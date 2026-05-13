@@ -11,6 +11,7 @@ export type SignificanceTier = 'marquee' | 'finale' | 'weighted' | 'note';
 export interface SignificanceFlag {
   tier: SignificanceTier;
   note: string;
+  weekend?: string;
 }
 
 export type SignificanceMap = Record<string, SignificanceFlag>;
@@ -34,4 +35,13 @@ export interface Series {
   fetchedAt: Date;
   stale: boolean;
   configured: boolean;
+}
+
+export interface Weekend {
+  key: string;
+  label?: string;
+  dateRangeLabel: string;
+  sessions: Session[];
+  significance?: SignificanceFlag;
+  isPast: boolean;
 }
