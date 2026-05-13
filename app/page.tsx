@@ -51,10 +51,12 @@ export default async function Home() {
 
       {byDay.length > 0 && (
         <section>
-          <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Upcoming</h2>
+          <h2 className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-semibold mb-3">
+            Upcoming
+          </h2>
           {byDay.map(day => (
             <div key={day.label} className="mb-3">
-              <DayHeader label={day.label} />
+              <DayHeader label={day.label} count={day.sessions.length} />
               <SessionList
                 items={day.sessions.map(s => ({ session: s, color: colorByUid[s.uid] }))}
               />
