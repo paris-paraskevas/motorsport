@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motorsport UI mockups — Phase 1</title>
+<style>
+  :root { color-scheme: dark; }
+  body { background: #0a0a0a; color: #e4e4e7; font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; padding: 24px; }
+  h1 { font-size: 18px; margin: 0 0 6px; }
+  p.sub { color: #71717a; margin: 0 0 24px; font-size: 14px; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #a1a1aa; margin: 32px 0 12px; border-top: 1px solid #27272a; padding-top: 16px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .card { background: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 16px; }
+  .card h3 { margin: 0 0 4px; font-size: 15px; color: #fafafa; }
+  .card p { margin: 0 0 12px; font-size: 13px; color: #a1a1aa; line-height: 1.4; }
+  .card img { width: 100%; height: auto; border-radius: 6px; display: block; }
+  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1>Motorsport — UI layout mockups</h1>
+<p class="sub">AIDesigner-generated phone mockups. Pick one per row.</p>
+
+<h2>Home page · which leading layout?</h2>
+<div class="row">
+  <div class="card">
+    <h3>A — hero NEXT card on top</h3>
+    <p>Big spotlight card for the very next session, then "This weekend", then "Next 7 days" with day separators. More weight on what's imminent.</p>
+    <img src="home-A-with-hero.webp" alt="Home variant A: hero NEXT card on top">
+  </div>
+  <div class="card">
+    <h3>B — no hero, inline NEXT tag</h3>
+    <p>Leads straight with "This weekend" (the first row tagged NEXT inline). "Next 7 days" is a flat list — no day separators. Maximum density.</p>
+    <img src="home-B-no-hero.webp" alt="Home variant B: no hero, inline NEXT">
+  </div>
+</div>
+
+<h2>Series detail · which calendar view?</h2>
+<div class="row">
+  <div class="card">
+    <h3>C — full season, past dimmed</h3>
+    <p>All 24 weekends in chronological order. Past races dimmed at the top. Monaco GP carries a "MARQUEE" tag. You scroll past what's done to reach what's next.</p>
+    <img src="series-C-full-season.webp" alt="Series variant C: full season">
+  </div>
+  <div class="card">
+    <h3>D — upcoming only + toggle</h3>
+    <p>Only future weekends visible by default. A "+ show past" toggle reveals the rest. NEXT tag on the next weekend, MARQUEE tag on Austrian GP.</p>
+    <img src="series-D-upcoming-only.webp" alt="Series variant D: upcoming only">
+  </div>
+</div>
+
+</body>
+</html>
