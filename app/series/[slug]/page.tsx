@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { listSeriesSlugs, loadSeries } from '@/lib/series';
 import { groupByWeekend } from '@/lib/group';
@@ -33,13 +32,12 @@ export default async function SeriesPage({
   const nextWeekendKey = upcomingWeekends[0]?.key;
 
   return (
-    <main className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4 pb-16">
       <header className="mb-6">
-        <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-300">← home</Link>
-        <div className="mt-2">
+        <div className="mb-2">
           <SeriesBadge name={series.meta.name} color={series.meta.color} />
         </div>
-        <h1 className="text-zinc-100 text-xl mt-1">{series.meta.season} season</h1>
+        <h1 className="text-zinc-100 text-2xl font-bold tracking-tight">{series.meta.season} season</h1>
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
 
@@ -77,6 +75,6 @@ export default async function SeriesPage({
           />
         </section>
       )}
-    </main>
+    </div>
   );
 }

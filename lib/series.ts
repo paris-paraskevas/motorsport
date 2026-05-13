@@ -81,3 +81,14 @@ export async function loadAllSeries(): Promise<Series[]> {
   const slugs = await listSeriesSlugs();
   return Promise.all(slugs.map(loadSeries));
 }
+
+export async function loadSeriesMeta(slug: string): Promise<SeriesMeta> {
+  return JSON.parse(
+    await fs.readFile(path.join(SERIES_ROOT, slug, 'meta.json'), 'utf-8'),
+  );
+}
+
+export async function loadAllSeriesMeta(): Promise<SeriesMeta[]> {
+  const slugs = await listSeriesSlugs();
+  return Promise.all(slugs.map(loadSeriesMeta));
+}

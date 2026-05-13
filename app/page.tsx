@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { loadAllSeries } from '@/lib/series';
 import { groupByDay } from '@/lib/group';
 import { SessionList } from '@/components/SessionList';
@@ -28,14 +27,7 @@ export default async function Home() {
   const byDay = groupByDay(remaining.map(x => x.session));
 
   return (
-    <main className="max-w-2xl mx-auto p-4 pb-16">
-      <header className="flex items-center justify-between mb-6 pt-2">
-        <h1 className="text-zinc-100 text-lg font-medium tracking-tight">Motorsport</h1>
-        <Link href="/about" className="text-xs text-zinc-500 hover:text-zinc-300">
-          about
-        </Link>
-      </header>
-
+    <div className="max-w-2xl mx-auto p-4 pb-16">
       {next ? (
         <NextSessionCard
           session={next.session}
@@ -64,6 +56,6 @@ export default async function Home() {
           ))}
         </section>
       )}
-    </main>
+    </div>
   );
 }

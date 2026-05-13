@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { loadAllSeries } from '@/lib/series';
 
 export const revalidate = 21600;
@@ -6,10 +5,9 @@ export const revalidate = 21600;
 export default async function About() {
   const all = await loadAllSeries();
   return (
-    <main className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4 pb-16">
       <header className="mb-6">
-        <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-300">← home</Link>
-        <h1 className="text-zinc-100 text-xl mt-2">About</h1>
+        <h1 className="text-zinc-100 text-2xl font-bold tracking-tight">About</h1>
       </header>
 
       <section className="mb-6">
@@ -41,6 +39,6 @@ export default async function About() {
           Personal-use PWA. Data fetched at build with 6-hour revalidation. All times rendered in Europe/Athens.
         </p>
       </section>
-    </main>
+    </div>
   );
 }
