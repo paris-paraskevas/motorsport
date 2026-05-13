@@ -29,9 +29,9 @@ function chunk(type, data) {
   return Buffer.concat([len, typeBuf, data, crcBuf]);
 }
 
-const BG  = [0x0a, 0x0a, 0x0a]; // zinc-950
-const RED = [0xe1, 0x06, 0x00]; // F1 red
-const LT  = [0xf5, 0xf5, 0xf5]; // near-white
+const BG    = [0x0a, 0x0a, 0x0a]; // zinc-950
+const BLACK = [0x00, 0x00, 0x00]; // pure black for checker cell
+const WHITE = [0xff, 0xff, 0xff]; // pure white for checker cell
 
 function makeCheckerIcon(size, checkerFraction, gridSize, outPath) {
   const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -59,7 +59,7 @@ function makeCheckerIcon(size, checkerFraction, gridSize, outPath) {
       if (x >= checkerStart && x < checkerEnd && y >= checkerStart && y < checkerEnd) {
         const cellX = Math.floor((x - checkerStart) / cellSize);
         const cellY = Math.floor((y - checkerStart) / cellSize);
-        rgb = ((cellX + cellY) % 2 === 0) ? RED : LT;
+        rgb = ((cellX + cellY) % 2 === 0) ? BLACK : WHITE;
       }
       const pos = y * rowLength + 1 + x * 3;
       raw[pos] = rgb[0];
