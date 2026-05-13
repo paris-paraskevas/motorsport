@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { listSeriesSlugs, loadSeries } from '@/lib/series';
-import { SessionList } from '@/components/SessionList';
+import { groupByWeekend } from '@/lib/group';
+import { PastToggleSection } from '@/components/PastToggleSection';
 import { StaleBanner } from '@/components/StaleBanner';
 import { SeriesBadge } from '@/components/SeriesBadge';
 
@@ -25,7 +26,11 @@ export default async function SeriesPage({
     notFound();
   }
 
-  const items = series.sessions.map(session => ({ session, color: series.meta.color }));
+  const now = new Date();
+  const weekends = groupByWeekend(series.sessions, now);
+  const pastWeekends = weekends.filter(w => w.isPast);
+  const upcomingWeekends = weekends.filter(w => !w.isPast);
+  const nextWeekendKey = upcomingWeekends[0]?.key;
 
   return (
     <main className="max-w-2xl mx-auto p-4">
@@ -38,10 +43,12 @@ export default async function SeriesPage({
         <StaleBanner configured={series.configured} />
       </header>
 
-      <section className="mb-8">
-        <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Calendar</h2>
-        <SessionList items={items} />
-      </section>
+      <PastToggleSection
+        pastWeekends={pastWeekends}
+        upcomingWeekends={upcomingWeekends}
+        color={series.meta.color}
+        nextWeekendKey={nextWeekendKey}
+      />
 
       {series.overview && (
         <section className="mb-8">
@@ -52,7 +59,6 @@ export default async function SeriesPage({
           />
         </section>
       )}
-
       {series.drivers && (
         <section className="mb-8">
           <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Drivers</h2>
@@ -62,7 +68,6 @@ export default async function SeriesPage({
           />
         </section>
       )}
-
       {series.significance && (
         <section className="mb-8">
           <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Significance</h2>
