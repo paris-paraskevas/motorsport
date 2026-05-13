@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
 import { listSeriesSlugs, loadSeries } from '@/lib/series';
-import { groupByWeekend } from '@/lib/group';
-import { PastToggleSection } from '@/components/PastToggleSection';
+import { resolveTab, labelForTab } from '@/lib/tabs';
+import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
 import { SeriesBadge } from '@/components/SeriesBadge';
+import { CalendarTab } from '@/components/tabs/CalendarTab';
+import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,10 +16,13 @@ export async function generateStaticParams() {
 
 export default async function SeriesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }) {
   const { slug } = await params;
+  const { tab } = await searchParams;
   let series;
   try {
     series = await loadSeries(slug);
@@ -25,56 +30,29 @@ export default async function SeriesPage({
     notFound();
   }
 
-  const now = new Date();
-  const weekends = groupByWeekend(series.sessions, now);
-  const pastWeekends = weekends.filter(w => w.isPast);
-  const upcomingWeekends = weekends.filter(w => !w.isPast);
-  const nextWeekendKey = upcomingWeekends[0]?.key;
+  const activeTab = resolveTab(tab);
 
   return (
     <div className="max-w-2xl mx-auto p-4 pb-16">
-      <header className="mb-6">
+      <header className="mb-4">
         <div className="mb-2">
           <SeriesBadge name={series.meta.name} color={series.meta.color} />
         </div>
-        <h1 className="text-zinc-100 text-2xl font-bold tracking-tight">{series.meta.season} season</h1>
+        <h1 className="text-zinc-100 text-2xl font-bold tracking-tight">
+          {series.meta.season} season
+        </h1>
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
 
-      <PastToggleSection
-        pastWeekends={pastWeekends}
-        upcomingWeekends={upcomingWeekends}
-        color={series.meta.color}
-        nextWeekendKey={nextWeekendKey}
-      />
+      <SeriesTabs color={series.meta.color} activeTab={activeTab} />
 
-      {series.overview && (
-        <section className="mb-8">
-          <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Overview</h2>
-          <article
-            className="prose prose-invert prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: series.overview }}
-          />
-        </section>
-      )}
-      {series.drivers && (
-        <section className="mb-8">
-          <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Drivers</h2>
-          <article
-            className="prose prose-invert prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: series.drivers }}
-          />
-        </section>
-      )}
-      {series.significance && (
-        <section className="mb-8">
-          <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Significance</h2>
-          <article
-            className="prose prose-invert prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: series.significance }}
-          />
-        </section>
-      )}
+      <div className="mt-6">
+        {activeTab === 'calendar' ? (
+          <CalendarTab series={series} />
+        ) : (
+          <PlaceholderTab tabLabel={labelForTab(activeTab)} />
+        )}
+      </div>
     </div>
   );
 }

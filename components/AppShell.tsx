@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Fragment } from 'react';
 import { SeriesMeta } from '@/lib/types';
+import { groupSeriesByCategory } from '@/lib/categories';
 
 export function AppShell({
   children,
@@ -83,15 +85,19 @@ export function AppShell({
         <nav className="space-y-0.5">
           <DrawerLink href="/" active={pathname === '/'} label="Home" />
 
-          <DrawerLabel>Championships</DrawerLabel>
-          {seriesList.map(s => (
-            <DrawerLink
-              key={s.slug}
-              href={`/series/${s.slug}`}
-              active={pathname === `/series/${s.slug}`}
-              label={s.name}
-              dot={s.color}
-            />
+          {groupSeriesByCategory(seriesList).map(group => (
+            <Fragment key={group.category.id}>
+              <DrawerLabel>{group.category.label}</DrawerLabel>
+              {group.series.map(s => (
+                <DrawerLink
+                  key={s.slug}
+                  href={`/series/${s.slug}`}
+                  active={pathname.startsWith(`/series/${s.slug}`)}
+                  label={s.name}
+                  dot={s.color}
+                />
+              ))}
+            </Fragment>
           ))}
 
           <DrawerLabel>More</DrawerLabel>
