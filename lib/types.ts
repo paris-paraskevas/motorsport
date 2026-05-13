@@ -36,6 +36,32 @@ export interface ConstructorStanding {
   wins?: number;
 }
 
+export interface RaceResultEntry {
+  position: number;
+  driverName: string;
+  driverCode?: string;
+  team: string;
+  status: string;
+  time?: string;
+  points: number;
+}
+
+export interface RaceResult {
+  round: number;
+  raceName: string;
+  date: Date;
+  circuit: string;
+  results: RaceResultEntry[];
+}
+
+export interface RaceSummary {
+  round: number;
+  raceName: string;
+  date: Date;
+  winner?: string;
+  winnerTeam?: string;
+}
+
 export interface Champion {
   year: number;
   driver: string;
