@@ -1579,10 +1579,13 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ["node-ical"],
 };
 
 export default withSerwist(nextConfig);
 ```
+
+> **`serverExternalPackages` is required.** Without it, Turbopack tries to bundle `node-ical` for the RSC server bundle and crashes at runtime with `TypeError: e.BigInt is not a function`. Marking it external tells Next.js to leave it as a normal `require()` at runtime. Discovered during Task 13; the fix was already applied to `next.config.ts` then — preserve it here.
 
 - [ ] **Step 2: Create the service-worker source**
 
