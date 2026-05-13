@@ -1,8 +1,8 @@
 import { loadAllSeries } from '@/lib/series';
 import { groupByDay } from '@/lib/group';
-import { SessionList } from '@/components/SessionList';
 import { NextSessionCard } from '@/components/NextSessionCard';
 import { DayHeader } from '@/components/DayHeader';
+import { SessionCard } from '@/components/SessionCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,13 +21,15 @@ export default async function Home() {
 
   const upcoming = flat.filter(x => x.session.end >= now);
   const next = upcoming[0];
-  const remaining = upcoming.slice(1, 13);
+  const remaining = upcoming.slice(1, 19);
   const colorByUid: Record<string, string> = {};
-  remaining.forEach(x => { colorByUid[x.session.uid] = x.color; });
+  remaining.forEach(x => {
+    colorByUid[x.session.uid] = x.color;
+  });
   const byDay = groupByDay(remaining.map(x => x.session));
 
   return (
-    <div className="max-w-2xl mx-auto p-4 pb-16">
+    <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       {next ? (
         <NextSessionCard
           session={next.session}
@@ -49,9 +51,15 @@ export default async function Home() {
           {byDay.map(day => (
             <div key={day.label} className="mb-3">
               <DayHeader label={day.label} count={day.sessions.length} />
-              <SessionList
-                items={day.sessions.map(s => ({ session: s, color: colorByUid[s.uid] }))}
-              />
+              <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                {day.sessions.map(s => (
+                  <SessionCard
+                    key={`${s.seriesSlug}-${s.uid}`}
+                    session={s}
+                    color={colorByUid[s.uid]}
+                  />
+                ))}
+              </div>
             </div>
           ))}
         </section>

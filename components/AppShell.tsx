@@ -1,9 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Fragment } from 'react';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 
@@ -17,24 +16,27 @@ export function AppShell({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // close drawer on route change
+  // Close drawer on route change
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  // lock body scroll when drawer open
+  // Lock body scroll only when mobile drawer is open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [open]);
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-900/80">
+      {/* Mobile/tablet header (hidden on lg+) */}
+      <header className="lg:hidden sticky top-0 z-30 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-900/80">
         <div className="max-w-2xl mx-auto px-3 h-14 flex items-center">
           <button
             type="button"
@@ -53,30 +55,34 @@ export function AppShell({
         </div>
       </header>
 
-      <main>{children}</main>
-
-      {/* Backdrop */}
+      {/* Mobile backdrop (hidden on lg+) */}
       <div
         onClick={() => setOpen(false)}
         aria-hidden="true"
-        className={`fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity duration-200 ${
+        className={`lg:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity duration-200 ${
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       />
 
-      {/* Drawer */}
+      {/* Drawer / Sidebar — slides on mobile, permanent on lg+ */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 w-80 max-w-[85vw] bg-zinc-950 border-r border-zinc-900 p-4 overflow-y-auto transition-transform duration-200 ease-out ${
-          open ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-zinc-950 border-r border-zinc-900 p-4 overflow-y-auto
+                    transition-transform duration-200 ease-out
+                    lg:translate-x-0
+                    ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex items-center justify-between mb-6">
-          <span className="text-zinc-100 font-semibold text-lg tracking-tight">Motorsport</span>
+          <Link
+            href="/"
+            className="text-zinc-100 font-semibold text-lg tracking-tight"
+          >
+            Motorsport
+          </Link>
           <button
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="p-2 -mr-2 text-zinc-400 hover:text-zinc-100 rounded-lg hover:bg-zinc-900 transition-colors"
+            className="lg:hidden p-2 -mr-2 text-zinc-400 hover:text-zinc-100 rounded-lg hover:bg-zinc-900 transition-colors"
           >
             <X size={20} />
           </button>
@@ -104,6 +110,9 @@ export function AppShell({
           <DrawerLink href="/about" active={pathname === '/about'} label="About" />
         </nav>
       </aside>
+
+      {/* Main content — shifted right on lg+ for the permanent sidebar */}
+      <main className="lg:ml-72">{children}</main>
     </>
   );
 }

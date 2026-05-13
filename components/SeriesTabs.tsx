@@ -20,7 +20,7 @@ export function SeriesTabs({
   }, [activeTab]);
 
   return (
-    <div className="sticky top-14 z-20 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-900/80 -mx-4">
+    <div className="sticky top-14 lg:top-0 z-20 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-900/80 -mx-4 md:-mx-6 lg:-mx-8">
       <div className="overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         <style>{`.tab-scroll::-webkit-scrollbar { display: none; }`}</style>
         <nav className="tab-scroll flex items-center min-w-max px-3">

@@ -5,7 +5,7 @@ export const revalidate = 21600;
 export default async function About() {
   const all = await loadAllSeries();
   return (
-    <div className="max-w-2xl mx-auto p-4 pb-16">
+    <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <header className="mb-6">
         <h1 className="text-zinc-100 text-2xl font-bold tracking-tight">About</h1>
       </header>
