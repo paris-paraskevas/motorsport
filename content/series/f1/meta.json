@@ -2,6 +2,6 @@
   "slug": "f1",
   "name": "Formula 1",
   "color": "#e10600",
-  "icsUrl": "",
+  "icsUrl": "https://better-f1-calendar.vercel.app/api/calendar.ics",
   "season": 2026
 }
