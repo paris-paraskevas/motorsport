@@ -8,12 +8,21 @@ export function SessionCard({
   session: Session;
   color: string;
 }) {
+  const now = new Date();
+  const isLive = session.start <= now && now <= session.end;
+  const isPast = !isLive && session.end < now;
+
   return (
-    <div className="flex items-stretch gap-3 py-3 border-b border-zinc-800">
+    <div className={`flex items-stretch gap-3 py-3 border-b border-zinc-800 ${isPast ? 'opacity-50' : ''}`}>
       <div className="w-1 rounded" style={{ backgroundColor: color }} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-zinc-100 truncate">{session.title}</span>
+          {isLive && (
+            <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-900/40 text-red-300">
+              live
+            </span>
+          )}
           {session.significance && (
             <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-900/40 text-amber-300">
               {session.significance.tier}
