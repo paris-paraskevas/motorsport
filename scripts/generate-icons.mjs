@@ -1,8 +1,9 @@
 // Generate PWA icons at proper sizes. Pure Node — no deps.
 // Run via `node scripts/generate-icons.mjs`.
 //
-// Output: zinc-950 background with a red (F1-ish) filled circle in the center.
-// Maskable variant uses a smaller circle so the safe area (inner 80%) holds the mark.
+// Design: zinc-950 background with a centered 4x4 checkered-flag pattern
+// in red (#e10600) + off-white (#f5f5f5). Maskable variant uses a smaller
+// checker so the safe area (inner ~80%) carries the mark.
 
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -28,40 +29,42 @@ function chunk(type, data) {
   return Buffer.concat([len, typeBuf, data, crcBuf]);
 }
 
-function makeIcon(size, circleDiameterFraction, outPath) {
+const BG  = [0x0a, 0x0a, 0x0a]; // zinc-950
+const RED = [0xe1, 0x06, 0x00]; // F1 red
+const LT  = [0xf5, 0xf5, 0xf5]; // near-white
+
+function makeCheckerIcon(size, checkerFraction, gridSize, outPath) {
   const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(size, 0);
   ihdr.writeUInt32BE(size, 4);
   ihdr[8] = 8;      // bit depth
   ihdr[9] = 2;      // color type RGB
-  ihdr[10] = 0;     // compression
-  ihdr[11] = 0;     // filter
-  ihdr[12] = 0;     // interlace
+  ihdr[10] = 0;
+  ihdr[11] = 0;
+  ihdr[12] = 0;
+
+  const checkerSize = size * checkerFraction;
+  const checkerStart = (size - checkerSize) / 2;
+  const checkerEnd = checkerStart + checkerSize;
+  const cellSize = checkerSize / gridSize;
 
   const rowLength = 1 + size * 3;
   const raw = Buffer.alloc(rowLength * size);
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = (size * circleDiameterFraction) / 2;
-  const r2 = r * r;
 
   for (let y = 0; y < size; y++) {
-    raw[y * rowLength] = 0; // filter byte: None
+    raw[y * rowLength] = 0; // PNG filter: None
     for (let x = 0; x < size; x++) {
-      const dx = x - cx + 0.5;
-      const dy = y - cy + 0.5;
-      const inCircle = (dx * dx + dy * dy) <= r2;
-      const pos = y * rowLength + 1 + x * 3;
-      if (inCircle) {
-        raw[pos] = 0xe1;     // F1 red
-        raw[pos + 1] = 0x06;
-        raw[pos + 2] = 0x00;
-      } else {
-        raw[pos] = 0x0a;     // zinc-950
-        raw[pos + 1] = 0x0a;
-        raw[pos + 2] = 0x0a;
+      let rgb = BG;
+      if (x >= checkerStart && x < checkerEnd && y >= checkerStart && y < checkerEnd) {
+        const cellX = Math.floor((x - checkerStart) / cellSize);
+        const cellY = Math.floor((y - checkerStart) / cellSize);
+        rgb = ((cellX + cellY) % 2 === 0) ? RED : LT;
       }
+      const pos = y * rowLength + 1 + x * 3;
+      raw[pos] = rgb[0];
+      raw[pos + 1] = rgb[1];
+      raw[pos + 2] = rgb[2];
     }
   }
 
@@ -77,6 +80,7 @@ function makeIcon(size, circleDiameterFraction, outPath) {
 }
 
 fs.mkdirSync('public/icons', { recursive: true });
-makeIcon(192, 0.55, 'public/icons/icon-192.png');
-makeIcon(512, 0.55, 'public/icons/icon-512.png');
-makeIcon(512, 0.40, 'public/icons/icon-512-maskable.png');
+makeCheckerIcon(192, 0.62, 4, 'public/icons/icon-192.png');
+makeCheckerIcon(512, 0.62, 4, 'public/icons/icon-512.png');
+// Maskable: tighter so the checker lives inside the safe area (inner ~80%)
+makeCheckerIcon(512, 0.46, 4, 'public/icons/icon-512-maskable.png');
