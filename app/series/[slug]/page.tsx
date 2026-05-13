@@ -1,10 +1,15 @@
 import { notFound } from 'next/navigation';
 import { listSeriesSlugs, loadSeries } from '@/lib/series';
-import { resolveTab, labelForTab } from '@/lib/tabs';
+import { resolveTab, labelForTab, TabKey } from '@/lib/tabs';
+import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
 import { SeriesBadge } from '@/components/SeriesBadge';
 import { CalendarTab } from '@/components/tabs/CalendarTab';
+import { AboutTab } from '@/components/tabs/AboutTab';
+import { HistoryTab } from '@/components/tabs/HistoryTab';
+import { ChampionsTab } from '@/components/tabs/ChampionsTab';
+import { StandingsTab } from '@/components/tabs/StandingsTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 export const dynamic = 'force-dynamic';
@@ -12,6 +17,23 @@ export const dynamic = 'force-dynamic';
 export async function generateStaticParams() {
   const slugs = await listSeriesSlugs();
   return slugs.map(slug => ({ slug }));
+}
+
+function renderTab(activeTab: TabKey, series: Series) {
+  switch (activeTab) {
+    case 'calendar':
+      return <CalendarTab series={series} />;
+    case 'about':
+      return <AboutTab series={series} />;
+    case 'history':
+      return <HistoryTab series={series} />;
+    case 'champions':
+      return <ChampionsTab series={series} />;
+    case 'standings':
+      return <StandingsTab series={series} />;
+    default:
+      return <PlaceholderTab tabLabel={labelForTab(activeTab)} />;
+  }
 }
 
 export default async function SeriesPage({
@@ -46,13 +68,7 @@ export default async function SeriesPage({
 
       <SeriesTabs color={series.meta.color} activeTab={activeTab} />
 
-      <div className="mt-6">
-        {activeTab === 'calendar' ? (
-          <CalendarTab series={series} />
-        ) : (
-          <PlaceholderTab tabLabel={labelForTab(activeTab)} />
-        )}
-      </div>
+      <div className="mt-6">{renderTab(activeTab, series)}</div>
     </div>
   );
 }
