@@ -3,5 +3,6 @@
   "name": "FIA WEC",
   "color": "#3b82f6",
   "icsUrl": "https://calendar.google.com/calendar/ical/61jccgg4rshh1temqk0dj4lens%40group.calendar.google.com/public/basic.ics",
-  "season": 2026
+  "season": 2026,
+  "category": "endurance"
 }

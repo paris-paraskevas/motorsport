@@ -1,9 +1,54 @@
+export type SeriesCategory =
+  | 'formula'
+  | 'endurance'
+  | 'gt'
+  | 'motorcycle'
+  | 'rally'
+  | 'stock';
+
 export interface SeriesMeta {
   slug: string;
   name: string;
   color: string;
   icsUrl: string;
   season: number;
+  category: SeriesCategory;
+  wikipediaPage?: string;
+  championsPage?: string;
+  seasonPage?: string;
+  officialStandingsUrl?: string;
+  officialSite?: string;
+}
+
+export interface DriverStanding {
+  position: number;
+  driverName: string;
+  driverCode?: string;
+  team: string;
+  points: number;
+  wins?: number;
+}
+
+export interface ConstructorStanding {
+  position: number;
+  name: string;
+  points: number;
+  wins?: number;
+}
+
+export interface Champion {
+  year: number;
+  driver: string;
+  constructor?: string;
+  points?: number;
+}
+
+export interface WikipediaSummary {
+  title: string;
+  extract: string;
+  description?: string;
+  url: string;
+  fetchedAt: Date;
 }
 
 export type SignificanceTier = 'marquee' | 'finale' | 'weighted' | 'note';
