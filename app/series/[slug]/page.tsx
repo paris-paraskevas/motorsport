@@ -67,12 +67,22 @@ export default async function SeriesPage({
 
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
-      <header className="mb-6">
-        <div className="mb-2">
-          <SeriesBadge name={series.meta.name} color={series.meta.color} />
+      <header className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <span
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ backgroundColor: series.meta.color, boxShadow: `0 0 12px ${series.meta.color}` }}
+          />
+          <span
+            className="text-[11px] uppercase tracking-[0.18em] font-semibold"
+            style={{ color: series.meta.color }}
+          >
+            {series.meta.name}
+          </span>
         </div>
-        <h1 className="text-zinc-100 text-2xl font-bold tracking-tight">
-          {series.meta.season} season
+        <h1 className="text-zinc-50 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+          <span className="tnum">{series.meta.season}</span>{' '}
+          <span className="text-zinc-400 font-medium">season</span>
         </h1>
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>

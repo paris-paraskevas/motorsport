@@ -8,9 +8,26 @@ html {
 }
 
 html, body {
-  background: #0a0a0a;
   color: #fafafa;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
 }
+
+/* Subtle ambient background — slightly warm at top, near-black overall.
+   Avoids the "flat slop" feel of pure single-color body. */
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 255, 255, 0.035) 0%, transparent 60%),
+    #08080a;
+  min-height: 100vh;
+}
+
+/* Tabular numerals — used for times, points, positions. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide scrollbar for horizontal tab containers if they reappear. */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { scrollbar-width: none; }

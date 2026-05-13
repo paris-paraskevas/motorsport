@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronRight, MapPin } from 'lucide-react';
+import { ArrowUpRight, MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
 import { formatLocal, formatRelative } from '@/lib/date';
 
@@ -17,46 +17,58 @@ export function NextSessionCard({
   return (
     <Link
       href={`/series/${seriesSlug}`}
-      className="group relative block mb-10 rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 transition-all hover:bg-zinc-900 hover:border-zinc-700"
+      className="group relative block mb-10 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/40 transition-all duration-300 hover:bg-zinc-900/70 hover:border-zinc-700"
     >
+      {/* Series-color gradient corner — subtle but distinctive */}
       <div
-        className="absolute inset-0 opacity-[0.10] pointer-events-none"
-        style={{ background: `linear-gradient(135deg, ${color} 0%, transparent 55%)` }}
+        className="absolute inset-0 opacity-[0.18] pointer-events-none"
+        style={{ background: `radial-gradient(circle at 0% 0%, ${color} 0%, transparent 55%)` }}
       />
+      {/* Top accent line in series color */}
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ backgroundColor: color, opacity: 0.6 }} />
 
-      <div className="relative p-5">
-        <div className="flex items-center justify-between mb-4">
-          <span
-            className="inline-flex items-center text-[11px] uppercase tracking-[0.14em] font-semibold px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: `${color}26`, color }}
-          >
-            {seriesName}
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-200 font-semibold">
-              next
+      <div className="relative p-6 md:p-8">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2.5">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: color, boxShadow: `0 0 12px ${color}` }}
+            />
+            <span
+              className="text-[11px] uppercase tracking-[0.18em] font-semibold"
+              style={{ color }}
+            >
+              {seriesName}
             </span>
-            <ChevronRight size={16} className="text-zinc-600 group-hover:text-zinc-300 transition-colors" />
           </div>
+          <span className="text-[10px] uppercase tracking-[0.16em] font-semibold text-zinc-500">
+            Up next
+          </span>
         </div>
 
-        <h2 className="text-2xl text-zinc-50 font-bold leading-[1.15] tracking-tight">
+        <h2 className="text-2xl md:text-3xl text-zinc-50 font-bold leading-[1.1] tracking-tight">
           {session.title}
         </h2>
 
-        <div className="mt-4 text-sm text-zinc-300 font-medium tabular-nums">
-          {formatRelative(session.start)}
+        <div className="mt-6 flex items-baseline gap-4 flex-wrap">
+          <span className="text-lg md:text-xl font-semibold text-zinc-100 tnum">
+            {formatRelative(session.start)}
+          </span>
+          <span className="text-sm text-zinc-500 tnum">
+            {formatLocal(session.start)}
+          </span>
         </div>
 
-        <div className="mt-1 text-sm text-zinc-500 flex items-center gap-1.5 flex-wrap">
-          <span className="tabular-nums">{formatLocal(session.start)}</span>
-          {session.location && (
-            <>
-              <span className="text-zinc-700">·</span>
-              <MapPin size={12} className="text-zinc-600 shrink-0" />
-              <span>{session.location}</span>
-            </>
-          )}
+        {session.location && (
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-zinc-500">
+            <MapPin size={13} className="text-zinc-600" />
+            <span>{session.location}</span>
+          </div>
+        )}
+
+        <div className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+          Open series
+          <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>
     </Link>

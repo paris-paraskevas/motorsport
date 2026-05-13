@@ -1,8 +1,13 @@
 export function PlaceholderTab({ tabLabel }: { tabLabel: string }) {
   return (
-    <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-8 text-center">
-      <div className="text-zinc-300 text-base font-medium mb-1">{tabLabel}</div>
-      <div className="text-zinc-500 text-sm">Coming in a later phase.</div>
+    <div className="flex flex-col items-center justify-center text-center py-16 px-6">
+      <div className="w-12 h-px bg-zinc-700 mb-6" />
+      <div className="text-xs uppercase tracking-[0.18em] text-zinc-500 font-semibold mb-3">
+        {tabLabel}
+      </div>
+      <div className="text-zinc-400 text-base max-w-xs">
+        Coming soon.
+      </div>
     </div>
   );
 }

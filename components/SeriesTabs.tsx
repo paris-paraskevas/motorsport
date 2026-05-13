@@ -37,7 +37,7 @@ export function SeriesTabs({
   const pathname = usePathname();
 
   return (
-    <nav className="grid grid-cols-3 gap-2 mb-6">
+    <nav className="grid grid-cols-3 gap-2 md:gap-3 mb-8" aria-label="Series sections">
       {TABS.map(tab => {
         const isActive = tab.key === activeTab;
         const Icon = ICONS[tab.key];
@@ -47,20 +47,28 @@ export function SeriesTabs({
             href={`${pathname}?tab=${tab.key}`}
             scroll={false}
             aria-current={isActive ? 'page' : undefined}
-            className={`group flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl border transition-all ${
+            className={`group relative flex flex-col items-center justify-center gap-2 py-5 px-2 rounded-2xl border transition-all duration-200 ${
               isActive
-                ? 'bg-zinc-900 border-zinc-700'
-                : 'bg-zinc-900/30 border-zinc-800/60 hover:bg-zinc-900/70 hover:border-zinc-700'
+                ? 'bg-zinc-900/80 border-zinc-700'
+                : 'bg-zinc-900/20 border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700/80'
             }`}
-            style={isActive ? { borderColor: color, boxShadow: `inset 0 0 0 1px ${color}` } : undefined}
+            style={
+              isActive
+                ? {
+                    borderColor: color,
+                    boxShadow: `inset 0 0 0 1px ${color}, 0 8px 24px -16px ${color}`,
+                  }
+                : undefined
+            }
           >
             <Icon
-              size={20}
+              size={22}
               className={isActive ? '' : 'text-zinc-400 group-hover:text-zinc-200 transition-colors'}
+              strokeWidth={isActive ? 2 : 1.75}
               style={isActive ? { color } : undefined}
             />
             <span
-              className={`text-[11px] uppercase tracking-[0.1em] font-semibold text-center leading-tight ${
+              className={`text-[11px] uppercase tracking-[0.12em] font-semibold text-center leading-tight ${
                 isActive ? 'text-zinc-50' : 'text-zinc-400 group-hover:text-zinc-200'
               }`}
             >
