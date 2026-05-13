@@ -10,6 +10,9 @@ import { AboutTab } from '@/components/tabs/AboutTab';
 import { HistoryTab } from '@/components/tabs/HistoryTab';
 import { ChampionsTab } from '@/components/tabs/ChampionsTab';
 import { StandingsTab } from '@/components/tabs/StandingsTab';
+import { ResultsTab } from '@/components/tabs/ResultsTab';
+import { DriversTab } from '@/components/tabs/DriversTab';
+import { RulesTab } from '@/components/tabs/RulesTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 export const dynamic = 'force-dynamic';
@@ -23,14 +26,22 @@ function renderTab(activeTab: TabKey, series: Series) {
   switch (activeTab) {
     case 'calendar':
       return <CalendarTab series={series} />;
+    case 'news':
+      return <PlaceholderTab tabLabel="News" />;
+    case 'standings':
+      return <StandingsTab series={series} />;
+    case 'results':
+      return <ResultsTab series={series} />;
+    case 'drivers':
+      return <DriversTab series={series} />;
+    case 'rules':
+      return <RulesTab series={series} />;
     case 'about':
       return <AboutTab series={series} />;
     case 'history':
       return <HistoryTab series={series} />;
     case 'champions':
       return <ChampionsTab series={series} />;
-    case 'standings':
-      return <StandingsTab series={series} />;
     default:
       return <PlaceholderTab tabLabel={labelForTab(activeTab)} />;
   }
@@ -56,7 +67,7 @@ export default async function SeriesPage({
 
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
-      <header className="mb-4">
+      <header className="mb-6">
         <div className="mb-2">
           <SeriesBadge name={series.meta.name} color={series.meta.color} />
         </div>
@@ -68,7 +79,7 @@ export default async function SeriesPage({
 
       <SeriesTabs color={series.meta.color} activeTab={activeTab} />
 
-      <div className="mt-6">{renderTab(activeTab, series)}</div>
+      <div>{renderTab(activeTab, series)}</div>
     </div>
   );
 }

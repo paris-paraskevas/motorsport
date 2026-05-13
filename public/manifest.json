@@ -1,7 +1,7 @@
 {
-  "name": "Motorsport",
-  "short_name": "Motorsport",
-  "description": "Personal motorsport companion",
+  "name": "Paddock",
+  "short_name": "Paddock",
+  "description": "Personal motorsport companion — calendars, standings, drivers and more",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

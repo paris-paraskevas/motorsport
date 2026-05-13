@@ -50,7 +50,7 @@ export function AppShell({
             href="/"
             className="ml-2 text-zinc-100 font-semibold text-base tracking-tight"
           >
-            Motorsport
+            Paddock
           </Link>
         </div>
       </header>
@@ -76,7 +76,7 @@ export function AppShell({
             href="/"
             className="text-zinc-100 font-semibold text-lg tracking-tight"
           >
-            Motorsport
+            Paddock
           </Link>
           <button
             type="button"

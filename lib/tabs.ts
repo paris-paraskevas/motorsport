@@ -3,7 +3,7 @@ export const TABS = [
   { key: 'news',      label: 'News' },
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
-  { key: 'drivers',   label: 'Drivers & Teams' },
+  { key: 'drivers',   label: 'Drivers' },
   { key: 'rules',     label: 'Rules' },
   { key: 'about',     label: 'About' },
   { key: 'history',   label: 'History' },
