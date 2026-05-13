@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Session } from '@/lib/types';
 import { formatLocal, formatRelative } from '@/lib/date';
 
@@ -5,25 +6,42 @@ export function NextSessionCard({
   session,
   color,
   seriesName,
+  seriesSlug,
 }: {
   session: Session;
   color: string;
   seriesName: string;
+  seriesSlug: string;
 }) {
   return (
-    <div className="flex items-stretch gap-3 p-4 mb-6 border border-zinc-800 rounded-lg">
-      <div className="w-1 rounded" style={{ backgroundColor: color }} />
-      <div className="flex-1 min-w-0">
-        <div className="text-xs uppercase tracking-wider mb-1" style={{ color }}>
-          {seriesName} · next
+    <Link
+      href={`/series/${seriesSlug}`}
+      className="block mb-8 rounded-xl bg-zinc-900/60 border border-zinc-800 overflow-hidden hover:bg-zinc-900 transition-colors"
+    >
+      <div className="h-1 w-full" style={{ backgroundColor: color }} />
+      <div className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <span
+            className="text-[11px] uppercase tracking-[0.15em] font-medium"
+            style={{ color }}
+          >
+            {seriesName}
+          </span>
+          <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium">
+            next
+          </span>
         </div>
-        <div className="text-lg text-zinc-100">{session.title}</div>
-        <div className="text-sm text-zinc-400 mt-1">
+        <h2 className="text-2xl text-zinc-50 font-semibold leading-tight tracking-tight">
+          {session.title}
+        </h2>
+        <div className="mt-3 text-sm text-zinc-400">
           {formatLocal(session.start)}
-          {session.location ? ` · ${session.location}` : ''}
+          {session.location ? <> · <span className="text-zinc-500">{session.location}</span></> : null}
         </div>
-        <div className="text-sm text-zinc-500 mt-2">{formatRelative(session.start)}</div>
+        <div className="mt-1 text-sm font-medium text-zinc-300">
+          {formatRelative(session.start)}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

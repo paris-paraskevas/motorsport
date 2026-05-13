@@ -6,7 +6,7 @@ import { PastToggleSection } from '@/components/PastToggleSection';
 import { StaleBanner } from '@/components/StaleBanner';
 import { SeriesBadge } from '@/components/SeriesBadge';
 
-export const revalidate = 21600;
+export const dynamic = 'force-dynamic';
 
 export async function generateStaticParams() {
   const slugs = await listSeriesSlugs();
@@ -40,7 +40,7 @@ export default async function SeriesPage({
           <SeriesBadge name={series.meta.name} color={series.meta.color} />
         </div>
         <h1 className="text-zinc-100 text-xl mt-1">{series.meta.season} season</h1>
-        <StaleBanner configured={series.configured} />
+        <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
 
       <PastToggleSection
