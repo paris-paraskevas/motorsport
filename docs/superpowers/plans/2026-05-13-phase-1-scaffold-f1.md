@@ -133,6 +133,8 @@ export interface Series {
 
 - [ ] **Step 1: Run create-next-app non-interactively into the current directory**
 
+The directory is non-empty (`.git/`, `.claude/`, `docs/` are present). `create-next-app .` will proceed because none of those names conflict with files it generates. If it refuses, temporarily move `docs/` out, run the command, then move `docs/` back.
+
 Run (from `C:\Dev\Personal\Motorsport`):
 
 ```bash
@@ -141,20 +143,17 @@ npx --yes create-next-app@latest . \
   --tailwind \
   --eslint \
   --app \
-  --src-dir=false \
+  --no-src-dir \
   --import-alias "@/*" \
-  --no-turbo \
-  --use-npm \
-  --skip-install
+  --use-npm
 ```
 
-Then install:
+Notes:
+- If your create-next-app version still uses `--src-dir=false` instead of `--no-src-dir`, swap accordingly.
+- If it prompts about Turbopack, accept the default (either yes or no — does not affect this plan).
+- It installs deps automatically.
 
-```bash
-npm install
-```
-
-Expected: `package.json`, `app/`, `tailwind.config.ts`, `postcss.config.mjs`, `next.config.mjs`, `.gitignore`, `tsconfig.json` all created.
+Expected: `package.json`, `app/`, `tailwind.config.ts`, `postcss.config.mjs`, `next.config.mjs`, `.gitignore`, `tsconfig.json` all created at the project root.
 
 - [ ] **Step 2: Append local-only entries to `.gitignore`**
 
