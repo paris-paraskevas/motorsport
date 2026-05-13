@@ -1,13 +1,13 @@
 export const TABS = [
   { key: 'calendar',  label: 'Calendar' },
-  { key: 'about',     label: 'About' },
-  { key: 'history',   label: 'History' },
-  { key: 'drivers',   label: 'Drivers & Teams' },
-  { key: 'rules',     label: 'Rules' },
-  { key: 'champions', label: 'Champions' },
+  { key: 'news',      label: 'News' },
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
-  { key: 'news',      label: 'News' },
+  { key: 'drivers',   label: 'Drivers & Teams' },
+  { key: 'rules',     label: 'Rules' },
+  { key: 'about',     label: 'About' },
+  { key: 'history',   label: 'History' },
+  { key: 'champions', label: 'Champions' },
 ] as const;
 
 export type TabKey = typeof TABS[number]['key'];

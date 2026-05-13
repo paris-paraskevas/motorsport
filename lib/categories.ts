@@ -7,7 +7,7 @@ export interface CategoryDef {
 
 // Display order in the drawer (top to bottom).
 export const CATEGORIES: CategoryDef[] = [
-  { id: 'formula', label: 'Formula' },
+  { id: 'formula', label: 'Open-Wheel' },
   { id: 'endurance', label: 'Endurance' },
   { id: 'gt', label: 'GT' },
   { id: 'motorcycle', label: 'Motorcycles' },
