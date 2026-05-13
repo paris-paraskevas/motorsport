@@ -4,5 +4,10 @@
   "color": "#eab308",
   "icsUrl": "https://calendar.google.com/calendar/ical/fei68gpe16c85ed3jjdtvrn8ns%40group.calendar.google.com/public/basic.ics",
   "season": 2026,
-  "category": "rally"
+  "category": "rally",
+  "wikipediaPage": "World_Rally_Championship",
+  "championsPage": "List_of_World_Rally_champions",
+  "seasonPage": "2026_World_Rally_Championship",
+  "officialStandingsUrl": "https://www.wrc.com/en/championship/standings/",
+  "officialSite": "https://www.wrc.com/"
 }

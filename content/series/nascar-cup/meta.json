@@ -1,0 +1,13 @@
+{
+  "slug": "nascar-cup",
+  "name": "NASCAR Cup",
+  "color": "#a3e635",
+  "icsUrl": "https://calendar.google.com/calendar/ical/db8c47ne2bt9qbld2mhdabm0u8%40group.calendar.google.com/public/basic.ics",
+  "season": 2026,
+  "category": "stock",
+  "wikipediaPage": "NASCAR_Cup_Series",
+  "championsPage": "List_of_NASCAR_Cup_Series_champions",
+  "seasonPage": "2026_NASCAR_Cup_Series",
+  "officialStandingsUrl": "https://www.nascar.com/standings/",
+  "officialSite": "https://www.nascar.com/"
+}

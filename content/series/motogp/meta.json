@@ -4,5 +4,10 @@
   "color": "#fb923c",
   "icsUrl": "https://calendar.google.com/calendar/ical/832vbii8pmrvma356b4vn3v42c%40group.calendar.google.com/public/basic.ics",
   "season": 2026,
-  "category": "motorcycle"
+  "category": "motorcycle",
+  "wikipediaPage": "MotoGP",
+  "championsPage": "List_of_Grand_Prix_motorcycle_racing_World_champions",
+  "seasonPage": "2026_MotoGP_World_Championship",
+  "officialStandingsUrl": "https://www.motogp.com/en/standings",
+  "officialSite": "https://www.motogp.com/"
 }
