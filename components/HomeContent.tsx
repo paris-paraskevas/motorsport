@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import type { Session } from '@/lib/types';
-import { getFollowedSeries } from '@/lib/follow';
+import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
 import { NextSessionCard } from './NextSessionCard';
 import { SessionCard } from './SessionCard';
@@ -51,19 +51,16 @@ export function HomeContent({
   items: HomeItem[];
   news: NewsItemSerialized[];
 }) {
-  const [followed, setFollowed] = useState<string[] | null>(null);
-  const [hydrated, setHydrated] = useState(false);
+  const { followed, hydrated } = useFollowedSeries();
   const [tab, setTab] = useState<Tab>('news');
 
   useEffect(() => {
-    setFollowed(getFollowedSeries());
     try {
       const stored = window.localStorage.getItem(TAB_KEY);
       if (stored === 'upcoming' || stored === 'news') setTab(stored);
     } catch {
       /* ignore */
     }
-    setHydrated(true);
   }, []);
 
   const setTabPersistent = (t: Tab) => {

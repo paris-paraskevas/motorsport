@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Bell, Check, ChevronRight } from 'lucide-react';
 import type { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
-import { setFollowedSeries } from '@/lib/follow';
+import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { isOnboarded, markOnboarded } from '@/lib/onboarding';
 import { getConsent } from '@/lib/consent';
 import {
@@ -16,6 +16,7 @@ import {
 type Step = 'series' | 'notifications' | 'done';
 
 export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
+  const { setFollowed } = useFollowedSeries();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('series');
   const [selected, setSelected] = useState<Set<string>>(
@@ -123,8 +124,8 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
     setSelected(new Set(seriesList.map(s => s.slug)));
   const selectNone = () => setSelected(new Set());
 
-  const saveSeriesAndNext = () => {
-    setFollowedSeries(Array.from(selected));
+  const saveSeriesAndNext = async () => {
+    await setFollowed(Array.from(selected));
     setStep('notifications');
   };
 
@@ -310,8 +311,8 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
               <>
                 <button
                   type="button"
-                  onClick={() => {
-                    setFollowedSeries(seriesList.map(s => s.slug));
+                  onClick={async () => {
+                    await setFollowed(seriesList.map(s => s.slug));
                     setStep('notifications');
                   }}
                   className="text-sm font-medium text-zinc-500 hover:text-zinc-200 transition-colors"

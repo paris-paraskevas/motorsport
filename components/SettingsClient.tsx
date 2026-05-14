@@ -1,54 +1,35 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
-import { getFollowedSeries, setFollowedSeries, clearFollowedSeries } from '@/lib/follow';
+import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupSeriesByCategory } from '@/lib/categories';
 
 export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
-  const [followed, setFollowed] = useState<string[] | null>(null);
-  const [hydrated, setHydrated] = useState(false);
+  const { isSignedIn } = useAuth();
+  const { followed, hydrated, setFollowed } = useFollowedSeries();
 
-  useEffect(() => {
-    const stored = getFollowedSeries();
-    // Default: follow everything
-    setFollowed(stored ?? seriesList.map(s => s.slug));
-    setHydrated(true);
-  }, [seriesList]);
-
-  if (!hydrated || followed === null) {
-    return (
-      <div className="text-zinc-500 text-sm">Loading preferences…</div>
-    );
+  if (!hydrated) {
+    return <div className="text-zinc-500 text-sm">Loading preferences…</div>;
   }
 
-  const isFollowing = (slug: string) => followed.includes(slug);
+  // Default when nothing stored yet: treat as "follow everything" for UI selection.
+  const effectiveFollowed = followed ?? seriesList.map(s => s.slug);
+
+  const isFollowing = (slug: string) => effectiveFollowed.includes(slug);
 
   const toggle = (slug: string) => {
     const next = isFollowing(slug)
-      ? followed.filter(s => s !== slug)
-      : [...followed, slug];
+      ? effectiveFollowed.filter(s => s !== slug)
+      : [...effectiveFollowed, slug];
     setFollowed(next);
-    setFollowedSeries(next);
   };
 
-  const followAll = () => {
-    const next = seriesList.map(s => s.slug);
-    setFollowed(next);
-    setFollowedSeries(next);
-  };
-
-  const unfollowAll = () => {
-    setFollowed([]);
-    setFollowedSeries([]);
-  };
-
-  const resetToDefault = () => {
-    clearFollowedSeries();
-    setFollowed(seriesList.map(s => s.slug));
-  };
+  const followAll = () => setFollowed(seriesList.map(s => s.slug));
+  const unfollowAll = () => setFollowed([]);
+  const resetToDefault = () => setFollowed(seriesList.map(s => s.slug));
 
   const grouped = groupSeriesByCategory(seriesList);
-  const followedCount = followed.length;
+  const followedCount = effectiveFollowed.length;
   const totalCount = seriesList.length;
 
   return (
@@ -59,6 +40,9 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
             <h2 className="text-zinc-50 text-base font-semibold">Followed championships</h2>
             <p className="text-zinc-500 text-xs mt-1">
               Home and Calendar only show sessions for series you follow.
+              {isSignedIn
+                ? ' Saved to your account — synced across devices.'
+                : ' Stored on this device.'}
             </p>
           </div>
           <div className="text-xs text-zinc-400 font-medium tabular-nums whitespace-nowrap">

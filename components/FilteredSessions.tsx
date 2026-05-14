@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import type { Session } from '@/lib/types';
-import { getFollowedSeries } from '@/lib/follow';
+import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
 import { SessionCard } from './SessionCard';
 import { DayHeader } from './DayHeader';
@@ -14,16 +13,10 @@ interface SessionEntry {
 }
 
 export function FilteredSessions({ items }: { items: SessionEntry[] }) {
-  const [followed, setFollowed] = useState<string[] | null>(null);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setFollowed(getFollowedSeries());
-    setHydrated(true);
-  }, []);
+  const { followed, hydrated } = useFollowedSeries();
 
   // Server-render + first client paint: show everything. After hydration,
-  // apply the localStorage filter if configured.
+  // apply the user's follow filter if configured.
   const filtered =
     hydrated && followed !== null
       ? items.filter(i => followed.includes(i.seriesSlug))
