@@ -1,6 +1,5 @@
 import { loadAllSeries } from '@/lib/series';
 import { HomeContent } from '@/components/HomeContent';
-import { LatestNewsSection } from '@/components/LatestNewsSection';
 import { fetchAggregatedNews } from '@/lib/news';
 
 export const dynamic = 'force-dynamic';
@@ -40,8 +39,7 @@ export default async function Home() {
 
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
-      <HomeContent items={upcoming} />
-      <LatestNewsSection items={news} />
+      <HomeContent items={upcoming} news={news} />
     </div>
   );
 }

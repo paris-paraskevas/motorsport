@@ -38,8 +38,8 @@ export function AppShell({
 
   return (
     <>
-      {/* Mobile/tablet header (hidden on lg+) */}
-      <header className="lg:hidden sticky top-0 z-30 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-900/80">
+      {/* Mobile/tablet header (hidden on lg+) — fixed because overflow-x: hidden on body kills `sticky` */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-900/80 pt-[env(safe-area-inset-top)]">
         <div className="max-w-2xl mx-auto px-3 h-14 flex items-center">
           <button
             type="button"
@@ -116,8 +116,9 @@ export function AppShell({
         </nav>
       </aside>
 
-      {/* Main content — shifted right on lg+ for the permanent sidebar */}
-      <main className="lg:ml-72 min-h-screen flex flex-col">
+      {/* Main content — shifted right on lg+ for the permanent sidebar.
+          pt-14 on mobile to clear the fixed header. */}
+      <main className="lg:ml-72 min-h-screen flex flex-col pt-14 lg:pt-0">
         <div className="flex-1">{children}</div>
         <Footer />
       </main>

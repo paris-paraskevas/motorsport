@@ -26,8 +26,8 @@ export function SessionCard({
       />
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[15px] text-zinc-50 font-semibold tracking-tight truncate">
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
+          <span className="text-[15px] text-zinc-50 font-semibold tracking-tight truncate min-w-0 flex-1 basis-full">
             {session.title}
           </span>
           {isLive && (

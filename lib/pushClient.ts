@@ -11,6 +11,22 @@ export function getPushAvailability(): PushAvailability {
   return 'available';
 }
 
+export interface ServerPushStatus {
+  ready: boolean;
+  vapidConfigured: boolean;
+  kvConfigured: boolean;
+}
+
+export async function getServerPushStatus(): Promise<ServerPushStatus | null> {
+  try {
+    const res = await fetch('/api/push/status', { cache: 'no-store' });
+    if (!res.ok) return null;
+    return (await res.json()) as ServerPushStatus;
+  } catch {
+    return null;
+  }
+}
+
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');

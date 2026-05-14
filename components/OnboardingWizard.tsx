@@ -10,6 +10,7 @@ import {
   getPushAvailability,
   subscribeToPush,
   getPushSubscriptionState,
+  getServerPushStatus,
 } from '@/lib/pushClient';
 
 type Step = 'series' | 'notifications' | 'done';
@@ -21,8 +22,8 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
     new Set(seriesList.map(s => s.slug)),
   );
   const [notifState, setNotifState] = useState<
-    'idle' | 'working' | 'subscribed' | 'denied' | 'unavailable' | 'error'
-  >('idle');
+    'checking' | 'idle' | 'working' | 'subscribed' | 'denied' | 'unavailable' | 'server-not-ready' | 'error'
+  >('checking');
   const [notifMsg, setNotifMsg] = useState<string | null>(null);
 
   const evaluateVisibility = () => {
@@ -62,17 +63,35 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   useEffect(() => {
     if (step !== 'notifications') return;
     let cancelled = false;
+    setNotifState('checking');
+    setNotifMsg(null);
+
     const avail = getPushAvailability();
     if (avail !== 'available') {
       setNotifState('unavailable');
       setNotifMsg(
         avail === 'no-vapid'
-          ? 'Push not configured on this server yet — you can enable later from Settings.'
+          ? 'Push not configured on this device build.'
           : 'This browser doesn\'t support web push.',
       );
       return;
     }
-    getPushSubscriptionState().then(s => {
+
+    (async () => {
+      const server = await getServerPushStatus();
+      if (cancelled) return;
+      if (!server || !server.ready) {
+        setNotifState('server-not-ready');
+        setNotifMsg(
+          !server
+            ? 'Could not reach the server. Try again later.'
+            : !server.kvConfigured
+              ? 'Notifications storage (Vercel KV) isn\'t connected yet. Skip for now — you can enable later from Settings.'
+              : 'Server isn\'t fully configured for push yet.',
+        );
+        return;
+      }
+      const s = await getPushSubscriptionState();
       if (cancelled) return;
       if (s === 'subscribed') setNotifState('subscribed');
       else if (s === 'denied') {
@@ -80,9 +99,8 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
         setNotifMsg('Notifications are blocked in browser settings.');
       } else {
         setNotifState('idle');
-        setNotifMsg(null);
       }
-    });
+    })();
     return () => {
       cancelled = true;
     };
@@ -246,13 +264,23 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                   </div>
                 </div>
 
-                {notifState === 'subscribed' ? (
+                {notifState === 'checking' && (
+                  <div className="text-zinc-500 text-sm">Checking…</div>
+                )}
+
+                {notifState === 'subscribed' && (
                   <div className="inline-flex items-center gap-1.5 text-sm text-emerald-400">
                     <Check size={16} /> Enabled
                   </div>
-                ) : notifState === 'unavailable' || notifState === 'denied' ? (
+                )}
+
+                {(notifState === 'unavailable' ||
+                  notifState === 'denied' ||
+                  notifState === 'server-not-ready') && (
                   <div className="text-amber-400 text-sm">{notifMsg}</div>
-                ) : (
+                )}
+
+                {(notifState === 'idle' || notifState === 'working' || notifState === 'error') && (
                   <button
                     type="button"
                     onClick={enableNotif}
@@ -264,9 +292,12 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                   </button>
                 )}
 
-                {notifMsg && notifState !== 'unavailable' && notifState !== 'denied' && (
-                  <div className="mt-3 text-xs text-zinc-400">{notifMsg}</div>
-                )}
+                {notifMsg &&
+                  notifState !== 'unavailable' &&
+                  notifState !== 'denied' &&
+                  notifState !== 'server-not-ready' && (
+                    <div className="mt-3 text-xs text-zinc-400">{notifMsg}</div>
+                  )}
               </div>
             </>
           )}

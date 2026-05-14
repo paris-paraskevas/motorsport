@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 
+const CONTACT_URL = process.env.NEXT_PUBLIC_CONTACT_URL || 'mailto:paris.paraskevas@skg-t.com';
+const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
+
 export function Footer() {
   return (
     <footer className="border-t border-zinc-900/80 mt-12">
@@ -27,6 +30,22 @@ export function Footer() {
         >
           Settings
         </Link>
+        <span className="text-zinc-700">·</span>
+        <a
+          href={CONTACT_URL}
+          className="hover:text-zinc-300 transition-colors"
+        >
+          Contact
+        </a>
+        <span className="text-zinc-700">·</span>
+        <a
+          href={COFFEE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-amber-300 transition-colors"
+        >
+          ☕ Buy me a coffee
+        </a>
       </div>
     </footer>
   );

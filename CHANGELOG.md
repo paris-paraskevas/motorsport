@@ -2,6 +2,21 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.3.0 — 2026-05-14
+
+### Added
+- **Home tabs.** Hero stays at top; tabs below switch between **News** (default, top 8 across followed series) and **Upcoming** (next 24 sessions grouped by day). Preference remembered in localStorage.
+- **Footer: Contact & Buy me a coffee.** Configurable via `NEXT_PUBLIC_CONTACT_URL` / `NEXT_PUBLIC_COFFEE_URL` env vars.
+- **`/api/push/status` endpoint.** Reports VAPID + KV configuration so the client can tell when the server isn't ready.
+
+### Fixed
+- **Mobile sticky header.** `overflow-x: hidden` on body was killing `position: sticky`; switched to `fixed` with content-area top padding so the Paddock bar stays put while scrolling.
+- **Long session titles overflowing cards on phone.** Title span lacked `min-w-0` inside its flex parent, so its nowrap intrinsic width pushed the card past the viewport. Now truncates as designed.
+- **Onboarding "Enabled" lie.** Wizard now checks server push readiness before reading the local subscription. When Vercel KV isn't connected, you see a clear "storage isn't connected yet" message instead of a false ✓ Enabled.
+
+### Removed
+- **"Replay onboarding" from Settings.** Redundant — the same series picker lives on `/settings` already.
+
 ## 0.2.0 — 2026-05-14
 
 ### Added
