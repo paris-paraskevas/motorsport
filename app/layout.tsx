@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { ClerkProvider } from '@clerk/nextjs';
 import { GeistSans } from 'geist/font/sans';
 import { AppShell } from '@/components/AppShell';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -42,10 +43,23 @@ export default async function RootLayout({
   const seriesList = await loadAllSeriesMeta();
 
   return (
-    <html lang="en" className={`${GeistSans.className} dark`}>
-      <body className="min-h-screen bg-zinc-950 text-zinc-100">
-        <AppShell seriesList={seriesList}>{children}</AppShell>
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorBackground: '#0a0a0a',
+          colorText: '#fafafa',
+          colorPrimary: '#fafafa',
+          colorTextOnPrimaryBackground: '#0a0a0a',
+          colorInputBackground: '#18181b',
+          colorInputText: '#fafafa',
+        },
+      }}
+    >
+      <html lang="en" className={`${GeistSans.className} dark`}>
+        <body className="min-h-screen bg-zinc-950 text-zinc-100">
+          <AppShell seriesList={seriesList}>{children}</AppShell>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

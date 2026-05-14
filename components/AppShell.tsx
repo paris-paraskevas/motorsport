@@ -1,8 +1,9 @@
 'use client';
 import { Fragment, useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { UserButton, useAuth } from '@clerk/nextjs';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { Footer } from './Footer';
@@ -113,6 +114,9 @@ export function AppShell({
           <DrawerLabel>More</DrawerLabel>
           <DrawerLink href="/settings" active={pathname === '/settings'} label="Settings" />
           <DrawerLink href="/about" active={pathname === '/about'} label="About" />
+
+          <DrawerLabel>Account</DrawerLabel>
+          <AccountSection />
         </nav>
       </aside>
 
@@ -163,5 +167,29 @@ function DrawerLabel({ children }: { children: React.ReactNode }) {
     <div className="pt-5 pb-1 px-3 text-[10px] uppercase tracking-[0.16em] text-zinc-500 font-semibold">
       {children}
     </div>
+  );
+}
+
+function AccountSection() {
+  const { isLoaded, isSignedIn } = useAuth();
+  if (!isLoaded) {
+    return <div className="py-2.5 px-3 text-zinc-600 text-sm">…</div>;
+  }
+  if (isSignedIn) {
+    return (
+      <div className="flex items-center gap-3 py-2.5 px-3">
+        <UserButton appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
+        <span className="text-zinc-400 text-sm">Signed in</span>
+      </div>
+    );
+  }
+  return (
+    <Link
+      href="/sign-in"
+      className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-zinc-300 hover:bg-zinc-900/70 hover:text-zinc-100 transition-colors"
+    >
+      <LogIn size={16} className="text-zinc-500" />
+      <span className="text-sm font-medium">Sign in</span>
+    </Link>
   );
 }
