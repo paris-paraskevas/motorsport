@@ -13,6 +13,7 @@ import { StandingsTab } from '@/components/tabs/StandingsTab';
 import { ResultsTab } from '@/components/tabs/ResultsTab';
 import { DriversTab } from '@/components/tabs/DriversTab';
 import { RulesTab } from '@/components/tabs/RulesTab';
+import { NewsTab } from '@/components/tabs/NewsTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,7 @@ function renderTab(activeTab: TabKey, series: Series) {
     case 'calendar':
       return <CalendarTab series={series} />;
     case 'news':
-      return <PlaceholderTab tabLabel="News" />;
+      return <NewsTab series={series} />;
     case 'standings':
       return <StandingsTab series={series} />;
     case 'results':

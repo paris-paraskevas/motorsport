@@ -77,6 +77,13 @@ export interface WikipediaSummary {
   fetchedAt: Date;
 }
 
+export interface NewsItem {
+  title: string;
+  link: string;
+  pubDate: Date;
+  description?: string;
+}
+
 export type SignificanceTier = 'marquee' | 'finale' | 'weighted' | 'note';
 
 export interface SignificanceFlag {

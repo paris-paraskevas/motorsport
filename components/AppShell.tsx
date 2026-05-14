@@ -90,6 +90,7 @@ export function AppShell({
 
         <nav className="space-y-0.5">
           <DrawerLink href="/" active={pathname === '/'} label="Home" />
+          <DrawerLink href="/calendar" active={pathname === '/calendar'} label="Calendar" />
 
           {groupSeriesByCategory(seriesList).map(group => (
             <Fragment key={group.category.id}>
