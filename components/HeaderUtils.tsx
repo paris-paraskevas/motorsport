@@ -1,10 +1,19 @@
 'use client';
-import { Coffee, Mail } from 'lucide-react';
+import { Coffee, Mail, Settings } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
+import type { SeriesMeta } from '@/lib/types';
 import { openContactModal } from './ContactModal';
+import { SettingsClient } from './SettingsClient';
 
 const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
-export function HeaderUtils({ className = '' }: { className?: string }) {
+export function HeaderUtils({
+  className = '',
+  seriesList,
+}: {
+  className?: string;
+  seriesList: SeriesMeta[];
+}) {
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
       <button
@@ -27,6 +36,19 @@ export function HeaderUtils({ className = '' }: { className?: string }) {
         <span className="hidden sm:inline">Buy me a coffee</span>
         <span className="sm:hidden">Coffee</span>
       </a>
+      <UserButton
+        appearance={{ elements: { avatarBox: 'w-8 h-8' } }}
+      >
+        <UserButton.UserProfilePage
+          label="Preferences"
+          url="preferences"
+          labelIcon={<Settings size={14} />}
+        >
+          <div className="paddock-prefs">
+            <SettingsClient seriesList={seriesList} />
+          </div>
+        </UserButton.UserProfilePage>
+      </UserButton>
     </div>
   );
 }

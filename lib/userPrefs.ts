@@ -20,3 +20,21 @@ export async function setUserFollowed(userId: string, slugs: string[]): Promise<
   }
   await kv.set(`${PREFIX}${userId}:followed`, slugs);
 }
+
+export async function isUserOnboarded(userId: string): Promise<boolean> {
+  if (!isKvConfigured()) return false;
+  const v = await kv.get<boolean>(`${PREFIX}${userId}:onboarded`);
+  return v === true;
+}
+
+export async function markUserOnboarded(userId: string): Promise<void> {
+  if (!isKvConfigured()) {
+    throw new Error('Vercel KV is not configured.');
+  }
+  await kv.set(`${PREFIX}${userId}:onboarded`, true);
+}
+
+export async function resetUserOnboarded(userId: string): Promise<void> {
+  if (!isKvConfigured()) return;
+  await kv.del(`${PREFIX}${userId}:onboarded`);
+}

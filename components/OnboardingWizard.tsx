@@ -1,10 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Bell, Check, ChevronRight } from 'lucide-react';
+import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
-import { isOnboarded, markOnboarded } from '@/lib/onboarding';
 import { getConsent } from '@/lib/consent';
 import {
   getPushAvailability,
@@ -16,6 +16,7 @@ import {
 type Step = 'series' | 'notifications' | 'done';
 
 export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
+  const { isLoaded, isSignedIn } = useAuth();
   const { setFollowed } = useFollowedSeries();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('series');
@@ -27,29 +28,44 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   >('checking');
   const [notifMsg, setNotifMsg] = useState<string | null>(null);
 
-  const evaluateVisibility = () => {
-    if (isOnboarded()) return false;
-    // Gate on cookie consent being decided first.
-    if (getConsent() === null) return false;
-    return true;
+  const evaluateAndShow = async () => {
+    // Gate on cookie consent decided first.
+    if (getConsent() === null) {
+      setOpen(false);
+      return;
+    }
+    // Signed-out users: don't show — they need to sign in first.
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setOpen(false);
+      return;
+    }
+    try {
+      const res = await fetch('/api/user/onboarded');
+      if (res.ok) {
+        const data = (await res.json()) as { onboarded: boolean };
+        setOpen(!data.onboarded);
+      }
+    } catch {
+      /* ignore */
+    }
   };
 
   useEffect(() => {
-    setOpen(evaluateVisibility());
-
-    const onConsent = () => setOpen(evaluateVisibility());
+    evaluateAndShow();
+    const onConsent = () => evaluateAndShow();
     const onReopen = () => {
       setStep('series');
       setOpen(true);
     };
-
     window.addEventListener('paddock:consent-changed', onConsent);
     window.addEventListener('paddock:reopen-onboarding', onReopen);
     return () => {
       window.removeEventListener('paddock:consent-changed', onConsent);
       window.removeEventListener('paddock:reopen-onboarding', onReopen);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, isSignedIn]);
 
   // Lock body scroll while wizard is open
   useEffect(() => {
@@ -151,8 +167,12 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
     }
   };
 
-  const finish = () => {
-    markOnboarded();
+  const finish = async () => {
+    try {
+      await fetch('/api/user/onboarded', { method: 'POST' });
+    } catch {
+      /* ignore — wizard closes anyway */
+    }
     setStep('done');
     setOpen(false);
   };

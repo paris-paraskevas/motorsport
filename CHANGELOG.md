@@ -2,6 +2,21 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.5.0 — 2026-05-14
+
+### Changed
+- **Sign-in is now required.** First visit redirects to `/sign-in`. Users either log in or sign up — onboarding wizard auto-triggers after sign-up only.
+- **Onboarded flag moved to server (KV).** No more device-bound localStorage flag — your onboarding state lives with your account.
+- **Profile avatar moved into the header**, right of the Coffee button. Same on mobile and desktop.
+- **Preferences live inside your account.** Click avatar → Manage Account → "Preferences" tab. The standalone `/settings` URL still works as a fallback.
+- **Drawer cleanup.** Settings link removed (it's in the profile now). Account section removed (avatar is in the header).
+
+### Added
+- **Header utility bar.** Contact + Buy me a coffee + Avatar — sticky on every page.
+- **Contact form modal.** Click "Contact" → modal with email + message. Submissions saved to KV (`paddock:contact:*`), optionally emailed via Resend when `RESEND_API_KEY` + `CONTACT_TO_EMAIL` are set.
+- **`/api/push/inspect`** — lists your registered push devices (provider, endpoint tail, createdAt) so you can debug which device a "1 delivered" went to.
+- **`/api/push/test` is now user-scoped** — sends only to your subscriptions and returns per-device results.
+
 ## 0.4.0 — 2026-05-14
 
 ### Added

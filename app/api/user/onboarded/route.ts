@@ -1,0 +1,57 @@
+import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import {
+  isUserOnboarded,
+  markUserOnboarded,
+  resetUserOnboarded,
+} from '@/lib/userPrefs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+  try {
+    const onboarded = await isUserOnboarded(userId);
+    return NextResponse.json({ onboarded });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'unknown' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST() {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+  try {
+    await markUserOnboarded(userId);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'unknown' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE() {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+  try {
+    await resetUserOnboarded(userId);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'unknown' },
+      { status: 500 },
+    );
+  }
+}

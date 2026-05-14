@@ -1,6 +1,22 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export default clerkMiddleware();
+// Anything matching `isPublic` skips the auth gate.
+// Everything else requires a signed-in user.
+const isPublic = createRouteMatcher([
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/cron/(.*)',
+  '/api/push/status',
+  '/api/contact',
+  '/manifest.json',
+  '/opengraph-image(.*)',
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublic(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
