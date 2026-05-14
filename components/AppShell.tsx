@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
+import { Footer } from './Footer';
 
 export function AppShell({
   children,
@@ -114,7 +115,10 @@ export function AppShell({
       </aside>
 
       {/* Main content — shifted right on lg+ for the permanent sidebar */}
-      <main className="lg:ml-72">{children}</main>
+      <main className="lg:ml-72 min-h-screen flex flex-col">
+        <div className="flex-1">{children}</div>
+        <Footer />
+      </main>
     </>
   );
 }
