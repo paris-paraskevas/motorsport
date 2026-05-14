@@ -28,7 +28,14 @@ interface PushPayload {
   body?: string;
   url?: string;
   tag?: string;
+  image?: string;
+  /** Accent color applied to the notification chrome on Chromium/Android. */
+  color?: string;
 }
+
+// Brand accent colour for the notification chip on Android.
+// Picked to read against the black launcher icon background.
+const ACCENT_COLOR = '#e10600';
 
 self.addEventListener('push', (event: PushEvent) => {
   if (!event.data) return;
@@ -39,16 +46,19 @@ self.addEventListener('push', (event: PushEvent) => {
     payload = { title: 'Paddock', body: event.data.text() };
   }
   const title = payload.title ?? 'Paddock';
-  const options: NotificationOptions = {
-    body: payload.body,
-    // Large in-notification icon — full-colour app icon is fine here.
+  // NotificationOptions in TS doesn't surface `image`/`color`, but Chromium
+  // honours both. Cast through `unknown` to allow them without `any`.
+  const options = {
+    body: payload.body ?? 'Tap to open Paddock.',
     icon: '/icons/icon-192.png',
-    // Status-bar badge — must be monochrome white on transparent or Android
-    // renders a blank white square. badge-96.png is the silhouette version.
     badge: '/icons/badge-96.png',
     tag: payload.tag,
     data: { url: payload.url ?? '/' },
-  };
+    image: payload.image,
+    color: payload.color ?? ACCENT_COLOR,
+    vibrate: [80, 40, 80],
+    timestamp: Date.now(),
+  } as unknown as NotificationOptions;
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
