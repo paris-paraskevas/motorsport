@@ -90,6 +90,16 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
         </div>
       </div>
 
+      <div className="mb-6 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event('paddock:reopen-consent'))}
+          className="text-xs font-medium text-zinc-400 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+        >
+          Cookie preferences
+        </button>
+      </div>
+
       <div className="space-y-6">
         {grouped.map(group => (
           <section key={group.category.id}>

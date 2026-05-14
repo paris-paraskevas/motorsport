@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { Footer } from './Footer';
+import { CookieBanner } from './CookieBanner';
 
 export function AppShell({
   children,
@@ -119,6 +120,8 @@ export function AppShell({
         <div className="flex-1">{children}</div>
         <Footer />
       </main>
+
+      <CookieBanner />
     </>
   );
 }
