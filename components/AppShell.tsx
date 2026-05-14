@@ -9,6 +9,8 @@ import { groupSeriesByCategory } from '@/lib/categories';
 import { Footer } from './Footer';
 import { CookieBanner } from './CookieBanner';
 import { OnboardingWizard } from './OnboardingWizard';
+import { ContactModal } from './ContactModal';
+import { HeaderUtils } from './HeaderUtils';
 
 export function AppShell({
   children,
@@ -56,8 +58,16 @@ export function AppShell({
           >
             Paddock
           </Link>
+          <HeaderUtils className="ml-auto" />
         </div>
       </header>
+
+      {/* Desktop floating utilities — top right of main content area */}
+      <div className="hidden lg:flex fixed top-0 right-0 z-30 p-4 gap-2 items-center pointer-events-none">
+        <div className="pointer-events-auto">
+          <HeaderUtils />
+        </div>
+      </div>
 
       {/* Mobile backdrop (hidden on lg+) */}
       <div
@@ -129,6 +139,7 @@ export function AppShell({
 
       <CookieBanner />
       <OnboardingWizard seriesList={seriesList} />
+      <ContactModal />
     </>
   );
 }
