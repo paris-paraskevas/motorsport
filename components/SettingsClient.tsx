@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { SeriesMeta } from '@/lib/types';
 import { getFollowedSeries, setFollowedSeries, clearFollowedSeries } from '@/lib/follow';
 import { groupSeriesByCategory } from '@/lib/categories';
+import { resetOnboarded } from '@/lib/onboarding';
 
 export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
   const [followed, setFollowed] = useState<string[] | null>(null);
@@ -91,6 +92,16 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
       </div>
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            resetOnboarded();
+            window.dispatchEvent(new Event('paddock:reopen-onboarding'));
+          }}
+          className="text-xs font-medium text-zinc-400 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+        >
+          Replay onboarding
+        </button>
         <button
           type="button"
           onClick={() => window.dispatchEvent(new Event('paddock:reopen-consent'))}

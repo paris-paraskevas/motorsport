@@ -7,6 +7,7 @@ import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { Footer } from './Footer';
 import { CookieBanner } from './CookieBanner';
+import { OnboardingWizard } from './OnboardingWizard';
 
 export function AppShell({
   children,
@@ -122,6 +123,7 @@ export function AppShell({
       </main>
 
       <CookieBanner />
+      <OnboardingWizard seriesList={seriesList} />
     </>
   );
 }
