@@ -65,17 +65,39 @@ export default async function SeriesPage({
 
   const activeTab = resolveTab(tab);
 
+  const color = series.meta.color;
+
   return (
-    <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div
+      className="relative max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      style={
+        {
+          '--series-color': color,
+        } as React.CSSProperties
+      }
+    >
+      {/* Series-color wash — subtle, only at top, only on this page */}
+      <div
+        className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${color}1f 0%, transparent 70%)`,
+        }}
+      />
+      {/* Hairline color accent at the very top */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px -z-10"
+        style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+      />
+
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-3">
           <span
             className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: series.meta.color, boxShadow: `0 0 12px ${series.meta.color}` }}
+            style={{ backgroundColor: color, boxShadow: `0 0 14px ${color}` }}
           />
           <span
             className="text-[11px] uppercase tracking-[0.18em] font-semibold"
-            style={{ color: series.meta.color }}
+            style={{ color }}
           >
             {series.meta.name}
           </span>
@@ -87,7 +109,7 @@ export default async function SeriesPage({
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
 
-      <SeriesTabs color={series.meta.color} activeTab={activeTab} />
+      <SeriesTabs color={color} activeTab={activeTab} />
 
       <div>{renderTab(activeTab, series)}</div>
     </div>

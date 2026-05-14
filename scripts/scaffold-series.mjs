@@ -86,6 +86,17 @@ const series = [
     officialSite: 'https://www.fiawec.com/',
   },
   {
+    slug: 'nls',
+    name: 'NLS Nürburgring',
+    color: '#fbbf24',
+    icsUrl: 'https://calendar.google.com/calendar/ical/f7ubn1ltpc4p7amil7kefgj754%40group.calendar.google.com/public/basic.ics',
+    season: 2026,
+    category: 'endurance',
+    wikipediaPage: 'Nürburgring_Langstrecken-Serie',
+    seasonPage: '2026_Nürburgring_Langstrecken-Serie',
+    officialSite: 'https://nls-langstrecke.de/',
+  },
+  {
     slug: 'imsa',
     name: 'IMSA',
     color: '#2dd4bf',
