@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { saveSubscription } from '@/lib/push-store';
 
 export const runtime = 'nodejs';
@@ -25,11 +26,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'malformed subscription' }, { status: 400 });
   }
 
+  let userId: string | null = null;
   try {
-    await saveSubscription({
-      endpoint: sub.endpoint,
-      keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
-    });
+    const a = await auth();
+    userId = a.userId ?? null;
+  } catch {
+    userId = null;
+  }
+
+  try {
+    await saveSubscription(
+      {
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
+      },
+      userId,
+    );
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown error';

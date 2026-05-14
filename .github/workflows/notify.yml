@@ -1,0 +1,51 @@
+name: notify cron
+
+on:
+  schedule:
+    # Every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read the CRON_SECRET from repo secrets
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/notify (sessions)
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/notify.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://motorsport-pi.vercel.app/api/cron/notify)
+          echo "Status: $STATUS"
+          cat /tmp/notify.json
+          echo ""
+          test "$STATUS" = "200"
+
+      - name: Ping /api/cron/news (articles)
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/news.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://motorsport-pi.vercel.app/api/cron/news)
+          echo "Status: $STATUS"
+          cat /tmp/news.json
+          echo ""
+          # 503 (kv not configured) is acceptable while KV is being provisioned
+          test "$STATUS" = "200" -o "$STATUS" = "503"

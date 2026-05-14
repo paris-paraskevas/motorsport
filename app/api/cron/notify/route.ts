@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
+import { getUserFollowed } from '@/lib/userPrefs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -33,11 +34,8 @@ function fmtTime(date: Date): string {
 }
 
 async function authorizeCronRequest(req: Request): Promise<boolean> {
-  // Vercel Cron sends Authorization: Bearer <CRON_SECRET> if you set the env var.
-  // Hobby plans use a per-project secret automatically; in production accept any
-  // request from the Vercel cron infrastructure (identified by the header).
   const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return true; // no secret = allow (single-user, low risk)
+  if (!cronSecret) return true;
   const header = req.headers.get('authorization');
   return header === `Bearer ${cronSecret}`;
 }
@@ -81,8 +79,18 @@ export async function GET(req: Request) {
     notifiable.sort((a, b) => a.start.getTime() - b.start.getTime());
     const queue = notifiable.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
+    // Per-user followed cache (avoid re-fetching for the same userId)
+    const followedByUser = new Map<string, string[] | null>();
+    const getFollowed = async (userId: string): Promise<string[] | null> => {
+      if (followedByUser.has(userId)) return followedByUser.get(userId)!;
+      const f = await getUserFollowed(userId);
+      followedByUser.set(userId, f);
+      return f;
+    };
+
     let sent = 0;
     let evicted = 0;
+    let skipped = 0;
     for (const session of queue) {
       const minsLeft = Math.round(minutesUntil(session.start, now));
       const payload = {
@@ -91,7 +99,16 @@ export async function GET(req: Request) {
         url: `/series/${session.seriesSlug}`,
         tag: `paddock-${session.uid}`,
       };
-      for (const { subscription } of subs) {
+      for (const { subscription, userId } of subs) {
+        // Filter per user's followed series. Anonymous subs (userId === null)
+        // get every series — they have no server-side prefs.
+        if (userId) {
+          const followed = await getFollowed(userId);
+          if (followed !== null && !followed.includes(session.seriesSlug)) {
+            skipped++;
+            continue;
+          }
+        }
         const result = await sendPushTo(subscription, payload);
         if (result.ok) {
           sent++;
@@ -108,6 +125,7 @@ export async function GET(req: Request) {
       notifiable: notifiable.length,
       queued: queue.length,
       sent,
+      skipped,
       evicted,
     });
   } catch (err) {

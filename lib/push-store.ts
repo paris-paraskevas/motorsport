@@ -3,8 +3,9 @@ import type { PushSubscription } from 'web-push';
 
 const KEY_PREFIX = 'paddock:push:';
 
-interface StoredSubscription {
+export interface StoredSubscription {
   subscription: PushSubscription;
+  userId: string | null;
   createdAt: number;
 }
 
@@ -14,12 +15,15 @@ function isKvConfigured(): boolean {
   );
 }
 
-export async function saveSubscription(sub: PushSubscription): Promise<void> {
+export async function saveSubscription(
+  sub: PushSubscription,
+  userId: string | null = null,
+): Promise<void> {
   if (!isKvConfigured()) {
     throw new Error('Vercel KV is not configured. Connect KV in the Vercel Storage tab.');
   }
   const id = endpointHash(sub.endpoint);
-  const value: StoredSubscription = { subscription: sub, createdAt: Date.now() };
+  const value: StoredSubscription = { subscription: sub, userId, createdAt: Date.now() };
   await kv.set(`${KEY_PREFIX}${id}`, value);
 }
 

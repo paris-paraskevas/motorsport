@@ -2,6 +2,23 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.4.0 — 2026-05-14
+
+### Added
+- **Sign in via Clerk.** Optional account for cross-device sync. Drawer → Account → Sign in. Email + Google etc.
+- **Followed-series sync.** Signed-in users have their followed list saved in Vercel KV and synced across devices. Signed-out users stay on localStorage.
+  - One-time migration on first sign-in: local prefs (if any) are pushed to KV when KV is empty.
+- **User-aware push notifications.** Subscriptions now associate to a Clerk user when authed. Cron filters per-user followed series so you only get pings for what you follow.
+- **Daily news push (`/api/cron/news`).** Polls every series' motorsport.com RSS, sends a push when there's a brand-new top story. KV stores `lastLink` per series to dedup. First run for each series is a silent cold-start.
+- **GitHub Actions cron (`.github/workflows/notify.yml`).** Hits `/api/cron/notify` and `/api/cron/news` every 15 min. Uses repo secret `CRON_SECRET` if set.
+- **Sign-in / Sign-up pages** at `/sign-in` and `/sign-up` using Clerk components with dark theme.
+
+### Changed
+- **EnableNotifications on /settings** uses the same `/api/push/status` check as the onboarding wizard — no more false "Enabled" when KV is missing.
+
+### Known limitations
+- **Session-level feeds for F2 / F3 / IndyCar / MotoGP** are not currently available. The nixxo public URLs that used to expose these returned 404 since the source moved. No working public alternative found yet. Round-level data (championship calendar) is still ingested.
+
 ## 0.3.0 — 2026-05-14
 
 ### Added

@@ -1,83 +1,74 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Bell, BellOff, BellRing } from 'lucide-react';
-
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '';
+import {
+  getPushAvailability,
+  getServerPushStatus,
+  getPushSubscriptionState,
+  subscribeToPush,
+  unsubscribeFromPush,
+} from '@/lib/pushClient';
 
 type Status =
+  | 'checking'
   | 'unsupported'
   | 'no-vapid'
+  | 'server-not-ready'
   | 'idle'
   | 'denied'
   | 'subscribed'
   | 'working';
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = atob(base64);
-  const out = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; i++) out[i] = rawData.charCodeAt(i);
-  return out;
-}
-
 export function EnableNotifications() {
-  const [status, setStatus] = useState<Status>('idle');
+  const [status, setStatus] = useState<Status>('checking');
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      setStatus('unsupported');
-      return;
-    }
-    if (!VAPID_PUBLIC_KEY) {
-      setStatus('no-vapid');
-      return;
-    }
-    if (Notification.permission === 'denied') {
-      setStatus('denied');
-      return;
-    }
+    let cancelled = false;
     (async () => {
-      try {
-        const reg = await navigator.serviceWorker.ready;
-        const existing = await reg.pushManager.getSubscription();
-        setStatus(existing ? 'subscribed' : 'idle');
-      } catch {
-        setStatus('idle');
+      const avail = getPushAvailability();
+      if (avail === 'unsupported') return setStatus('unsupported');
+      if (avail === 'no-vapid') return setStatus('no-vapid');
+
+      const server = await getServerPushStatus();
+      if (cancelled) return;
+      if (!server || !server.ready) {
+        setStatus('server-not-ready');
+        setMessage(
+          !server
+            ? 'Could not reach the server.'
+            : !server.kvConfigured
+              ? 'Notifications storage (Vercel KV) isn\'t connected yet.'
+              : 'Server isn\'t fully configured for push yet.',
+        );
+        return;
       }
+
+      const s = await getPushSubscriptionState();
+      if (cancelled) return;
+      if (s === 'denied') return setStatus('denied');
+      setStatus(s === 'subscribed' ? 'subscribed' : 'idle');
     })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const enable = async () => {
     setStatus('working');
     setMessage(null);
     try {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        setStatus(permission === 'denied' ? 'denied' : 'idle');
-        return;
-      }
-      const reg = await navigator.serviceWorker.ready;
-      const subscription = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
-      });
-      const res = await fetch('/api/push/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscription }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.error || `server error (${res.status})`);
-      }
+      await subscribeToPush();
       setStatus('subscribed');
       setMessage('Notifications enabled — you\'ll get a ping ~30 min before sessions.');
     } catch (err) {
-      setStatus('idle');
-      setMessage(err instanceof Error ? err.message : 'Failed to enable notifications.');
+      const msg = err instanceof Error ? err.message : 'Failed';
+      if (msg === 'denied') {
+        setStatus('denied');
+      } else {
+        setStatus('idle');
+        setMessage(msg);
+      }
     }
   };
 
@@ -85,16 +76,7 @@ export function EnableNotifications() {
     setStatus('working');
     setMessage(null);
     try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        await fetch('/api/push/unsubscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ endpoint: sub.endpoint }),
-        });
-        await sub.unsubscribe();
-      }
+      await unsubscribeFromPush();
       setStatus('idle');
       setMessage('Notifications disabled.');
     } catch (err) {
@@ -138,6 +120,10 @@ export function EnableNotifications() {
         </div>
       </div>
 
+      {status === 'checking' && (
+        <div className="text-zinc-500 text-sm">Checking…</div>
+      )}
+
       {status === 'unsupported' && (
         <div className="text-zinc-500 text-sm">
           Push notifications aren&apos;t supported on this browser.
@@ -148,6 +134,10 @@ export function EnableNotifications() {
         <div className="text-amber-400 text-sm">
           Server isn&apos;t configured for push yet. (Missing VAPID env vars.)
         </div>
+      )}
+
+      {status === 'server-not-ready' && (
+        <div className="text-amber-400 text-sm">{message}</div>
       )}
 
       {status === 'denied' && (
@@ -187,7 +177,7 @@ export function EnableNotifications() {
         </div>
       )}
 
-      {message && (
+      {message && status !== 'server-not-ready' && (
         <div className="mt-3 text-xs text-zinc-400">{message}</div>
       )}
     </div>
