@@ -108,6 +108,7 @@ export function AppShell({
           ))}
 
           <DrawerLabel>More</DrawerLabel>
+          <DrawerLink href="/settings" active={pathname === '/settings'} label="Settings" />
           <DrawerLink href="/about" active={pathname === '/about'} label="About" />
         </nav>
       </aside>
