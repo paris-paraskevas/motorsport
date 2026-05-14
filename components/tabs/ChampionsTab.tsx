@@ -10,13 +10,20 @@ function wikipediaUrl(pageTitle: string): string {
 }
 
 export async function ChampionsTab({ series }: { series: Series }) {
-  const championsPage = series.meta.championsPage;
-  if (!championsPage) {
+  // Try the dedicated champions list page first, then the main article as a fallback.
+  // Many series don't have a separate "List of <X> champions" article; the table
+  // lives inside the main article on Wikipedia.
+  const candidates: string[] = [];
+  if (series.meta.championsPage) candidates.push(series.meta.championsPage);
+  if (series.meta.wikipediaPage && series.meta.wikipediaPage !== series.meta.championsPage) {
+    candidates.push(series.meta.wikipediaPage);
+  }
+  if (candidates.length === 0) {
     return <PlaceholderTab tabLabel="Champions" />;
   }
 
-  const champions = await fetchChampions(championsPage);
-  const pageUrl = wikipediaUrl(championsPage);
+  const champions = await fetchChampions(candidates);
+  const pageUrl = wikipediaUrl(series.meta.championsPage ?? series.meta.wikipediaPage ?? '');
 
   if (champions.length === 0) {
     return (

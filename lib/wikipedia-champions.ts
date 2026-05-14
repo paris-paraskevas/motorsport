@@ -76,7 +76,20 @@ function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
   return $(el).text().replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim();
 }
 
-export async function fetchChampions(pageTitle: string): Promise<Champion[]> {
+export async function fetchChampions(
+  pageTitleOrTitles: string | string[],
+): Promise<Champion[]> {
+  const titles = Array.isArray(pageTitleOrTitles)
+    ? pageTitleOrTitles.filter(Boolean)
+    : [pageTitleOrTitles].filter(Boolean);
+  for (const title of titles) {
+    const result = await fetchChampionsFromPage(title);
+    if (result.length > 0) return result;
+  }
+  return [];
+}
+
+async function fetchChampionsFromPage(pageTitle: string): Promise<Champion[]> {
   const url = `${REST_BASE}/${encodeURIComponent(pageTitle)}`;
   let html: string;
   try {

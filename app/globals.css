@@ -12,6 +12,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
+  overflow-x: hidden;
 }
 
 /* Subtle ambient background — slightly warm at top, near-black overall.
