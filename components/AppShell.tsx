@@ -10,6 +10,7 @@ import { CookieBanner } from './CookieBanner';
 import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
+import { PWAInstallPrompt } from './PWAInstallPrompt';
 
 export function AppShell({
   children,
@@ -128,6 +129,7 @@ export function AppShell({
       {/* Main content — shifted right on lg+ for the permanent sidebar.
           pt-14 on mobile to clear the fixed header. */}
       <main className="lg:ml-72 min-h-screen flex flex-col pt-14 lg:pt-0">
+        <PWAInstallPrompt />
         <div className="flex-1">{children}</div>
         <Footer />
       </main>

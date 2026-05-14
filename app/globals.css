@@ -38,3 +38,34 @@ body {
 /* Hide scrollbar for horizontal tab containers if they reappear. */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { scrollbar-width: none; }
+
+/* Wikipedia tables (Rules / History / etc.) — scroll horizontally
+   instead of pushing the page wider than the viewport. */
+.wiki-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  margin: 1em 0;
+  border-radius: 8px;
+}
+.wiki-table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 100%;
+}
+.wiki-table th,
+.wiki-table td {
+  border: 1px solid rgb(39 39 42 / 0.8); /* zinc-800/80 */
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: middle;
+  color: #d4d4d8; /* zinc-300 */
+}
+.wiki-table th {
+  background: rgb(24 24 27 / 0.6); /* zinc-900/60 */
+  font-weight: 600;
+  color: #fafafa;
+}
+.wiki-table tr:nth-child(even) td {
+  background: rgb(24 24 27 / 0.3);
+}

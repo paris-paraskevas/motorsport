@@ -2,6 +2,23 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.7.0 — 2026-05-14
+
+### Fixed
+- **F1 Drivers tab showing driver numbers instead of names.** Wikipedia season-table scraper picked the "No." column as Driver because the substring match was too loose. Now skips numeric headers and filters numeric-only "names" from results. Added a sanity check that rejects a parsed table if most rows end up empty.
+- **History/Rules sections rendering Wikipedia's table of contents** as a list of underlined non-links. Strip `.toc`, related TOC classes, and unwrap dead `href="#anchor"` links.
+- **Wikipedia tables overflowing the viewport on mobile** (points-system grid, regulations tables). Each `<table>` now wraps in a horizontally-scrollable container with sane dark-themed cell styling.
+- **Wikipedia inline cell colors** (medal-position golds/silvers) stripped — they didn't belong in our dark theme.
+- **Champions table truncating constructor names** to "T…", "M-…", "Vol…". Mobile now stacks constructor under the driver line so the full team name is always visible.
+
+### Added
+- **PWA install prompt.** Auto-detects:
+  - Android Chrome / desktop Chrome → real install button via `beforeinstallprompt`
+  - iOS Safari → instructions to "Add to Home Screen"
+  - iOS non-Safari (Chrome, Firefox, Edge) → explains push only works after installing via Safari
+  Dismissible (persisted in localStorage). Hidden when the PWA is already installed.
+- **Drivers tab fallback** when no parseable lineup exists — clean card with Wikipedia + official-site links instead of "Coming soon".
+
 ## 0.6.0 — 2026-05-14
 
 ### Added

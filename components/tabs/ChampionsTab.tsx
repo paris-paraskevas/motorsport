@@ -50,10 +50,10 @@ export async function ChampionsTab({ series }: { series: Series }) {
 
   return (
     <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 overflow-hidden">
-      <div className="grid grid-cols-[auto_1fr_auto] gap-x-3 px-4 py-2 text-xs uppercase tracking-wider text-zinc-500 border-b border-zinc-800/60">
+      <div className="hidden sm:grid grid-cols-[3rem_1fr_minmax(0,1fr)] gap-x-3 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-zinc-500 border-b border-zinc-800/60 font-semibold">
         <div>Year</div>
         <div>Driver</div>
-        <div className="text-right">Constructor</div>
+        <div>Constructor</div>
       </div>
       <div className="divide-y divide-zinc-800/40">
         {rows.map((c, i) => {
@@ -61,21 +61,42 @@ export async function ChampionsTab({ series }: { series: Series }) {
           return (
             <div
               key={`${c.year}-${i}`}
-              className={`grid grid-cols-[auto_1fr_auto] gap-x-3 px-4 py-2 items-baseline ${fade}`}
+              className={`px-4 py-2 ${fade}`}
             >
-              <div className="text-zinc-400 tabular-nums text-sm font-medium w-12">
-                {c.year}
+              {/* Desktop layout — three columns */}
+              <div className="hidden sm:grid grid-cols-[3rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
+                <div className="text-zinc-400 tabular-nums text-sm font-medium">
+                  {c.year}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-zinc-100 text-sm leading-snug">{c.driver}</div>
+                  {c.points !== undefined ? (
+                    <div className="text-[10px] text-zinc-500 tabular-nums mt-0.5">
+                      {c.points} pts
+                    </div>
+                  ) : null}
+                </div>
+                <div className="text-xs text-zinc-400 leading-snug">
+                  {c.constructor ?? ''}
+                </div>
               </div>
-              <div className="min-w-0">
-                <div className="text-zinc-100 text-sm truncate">{c.driver}</div>
-                {c.points !== undefined ? (
-                  <div className="text-[10px] text-zinc-500 tabular-nums">
-                    {c.points} pts
+
+              {/* Mobile layout — stacked so constructor never truncates */}
+              <div className="sm:hidden">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-zinc-400 tabular-nums text-sm font-medium tnum w-12">
+                    {c.year}
+                  </span>
+                  <span className="text-zinc-100 text-sm">{c.driver}</span>
+                </div>
+                {(c.constructor || c.points !== undefined) && (
+                  <div className="ml-[3.75rem] mt-0.5 text-[11px] text-zinc-500 flex items-baseline gap-2 flex-wrap">
+                    {c.constructor && <span>{c.constructor}</span>}
+                    {c.points !== undefined && (
+                      <span className="tabular-nums">· {c.points} pts</span>
+                    )}
                   </div>
-                ) : null}
-              </div>
-              <div className="text-xs text-zinc-400 text-right truncate max-w-[40%] sm:max-w-[50%]">
-                {c.constructor ?? ''}
+                )}
               </div>
             </div>
           );

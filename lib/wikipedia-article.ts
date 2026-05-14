@@ -84,10 +84,22 @@ function cleanSectionHtml(html: string): string {
   $('sup.reference, sup.noprint').remove();
   $('.mw-editsection').remove();
   $('.mw-empty-elt').remove();
-  $('table.navbox, table.vertical-navbox, table.metadata').remove();
+  $('table.navbox, table.vertical-navbox, table.metadata, table.sidebar').remove();
   $('.hatnote, .ambox, .shortdescription').remove();
   $('style').remove();
   $('.thumbcaption .magnify').remove();
+  // Wikipedia in-article navigation (table of contents, etc.) — the rendered
+  // output for a section sometimes embeds a TOC of its sub-headings which
+  // ends up as a list of underlined-but-broken anchors in our prose.
+  $('.toc, #toc, nav.toc, .mw-tochidden, .toclimit-2, .toclimit-3, .toclimit-4').remove();
+  // Strip lone anchor-only headings that the section API sometimes emits.
+  $('.mw-headline-anchor').remove();
+  // Anchor-only links (href starts with #) become dead text in our render —
+  // unwrap them so they aren't styled as broken links.
+  $('a[href^="#"]').each((_, el) => {
+    const $a = $(el);
+    $a.replaceWith($a.contents());
+  });
 
   // Rewrite internal links to absolute and open in new tab.
   $('a').each((_, el) => {
@@ -120,6 +132,30 @@ function cleanSectionHtml(html: string): string {
     // Strip srcset — those are protocol-relative too and the browser
     // resolves them against the current host (us), breaking the image.
     $img.removeAttr('srcset');
+  });
+
+  // Strip inline background/text colours from tables — Wikipedia's
+  // medal-position cells (gold/silver/bronze) clash with our dark theme.
+  $('table, table td, table th, table tr').each((_, el) => {
+    const $el = $(el);
+    const style = $el.attr('style');
+    if (!style) return;
+    const cleaned = style
+      .split(';')
+      .filter(d => d.trim() && !/background/i.test(d) && !/^\s*color\s*:/i.test(d))
+      .join(';')
+      .trim();
+    if (cleaned) $el.attr('style', cleaned);
+    else $el.removeAttr('style');
+  });
+
+  // Wrap each top-level table in a horizontal scroll container so it can't
+  // push the page wider than the viewport on mobile.
+  $('table').each((_, el) => {
+    const $table = $(el);
+    if ($table.parent('.wiki-table-scroll').length > 0) return;
+    $table.addClass('wiki-table');
+    $table.wrap('<div class="wiki-table-scroll"></div>');
   });
 
   return $.html();

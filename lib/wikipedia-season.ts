@@ -5,6 +5,10 @@ const REST_BASE = 'https://en.wikipedia.org/api/rest_v1/page/html';
 
 const TEAM_HEADERS = ['constructor', 'team', 'entrant'];
 const DRIVER_HEADERS = ['driver', 'rider', 'race drivers', 'drivers'];
+// Headers that look like driver/team headers superficially but are actually
+// numbers, ranks, or other ancillary data. Used to reject false positives
+// like "Driver no." matching "driver".
+const REJECT_NUMERIC_HEADERS = ['no.', 'number', '#', 'car no.', 'car number'];
 
 export interface TeamLineup {
   team: string;
@@ -16,13 +20,23 @@ interface ColumnMap {
   driver: number;
 }
 
+function isNumericHeader(header: string): boolean {
+  return REJECT_NUMERIC_HEADERS.some((n) => header.includes(n));
+}
+
 function findColumnIndex(headers: string[], needles: string[]): number {
+  // Pass 1: prefer exact-match headers
   for (let i = 0; i < headers.length; i++) {
     const cell = headers[i];
+    if (isNumericHeader(cell)) continue;
+    if (needles.includes(cell)) return i;
+  }
+  // Pass 2: substring match, but skip numeric-flavored headers
+  for (let i = 0; i < headers.length; i++) {
+    const cell = headers[i];
+    if (isNumericHeader(cell)) continue;
     for (const needle of needles) {
-      if (cell.includes(needle)) {
-        return i;
-      }
+      if (cell.includes(needle)) return i;
     }
   }
   return -1;
@@ -35,6 +49,11 @@ function detectColumns(headerCells: string[]): ColumnMap | null {
   if (teamIdx === -1 || driverIdx === -1) return null;
   if (teamIdx === driverIdx) return null;
   return { team: teamIdx, driver: driverIdx };
+}
+
+function isLikelyNumericName(value: string): boolean {
+  // Single car number like "10" or "43", not a real driver name.
+  return /^\d{1,3}$/.test(value.trim());
 }
 
 function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
@@ -168,7 +187,7 @@ function parseTable(
       currentTeamEl = teamCell;
     }
 
-    const drivers = extractDrivers($, driverCell);
+    const drivers = extractDrivers($, driverCell).filter(d => !isLikelyNumericName(d));
     for (const d of drivers) {
       if (currentEntry && !currentEntry.drivers.includes(d)) {
         currentEntry.drivers.push(d);
@@ -179,7 +198,13 @@ function parseTable(
     lineup.push(currentEntry);
   }
 
-  return lineup.length > 0 ? lineup : null;
+  // Final sanity check: if we ended up with mostly empty driver lists
+  // (because the matched column was actually a car-number column whose
+  // values we filtered out), discard this table.
+  const meaningful = lineup.filter(e => e.drivers.length > 0);
+  if (meaningful.length < Math.max(2, lineup.length / 2)) return null;
+
+  return meaningful.length > 0 ? meaningful : null;
 }
 
 export async function fetchSeasonLineup(
