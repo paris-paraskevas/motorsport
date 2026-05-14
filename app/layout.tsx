@@ -5,7 +5,7 @@ import { AppShell } from '@/components/AppShell';
 import { loadAllSeriesMeta } from '@/lib/series';
 import './globals.css';
 
-const SITE_URL = 'https://motorsport-pi.vercel.app';
+const SITE_URL = 'https://paddock-tracker.com';
 const SITE_TITLE = 'Paddock';
 const SITE_DESCRIPTION =
   'Personal motorsport companion — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more.';

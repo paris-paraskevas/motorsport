@@ -26,7 +26,7 @@ jobs:
           fi
           STATUS=$(curl -sS -o /tmp/notify.json -w "%{http_code}" \
             -H "$AUTH_HEADER" \
-            https://motorsport-pi.vercel.app/api/cron/notify)
+            https://paddock-tracker.com/api/cron/notify)
           echo "Status: $STATUS"
           cat /tmp/notify.json
           echo ""
@@ -43,7 +43,7 @@ jobs:
           fi
           STATUS=$(curl -sS -o /tmp/news.json -w "%{http_code}" \
             -H "$AUTH_HEADER" \
-            https://motorsport-pi.vercel.app/api/cron/news)
+            https://paddock-tracker.com/api/cron/news)
           echo "Status: $STATUS"
           cat /tmp/news.json
           echo ""

@@ -25,7 +25,7 @@ jobs:
           fi
           STATUS=$(curl -sS -o /tmp/rw.json -w "%{http_code}" \
             -H "$AUTH_HEADER" \
-            https://motorsport-pi.vercel.app/api/cron/race-week)
+            https://paddock-tracker.com/api/cron/race-week)
           echo "Status: $STATUS"
           cat /tmp/rw.json
           echo ""

@@ -20,7 +20,7 @@ async function check(title) {
     try {
       const res = await fetch(url, {
         redirect: 'manual',
-        headers: { 'User-Agent': 'Paddock-PWA audit (https://motorsport-pi.vercel.app)' },
+        headers: { 'User-Agent': 'Paddock-PWA audit (https://paddock-tracker.com)' },
       });
       if (res.status === 429) {
         await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));

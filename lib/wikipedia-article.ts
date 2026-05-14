@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 
-const UA = 'Paddock-PWA (https://motorsport-pi.vercel.app)';
+const UA = 'Paddock-PWA (https://paddock-tracker.com)';
 
 interface SectionMatch {
   html: string;
