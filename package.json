@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@serwist/next": "^9.5.11",
+    "@vercel/kv": "^3.0.0",
     "cheerio": "^1.2.0",
     "fast-xml-parser": "^5.8.0",
     "geist": "^1.7.0",
@@ -23,7 +24,8 @@
     "react-dom": "19.2.4",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
-    "temporal-polyfill": "^0.3.2"
+    "temporal-polyfill": "^0.3.2",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -31,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "serwist": "^9.5.11",

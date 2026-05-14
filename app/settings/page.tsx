@@ -1,5 +1,6 @@
 import { loadAllSeriesMeta } from '@/lib/series';
 import { SettingsClient } from '@/components/SettingsClient';
+import { EnableNotifications } from '@/components/EnableNotifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +17,7 @@ export default async function SettingsPage() {
           Settings
         </h1>
       </header>
+      <EnableNotifications />
       <SettingsClient seriesList={seriesList} />
     </div>
   );
