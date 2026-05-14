@@ -41,8 +41,11 @@ self.addEventListener('push', (event: PushEvent) => {
   const title = payload.title ?? 'Paddock';
   const options: NotificationOptions = {
     body: payload.body,
+    // Large in-notification icon — full-colour app icon is fine here.
     icon: '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
+    // Status-bar badge — must be monochrome white on transparent or Android
+    // renders a blank white square. badge-96.png is the silhouette version.
+    badge: '/icons/badge-96.png',
     tag: payload.tag,
     data: { url: payload.url ?? '/' },
   };
