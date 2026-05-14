@@ -3,8 +3,6 @@ import { FilteredSessions } from '@/components/FilteredSessions';
 
 export const dynamic = 'force-dynamic';
 
-const MAX_SESSIONS = 100;
-
 export default async function CalendarPage() {
   const all = await loadAllSeries();
   const now = new Date();
@@ -19,9 +17,7 @@ export default async function CalendarPage() {
     )
     .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());
 
-  const upcoming = flat
-    .filter(x => x.session.end >= now)
-    .slice(0, MAX_SESSIONS);
+  const upcoming = flat.filter(x => x.session.end >= now);
 
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
