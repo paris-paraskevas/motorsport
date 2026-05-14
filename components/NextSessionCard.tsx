@@ -62,7 +62,7 @@ export function NextSessionCard({
         {session.location && (
           <div className="mt-2 flex items-center gap-1.5 text-sm text-zinc-500">
             <MapPin size={13} className="text-zinc-600" />
-            <span>{session.location}</span>
+            <span>{session.location.split(',')[0].trim()}</span>
           </div>
         )}
 

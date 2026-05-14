@@ -54,7 +54,7 @@ export function SessionCard({
             <>
               <span className="text-zinc-700">·</span>
               <MapPin size={11} className="text-zinc-600 shrink-0" />
-              <span className="truncate">{session.location}</span>
+              <span className="truncate">{session.location.split(',')[0].trim()}</span>
             </>
           )}
         </div>
