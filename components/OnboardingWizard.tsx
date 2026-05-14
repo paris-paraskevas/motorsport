@@ -5,7 +5,6 @@ import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
-import { getConsent } from '@/lib/consent';
 import {
   getPushAvailability,
   subscribeToPush,
@@ -29,12 +28,6 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   const [notifMsg, setNotifMsg] = useState<string | null>(null);
 
   const evaluateAndShow = async () => {
-    // Gate on cookie consent decided first.
-    if (getConsent() === null) {
-      setOpen(false);
-      return;
-    }
-    // Signed-out users: don't show — they need to sign in first.
     if (!isLoaded) return;
     if (!isSignedIn) {
       setOpen(false);
@@ -53,15 +46,12 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   useEffect(() => {
     evaluateAndShow();
-    const onConsent = () => evaluateAndShow();
     const onReopen = () => {
       setStep('series');
       setOpen(true);
     };
-    window.addEventListener('paddock:consent-changed', onConsent);
     window.addEventListener('paddock:reopen-onboarding', onReopen);
     return () => {
-      window.removeEventListener('paddock:consent-changed', onConsent);
       window.removeEventListener('paddock:reopen-onboarding', onReopen);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

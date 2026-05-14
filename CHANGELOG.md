@@ -2,6 +2,20 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.6.0 — 2026-05-14
+
+### Added
+- **Custom 404 page** with the dark theme + warm/cool accent corners and quick links home / calendar.
+- **Layered background.** Warm amber wash top-left, cool blue wash bottom-right, faint grain over everything — escape the flat black.
+- **"Preferences" item directly in the avatar dropdown.** Click avatar → Preferences (opens the profile modal to the right page in one tap).
+- **Notification preferences.** New section in Preferences with per-type toggles: Session reminders, News articles, Race week summary. Stored in KV.
+- **`/api/cron/race-week`.** Runs every Monday morning (`0 8 * * 1` UTC = 11:00 Athens). For each user, finds followed-series races in the next 7 days and sends one summary push per series, deduped by ISO week.
+- **`/api/user/notif-prefs`** GET/PUT endpoint.
+
+### Fixed
+- **Existing users seeing onboarding wizard.** Wizard checked a server flag that didn't exist for accounts created before 0.5.0. `/api/user/onboarded` now backfills the flag if the user already has followed-series in KV.
+- **Onboarding waiting on cookie banner.** Wizard no longer gates on cookie consent decision — both can show independently.
+
 ## 0.5.0 — 2026-05-14
 
 ### Changed

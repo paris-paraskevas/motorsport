@@ -3,6 +3,7 @@ import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupSeriesByCategory } from '@/lib/categories';
+import { NotifPrefsSection } from './NotifPrefsSection';
 
 export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
   const { isSignedIn } = useAuth();
@@ -73,6 +74,8 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
           </button>
         </div>
       </div>
+
+      {isSignedIn && <NotifPrefsSection />}
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <button

@@ -1,0 +1,32 @@
+name: race week cron
+
+on:
+  schedule:
+    # 08:00 UTC every Monday = 11:00 Athens
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/race-week
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/rw.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://motorsport-pi.vercel.app/api/cron/race-week)
+          echo "Status: $STATUS"
+          cat /tmp/rw.json
+          echo ""
+          test "$STATUS" = "200" -o "$STATUS" = "503"

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
-import { getUserFollowed } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -79,13 +79,18 @@ export async function GET(req: Request) {
     notifiable.sort((a, b) => a.start.getTime() - b.start.getTime());
     const queue = notifiable.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
-    // Per-user followed cache (avoid re-fetching for the same userId)
-    const followedByUser = new Map<string, string[] | null>();
-    const getFollowed = async (userId: string): Promise<string[] | null> => {
-      if (followedByUser.has(userId)) return followedByUser.get(userId)!;
-      const f = await getUserFollowed(userId);
-      followedByUser.set(userId, f);
-      return f;
+    // Per-user followed + notif-prefs cache (avoid re-fetching for the same userId)
+    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean }>();
+    const getUserState = async (userId: string) => {
+      const cached = userCache.get(userId);
+      if (cached) return cached;
+      const [followed, prefs] = await Promise.all([
+        getUserFollowed(userId),
+        getUserNotifPrefs(userId),
+      ]);
+      const state = { followed, sessionsOn: prefs.sessions };
+      userCache.set(userId, state);
+      return state;
     };
 
     let sent = 0;
@@ -100,11 +105,13 @@ export async function GET(req: Request) {
         tag: `paddock-${session.uid}`,
       };
       for (const { subscription, userId } of subs) {
-        // Filter per user's followed series. Anonymous subs (userId === null)
-        // get every series — they have no server-side prefs.
         if (userId) {
-          const followed = await getFollowed(userId);
-          if (followed !== null && !followed.includes(session.seriesSlug)) {
+          const state = await getUserState(userId);
+          if (!state.sessionsOn) {
+            skipped++;
+            continue;
+          }
+          if (state.followed !== null && !state.followed.includes(session.seriesSlug)) {
             skipped++;
             continue;
           }

@@ -39,6 +39,13 @@ export function HeaderUtils({
       <UserButton
         appearance={{ elements: { avatarBox: 'w-8 h-8' } }}
       >
+        <UserButton.MenuItems>
+          <UserButton.Action
+            label="Preferences"
+            labelIcon={<Settings size={14} />}
+            open="preferences"
+          />
+        </UserButton.MenuItems>
         <UserButton.UserProfilePage
           label="Preferences"
           url="preferences"

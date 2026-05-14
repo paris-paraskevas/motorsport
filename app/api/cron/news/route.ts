@@ -4,7 +4,7 @@ import { NEWS_SLUG_MAP, fetchNews } from '@/lib/news';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
-import { getUserFollowed } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -40,13 +40,18 @@ export async function GET(req: Request) {
 
     const subs = await listSubscriptions();
 
-    // Per-user followed cache for this cron run
-    const followedByUser = new Map<string, string[] | null>();
-    const getFollowed = async (userId: string): Promise<string[] | null> => {
-      if (followedByUser.has(userId)) return followedByUser.get(userId)!;
-      const f = await getUserFollowed(userId);
-      followedByUser.set(userId, f);
-      return f;
+    // Per-user followed + notif-prefs cache for this cron run
+    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean }>();
+    const getUserState = async (userId: string) => {
+      const cached = userCache.get(userId);
+      if (cached) return cached;
+      const [followed, prefs] = await Promise.all([
+        getUserFollowed(userId),
+        getUserNotifPrefs(userId),
+      ]);
+      const state = { followed, newsOn: prefs.news };
+      userCache.set(userId, state);
+      return state;
     };
 
     let coldStart = 0;
@@ -107,8 +112,12 @@ export async function GET(req: Request) {
       };
       for (const { subscription, userId } of subs) {
         if (userId) {
-          const followed = await getFollowed(userId);
-          if (followed !== null && !followed.includes(article.slug)) {
+          const state = await getUserState(userId);
+          if (!state.newsOn) {
+            skipped++;
+            continue;
+          }
+          if (state.followed !== null && !state.followed.includes(article.slug)) {
             skipped++;
             continue;
           }

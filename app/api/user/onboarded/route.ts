@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import {
+  getUserFollowed,
   isUserOnboarded,
   markUserOnboarded,
   resetUserOnboarded,
@@ -14,7 +15,16 @@ export async function GET() {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   try {
-    const onboarded = await isUserOnboarded(userId);
+    let onboarded = await isUserOnboarded(userId);
+    if (!onboarded) {
+      // Backfill: any user who already has followed-series from before
+      // the flag existed is implicitly onboarded.
+      const followed = await getUserFollowed(userId);
+      if (followed !== null) {
+        await markUserOnboarded(userId);
+        onboarded = true;
+      }
+    }
     return NextResponse.json({ onboarded });
   } catch (err) {
     return NextResponse.json(

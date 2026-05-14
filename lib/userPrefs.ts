@@ -38,3 +38,34 @@ export async function resetUserOnboarded(userId: string): Promise<void> {
   if (!isKvConfigured()) return;
   await kv.del(`${PREFIX}${userId}:onboarded`);
 }
+
+export interface NotifPrefs {
+  sessions: boolean;   // ~30 min before each session
+  news: boolean;       // new article from a followed series
+  raceWeek: boolean;   // Monday-morning summary if any race this week
+}
+
+export const DEFAULT_NOTIF_PREFS: NotifPrefs = {
+  sessions: true,
+  news: true,
+  raceWeek: true,
+};
+
+export async function getUserNotifPrefs(userId: string): Promise<NotifPrefs> {
+  if (!isKvConfigured()) return DEFAULT_NOTIF_PREFS;
+  const stored = await kv.get<Partial<NotifPrefs>>(`${PREFIX}${userId}:notifPrefs`);
+  return { ...DEFAULT_NOTIF_PREFS, ...(stored ?? {}) };
+}
+
+export async function setUserNotifPrefs(
+  userId: string,
+  patch: Partial<NotifPrefs>,
+): Promise<NotifPrefs> {
+  if (!isKvConfigured()) {
+    throw new Error('Vercel KV is not configured.');
+  }
+  const current = await getUserNotifPrefs(userId);
+  const next: NotifPrefs = { ...current, ...patch };
+  await kv.set(`${PREFIX}${userId}:notifPrefs`, next);
+  return next;
+}
