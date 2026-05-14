@@ -11,7 +11,6 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  serverExternalPackages: ["node-ical"],
 };
 
 export default withSerwist(nextConfig);
