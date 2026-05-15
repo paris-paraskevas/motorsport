@@ -204,7 +204,27 @@ function parseTable(
   const meaningful = lineup.filter(e => e.drivers.length > 0);
   if (meaningful.length < Math.max(2, lineup.length / 2)) return null;
 
-  return meaningful.length > 0 ? meaningful : null;
+  // Reject entries whose "team" name is actually a column-header leak
+  // ("No.", "Source", "Driver", "Chassis", "Round", etc.) or otherwise
+  // implausible (too short, contains ':' as in "Source:").
+  const credible = meaningful.filter(e => isCredibleTeamName(e.team));
+
+  // A real season lineup has at least four teams. Anything smaller is
+  // almost certainly a 2-row stats table the scraper landed on by mistake.
+  if (credible.length < 4) return null;
+
+  return credible;
+}
+
+const JUNK_TEAM_PATTERN =
+  /^(no\.?|source|driver|drivers|rider|riders|chassis|engine|tyre|tyres|tire|tires|round|pos\.?|position|rank|car no\.?|car number|points|total)$/i;
+
+function isCredibleTeamName(name: string): boolean {
+  const trimmed = name.trim();
+  if (trimmed.length <= 3) return false;
+  if (trimmed.includes(':')) return false;
+  if (JUNK_TEAM_PATTERN.test(trimmed)) return false;
+  return true;
 }
 
 export async function fetchSeasonLineup(
