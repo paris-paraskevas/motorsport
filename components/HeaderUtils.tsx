@@ -1,6 +1,6 @@
 'use client';
-import { Coffee, Mail, Settings } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
+import { Coffee, LogIn, Mail, Settings } from 'lucide-react';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { openContactModal } from './ContactModal';
 import { SettingsClient } from './SettingsClient';
@@ -14,6 +14,8 @@ export function HeaderUtils({
   className?: string;
   seriesList: SeriesMeta[];
 }) {
+  const { isLoaded, isSignedIn } = useAuth();
+
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
       <button
@@ -36,26 +38,39 @@ export function HeaderUtils({
         <span className="hidden sm:inline">Buy me a coffee</span>
         <span className="sm:hidden">Coffee</span>
       </a>
-      <UserButton
-        appearance={{ elements: { avatarBox: 'w-8 h-8' } }}
-      >
-        <UserButton.MenuItems>
-          <UserButton.Action
-            label="Preferences"
-            labelIcon={<Settings size={14} />}
-            open="preferences"
-          />
-        </UserButton.MenuItems>
-        <UserButton.UserProfilePage
-          label="Preferences"
-          url="preferences"
-          labelIcon={<Settings size={14} />}
+      {isLoaded && isSignedIn && (
+        <UserButton
+          appearance={{ elements: { avatarBox: 'w-8 h-8' } }}
         >
-          <div className="paddock-prefs">
-            <SettingsClient seriesList={seriesList} />
-          </div>
-        </UserButton.UserProfilePage>
-      </UserButton>
+          <UserButton.MenuItems>
+            <UserButton.Action
+              label="Preferences"
+              labelIcon={<Settings size={14} />}
+              open="preferences"
+            />
+          </UserButton.MenuItems>
+          <UserButton.UserProfilePage
+            label="Preferences"
+            url="preferences"
+            labelIcon={<Settings size={14} />}
+          >
+            <div className="paddock-prefs">
+              <SettingsClient seriesList={seriesList} />
+            </div>
+          </UserButton.UserProfilePage>
+        </UserButton>
+      )}
+      {isLoaded && !isSignedIn && (
+        <SignInButton mode="modal">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+          >
+            <LogIn size={13} />
+            <span className="hidden sm:inline">Sign in</span>
+          </button>
+        </SignInButton>
+      )}
     </div>
   );
 }
