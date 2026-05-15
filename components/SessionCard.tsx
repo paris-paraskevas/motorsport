@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
 import { formatLocal, formatRelative } from '@/lib/date';
@@ -14,7 +15,8 @@ export function SessionCard({
   const isPast = !isLive && session.end < now;
 
   return (
-    <div
+    <Link
+      href={`/series/${session.seriesSlug}?tab=calendar`}
       className={`group relative flex items-stretch gap-3 pl-3 pr-3 py-3 rounded-lg bg-zinc-900/30 border border-zinc-800/50 mb-1.5 transition-all hover:bg-zinc-900/60 hover:border-zinc-700/80 ${
         isPast ? 'opacity-45' : ''
       }`}
@@ -66,6 +68,6 @@ export function SessionCard({
       <span className="text-xs font-medium text-zinc-400 tnum self-center whitespace-nowrap">
         {formatRelative(session.start)}
       </span>
-    </div>
+    </Link>
   );
 }

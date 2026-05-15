@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, MapPin } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
+import { formatRelative } from '@/lib/date';
 import { NextSessionCard } from './NextSessionCard';
 import { SessionCard } from './SessionCard';
 import { DayHeader } from './DayHeader';
@@ -82,8 +83,14 @@ export function HomeContent({
       ? news.filter(n => followed.includes(n.seriesSlug))
       : news;
 
-  const hero = filteredSessions[0];
-  const remaining = filteredSessions.slice(1, 1 + UPCOMING_LIMIT);
+  const now = new Date();
+  const liveItems = filteredSessions.filter(
+    i => i.session.start <= now && now <= i.session.end,
+  );
+  const upcomingItems = filteredSessions.filter(i => i.session.start > now);
+
+  const hero = upcomingItems[0];
+  const remaining = upcomingItems.slice(1, 1 + UPCOMING_LIMIT);
 
   const colorByUid: Record<string, string> = {};
   remaining.forEach(i => {
@@ -98,6 +105,67 @@ export function HomeContent({
 
   return (
     <>
+      {liveItems.length > 0 && (
+        <section className="mb-6">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="relative inline-flex">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-60 animate-ping" />
+              <span className="relative inline-flex w-2 h-2 rounded-full bg-red-500" />
+            </span>
+            <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-red-300">
+              Live now
+            </span>
+          </div>
+          <div className="space-y-2">
+            {liveItems.map(item => (
+              <Link
+                key={`${item.seriesSlug}-${item.session.uid}`}
+                href={`/series/${item.seriesSlug}?tab=calendar`}
+                className="group block relative overflow-hidden rounded-2xl border border-red-500/30 bg-zinc-900/50 transition-all hover:bg-zinc-900/80 hover:border-red-500/50"
+              >
+                <div
+                  className="absolute inset-0 opacity-[0.10] pointer-events-none"
+                  style={{
+                    background: `radial-gradient(circle at 0% 0%, ${item.color} 0%, transparent 55%)`,
+                  }}
+                />
+                <div
+                  className="absolute top-0 left-0 right-0 h-px"
+                  style={{ backgroundColor: item.color, opacity: 0.6 }}
+                />
+                <div className="relative p-4 md:p-5">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span
+                      className="text-[10px] uppercase tracking-[0.16em] font-semibold"
+                      style={{ color: item.color }}
+                    >
+                      {item.seriesName}
+                    </span>
+                    <span className="text-zinc-700">·</span>
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-zinc-400 font-medium">
+                      started {formatRelative(item.session.start)}
+                    </span>
+                  </div>
+                  <div className="text-zinc-50 text-lg md:text-xl font-bold tracking-tight">
+                    {item.session.title}
+                  </div>
+                  {item.session.location && (
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                      <MapPin size={12} className="text-zinc-600" />
+                      <span>{item.session.location.split(',')[0].trim()}</span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {hero ? (
         <NextSessionCard
           session={hero.session}
@@ -105,7 +173,7 @@ export function HomeContent({
           seriesName={hero.seriesName}
           seriesSlug={hero.seriesSlug}
         />
-      ) : (
+      ) : liveItems.length > 0 ? null : (
         <div className="mb-8 p-5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-500 text-sm">
           {isEmptyFromFilter ? (
             <>
