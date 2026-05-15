@@ -269,9 +269,13 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                     <h2 className="text-zinc-50 text-base font-semibold">
                       Session reminders
                     </h2>
-                    <p className="text-zinc-500 text-xs mt-1 leading-relaxed">
-                      Browser asks for permission once you tap Enable.
-                    </p>
+                    {(notifState === 'idle' ||
+                      notifState === 'working' ||
+                      notifState === 'error') && (
+                      <p className="text-zinc-500 text-xs mt-1 leading-relaxed">
+                        Browser asks for permission once you tap Enable.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -288,7 +292,12 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                 {(notifState === 'unavailable' ||
                   notifState === 'denied' ||
                   notifState === 'server-not-ready') && (
-                  <div className="text-amber-400 text-sm">{notifMsg}</div>
+                  <div className="space-y-2">
+                    <div className="text-amber-400 text-sm">{notifMsg}</div>
+                    <div className="text-zinc-500 text-xs leading-relaxed">
+                      Tap <span className="text-zinc-300 font-medium">Done</span> below to finish — you can enable notifications later from your account preferences.
+                    </div>
+                  </div>
                 )}
 
                 {(notifState === 'idle' || notifState === 'working' || notifState === 'error') && (
