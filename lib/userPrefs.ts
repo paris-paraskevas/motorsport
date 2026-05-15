@@ -43,13 +43,29 @@ export interface NotifPrefs {
   sessions: boolean;   // ~30 min before each session
   news: boolean;       // new article from a followed series
   raceWeek: boolean;   // Monday-morning summary if any race this week
+  mutedSeries?: string[];  // per-series mute (independent of follow state)
 }
 
 export const DEFAULT_NOTIF_PREFS: NotifPrefs = {
   sessions: true,
   news: true,
   raceWeek: true,
+  mutedSeries: [],
 };
+
+export async function addMutedSeries(userId: string, slug: string): Promise<NotifPrefs> {
+  const prefs = await getUserNotifPrefs(userId);
+  const muted = new Set(prefs.mutedSeries ?? []);
+  muted.add(slug);
+  return setUserNotifPrefs(userId, { mutedSeries: [...muted] });
+}
+
+export async function removeMutedSeries(userId: string, slug: string): Promise<NotifPrefs> {
+  const prefs = await getUserNotifPrefs(userId);
+  const muted = new Set(prefs.mutedSeries ?? []);
+  muted.delete(slug);
+  return setUserNotifPrefs(userId, { mutedSeries: [...muted] });
+}
 
 export async function getUserNotifPrefs(userId: string): Promise<NotifPrefs> {
   if (!isKvConfigured()) return DEFAULT_NOTIF_PREFS;

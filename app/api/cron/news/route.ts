@@ -41,7 +41,7 @@ export async function GET(req: Request) {
     const subs = await listSubscriptions();
 
     // Per-user followed + notif-prefs cache for this cron run
-    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean }>();
+    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean; muted: Set<string> }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -49,7 +49,11 @@ export async function GET(req: Request) {
         getUserFollowed(userId),
         getUserNotifPrefs(userId),
       ]);
-      const state = { followed, newsOn: prefs.news };
+      const state = {
+        followed,
+        newsOn: prefs.news,
+        muted: new Set(prefs.mutedSeries ?? []),
+      };
       userCache.set(userId, state);
       return state;
     };
@@ -109,6 +113,12 @@ export async function GET(req: Request) {
         body: article.title,
         url: article.link,
         tag: `paddock-news-${article.slug}`,
+        color: meta.color,
+        actions: [
+          { action: 'open', title: 'Read' },
+          { action: 'mute', title: 'Mute series' },
+        ],
+        data: { seriesSlug: article.slug },
       };
       for (const { subscription, userId } of subs) {
         if (userId) {
@@ -118,6 +128,10 @@ export async function GET(req: Request) {
             continue;
           }
           if (state.followed !== null && !state.followed.includes(article.slug)) {
+            skipped++;
+            continue;
+          }
+          if (state.muted.has(article.slug)) {
             skipped++;
             continue;
           }

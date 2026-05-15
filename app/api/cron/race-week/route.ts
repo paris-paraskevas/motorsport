@@ -89,7 +89,7 @@ export async function GET(req: Request) {
 
     const userCache = new Map<
       string,
-      { followed: string[] | null; raceWeekOn: boolean }
+      { followed: string[] | null; raceWeekOn: boolean; muted: Set<string> }
     >();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
@@ -98,7 +98,11 @@ export async function GET(req: Request) {
         getUserFollowed(userId),
         getUserNotifPrefs(userId),
       ]);
-      const state = { followed, raceWeekOn: prefs.raceWeek };
+      const state = {
+        followed,
+        raceWeekOn: prefs.raceWeek,
+        muted: new Set(prefs.mutedSeries ?? []),
+      };
       userCache.set(userId, state);
       return state;
     };
@@ -130,6 +134,7 @@ export async function GET(req: Request) {
       for (const series of allSeries) {
         const slug = series.meta.slug;
         if (state.followed !== null && !state.followed.includes(slug)) continue;
+        if (state.muted.has(slug)) continue;
         const thisWeek = upcomingBySlug.get(slug);
         if (!thisWeek) continue;
 
@@ -147,6 +152,12 @@ export async function GET(req: Request) {
           body: `${thisWeek.length} session${thisWeek.length === 1 ? '' : 's'} this week. ${main.title}: ${fmtDate(main.start)} ${fmtTime(main.start)}.`,
           url: `/series/${slug}`,
           tag: `paddock-race-week-${slug}-${weekKey}`,
+          color: series.meta.color,
+          actions: [
+            { action: 'open', title: 'Open' },
+            { action: 'mute', title: 'Mute series' },
+          ],
+          data: { seriesSlug: slug },
         };
 
         const result = await sendPushTo(subscription, payload);

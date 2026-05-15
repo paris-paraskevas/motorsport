@@ -14,11 +14,25 @@ function configure() {
   configured = true;
 }
 
+export interface PushAction {
+  action: string;
+  title: string;
+  icon?: string;
+}
+
 export interface PushPayload {
   title: string;
   body: string;
   url?: string;
   tag?: string;
+  /** Hex colour for the notification chrome on Chromium/Android. */
+  color?: string;
+  /** Optional hero image URL displayed below the body. */
+  image?: string;
+  /** Action buttons rendered under the notification (Chrome/Edge/Android). */
+  actions?: PushAction[];
+  /** Opaque per-notification data attached for the click handler. */
+  data?: Record<string, string>;
 }
 
 /**

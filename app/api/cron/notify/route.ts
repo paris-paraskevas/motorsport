@@ -18,6 +18,7 @@ interface NotifiableSession {
   end: Date;
   seriesSlug: string;
   seriesName: string;
+  seriesColor: string;
 }
 
 function minutesUntil(date: Date, now: Date): number {
@@ -67,6 +68,7 @@ export async function GET(req: Request) {
             end: s.end,
             seriesSlug: series.meta.slug,
             seriesName: series.meta.name,
+            seriesColor: series.meta.color,
           });
         }
       }
@@ -80,7 +82,7 @@ export async function GET(req: Request) {
     const queue = notifiable.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
     // Per-user followed + notif-prefs cache (avoid re-fetching for the same userId)
-    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean }>();
+    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; muted: Set<string> }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -88,7 +90,11 @@ export async function GET(req: Request) {
         getUserFollowed(userId),
         getUserNotifPrefs(userId),
       ]);
-      const state = { followed, sessionsOn: prefs.sessions };
+      const state = {
+        followed,
+        sessionsOn: prefs.sessions,
+        muted: new Set(prefs.mutedSeries ?? []),
+      };
       userCache.set(userId, state);
       return state;
     };
@@ -103,6 +109,12 @@ export async function GET(req: Request) {
         body: `Starts in ${minsLeft} min · ${fmtTime(session.start)} Athens`,
         url: `/series/${session.seriesSlug}`,
         tag: `paddock-${session.uid}`,
+        color: session.seriesColor,
+        actions: [
+          { action: 'open', title: 'Open' },
+          { action: 'mute', title: 'Mute series' },
+        ],
+        data: { seriesSlug: session.seriesSlug },
       };
       for (const { subscription, userId } of subs) {
         if (userId) {
@@ -112,6 +124,10 @@ export async function GET(req: Request) {
             continue;
           }
           if (state.followed !== null && !state.followed.includes(session.seriesSlug)) {
+            skipped++;
+            continue;
+          }
+          if (state.muted.has(session.seriesSlug)) {
             skipped++;
             continue;
           }
