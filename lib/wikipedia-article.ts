@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import type { AnyNode } from 'domhandler';
 
 const UA = 'Paddock-PWA (https://paddock-tracker.com)';
 
@@ -163,27 +164,41 @@ function cleanSectionHtml(html: string): string {
     else $el.removeAttr('style');
   });
 
-  // Transpose points-system tables (single header row of position labels
-  // + single row of point values) into a vertical two-column layout that
-  // reads well on narrow screens. Detect by shape + content of cells.
-  const positionPattern = /^(\d+(st|nd|rd|th)?|pos\.?|position|rank|place)$/i;
+  // Transpose points-system tables into a vertical two-column layout
+  // that reads well on narrow screens. We look for a row whose every
+  // cell matches a position label (1st, 2nd, … or 1, 2, …) followed by
+  // a row of the same shape holding numeric point values. The table
+  // may have a "Point system for X" caption row above, so we search
+  // every row rather than insisting on exactly 2 rows.
+  const positionPattern = /^[\s ]*(\d+(st|nd|rd|th)?|pos\.?|position|rank|place)[\s ]*$/i;
+  const cleanCellText = (s: string) => s.replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
   $('table').each((_, el) => {
     const $table = $(el);
     const $rows = $table.find('tr');
-    if ($rows.length !== 2) return;
-    const $row0 = $($rows.get(0)).find('th, td');
-    const $row1 = $($rows.get(1)).find('th, td');
-    if ($row0.length < 4 || $row0.length !== $row1.length) return;
-    const positions: string[] = [];
-    for (let i = 0; i < $row0.length; i++) {
-      const txt = $($row0.get(i)).text().trim();
-      if (!positionPattern.test(txt)) return;
-      positions.push(txt);
+    if ($rows.length < 2) return;
+
+    // Scan rows to find a position-label row followed by a value row.
+    let posRowIdx = -1;
+    let posCells: cheerio.Cheerio<AnyNode> | null = null;
+    let valCells: cheerio.Cheerio<AnyNode> | null = null;
+    for (let i = 0; i < $rows.length - 1; i++) {
+      const $candidate = $($rows.get(i)).find('th, td');
+      if ($candidate.length < 4) continue;
+      const allPositions = $candidate
+        .toArray()
+        .every(c => positionPattern.test($(c).text()));
+      if (!allPositions) continue;
+      const $next = $($rows.get(i + 1)).find('th, td');
+      if ($next.length !== $candidate.length) continue;
+      posRowIdx = i;
+      posCells = $candidate;
+      valCells = $next;
+      break;
     }
-    const values: string[] = [];
-    for (let i = 0; i < $row1.length; i++) {
-      values.push($($row1.get(i)).text().trim());
-    }
+    if (posRowIdx === -1 || !posCells || !valCells) return;
+
+    const positions = posCells.toArray().map(c => cleanCellText($(c).text()));
+    const values = valCells.toArray().map(c => cleanCellText($(c).text()));
     const bodyRows = positions
       .map((p, i) => `<tr><td class="tnum">${p}</td><td class="tnum">${values[i]}</td></tr>`)
       .join('');
