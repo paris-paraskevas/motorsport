@@ -22,14 +22,13 @@ function EmptyState({ message }: { message: string }) {
 }
 
 function DriversTable({ drivers }: { drivers: DriverStanding[] }) {
-  const top = drivers.slice(0, 10);
   return (
     <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
       <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold mb-3">
         Drivers
       </h2>
       <ul className="divide-y divide-zinc-800/60">
-        {top.map(d => (
+        {drivers.map(d => (
           <li
             key={`${d.position}-${d.driverName}`}
             className="flex items-baseline gap-3 py-2"
@@ -64,14 +63,13 @@ function DriversTable({ drivers }: { drivers: DriverStanding[] }) {
 }
 
 function ConstructorsTable({ constructors }: { constructors: ConstructorStanding[] }) {
-  const top = constructors.slice(0, 10);
   return (
     <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
       <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold mb-3">
         Constructors
       </h2>
       <ul className="divide-y divide-zinc-800/60">
-        {top.map(c => (
+        {constructors.map(c => (
           <li key={`${c.position}-${c.name}`} className="flex items-baseline gap-3 py-2">
             <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
               {c.position}
