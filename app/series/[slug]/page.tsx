@@ -12,6 +12,7 @@ import { ChampionsTab } from '@/components/tabs/ChampionsTab';
 import { StandingsTab } from '@/components/tabs/StandingsTab';
 import { ResultsTab } from '@/components/tabs/ResultsTab';
 import { DriversTab } from '@/components/tabs/DriversTab';
+import { TeamsTab } from '@/components/tabs/TeamsTab';
 import { RulesTab } from '@/components/tabs/RulesTab';
 import { NewsTab } from '@/components/tabs/NewsTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
@@ -35,6 +36,8 @@ function renderTab(activeTab: TabKey, series: Series) {
       return <ResultsTab series={series} />;
     case 'drivers':
       return <DriversTab series={series} />;
+    case 'teams':
+      return <TeamsTab series={series} />;
     case 'rules':
       return <RulesTab series={series} />;
     case 'about':
