@@ -3,7 +3,9 @@ import type { AnyNode } from 'domhandler';
 import type { Champion } from './types';
 
 const REST_BASE = 'https://en.wikipedia.org/api/rest_v1/page/html';
-const MAX_ENTRIES = 50;
+// Most championships have <100 seasons; we keep a high ceiling rather
+// than truncate the list. Series like F1 hit ~75 seasons.
+const MAX_ENTRIES = 200;
 
 const YEAR_HEADERS = ['year', 'season'];
 const DRIVER_HEADERS = ['driver', 'rider', 'champion'];
