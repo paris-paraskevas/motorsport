@@ -88,6 +88,20 @@ function cleanSectionHtml(html: string): string {
   $('.hatnote, .ambox, .shortdescription').remove();
   $('style').remove();
   $('.thumbcaption .magnify').remove();
+  // Footnote references appendix (rendered at the end of section payloads when
+  // the source article uses inline citations) and the cite-error warning block
+  // that appears when group refs reference a missing reflist template.
+  $('ol.references, ul.references, .references, .reflist, .mw-references-wrap').remove();
+  $('.mw-ext-cite-error, .error.mw-ext-cite-error').remove();
+  // Catch the textual "Cite error: ..." paragraph that ships without the
+  // .mw-ext-cite-error class on some article renders. Match by leading text.
+  $('p').each((_, el) => {
+    const $p = $(el);
+    if (/^\s*Cite error:/i.test($p.text())) $p.remove();
+  });
+  // COinS bibliographic metadata spans — invisible to users but cheerio
+  // surfaces them as empty divs.
+  $('.Z3988').remove();
   // Wikipedia in-article navigation (table of contents, etc.) — the rendered
   // output for a section sometimes embeds a TOC of its sub-headings which
   // ends up as a list of underlined-but-broken anchors in our prose.
@@ -147,6 +161,35 @@ function cleanSectionHtml(html: string): string {
       .trim();
     if (cleaned) $el.attr('style', cleaned);
     else $el.removeAttr('style');
+  });
+
+  // Transpose points-system tables (single header row of position labels
+  // + single row of point values) into a vertical two-column layout that
+  // reads well on narrow screens. Detect by shape + content of cells.
+  const positionPattern = /^(\d+(st|nd|rd|th)?|pos\.?|position|rank|place)$/i;
+  $('table').each((_, el) => {
+    const $table = $(el);
+    const $rows = $table.find('tr');
+    if ($rows.length !== 2) return;
+    const $row0 = $($rows.get(0)).find('th, td');
+    const $row1 = $($rows.get(1)).find('th, td');
+    if ($row0.length < 4 || $row0.length !== $row1.length) return;
+    const positions: string[] = [];
+    for (let i = 0; i < $row0.length; i++) {
+      const txt = $($row0.get(i)).text().trim();
+      if (!positionPattern.test(txt)) return;
+      positions.push(txt);
+    }
+    const values: string[] = [];
+    for (let i = 0; i < $row1.length; i++) {
+      values.push($($row1.get(i)).text().trim());
+    }
+    const bodyRows = positions
+      .map((p, i) => `<tr><td class="tnum">${p}</td><td class="tnum">${values[i]}</td></tr>`)
+      .join('');
+    $table.replaceWith(
+      `<table class="wiki-table"><thead><tr><th>Position</th><th>Points</th></tr></thead><tbody>${bodyRows}</tbody></table>`,
+    );
   });
 
   // Wrap each top-level table in a horizontal scroll container so it can't
