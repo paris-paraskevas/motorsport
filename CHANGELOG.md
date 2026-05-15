@@ -2,6 +2,49 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.0 — 2026-05-16
+
+### Added
+- **Race-weekend pages** at `/series/[slug]/weekend/[round]`. Each weekend gets its own first-class page: hero with countdown / live / past badge, multi-day weather strip (one tile per session day), schedule grouped by day, standings snapshot ("Going into round N" for F1; link-out for other series), and news filtered to the weekend window. The home hero, Live-now cards, and Calendar weekend blocks all click through here.
+- **Weather chip on home Upcoming session cards.** Previously only the hero showed forecast; the day-grouped list now does too. Lookup widened from the next 5 to the next 12 sessions (still de-duped per circuit).
+
+### Fixed
+- **Weather forecast pulled the wrong day** for evening sessions whose UTC date differed from venue-local date (e.g. anything in the Americas). Open-Meteo returns daily entries in venue-local timezone; lookup now respects that.
+- **Round numbers on non-F1 weekend pages** appearing in the hundreds (Formula E /121, MotoGP /323, WSBK /193). The weekend-grouping algorithm was iterating over years of historical ICS data; it now clamps to roughly the current season.
+
+## 0.8.0 — 2026-05-15
+
+### Added
+- **`paddock-tracker.com`** — custom domain via Vercel registrar, Clerk Production active with Google OAuth, public-with-account auth (everything is browseable signed-out; only prefs/push/settings need sign-in).
+- **Vercel Analytics + Speed Insights** wired site-wide. Visitor counts + Core Web Vitals collection live.
+- **Live now home section** — pinned red strip above the hero whenever any followed-series session is in progress.
+- **MDX blog at `/blog`** — file-based posts under `content/posts/*.mdx`, RSS feed at `/feed.xml`, `<YouTube id="…" />` component available in posts.
+- **Drivers + Teams detail pages** at `/drivers/[slug]` and `/teams/[slug]` (foundation; full enrichment still to come). Names in F1 Drivers tab are clickable when rendered from curated data.
+- **Full F1 season results panel.** Race-by-race, native `<details>` per round, top-10 finishers per race, most recent round open by default.
+- **Drivers' season trend chart** on F1 Results — Recharts line chart with toggleable drivers; top 6 by points enabled by default.
+- **Full standings grid** (drivers + constructors) — no more top-10 slice. F1 now shows all 20–22 drivers.
+- **Champions tab grouped by decade**, all entries shown (cap raised 50 → 200). Points hidden until parser can disambiguate columns reliably.
+- **Notifications: per-series accent colour, action buttons, mute-series flow.** Tap "Mute series" on a push and that series stops paging you. Brand-coloured chip on every notification.
+- **Per-user notification sound toggle** in Settings. When off, pushes are silent + no vibration.
+- **ADAC Ravenol 24h Nürburgring** added (yellow accent; calendar feed still TBD).
+- **Weather forecast chip on the next-session hero** — temp range + condition emoji + rain chance.
+- **Curated content layer.** Every editable surface (drivers, champions, results overrides, standings overrides, series meta, overview, significance, fallback ICS) has a file home under `content/series/<slug>/`. Renderers prefer curated files; external APIs are fallbacks.
+- **News series filter chips** on the home feed when multiple series have stories.
+
+### Changed
+- **Sign-in is no longer required to browse.** Drop the force-sign-in gate from `0.5.0` — site is public; account only needed for prefs/push.
+- **About tab** now folds in `content/series/<slug>/overview.md` when present. Real F1 overview content written.
+- **Drop Teams tab** as a top-level series tab — it was redundant with Drivers (already groups by team).
+
+### Fixed
+- **Wikipedia "Cite error" paragraphs and COinS metadata** stripped from Rules / History tabs.
+- **Points-system tables transpose vertically on narrow screens** instead of horizontal-scroll. Handles tables with a "Point system for X" caption row above the position labels (F3 / Formula E shape).
+- **Drivers parser rejects junk-table lineups** — `<= 3` char teams, ":"-containing teams, column-header leakage ("No.", "Source", "Chassis", etc.), and requires ≥ 4 credible teams.
+- **F1 2026 entries table** with multi-row header (`Race drivers` colspan=3 + sub-header) now parses; broadened bracket-annotation stripping (`[a]`, `[N 1]`, `[lower-alpha 2]`).
+- **Drivers parser merges same-team rows** when source table omits rowspan grouping.
+- **F1 Champions** points column hidden as workaround for Wikipedia disambiguation page rename; lookup updated to `List_of_Formula_One_World_Drivers'_Champions`.
+- **Onboarding wizard** no longer shows a misleading "Browser asks for permission once you tap Enable" cue when push permission is already denied.
+
 ## 0.7.0 — 2026-05-14
 
 ### Fixed
