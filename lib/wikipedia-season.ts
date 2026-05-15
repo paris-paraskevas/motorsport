@@ -56,10 +56,15 @@ function isLikelyNumericName(value: string): boolean {
   return /^\d{1,3}$/.test(value.trim());
 }
 
+// Strip any bracketed annotation up to 15 chars: [1], [a], [N 1],
+// [lower-alpha 2], [note 3], etc. Wikipedia uses several footnote
+// styles beyond the numeric one our original regex covered.
+const BRACKET_ANNOTATION_RE = /\[[^\]]{1,15}\]/g;
+
 function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
   return $(el)
     .text()
-    .replace(/\[\d+\]/g, '')
+    .replace(BRACKET_ANNOTATION_RE, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -74,7 +79,7 @@ function extractDrivers($: cheerio.CheerioAPI, el: Element): string[] {
   $cell.find('sup').remove(); // strip footnote refs etc.
   const raw = $cell
     .text()
-    .replace(/\[\d+\]/g, '')
+    .replace(BRACKET_ANNOTATION_RE, '')
     .replace(/ /g, ' ');
   return raw
     .split(/\n+/)
@@ -135,6 +140,50 @@ function resolveRowspans(
   return result;
 }
 
+/**
+ * Build a flat list of header names per actual column index, accounting
+ * for colspan in row 0. When row 0 has multi-column headers (e.g. F1's
+ * "Race drivers" spanning 3 sub-columns: No., Driver name, Rounds),
+ * row 1 contains the sub-headers that fill the gap columns in order.
+ */
+function flattenHeaderRows(
+  $: cheerio.CheerioAPI,
+  row0: Element,
+  row1: Element | null,
+): string[] {
+  const out: string[] = [];
+  const row0Cells = $(row0).find('> th, > td').toArray() as Element[];
+  let col = 0;
+  for (const cell of row0Cells) {
+    const text = cellText($, cell);
+    const colspan = parseInt($(cell).attr('colspan') || '1', 10);
+    if (colspan === 1) {
+      out[col] = text;
+    } else {
+      // Multi-col parent header (e.g. "Race drivers"). Leave all spanned
+      // positions empty so row 1's sub-headers can fill them in order.
+      for (let i = 0; i < colspan; i++) out[col + i] = '';
+    }
+    col += colspan;
+  }
+  if (row1) {
+    const row1Cells = $(row1).find('> th, > td').toArray() as Element[];
+    let row1Idx = 0;
+    for (let c = 0; c < out.length; c++) {
+      if (out[c] === '' && row1Idx < row1Cells.length) {
+        out[c] = cellText($, row1Cells[row1Idx]);
+        row1Idx++;
+      }
+    }
+  }
+  return out;
+}
+
+function rowHasMultiCol($: cheerio.CheerioAPI, row: Element): boolean {
+  const cells = $(row).find('> th, > td').toArray() as Element[];
+  return cells.some(c => parseInt($(c).attr('colspan') || '1', 10) > 1);
+}
+
 function parseTable(
   $: cheerio.CheerioAPI,
   table: Element,
@@ -144,24 +193,30 @@ function parseTable(
   if (allRows.length < 2) return null;
 
   // Try header rows starting from row 0; some tables have multi-row headers.
-  let headerRowIdx = -1;
+  // If a row has any cell with colspan > 1, the next row likely contains
+  // sub-headers for the spanned columns — flatten both into one logical
+  // header list before column detection.
+  let lastHeaderRowIdx = -1;
   let cols: ColumnMap | null = null;
   for (let i = 0; i < Math.min(3, allRows.length); i++) {
-    const headerCells = $(allRows[i])
-      .find('> th, > td')
-      .toArray()
-      .map((el) => cellText($, el));
-    if (headerCells.length === 0) continue;
+    const row0 = allRows[i];
+    const row0Cells = $(row0).find('> th, > td').toArray() as Element[];
+    if (row0Cells.length === 0) continue;
+
+    const hasMultiCol = rowHasMultiCol($, row0);
+    const row1 = hasMultiCol && i + 1 < allRows.length ? allRows[i + 1] : null;
+    const headerCells = flattenHeaderRows($, row0, row1);
+
     const detected = detectColumns(headerCells);
     if (detected) {
-      headerRowIdx = i;
+      lastHeaderRowIdx = row1 ? i + 1 : i;
       cols = detected;
       break;
     }
   }
-  if (!cols || headerRowIdx === -1) return null;
+  if (!cols || lastHeaderRowIdx === -1) return null;
 
-  const dataRows = allRows.slice(headerRowIdx + 1);
+  const dataRows = allRows.slice(lastHeaderRowIdx + 1);
   const resolved = resolveRowspans($, dataRows);
 
   // Group consecutive rows by their effective team cell. Multi-row tables

@@ -99,6 +99,86 @@ const MULTI_ROW_HTML = `
 </body></html>
 `;
 
+// F1 2026-style multi-row header. Row 0 has `Race drivers` with
+// colspan=3; row 1 has the sub-headers (No., Driver name, Rounds).
+// Parser should flatten both rows, detect Entrant and Driver name as
+// the team/driver columns, then read those positions on data rows.
+const MULTI_ROW_HEADER_HTML = `
+<!DOCTYPE html>
+<html><body>
+<table class="wikitable">
+  <tbody>
+    <tr>
+      <th>Entrant</th>
+      <th>Constructor</th>
+      <th>Chassis</th>
+      <th>Power unit</th>
+      <th colspan="3">Race drivers</th>
+    </tr>
+    <tr>
+      <th>No.</th>
+      <th>Driver name</th>
+      <th>Rounds</th>
+    </tr>
+    <tr>
+      <td>BWT Alpine F1 Team</td>
+      <td>Alpine - Mercedes</td>
+      <td>A526</td>
+      <td>Mercedes-AMG F1 M17</td>
+      <td>10<br>43</td>
+      <td>Pierre Gasly<br>Franco Colapinto</td>
+      <td>All</td>
+    </tr>
+    <tr>
+      <td>Aston Martin Aramco F1 Team</td>
+      <td>Aston Martin Aramco - Honda</td>
+      <td>AMR26</td>
+      <td>Honda RA626H</td>
+      <td>14<br>18</td>
+      <td>Fernando Alonso<br>Lance Stroll</td>
+      <td>All</td>
+    </tr>
+    <tr>
+      <td>Atlassian Williams F1 Team</td>
+      <td>Atlassian Williams - Mercedes</td>
+      <td>FW48</td>
+      <td>Mercedes-AMG F1 M17</td>
+      <td>23<br>55</td>
+      <td>Alexander Albon<br>Carlos Sainz Jr.</td>
+      <td>All</td>
+    </tr>
+    <tr>
+      <td>Audi Revolut F1 Team</td>
+      <td>Audi</td>
+      <td>R26</td>
+      <td>Audi AFR 26 Hybrid</td>
+      <td>5<br>27</td>
+      <td>Gabriel Bortoleto<br>Nico Hülkenberg</td>
+      <td>All</td>
+    </tr>
+  </tbody>
+</table>
+</body></html>
+`;
+
+// Driver cell containing bracketed footnotes ([a], [N 1], etc.) that
+// older regex (numeric-only) failed to strip. The team name should
+// render cleanly without bracket noise.
+const FOOTNOTE_ANNOTATION_HTML = `
+<!DOCTYPE html>
+<html><body>
+<table class="wikitable">
+  <tbody>
+    <tr><th>Constructor</th><th>Driver</th></tr>
+    <tr><td>Monster Energy Yamaha MotoGP Team[a]</td><td>Fabio Quartararo[1]</td></tr>
+    <tr><td>Aprilia Racing[N 1]</td><td>Marco Bezzecchi</td></tr>
+    <tr><td>Ducati Lenovo Team</td><td>Francesco Bagnaia[lower-alpha 2]</td></tr>
+    <tr><td>Red Bull KTM Factory Racing</td><td>Brad Binder</td></tr>
+  </tbody>
+</table>
+</body></html>
+`;
+
 // One row per driver — same team text repeats on multiple rows without
 // rowspan grouping. Parser should merge these into one entry per team.
 const ONE_ROW_PER_DRIVER_HTML = `
@@ -224,6 +304,30 @@ describe('fetchSeasonLineup', () => {
     expect(lineup[0].drivers).toEqual(['Charles Leclerc', 'Lewis Hamilton']);
     expect(lineup[1].team).toBe('McLaren');
     expect(lineup[1].drivers).toEqual(['Lando Norris', 'Oscar Piastri']);
+  });
+
+  it('handles multi-row headers where Race drivers spans No. + Driver name + Rounds sub-columns', async () => {
+    mockFetchOnceOk(MULTI_ROW_HEADER_HTML);
+    const lineup = await fetchSeasonLineup('2026_Formula_One_World_Championship');
+    expect(lineup).toHaveLength(4);
+    expect(lineup[0].team).toBe('BWT Alpine F1 Team');
+    expect(lineup[0].drivers).toEqual(['Pierre Gasly', 'Franco Colapinto']);
+    expect(lineup[1].team).toBe('Aston Martin Aramco F1 Team');
+    expect(lineup[1].drivers).toEqual(['Fernando Alonso', 'Lance Stroll']);
+    expect(lineup[2].team).toBe('Atlassian Williams F1 Team');
+    expect(lineup[2].drivers).toEqual(['Alexander Albon', 'Carlos Sainz Jr.']);
+    expect(lineup[3].team).toBe('Audi Revolut F1 Team');
+    expect(lineup[3].drivers).toEqual(['Gabriel Bortoleto', 'Nico Hülkenberg']);
+  });
+
+  it('strips non-numeric footnote annotations like [a], [N 1], [lower-alpha 2] from team and driver names', async () => {
+    mockFetchOnceOk(FOOTNOTE_ANNOTATION_HTML);
+    const lineup = await fetchSeasonLineup('Some_Page');
+    expect(lineup).toHaveLength(4);
+    expect(lineup[0].team).toBe('Monster Energy Yamaha MotoGP Team');
+    expect(lineup[0].drivers).toEqual(['Fabio Quartararo']);
+    expect(lineup[1].team).toBe('Aprilia Racing');
+    expect(lineup[2].drivers).toEqual(['Francesco Bagnaia']);
   });
 
   it('merges duplicate team rows when the table uses one row per driver (no rowspan)', async () => {
