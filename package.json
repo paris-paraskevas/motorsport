@@ -13,7 +13,9 @@
   "dependencies": {
     "@clerk/nextjs": "^7.3.3",
     "@serwist/next": "^9.5.11",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/kv": "^3.0.0",
+    "@vercel/speed-insights": "^2.0.0",
     "cheerio": "^1.2.0",
     "fast-xml-parser": "^5.8.0",
     "geist": "^1.7.0",
