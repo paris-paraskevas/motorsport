@@ -6,6 +6,7 @@ interface NotifPrefs {
   sessions: boolean;
   news: boolean;
   raceWeek: boolean;
+  sound: boolean;
 }
 
 const ROWS: Array<{ key: keyof NotifPrefs; label: string; description: string }> = [
@@ -23,6 +24,11 @@ const ROWS: Array<{ key: keyof NotifPrefs; label: string; description: string }>
     key: 'raceWeek',
     label: 'Race week summary',
     description: 'Monday morning recap of races coming up this week.',
+  },
+  {
+    key: 'sound',
+    label: 'Play notification sound',
+    description: 'Turn off to receive notifications silently (badge + banner only).',
   },
 ];
 

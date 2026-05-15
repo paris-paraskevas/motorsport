@@ -33,6 +33,8 @@ export interface PushPayload {
   actions?: PushAction[];
   /** Opaque per-notification data attached for the click handler. */
   data?: Record<string, string>;
+  /** When true, suppress the system notification sound (badge/banner stay). */
+  silent?: boolean;
 }
 
 /**

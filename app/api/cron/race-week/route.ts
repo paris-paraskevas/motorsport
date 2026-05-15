@@ -89,7 +89,7 @@ export async function GET(req: Request) {
 
     const userCache = new Map<
       string,
-      { followed: string[] | null; raceWeekOn: boolean; muted: Set<string> }
+      { followed: string[] | null; raceWeekOn: boolean; soundOn: boolean; muted: Set<string> }
     >();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
@@ -101,6 +101,7 @@ export async function GET(req: Request) {
       const state = {
         followed,
         raceWeekOn: prefs.raceWeek,
+        soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
       };
       userCache.set(userId, state);
@@ -160,7 +161,10 @@ export async function GET(req: Request) {
           data: { seriesSlug: slug },
         };
 
-        const result = await sendPushTo(subscription, payload);
+        const result = await sendPushTo(
+          subscription,
+          state.soundOn ? payload : { ...payload, silent: true },
+        );
         if (result.ok) {
           sent++;
           await kv.set(dedupKey, 1, { ex: 60 * 60 * 24 * 14 });

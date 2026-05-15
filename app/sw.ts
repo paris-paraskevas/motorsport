@@ -39,6 +39,8 @@ interface PushPayload {
   color?: string;
   actions?: PushAction[];
   data?: Record<string, string>;
+  /** Suppress system notification sound when true. */
+  silent?: boolean;
 }
 
 // Brand accent colour for the notification chip on Android.
@@ -65,7 +67,8 @@ self.addEventListener('push', (event: PushEvent) => {
     image: payload.image,
     color: payload.color ?? ACCENT_COLOR,
     actions: payload.actions ?? [],
-    vibrate: [80, 40, 80],
+    silent: payload.silent === true,
+    vibrate: payload.silent === true ? undefined : [80, 40, 80],
     timestamp: Date.now(),
   } as unknown as NotificationOptions;
   event.waitUntil(self.registration.showNotification(title, options));

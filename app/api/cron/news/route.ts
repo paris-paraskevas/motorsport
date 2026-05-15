@@ -41,7 +41,7 @@ export async function GET(req: Request) {
     const subs = await listSubscriptions();
 
     // Per-user followed + notif-prefs cache for this cron run
-    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean; muted: Set<string> }>();
+    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean; soundOn: boolean; muted: Set<string> }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -52,6 +52,7 @@ export async function GET(req: Request) {
       const state = {
         followed,
         newsOn: prefs.news,
+        soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
       };
       userCache.set(userId, state);
@@ -121,6 +122,7 @@ export async function GET(req: Request) {
         data: { seriesSlug: article.slug },
       };
       for (const { subscription, userId } of subs) {
+        let silent = false;
         if (userId) {
           const state = await getUserState(userId);
           if (!state.newsOn) {
@@ -135,8 +137,12 @@ export async function GET(req: Request) {
             skipped++;
             continue;
           }
+          silent = !state.soundOn;
         }
-        const result = await sendPushTo(subscription, payload);
+        const result = await sendPushTo(
+          subscription,
+          silent ? { ...payload, silent: true } : payload,
+        );
         if (result.ok) {
           sent++;
         } else if (result.gone) {

@@ -82,7 +82,7 @@ export async function GET(req: Request) {
     const queue = notifiable.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
     // Per-user followed + notif-prefs cache (avoid re-fetching for the same userId)
-    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; muted: Set<string> }>();
+    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string> }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -93,6 +93,7 @@ export async function GET(req: Request) {
       const state = {
         followed,
         sessionsOn: prefs.sessions,
+        soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
       };
       userCache.set(userId, state);
@@ -117,6 +118,7 @@ export async function GET(req: Request) {
         data: { seriesSlug: session.seriesSlug },
       };
       for (const { subscription, userId } of subs) {
+        let silent = false;
         if (userId) {
           const state = await getUserState(userId);
           if (!state.sessionsOn) {
@@ -131,8 +133,12 @@ export async function GET(req: Request) {
             skipped++;
             continue;
           }
+          silent = !state.soundOn;
         }
-        const result = await sendPushTo(subscription, payload);
+        const result = await sendPushTo(
+          subscription,
+          silent ? { ...payload, silent: true } : payload,
+        );
         if (result.ok) {
           sent++;
         } else if (result.gone) {
