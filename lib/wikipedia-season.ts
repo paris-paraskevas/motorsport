@@ -209,11 +209,26 @@ function parseTable(
   // implausible (too short, contains ':' as in "Source:").
   const credible = meaningful.filter(e => isCredibleTeamName(e.team));
 
-  // A real season lineup has at least four teams. Anything smaller is
-  // almost certainly a 2-row stats table the scraper landed on by mistake.
-  if (credible.length < 4) return null;
+  // Merge entries whose team name matches — the season table sometimes
+  // uses one row per driver (no rowspan), so the same team appears on
+  // multiple rows. Without this we'd render "Mercedes" four times in a row.
+  const merged: TeamLineup[] = [];
+  for (const entry of credible) {
+    const existing = merged.find(m => m.team === entry.team);
+    if (existing) {
+      for (const d of entry.drivers) {
+        if (!existing.drivers.includes(d)) existing.drivers.push(d);
+      }
+    } else {
+      merged.push({ team: entry.team, drivers: [...entry.drivers] });
+    }
+  }
 
-  return credible;
+  // A real season lineup has at least four UNIQUE teams. Anything smaller
+  // is almost certainly a 2-row stats table the scraper landed on by mistake.
+  if (merged.length < 4) return null;
+
+  return merged;
 }
 
 const JUNK_TEAM_PATTERN =

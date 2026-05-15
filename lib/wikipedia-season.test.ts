@@ -99,6 +99,27 @@ const MULTI_ROW_HTML = `
 </body></html>
 `;
 
+// One row per driver — same team text repeats on multiple rows without
+// rowspan grouping. Parser should merge these into one entry per team.
+const ONE_ROW_PER_DRIVER_HTML = `
+<!DOCTYPE html>
+<html><body>
+<table class="wikitable">
+  <tbody>
+    <tr><th>Constructor</th><th>No.</th><th>Driver</th></tr>
+    <tr><td>Mercedes</td><td>63</td><td>George Russell</td></tr>
+    <tr><td>Mercedes</td><td>12</td><td>Andrea Kimi Antonelli</td></tr>
+    <tr><td>McLaren</td><td>4</td><td>Lando Norris</td></tr>
+    <tr><td>McLaren</td><td>81</td><td>Oscar Piastri</td></tr>
+    <tr><td>Ferrari</td><td>16</td><td>Charles Leclerc</td></tr>
+    <tr><td>Ferrari</td><td>44</td><td>Lewis Hamilton</td></tr>
+    <tr><td>Red Bull</td><td>1</td><td>Max Verstappen</td></tr>
+    <tr><td>Red Bull</td><td>22</td><td>Yuki Tsunoda</td></tr>
+  </tbody>
+</table>
+</body></html>
+`;
+
 // A 2-row table that looks superficially driver-ish but is actually too
 // small to be a credible season lineup. Should be rejected by the
 // >= 4 credible-teams floor.
@@ -203,6 +224,20 @@ describe('fetchSeasonLineup', () => {
     expect(lineup[0].drivers).toEqual(['Charles Leclerc', 'Lewis Hamilton']);
     expect(lineup[1].team).toBe('McLaren');
     expect(lineup[1].drivers).toEqual(['Lando Norris', 'Oscar Piastri']);
+  });
+
+  it('merges duplicate team rows when the table uses one row per driver (no rowspan)', async () => {
+    mockFetchOnceOk(ONE_ROW_PER_DRIVER_HTML);
+    const lineup = await fetchSeasonLineup('Some_Season_Page');
+    expect(lineup).toHaveLength(4);
+    expect(lineup[0].team).toBe('Mercedes');
+    expect(lineup[0].drivers).toEqual(['George Russell', 'Andrea Kimi Antonelli']);
+    expect(lineup[1].team).toBe('McLaren');
+    expect(lineup[1].drivers).toEqual(['Lando Norris', 'Oscar Piastri']);
+    expect(lineup[2].team).toBe('Ferrari');
+    expect(lineup[2].drivers).toEqual(['Charles Leclerc', 'Lewis Hamilton']);
+    expect(lineup[3].team).toBe('Red Bull');
+    expect(lineup[3].drivers).toEqual(['Max Verstappen', 'Yuki Tsunoda']);
   });
 
   it('rejects a lineup that has fewer than 4 credible teams', async () => {
