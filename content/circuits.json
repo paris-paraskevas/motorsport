@@ -1,0 +1,230 @@
+{
+  "bahrain": {
+    "name": "Bahrain International Circuit",
+    "lat": 26.0325,
+    "lon": 50.5106,
+    "aliases": ["Sakhir", "Bahrain Grand Prix", "Bahrain International Circuit"]
+  },
+  "jeddah": {
+    "name": "Jeddah Corniche Circuit",
+    "lat": 21.6319,
+    "lon": 39.1044,
+    "aliases": ["Jeddah", "Saudi Arabian Grand Prix", "Jeddah Corniche"]
+  },
+  "albert-park": {
+    "name": "Albert Park Circuit",
+    "lat": -37.8497,
+    "lon": 144.9683,
+    "aliases": ["Melbourne", "Australian Grand Prix", "Albert Park"]
+  },
+  "suzuka": {
+    "name": "Suzuka International Racing Course",
+    "lat": 34.8431,
+    "lon": 136.5413,
+    "aliases": ["Suzuka", "Japanese Grand Prix"]
+  },
+  "shanghai": {
+    "name": "Shanghai International Circuit",
+    "lat": 31.3389,
+    "lon": 121.2197,
+    "aliases": ["Shanghai", "Chinese Grand Prix"]
+  },
+  "miami": {
+    "name": "Miami International Autodrome",
+    "lat": 25.9581,
+    "lon": -80.2389,
+    "aliases": ["Miami", "Miami Grand Prix", "Miami International Autodrome"]
+  },
+  "imola": {
+    "name": "Autodromo Enzo e Dino Ferrari",
+    "lat": 44.3439,
+    "lon": 11.7167,
+    "aliases": ["Imola", "Emilia Romagna Grand Prix", "San Marino"]
+  },
+  "monaco": {
+    "name": "Circuit de Monaco",
+    "lat": 43.7347,
+    "lon": 7.4206,
+    "aliases": ["Monaco", "Monaco Grand Prix", "Monaco ePrix", "Monte Carlo"]
+  },
+  "montreal": {
+    "name": "Circuit Gilles Villeneuve",
+    "lat": 45.5008,
+    "lon": -73.5228,
+    "aliases": ["Montreal", "Canadian Grand Prix", "Gilles Villeneuve"]
+  },
+  "barcelona": {
+    "name": "Circuit de Barcelona-Catalunya",
+    "lat": 41.5708,
+    "lon": 2.2611,
+    "aliases": ["Barcelona", "Spanish Grand Prix", "Catalunya", "Barcelona-Catalunya", "Gran Premi de Catalunya"]
+  },
+  "red-bull-ring": {
+    "name": "Red Bull Ring",
+    "lat": 47.2197,
+    "lon": 14.7647,
+    "aliases": ["Spielberg", "Austrian Grand Prix", "Red Bull Ring", "Styria"]
+  },
+  "silverstone": {
+    "name": "Silverstone Circuit",
+    "lat": 52.0786,
+    "lon": -1.0169,
+    "aliases": ["Silverstone", "British Grand Prix"]
+  },
+  "hungaroring": {
+    "name": "Hungaroring",
+    "lat": 47.5786,
+    "lon": 19.2486,
+    "aliases": ["Budapest", "Hungarian Grand Prix", "Hungaroring", "Mogyoród"]
+  },
+  "spa": {
+    "name": "Circuit de Spa-Francorchamps",
+    "lat": 50.4372,
+    "lon": 5.9714,
+    "aliases": ["Spa", "Belgian Grand Prix", "Spa-Francorchamps", "Francorchamps"]
+  },
+  "zandvoort": {
+    "name": "Circuit Zandvoort",
+    "lat": 52.3888,
+    "lon": 4.5408,
+    "aliases": ["Zandvoort", "Dutch Grand Prix"]
+  },
+  "monza": {
+    "name": "Autodromo Nazionale Monza",
+    "lat": 45.6156,
+    "lon": 9.2811,
+    "aliases": ["Monza", "Italian Grand Prix"]
+  },
+  "baku": {
+    "name": "Baku City Circuit",
+    "lat": 40.3725,
+    "lon": 49.8533,
+    "aliases": ["Baku", "Azerbaijan Grand Prix"]
+  },
+  "marina-bay": {
+    "name": "Marina Bay Street Circuit",
+    "lat": 1.2914,
+    "lon": 103.8643,
+    "aliases": ["Singapore", "Singapore Grand Prix", "Marina Bay"]
+  },
+  "cota": {
+    "name": "Circuit of the Americas",
+    "lat": 30.1328,
+    "lon": -97.6411,
+    "aliases": ["Austin", "United States Grand Prix", "COTA", "Circuit of the Americas"]
+  },
+  "mexico-city": {
+    "name": "Autódromo Hermanos Rodríguez",
+    "lat": 19.4042,
+    "lon": -99.0907,
+    "aliases": ["Mexico City", "Mexico City Grand Prix", "Hermanos Rodríguez"]
+  },
+  "interlagos": {
+    "name": "Autódromo José Carlos Pace",
+    "lat": -23.7036,
+    "lon": -46.6997,
+    "aliases": ["São Paulo", "Sao Paulo", "Brazilian Grand Prix", "Interlagos"]
+  },
+  "las-vegas": {
+    "name": "Las Vegas Strip Circuit",
+    "lat": 36.1147,
+    "lon": -115.1728,
+    "aliases": ["Las Vegas", "Las Vegas Grand Prix"]
+  },
+  "lusail": {
+    "name": "Lusail International Circuit",
+    "lat": 25.49,
+    "lon": 51.4542,
+    "aliases": ["Lusail", "Qatar Grand Prix", "Doha"]
+  },
+  "yas-marina": {
+    "name": "Yas Marina Circuit",
+    "lat": 24.4672,
+    "lon": 54.6031,
+    "aliases": ["Yas Marina", "Abu Dhabi Grand Prix", "Abu Dhabi"]
+  },
+  "nurburgring": {
+    "name": "Nürburgring",
+    "lat": 50.3356,
+    "lon": 6.9475,
+    "aliases": ["Nürburgring", "Nurburgring", "Nordschleife", "Eifel"]
+  },
+  "le-mans": {
+    "name": "Circuit de la Sarthe",
+    "lat": 47.9558,
+    "lon": 0.2069,
+    "aliases": ["Le Mans", "Circuit de la Sarthe", "24 Hours of Le Mans"]
+  },
+  "sebring": {
+    "name": "Sebring International Raceway",
+    "lat": 27.4544,
+    "lon": -81.3478,
+    "aliases": ["Sebring"]
+  },
+  "fuji": {
+    "name": "Fuji Speedway",
+    "lat": 35.3719,
+    "lon": 138.9258,
+    "aliases": ["Fuji", "Fuji Speedway"]
+  },
+  "indianapolis": {
+    "name": "Indianapolis Motor Speedway",
+    "lat": 39.795,
+    "lon": -86.2347,
+    "aliases": ["Indianapolis", "Indy 500", "Indy Motor Speedway", "IMS"]
+  },
+  "daytona": {
+    "name": "Daytona International Speedway",
+    "lat": 29.185,
+    "lon": -81.07,
+    "aliases": ["Daytona"]
+  },
+  "charlotte": {
+    "name": "Charlotte Motor Speedway",
+    "lat": 35.35,
+    "lon": -80.6831,
+    "aliases": ["Charlotte", "Coca-Cola 600"]
+  },
+  "talladega": {
+    "name": "Talladega Superspeedway",
+    "lat": 33.5664,
+    "lon": -86.0664,
+    "aliases": ["Talladega"]
+  },
+  "dover": {
+    "name": "Dover Motor Speedway",
+    "lat": 39.1894,
+    "lon": -75.5306,
+    "aliases": ["Dover", "Dover Motor Speedway"]
+  },
+  "portimao": {
+    "name": "Algarve International Circuit",
+    "lat": 37.2308,
+    "lon": -8.6267,
+    "aliases": ["Portimão", "Portimao", "Algarve"]
+  },
+  "termas-de-rio-hondo": {
+    "name": "Termas de Río Hondo",
+    "lat": -27.4836,
+    "lon": -64.8669,
+    "aliases": ["Termas de Río Hondo", "Argentina"]
+  },
+  "sachsenring": {
+    "name": "Sachsenring",
+    "lat": 50.7917,
+    "lon": 12.6864,
+    "aliases": ["Sachsenring", "German MotoGP"]
+  },
+  "mugello": {
+    "name": "Mugello Circuit",
+    "lat": 43.9975,
+    "lon": 11.3719,
+    "aliases": ["Mugello", "Italian MotoGP"]
+  },
+  "autodrom-most": {
+    "name": "Autodrom Most",
+    "lat": 50.5189,
+    "lon": 13.6189,
+    "aliases": ["Autodrom Most", "Czech Round", "Most"]
+  }
+}

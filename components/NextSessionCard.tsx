@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
+import type { DailyWeather } from '@/lib/weather';
+import { weatherLabel } from '@/lib/weather';
 import { formatLocal, formatRelative } from '@/lib/date';
 
 export function NextSessionCard({
@@ -8,12 +10,15 @@ export function NextSessionCard({
   color,
   seriesName,
   seriesSlug,
+  weather,
 }: {
   session: Session;
   color: string;
   seriesName: string;
   seriesSlug: string;
+  weather?: DailyWeather;
 }) {
+  const w = weather ? weatherLabel(weather.weatherCode) : null;
   return (
     <Link
       href={`/series/${seriesSlug}`}
@@ -63,6 +68,25 @@ export function NextSessionCard({
           <div className="mt-2 flex items-center gap-1.5 text-sm text-zinc-500">
             <MapPin size={13} className="text-zinc-600" />
             <span>{session.location.split(',')[0].trim()}</span>
+          </div>
+        )}
+
+        {weather && w && (
+          <div className="mt-4 inline-flex items-center gap-2 text-xs text-zinc-300 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1.5">
+            <span aria-hidden>{w.emoji}</span>
+            <span className="font-medium">{w.label}</span>
+            <span className="text-zinc-500">·</span>
+            <span className="tabular-nums">
+              {Math.round(weather.maxC)}° / {Math.round(weather.minC)}°
+            </span>
+            {weather.precipProb >= 30 && (
+              <>
+                <span className="text-zinc-500">·</span>
+                <span className="tabular-nums text-sky-300">
+                  {Math.round(weather.precipProb)}% rain
+                </span>
+              </>
+            )}
           </div>
         )}
 

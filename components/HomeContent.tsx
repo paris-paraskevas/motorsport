@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ExternalLink, MapPin } from 'lucide-react';
 import type { Session } from '@/lib/types';
+import type { DailyWeather } from '@/lib/weather';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
 import { formatRelative } from '@/lib/date';
@@ -48,9 +49,11 @@ function relativeAgo(date: Date): string {
 export function HomeContent({
   items,
   news,
+  weatherByUid,
 }: {
   items: HomeItem[];
   news: NewsItemSerialized[];
+  weatherByUid?: Record<string, DailyWeather>;
 }) {
   const { followed, hydrated } = useFollowedSeries();
   const [tab, setTab] = useState<Tab>('news');
@@ -191,6 +194,7 @@ export function HomeContent({
           color={hero.color}
           seriesName={hero.seriesName}
           seriesSlug={hero.seriesSlug}
+          weather={weatherByUid?.[hero.session.uid]}
         />
       ) : liveItems.length > 0 ? null : (
         <div className="mb-8 p-5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-500 text-sm">
