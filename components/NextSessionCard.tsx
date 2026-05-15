@@ -11,17 +11,22 @@ export function NextSessionCard({
   seriesName,
   seriesSlug,
   weather,
+  round,
 }: {
   session: Session;
   color: string;
   seriesName: string;
   seriesSlug: string;
   weather?: DailyWeather;
+  round?: number;
 }) {
   const w = weather ? weatherLabel(weather.weatherCode) : null;
+  const href = round
+    ? `/series/${seriesSlug}/weekend/${round}`
+    : `/series/${seriesSlug}`;
   return (
     <Link
-      href={`/series/${seriesSlug}`}
+      href={href}
       className="group relative block mb-10 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/40 transition-all duration-300 hover:bg-zinc-900/70 hover:border-zinc-700"
     >
       {/* Series-color gradient corner — subtle but distinctive */}
@@ -91,7 +96,7 @@ export function NextSessionCard({
         )}
 
         <div className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
-          Open series
+          {round ? 'Open weekend' : 'Open series'}
           <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>

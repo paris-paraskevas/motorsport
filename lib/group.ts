@@ -27,9 +27,21 @@ function pickBestSignificance(sessions: Session[]): SignificanceFlag | undefined
   return best;
 }
 
+const PAST_WINDOW_MS = 365 * DAY_MS;
+const FUTURE_WINDOW_MS = 540 * DAY_MS; // ~18 months
+
 export function groupByWeekend(sessions: Session[], now: Date = new Date()): Weekend[] {
   if (sessions.length === 0) return [];
-  const sorted = [...sessions].sort((a, b) => a.start.getTime() - b.start.getTime());
+  // Cap the window so series with multi-year ICS archives don't produce
+  // round numbers in the hundreds (e.g. Formula E historical sessions).
+  const min = now.getTime() - PAST_WINDOW_MS;
+  const max = now.getTime() + FUTURE_WINDOW_MS;
+  const windowed = sessions.filter(s => {
+    const t = s.start.getTime();
+    return t >= min && t <= max;
+  });
+  if (windowed.length === 0) return [];
+  const sorted = [...windowed].sort((a, b) => a.start.getTime() - b.start.getTime());
 
   const weekends: Session[][] = [];
   let current: Session[] = [sorted[0]];

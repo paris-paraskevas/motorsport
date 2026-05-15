@@ -1,5 +1,6 @@
 import { loadAllSeries } from '@/lib/series';
 import { FilteredSessions } from '@/components/FilteredSessions';
+import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,10 @@ export default async function CalendarPage() {
 
   const upcoming = flat.filter(x => x.session.end >= now);
 
+  const roundLookup = buildRoundLookupAcrossSeries(all, now);
+  const roundByKey: Record<string, number> = {};
+  for (const [k, v] of roundLookup) roundByKey[k] = v;
+
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <header className="mb-8">
@@ -33,7 +38,7 @@ export default async function CalendarPage() {
         </p>
       </header>
 
-      <FilteredSessions items={upcoming} />
+      <FilteredSessions items={upcoming} roundByKey={roundByKey} />
     </div>
   );
 }

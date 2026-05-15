@@ -2,35 +2,32 @@ import { loadAllSeries } from '@/lib/series';
 import { HomeContent } from '@/components/HomeContent';
 import { fetchAggregatedNews } from '@/lib/news';
 import { matchCircuit } from '@/lib/circuits';
-import { fetchWeather, forecastFor, type DailyWeather } from '@/lib/weather';
+import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
+import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
 export const dynamic = 'force-dynamic';
-
-function toIsoDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
 
 async function weatherForSessions(
   candidates: Array<{ session: { uid: string; start: Date; location?: string; title: string } }>,
 ): Promise<Record<string, DailyWeather>> {
-  // Look up circuit + weather for up to the next 5 sessions, deduped by circuit.
-  const top = candidates.slice(0, 5);
-  const fetched = new Map<string, DailyWeather | null>(); // key: lat,lon
+  // Look up weather for up to the next 12 sessions; circuit forecasts dedupe
+  // by lat/lon so each unique venue costs at most one upstream call.
+  const top = candidates.slice(0, 12);
+  const forecasts = new Map<string, WeatherForecast | null>(); // key: lat,lon
   const result: Record<string, DailyWeather> = {};
 
   for (const item of top) {
     const c = await matchCircuit(item.session.location, item.session.title);
     if (!c) continue;
     const key = `${c.lat},${c.lon}`;
-    let daily = fetched.get(key);
-    if (daily === undefined) {
-      const forecast = await fetchWeather(c.lat, c.lon);
-      daily = forecast ? forecastFor(forecast, toIsoDate(item.session.start)) : null;
-      fetched.set(key, daily);
+    let forecast = forecasts.get(key);
+    if (forecast === undefined) {
+      forecast = await fetchWeather(c.lat, c.lon);
+      forecasts.set(key, forecast);
     }
-    if (daily) {
-      result[item.session.uid] = daily;
-    }
+    if (!forecast) continue;
+    const daily = forecastFor(forecast, item.session.start);
+    if (daily) result[item.session.uid] = daily;
   }
   return result;
 }
@@ -70,9 +67,18 @@ export default async function Home() {
 
   const weatherByUid = await weatherForSessions(upcoming);
 
+  const roundLookup = buildRoundLookupAcrossSeries(all, now);
+  const roundByKey: Record<string, number> = {};
+  for (const [k, v] of roundLookup) roundByKey[k] = v;
+
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
-      <HomeContent items={upcoming} news={news} weatherByUid={weatherByUid} />
+      <HomeContent
+        items={upcoming}
+        news={news}
+        weatherByUid={weatherByUid}
+        roundByKey={roundByKey}
+      />
     </div>
   );
 }

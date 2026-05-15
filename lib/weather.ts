@@ -14,6 +14,7 @@ export interface WeatherForecast {
   lat: number;
   lon: number;
   fetchedAt: string;
+  utcOffsetSeconds: number;
   daily: DailyWeather[];
 }
 
@@ -30,6 +31,7 @@ function cacheKey(lat: number, lon: number): string {
 }
 
 interface OpenMeteoResponse {
+  utc_offset_seconds?: number;
   daily?: {
     time?: string[];
     temperature_2m_max?: number[];
@@ -79,7 +81,13 @@ async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast
       windKph: d.wind_speed_10m_max![i],
       weatherCode: d.weather_code![i],
     }));
-    return { lat, lon, fetchedAt: new Date().toISOString(), daily };
+    return {
+      lat,
+      lon,
+      fetchedAt: new Date().toISOString(),
+      utcOffsetSeconds: data.utc_offset_seconds ?? 0,
+      daily,
+    };
   } catch {
     return null;
   }
@@ -95,7 +103,9 @@ export async function fetchWeather(
 ): Promise<WeatherForecast | null> {
   if (isKvConfigured()) {
     const cached = await kv.get<WeatherForecast>(cacheKey(lat, lon));
-    if (cached) return cached;
+    // Old cache entries pre-date utcOffsetSeconds; refresh them so venue-local
+    // date math doesn't trip over a missing field.
+    if (cached && typeof cached.utcOffsetSeconds === 'number') return cached;
   }
   const fresh = await fetchOpenMeteo(lat, lon);
   if (!fresh) return null;
@@ -106,14 +116,23 @@ export async function fetchWeather(
 }
 
 /**
- * Pick the forecast entry that matches a target date (YYYY-MM-DD). Returns
- * null if the date is outside the 7-day window.
+ * Pick the forecast entry that matches a target instant in *venue-local* time.
+ * Open-Meteo returns daily entries keyed by venue-local date (timezone=auto),
+ * so converting via UTC would pick the wrong day for evening sessions whose
+ * UTC date differs from the venue's local date.
  */
 export function forecastFor(
   forecast: WeatherForecast,
-  isoDate: string,
+  at: Date | string,
 ): DailyWeather | null {
-  return forecast.daily.find(d => d.date === isoDate) ?? null;
+  const iso = typeof at === 'string' ? at : venueLocalIsoDate(forecast, at);
+  return forecast.daily.find(d => d.date === iso) ?? null;
+}
+
+/** YYYY-MM-DD for the given instant in the forecast's venue-local timezone. */
+export function venueLocalIsoDate(forecast: WeatherForecast, at: Date): string {
+  const shifted = new Date(at.getTime() + forecast.utcOffsetSeconds * 1000);
+  return shifted.toISOString().slice(0, 10);
 }
 
 // WMO weather code → short label. https://open-meteo.com/en/docs#weathervariables

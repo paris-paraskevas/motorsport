@@ -12,7 +12,13 @@ interface SessionEntry {
   seriesSlug: string;
 }
 
-export function FilteredSessions({ items }: { items: SessionEntry[] }) {
+export function FilteredSessions({
+  items,
+  roundByKey,
+}: {
+  items: SessionEntry[];
+  roundByKey?: Record<string, number>;
+}) {
   const { followed, hydrated } = useFollowedSeries();
 
   // Server-render + first client paint: show everything. After hydration,
@@ -67,6 +73,7 @@ export function FilteredSessions({ items }: { items: SessionEntry[] }) {
                 key={`${s.seriesSlug}-${s.uid}`}
                 session={s}
                 color={colorByUid[s.uid]}
+                round={roundByKey?.[`${s.seriesSlug}:${s.uid}`]}
               />
             ))}
           </div>

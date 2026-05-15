@@ -1,19 +1,25 @@
+import Link from 'next/link';
 import { Session, Weekend } from '@/lib/types';
 import { formatLocal } from '@/lib/date';
 
 export function WeekendBlock({
   weekend,
+  round,
+  seriesSlug,
   color,
   showNextTag = false,
 }: {
   weekend: Weekend;
+  round: number;
+  seriesSlug: string;
   color: string;
   showNextTag?: boolean;
 }) {
   return (
-    <div
-      className={`rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4 ${
-        weekend.isPast ? 'opacity-50' : ''
+    <Link
+      href={`/series/${seriesSlug}/weekend/${round}`}
+      className={`block rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4 transition-colors hover:bg-zinc-900/70 hover:border-zinc-700 ${
+        weekend.isPast ? 'opacity-50 hover:opacity-80' : ''
       }`}
     >
       <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -54,6 +60,9 @@ export function WeekendBlock({
           </li>
         ))}
       </ul>
-    </div>
+      <div className="mt-3 text-[10px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">
+        Round {round} <span aria-hidden>→</span>
+      </div>
+    </Link>
   );
 }

@@ -50,11 +50,15 @@ export function HomeContent({
   items,
   news,
   weatherByUid,
+  roundByKey,
 }: {
   items: HomeItem[];
   news: NewsItemSerialized[];
   weatherByUid?: Record<string, DailyWeather>;
+  roundByKey?: Record<string, number>;
 }) {
+  const roundFor = (slug: string, uid: string): number | undefined =>
+    roundByKey?.[`${slug}:${uid}`];
   const { followed, hydrated } = useFollowedSeries();
   const [tab, setTab] = useState<Tab>('news');
   const [newsFilter, setNewsFilter] = useState<string | null>(null);
@@ -139,10 +143,15 @@ export function HomeContent({
             </span>
           </div>
           <div className="space-y-2">
-            {liveItems.map(item => (
+            {liveItems.map(item => {
+              const liveRound = roundFor(item.seriesSlug, item.session.uid);
+              const liveHref = liveRound
+                ? `/series/${item.seriesSlug}/weekend/${liveRound}`
+                : `/series/${item.seriesSlug}?tab=calendar`;
+              return (
               <Link
                 key={`${item.seriesSlug}-${item.session.uid}`}
-                href={`/series/${item.seriesSlug}?tab=calendar`}
+                href={liveHref}
                 className="group block relative overflow-hidden rounded-2xl border border-red-500/30 bg-zinc-900/50 transition-all hover:bg-zinc-900/80 hover:border-red-500/50"
               >
                 <div
@@ -183,7 +192,8 @@ export function HomeContent({
                   )}
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -195,6 +205,7 @@ export function HomeContent({
           seriesName={hero.seriesName}
           seriesSlug={hero.seriesSlug}
           weather={weatherByUid?.[hero.session.uid]}
+          round={roundFor(hero.seriesSlug, hero.session.uid)}
         />
       ) : liveItems.length > 0 ? null : (
         <div className="mb-8 p-5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-500 text-sm">
@@ -365,6 +376,8 @@ export function HomeContent({
                       key={`${s.seriesSlug}-${s.uid}`}
                       session={s}
                       color={colorByUid[s.uid]}
+                      round={roundFor(s.seriesSlug, s.uid)}
+                      weather={weatherByUid?.[s.uid]}
                     />
                   ))}
                 </div>

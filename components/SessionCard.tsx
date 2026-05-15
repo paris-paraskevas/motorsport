@@ -1,22 +1,32 @@
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
+import type { DailyWeather } from '@/lib/weather';
+import { weatherLabel } from '@/lib/weather';
 import { formatLocal, formatRelative } from '@/lib/date';
 
 export function SessionCard({
   session,
   color,
+  round,
+  weather,
 }: {
   session: Session;
   color: string;
+  round?: number;
+  weather?: DailyWeather;
 }) {
   const now = new Date();
   const isLive = session.start <= now && now <= session.end;
   const isPast = !isLive && session.end < now;
+  const href = round
+    ? `/series/${session.seriesSlug}/weekend/${round}`
+    : `/series/${session.seriesSlug}?tab=calendar`;
+  const w = weather ? weatherLabel(weather.weatherCode) : null;
 
   return (
     <Link
-      href={`/series/${session.seriesSlug}?tab=calendar`}
+      href={href}
       className={`group relative flex items-stretch gap-3 pl-3 pr-3 py-3 rounded-lg bg-zinc-900/30 border border-zinc-800/50 mb-1.5 transition-all hover:bg-zinc-900/60 hover:border-zinc-700/80 ${
         isPast ? 'opacity-45' : ''
       }`}
@@ -62,6 +72,19 @@ export function SessionCard({
         </div>
         {session.significance?.note && (
           <div className="text-xs text-amber-200/70 mt-1">{session.significance.note}</div>
+        )}
+        {weather && w && !isPast && (
+          <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] text-zinc-400">
+            <span aria-hidden>{w.emoji}</span>
+            <span className="tabular-nums">
+              {Math.round(weather.maxC)}°/{Math.round(weather.minC)}°
+            </span>
+            {weather.precipProb >= 30 && (
+              <span className="tabular-nums text-sky-300">
+                · {Math.round(weather.precipProb)}% rain
+              </span>
+            )}
+          </div>
         )}
       </div>
 
