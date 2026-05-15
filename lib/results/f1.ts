@@ -1,9 +1,9 @@
-import type { RaceResult, RaceResultEntry, RaceSummary } from '@/lib/types';
+import type { RaceResult, RaceResultEntry } from '@/lib/types';
 
-export type { RaceResult, RaceResultEntry, RaceSummary };
+export type { RaceResult, RaceResultEntry };
 
 const LAST_RACE_URL = 'https://api.jolpi.ca/ergast/f1/current/last/results.json';
-const SEASON_RACES_URL = 'https://api.jolpi.ca/ergast/f1/current/results.json?limit=1000';
+const SEASON_RESULTS_URL = 'https://api.jolpi.ca/ergast/f1/current/results.json?limit=1000';
 
 interface RawDriver {
   givenName?: string;
@@ -84,23 +84,6 @@ function parseRace(raw: RawRace): RaceResult | null {
   return { round, raceName, date, circuit, results };
 }
 
-function parseSummary(raw: RawRace): RaceSummary | null {
-  const round = Number(raw?.round);
-  const raceName = raw?.raceName;
-  const date = parseDate(raw?.date);
-  if (!Number.isFinite(round) || !raceName || !date) return null;
-  const winnerRaw = raw?.Results?.find(r => r?.position === '1');
-  let winner: string | undefined;
-  let winnerTeam: string | undefined;
-  if (winnerRaw?.Driver?.givenName && winnerRaw?.Driver?.familyName) {
-    winner = `${winnerRaw.Driver.givenName} ${winnerRaw.Driver.familyName}`;
-  }
-  if (winnerRaw?.Constructor?.name) {
-    winnerTeam = winnerRaw.Constructor.name;
-  }
-  return { round, raceName, date, winner, winnerTeam };
-}
-
 export async function fetchF1LastRace(): Promise<RaceResult | null> {
   try {
     const res = await fetch(LAST_RACE_URL, { next: { revalidate: 3600 } });
@@ -114,19 +97,19 @@ export async function fetchF1LastRace(): Promise<RaceResult | null> {
   }
 }
 
-export async function fetchF1SeasonRaces(): Promise<RaceSummary[]> {
+export async function fetchF1SeasonResults(): Promise<RaceResult[]> {
   try {
-    const res = await fetch(SEASON_RACES_URL, { next: { revalidate: 3600 } });
+    const res = await fetch(SEASON_RESULTS_URL, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const json = (await res.json()) as RacePayload;
     const races = json?.MRData?.RaceTable?.Races;
     if (!Array.isArray(races)) return [];
-    const summaries: RaceSummary[] = [];
+    const results: RaceResult[] = [];
     for (const r of races) {
-      const summary = parseSummary(r);
-      if (summary) summaries.push(summary);
+      const parsed = parseRace(r);
+      if (parsed) results.push(parsed);
     }
-    return summaries;
+    return results;
   } catch {
     return [];
   }

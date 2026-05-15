@@ -1,5 +1,6 @@
-import type { Series, RaceResult, RaceResultEntry, RaceSummary } from '@/lib/types';
-import { fetchF1LastRace, fetchF1SeasonRaces } from '@/lib/results/f1';
+import { ChevronDown } from 'lucide-react';
+import type { Series, RaceResult, RaceResultEntry } from '@/lib/types';
+import { fetchF1SeasonResults } from '@/lib/results/f1';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
@@ -29,78 +30,76 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
-function LastRacePanel({ race }: { race: RaceResult }) {
-  const top10: RaceResultEntry[] = race.results.slice(0, 10);
+function ResultRow({ entry }: { entry: RaceResultEntry }) {
   return (
-    <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
-      <div className="mb-3">
-        <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold">
-          Last race
-        </h2>
-        <div className="mt-1 flex items-baseline gap-2 flex-wrap">
-          <span className="text-zinc-100 text-base font-medium">{race.raceName}</span>
-          <span className="text-zinc-500 text-xs">{formatDate(race.date)}</span>
+    <li className="flex items-baseline gap-3 py-2">
+      <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
+        {entry.position}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="text-zinc-100 text-sm font-medium truncate">
+            {entry.driverName}
+          </span>
+          {entry.driverCode ? (
+            <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded">
+              {entry.driverCode}
+            </span>
+          ) : null}
         </div>
-        <div className="text-zinc-500 text-xs">{race.circuit}</div>
+        <div className="text-zinc-400 text-xs truncate">{entry.team}</div>
       </div>
-      <ul className="divide-y divide-zinc-800/60">
-        {top10.map(r => (
-          <li
-            key={`${r.position}-${r.driverName}`}
-            className="flex items-baseline gap-3 py-2"
-          >
-            <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
-              {r.position}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-2">
-                <span className="text-zinc-100 text-sm font-medium truncate">
-                  {r.driverName}
-                </span>
-                {r.driverCode ? (
-                  <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded">
-                    {r.driverCode}
-                  </span>
-                ) : null}
-              </div>
-              <div className="text-zinc-400 text-xs truncate">{r.team}</div>
-            </div>
-            <span className="text-zinc-400 text-[11px] font-mono tabular-nums text-right w-20 truncate">
-              {r.time ?? r.status}
-            </span>
-            <span className="text-zinc-100 text-sm font-mono tabular-nums text-right w-10">
-              {r.points}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
+      <span className="text-zinc-400 text-[11px] font-mono tabular-nums text-right w-20 truncate">
+        {entry.time ?? entry.status}
+      </span>
+      <span className="text-zinc-100 text-sm font-mono tabular-nums text-right w-10">
+        {entry.points}
+      </span>
+    </li>
   );
 }
 
-function SeasonRacesPanel({ races }: { races: RaceSummary[] }) {
-  const recent = [...races].sort((a, b) => b.round - a.round).slice(0, 10);
+function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolean }) {
+  const winner = race.results.find(r => r.position === 1) ?? race.results[0];
+  return (
+    <details open={defaultOpen} className="group">
+      <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
+          {race.round}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-zinc-100 text-sm font-medium truncate">{race.raceName}</div>
+          <div className="text-zinc-500 text-xs truncate">
+            {formatDate(race.date)}
+            {winner ? ` · winner: ${winner.driverName}` : ''}
+            {winner ? ` (${winner.team})` : ''}
+          </div>
+        </div>
+        <ChevronDown
+          size={16}
+          className="text-zinc-500 transition-transform group-open:rotate-180 shrink-0"
+        />
+      </summary>
+      <ul className="ml-9 mt-2 mb-2 divide-y divide-zinc-800/60 border-l border-zinc-800/60 pl-3">
+        {race.results.slice(0, 10).map(entry => (
+          <ResultRow key={`${entry.position}-${entry.driverName}`} entry={entry} />
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+function SeasonResultsPanel({ races }: { races: RaceResult[] }) {
+  const sorted = [...races].sort((a, b) => b.round - a.round);
   return (
     <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
       <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold mb-3">
-        Season recent races
+        Season results
       </h2>
       <ul className="divide-y divide-zinc-800/60">
-        {recent.map(r => (
-          <li key={r.round} className="flex items-baseline gap-3 py-2">
-            <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
-              {r.round}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="text-zinc-100 text-sm font-medium truncate">
-                {r.raceName}
-              </div>
-              <div className="text-zinc-500 text-xs truncate">
-                {formatDate(r.date)}
-                {r.winner ? ` · winner: ${r.winner}` : ''}
-                {r.winnerTeam ? ` (${r.winnerTeam})` : ''}
-              </div>
-            </div>
+        {sorted.map((r, idx) => (
+          <li key={r.round} className="py-1">
+            <RoundRow race={r} defaultOpen={idx === 0} />
           </li>
         ))}
       </ul>
@@ -129,19 +128,15 @@ function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string })
 
 export async function ResultsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
-    const [lastRace, seasonRaces] = await Promise.all([
-      fetchF1LastRace(),
-      fetchF1SeasonRaces(),
-    ]);
-    if (!lastRace && seasonRaces.length === 0) {
+    const races = await fetchF1SeasonResults();
+    if (races.length === 0) {
       return (
         <EmptyState message="Results are temporarily unavailable. Check back shortly." />
       );
     }
     return (
       <div className="space-y-4">
-        {lastRace ? <LastRacePanel race={lastRace} /> : null}
-        {seasonRaces.length > 0 ? <SeasonRacesPanel races={seasonRaces} /> : null}
+        <SeasonResultsPanel races={races} />
         <div className="text-center">
           <a
             href={SOURCE_URL}

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { fetchF1LastRace, fetchF1SeasonRaces } from './f1';
+import { fetchF1LastRace, fetchF1SeasonResults } from './f1';
 
 const lastRaceFixture = {
   MRData: {
@@ -142,7 +142,7 @@ describe('fetchF1LastRace', () => {
   });
 });
 
-describe('fetchF1SeasonRaces', () => {
+describe('fetchF1SeasonResults', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -150,24 +150,21 @@ describe('fetchF1SeasonRaces', () => {
     vi.restoreAllMocks();
   });
 
-  it('parses season payload into RaceSummary array with winners', async () => {
+  it('parses season payload into full RaceResult array with finishers per round', async () => {
     vi.stubGlobal('fetch', mockLastRaceFetch(seasonFixture));
-    const races = await fetchF1SeasonRaces();
+    const races = await fetchF1SeasonResults();
     expect(races).toHaveLength(2);
-    expect(races[0]).toEqual({
-      round: 1,
-      raceName: 'Bahrain Grand Prix',
-      date: expect.any(Date),
-      winner: 'Max Verstappen',
-      winnerTeam: 'Red Bull',
-    });
-    expect(races[1].winner).toBe('Lando Norris');
-    expect(races[1].winnerTeam).toBe('McLaren');
+    expect(races[0].round).toBe(1);
+    expect(races[0].raceName).toBe('Bahrain Grand Prix');
+    expect(races[0].results).toHaveLength(1);
+    expect(races[0].results[0].driverName).toBe('Max Verstappen');
+    expect(races[0].results[0].team).toBe('Red Bull');
+    expect(races[1].results[0].driverName).toBe('Lando Norris');
   });
 
   it('returns empty array on fetch failure', async () => {
     vi.stubGlobal('fetch', mockLastRaceFetch(seasonFixture, false));
-    const races = await fetchF1SeasonRaces();
+    const races = await fetchF1SeasonResults();
     expect(races).toEqual([]);
   });
 
@@ -178,7 +175,7 @@ describe('fetchF1SeasonRaces', () => {
         throw new Error('network down');
       }),
     );
-    const races = await fetchF1SeasonRaces();
+    const races = await fetchF1SeasonResults();
     expect(races).toEqual([]);
   });
 });

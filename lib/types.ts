@@ -54,14 +54,6 @@ export interface RaceResult {
   results: RaceResultEntry[];
 }
 
-export interface RaceSummary {
-  round: number;
-  raceName: string;
-  date: Date;
-  winner?: string;
-  winnerTeam?: string;
-}
-
 export interface Champion {
   year: number;
   driver: string;
