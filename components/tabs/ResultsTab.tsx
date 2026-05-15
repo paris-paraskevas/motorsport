@@ -7,6 +7,8 @@ import type {
 } from '@/lib/types';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
 import { loadResultsOverrides } from '@/lib/series-content';
+import { buildSeasonTrendData } from '@/lib/season-trend';
+import { SeasonTrendChart } from '@/components/SeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
@@ -167,8 +169,19 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
+    const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
+        <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
+          <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+            Drivers&apos; season trend
+          </h2>
+          <SeasonTrendChart
+            data={trend.data}
+            drivers={trend.drivers}
+            totalsByDriver={trend.totalsByDriver}
+          />
+        </section>
         <SeasonResultsPanel races={merged} />
         <div className="text-center">
           <a
