@@ -1,5 +1,6 @@
-import type { Series } from '@/lib/types';
+import type { Champion, Series } from '@/lib/types';
 import { fetchChampions } from '@/lib/wikipedia-champions';
+import { loadCuratedChampions } from '@/lib/series-content';
 import { PlaceholderTab } from './PlaceholderTab';
 
 const MAX_ROWS = 30;
@@ -10,20 +11,29 @@ function wikipediaUrl(pageTitle: string): string {
 }
 
 export async function ChampionsTab({ series }: { series: Series }) {
-  // Try the dedicated champions list page first, then the main article as a fallback.
-  // Many series don't have a separate "List of <X> champions" article; the table
-  // lives inside the main article on Wikipedia.
-  const candidates: string[] = [];
-  if (series.meta.championsPage) candidates.push(series.meta.championsPage);
-  if (series.meta.wikipediaPage && series.meta.wikipediaPage !== series.meta.championsPage) {
-    candidates.push(series.meta.wikipediaPage);
-  }
-  if (candidates.length === 0) {
-    return <PlaceholderTab tabLabel="Champions" />;
-  }
+  // Curated JSON takes full priority. Falls through to the Wikipedia parser.
+  const curated = await loadCuratedChampions(series.meta.slug);
+  let champions: Champion[];
+  let sourceLabel: string;
+  let pageUrl: string;
 
-  const champions = await fetchChampions(candidates);
-  const pageUrl = wikipediaUrl(series.meta.championsPage ?? series.meta.wikipediaPage ?? '');
+  if (curated && curated.length > 0) {
+    champions = [...curated].sort((a, b) => b.year - a.year);
+    sourceLabel = 'curated';
+    pageUrl = wikipediaUrl(series.meta.championsPage ?? series.meta.wikipediaPage ?? '');
+  } else {
+    const candidates: string[] = [];
+    if (series.meta.championsPage) candidates.push(series.meta.championsPage);
+    if (series.meta.wikipediaPage && series.meta.wikipediaPage !== series.meta.championsPage) {
+      candidates.push(series.meta.wikipediaPage);
+    }
+    if (candidates.length === 0) {
+      return <PlaceholderTab tabLabel="Champions" />;
+    }
+    champions = await fetchChampions(candidates);
+    sourceLabel = 'Wikipedia';
+    pageUrl = wikipediaUrl(series.meta.championsPage ?? series.meta.wikipediaPage ?? '');
+  }
 
   if (champions.length === 0) {
     return (
@@ -103,14 +113,18 @@ export async function ChampionsTab({ series }: { series: Series }) {
         })}
       </div>
       <div className="px-4 py-2 text-[11px] text-zinc-500 border-t border-zinc-800/60">
-        <a
-          href={pageUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-zinc-300"
-        >
-          Source: Wikipedia &rarr;
-        </a>
+        {sourceLabel === 'curated' ? (
+          <span>Source: curated</span>
+        ) : (
+          <a
+            href={pageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-zinc-300"
+          >
+            Source: Wikipedia &rarr;
+          </a>
+        )}
       </div>
     </div>
   );

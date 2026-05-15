@@ -1,12 +1,54 @@
 import { ExternalLink } from 'lucide-react';
 import type { Series } from '@/lib/types';
 import { fetchSeasonLineup } from '@/lib/wikipedia-season';
+import { loadCuratedDrivers } from '@/lib/series-content';
 
 function wikipediaUrl(pageTitle: string): string {
   return `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
 }
 
 export async function DriversTab({ series }: { series: Series }) {
+  // Curated JSON takes full priority. Falls through to the Wikipedia scraper
+  // when the file doesn't exist, then to the legacy drivers.md prose.
+  const curated = await loadCuratedDrivers(series.meta.slug);
+  if (curated && curated.teams.length > 0) {
+    return (
+      <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {curated.teams.map((team, idx) => (
+            <div
+              key={`${team.name}-${idx}`}
+              className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4"
+              style={team.color ? { borderLeftColor: team.color, borderLeftWidth: '3px' } : undefined}
+            >
+              <div className="text-base text-zinc-100 font-semibold mb-2">
+                {team.name}
+              </div>
+              <ul className="space-y-0.5">
+                {team.drivers.map((d, i) => (
+                  <li key={`${d.name}-${i}`} className="text-sm text-zinc-300 flex items-baseline gap-2">
+                    {d.number != null ? (
+                      <span className="text-[10px] tabular-nums font-mono text-zinc-500 w-5 text-right">
+                        {d.number}
+                      </span>
+                    ) : null}
+                    <span className="flex-1">{d.name}</span>
+                    {d.code ? (
+                      <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded">
+                        {d.code}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="text-[11px] text-zinc-500">Source: curated</div>
+      </div>
+    );
+  }
+
   const seasonPage = series.meta.seasonPage;
   const lineup = seasonPage ? await fetchSeasonLineup(seasonPage) : [];
 

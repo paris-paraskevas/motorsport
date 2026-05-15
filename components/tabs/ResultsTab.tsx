@@ -1,9 +1,38 @@
 import { ChevronDown } from 'lucide-react';
-import type { Series, RaceResult, RaceResultEntry } from '@/lib/types';
+import type {
+  Series,
+  RaceResult,
+  RaceResultEntry,
+  ResultsOverridesFile,
+} from '@/lib/types';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
+import { loadResultsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
+
+function applyResultsOverrides(
+  races: RaceResult[],
+  overrides: ResultsOverridesFile | null,
+): RaceResult[] {
+  if (!overrides) return races;
+  return races.map(race => {
+    const patches = overrides[String(race.round)];
+    if (!patches || patches.length === 0) return race;
+    const patched: RaceResultEntry[] = race.results.map(entry => {
+      const o = patches.find(p => p.driverName === entry.driverName);
+      if (!o) return entry;
+      return {
+        ...entry,
+        position: o.position ?? entry.position,
+        points: o.points ?? entry.points,
+        status: o.status ?? entry.status,
+        time: o.time ?? entry.time,
+      };
+    });
+    return { ...race, results: patched.sort((a, b) => a.position - b.position) };
+  });
+}
 
 function hostnameOf(url: string): string {
   try {
@@ -128,15 +157,19 @@ function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string })
 
 export async function ResultsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
-    const races = await fetchF1SeasonResults();
+    const [races, overrides] = await Promise.all([
+      fetchF1SeasonResults(),
+      loadResultsOverrides(series.meta.slug),
+    ]);
     if (races.length === 0) {
       return (
         <EmptyState message="Results are temporarily unavailable. Check back shortly." />
       );
     }
+    const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={races} />
+        <SeasonResultsPanel races={merged} />
         <div className="text-center">
           <a
             href={SOURCE_URL}

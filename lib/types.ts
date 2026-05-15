@@ -107,6 +107,70 @@ export interface Series {
   configured: boolean;
 }
 
+export interface CuratedDriverEntry {
+  name: string;
+  code?: string;
+  number?: number;
+}
+
+export interface CuratedTeamLineup {
+  name: string;
+  color?: string;
+  drivers: CuratedDriverEntry[];
+}
+
+export interface CuratedDriversFile {
+  teams: CuratedTeamLineup[];
+}
+
+export interface DriverStandingOverride {
+  driverName: string;
+  position?: number;
+  points?: number;
+  wins?: number;
+}
+
+export interface ConstructorStandingOverride {
+  name: string;
+  position?: number;
+  points?: number;
+  wins?: number;
+}
+
+export interface StandingsOverridesFile {
+  drivers?: DriverStandingOverride[];
+  constructors?: ConstructorStandingOverride[];
+}
+
+export interface RaceResultOverride {
+  driverName: string;
+  position?: number;
+  points?: number;
+  status?: string;
+  time?: string;
+}
+
+export interface ResultsOverridesFile {
+  // Keyed by round number as a string.
+  [round: string]: RaceResultOverride[];
+}
+
+export interface PostFrontmatter {
+  title: string;
+  summary: string;
+  publishedAt: string;
+  tags?: string[];
+  heroImage?: string;
+  seriesSlug?: string;
+  draft?: boolean;
+}
+
+export interface Post {
+  slug: string;
+  frontmatter: PostFrontmatter;
+  contentHtml: string;
+}
+
 export interface Weekend {
   key: string;
   label?: string;

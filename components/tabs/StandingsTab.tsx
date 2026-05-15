@@ -1,8 +1,50 @@
-import type { Series, DriverStanding, ConstructorStanding } from '@/lib/types';
+import type {
+  Series,
+  DriverStanding,
+  ConstructorStanding,
+  StandingsOverridesFile,
+} from '@/lib/types';
 import { fetchF1Standings } from '@/lib/standings/f1';
+import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
+
+function applyDriverOverrides(
+  drivers: DriverStanding[],
+  overrides: StandingsOverridesFile['drivers'],
+): DriverStanding[] {
+  if (!overrides || overrides.length === 0) return drivers;
+  const patched = drivers.map(d => {
+    const o = overrides.find(x => x.driverName === d.driverName);
+    if (!o) return d;
+    return {
+      ...d,
+      position: o.position ?? d.position,
+      points: o.points ?? d.points,
+      wins: o.wins ?? d.wins,
+    };
+  });
+  return patched.sort((a, b) => a.position - b.position);
+}
+
+function applyConstructorOverrides(
+  constructors: ConstructorStanding[],
+  overrides: StandingsOverridesFile['constructors'],
+): ConstructorStanding[] {
+  if (!overrides || overrides.length === 0) return constructors;
+  const patched = constructors.map(c => {
+    const o = overrides.find(x => x.name === c.name);
+    if (!o) return c;
+    return {
+      ...c,
+      position: o.position ?? c.position,
+      points: o.points ?? c.points,
+      wins: o.wins ?? c.wins,
+    };
+  });
+  return patched.sort((a, b) => a.position - b.position);
+}
 
 function officialSiteLabel(url: string): string {
   try {
@@ -119,16 +161,24 @@ function LinkOutCard({
 
 export async function StandingsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
-    const data = await fetchF1Standings();
+    const [data, overrides] = await Promise.all([
+      fetchF1Standings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
     if (!data) {
       return (
         <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
       );
     }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
     return (
       <div className="space-y-4">
-        <DriversTable drivers={data.drivers} />
-        <ConstructorsTable constructors={data.constructors} />
+        <DriversTable drivers={drivers} />
+        <ConstructorsTable constructors={constructors} />
         <div className="text-center">
           <a
             href={SOURCE_URL}
