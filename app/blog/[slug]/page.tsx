@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft } from 'lucide-react';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 import { listPostSlugs, loadPost } from '@/lib/posts';
+import { mdxComponents } from '@/components/mdx/mdx-components';
 
 export const dynamic = 'force-dynamic';
 
@@ -92,8 +94,9 @@ export default async function PostPage({
                    prose-p:leading-relaxed
                    prose-strong:text-zinc-100
                    prose-a:text-zinc-100 prose-a:underline-offset-4"
-        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-      />
+      >
+        <MDXRemote source={post.source} components={mdxComponents} />
+      </article>
     </div>
   );
 }

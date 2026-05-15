@@ -168,7 +168,7 @@ export interface PostFrontmatter {
 export interface Post {
   slug: string;
   frontmatter: PostFrontmatter;
-  contentHtml: string;
+  source: string;
 }
 
 export interface Weekend {

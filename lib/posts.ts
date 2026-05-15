@@ -1,8 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import remarkHtml from 'remark-html';
 import type { Post, PostFrontmatter } from './types';
 
 const POSTS_ROOT = path.join(process.cwd(), 'content', 'posts');
@@ -34,8 +32,8 @@ export async function listPostSlugs(): Promise<string[]> {
 
 export async function loadPost(slug: string): Promise<Post | null> {
   const candidates = [
-    path.join(POSTS_ROOT, `${slug}.md`),
     path.join(POSTS_ROOT, `${slug}.mdx`),
+    path.join(POSTS_ROOT, `${slug}.md`),
   ];
   let raw: string | null = null;
   for (const p of candidates) {
@@ -52,11 +50,10 @@ export async function loadPost(slug: string): Promise<Post | null> {
   const fm = parsed.data as PostFrontmatter;
   if (!isPublishable(fm)) return null;
 
-  const processed = await remark().use(remarkHtml).process(parsed.content);
   return {
     slug,
     frontmatter: fm,
-    contentHtml: processed.toString(),
+    source: parsed.content,
   };
 }
 
