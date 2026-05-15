@@ -4,7 +4,6 @@ export const TABS = [
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
   { key: 'drivers',   label: 'Drivers' },
-  { key: 'teams',     label: 'Teams' },
   { key: 'rules',     label: 'Rules' },
   { key: 'about',     label: 'About' },
   { key: 'history',   label: 'History' },

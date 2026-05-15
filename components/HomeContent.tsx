@@ -30,7 +30,7 @@ interface NewsItemSerialized {
 type Tab = 'news' | 'upcoming';
 
 const UPCOMING_LIMIT = 24;
-const NEWS_LIMIT = 8;
+const NEWS_LIMIT = 12;
 const TAB_KEY = 'paddock:home-tab';
 
 function relativeAgo(date: Date): string {
@@ -54,6 +54,7 @@ export function HomeContent({
 }) {
   const { followed, hydrated } = useFollowedSeries();
   const [tab, setTab] = useState<Tab>('news');
+  const [newsFilter, setNewsFilter] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -98,7 +99,25 @@ export function HomeContent({
   });
   const byDay = groupByDay(remaining.map(i => i.session));
 
-  const topNews = filteredNews.slice(0, NEWS_LIMIT);
+  const seriesWithNews: Array<{ slug: string; name: string; color: string; count: number }> = [];
+  {
+    const seenSlugs = new Set<string>();
+    for (const n of filteredNews) {
+      if (!seenSlugs.has(n.seriesSlug)) {
+        seenSlugs.add(n.seriesSlug);
+        seriesWithNews.push({
+          slug: n.seriesSlug,
+          name: n.seriesName,
+          color: n.seriesColor,
+          count: filteredNews.filter(x => x.seriesSlug === n.seriesSlug).length,
+        });
+      }
+    }
+  }
+  const newsForTab = newsFilter
+    ? filteredNews.filter(n => n.seriesSlug === newsFilter)
+    : filteredNews;
+  const topNews = newsForTab.slice(0, NEWS_LIMIT);
 
   const isEmptyFromFilter =
     hydrated && followed !== null && followed.length < items.length;
@@ -214,6 +233,45 @@ export function HomeContent({
 
       {tab === 'news' && (
         <section>
+          {seriesWithNews.length > 1 && (
+            <div className="mb-3 -mx-1 px-1 flex gap-1.5 overflow-x-auto scrollbar-none">
+              <button
+                type="button"
+                onClick={() => setNewsFilter(null)}
+                className={`shrink-0 text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                  newsFilter === null
+                    ? 'bg-zinc-100 text-zinc-950 border-zinc-100'
+                    : 'text-zinc-400 border-zinc-800 hover:text-zinc-100 hover:border-zinc-700'
+                }`}
+              >
+                All
+                <span className="ml-1.5 tabular-nums opacity-70">{filteredNews.length}</span>
+              </button>
+              {seriesWithNews.map(s => {
+                const active = newsFilter === s.slug;
+                return (
+                  <button
+                    key={s.slug}
+                    type="button"
+                    onClick={() => setNewsFilter(s.slug)}
+                    className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                      active
+                        ? 'text-zinc-950 border-transparent'
+                        : 'text-zinc-400 border-zinc-800 hover:text-zinc-100 hover:border-zinc-700'
+                    }`}
+                    style={active ? { backgroundColor: s.color } : undefined}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: active ? '#0a0a0a' : s.color }}
+                    />
+                    {s.name}
+                    <span className="tabular-nums opacity-70">{s.count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {topNews.length === 0 ? (
             <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-8 text-center">
               <div className="text-zinc-300 text-base font-medium mb-1">No news yet</div>
