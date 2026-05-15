@@ -51,3 +51,9 @@ Thumbs.db
 !.vscode/extensions.json
 
 .vercel
+
+# clerk configuration (can include secrets)
+/.clerk/
+
+# playwright MCP browser profile
+/.playwright-mcp/
