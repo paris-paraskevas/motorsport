@@ -1,6 +1,7 @@
 import { Series } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import { PastToggleSection } from '@/components/PastToggleSection';
+import { CancelledRoundsSection } from '@/components/CancelledRounds';
 
 export function CalendarTab({ series }: { series: Series }) {
   const now = new Date();
@@ -13,12 +14,15 @@ export function CalendarTab({ series }: { series: Series }) {
   const nextWeekendKey = upcomingWeekends[0]?.weekend.key;
 
   return (
-    <PastToggleSection
-      pastWeekends={pastWeekends}
-      upcomingWeekends={upcomingWeekends}
-      color={series.meta.color}
-      seriesSlug={series.meta.slug}
-      nextWeekendKey={nextWeekendKey}
-    />
+    <>
+      <PastToggleSection
+        pastWeekends={pastWeekends}
+        upcomingWeekends={upcomingWeekends}
+        color={series.meta.color}
+        seriesSlug={series.meta.slug}
+        nextWeekendKey={nextWeekendKey}
+      />
+      <CancelledRoundsSection cancelledRounds={series.rounds?.cancelledRounds} />
+    </>
   );
 }

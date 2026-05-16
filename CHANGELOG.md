@@ -2,6 +2,21 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.8 — 2026-05-16
+
+### Fixed
+- **F1 2026 Bahrain + Saudi Arabia cancellations now render explicitly.** Both rounds were cancelled mid-season due to the Middle East conflict; previously they were silently removed from the schedule with no user-facing indication. `/series/f1` now shows a compact banner ("2 rounds cancelled this season — Bahrain, Saudi Arabian") near the page header, and the Calendar tab gains a "Cancelled this season" section with per-round cards showing the original date, reason, and reschedule status ("under discussion"). Stable round numbers and URLs for the remaining 22 rounds are preserved.
+
+### Added
+- **`cancelledRounds` field on `SeriesRoundsFile`** (`lib/types.ts`) — tracks cancelled-but-recorded rounds separately from the active calendar. Preserves stable round numbers / URLs while making cancellations explicit and queryable. Foundation for the same treatment of MotoGP and WEC postponements in upcoming sessions.
+- **`previousStartDate` / `previousEndDate` / `rescheduleNote` fields on `SeriesRoundEntry`** — for rescheduled (not cancelled) rounds where the date moved mid-season (MotoGP Qatar, WEC Qatar).
+- **`components/CancelledRounds.tsx`** — `CancelledRoundsBanner` (compact header strip) and `CancelledRoundsSection` (detailed card list).
+- **`docs/research/db-best-practices.md`** — Postgres/Supabase schema research synthesizing recommendations from 30+ sources. Covers entity shape, status modelling (lookup table vs ENUM), source provenance, audit log, time handling (local + IANA tz + UTC instant), JSONB hybrid model, change-detection patterns, and Supabase RLS best practices.
+- **`docs/research/per-series-source-audit.md`** — data-source audit for all 14 series Paddock tracks (F1, F2, F3, MotoGP, WSBK, WEC, IndyCar, IMSA, NASCAR Cup, Formula E, WRC, DTM, GT World Challenge, NLS, plus ADAC Ravenol 24h). Includes 2026 cancellation/postponement summary, recommended ingestion strategy per series, and identification of the F1 (Jolpica) and MotoGP (Pulselive) JSON APIs as the two highest-leverage upstream upgrades.
+
+### Changed
+- **`SCHEDULE.md`** — adds the pre-Fotis cutoff framing (Sat 2026-05-16 afternoon through Tue 2026-05-19 sit-down with Fotis). All new ideas during this window route to `IDEAS.md` Inbox; backlog clearing prioritised over scope expansion.
+
 ## 0.9.7 — 2026-05-16
 
 ### Added

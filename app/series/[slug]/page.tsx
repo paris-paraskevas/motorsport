@@ -5,6 +5,7 @@ import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
 import { SeriesBadge } from '@/components/SeriesBadge';
+import { CancelledRoundsBanner } from '@/components/CancelledRounds';
 import { CalendarTab } from '@/components/tabs/CalendarTab';
 import { AboutTab } from '@/components/tabs/AboutTab';
 import { HistoryTab } from '@/components/tabs/HistoryTab';
@@ -109,6 +110,8 @@ export default async function SeriesPage({
         </h1>
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
+
+      <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />
 
       <SeriesTabs color={color} activeTab={activeTab} />
 

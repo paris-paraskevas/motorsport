@@ -23,5 +23,23 @@
     { "round": 20, "startDate": "2026-11-19", "endDate": "2026-11-22", "name": "Las Vegas Grand Prix" },
     { "round": 21, "startDate": "2026-11-27", "endDate": "2026-11-29", "name": "Qatar Grand Prix" },
     { "round": 22, "startDate": "2026-12-04", "endDate": "2026-12-06", "name": "Abu Dhabi Grand Prix" }
+  ],
+  "cancelledRounds": [
+    {
+      "originalRound": 4,
+      "name": "Bahrain Grand Prix",
+      "originalStartDate": "2026-04-10",
+      "originalEndDate": "2026-04-12",
+      "reason": "Middle East conflict",
+      "rescheduleStatus": "under discussion"
+    },
+    {
+      "originalRound": 5,
+      "name": "Saudi Arabian Grand Prix",
+      "originalStartDate": "2026-04-17",
+      "originalEndDate": "2026-04-19",
+      "reason": "Middle East conflict",
+      "rescheduleStatus": "under discussion"
+    }
   ]
 }
