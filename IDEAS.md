@@ -14,17 +14,17 @@ Time-based scheduling lives in `SCHEDULE.md`.
 
 ## Now (≤ 3, in flight)
 
-1. Curate `sessions.json` real session hours for the most-followed non-F1 series (start with MotoGP + WEC + IMSA + Formula E rounds beyond Monaco), so the "3 am" placeholder disappears across the calendar.
-2. Investigate residual `00:00` string on /series/f1/weekend/5 to confirm it's a legit session time vs leftover fake — visually verify in a real browser once Playwright is unlocked.
-3. Scope the Supabase + scheduled-scrape initiative (decide table shapes, scraper boundaries, what stays as files) before starting any code.
+1. **Browser-verify `0.9.1` fixes in a real browser.** Click through home / `/series/f1/weekend/5` (Canada Round 5) / `/series/formula-e/weekend/12` (Monaco). Confirm no 3 am leakage on date-only entries, live-now still triggers on timed sessions, FE Monaco renders the curated R9+R10 timings. Capture screenshots for the changelog.
+2. **Investigate the residual `00:00` string** on `/series/f1/weekend/5`. Pulled-out via a tabular-nums probe during 0.9.1 verification; need to confirm whether it's a legit session time or a leftover fake. Quick fix once located.
+3. **Curate `sessions.json` for one more non-F1 series.** Pick the one whose next race is closest (likely MotoGP or IMSA). Same pattern as FE Monaco — official-site search → curated timed sessions → browser-verify.
 
 ## Next (≤ 5, queued — start within ~1–2 weeks)
 
-1. Supabase migration: provision via Vercel Marketplace, draft schema for sessions / standings / results / news / weather snapshots, draft per-series scrape jobs (Vercel Cron + Sandbox/Playwright for JS-rendered sites). Reframe of S4.
-2. Research existing public motorsport data sources (Ergast/jolpica for F1, MotoGP web API, FIA feeds, third-party aggregators) before building scrapers from scratch — could be a write-up doc rather than code.
-3. Curate `rounds.json` for the rest of the non-F1 series so FIA-canonical round numbers replace array-index fallback.
-4. Audit endurance-series weekend grouping (WEC / IMSA / NLS / ADAC 24h races + multi-day tests) for `groupByWeekend` mis-splits — pairs with the curation pass.
-5. SEO baseline (S5): `app/sitemap.ts`, `app/robots.ts`, JSON-LD (SportsEvent / Organization / Person / BreadcrumbList), per-page `generateMetadata`, OG image generators, canonicals.
+1. **Supabase migration scoping.** Provision via Vercel Marketplace; draft schema for sessions / standings / results / news / weather snapshots / live in-race data; draft per-series scrape boundaries (Vercel Cron + Sandbox/Playwright for JS-rendered sites). Reframe of S4. Plan first; code in a later session.
+2. **Public motorsport data sources research.** Write-up doc covering Ergast/jolpica for F1, MotoGP web API, FIA feeds, third-party aggregators. Identify which series we can pull from existing APIs vs which need custom scraping. Output: a markdown doc, not code.
+3. **Curate `rounds.json` for the remaining non-F1 series.** MotoGP, WEC, F2, F3, IndyCar, IMSA, WSBK, WRC, DTM, GT World, NASCAR Cup, NLS, FE. Replaces array-index fallback. Pairs with the sessions.json curation pass.
+4. **Audit endurance-series weekend grouping.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Verify case-by-case after rounds.json curation lands.
+5. **SEO baseline (S5).** `app/sitemap.ts`, `app/robots.ts`, JSON-LD (`SportsEvent` / `Organization` / `Person` / `BreadcrumbList`), per-page `generateMetadata`, OG image generators, canonicals.
 
 ## Inbox (unfiltered, append-only)
 

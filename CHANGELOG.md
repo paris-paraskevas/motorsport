@@ -2,6 +2,16 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.5 — 2026-05-16
+
+### Added
+- **`docs/HANDOFF.md`** — running operational record (critical landmines, authoring model, sessions roadmap, infra ledger, open design questions, what shipped recently). Ported from the per-user memory file so both contributors and Claude across machines share one source of truth.
+
+### Changed
+- **CLAUDE.md session-start reading list** is now explicit and ordered: CLAUDE.md → `docs/HANDOFF.md` → `IDEAS.md` → `SCHEDULE.md` → `AGENTS.md` → memory feedback files. Previous version listed the memory handoff; that file is now a one-line redirect to `docs/HANDOFF.md`.
+- **`IDEAS.md` Now/Next refreshed** after the four `0.9.x` ships. Now: browser-verify, the `00:00` mystery, one more non-F1 `sessions.json`. Next: Supabase scoping, public-data research, non-F1 `rounds.json`, endurance grouping audit, SEO baseline.
+- **`SCHEDULE.md` Saturday closed** (five ships logged); Sunday plan now concrete (verification, mystery resolution, one curation pass, first PR-flow rehearsal).
+
 ## 0.9.4 — 2026-05-16
 
 ### Added

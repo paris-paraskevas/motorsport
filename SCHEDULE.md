@@ -17,18 +17,22 @@ Items here should map to entries in `IDEAS.md` Now / Next.
 ### Sat 2026-05-16
 
 - → done: ship `0.9.1` weekend correctness fixes — phantom 3 am times (Session.dateOnly through the pipeline, "TBC" display, live-now + notify cron skips), canonical F1 round numbers via `content/series/<slug>/rounds.json`, sessions.json override loader, FE Monaco 2026 sessions curated.
-- → done: release notes (`CHANGELOG.md` 0.9.1) + `package.json` bump pushed in `d655bab`.
-- → in progress: bootstrap `CLAUDE.md` operating manual, `IDEAS.md` ledger, `SCHEDULE.md` time plan. Encode session workflow + release-notes rule.
+- → done: bootstrap `CLAUDE.md` operating manual + `IDEAS.md` ledger + `SCHEDULE.md` time plan (`0.9.2`).
+- → done: mature `CLAUDE.md` with ESPA protocol + seven extensions + Mode awareness + four communication discipline rules; reversed commit-attribution policy (no more `Co-Authored-By`) (`0.9.3`).
+- → done: scaffold two-contributor workflow — `CONTRIBUTING.md` + `ONBOARDING.md` + reversed CLAUDE.md push-to-main rule. CI workflow parked. (`0.9.4`)
+- → done: triage `IDEAS.md` Now/Next; close Saturday; sketch Sunday; port handoff from memory to `docs/HANDOFF.md`; memory file becomes a redirect stub. (`0.9.5`)
 - Won't touch this session: Supabase migration, curating non-F1 sessions.json files, SEO baseline, anything from the Parked list.
 
 ### Sun 2026-05-17
 
-_(plan TBD — propose at session start)_
+Plan (in priority order):
 
-Candidate work, in priority order:
-1. Visually verify yesterday's fixes in a real browser (Canada round 5, FE Monaco timed sessions, no 3 am leakage on home / calendar). Capture screenshots for the changelog.
-2. Resolve residual `00:00` mystery string on /series/f1/weekend/5.
-3. Start curating `sessions.json` for the next non-F1 series — pick the one with a live race this weekend or next.
+1. **Browser-verify yesterday's fixes** on a real laptop with Chrome — `/series/f1/weekend/5` (Canada → Round 5), `/series/formula-e/weekend/12` (FE Monaco R9+R10 timings), home Live-now and Upcoming for any 3 am leakage. Take screenshots for the changelog.
+2. **Resolve the `00:00` mystery** on `/series/f1/weekend/5`.
+3. **Curate one more non-F1 `sessions.json`** — pick the series whose next race is closest (likely MotoGP or IMSA). Same pattern as FE Monaco.
+4. **First PR-flow rehearsal.** Branch + PR + self-merge for one of the items above. Tests the workflow before Fotis arrives.
+
+Won't touch this session: Supabase work, rounds.json non-F1 curation, SEO baseline, anything from the Parked list.
 
 ---
 

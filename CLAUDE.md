@@ -13,9 +13,14 @@ Read this whole file at the start of every session. Then read `IDEAS.md` + `SCHE
 
 ## Read these before doing anything
 
-1. `AGENTS.md` (embedded above) — Next.js 16 has breaking changes from training data. Check `node_modules/next/dist/docs/` for current API shapes before writing Next-specific code.
-2. The running handoff memory (`memory/project-paddock-handoff.md`) — open follow-ups, recent shipped work, infra ledger, v1.0 audit.
-3. Memory feedback files — every rule there is non-negotiable user-set behaviour. The current set:
+**Required at every session start, in this order:**
+
+1. This file (`CLAUDE.md`) — operating manual, ESPA loop, working agreement.
+2. **`docs/HANDOFF.md`** — running operational record: critical landmines, what shipped last session, infra ledger, open design questions. **Always read at session start.** The per-user memory file at `memory/project-paddock-handoff.md` is now a redirect stub pointing here.
+3. `IDEAS.md` — Now / Next queue; what we're working on this week.
+4. `SCHEDULE.md` — today's plan.
+5. `AGENTS.md` (embedded above) — Next.js 16 has breaking changes from training data. Check `node_modules/next/dist/docs/` for current API shapes before writing Next-specific code.
+6. Memory feedback files — every rule there is non-negotiable user-set behaviour. The current set:
    - `feedback-paddock-debug-with-own-eyes` — visually verify UI in a browser before saying "shipped". Typecheck + curl miss user-facing bugs.
    - `feedback-paddock-search-for-missing-data` — when upstream feeds are thin, web-search the official source and curate. Don't shrug it off as a "documented limitation".
    - `feedback-paddock-weather-venue-local` — Open-Meteo lookups go by venue-local date, never UTC.
