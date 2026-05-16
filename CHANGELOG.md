@@ -2,6 +2,22 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.9 — 2026-05-16
+
+### Fixed
+- **Phantom "Sat 03:00" / "Sun 03:00" on non-F1 weekends.** Non-F1 ICS feeds (Google Calendar, ECAL, scrape-built) emit race weekends as `DTSTART:YYYYMMDDT000000Z` (midnight UTC with a time component) rather than `DTSTART;VALUE=DATE`, so the `0.9.1` dateOnly fix missed them. In Europe/Athens (UTC+3 in summer), midnight UTC rendered as "Sat 03:00", giving the impression that the race started at 3 am. The ICS parser now treats entries where both start and end fall on UTC midnight boundaries as effectively date-only — they render "TBC" honestly until session-level times are curated or pulled from a proper API (Pulselive for MotoGP/WSBK, Jolpica for F1).
+
+### Added
+- **MotoGP 2026 `rounds.json`** — full 22-round championship calendar with the Qatar postponement cascade: R20 Qatar moved from April to **6–8 November** (Middle East conflict), R21 Portuguese GP and R22 Valencian GP each shifted one week later as cascade. All three rescheduled rounds carry `previousStartDate` / `previousEndDate` / `rescheduleNote` so the UI shows what they were originally scheduled for.
+- **WEC 2026 `rounds.json`** — full 8-round championship calendar. R7 Qatar 1812km **postponed from R1 opener to penultimate round** (Oct 22–24); Imola promoted to R1, Prologue moved to Imola on Apr 14. Le Mans is intentionally 2-day (13–14 June race window).
+- **Postponement rendering UI** — weekend cards (`WeekendBlock`) and weekend hero (`WeekendHero`) both render a "rescheduled" pill and an amber `Rescheduled from <date> · <note>` line when a round's `previousStartDate` is set. Pairs with the F1 cancellation banner shipped in `0.9.8`.
+- **`previousStartDate` / `previousEndDate` / `rescheduleNote` fields on `Weekend`** (extending the same shape from `SeriesRoundEntry` in `0.9.8`). `lib/rounds.ts` copies the fields onto matched weekends.
+- **`docs/research/ingestion-resource-evaluation.md`** — synthesis of 5 alternative motorsport-data resources (F2 Data Pipeline, Sportbex on RapidAPI, TheSportsDB F3, IndyCar calendar repo, multi-series race-calendar repo). Verdicts: **adopt TheSportsDB as fallback** for the 11 non-API series, **borrow the IndyCar-calendar playbook heavily** (API-key harvest from SPA HTML, diff-before-write, cancellation handling), skip the rest.
+- **2 new `lib/ics.test.ts` cases** covering the midnight-UTC detection (flag when both start + end are UTC midnight; don't flag when end is a real off-midnight time).
+
+### Changed
+- **`IDEAS.md` Inbox additions** — surface per-weekend car upgrades on the F1 weekend page; embed YouTube highlights / extended highlights on past weekend pages plus season/month recap pages with season-highlight videos + blog text + standings snapshots.
+
 ## 0.9.8 — 2026-05-16
 
 ### Fixed

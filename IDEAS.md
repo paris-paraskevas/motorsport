@@ -69,6 +69,8 @@ Time-based scheduling lives in `SCHEDULE.md`.
 - Surface "common topics" on the Rules tab.
 - Install Resend Marketplace and wire RESEND_API_KEY + CONTACT_TO_EMAIL so contact-form submissions email out.
 - Rotate sk_live_* Clerk keys.
+- Surface per-weekend car upgrades on the F1 weekend page — what each team brought to this round, sourced from the FIA Car Presentation Document or scraped from F1.com / motorsport.com.
+- Embed YouTube highlights + extended-highlight videos on past weekend pages, and add dedicated season / month recap pages when a period wraps with embedded season-highlight videos + written blog text on how it went + standings snapshots at that point.
 
 ## Parked (might do, with a revisit trigger)
 

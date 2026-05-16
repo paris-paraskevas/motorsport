@@ -42,4 +42,34 @@ describe('parseIcs', () => {
     expect(only.dateOnly).toBe(true);
     expect(only.title).toBe('Test GP - Race (day-only)');
   });
+  it('flags dateOnly for midnight-UTC entries (effectively date-only)', () => {
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VEVENT',
+      'UID:race-midnight@test',
+      'SUMMARY:Race weekend (midnight UTC)',
+      'DTSTART:20260613T000000Z',
+      'DTEND:20260614T000000Z',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+    const [only] = parseIcs(ics, 'test');
+    expect(only.dateOnly).toBe(true);
+  });
+  it('does not flag dateOnly when a midnight-UTC start has a real end time', () => {
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VEVENT',
+      'UID:race-asia-prime@test',
+      'SUMMARY:Real session ending at 02:00Z',
+      'DTSTART:20260613T000000Z',
+      'DTEND:20260613T020000Z',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+    const [only] = parseIcs(ics, 'test');
+    expect(only.dateOnly).toBeUndefined();
+  });
 });

@@ -10,6 +10,23 @@ function hasDateOnly(d: Date | undefined): boolean {
   return (d as Date & { dateOnly?: boolean }).dateOnly === true;
 }
 
+// Many non-F1 feeds (Google Calendar exports, ECAL exports, scraper-built
+// ICS) emit race weekends as DTSTART:YYYYMMDDT000000Z rather than
+// DTSTART;VALUE=DATE. A real motorsport session starting exactly at UTC
+// midnight is implausible (races run in venue-local prime time), so when
+// BOTH start and end fall on a UTC midnight boundary we treat the entry
+// as effectively date-only — render "TBC" instead of inventing "Sat 03:00".
+function looksLikeDateOnlyMidnight(start: Date, end: Date | undefined): boolean {
+  const isUtcMidnight = (d: Date): boolean =>
+    d.getUTCHours() === 0 &&
+    d.getUTCMinutes() === 0 &&
+    d.getUTCSeconds() === 0 &&
+    d.getUTCMilliseconds() === 0;
+  if (!isUtcMidnight(start)) return false;
+  if (!end) return true;
+  return isUtcMidnight(end);
+}
+
 export function parseIcs(text: string, seriesSlug: string): Session[] {
   if (!text.trim()) return [];
   const events = ical.sync.parseICS(text);
@@ -19,7 +36,10 @@ export function parseIcs(text: string, seriesSlug: string): Session[] {
     if (ev.type !== 'VEVENT') continue;
     const start = ev.start as Date;
     const end = ev.end as Date;
-    const dateOnly = hasDateOnly(start) || hasDateOnly(end);
+    const dateOnly =
+      hasDateOnly(start) ||
+      hasDateOnly(end) ||
+      looksLikeDateOnlyMidnight(start, end);
     sessions.push({
       uid: String(ev.uid ?? key),
       seriesSlug,

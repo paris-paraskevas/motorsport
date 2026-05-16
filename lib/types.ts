@@ -244,4 +244,9 @@ export interface Weekend {
   // Canonical name from rounds.json (e.g. "Canadian Grand Prix"); used when
   // no series-specific significance label is set.
   roundName?: string;
+  // Set when this round was rescheduled mid-season (MotoGP Qatar 2026 moved
+  // from April to November). UI renders a "Rescheduled from <date>" note.
+  previousStartDate?: string;
+  previousEndDate?: string;
+  rescheduleNote?: string;
 }
