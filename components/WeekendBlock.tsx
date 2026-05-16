@@ -2,6 +2,18 @@ import Link from 'next/link';
 import { Session, Weekend } from '@/lib/types';
 import { formatLocal } from '@/lib/date';
 
+function formatShortRange(startISO: string, endISO: string): string {
+  const start = new Date(startISO + 'T00:00:00Z');
+  const end = new Date(endISO + 'T00:00:00Z');
+  const sameMonth = start.getUTCMonth() === end.getUTCMonth();
+  const monthShort = (d: Date) =>
+    d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+  if (sameMonth) {
+    return `${start.getUTCDate()}–${end.getUTCDate()} ${monthShort(start)}`;
+  }
+  return `${start.getUTCDate()} ${monthShort(start)} – ${end.getUTCDate()} ${monthShort(end)}`;
+}
+
 export function WeekendBlock({
   weekend,
   round,
@@ -40,6 +52,11 @@ export function WeekendBlock({
               next
             </span>
           )}
+          {weekend.previousStartDate && weekend.previousEndDate && (
+            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+              rescheduled
+            </span>
+          )}
           {weekend.significance && weekend.significance.tier !== 'note' && (
             <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
               {weekend.significance.tier}
@@ -47,6 +64,14 @@ export function WeekendBlock({
           )}
         </span>
       </div>
+      {weekend.previousStartDate && weekend.previousEndDate && (
+        <div className="text-[11px] text-amber-300/80 mb-2 tnum">
+          Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}
+          {weekend.rescheduleNote && (
+            <span className="text-zinc-500"> · {weekend.rescheduleNote}</span>
+          )}
+        </div>
+      )}
       <ul className="space-y-0.5">
         {weekend.sessions.map((s: Session) => (
           <li
@@ -55,7 +80,7 @@ export function WeekendBlock({
           >
             <span className="text-zinc-200 truncate">{s.title}</span>
             <span className="text-zinc-500 font-medium tabular-nums whitespace-nowrap">
-              {formatLocal(s.start)}
+              {s.dateOnly ? 'TBC' : formatLocal(s.start)}
             </span>
           </li>
         ))}

@@ -27,6 +27,13 @@ export function assignRoundsToWeekends(
       !r.cancelled && rangeCovers(r.startDate, r.endDate, start, end),
     );
     if (!match) return { ...w, round: i + 1 };
-    return { ...w, round: match.round, roundName: match.name };
+    return {
+      ...w,
+      round: match.round,
+      roundName: match.name,
+      previousStartDate: match.previousStartDate,
+      previousEndDate: match.previousEndDate,
+      rescheduleNote: match.rescheduleNote,
+    };
   });
 }

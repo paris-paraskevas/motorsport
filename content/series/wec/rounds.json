@@ -1,0 +1,21 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-04-17", "endDate": "2026-04-19", "name": "6 Hours of Imola" },
+    { "round": 2, "startDate": "2026-05-07", "endDate": "2026-05-09", "name": "TotalEnergies 6 Hours of Spa-Francorchamps" },
+    { "round": 3, "startDate": "2026-06-13", "endDate": "2026-06-14", "name": "24 Hours of Le Mans" },
+    { "round": 4, "startDate": "2026-07-10", "endDate": "2026-07-12", "name": "Rolex 6 Hours of São Paulo" },
+    { "round": 5, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "Lone Star Le Mans" },
+    { "round": 6, "startDate": "2026-09-25", "endDate": "2026-09-27", "name": "6 Hours of Fuji" },
+    {
+      "round": 7,
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-24",
+      "name": "Qatar 1812 km",
+      "previousStartDate": "2026-03-26",
+      "previousEndDate": "2026-03-28",
+      "rescheduleNote": "Postponed from R1 opener due to Middle East conflict; Imola promoted to season opener"
+    },
+    { "round": 8, "startDate": "2026-11-05", "endDate": "2026-11-07", "name": "Bapco Energies 8 Hours of Bahrain" }
+  ]
+}
