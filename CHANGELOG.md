@@ -2,6 +2,16 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.1 — 2026-05-16
+
+### Fixed
+- **Phantom "3 am" session times** on every non-F1 series (MotoGP, WEC, F2, F3, IndyCar, IMSA, WSBK, WRC, DTM, GT World, NASCAR Cup, NLS, Formula E). Their upstream calendars only publish a date — no hour — so node-ical was anchoring those events at UTC midnight, which Europe/Athens then rendered as 02:00–03:00. Sessions now carry a `dateOnly` flag from the parser; UI renders **"TBC"** instead of a made-up time, live-now and the notification cron both ignore them so no false "starts in 30 min" pushes fire.
+- **Wrong F1 round numbers.** The Canada page was titled "Round 3" when Canada is actually round 5 of the 2026 championship. Round numbers were the array index in our windowed sessions list; with Bahrain + Saudi cancelled and Australia + China already in the past, the index had drifted from the FIA-canonical number. Weekend pages now use canonical round numbers sourced from `content/series/<slug>/rounds.json` (F1 2026 seeded with the full 22-round calendar), with a graceful fallback to index+1 for series that haven't been curated yet.
+
+### Added
+- **Session overrides** at `content/series/<slug>/sessions.json` — when an upstream feed only ships a date-only weekend marker, a sidecar file fills in the real timed sessions. Seeded with **Formula E Monaco E-Prix 2026** (rounds 9 & 10 double-header, real CEST timings from fiaformulae.com).
+- **Round metadata** at `content/series/<slug>/rounds.json` — canonical FIA round numbers + race-weekend date ranges, used to keep the weekend page's "Round N" label honest even when upstream feeds skip cancellations or trim past races.
+
 ## 0.9.0 — 2026-05-16
 
 ### Added
