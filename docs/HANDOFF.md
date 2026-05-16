@@ -132,3 +132,72 @@ Four versions across one session — coherent narrative: bug fixes → operating
 - **Mid-session:** don't edit. Use `IDEAS.md` Inbox for new ideas, `TaskList` for in-flight work.
 - **Session end:** update the "what shipped last session" block + infra ledger. Bump the timestamp if you make non-trivial changes. Trim "loose items" or move them to `IDEAS.md` Inbox as they accumulate.
 - **Never:** duplicate state across `IDEAS.md` and this file. IDEAS.md is the *queue*; this file is the *snapshot of where the project is now*.
+
+---
+
+## Appendix — flat open-items inventory (snapshot 2026-05-16)
+
+Single flat enumeration of every open item known at the close of `0.9.5`. The sections above (Sessions roadmap / Loose items / Open design questions / Infra ledger) reorganise the same substance by lifecycle. The flat list exists so a contributor can scan the whole pile in one pass without jumping between sections.
+
+Items marked **DONE** were shipped during the 2026-05-16 session and remain here for traceability — they will be pruned when the appendix is next refreshed.
+
+1. Migrate sessions, standings, results, news, weather, drivers, and teams to a Supabase-backed data layer with scheduled scrapes per series.
+2. Research existing public motorsport data sources (Ergast/jolpica for F1, MotoGP web API, FIA feeds, third-party aggregators) before building scrapers from scratch.
+3. Curate `sessions.json` with real session hours for every non-F1 series (MotoGP, WEC, F2, F3, IndyCar, IMSA, WSBK, WRC, DTM, GT World, NASCAR Cup, NLS, ADAC Ravenol 24h).
+4. Curate `rounds.json` per non-F1 series so FIA-canonical round numbers replace the array-index fallback.
+5. Research and document live in-race data sources (sector times, leaderboard, gaps, tyre choices) for F1, MotoGP, WEC, FE, IndyCar.
+6. Reverse-engineer fiaformulae.com, motogp.com, nascar.com XHR endpoints to see if unsigned JSON can substitute Playwright scraping.
+7. Decide between Vercel Sandbox/Playwright, third-party aggregator, and curation-first for JS-rendered official sites.
+8. Replace the planned KV data-watch framework with Supabase-backed watchers that drive an admin push channel and a Claude-curation queue.
+9. Add `app/sitemap.ts`, `app/robots.ts`, JSON-LD (`SportsEvent`, `Organization`, `Person`, `BreadcrumbList`), per-page `generateMetadata`, OG image generators, and canonical URLs.
+10. Implement a fan-intent keyword strategy across series, weekend, driver, and team pages (schedule, programme, where to watch, live stream, timetable).
+11. Enrich `/drivers/[slug]` with Wikipedia bio, current standings position, last 5 results, and news mentions.
+12. Enrich `/teams/[slug]` with the same shape.
+13. Redesign F1 History tab or replace with curated `content/series/f1/history.md`.
+14. Improve Rules tab with an FIA PDF link and a "common topics" surface.
+15. Implement `lib/results/<slug>.ts` and `lib/standings/<slug>.ts` for MotoGP, WEC, IndyCar, NASCAR.
+16. Audit endurance-series weekend grouping (WEC, IMSA, NLS, ADAC 24h, multi-day tests) for `groupByWeekend` mis-splits.
+17. Add a custom `app/error.tsx` page.
+18. Integrate Sentry for error monitoring.
+19. Add `/api/cron/health` that summarises last-run timestamps for every cron job.
+20. Run a Lighthouse and Speed Insights perf audit and act on findings.
+21. Fix the nine legacy ESLint errors and add a husky pre-commit hook.
+22. Add component tests with vitest + Testing Library.
+23. Add Playwright E2E tests that run on Vercel preview deploys.
+24. Build a comments thread (Clerk-gated) on race-weekend pages.
+25. Build predictions with an open → locked-at-session-start → resolved-after-race state machine.
+26. Build paddock-coins ledger and leaderboard.
+27. Write a public README with screenshots and a Mermaid architecture diagram.
+28. Write the first 2–3 MDX blog posts.
+29. Persist active news-filter chip across page reloads.
+30. Run a mobile-first UI/UX audit using the `tailwindcss-mobile-first` patterns.
+31. Run a WCAG 2.2 AA accessibility audit and fix gaps.
+32. Polish motion, focus states, and dark-mode contrast across the site.
+33. Do another "Claude design" depth pass for background warmth and global theming.
+34. Run user research via a site survey, conversations with fans, and subreddit pain-point mining.
+35. Add per-event-type push notifications (qualifying topper via RSS filter, race winner, championship-deciding event).
+36. Make the push click handler deep-link to a specific session or article instead of always opening `/`.
+37. Build a Settings "Your devices" list with per-device test and remove buttons.
+38. Send hero images in `payload.image`, sourced from curated circuit JPEGs or motorsport.com thumbnails.
+39. Investigate per-series Champions JSON to fix the fragile parser (F1 wrong points column, F3 all zero, MotoGP brittle redirects).
+40. Delete unused `lib/onboarding.ts` (only wizard-reopen consumer).
+41. DRY the duplicated logic between `EnableNotifications` and `OnboardingWizard`.
+42. Retheme the Clerk sign-in and sign-up pages to Paddock dark.
+43. Add a `WeekendMedia` section to `/series/<slug>/weekend/<round>` fed by `content/series/<slug>/media.json` (YouTube highlight reels, blog cross-links, onboard clips).
+44. Choose an embedded-video provider (YouTube iframe vs Mux vs Cloudflare Stream).
+45. Add a Tracks/Circuits view per series with a map.
+46. Make the home hero show the next 2–3 sessions when all are imminent.
+47. Make session cards tap-to-expand to broadcast info, streaming, and track details.
+48. Add a per-driver season-trend chart to `/drivers/[slug]`.
+49. Add era markers and sparklines to the Champions tab.
+50. Fold `overview.md` content fully into the F1 About tab.
+51. Surface "common topics" on the Rules tab.
+52. Install Resend Marketplace and wire `RESEND_API_KEY` + `CONTACT_TO_EMAIL` so contact-form submissions email out.
+53. Rotate `sk_live_*` Clerk keys.
+54. **DONE (`0.9.2` + `0.9.3`)** — Bootstrap a real `CLAUDE.md` operating manual.
+55. **DONE (`0.9.2`)** — Scaffold `IDEAS.md` with Inbox / Now / Next / Parked / Killed sections seeded from this list.
+56. **DONE (`0.9.3`)** — Encode the time-plan-at-start, capture-mid-session, triage-at-end workflow in `CLAUDE.md` as a best practice.
+57. Investigate residual `00:00` string on `/series/f1/weekend/5` to confirm it is a legit time or remove a stale fake.
+58. Visually verify the Canada round-5 page and FE Monaco weekend in a real browser (Playwright was locked during the 0.9.1 verification pass).
+59. **DONE (`0.9.1`)** — Commit the bundled PR (3 am fix + sessions.json overrides + rounds.json infra + FE Monaco curation + F1 rounds curation + tests).
+60. **DONE (`0.9.5`)** — Update the handoff with the Supabase initiative reframing S4 and the live-race-data ambition.

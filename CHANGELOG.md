@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.6 — 2026-05-16
+
+### Added
+- **`docs/HANDOFF.md` appendix** — the flat 60-item open-items inventory now sits at the bottom of the handoff. The sections above still reorganise the same substance by lifecycle (Sessions roadmap / Loose items / Open design questions / Infra ledger); the appendix exists so a contributor can scan everything in one pass without jumping sections. Items already shipped during 2026-05-16 are marked **DONE** for traceability and will be pruned on the next refresh.
+
 ## 0.9.5 — 2026-05-16
 
 ### Added
