@@ -40,8 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code local
-.claude/settings.local.json
+# Claude Code local (settings + worktrees etc.)
+.claude/
 
 # OS / editors
 .DS_Store

@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.2 — 2026-05-16
+
+### Added
+- **Repo operating docs.** `CLAUDE.md` is now a real operating manual (replaces the one-line `@AGENTS.md` shim), `IDEAS.md` is the project-wide idea ledger with Now / Next / Inbox / Parked / Killed sections, and `SCHEDULE.md` holds the day-by-day time plan. Non-runtime files — no user-visible change — but establishes the working agreement and triage cadence for every future session.
+
 ## 0.9.1 — 2026-05-16
 
 ### Fixed
