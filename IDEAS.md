@@ -69,7 +69,8 @@ Time-based scheduling lives in `SCHEDULE.md`.
 - Surface "common topics" on the Rules tab.
 - Install Resend Marketplace and wire RESEND_API_KEY + CONTACT_TO_EMAIL so contact-form submissions email out.
 - Rotate sk_live_* Clerk keys.
-- Surface per-weekend car upgrades on the F1 weekend page — what each team brought to this round, sourced from the FIA Car Presentation Document or scraped from F1.com / motorsport.com.
+- Surface per-weekend car upgrades on the F1 weekend page — what each team brought to this round, sourced from the FIA Car Presentation Document or scraped from F1.com / motorsport.com. Implementation hint: RapidAPI's "Formula 1 Technical Upgrades" by SebastianL documents the data shape (stale repo but useful schema reference).
+- Live in-race data feed (lap-by-lap, telemetry, sector splits) for the live-now view on race day. Implementation hint: RapidAPI's "F1 Live Timing - Telemetry and GPS" (recently updated) is one candidate; the canonical long-term path is the Pulselive backend for MotoGP/WSBK and Jolpica live extensions for F1.
 - Embed YouTube highlights + extended-highlight videos on past weekend pages, and add dedicated season / month recap pages when a period wraps with embedded season-highlight videos + written blog text on how it went + standings snapshots at that point.
 
 ## Parked (might do, with a revisit trigger)

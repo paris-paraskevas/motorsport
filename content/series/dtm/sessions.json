@@ -13,6 +13,84 @@
         { "title": "DTM - Qualifying 2", "start": "2026-04-26T07:30:00Z", "end": "2026-04-26T08:00:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
         { "title": "DTM - Race 2", "start": "2026-04-26T10:55:00Z", "end": "2026-04-26T11:55:00Z", "location": "Red Bull Ring, Spielberg, Austria" }
       ]
+    },
+    {
+      "matchDate": "2026-05-24",
+      "round": 2,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-05-22T08:25:00Z", "end": "2026-05-22T09:25:00Z", "location": "Circuit Zandvoort, Netherlands" },
+        { "title": "DTM - Free Practice 2", "start": "2026-05-22T10:15:00Z", "end": "2026-05-22T11:15:00Z", "location": "Circuit Zandvoort, Netherlands" },
+        { "title": "DTM - Free Practice 3", "start": "2026-05-22T14:00:00Z", "end": "2026-05-22T14:45:00Z", "location": "Circuit Zandvoort, Netherlands" },
+        { "title": "DTM - Qualifying 1", "start": "2026-05-23T07:40:00Z", "end": "2026-05-23T08:10:00Z", "location": "Circuit Zandvoort, Netherlands" },
+        { "title": "DTM - Race 1", "start": "2026-05-23T10:55:00Z", "end": "2026-05-23T11:55:00Z", "location": "Circuit Zandvoort, Netherlands" },
+        { "title": "DTM - Qualifying 2", "start": "2026-05-24T07:30:00Z", "end": "2026-05-24T08:00:00Z", "location": "Circuit Zandvoort, Netherlands" },
+        { "title": "DTM - Race 2", "start": "2026-05-24T10:55:00Z", "end": "2026-05-24T11:55:00Z", "location": "Circuit Zandvoort, Netherlands" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-21",
+      "round": 3,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-06-19T08:25:00Z", "end": "2026-06-19T09:25:00Z", "location": "DEKRA Lausitzring, Germany" },
+        { "title": "DTM - Free Practice 2", "start": "2026-06-19T10:15:00Z", "end": "2026-06-19T11:15:00Z", "location": "DEKRA Lausitzring, Germany" },
+        { "title": "DTM - Free Practice 3", "start": "2026-06-19T14:00:00Z", "end": "2026-06-19T14:45:00Z", "location": "DEKRA Lausitzring, Germany" },
+        { "title": "DTM - Qualifying 1", "start": "2026-06-20T07:40:00Z", "end": "2026-06-20T08:10:00Z", "location": "DEKRA Lausitzring, Germany" },
+        { "title": "DTM - Race 1", "start": "2026-06-20T10:55:00Z", "end": "2026-06-20T11:55:00Z", "location": "DEKRA Lausitzring, Germany" },
+        { "title": "DTM - Qualifying 2", "start": "2026-06-21T07:30:00Z", "end": "2026-06-21T08:00:00Z", "location": "DEKRA Lausitzring, Germany" },
+        { "title": "DTM - Race 2", "start": "2026-06-21T10:55:00Z", "end": "2026-06-21T11:55:00Z", "location": "DEKRA Lausitzring, Germany" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-26",
+      "round": 5,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-07-24T08:25:00Z", "end": "2026-07-24T09:25:00Z", "location": "Motorsport Arena Oschersleben, Germany" },
+        { "title": "DTM - Free Practice 2", "start": "2026-07-24T10:15:00Z", "end": "2026-07-24T11:15:00Z", "location": "Motorsport Arena Oschersleben, Germany" },
+        { "title": "DTM - Free Practice 3", "start": "2026-07-24T14:00:00Z", "end": "2026-07-24T14:45:00Z", "location": "Motorsport Arena Oschersleben, Germany" },
+        { "title": "DTM - Qualifying 1", "start": "2026-07-25T07:40:00Z", "end": "2026-07-25T08:10:00Z", "location": "Motorsport Arena Oschersleben, Germany" },
+        { "title": "DTM - Race 1", "start": "2026-07-25T10:55:00Z", "end": "2026-07-25T11:55:00Z", "location": "Motorsport Arena Oschersleben, Germany" },
+        { "title": "DTM - Qualifying 2", "start": "2026-07-26T07:30:00Z", "end": "2026-07-26T08:00:00Z", "location": "Motorsport Arena Oschersleben, Germany" },
+        { "title": "DTM - Race 2", "start": "2026-07-26T10:55:00Z", "end": "2026-07-26T11:55:00Z", "location": "Motorsport Arena Oschersleben, Germany" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-16",
+      "round": 6,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-08-14T08:25:00Z", "end": "2026-08-14T09:25:00Z", "location": "Nürburgring, Germany" },
+        { "title": "DTM - Free Practice 2", "start": "2026-08-14T10:15:00Z", "end": "2026-08-14T11:15:00Z", "location": "Nürburgring, Germany" },
+        { "title": "DTM - Free Practice 3", "start": "2026-08-14T14:00:00Z", "end": "2026-08-14T14:45:00Z", "location": "Nürburgring, Germany" },
+        { "title": "DTM - Qualifying 1", "start": "2026-08-15T07:40:00Z", "end": "2026-08-15T08:10:00Z", "location": "Nürburgring, Germany" },
+        { "title": "DTM - Race 1", "start": "2026-08-15T10:55:00Z", "end": "2026-08-15T11:55:00Z", "location": "Nürburgring, Germany" },
+        { "title": "DTM - Qualifying 2", "start": "2026-08-16T07:30:00Z", "end": "2026-08-16T08:00:00Z", "location": "Nürburgring, Germany" },
+        { "title": "DTM - Race 2", "start": "2026-08-16T10:55:00Z", "end": "2026-08-16T11:55:00Z", "location": "Nürburgring, Germany" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-13",
+      "round": 7,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-09-11T08:25:00Z", "end": "2026-09-11T09:25:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" },
+        { "title": "DTM - Free Practice 2", "start": "2026-09-11T10:15:00Z", "end": "2026-09-11T11:15:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" },
+        { "title": "DTM - Free Practice 3", "start": "2026-09-11T14:00:00Z", "end": "2026-09-11T14:45:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" },
+        { "title": "DTM - Qualifying 1", "start": "2026-09-12T07:40:00Z", "end": "2026-09-12T08:10:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" },
+        { "title": "DTM - Race 1", "start": "2026-09-12T10:55:00Z", "end": "2026-09-12T11:55:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" },
+        { "title": "DTM - Qualifying 2", "start": "2026-09-13T07:30:00Z", "end": "2026-09-13T08:00:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" },
+        { "title": "DTM - Race 2", "start": "2026-09-13T10:55:00Z", "end": "2026-09-13T11:55:00Z", "location": "Sachsenring, Hohenstein-Ernstthal, Germany" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-11",
+      "round": 8,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-10-09T08:25:00Z", "end": "2026-10-09T09:25:00Z", "location": "Hockenheimring, Germany" },
+        { "title": "DTM - Free Practice 2", "start": "2026-10-09T10:15:00Z", "end": "2026-10-09T11:15:00Z", "location": "Hockenheimring, Germany" },
+        { "title": "DTM - Free Practice 3", "start": "2026-10-09T14:00:00Z", "end": "2026-10-09T14:45:00Z", "location": "Hockenheimring, Germany" },
+        { "title": "DTM - Qualifying 1", "start": "2026-10-10T07:40:00Z", "end": "2026-10-10T08:10:00Z", "location": "Hockenheimring, Germany" },
+        { "title": "DTM - Race 1", "start": "2026-10-10T10:55:00Z", "end": "2026-10-10T11:55:00Z", "location": "Hockenheimring, Germany" },
+        { "title": "DTM - Qualifying 2", "start": "2026-10-11T07:30:00Z", "end": "2026-10-11T08:00:00Z", "location": "Hockenheimring, Germany" },
+        { "title": "DTM - Race 2", "start": "2026-10-11T10:55:00Z", "end": "2026-10-11T11:55:00Z", "location": "Hockenheimring, Germany" }
+      ]
     }
   ]
 }

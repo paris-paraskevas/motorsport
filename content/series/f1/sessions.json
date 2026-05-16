@@ -154,6 +154,94 @@
         { "title": "F1 - Qualifying", "start": "2026-11-21T04:00:00Z", "end": "2026-11-21T05:00:00Z", "location": "Las Vegas Strip Circuit" },
         { "title": "F1 - Race", "start": "2026-11-22T04:00:00Z", "end": "2026-11-22T06:00:00Z", "location": "Las Vegas Strip Circuit" }
       ]
+    },
+    {
+      "matchDate": "2026-07-05",
+      "round": 9,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-07-03T11:30:00Z", "end": "2026-07-03T12:30:00Z", "location": "Silverstone Circuit" },
+        { "title": "F1 - Sprint Qualifying", "start": "2026-07-03T15:30:00Z", "end": "2026-07-03T16:14:00Z", "location": "Silverstone Circuit" },
+        { "title": "F1 - Sprint", "start": "2026-07-04T11:00:00Z", "end": "2026-07-04T12:00:00Z", "location": "Silverstone Circuit" },
+        { "title": "F1 - Qualifying", "start": "2026-07-04T15:00:00Z", "end": "2026-07-04T16:00:00Z", "location": "Silverstone Circuit" },
+        { "title": "F1 - Race", "start": "2026-07-05T14:00:00Z", "end": "2026-07-05T16:00:00Z", "location": "Silverstone Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-23",
+      "round": 12,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-08-21T10:30:00Z", "end": "2026-08-21T11:30:00Z", "location": "Circuit Zandvoort" },
+        { "title": "F1 - Sprint Qualifying", "start": "2026-08-21T14:30:00Z", "end": "2026-08-21T15:14:00Z", "location": "Circuit Zandvoort" },
+        { "title": "F1 - Sprint", "start": "2026-08-22T10:00:00Z", "end": "2026-08-22T11:00:00Z", "location": "Circuit Zandvoort" },
+        { "title": "F1 - Qualifying", "start": "2026-08-22T14:00:00Z", "end": "2026-08-22T15:00:00Z", "location": "Circuit Zandvoort" },
+        { "title": "F1 - Race", "start": "2026-08-23T13:00:00Z", "end": "2026-08-23T15:00:00Z", "location": "Circuit Zandvoort" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-26",
+      "round": 15,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-09-24T09:30:00Z", "end": "2026-09-24T10:30:00Z", "location": "Baku City Circuit" },
+        { "title": "F1 - Practice 2", "start": "2026-09-24T13:00:00Z", "end": "2026-09-24T14:00:00Z", "location": "Baku City Circuit" },
+        { "title": "F1 - Practice 3", "start": "2026-09-25T08:30:00Z", "end": "2026-09-25T09:30:00Z", "location": "Baku City Circuit" },
+        { "title": "F1 - Qualifying", "start": "2026-09-25T12:00:00Z", "end": "2026-09-25T13:00:00Z", "location": "Baku City Circuit" },
+        { "title": "F1 - Race", "start": "2026-09-26T11:00:00Z", "end": "2026-09-26T13:00:00Z", "location": "Baku City Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-11",
+      "round": 16,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-10-09T09:30:00Z", "end": "2026-10-09T10:30:00Z", "location": "Marina Bay Street Circuit, Singapore" },
+        { "title": "F1 - Sprint Qualifying", "start": "2026-10-09T12:30:00Z", "end": "2026-10-09T13:14:00Z", "location": "Marina Bay Street Circuit, Singapore" },
+        { "title": "F1 - Sprint", "start": "2026-10-10T09:00:00Z", "end": "2026-10-10T10:00:00Z", "location": "Marina Bay Street Circuit, Singapore" },
+        { "title": "F1 - Qualifying", "start": "2026-10-10T12:00:00Z", "end": "2026-10-10T13:00:00Z", "location": "Marina Bay Street Circuit, Singapore" },
+        { "title": "F1 - Race", "start": "2026-10-11T12:00:00Z", "end": "2026-10-11T14:00:00Z", "location": "Marina Bay Street Circuit, Singapore" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-25",
+      "round": 17,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-10-23T18:30:00Z", "end": "2026-10-23T19:30:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "F1 - Practice 2", "start": "2026-10-23T22:00:00Z", "end": "2026-10-23T23:00:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "F1 - Practice 3", "start": "2026-10-24T17:30:00Z", "end": "2026-10-24T18:30:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "F1 - Qualifying", "start": "2026-10-24T21:00:00Z", "end": "2026-10-24T22:00:00Z", "location": "Circuit of The Americas, Austin" },
+        { "title": "F1 - Race", "start": "2026-10-25T20:00:00Z", "end": "2026-10-25T22:00:00Z", "location": "Circuit of The Americas, Austin" }
+      ]
+    },
+    {
+      "matchDate": "2026-11-08",
+      "round": 19,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-11-06T16:30:00Z", "end": "2026-11-06T17:30:00Z", "location": "Autodromo Jose Carlos Pace, São Paulo" },
+        { "title": "F1 - Practice 2", "start": "2026-11-06T20:00:00Z", "end": "2026-11-06T21:00:00Z", "location": "Autodromo Jose Carlos Pace, São Paulo" },
+        { "title": "F1 - Practice 3", "start": "2026-11-07T15:30:00Z", "end": "2026-11-07T16:30:00Z", "location": "Autodromo Jose Carlos Pace, São Paulo" },
+        { "title": "F1 - Qualifying", "start": "2026-11-07T19:00:00Z", "end": "2026-11-07T20:00:00Z", "location": "Autodromo Jose Carlos Pace, São Paulo" },
+        { "title": "F1 - Race", "start": "2026-11-08T18:00:00Z", "end": "2026-11-08T20:00:00Z", "location": "Autodromo Jose Carlos Pace, São Paulo" }
+      ]
+    },
+    {
+      "matchDate": "2026-11-29",
+      "round": 21,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-11-27T13:30:00Z", "end": "2026-11-27T14:30:00Z", "location": "Lusail International Circuit" },
+        { "title": "F1 - Practice 2", "start": "2026-11-27T17:00:00Z", "end": "2026-11-27T18:00:00Z", "location": "Lusail International Circuit" },
+        { "title": "F1 - Practice 3", "start": "2026-11-28T12:30:00Z", "end": "2026-11-28T13:30:00Z", "location": "Lusail International Circuit" },
+        { "title": "F1 - Qualifying", "start": "2026-11-28T16:00:00Z", "end": "2026-11-28T17:00:00Z", "location": "Lusail International Circuit" },
+        { "title": "F1 - Race", "start": "2026-11-29T16:00:00Z", "end": "2026-11-29T18:00:00Z", "location": "Lusail International Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-12-06",
+      "round": 22,
+      "sessions": [
+        { "title": "F1 - Practice 1", "start": "2026-12-04T09:30:00Z", "end": "2026-12-04T10:30:00Z", "location": "Yas Marina Circuit" },
+        { "title": "F1 - Practice 2", "start": "2026-12-04T13:00:00Z", "end": "2026-12-04T14:00:00Z", "location": "Yas Marina Circuit" },
+        { "title": "F1 - Practice 3", "start": "2026-12-05T10:30:00Z", "end": "2026-12-05T11:30:00Z", "location": "Yas Marina Circuit" },
+        { "title": "F1 - Qualifying", "start": "2026-12-05T14:00:00Z", "end": "2026-12-05T15:00:00Z", "location": "Yas Marina Circuit" },
+        { "title": "F1 - Race", "start": "2026-12-06T13:00:00Z", "end": "2026-12-06T15:00:00Z", "location": "Yas Marina Circuit" }
+      ]
     }
   ]
 }

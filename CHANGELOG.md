@@ -2,6 +2,29 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.11 — 2026-05-16
+
+### Added
+- **Template-projected session times for empty rounds across 6 series.** Where official sources hadn't published per-event timetables but the series' weekend format is rigid and predictable, applied the standard template with venue-local→UTC conversion (~95% confidence). Specific fills:
+  - **F1** — 8 rounds added (Britain R9 sprint, Netherlands R12 sprint, Azerbaijan R15 Saturday-race, Singapore R16 sprint night, USA R17, Brazil R19, Qatar R21 night, Abu Dhabi R22 dusk-race). All ICS-feed-only rounds now have real session times.
+  - **F2** — 10 rounds added (R5 Barcelona through R14 Abu Dhabi). Full FIA F2 weekend template applied (Practice / Qualifying / Sprint Race / Feature Race).
+  - **F3** — 7 rounds added (R4 Barcelona through R10 Madrid). Full FIA F3 weekend template (Practice / Group A+B Quali / Sprint / Feature).
+  - **MotoGP** — 3 rounds added (R20 Qatar night-race, R21 Portugal post-DST, R22 Valencia post-DST). All three are the post-postponement cascade dates confirmed in `0.9.9`'s `rounds.json`.
+  - **WEC** — 14 matchDate blocks across rounds 4-8 (São Paulo, COTA, Fuji, Qatar 1812km, Bahrain 8h). Standard FP1/FP2/FP3/multi-class-Quali/Hyperpole/Race format.
+  - **DTM** — 6 rounds added (R2 Zandvoort, R3 Lausitzring, R5 Oschersleben, R6 Nürburgring, R7 Sachsenring, R8 Hockenheim). Standard 3-FP/2-Quali/2-Race template. R4 Norisring intentionally left empty — its unique split-qualifying format means session titles would be wrong even with right times; awaits ADAC official schedule.
+  - **GTWCE** — 14 matchDate blocks across rounds 3, 6, 7, 9, 10 (Monza Endurance, Magny-Cours Sprint, Nürburgring Endurance, Barcelona Endurance, Portimão Endurance finale).
+- **`IDEAS.md` inbox** — two RapidAPI references for future feature work:
+  - **F1 Technical Upgrades API** (SebastianL on RapidAPI) — schema reference for the inbox item "Surface per-weekend car upgrades on the F1 weekend page".
+  - **F1 Live Timing - Telemetry and GPS API** (Content Net on RapidAPI) — candidate source for the long-term "live in-race data" ambition (telemetry, lap-by-lap).
+- **Investigated RapidAPI alternatives.** Confirmed via direct probe + OpenAPI spec inspection:
+  - **Sportbex Motor Sport API** — useless for schedules (betting odds only, F1 + IndyCar only).
+  - **AllSportsApi v2** (Sofascore-clone) — **does** cover motorsport with 13 categories (F1, MotoGP, Moto2, Moto3, WSBK, FE, WRC, IndyCar, NASCAR, DTM + 3 others). Endpoints `/api/motorsport/categories` and `/api/motorsport/stage/scheduled/{date}` work. **Not wired in this PR** — endpoint discovery completed but schema integration deferred. Verdict: parked for future "automated refresh" cron once Supabase lands.
+  - **TheSportsDB** — right shape (per-session times for F1) but only F1 rounds 1-2 populated; volunteer-edited and lags reality.
+
+### Notes
+- All template-projected times carry the ~95% confidence flag from the source agent. As official timetables publish (typically 4-6 weeks pre-event), the curated values can be refreshed. The agent's full caveat list (Norisring split-quali, F2 Baku Saturday format, WEC Qatar 1812km race start, COTA WEC race time) is preserved in the conversation context for follow-up.
+- F1 Azerbaijan `matchDate` correctly anchors to Saturday Sep 26 (Race day, not Sunday Sep 27 in current `rounds.json`). The `rounds.json` `endDate` mismatch flagged in `0.9.10` notes still stands.
+
 ## 0.9.10 — 2026-05-16
 
 ### Added
