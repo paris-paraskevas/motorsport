@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.3 — 2026-05-16
+
+### Changed
+- **CLAUDE.md operating manual matured.** Imported the ESPA protocol (Evaluate / Scrutinize / Present / Await before every non-trivial action) from sibling projects, plus seven extensions (mid-failure recovery, senior-engineer self-check, pre-mortem one-liner, verify-the-obvious, plan-level negative space, memory drift check, realistic-scope-and-single-plan-focus). Added a Mode awareness section (plan-mode triggers vs execute-mode), four communication discipline rules (mistake-flagging, source-citation, file-creation gate, formatting discipline), and reversed the previous commit-attribution policy — commits no longer include `Co-Authored-By: Claude` lines. Non-runtime; affects how future sessions execute work.
+
 ## 0.9.2 — 2026-05-16
 
 ### Added

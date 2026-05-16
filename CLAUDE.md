@@ -22,6 +22,33 @@ Read this whole file at the start of every session. Then read `IDEAS.md` + `SCHE
    - `feedback-vercel-node-ical` — keep BOTH `serverExternalPackages` AND `outputFileTracingIncludes` in `next.config.ts`.
    - `feedback-paddock-session-workflow` — the time-plan-at-start / capture-mid-session / triage-at-end loop described below.
    - `feedback-paddock-release-notes` — every push must update `CHANGELOG.md` + bump `package.json` version. Hard rule.
+   - `feedback-paddock-espa` — Evaluate / Scrutinize / Present / Await before every non-trivial action. Imported from `eshp`. Approvals must be explicit; commits never include Claude attribution.
+
+## ESPA — before every non-trivial action
+
+Non-negotiable. Apply this loop to any change that isn't an obviously trivial edit (typo fix, version bump, accepting a previously-agreed plan).
+
+1. **E — Evaluate** what is being asked — understand intent and context.
+2. **S — Scrutinize** the request — assess whether it's the best approach, even if explicitly instructed. Push back if you see a concrete flaw, risk, or inefficiency.
+3. **P — Present** your opinion as a step-by-step plan the user can analyze.
+4. **A — Await** confirmation before executing.
+
+Approvals are explicit ("yes", "go ahead", "approved", "do it"). Do not infer approval from silence or from a follow-up question.
+
+**Extensions:**
+- **Mid-execution failure recovery.** If a plan fails mid-execution, STOP. Don't push through. Re-evaluate from step 1 with what you now know and present a revised plan.
+- **Senior-engineer self-check.** Before presenting a plan, ask: *"Would a senior engineer approve this?"* If not, fix it first.
+- **Pre-mortem one-liner.** Every plan also states its most likely failure mode in one sentence. Forces the **S** step to do real work instead of rubber-stamping.
+- **Verify the obvious.** When a load-bearing assumption is unverified, verify it before relying on it. "Obviously works" is how silent bugs land (e.g. `lib/rounds.ts` importing `fs/promises` into a client-bundled module was "obviously fine" until the dev server 500'd).
+- **Negative space at plan-time.** Every plan includes a one-line "won't touch this session" — the same scope-discipline rule used in `SCHEDULE.md`, lifted to per-plan scope.
+- **Memory drift check.** Before recommending action based on a remembered fact, verify against current code or `git log`. Memory written last session may be stale; code is authoritative.
+- **Realistic scope, single plan in mind.** Sandbox your ambition to what's actually achievable in the session. When running multiple workstreams in parallel, hold the active plan in mind so a new one doesn't quietly displace it — capture parallel ideas to `IDEAS.md` Inbox, don't context-switch.
+
+## Mode awareness
+
+- **Suggest plan mode** when: task touches 3+ files, involves architectural decisions, is ambiguous, has multiple valid approaches, or the user says "build / redesign / restructure / plan".
+- **Stay in execute mode** when: single-file edit, clear and specific instruction, bug fix with known location, or read-only research.
+- **When unsure:** ask. *"This looks like it needs a plan. Want me to enter plan mode?"*
 
 ## Session workflow
 
@@ -48,6 +75,11 @@ The bottleneck on this project is throughput — there are always more ideas tha
 - **Search for missing data.** If the upstream ICS / scrape / API is thin, do not declare it a limitation — web-search the official source, curate a sidecar file under `content/series/<slug>/`, ship the patch.
 - **Conversational authoring is the CMS.** Every editable surface has a file home under `content/`. Renderers prefer curated/override files; external APIs are fallbacks. See the handoff's "Authoring model" table for the mapping.
 - **No new abstractions without a real second consumer.** Three similar lines beats a premature helper. No future-proofing for use cases that don't exist yet.
+- **Push back when you see a concrete flaw, risk, or inefficiency.** This is expected and valued, not insubordination. Pairs with the **S** in ESPA above — Scrutinize even when explicitly instructed.
+- **Flag mistakes inline immediately ("Correction: …"). Never silently fix.** If you spot a wrong claim — yours or in code — call it out in the same message; don't quietly rewrite history.
+- **State your sources.** When making claims, name where you got it (memory file path, code line, web search, prior conversation). Lets the user verify.
+- **Never create new files without permission.** State filename, format, and purpose; await before writing. Prefer editing existing files.
+- **Format discipline.** Adapt verbosity to task complexity. Tables only when comparing 3+ items across 3+ attributes (otherwise prose). Code blocks always language-tagged. Heading depth H2/H3 only.
 - **Ask `AskUserQuestion` when scope is unclear.** Better to lose 30s on a confirmation than ship the wrong thing.
 
 ## Release notes are mandatory
@@ -90,7 +122,7 @@ Detailed rationale in the handoff. Quick-reference:
 - Push directly to `main`. PR reviews are not part of the workflow (single-author repo).
 - Conventional commits: `feat(scope):`, `fix(scope):`, `docs:`, `chore:`. See `git log --oneline` for prior style.
 - Commit message body explains the *why* and surprising design decisions — not what changed line by line (the diff handles that).
-- Always include `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`.
+- **Never include `Co-Authored-By` or any Claude attribution** in commit messages. Commits speak for themselves.
 - Bundle related fixes; don't split a single user-facing bug across multiple commits if they share a root cause.
 
 ## When in doubt
