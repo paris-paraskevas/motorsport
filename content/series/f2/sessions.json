@@ -1,0 +1,44 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-03-08",
+      "round": 1,
+      "sessions": [
+        { "title": "F2 - Practice", "start": "2026-03-05T23:00:00Z", "end": "2026-03-05T23:45:00Z", "location": "Albert Park Circuit, Melbourne" },
+        { "title": "F2 - Qualifying", "start": "2026-03-06T03:55:00Z", "end": "2026-03-06T04:25:00Z", "location": "Albert Park Circuit, Melbourne" },
+        { "title": "F2 - Sprint Race", "start": "2026-03-07T03:10:00Z", "end": "2026-03-07T04:00:00Z", "location": "Albert Park Circuit, Melbourne" },
+        { "title": "F2 - Feature Race", "start": "2026-03-08T00:25:00Z", "end": "2026-03-08T01:35:00Z", "location": "Albert Park Circuit, Melbourne" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-03",
+      "round": 2,
+      "sessions": [
+        { "title": "F2 - Practice", "start": "2026-05-01T13:30:00Z", "end": "2026-05-01T14:15:00Z", "location": "Miami International Autodrome" },
+        { "title": "F2 - Qualifying", "start": "2026-05-01T18:30:00Z", "end": "2026-05-01T19:00:00Z", "location": "Miami International Autodrome" },
+        { "title": "F2 - Sprint Race", "start": "2026-05-02T18:10:00Z", "end": "2026-05-02T18:55:00Z", "location": "Miami International Autodrome" },
+        { "title": "F2 - Feature Race", "start": "2026-05-03T13:25:00Z", "end": "2026-05-03T14:30:00Z", "location": "Miami International Autodrome" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-24",
+      "round": 3,
+      "sessions": [
+        { "title": "F2 - Practice", "start": "2026-05-22T14:05:00Z", "end": "2026-05-22T14:50:00Z", "location": "Circuit Gilles Villeneuve, Montreal" },
+        { "title": "F2 - Qualifying", "start": "2026-05-22T18:00:00Z", "end": "2026-05-22T18:30:00Z", "location": "Circuit Gilles Villeneuve, Montreal" },
+        { "title": "F2 - Sprint Race", "start": "2026-05-23T18:10:00Z", "end": "2026-05-23T18:55:00Z", "location": "Circuit Gilles Villeneuve, Montreal" },
+        { "title": "F2 - Feature Race", "start": "2026-05-24T16:05:00Z", "end": "2026-05-24T17:05:00Z", "location": "Circuit Gilles Villeneuve, Montreal" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-07",
+      "round": 4,
+      "sessions": [
+        { "title": "F2 - Qualifying", "start": "2026-06-05T13:10:00Z", "end": "2026-06-05T13:50:00Z", "location": "Circuit de Monaco" },
+        { "title": "F2 - Sprint Race", "start": "2026-06-06T12:15:00Z", "end": "2026-06-06T13:05:00Z", "location": "Circuit de Monaco" },
+        { "title": "F2 - Feature Race", "start": "2026-06-07T07:35:00Z", "end": "2026-06-07T08:40:00Z", "location": "Circuit de Monaco" }
+      ]
+    }
+  ]
+}

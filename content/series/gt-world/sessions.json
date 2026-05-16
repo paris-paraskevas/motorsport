@@ -1,0 +1,63 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-04-10",
+      "round": 1,
+      "sessions": [
+        { "title": "GTWCE - Bronze Test", "start": "2026-04-10T07:00:00Z", "end": "2026-04-10T08:00:00Z", "location": "Circuit Paul Ricard" },
+        { "title": "GTWCE - Free Practice 1", "start": "2026-04-10T12:25:00Z", "end": "2026-04-10T13:55:00Z", "location": "Circuit Paul Ricard" },
+        { "title": "GTWCE - Free Practice 2", "start": "2026-04-10T17:25:00Z", "end": "2026-04-10T18:55:00Z", "location": "Circuit Paul Ricard" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-11",
+      "round": 1,
+      "sessions": [
+        { "title": "GTWCE - Qualifying", "start": "2026-04-11T10:05:00Z", "end": "2026-04-11T11:15:00Z", "location": "Circuit Paul Ricard" },
+        { "title": "GTWCE - 6 Hours of Paul Ricard (Race)", "start": "2026-04-11T16:00:00Z", "end": "2026-04-11T22:00:00Z", "location": "Circuit Paul Ricard" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-02",
+      "round": 2,
+      "sessions": [
+        { "title": "GTWCE - Free Practice 1", "start": "2026-05-02T08:35:00Z", "end": "2026-05-02T09:35:00Z", "location": "Brands Hatch" },
+        { "title": "GTWCE - Free Practice 2", "start": "2026-05-02T11:00:00Z", "end": "2026-05-02T12:00:00Z", "location": "Brands Hatch" },
+        { "title": "GTWCE - Qualifying 1", "start": "2026-05-02T15:40:00Z", "end": "2026-05-02T15:50:00Z", "location": "Brands Hatch" },
+        { "title": "GTWCE - Qualifying 2", "start": "2026-05-02T16:00:00Z", "end": "2026-05-02T16:10:00Z", "location": "Brands Hatch" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-03",
+      "round": 2,
+      "sessions": [
+        { "title": "GTWCE - Sprint Race 1", "start": "2026-05-03T10:15:00Z", "end": "2026-05-03T11:15:00Z", "location": "Brands Hatch" },
+        { "title": "GTWCE - Sprint Race 2", "start": "2026-05-03T14:45:00Z", "end": "2026-05-03T15:45:00Z", "location": "Brands Hatch" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-27",
+      "round": 4,
+      "sessions": [
+        { "title": "GTWCE - CrowdStrike 24 Hours of Spa (Race Start)", "start": "2026-06-27T14:30:00Z", "end": "2026-06-28T14:30:00Z", "location": "Circuit de Spa-Francorchamps", "significance": { "tier": "marquee", "note": "24 Hours of Spa — GTWCE's endurance crown jewel" } }
+      ]
+    },
+    {
+      "matchDate": "2026-07-17",
+      "round": 5,
+      "sessions": [
+        { "title": "GTWCE - Free Practice 2", "start": "2026-07-17T18:10:00Z", "end": "2026-07-17T19:30:00Z", "location": "Misano World Circuit Marco Simoncelli" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-18",
+      "round": 8,
+      "sessions": [
+        { "title": "GTWCE - Qualifying 1 (Group A)", "start": "2026-09-18T07:50:00Z", "end": "2026-09-18T08:00:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Qualifying 1 (Group B)", "start": "2026-09-18T08:05:00Z", "end": "2026-09-18T08:15:00Z", "location": "Circuit Zandvoort" },
+        { "title": "GTWCE - Sprint Race 1", "start": "2026-09-18T12:45:00Z", "end": "2026-09-18T13:45:00Z", "location": "Circuit Zandvoort" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-04-17",
+      "round": 1,
+      "sessions": [
+        { "title": "WEC - Free Practice 1", "start": "2026-04-17T08:15:00Z", "end": "2026-04-17T09:45:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
+        { "title": "WEC - Free Practice 2", "start": "2026-04-17T13:15:00Z", "end": "2026-04-17T14:45:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-18",
+      "round": 1,
+      "sessions": [
+        { "title": "WEC - Free Practice 3", "start": "2026-04-18T08:30:00Z", "end": "2026-04-18T09:30:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
+        { "title": "WEC - LMGT3 Qualifying", "start": "2026-04-18T12:30:00Z", "end": "2026-04-18T12:42:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
+        { "title": "WEC - LMGT3 Hyperpole", "start": "2026-04-18T12:50:00Z", "end": "2026-04-18T13:00:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
+        { "title": "WEC - Hypercar Qualifying", "start": "2026-04-18T13:10:00Z", "end": "2026-04-18T13:22:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
+        { "title": "WEC - Hypercar Hyperpole", "start": "2026-04-18T13:30:00Z", "end": "2026-04-18T13:40:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-19",
+      "round": 1,
+      "sessions": [
+        { "title": "WEC - 6 Hours of Imola (Race)", "start": "2026-04-19T11:00:00Z", "end": "2026-04-19T17:00:00Z", "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-07",
+      "round": 2,
+      "sessions": [
+        { "title": "WEC - Free Practice 1", "start": "2026-05-07T09:00:00Z", "end": "2026-05-07T10:30:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "WEC - Free Practice 2", "start": "2026-05-07T13:40:00Z", "end": "2026-05-07T15:10:00Z", "location": "Circuit de Spa-Francorchamps" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-08",
+      "round": 2,
+      "sessions": [
+        { "title": "WEC - Free Practice 3", "start": "2026-05-08T08:10:00Z", "end": "2026-05-08T09:10:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "WEC - LMGT3 Qualifying", "start": "2026-05-08T12:30:00Z", "end": "2026-05-08T12:42:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "WEC - LMGT3 Hyperpole", "start": "2026-05-08T12:55:00Z", "end": "2026-05-08T13:05:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "WEC - Hypercar Qualifying", "start": "2026-05-08T13:20:00Z", "end": "2026-05-08T13:32:00Z", "location": "Circuit de Spa-Francorchamps" },
+        { "title": "WEC - Hypercar Hyperpole", "start": "2026-05-08T13:45:00Z", "end": "2026-05-08T13:55:00Z", "location": "Circuit de Spa-Francorchamps" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-09",
+      "round": 2,
+      "sessions": [
+        { "title": "WEC - 6 Hours of Spa-Francorchamps (Race)", "start": "2026-05-09T12:00:00Z", "end": "2026-05-09T18:00:00Z", "location": "Circuit de Spa-Francorchamps" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-10",
+      "round": 3,
+      "sessions": [
+        { "title": "WEC - Le Mans Free Practice 1", "start": "2026-06-10T12:00:00Z", "end": "2026-06-10T15:00:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Qualifying (LMP2 & LMGT3)", "start": "2026-06-10T16:45:00Z", "end": "2026-06-10T17:15:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Qualifying (Hypercar)", "start": "2026-06-10T17:30:00Z", "end": "2026-06-10T18:00:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Free Practice 2", "start": "2026-06-10T20:00:00Z", "end": "2026-06-10T22:00:00Z", "location": "Circuit de la Sarthe, Le Mans" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-11",
+      "round": 3,
+      "sessions": [
+        { "title": "WEC - Le Mans Free Practice 3", "start": "2026-06-11T12:45:00Z", "end": "2026-06-11T14:45:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Hyperpole 1 (LMP2 & LMGT3)", "start": "2026-06-11T18:00:00Z", "end": "2026-06-11T18:30:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Hyperpole 2 (LMP2 & LMGT3)", "start": "2026-06-11T18:35:00Z", "end": "2026-06-11T19:05:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Hyperpole 1 (Hypercar)", "start": "2026-06-11T19:05:00Z", "end": "2026-06-11T19:35:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Hyperpole 2 (Hypercar)", "start": "2026-06-11T19:40:00Z", "end": "2026-06-11T20:10:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - Le Mans Free Practice 4", "start": "2026-06-11T21:00:00Z", "end": "2026-06-11T22:00:00Z", "location": "Circuit de la Sarthe, Le Mans" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-13",
+      "round": 3,
+      "sessions": [
+        { "title": "WEC - Le Mans Warm-up", "start": "2026-06-13T10:00:00Z", "end": "2026-06-13T10:15:00Z", "location": "Circuit de la Sarthe, Le Mans" },
+        { "title": "WEC - 24 Hours of Le Mans (Race Start)", "start": "2026-06-13T14:00:00Z", "end": "2026-06-14T14:00:00Z", "location": "Circuit de la Sarthe, Le Mans", "significance": { "tier": "marquee", "note": "24 Hours of Le Mans — century-old endurance classic" } }
+      ]
+    }
+  ]
+}

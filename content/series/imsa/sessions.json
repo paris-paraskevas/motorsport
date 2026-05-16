@@ -1,0 +1,190 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-01-22",
+      "round": 1,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-01-22T15:05:00Z", "end": "2026-01-22T16:35:00Z", "location": "Daytona International Speedway" },
+        { "title": "IMSA - Qualifying", "start": "2026-01-22T19:10:00Z", "end": "2026-01-22T20:25:00Z", "location": "Daytona International Speedway" },
+        { "title": "IMSA - Practice 2 (Night)", "start": "2026-01-22T23:15:00Z", "end": "2026-01-23T00:45:00Z", "location": "Daytona International Speedway" }
+      ]
+    },
+    {
+      "matchDate": "2026-01-23",
+      "round": 1,
+      "sessions": [
+        { "title": "IMSA - Final Practice", "start": "2026-01-23T16:05:00Z", "end": "2026-01-23T17:20:00Z", "location": "Daytona International Speedway" }
+      ]
+    },
+    {
+      "matchDate": "2026-01-24",
+      "round": 1,
+      "sessions": [
+        { "title": "IMSA - Rolex 24 At Daytona (Race)", "start": "2026-01-24T18:40:00Z", "end": "2026-01-25T18:40:00Z", "location": "Daytona International Speedway", "significance": { "tier": "marquee", "note": "Rolex 24 At Daytona — IMSA season opener, 24-hour endurance classic" } }
+      ]
+    },
+    {
+      "matchDate": "2026-03-19",
+      "round": 2,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-03-19T14:05:00Z", "end": "2026-03-19T15:35:00Z", "location": "Sebring International Raceway" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-20",
+      "round": 2,
+      "sessions": [
+        { "title": "IMSA - Qualifying", "start": "2026-03-20T15:25:00Z", "end": "2026-03-20T16:40:00Z", "location": "Sebring International Raceway" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-21",
+      "round": 2,
+      "sessions": [
+        { "title": "IMSA - 12 Hours of Sebring (Race)", "start": "2026-03-21T14:10:00Z", "end": "2026-03-22T02:10:00Z", "location": "Sebring International Raceway" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-17",
+      "round": 3,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-04-17T16:00:00Z", "end": "2026-04-17T17:00:00Z", "location": "Long Beach Street Circuit" },
+        { "title": "IMSA - Practice 2", "start": "2026-04-17T20:10:00Z", "end": "2026-04-17T21:40:00Z", "location": "Long Beach Street Circuit" },
+        { "title": "IMSA - Qualifying", "start": "2026-04-18T00:25:00Z", "end": "2026-04-18T01:00:00Z", "location": "Long Beach Street Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-18",
+      "round": 3,
+      "sessions": [
+        { "title": "IMSA - Acura Grand Prix of Long Beach (Race)", "start": "2026-04-18T20:05:00Z", "end": "2026-04-18T21:45:00Z", "location": "Long Beach Street Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-01",
+      "round": 4,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-05-01T22:20:00Z", "end": "2026-05-01T23:50:00Z", "location": "WeatherTech Raceway Laguna Seca" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-02",
+      "round": 4,
+      "sessions": [
+        { "title": "IMSA - Practice 2", "start": "2026-05-02T16:55:00Z", "end": "2026-05-02T18:25:00Z", "location": "WeatherTech Raceway Laguna Seca" },
+        { "title": "IMSA - Qualifying", "start": "2026-05-02T22:15:00Z", "end": "2026-05-02T23:10:00Z", "location": "WeatherTech Raceway Laguna Seca" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-03",
+      "round": 4,
+      "sessions": [
+        { "title": "IMSA - Monterey SportsCar Championship (Race)", "start": "2026-05-03T20:10:00Z", "end": "2026-05-03T22:50:00Z", "location": "WeatherTech Raceway Laguna Seca" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-29",
+      "round": 5,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-05-29T12:00:00Z", "end": "2026-05-29T13:30:00Z", "location": "Detroit Street Circuit" },
+        { "title": "IMSA - Practice 2", "start": "2026-05-29T15:30:00Z", "end": "2026-05-29T17:30:00Z", "location": "Detroit Street Circuit" },
+        { "title": "IMSA - Qualifying", "start": "2026-05-29T20:50:00Z", "end": "2026-05-29T21:25:00Z", "location": "Detroit Street Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-30",
+      "round": 5,
+      "sessions": [
+        { "title": "IMSA - Chevrolet Detroit Sports Car Classic (Race)", "start": "2026-05-30T20:00:00Z", "end": "2026-05-30T22:00:00Z", "location": "Detroit Street Circuit" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-27",
+      "round": 6,
+      "sessions": [
+        { "title": "IMSA - Practice 2", "start": "2026-06-27T17:05:00Z", "end": "2026-06-27T19:05:00Z", "location": "Watkins Glen International" },
+        { "title": "IMSA - Qualifying", "start": "2026-06-27T21:15:00Z", "end": "2026-06-27T22:05:00Z", "location": "Watkins Glen International" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-28",
+      "round": 6,
+      "sessions": [
+        { "title": "IMSA - Sahlen's Six Hours of The Glen (Race)", "start": "2026-06-28T16:10:00Z", "end": "2026-06-28T22:10:00Z", "location": "Watkins Glen International" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-11",
+      "round": 7,
+      "sessions": [
+        { "title": "IMSA - Practice 2", "start": "2026-07-11T17:25:00Z", "end": "2026-07-11T19:25:00Z", "location": "Canadian Tire Motorsport Park" },
+        { "title": "IMSA - Qualifying", "start": "2026-07-11T21:25:00Z", "end": "2026-07-11T22:10:00Z", "location": "Canadian Tire Motorsport Park" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-12",
+      "round": 7,
+      "sessions": [
+        { "title": "IMSA - Chevrolet Grand Prix (Race)", "start": "2026-07-12T18:05:00Z", "end": "2026-07-12T20:45:00Z", "location": "Canadian Tire Motorsport Park" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-01",
+      "round": 8,
+      "sessions": [
+        { "title": "IMSA - Qualifying", "start": "2026-08-01T22:55:00Z", "end": "2026-08-01T23:50:00Z", "location": "Road America" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-02",
+      "round": 8,
+      "sessions": [
+        { "title": "IMSA - Motul SportsCar Endurance Grand Prix (Race)", "start": "2026-08-02T15:35:00Z", "end": "2026-08-02T21:35:00Z", "location": "Road America" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-22",
+      "round": 9,
+      "sessions": [
+        { "title": "IMSA - Qualifying", "start": "2026-08-22T20:45:00Z", "end": "2026-08-22T21:25:00Z", "location": "Virginia International Raceway" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-23",
+      "round": 9,
+      "sessions": [
+        { "title": "IMSA - Michelin GT Challenge at VIR (Race)", "start": "2026-08-23T16:00:00Z", "end": "2026-08-23T19:00:00Z", "location": "Virginia International Raceway" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-19",
+      "round": 10,
+      "sessions": [
+        { "title": "IMSA - Practice 2", "start": "2026-09-19T16:35:00Z", "end": "2026-09-19T17:15:00Z", "location": "Indianapolis Motor Speedway" },
+        { "title": "IMSA - Qualifying", "start": "2026-09-19T21:00:00Z", "end": "2026-09-19T22:20:00Z", "location": "Indianapolis Motor Speedway" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-20",
+      "round": 10,
+      "sessions": [
+        { "title": "IMSA - TireRack.com Battle on the Bricks (Race)", "start": "2026-09-20T19:00:00Z", "end": "2026-09-20T22:00:00Z", "location": "Indianapolis Motor Speedway" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-02",
+      "round": 11,
+      "sessions": [
+        { "title": "IMSA - Qualifying", "start": "2026-10-02T19:50:00Z", "end": "2026-10-02T20:35:00Z", "location": "Michelin Raceway Road Atlanta" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-03",
+      "round": 11,
+      "sessions": [
+        { "title": "IMSA - Motul Petit Le Mans (Race)", "start": "2026-10-03T16:05:00Z", "end": "2026-10-04T02:10:00Z", "location": "Michelin Raceway Road Atlanta", "significance": { "tier": "marquee", "note": "Petit Le Mans — Road Atlanta 10-hour endurance season finale" } }
+      ]
+    }
+  ]
+}

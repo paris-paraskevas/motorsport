@@ -1,0 +1,276 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-02-01",
+      "sessions": [
+        { "title": "NASCAR - Cook Out Clash at Bowman Gray (exhibition)", "start": "2026-02-02T01:00:00Z", "end": "2026-02-02T03:30:00Z", "location": "Bowman Gray Stadium, Winston-Salem, NC" }
+      ]
+    },
+    {
+      "matchDate": "2026-02-12",
+      "sessions": [
+        { "title": "NASCAR - Bluegreen Vacations Duel at Daytona", "start": "2026-02-13T00:00:00Z", "end": "2026-02-13T02:30:00Z", "location": "Daytona International Speedway, Daytona Beach, FL" }
+      ]
+    },
+    {
+      "matchDate": "2026-02-15",
+      "round": 1,
+      "sessions": [
+        { "title": "NASCAR - 68th Daytona 500", "start": "2026-02-15T19:30:00Z", "end": "2026-02-15T23:30:00Z", "location": "Daytona International Speedway, Daytona Beach, FL", "significance": { "tier": "marquee", "note": "68th Daytona 500 — NASCAR season opener and crown jewel" } }
+      ]
+    },
+    {
+      "matchDate": "2026-02-22",
+      "round": 2,
+      "sessions": [
+        { "title": "NASCAR - Ambetter Health 400", "start": "2026-02-22T20:00:00Z", "end": "2026-02-22T23:30:00Z", "location": "Atlanta Motor Speedway, Hampton, GA" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-01",
+      "round": 3,
+      "sessions": [
+        { "title": "NASCAR - EchoPark Automotive Grand Prix", "start": "2026-03-01T20:30:00Z", "end": "2026-03-02T00:00:00Z", "location": "Circuit of the Americas, Austin, TX" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-08",
+      "round": 4,
+      "sessions": [
+        { "title": "NASCAR - Shriners Children's 500", "start": "2026-03-08T19:30:00Z", "end": "2026-03-08T22:30:00Z", "location": "Phoenix Raceway, Avondale, AZ" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-15",
+      "round": 5,
+      "sessions": [
+        { "title": "NASCAR - Pennzoil 400", "start": "2026-03-15T20:00:00Z", "end": "2026-03-15T23:30:00Z", "location": "Las Vegas Motor Speedway, Las Vegas, NV" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-22",
+      "round": 6,
+      "sessions": [
+        { "title": "NASCAR - Goodyear 400", "start": "2026-03-22T19:00:00Z", "end": "2026-03-22T22:30:00Z", "location": "Darlington Raceway, Darlington, SC" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-29",
+      "round": 7,
+      "sessions": [
+        { "title": "NASCAR - Cook Out 400", "start": "2026-03-29T19:30:00Z", "end": "2026-03-29T22:30:00Z", "location": "Martinsville Speedway, Martinsville, VA" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-12",
+      "round": 8,
+      "sessions": [
+        { "title": "NASCAR - Food City 500", "start": "2026-04-12T19:00:00Z", "end": "2026-04-12T22:30:00Z", "location": "Bristol Motor Speedway, Bristol, TN" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-19",
+      "round": 9,
+      "sessions": [
+        { "title": "NASCAR - AdventHealth 400", "start": "2026-04-19T18:00:00Z", "end": "2026-04-19T21:30:00Z", "location": "Kansas Speedway, Kansas City, KS" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-26",
+      "round": 10,
+      "sessions": [
+        { "title": "NASCAR - Jack Link's 500", "start": "2026-04-26T19:00:00Z", "end": "2026-04-26T22:30:00Z", "location": "Talladega Superspeedway, Talladega, AL" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-03",
+      "round": 11,
+      "sessions": [
+        { "title": "NASCAR - Wurth 400", "start": "2026-05-03T19:30:00Z", "end": "2026-05-03T22:30:00Z", "location": "Texas Motor Speedway, Fort Worth, TX" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-10",
+      "round": 12,
+      "sessions": [
+        { "title": "NASCAR - Go Bowling at The Glen", "start": "2026-05-10T19:00:00Z", "end": "2026-05-10T22:30:00Z", "location": "Watkins Glen International, Watkins Glen, NY" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-17",
+      "sessions": [
+        { "title": "NASCAR - All-Star Open (exhibition)", "start": "2026-05-17T18:00:00Z", "end": "2026-05-17T19:00:00Z", "location": "Dover Motor Speedway, Dover, DE" },
+        { "title": "NASCAR - All-Star Race (exhibition)", "start": "2026-05-17T19:00:00Z", "end": "2026-05-17T22:00:00Z", "location": "Dover Motor Speedway, Dover, DE" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-24",
+      "round": 13,
+      "sessions": [
+        { "title": "NASCAR - Coca-Cola 600", "start": "2026-05-24T22:00:00Z", "end": "2026-05-25T03:00:00Z", "location": "Charlotte Motor Speedway, Concord, NC", "significance": { "tier": "marquee", "note": "Coca-Cola 600 — longest NASCAR race of the year" } }
+      ]
+    },
+    {
+      "matchDate": "2026-05-31",
+      "round": 14,
+      "sessions": [
+        { "title": "NASCAR - Cracker Barrel 400", "start": "2026-05-31T23:00:00Z", "end": "2026-06-01T02:30:00Z", "location": "Nashville Superspeedway, Lebanon, TN" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-07",
+      "round": 15,
+      "sessions": [
+        { "title": "NASCAR - FireKeepers Casino 400", "start": "2026-06-07T19:00:00Z", "end": "2026-06-07T22:30:00Z", "location": "Michigan International Speedway, Brooklyn, MI" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-14",
+      "round": 16,
+      "sessions": [
+        { "title": "NASCAR - The Great American Getaway 400", "start": "2026-06-14T19:00:00Z", "end": "2026-06-14T22:30:00Z", "location": "Pocono Raceway, Long Pond, PA" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-21",
+      "round": 17,
+      "sessions": [
+        { "title": "NASCAR - Anduril 250 Race the Base", "start": "2026-06-21T20:00:00Z", "end": "2026-06-21T23:00:00Z", "location": "Naval Base Coronado Street Circuit, San Diego, CA" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-28",
+      "round": 18,
+      "sessions": [
+        { "title": "NASCAR - Toyota/Save Mart 350", "start": "2026-06-28T19:30:00Z", "end": "2026-06-28T22:30:00Z", "location": "Sonoma Raceway, Sonoma, CA" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-05",
+      "round": 19,
+      "sessions": [
+        { "title": "NASCAR - Grant Park 400 (Chicagoland)", "start": "2026-07-05T22:00:00Z", "end": "2026-07-06T01:30:00Z", "location": "Chicagoland Speedway, Joliet, IL" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-12",
+      "round": 20,
+      "sessions": [
+        { "title": "NASCAR - Quaker State 400", "start": "2026-07-12T23:00:00Z", "end": "2026-07-13T02:30:00Z", "location": "Atlanta Motor Speedway, Hampton, GA" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-19",
+      "round": 21,
+      "sessions": [
+        { "title": "NASCAR - Window World 450 (North Wilkesboro)", "start": "2026-07-19T23:00:00Z", "end": "2026-07-20T02:30:00Z", "location": "North Wilkesboro Speedway, North Wilkesboro, NC" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-26",
+      "round": 22,
+      "sessions": [
+        { "title": "NASCAR - Brickyard 400", "start": "2026-07-26T18:00:00Z", "end": "2026-07-26T22:00:00Z", "location": "Indianapolis Motor Speedway, Indianapolis, IN" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-09",
+      "round": 23,
+      "sessions": [
+        { "title": "NASCAR - Iowa Corn 350", "start": "2026-08-09T19:30:00Z", "end": "2026-08-09T22:30:00Z", "location": "Iowa Speedway, Newton, IA" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-15",
+      "round": 24,
+      "sessions": [
+        { "title": "NASCAR - Cook Out 400 (Richmond)", "start": "2026-08-15T23:00:00Z", "end": "2026-08-16T02:30:00Z", "location": "Richmond Raceway, Richmond, VA" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-23",
+      "round": 25,
+      "sessions": [
+        { "title": "NASCAR - Mobil 1 301", "start": "2026-08-23T19:00:00Z", "end": "2026-08-23T22:30:00Z", "location": "New Hampshire Motor Speedway, Loudon, NH" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-29",
+      "round": 26,
+      "sessions": [
+        { "title": "NASCAR - Coke Zero Sugar 400 (regular-season finale)", "start": "2026-08-29T23:30:00Z", "end": "2026-08-30T03:00:00Z", "location": "Daytona International Speedway, Daytona Beach, FL" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-06",
+      "round": 27,
+      "sessions": [
+        { "title": "NASCAR - Southern 500", "start": "2026-09-06T21:00:00Z", "end": "2026-09-07T01:30:00Z", "location": "Darlington Raceway, Darlington, SC" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-13",
+      "round": 28,
+      "sessions": [
+        { "title": "NASCAR - Enjoy Illinois 300 (WWT Raceway)", "start": "2026-09-13T19:00:00Z", "end": "2026-09-13T22:30:00Z", "location": "World Wide Technology Raceway, Madison, IL" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-19",
+      "round": 29,
+      "sessions": [
+        { "title": "NASCAR - Bass Pro Shops Night Race", "start": "2026-09-19T23:30:00Z", "end": "2026-09-20T03:00:00Z", "location": "Bristol Motor Speedway, Bristol, TN" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-27",
+      "round": 30,
+      "sessions": [
+        { "title": "NASCAR - Hollywood Casino 400", "start": "2026-09-27T19:00:00Z", "end": "2026-09-27T22:30:00Z", "location": "Kansas Speedway, Kansas City, KS" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-04",
+      "round": 31,
+      "sessions": [
+        { "title": "NASCAR - South Point 400", "start": "2026-10-04T21:30:00Z", "end": "2026-10-05T01:00:00Z", "location": "Las Vegas Motor Speedway, Las Vegas, NV" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-11",
+      "round": 32,
+      "sessions": [
+        { "title": "NASCAR - Bank of America 400", "start": "2026-10-11T19:00:00Z", "end": "2026-10-11T22:30:00Z", "location": "Charlotte Motor Speedway (oval), Concord, NC" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-18",
+      "round": 33,
+      "sessions": [
+        { "title": "NASCAR - United Rentals 312", "start": "2026-10-18T19:00:00Z", "end": "2026-10-18T22:30:00Z", "location": "Phoenix Raceway, Avondale, AZ" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-25",
+      "round": 34,
+      "sessions": [
+        { "title": "NASCAR - YellaWood 500", "start": "2026-10-25T18:00:00Z", "end": "2026-10-25T21:30:00Z", "location": "Talladega Superspeedway, Talladega, AL" }
+      ]
+    },
+    {
+      "matchDate": "2026-11-01",
+      "round": 35,
+      "sessions": [
+        { "title": "NASCAR - Xfinity 500", "start": "2026-11-01T19:00:00Z", "end": "2026-11-01T22:30:00Z", "location": "Martinsville Speedway, Martinsville, VA" }
+      ]
+    },
+    {
+      "matchDate": "2026-11-08",
+      "round": 36,
+      "sessions": [
+        { "title": "NASCAR - NASCAR Cup Series Championship (Homestead)", "start": "2026-11-08T20:00:00Z", "end": "2026-11-08T23:30:00Z", "location": "Homestead-Miami Speedway, Homestead, FL", "significance": { "tier": "finale", "note": "Cup Series Championship — title decider at Homestead" } }
+      ]
+    }
+  ]
+}

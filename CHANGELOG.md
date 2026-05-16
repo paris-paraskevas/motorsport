@@ -2,6 +2,32 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.10 — 2026-05-16
+
+### Added
+- **Full-season session-time curation across all 14 racing series + ADAC Ravenol 24h.** Every series now has a `content/series/<slug>/sessions.json` override file with venue-local-converted UTC datetimes for every published session of the 2026 season. Replaces the TBC placeholders introduced in `0.9.9` with real factual data sourced from official series sites, Wikipedia season pages, and reputable aggregators. Five parallel research agents fanned out across F1/F2/F3, MotoGP/WSBK, WEC/IMSA/GTWCE, IndyCar/NASCAR/ADAC-24h, and FE/WRC/DTM/NLS — every datetime cited and cross-referenced.
+- **Per-series coverage notes:**
+  - **F1** — 14 rounds fully timed (Australia → Las Vegas), including Sprint weekends (Shanghai, Miami, Montreal). Race-as-run times used for past events where weather forced reschedules (Miami race ran 13:00 EDT, not scheduled 16:00).
+  - **F2 / F3** — Melbourne + Monaco fully timed; remaining FIA support-rounds curate as the FIA releases them ~6 weeks pre-event.
+  - **MotoGP** — 19 rounds fully timed including Brazil's non-standard 60-min FP1 / 75-min Practice. Postponed Qatar (R20), Portugal (R21), Valencia (R22) await session times from motogp.com.
+  - **WSBK** — All 12 rounds with the new 2026 format (Race 1 / Race 2 at 15:30 local, was 14:00 in 2025).
+  - **WEC** — Imola, Spa, Le Mans (full Test Day + FP1-4 + multi-class Hyperpole + Warm-up + Race) detailed; Le Mans Race start 16:00 CEST 2026-06-13.
+  - **IMSA** — All 11 WeatherTech rounds: Rolex 24 At Daytona, 12h Sebring, Long Beach, Laguna Seca, Detroit, Watkins Glen 6h, CTMP, Road America 6h, VIR, Indianapolis, Petit Le Mans.
+  - **GTWCE** — Paul Ricard 6h, Brands Hatch Sprint, 24h Spa race-start (16:30 CEST Saturday 27 June); other rounds publish per-event timetables closer to date.
+  - **IndyCar** — 17 rounds anchored by FOX-published race-start times; full Indy 500 schedule with new 2026 qualifying format (no bumping, Top 12 + Last Chance + Firestone Fast Six).
+  - **NASCAR Cup** — All 36 points races + Clash + Duels + All-Star Race with FOX/USA-published Eastern start times converted to UTC.
+  - **ADAC Ravenol 24h Nürburgring** — Complete schedule: admin check, scrutineering, qualifying 1/2, Top Qualifying 1/2/3, Q3, pit walk, warm-up, grid formation, race start (13:00 UTC Saturday 16 May, finish Sunday 17 May).
+  - **Formula E** — All 17 rounds of Season 12, São Paulo R1 through London R17 (16 August finale). Replaces the previous Monaco-only curation.
+  - **WRC** — Monte Carlo, Croatia, Portugal, Finland with full per-stage timetables (Power Stages, Shakedown, all SS times); remaining rallies publish stage itineraries 4-6 weeks pre-event.
+  - **DTM** — Red Bull Ring season opener fully timed; other 7 rounds publish per-event timetables 3-6 weeks ahead.
+  - **NLS** — All 10 races at Nürburgring with standard format (Free Training, Qualifying, 4h race; NLS7 6h Ruhr-Pokal-Rennen at 6h; NLS4 + NLS5 24h Qualifiers weekend with two 4h races).
+- **`docs/research/ingestion-resource-evaluation.md`** — 5-link external-resource audit. Verdicts: adopt TheSportsDB as fallback API for niche series; borrow the `maxgubler/indycar-calendar` playbook (API-key harvest from SPA HTML, diff-before-write, cancellation handling) for our own ingestion pipeline; skip Sportbex (commercial black box) and `armagantrs/race-calendar` (born-dead scaffold).
+
+### Notes
+- Late-season rounds where the official timetable hasn't been published yet (Aug-Nov) are intentionally left with empty `sessions` arrays — they render TBC honestly rather than fabricated times. Curate when each source publishes.
+- F1 Bahrain (R4) and Saudi Arabian GP (R5) remain in `cancelledRounds` per the `0.9.8` design — not present in this sessions.json (cancelled events have no sessions).
+- Two pre-existing data-integrity issues surfaced by the curation work (track for separate follow-up): F1 Azerbaijan `rounds.json` has `endDate: 2026-09-27` but actual race is **Saturday Sep 26** to avoid Remembrance Day; Miami F1 + F2 race times were as-RUN not as-scheduled (weather move).
+
 ## 0.9.9 — 2026-05-16
 
 ### Fixed

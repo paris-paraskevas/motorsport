@@ -1,0 +1,27 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-05-16",
+      "sessions": [
+        { "title": "24h Nürburgring - Administrative Check (Wed)", "start": "2026-05-13T07:00:00Z", "end": "2026-05-13T19:00:00Z", "location": "Nürburgring, Start/Finish building, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Scrutineering (Wed)", "start": "2026-05-13T07:00:00Z", "end": "2026-05-13T19:00:00Z", "location": "Nürburgring, Paddock Scrutineering building, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Permit Training Course AM (Nordschleife)", "start": "2026-05-13T05:30:00Z", "end": "2026-05-13T10:00:00Z", "location": "Nordschleife, Nürburgring, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Permit Training Course PM (Nordschleife)", "start": "2026-05-13T11:30:00Z", "end": "2026-05-13T16:00:00Z", "location": "Nordschleife, Nürburgring, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Administrative Check (Thu)", "start": "2026-05-14T07:00:00Z", "end": "2026-05-14T08:00:00Z", "location": "Nürburgring, Start/Finish building, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Scrutineering (Thu)", "start": "2026-05-14T07:00:00Z", "end": "2026-05-14T08:00:00Z", "location": "Nürburgring, Paddock Scrutineering building, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Qualifying 1", "start": "2026-05-14T11:15:00Z", "end": "2026-05-14T13:15:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Qualifying 2 (Night)", "start": "2026-05-14T18:00:00Z", "end": "2026-05-14T21:30:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Top Qualifying 1", "start": "2026-05-15T08:15:00Z", "end": "2026-05-15T08:45:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Top Qualifying 2", "start": "2026-05-15T09:05:00Z", "end": "2026-05-15T09:35:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Qualifying 3", "start": "2026-05-15T10:00:00Z", "end": "2026-05-15T11:05:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Top Qualifying 3 (Pole Shootout)", "start": "2026-05-15T11:35:00Z", "end": "2026-05-15T12:35:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Pit Walk / Track Walk", "start": "2026-05-15T17:30:00Z", "end": "2026-05-15T19:00:00Z", "location": "Nürburgring, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Warm-up", "start": "2026-05-16T08:00:00Z", "end": "2026-05-16T09:00:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany" },
+        { "title": "24h Nürburgring - Grid Formation", "start": "2026-05-16T10:45:00Z", "end": "2026-05-16T12:40:00Z", "location": "Nürburgring, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Open Grid", "start": "2026-05-16T11:10:00Z", "end": "2026-05-16T12:10:00Z", "location": "Nürburgring, Nürburg, Germany" },
+        { "title": "24h Nürburgring - Race (Start)", "start": "2026-05-16T13:00:00Z", "end": "2026-05-17T13:00:00Z", "location": "Nürburgring (Nordschleife + GP-Strecke), Nürburg, Germany", "significance": { "tier": "marquee", "note": "ADAC Ravenol 24 Hours of Nürburgring — Nordschleife's greatest race" } }
+      ]
+    }
+  ]
+}

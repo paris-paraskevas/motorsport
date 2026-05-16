@@ -1,0 +1,77 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-01-22",
+      "round": 1,
+      "sessions": [
+        { "title": "WRC - Shakedown (Monte Carlo)", "start": "2026-01-21T12:01:00Z", "end": "2026-01-21T13:30:00Z", "location": "Gap, France" },
+        { "title": "WRC - SS1 Toudon / Saint-Antonin (Monte Carlo)", "start": "2026-01-22T15:05:00Z", "end": "2026-01-22T15:35:00Z", "location": "Toudon, France" },
+        { "title": "WRC - SS2 Esclangon / Seyne-les-Alpes (Monte Carlo)", "start": "2026-01-22T17:35:00Z", "end": "2026-01-22T18:05:00Z", "location": "Esclangon, France" },
+        { "title": "WRC - SS3 Vaumeilh / Claret 1 (Monte Carlo)", "start": "2026-01-22T19:35:00Z", "end": "2026-01-22T20:00:00Z", "location": "Vaumeilh, France" },
+        { "title": "WRC - SS4 Laborel / Chauvac-Laux-Montaux 1 (Monte Carlo)", "start": "2026-01-23T08:04:00Z", "end": "2026-01-23T08:34:00Z", "location": "Laborel, France" },
+        { "title": "WRC - SS6 La-Bâtie-des-Fontes / Aspremont 1 (Monte Carlo)", "start": "2026-01-23T14:16:00Z", "end": "2026-01-23T14:46:00Z", "location": "La-Bâtie-des-Fontes, France" },
+        { "title": "WRC - SS7 Laborel / Chauvac-Laux-Montaux 2 (Monte Carlo)", "start": "2026-01-23T15:44:00Z", "end": "2026-01-23T16:14:00Z", "location": "Laborel, France" },
+        { "title": "WRC - SS8 Saint-Nazaire-le-Désert / La Motte-Chalancon 2 (Monte Carlo)", "start": "2026-01-23T17:05:00Z", "end": "2026-01-23T17:50:00Z", "location": "Saint-Nazaire-le-Désert, France" },
+        { "title": "WRC - SS10 La Bréole / Bellaffaires 1 (Monte Carlo)", "start": "2026-01-24T07:31:00Z", "end": "2026-01-24T08:15:00Z", "location": "La Bréole, France" },
+        { "title": "WRC - SS11 Vaumeilh / Claret 2 (Monte Carlo)", "start": "2026-01-24T08:55:00Z", "end": "2026-01-24T09:20:00Z", "location": "Vaumeilh, France" },
+        { "title": "WRC - SS12 La Bréole / Bellaffaires 2 (Monte Carlo)", "start": "2026-01-24T11:31:00Z", "end": "2026-01-24T12:15:00Z", "location": "La Bréole, France" },
+        { "title": "WRC - SS13 Monaco Circuit (Super Special) (Monte Carlo)", "start": "2026-01-24T17:35:00Z", "end": "2026-01-24T17:45:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco" },
+        { "title": "WRC - SS14 Col de Braus / La Cabanette 1 (Monte Carlo)", "start": "2026-01-25T07:05:00Z", "end": "2026-01-25T07:25:00Z", "location": "Col de Braus, France" },
+        { "title": "WRC - SS15 La Bollène-Vésubie / Moulinet 1 (Monte Carlo)", "start": "2026-01-25T08:35:00Z", "end": "2026-01-25T09:05:00Z", "location": "La Bollène-Vésubie, France" },
+        { "title": "WRC - SS16 Col de Braus / La Cabanette 2 (Monte Carlo)", "start": "2026-01-25T10:09:00Z", "end": "2026-01-25T10:29:00Z", "location": "Col de Braus, France" },
+        { "title": "WRC - SS17 La Bollène-Vésubie / Moulinet 2 - Power Stage (Monte Carlo)", "start": "2026-01-25T12:15:00Z", "end": "2026-01-25T12:45:00Z", "location": "La Bollène-Vésubie, France" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-09",
+      "round": 4,
+      "sessions": [
+        { "title": "WRC - Shakedown (Croatia)", "start": "2026-04-09T08:01:00Z", "end": "2026-04-09T11:00:00Z", "location": "Automotodrom Grobnik, Rijeka, Croatia" },
+        { "title": "WRC - Ceremonial Start Rijeka Korzo (Croatia)", "start": "2026-04-09T16:30:00Z", "end": "2026-04-09T18:00:00Z", "location": "Rijeka Korzo, Croatia" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-07",
+      "round": 6,
+      "sessions": [
+        { "title": "WRC - Shakedown (Portugal)", "start": "2026-05-06T07:00:00Z", "end": "2026-05-06T10:00:00Z", "location": "Matosinhos / Porto, Portugal" },
+        { "title": "WRC - SS1 Águeda / Sever (Portugal)", "start": "2026-05-07T15:05:00Z", "end": "2026-05-07T15:25:00Z", "location": "Águeda, Portugal" },
+        { "title": "WRC - SS2 Sever / Albergaria (Portugal)", "start": "2026-05-07T16:05:00Z", "end": "2026-05-07T16:30:00Z", "location": "Sever, Portugal" },
+        { "title": "WRC - SS3 Figueira da Foz (Portugal)", "start": "2026-05-07T18:05:00Z", "end": "2026-05-07T18:10:00Z", "location": "Figueira da Foz, Portugal" },
+        { "title": "WRC - SS20 Vieira do Minho 1 (Portugal)", "start": "2026-05-10T07:00:00Z", "end": "2026-05-10T07:30:00Z", "location": "Vieira do Minho, Portugal" },
+        { "title": "WRC - SS21 Fafe 1 (Portugal)", "start": "2026-05-10T08:00:00Z", "end": "2026-05-10T08:15:00Z", "location": "Fafe, Portugal" },
+        { "title": "WRC - SS22 Vieira do Minho 2 (Portugal)", "start": "2026-05-10T10:00:00Z", "end": "2026-05-10T10:30:00Z", "location": "Vieira do Minho, Portugal" },
+        { "title": "WRC - SS23 Fafe 2 - Wolf Power Stage (Portugal)", "start": "2026-05-10T11:15:00Z", "end": "2026-05-10T11:30:00Z", "location": "Fafe, Portugal" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-30",
+      "round": 10,
+      "sessions": [
+        { "title": "WRC - Ceremonial Start Jyväskylä (Finland)", "start": "2026-07-29T15:00:00Z", "end": "2026-07-29T16:30:00Z", "location": "Jyväskylä, Finland" },
+        { "title": "WRC - Shakedown Ruuhimäki (Finland)", "start": "2026-07-30T05:01:00Z", "end": "2026-07-30T08:00:00Z", "location": "Ruuhimäki, Finland" },
+        { "title": "WRC - SS1 Harju 1 (Finland)", "start": "2026-07-30T15:05:00Z", "end": "2026-07-30T15:15:00Z", "location": "Jyväskylä, Finland" },
+        { "title": "WRC - SS2 Laukaa 1 (Finland)", "start": "2026-07-31T04:44:00Z", "end": "2026-07-31T05:10:00Z", "location": "Laukaa, Finland" },
+        { "title": "WRC - SS3 Saarikas 1 (Finland)", "start": "2026-07-31T05:45:00Z", "end": "2026-07-31T06:08:00Z", "location": "Saarikas, Finland" },
+        { "title": "WRC - SS4 Sydänmaa 1 (Finland)", "start": "2026-07-31T06:50:00Z", "end": "2026-07-31T07:15:00Z", "location": "Sydänmaa, Finland" },
+        { "title": "WRC - SS5 Hoho 1 (Finland)", "start": "2026-07-31T07:58:00Z", "end": "2026-07-31T08:14:00Z", "location": "Hoho, Finland" },
+        { "title": "WRC - SS6 Laukaa 2 (Finland)", "start": "2026-07-31T10:48:00Z", "end": "2026-07-31T11:14:00Z", "location": "Laukaa, Finland" },
+        { "title": "WRC - SS7 Saarikas 2 (Finland)", "start": "2026-07-31T11:49:00Z", "end": "2026-07-31T12:12:00Z", "location": "Saarikas, Finland" },
+        { "title": "WRC - SS8 Sydänmaa 2 (Finland)", "start": "2026-07-31T12:54:00Z", "end": "2026-07-31T13:19:00Z", "location": "Sydänmaa, Finland" },
+        { "title": "WRC - SS9 Hoho 2 (Finland)", "start": "2026-07-31T14:05:00Z", "end": "2026-07-31T14:21:00Z", "location": "Hoho, Finland" },
+        { "title": "WRC - SS10 Harju 2 (Finland)", "start": "2026-07-31T15:05:00Z", "end": "2026-07-31T15:15:00Z", "location": "Jyväskylä, Finland" },
+        { "title": "WRC - SS11 Parkkola 1 (Finland)", "start": "2026-08-01T04:01:00Z", "end": "2026-08-01T04:25:00Z", "location": "Parkkola, Finland" },
+        { "title": "WRC - SS12 Päijälä 1 (Finland)", "start": "2026-08-01T05:42:00Z", "end": "2026-08-01T05:58:00Z", "location": "Päijälä, Finland" },
+        { "title": "WRC - SS13 Västilä 1 (Finland)", "start": "2026-08-01T06:36:00Z", "end": "2026-08-01T07:02:00Z", "location": "Västilä, Finland" },
+        { "title": "WRC - SS14 Leustu 1 (Finland)", "start": "2026-08-01T08:05:00Z", "end": "2026-08-01T08:30:00Z", "location": "Leustu, Korpilahti, Finland" },
+        { "title": "WRC - SS15 Parkkola 2 (Finland)", "start": "2026-08-01T11:01:00Z", "end": "2026-08-01T11:25:00Z", "location": "Parkkola, Finland" },
+        { "title": "WRC - SS16 Päijälä 2 (Finland)", "start": "2026-08-01T12:42:00Z", "end": "2026-08-01T12:58:00Z", "location": "Päijälä, Finland" },
+        { "title": "WRC - SS17 Västilä 2 (Finland)", "start": "2026-08-01T13:36:00Z", "end": "2026-08-01T14:02:00Z", "location": "Västilä, Finland" },
+        { "title": "WRC - SS18 Leustu 2 (Finland)", "start": "2026-08-01T15:05:00Z", "end": "2026-08-01T15:30:00Z", "location": "Leustu, Korpilahti, Finland" },
+        { "title": "WRC - SS19 Himos-Jämsä 1 (Finland)", "start": "2026-08-02T06:35:00Z", "end": "2026-08-02T07:15:00Z", "location": "Himos, Jämsä, Finland" },
+        { "title": "WRC - SS20 Himos-Jämsä 2 - Wolf Power Stage (Finland)", "start": "2026-08-02T09:15:00Z", "end": "2026-08-02T09:55:00Z", "location": "Himos, Jämsä, Finland" }
+      ]
+    }
+  ]
+}

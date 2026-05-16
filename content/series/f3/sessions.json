@@ -1,0 +1,26 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-03-08",
+      "round": 1,
+      "sessions": [
+        { "title": "F3 - Practice", "start": "2026-03-05T21:50:00Z", "end": "2026-03-05T22:35:00Z", "location": "Albert Park Circuit, Melbourne" },
+        { "title": "F3 - Qualifying", "start": "2026-03-06T03:00:00Z", "end": "2026-03-06T03:30:00Z", "location": "Albert Park Circuit, Melbourne" },
+        { "title": "F3 - Sprint Race", "start": "2026-03-07T00:15:00Z", "end": "2026-03-07T01:00:00Z", "location": "Albert Park Circuit, Melbourne" },
+        { "title": "F3 - Feature Race", "start": "2026-03-07T21:50:00Z", "end": "2026-03-07T22:40:00Z", "location": "Albert Park Circuit, Melbourne" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-07",
+      "round": 3,
+      "sessions": [
+        { "title": "F3 - Practice", "start": "2026-06-04T11:25:00Z", "end": "2026-06-04T12:10:00Z", "location": "Circuit de Monaco" },
+        { "title": "F3 - Qualifying Group A", "start": "2026-06-05T08:05:00Z", "end": "2026-06-05T08:19:00Z", "location": "Circuit de Monaco" },
+        { "title": "F3 - Qualifying Group B", "start": "2026-06-05T09:29:00Z", "end": "2026-06-05T09:43:00Z", "location": "Circuit de Monaco" },
+        { "title": "F3 - Sprint Race", "start": "2026-06-06T08:45:00Z", "end": "2026-06-06T09:25:00Z", "location": "Circuit de Monaco" },
+        { "title": "F3 - Feature Race", "start": "2026-06-07T05:55:00Z", "end": "2026-06-07T06:40:00Z", "location": "Circuit de Monaco" }
+      ]
+    }
+  ]
+}

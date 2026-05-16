@@ -1,0 +1,18 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-04-25",
+      "round": 1,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-04-24T08:25:00Z", "end": "2026-04-24T09:25:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
+        { "title": "DTM - Free Practice 2", "start": "2026-04-24T10:15:00Z", "end": "2026-04-24T11:15:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
+        { "title": "DTM - Free Practice 3", "start": "2026-04-24T14:00:00Z", "end": "2026-04-24T14:45:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
+        { "title": "DTM - Qualifying 1", "start": "2026-04-25T07:40:00Z", "end": "2026-04-25T08:10:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
+        { "title": "DTM - Race 1", "start": "2026-04-25T10:55:00Z", "end": "2026-04-25T11:55:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
+        { "title": "DTM - Qualifying 2", "start": "2026-04-26T07:30:00Z", "end": "2026-04-26T08:00:00Z", "location": "Red Bull Ring, Spielberg, Austria" },
+        { "title": "DTM - Race 2", "start": "2026-04-26T10:55:00Z", "end": "2026-04-26T11:55:00Z", "location": "Red Bull Ring, Spielberg, Austria" }
+      ]
+    }
+  ]
+}
