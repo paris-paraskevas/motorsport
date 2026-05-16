@@ -17,35 +17,64 @@ Items here should map to entries in `IDEAS.md` Now / Next.
 
 ### Sat 2026-05-16
 
+Morning ship marathon:
+
 - → done: ship `0.9.1` weekend correctness fixes — phantom 3 am times (Session.dateOnly through the pipeline, "TBC" display, live-now + notify cron skips), canonical F1 round numbers via `content/series/<slug>/rounds.json`, sessions.json override loader, FE Monaco 2026 sessions curated.
 - → done: bootstrap `CLAUDE.md` operating manual + `IDEAS.md` ledger + `SCHEDULE.md` time plan (`0.9.2`).
 - → done: mature `CLAUDE.md` with ESPA protocol + seven extensions + Mode awareness + four communication discipline rules; reversed commit-attribution policy (no more `Co-Authored-By`) (`0.9.3`).
 - → done: scaffold two-contributor workflow — `CONTRIBUTING.md` + `ONBOARDING.md` + reversed CLAUDE.md push-to-main rule. CI workflow parked. (`0.9.4`)
 - → done: triage `IDEAS.md` Now/Next; close Saturday; sketch Sunday; port handoff from memory to `docs/HANDOFF.md`; memory file becomes a redirect stub. (`0.9.5`)
-- Won't touch this session: Supabase migration, curating non-F1 sessions.json files, SEO baseline, anything from the Parked list.
+- → done: handoff appendix — flat 60-item open-items inventory in `docs/HANDOFF.md` (`0.9.6`).
+- → done: per-prompt active-time tracking — `[+Nm]` prefix → `SCHEDULE.md` Active line + memory rule (`0.9.7`).
+
+Afternoon mini-session — **pre-Fotis cutoff scoped**:
+
+- Scope rule set ([[project-paddock-pre-fotis-cutoff]]): clear open items by Mon/Tue (2026-05-18/19). All new ideas → Inbox only. After Tue Fotis sit-down happens.
+- Plan: doc-sync `0.9.6` + `0.9.7` to `docs/HANDOFF.md`, then start Tier 1 — browser-verify `0.9.1`, `00:00` mystery, then sessions.json + rounds.json curation scout for non-F1 series with upcoming rounds.
+- Won't touch this afternoon: Supabase work, SEO baseline (S5), Tier 4 multi-session items (only chip if Tier 1+2+3 finish early).
+- All commits from here on follow the new branch + PR + squash-merge flow (`CONTRIBUTING.md`). No more direct pushes to main.
 
 ### Sun 2026-05-17
 
-Plan (in priority order):
+Pre-Fotis cutoff continues. Priority order:
 
-1. **Browser-verify yesterday's fixes** on a real laptop with Chrome — `/series/f1/weekend/5` (Canada → Round 5), `/series/formula-e/weekend/12` (FE Monaco R9+R10 timings), home Live-now and Upcoming for any 3 am leakage. Take screenshots for the changelog.
-2. **Resolve the `00:00` mystery** on `/series/f1/weekend/5`.
-3. **Curate one more non-F1 `sessions.json`** — pick the series whose next race is closest (likely MotoGP or IMSA). Same pattern as FE Monaco.
-4. **First PR-flow rehearsal.** Branch + PR + self-merge for one of the items above. Tests the workflow before Fotis arrives.
+1. **Tier 1 finish** — sessions.json + rounds.json curation pass across non-F1 series with rounds in next 30d, endurance-series weekend grouping audit, ESLint cleanup + husky pre-commit, delete unused `lib/onboarding.ts`.
+2. **Tier 2 polish** — custom `app/error.tsx`, `/api/cron/health`, news-filter persistence, push click handler deep-link, DRY notifications components, hero images in push payload, fold `overview.md` into F1 About, home hero next-2-3-sessions, Settings "Your devices", install Resend.
+3. **Tier 2 pull-ups** — session cards tap-to-expand, driver season-trend chart, common topics on Rules tab, Clerk dark retheme.
 
-Won't touch this session: Supabase work, rounds.json non-F1 curation, SEO baseline, anything from the Parked list.
+Won't touch this session: Supabase code, comments thread, predictions, anything from `IDEAS.md` Parked or `Killed`.
 
 Active:
-(time-tracking starts this session — prefix each prompt with `[+Nm]` and I append here)
+(time-tracking starts the next session — prefix each prompt with `[+Nm]` and I append here)
+
+### Mon 2026-05-18
+
+Pre-Fotis cutoff continues — Tier 1+2 carry-over from Sun. Begin Tier 3 if Tier 1+2 done.
+
+Won't touch this session: anything kicked to post-Fotis carry-over.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
+### Tue 2026-05-19 — Fotis sit-down day
+
+**Tier 3 investigation docs:** data-sources research first (Ergast/jolpica, MotoGP web API, FIA feeds, aggregators), then Supabase scoping doc. JS-site XHR reverse-engineering + Champions JSON cleanup investigation if time remains.
+
+**End-of-day:** pre-Fotis cutoff rule expires after the sit-down. Resume normal IDEAS.md triage. Delete `project-paddock-pre-fotis-cutoff` memory.
+
+Won't touch this session: anything not Tier 1/2/3 unless explicitly pulled in during the sit-down.
+
+Active:
+_(awaiting [+Nm] prefixes)_
 
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
-- **Supabase migration scoping** — decide schema + scrape boundaries + what stays as files. Plan first; code in a later session.
-- **Non-F1 `sessions.json` curation pass** — MotoGP, WEC, IMSA, FE remaining rounds. Likely 2–3 sessions of curation work.
-- **Non-F1 `rounds.json` curation pass** — same set of series.
-- **SEO baseline (S5)** — sitemap, robots, JSON-LD, per-page metadata, OG image generators.
+- **Supabase migration full execution** — schema build, scrapers, ingestion crons. Scoping doc ships pre-Fotis (Tue); execution post-Fotis.
+- **SEO baseline (S5)** — sitemap, robots, JSON-LD, per-page metadata, OG image generators. Multi-day; deferred to post-Fotis.
+- **Detail-page enrichment (S6)** — `/drivers/[slug]`, `/teams/[slug]`, F1 History, Rules tab. Post-Fotis.
+- **Native non-F1 results + standings (S7)** — MotoGP / WEC / IndyCar / NASCAR. Post-Fotis.
 
 ---
 

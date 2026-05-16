@@ -118,11 +118,33 @@ export interface SeriesRoundEntry {
   endDate: string;
   name: string;
   cancelled?: boolean;
+  // Set when a round was rescheduled mid-season (e.g. MotoGP Qatar 2026
+  // moved from April to November). Original dates preserved for UI display.
+  previousStartDate?: string;
+  previousEndDate?: string;
+  rescheduleNote?: string;
+}
+
+export interface CancelledRoundEntry {
+  // Original round number in the pre-cancellation calendar (e.g. F1 Bahrain
+  // was R4 of the original 24-round 2026 calendar before the conflict-related
+  // cancellation reduced the season to 22 effective rounds).
+  originalRound: number;
+  name: string;
+  originalStartDate: string;
+  originalEndDate: string;
+  reason?: string;
+  // Free-form reschedule status: "under discussion", "rescheduled to 2026-09-15",
+  // "no reschedule planned", etc.
+  rescheduleStatus?: string;
 }
 
 export interface SeriesRoundsFile {
   season: number;
   rounds: SeriesRoundEntry[];
+  // Kept separate from `rounds` so canonical round numbers and URL slugs
+  // for the remaining rounds stay stable when a round is cancelled mid-season.
+  cancelledRounds?: CancelledRoundEntry[];
 }
 
 export interface SessionOverrideEntry {
