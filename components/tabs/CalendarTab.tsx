@@ -4,9 +4,9 @@ import { PastToggleSection } from '@/components/PastToggleSection';
 
 export function CalendarTab({ series }: { series: Series }) {
   const now = new Date();
-  const weekends = groupByWeekend(series.sessions, now).map((weekend, i) => ({
+  const weekends = groupByWeekend(series.sessions, now, series.rounds).map(weekend => ({
     weekend,
-    round: i + 1,
+    round: weekend.round,
   }));
   const pastWeekends = weekends.filter(w => w.weekend.isPast);
   const upcomingWeekends = weekends.filter(w => !w.weekend.isPast);

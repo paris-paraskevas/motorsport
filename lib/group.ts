@@ -1,4 +1,5 @@
-import { Session, SignificanceFlag, Weekend } from './types';
+import { Session, SeriesRoundsFile, SignificanceFlag, Weekend } from './types';
+import { assignRoundsToWeekends } from './rounds';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKEND_GAP_DAYS = 4;
@@ -30,7 +31,11 @@ function pickBestSignificance(sessions: Session[]): SignificanceFlag | undefined
 const PAST_WINDOW_MS = 365 * DAY_MS;
 const FUTURE_WINDOW_MS = 540 * DAY_MS; // ~18 months
 
-export function groupByWeekend(sessions: Session[], now: Date = new Date()): Weekend[] {
+export function groupByWeekend(
+  sessions: Session[],
+  now: Date = new Date(),
+  rounds?: SeriesRoundsFile,
+): Weekend[] {
   if (sessions.length === 0) return [];
   // Cap the window so series with multi-year ICS archives don't produce
   // round numbers in the hundreds (e.g. Formula E historical sessions).
@@ -58,7 +63,7 @@ export function groupByWeekend(sessions: Session[], now: Date = new Date()): Wee
   }
   weekends.push(current);
 
-  return weekends.map(group => {
+  const base: Weekend[] = weekends.map(group => {
     const significance = pickBestSignificance(group);
     const startDate = group[0].start;
     const endDate = group[group.length - 1].start;
@@ -69,8 +74,10 @@ export function groupByWeekend(sessions: Session[], now: Date = new Date()): Wee
       sessions: group,
       significance,
       isPast: endDate.getTime() < now.getTime() - DAY_MS,
+      round: 0, // overwritten by assignRoundsToWeekends
     };
   });
+  return assignRoundsToWeekends(base, rounds);
 }
 
 export function groupByDay(sessions: Session[]): Array<{ label: string; sessions: Session[] }> {

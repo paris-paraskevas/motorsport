@@ -7,6 +7,10 @@ const FIXTURE = fs.readFileSync(
   path.join(__dirname, '..', 'tests', 'fixtures', 'sample.ics'),
   'utf-8',
 );
+const DATE_ONLY_FIXTURE = fs.readFileSync(
+  path.join(__dirname, '..', 'tests', 'fixtures', 'sample-dateonly.ics'),
+  'utf-8',
+);
 
 describe('parseIcs', () => {
   it('returns one Session per VEVENT', () => {
@@ -28,5 +32,14 @@ describe('parseIcs', () => {
   });
   it('returns [] for empty input', () => {
     expect(parseIcs('', 'test')).toEqual([]);
+  });
+  it('does not set dateOnly for normal date-time entries', () => {
+    const [first] = parseIcs(FIXTURE, 'test');
+    expect(first.dateOnly).toBeUndefined();
+  });
+  it('flags dateOnly for VALUE=DATE entries', () => {
+    const [only] = parseIcs(DATE_ONLY_FIXTURE, 'test');
+    expect(only.dateOnly).toBe(true);
+    expect(only.title).toBe('Test GP - Race (day-only)');
   });
 });

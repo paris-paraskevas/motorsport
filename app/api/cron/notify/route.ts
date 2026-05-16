@@ -59,6 +59,8 @@ export async function GET(req: Request) {
     const notifiable: NotifiableSession[] = [];
     for (const series of all) {
       for (const s of series.sessions) {
+        // Never notify for date-only events — we don't know the real start time.
+        if (s.dateOnly) continue;
         const mins = minutesUntil(s.start, now);
         if (mins >= HORIZON_FLOOR_MIN && mins <= HORIZON_MIN) {
           notifiable.push({

@@ -23,7 +23,7 @@ export function WeekendSchedule({
             </div>
             <ul>
               {day.sessions.map((s: Session) => {
-                const isLive = s.start <= now && now <= s.end;
+                const isLive = !s.dateOnly && s.start <= now && now <= s.end;
                 const isPast = !isLive && s.end < now;
                 return (
                   <li
@@ -58,7 +58,7 @@ export function WeekendSchedule({
                       )}
                     </div>
                     <span className="text-zinc-400 text-sm font-medium tabular-nums whitespace-nowrap">
-                      {formatLocal(s.start)}
+                      {s.dateOnly ? 'TBC' : formatLocal(s.start)}
                     </span>
                   </li>
                 );

@@ -17,8 +17,8 @@ export async function generateStaticParams() {
     slugs.map(async slug => {
       try {
         const series = await loadSeries(slug);
-        const weekends = groupByWeekend(series.sessions);
-        return weekends.map((_, i) => ({ slug, round: String(i + 1) }));
+        const weekends = groupByWeekend(series.sessions, new Date(), series.rounds);
+        return weekends.map(w => ({ slug, round: String(w.round) }));
       } catch {
         return [];
       }

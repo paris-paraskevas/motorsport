@@ -12,7 +12,8 @@ export function weekendLabel(weekend: Weekend, round: number): {
   const location = weekend.sessions.find(s => s.location)?.location;
   const locationShort = location?.split(',')[0].trim() || undefined;
   const hint = deriveTitleHint(weekend.sessions[0]?.title);
-  const title = weekend.label || locationShort || hint || `Round ${round}`;
+  const title =
+    weekend.label || weekend.roundName || locationShort || hint || `Round ${round}`;
   const subtitle =
     locationShort && weekend.label && weekend.label !== locationShort
       ? locationShort
@@ -29,13 +30,13 @@ export function deriveTitleHint(raw: string | undefined): string | undefined {
 
 export function weekendFor(series: Series, round: number, now: Date = new Date()): Weekend | null {
   if (!Number.isInteger(round) || round < 1) return null;
-  const weekends = groupByWeekend(series.sessions, now);
-  return weekends[round - 1] ?? null;
+  const weekends = groupByWeekend(series.sessions, now, series.rounds);
+  return weekends.find(w => w.round === round) ?? null;
 }
 
 export function roundForSession(weekends: Weekend[], uid: string): number | undefined {
-  for (let i = 0; i < weekends.length; i++) {
-    if (weekends[i].sessions.some(s => s.uid === uid)) return i + 1;
+  for (const w of weekends) {
+    if (w.sessions.some(s => s.uid === uid)) return w.round;
   }
   return undefined;
 }
@@ -46,10 +47,10 @@ function lookupKey(seriesSlug: string, uid: string): string {
 
 export function buildRoundLookup(series: Series, now: Date = new Date()): Map<string, number> {
   const out = new Map<string, number>();
-  const weekends = groupByWeekend(series.sessions, now);
-  for (let i = 0; i < weekends.length; i++) {
-    for (const s of weekends[i].sessions) {
-      out.set(lookupKey(series.meta.slug, s.uid), i + 1);
+  const weekends = groupByWeekend(series.sessions, now, series.rounds);
+  for (const w of weekends) {
+    for (const s of w.sessions) {
+      out.set(lookupKey(series.meta.slug, s.uid), w.round);
     }
   }
   return out;
@@ -81,9 +82,9 @@ export function weekendStartEnd(weekend: Weekend): { start: Date; end: Date } {
 }
 
 export function weekendIsLive(weekend: Weekend, now: Date = new Date()): boolean {
-  return weekend.sessions.some(s => s.start <= now && now <= s.end);
+  return weekend.sessions.some(s => !s.dateOnly && s.start <= now && now <= s.end);
 }
 
 export function liveSessionsIn(weekend: Weekend, now: Date = new Date()): Session[] {
-  return weekend.sessions.filter(s => s.start <= now && now <= s.end);
+  return weekend.sessions.filter(s => !s.dateOnly && s.start <= now && now <= s.end);
 }

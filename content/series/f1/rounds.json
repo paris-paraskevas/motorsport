@@ -1,0 +1,27 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-03-06", "endDate": "2026-03-08", "name": "Australian Grand Prix" },
+    { "round": 2, "startDate": "2026-03-13", "endDate": "2026-03-15", "name": "Chinese Grand Prix" },
+    { "round": 3, "startDate": "2026-03-27", "endDate": "2026-03-29", "name": "Japanese Grand Prix" },
+    { "round": 4, "startDate": "2026-05-01", "endDate": "2026-05-03", "name": "Miami Grand Prix" },
+    { "round": 5, "startDate": "2026-05-22", "endDate": "2026-05-24", "name": "Canadian Grand Prix" },
+    { "round": 6, "startDate": "2026-06-05", "endDate": "2026-06-07", "name": "Monaco Grand Prix" },
+    { "round": 7, "startDate": "2026-06-12", "endDate": "2026-06-14", "name": "Barcelona-Catalunya Grand Prix" },
+    { "round": 8, "startDate": "2026-06-26", "endDate": "2026-06-28", "name": "Austrian Grand Prix" },
+    { "round": 9, "startDate": "2026-07-03", "endDate": "2026-07-05", "name": "British Grand Prix" },
+    { "round": 10, "startDate": "2026-07-17", "endDate": "2026-07-19", "name": "Belgian Grand Prix" },
+    { "round": 11, "startDate": "2026-07-24", "endDate": "2026-07-26", "name": "Hungarian Grand Prix" },
+    { "round": 12, "startDate": "2026-08-21", "endDate": "2026-08-23", "name": "Dutch Grand Prix" },
+    { "round": 13, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "Italian Grand Prix" },
+    { "round": 14, "startDate": "2026-09-11", "endDate": "2026-09-13", "name": "Spanish Grand Prix (Madrid)" },
+    { "round": 15, "startDate": "2026-09-24", "endDate": "2026-09-27", "name": "Azerbaijan Grand Prix" },
+    { "round": 16, "startDate": "2026-10-09", "endDate": "2026-10-11", "name": "Singapore Grand Prix" },
+    { "round": 17, "startDate": "2026-10-23", "endDate": "2026-10-25", "name": "United States Grand Prix" },
+    { "round": 18, "startDate": "2026-10-30", "endDate": "2026-11-01", "name": "Mexico City Grand Prix" },
+    { "round": 19, "startDate": "2026-11-06", "endDate": "2026-11-08", "name": "São Paulo Grand Prix" },
+    { "round": 20, "startDate": "2026-11-19", "endDate": "2026-11-22", "name": "Las Vegas Grand Prix" },
+    { "round": 21, "startDate": "2026-11-27", "endDate": "2026-11-29", "name": "Qatar Grand Prix" },
+    { "round": 22, "startDate": "2026-12-04", "endDate": "2026-12-06", "name": "Abu Dhabi Grand Prix" }
+  ]
+}

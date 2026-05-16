@@ -4,6 +4,8 @@ import { Series, SeriesMeta, SignificanceMap } from './types';
 import { parseIcs, fetchIcsText } from './ics';
 import { mergeSignificance } from './significance';
 import { loadMarkdownAsHtml } from './content';
+import { loadRounds } from './rounds-loader';
+import { loadSessionsOverrides, applySessionsOverrides } from './sessions-overrides';
 
 export async function loadSeriesFromDir(dir: string): Promise<Series> {
   const meta: SeriesMeta = JSON.parse(
@@ -27,14 +29,14 @@ export async function loadSeriesFromDir(dir: string): Promise<Series> {
 
   const rawSessions = parseIcs(icsText, meta.slug);
 
-  let significanceMap: SignificanceMap = {};
-  try {
-    const raw = await fs.readFile(path.join(dir, 'significance.json'), 'utf-8');
-    significanceMap = JSON.parse(raw);
-  } catch {
-    // sidecar optional
-  }
-  const sessions = mergeSignificance(rawSessions, significanceMap);
+  const [overrides, rounds, significanceMap] = await Promise.all([
+    loadSessionsOverrides(dir),
+    loadRounds(dir),
+    loadSignificance(dir),
+  ]);
+
+  const overridden = applySessionsOverrides(meta.slug, rawSessions, overrides);
+  const sessions = mergeSignificance(overridden, significanceMap);
 
   const [overview, drivers, significance] = await Promise.all([
     loadMarkdownAsHtml(path.join(dir, 'overview.md')),
@@ -51,7 +53,17 @@ export async function loadSeriesFromDir(dir: string): Promise<Series> {
     fetchedAt: new Date(),
     stale,
     configured,
+    rounds,
   };
+}
+
+async function loadSignificance(dir: string): Promise<SignificanceMap> {
+  try {
+    const raw = await fs.readFile(path.join(dir, 'significance.json'), 'utf-8');
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
 }
 
 async function readFallback(dir: string): Promise<string> {

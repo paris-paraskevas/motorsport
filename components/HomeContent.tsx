@@ -93,9 +93,11 @@ export function HomeContent({
 
   const now = new Date();
   const liveItems = filteredSessions.filter(
-    i => i.session.start <= now && now <= i.session.end,
+    i => !i.session.dateOnly && i.session.start <= now && now <= i.session.end,
   );
-  const upcomingItems = filteredSessions.filter(i => i.session.start > now);
+  const upcomingItems = filteredSessions.filter(i =>
+    i.session.dateOnly ? i.session.end > now : i.session.start > now,
+  );
 
   const hero = upcomingItems[0];
   const remaining = upcomingItems.slice(1, 1 + UPCOMING_LIMIT);

@@ -32,3 +32,15 @@ export function formatLocal(date: Date, tz: string = 'Europe/Athens'): string {
     hour12: false,
   }).format(date);
 }
+
+// Used for date-only ICS entries where we don't know the actual hour.
+// Renders just "Sat 16 May · time TBC" instead of inventing a 03:00.
+export function formatLocalDay(date: Date): string {
+  const day = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'UTC',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  }).format(date);
+  return `${day} · time TBC`;
+}

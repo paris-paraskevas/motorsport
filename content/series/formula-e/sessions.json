@@ -1,0 +1,55 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-05-16",
+      "matchTitle": "Monaco",
+      "sessions": [
+        {
+          "title": "FE Monaco E-Prix R9 - Free Practice 1",
+          "start": "2026-05-16T07:30:00+02:00",
+          "end": "2026-05-16T08:15:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco"
+        },
+        {
+          "title": "FE Monaco E-Prix R9 - Free Practice 2",
+          "start": "2026-05-16T09:10:00+02:00",
+          "end": "2026-05-16T09:45:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco"
+        },
+        {
+          "title": "FE Monaco E-Prix R9 - Qualifying",
+          "start": "2026-05-16T10:40:00+02:00",
+          "end": "2026-05-16T11:48:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco"
+        },
+        {
+          "title": "FE Monaco E-Prix R9 - Race",
+          "start": "2026-05-16T15:05:00+02:00",
+          "end": "2026-05-16T16:00:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco",
+          "significance": { "tier": "marquee", "note": "Round 9 — Monaco double-header race day 1" }
+        },
+        {
+          "title": "FE Monaco E-Prix R10 - Free Practice 3",
+          "start": "2026-05-17T08:30:00+02:00",
+          "end": "2026-05-17T09:15:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco"
+        },
+        {
+          "title": "FE Monaco E-Prix R10 - Qualifying",
+          "start": "2026-05-17T10:40:00+02:00",
+          "end": "2026-05-17T11:48:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco"
+        },
+        {
+          "title": "FE Monaco E-Prix R10 - Race",
+          "start": "2026-05-17T15:05:00+02:00",
+          "end": "2026-05-17T16:00:00+02:00",
+          "location": "Circuit de Monaco, Monte Carlo, Monaco",
+          "significance": { "tier": "marquee", "note": "Round 10 — Monaco double-header race day 2" }
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import { ArrowUpRight, MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
-import { formatLocal, formatRelative } from '@/lib/date';
+import { formatLocal, formatLocalDay, formatRelative } from '@/lib/date';
 
 export function NextSessionCard({
   session,
@@ -62,10 +62,10 @@ export function NextSessionCard({
 
         <div className="mt-6 flex items-baseline gap-4 flex-wrap">
           <span className="text-lg md:text-xl font-semibold text-zinc-100 tnum">
-            {formatRelative(session.start)}
+            {session.dateOnly ? 'This weekend' : formatRelative(session.start)}
           </span>
           <span className="text-sm text-zinc-500 tnum">
-            {formatLocal(session.start)}
+            {session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}
           </span>
         </div>
 

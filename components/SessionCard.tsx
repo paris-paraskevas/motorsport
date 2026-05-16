@@ -3,7 +3,7 @@ import { MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
-import { formatLocal, formatRelative } from '@/lib/date';
+import { formatLocal, formatLocalDay, formatRelative } from '@/lib/date';
 
 export function SessionCard({
   session,
@@ -17,7 +17,7 @@ export function SessionCard({
   weather?: DailyWeather;
 }) {
   const now = new Date();
-  const isLive = session.start <= now && now <= session.end;
+  const isLive = !session.dateOnly && session.start <= now && now <= session.end;
   const isPast = !isLive && session.end < now;
   const href = round
     ? `/series/${session.seriesSlug}/weekend/${round}`
@@ -61,7 +61,7 @@ export function SessionCard({
           )}
         </div>
         <div className="text-xs text-zinc-500 mt-0.5 flex items-center gap-1.5 min-w-0 tnum">
-          <span>{formatLocal(session.start)}</span>
+          <span>{session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}</span>
           {session.location && (
             <>
               <span className="text-zinc-700">·</span>
@@ -89,7 +89,7 @@ export function SessionCard({
       </div>
 
       <span className="text-xs font-medium text-zinc-400 tnum self-center whitespace-nowrap">
-        {formatRelative(session.start)}
+        {session.dateOnly ? 'TBC' : formatRelative(session.start)}
       </span>
     </Link>
   );

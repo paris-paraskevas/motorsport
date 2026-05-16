@@ -94,6 +94,10 @@ export interface Session {
   end: Date;
   location?: string;
   significance?: SignificanceFlag;
+  // True when the upstream ICS entry was DTSTART;VALUE=DATE — no real hour
+  // is known. UI must not display a clock time, notifications must not fire,
+  // and live-now must not consider it active.
+  dateOnly?: boolean;
 }
 
 export interface Series {
@@ -105,6 +109,40 @@ export interface Series {
   fetchedAt: Date;
   stale: boolean;
   configured: boolean;
+  rounds?: SeriesRoundsFile;
+}
+
+export interface SeriesRoundEntry {
+  round: number;
+  startDate: string;
+  endDate: string;
+  name: string;
+  cancelled?: boolean;
+}
+
+export interface SeriesRoundsFile {
+  season: number;
+  rounds: SeriesRoundEntry[];
+}
+
+export interface SessionOverrideEntry {
+  title: string;
+  start: string;
+  end: string;
+  location?: string;
+  significance?: SignificanceFlag;
+}
+
+export interface SessionOverrideBlock {
+  matchDate: string;
+  matchTitle?: string;
+  round?: number;
+  sessions: SessionOverrideEntry[];
+}
+
+export interface SessionsOverridesFile {
+  season: number;
+  overrides: SessionOverrideBlock[];
 }
 
 export interface CuratedDriverEntry {
@@ -178,4 +216,10 @@ export interface Weekend {
   sessions: Session[];
   significance?: SignificanceFlag;
   isPast: boolean;
+  // Canonical championship round number. Sourced from content/series/<slug>/rounds.json
+  // when curated. When absent, falls back to array index + 1.
+  round: number;
+  // Canonical name from rounds.json (e.g. "Canadian Grand Prix"); used when
+  // no series-specific significance label is set.
+  roundName?: string;
 }
