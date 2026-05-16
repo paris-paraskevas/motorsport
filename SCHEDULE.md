@@ -9,6 +9,7 @@ Items here should map to entries in `IDEAS.md` Now / Next.
 - One subsection per day (`### Mon YYYY-MM-DD`).
 - Bullets are intent at the start of the day; append outcomes at the end (`→ done`, `→ partial: <note>`, `→ skipped: <why>`).
 - Explicit "won't touch this session" line stops scope creep.
+- `Active:` line under each day logs real active time per the `[+Nm]` prompt prefix (see `CLAUDE.md` → Time tracking). Example: `Active: 25 + 40 + 15 = 1h 20m`.
 
 ---
 
@@ -33,6 +34,9 @@ Plan (in priority order):
 4. **First PR-flow rehearsal.** Branch + PR + self-merge for one of the items above. Tests the workflow before Fotis arrives.
 
 Won't touch this session: Supabase work, rounds.json non-F1 curation, SEO baseline, anything from the Parked list.
+
+Active:
+(time-tracking starts this session — prefix each prompt with `[+Nm]` and I append here)
 
 ---
 

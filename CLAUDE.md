@@ -28,6 +28,7 @@ Read this whole file at the start of every session. Then read `IDEAS.md` + `SCHE
    - `feedback-paddock-session-workflow` — the time-plan-at-start / capture-mid-session / triage-at-end loop described below.
    - `feedback-paddock-release-notes` — every push must update `CHANGELOG.md` + bump `package.json` version. Hard rule.
    - `feedback-paddock-espa` — Evaluate / Scrutinize / Present / Await before every non-trivial action. Imported from `eshp`. Approvals must be explicit; commits never include Claude attribution.
+   - `feedback-paddock-time-tracking` — per-prompt `[+Nm]` prefix logs active minutes to `SCHEDULE.md`. See the Time tracking section below.
 
 ## ESPA — before every non-trivial action
 
@@ -54,6 +55,17 @@ Approvals are explicit ("yes", "go ahead", "approved", "do it"). Do not infer ap
 - **Suggest plan mode** when: task touches 3+ files, involves architectural decisions, is ambiguous, has multiple valid approaches, or the user says "build / redesign / restructure / plan".
 - **Stay in execute mode** when: single-file edit, clear and specific instruction, bug fix with known location, or read-only research.
 - **When unsure:** ask. *"This looks like it needs a plan. Want me to enter plan mode?"*
+
+## Time tracking
+
+Realistic *active* time per session, not wall-clock between prompts. **Per-prompt prefix `[+Nm]`** at the start of a new prompt = `N` active minutes the user spent between the previous prompt and this one.
+
+- Examples: `[+15m] curate IMSA sessions.json`, `[+5m] back, what was the diff?`.
+- Counted: reading, thinking, coding, watching me work, on-task AFK (e.g. checking a real browser).
+- Not counted: idle wall-clock time when the user was away from the project entirely.
+- On seeing `[+Nm]`: append it to today's section in `SCHEDULE.md` under an `Active:` line, maintain a running total. Then respond to the rest of the prompt normally.
+- Forgot the prefix? Reply with just `[+12m]` (no other text) and I'll backfill the previous window.
+- Daily total appears at session end alongside the `→ done` outcomes.
 
 ## Session workflow
 

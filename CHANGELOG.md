@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.7 — 2026-05-16
+
+### Added
+- **Per-prompt active-time tracking.** Prefix any prompt with `[+Nm]` (e.g. `[+15m] curate IMSA sessions.json`) to log N active minutes since the previous prompt. Claude appends each value to today's section in `SCHEDULE.md` under an `Active:` line and maintains a running total. Wall-clock gaps between prompts no longer overstate throughput — only declared active time counts. Rule documented in `CLAUDE.md` → Time tracking; format reference in `SCHEDULE.md` conventions.
+
 ## 0.9.6 — 2026-05-16
 
 ### Added
