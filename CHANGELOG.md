@@ -2,6 +2,15 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.4 — 2026-05-16
+
+### Added
+- **`CONTRIBUTING.md`** — branch / PR / review / commit / hot-fix / conflict rules for a two-person codebase. Trust-based discipline (no enforced branch protection yet).
+- **`ONBOARDING.md`** — walkthrough for Paddock contributor #2 (stack, code layout, non-obvious conventions, local setup, first-contribution suggestions).
+
+### Changed
+- **CLAUDE.md commit & branch conventions** reversed: Paddock is now a two-person project, default flow is feature-branch → PR → preview review → squash-merge. The prior "push directly to main, no PR review" line was correct for solo work and is no longer accurate.
+
 ## 0.9.3 — 2026-05-16
 
 ### Changed

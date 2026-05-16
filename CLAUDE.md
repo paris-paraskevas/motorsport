@@ -119,10 +119,12 @@ Detailed rationale in the handoff. Quick-reference:
 
 ## Commit & branch conventions
 
-- Push directly to `main`. PR reviews are not part of the workflow (single-author repo).
+- Paddock is now a two-person project. **Read `CONTRIBUTING.md`** for the full workflow.
+- Default flow: branch from latest `main` → PR → preview review → squash-merge.
+- Never push directly to `main`. Hot-fix process documented in `CONTRIBUTING.md`.
 - Conventional commits: `feat(scope):`, `fix(scope):`, `docs:`, `chore:`. See `git log --oneline` for prior style.
-- Commit message body explains the *why* and surprising design decisions — not what changed line by line (the diff handles that).
-- **Never include `Co-Authored-By` or any Claude attribution** in commit messages. Commits speak for themselves.
+- Commit body explains the *why*, not the *what*.
+- **Never include `Co-Authored-By` or any Claude attribution** in commit messages.
 - Bundle related fixes; don't split a single user-facing bug across multiple commits if they share a root cause.
 
 ## When in doubt
