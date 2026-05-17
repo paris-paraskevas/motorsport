@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -11,6 +12,7 @@ const SITE_URL = 'https://paddock-tracker.com';
 const SITE_TITLE = 'Paddock';
 const SITE_DESCRIPTION =
   'Personal motorsport companion — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more.';
+const GA_MEASUREMENT_ID = 'G-DDMJ2NMBWC';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -66,6 +68,18 @@ export default async function RootLayout({
           <AppShell seriesList={seriesList}>{children}</AppShell>
           <Analytics />
           <SpeedInsights />
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+          </Script>
         </body>
       </html>
     </ClerkProvider>

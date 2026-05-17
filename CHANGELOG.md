@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.15 — 2026-05-17
+
+### Added
+- **Google Analytics 4 (`G-DDMJ2NMBWC`).** Wired into `app/layout.tsx` via `next/script` with `strategy="afterInteractive"` so the tracker loads after the page is interactive and doesn't block initial render. Coexists with the existing Vercel Analytics + Speed Insights — they measure different things (Vercel = visits + Web Vitals + edge performance; GA = behaviour, attribution, audience). Measurement ID is a public identifier (visible in browser source), no env-var indirection needed. **Open follow-up:** GDPR cookie-consent banner — GA4 sets cookies and EU receivers technically require explicit opt-in. Logged to `IDEAS.md` Inbox.
+
 ## 0.9.14 — 2026-05-17
 
 ### Fixed
