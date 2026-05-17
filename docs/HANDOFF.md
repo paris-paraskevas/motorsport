@@ -115,54 +115,85 @@ When a curated/override file is absent, renderers fall back to the live external
 - ✅ Per-prompt active-time tracking (`[+Nm]` prefix → SCHEDULE.md `Active:` line) — DONE 2026-05-16 (`0.9.7`)
 - ✅ F1 2026 Bahrain + Saudi cancellations restored with banner + section render — DONE 2026-05-16 (`0.9.8`, PR #1 at `cd169b6`)
 - ✅ Postponement rendering UI + MotoGP/WEC `rounds.json` + midnight-UTC `dateOnly` detection ("3 am" fix) — DONE 2026-05-16 (`0.9.9`, PR #2 at `e0d93cf`)
-- 🟡 Full-season `sessions.json` curation across 14 series + ADAC 24h — committed but **STUCK ON BRANCH** awaiting PR #3 (`0.9.10`, commit `141de18`)
-- 🟡 Template-projected empty rounds across F1/F2/F3/MotoGP/WEC/DTM/GTWCE — committed but **STUCK ON BRANCH** awaiting PR #3 (`0.9.11`, commit `2778037`)
-- ❌ `sk_live_*` rotation — deferred
-- ❌ Contact-form email delivery — submissions stored in KV (`paddock:contact:*`); install Resend Marketplace + set `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to actually email
+- ✅ Full-season `sessions.json` curation + template-projected empty rounds — DONE 2026-05-17 (`0.9.10` + `0.9.11`, PR #3 merged)
+- ✅ Calendar-correctness audit — season filter in `lib/series.ts` (kills 2025 leakage everywhere), WEC R3/R4/R5 routing fixed (side-effect), `WeekendBlock` venue-name label upgrade, Open-Meteo 7→16 day forecast horizon — DONE 2026-05-17 (`0.9.14`, PR #6 merged)
+- ✅ Contact-form email delivery — Resend Marketplace installed, sender swapped to apex `paddock-tracker.com` after `send.` subdomain rejected 403 — DONE 2026-05-17 (`0.9.12` PR #4 + `0.9.13` PR #5)
+- ✅ Google Analytics 4 (`G-DDMJ2NMBWC`) wired via `next/script` `afterInteractive` in `app/layout.tsx` — DONE 2026-05-17 (`0.9.15`, PR #7)
+- ✅ `rounds.json` curated for F2 / F3 / IMSA / IndyCar / WSBK — DONE 2026-05-17 (`0.9.16`, PR #8)
+- ✅ Cron fail-closed when `CRON_SECRET` is unset — `lib/cron-auth.ts` shared helper, all three cron routes updated — DONE 2026-05-17 (`0.9.17`, PR #9)
+- ✅ Split `CHANGELOG.md` (engineering) from `RELEASES.md` (public-facing) — `/changelog` page now reads `RELEASES.md`, CLAUDE.md release-notes rule rewritten — DONE 2026-05-17 (`0.9.18`, PR #10)
+- ✅ Supabase v1 schema draft — `docs/research/supabase-schema-draft.md` 18 sections, ~800 lines, ready for Tuesday Fotis — DONE 2026-05-17 (`0.9.19`, PR #11)
+- ❌ Supabase provisioning + run migrations 001–008 — post-Fotis (Tuesday 2026-05-19)
+- ❌ Native non-F1 results + standings (S7) — pending; post-Supabase
+- ❌ `sk_live_*` rotation — deferred indefinitely
 - ❌ Sentry integration — pending
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
+- ❌ GDPR / cookie-consent banner for GA4 — logged to IDEAS Next #4, revisit trigger ~500 visitors/day or legal complaint
 
-## ⚡ Next session priorities (Sunday 2026-05-17)
+## ⚡ Next session priorities (Monday 2026-05-18)
 
-**Priority 1 — Open PR #3 first thing.** Two commits are stuck on branch `feat/postponement-rendering-motogp-wec` and not yet on main. PR #2 was merged before these landed:
+**Priority 1 — `rounds.json` for the bottom 8 series.** DTM, GTWCE, NLS, NASCAR Cup, WRC, plus IndyCar R11–R14 + R17 (Mid-Ohio / Music City / Portland / Markham / Laguna Seca finale), MotoGP postponement-cascade consistency check, FE (Sanya R11 gap + venue-named rounds). After this lands, every series has canonical round numbers — array-index fallback is fully retired.
 
-- `141de18` — `0.9.10` full-season session-time curation (15 new `sessions.json` files across all 14 series + ADAC 24h)
-- `2778037` — `0.9.11` template-projected empty rounds (62 new override blocks across F1/F2/F3/MotoGP/WEC/DTM/GTWCE)
-- `e94c13c` — `docs(schedule)` Saturday outcomes + Sunday plan (lighter, rides along)
+**Priority 2 — IMSA P1 + FE Sanya R11 + F1 Azerbaijan `endDate` curation patches.** Three small gaps surfaced in Sunday's audit. IMSA R6–R11 missing Practice 1, FE Sanya R11 (Jun 20) missing session times, F1 Azerbaijan `rounds.json` `endDate: 2026-09-27` but actual race is Saturday Sep 26.
 
-Quick command:
-```bash
-gh pr create --base main --head feat/postponement-rendering-motogp-wec \
-  --title "feat(series): full-season session times + template-projected empty rounds (0.9.10 + 0.9.11)"
-```
+**Priority 3 — Weather + news coverage audit (the original Task #4).** Sunday's calendar-correctness work was about *correctness* of round numbering and session times. The still-pending audit is *coverage*: for each of 15 series, click into the next upcoming weekend and confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) + news feed populate. Output a per-series gap list. Curation pass for any series missing weather/news wiring.
 
-Once merged, paddock-tracker.com auto-deploys real session times across all 15 series within ~90s. Then browser-verify with MotoGP Catalunya R6 (this weekend's race), IndyCar Indy 500 (May 24), F1 Canada (May 22-24), IMSA Detroit (May 29-30), WEC Le Mans (Jun 13-14).
+**Priority 4 — ADAC Ravenol 24h special-casing.** Sunday's audit found ADAC's series page only renders Champions data — Standings / Results / Drivers tabs are empty because the event is a single annual race, not a multi-round championship. Decision was to special-case rather than remove (preserves the 0.8.0 + 0.9.10 work). Plan: add `singleEvent: true` flag to `meta.json`, render a slimmer tab set (Calendar + About + Past Winners + officialSite link), hide tabs that don't apply. NLS unaffected. See IDEAS.md Inbox for full plan.
 
-**Priority 2 — Task #4 weather + news audit.** Never started on Saturday. For each of 15 series, click into the next upcoming weekend, confirm Open-Meteo weather block renders (venue-local date per `feedback-paddock-weather-venue-local`) and news feed populates. Output: list of gaps + curation pass for any series missing wiring.
+**Pre-Fotis cutoff final day** ([[project-paddock-pre-fotis-cutoff]]): Tuesday 2026-05-19 is the Fotis sit-down. Memory expires after that. New ideas → IDEAS.md Inbox only until then.
 
-**Priority 3 — Task #2 Supabase schema DDL draft.** Saturday produced the research (`docs/research/db-best-practices.md`) but not the actual DDL doc. Write `docs/research/supabase-schema-draft.md`: tables, columns, types, FKs, status lookup table, audit log, provenance columns (`source_id`/`fetched_at`/`verified_at`/`manual_override`/`content_hash`), time model (local + IANA tz + computed UTC instant). Ready for Tuesday Fotis sit-down.
+### Tuesday 2026-05-19 — Fotis sit-down day
 
-**Pre-Fotis cutoff still active** ([[project-paddock-pre-fotis-cutoff]]): Mon/Tue 2026-05-18/19 is the deadline for the open-items push. New ideas → IDEAS.md Inbox only.
+Walk `docs/research/supabase-schema-draft.md` together. Answer the 10 open questions in §17 (UUID v7 timing, service role split, status PK shape, JSONB scope, Schema.org generation location, audit retention, backfill noise, naming convention, comments/predictions launch order, Realtime subscriptions). If shape holds → kick off Supabase provisioning + run migrations `001_extensions.sql` through `008_rls.sql` (12-step plan in §18 of the schema doc). Delete `project-paddock-pre-fotis-cutoff` memory after the sit-down.
 
-### Known data flags surfaced during Saturday curation (not yet fixed)
+### Known data flags surfaced during Sunday work (not yet fixed)
 
-- **F1 Azerbaijan `rounds.json` `endDate: 2026-09-27`** but actual race is **Saturday Sep 26** (avoids Azerbaijan Remembrance Day). The PR #3 sessions.json correctly uses `matchDate: 2026-09-26` but rounds.json should be patched for consistency.
-- **Miami F1 + F2 race times** in sessions.json reflect as-RUN (weather move) not as-scheduled. Acceptable.
-- **DTM Norisring R4** intentionally TBC — its unique split-qualifying format (QF1A → Race 1; QF2B → Race 2) means session titles would be wrong with template times. Curate when ADAC publishes 2026 schedule (~3-4 weeks pre-event).
-- **WRC stage detail** for Sweden, Safari Kenya, Japan, Greece, Estonia, Paraguay, Chile, Italy Sardegna, Saudi Arabia — official itineraries publish 4-6 weeks pre-rally.
-- **GTWCE late-event detail, NASCAR + IndyCar mid-season practice/qualifying** — sources publish race-week, not annually. Stay TBC until then.
+- **F1 Azerbaijan `rounds.json` `endDate: 2026-09-27`** but actual race is **Saturday Sep 26**. The PR #3 sessions.json correctly uses `matchDate: 2026-09-26`. → Monday Priority 2.
+- **IMSA Practice 1 missing on R6–R11.** Sessions.json curation gap. → Monday Priority 2.
+- **FE Sanya ePrix R11 (Jun 20)** has no curated session times. → Monday Priority 2.
+- **IndyCar R11–R14 + R17** not in `rounds.json` (Mid-Ohio / Music City / Portland / Markham / Laguna Seca). → Monday Priority 1.
+- **DTM Norisring R4** intentionally TBC (split-quali format). Curate when ADAC publishes 2026 schedule.
+- **WRC stage detail** for Sweden, Safari, Japan, Greece, Estonia, Paraguay, Chile, Sardegna, Saudi — official itineraries publish 4-6 weeks pre-rally.
+- **NASCAR + IndyCar mid-season practice/qualifying** — sources publish race-week, not annually. Stay TBC until then.
+- **Miami F1 + F2 race times** reflect as-RUN (weather move) not as-scheduled. Acceptable.
 
-### Honest task state at end of Saturday
+### Honest task state at end of Sunday
 
-- ✅ #1 Per-series source audit (14 series) — done
-- 🟡 #2 Apply DB practices → draft schema for our case — **research done, DDL doc skipped**, priority for Sunday
-- 🟡 #3 Make every series calendar factually accurate — **work done locally on branch, awaiting PR #3 to reach main**; residual rounds intentionally TBC per above
-- ⏳ #4 Wire weather + news into every round — **never started**, priority for Sunday
+- ✅ #1 Per-series source audit (14 series) — done (Saturday)
+- ✅ #2 Apply DB practices → draft schema for our case — **done Sunday** (`0.9.19`, PR #11, `docs/research/supabase-schema-draft.md`)
+- 🟡 #3 Make every series calendar factually accurate — bulk done Sunday (PR #3 + PR #6 + PR #8 = season filter, venue labels, real session times, canonical round numbers for 5 more series). Residual: bottom 8 series `rounds.json`, IMSA P1 gap, FE Sanya R11, F1 Azerbaijan endDate — all promoted to Monday.
+- ⏳ #4 Wire weather + news coverage audit — **still pending**, promoted to Monday Priority 3. Sunday's calendar-correctness work focused on the *correctness* angle; the *coverage* audit (which series have weather/news wired) hasn't run.
 - ✅ #5 Research DB best practices — done (`docs/research/db-best-practices.md`)
-- ✅ #6 Fix phantom Sat/Sun 03:00 — done (`0.9.9`)
-- ✅ #7 Full-season session-time curation — done locally, awaiting PR #3
-- ✅ #8 Template-projection fill for empty rounds — done locally, awaiting PR #3
+- ✅ #6 Fix phantom Sat/Sun 03:00 — done (`0.9.9` midnight-UTC + `0.9.14` season filter killed the 2025-leakage variant)
+- ✅ #7 Full-season session-time curation — done, PR #3 merged Sunday
+- ✅ #8 Template-projection fill for empty rounds — done, PR #3 merged Sunday
+
+---
+
+## What shipped Sunday 2026-05-17 (massive session — 9 versions live across 7 PRs)
+
+- **`0.9.10` + `0.9.11`** (PR #3, merged `5bd8393`) — Saturday's stuck branch finally landed. Full-season `sessions.json` curation across all 14 series + ADAC 24h, plus template-projected empty rounds for F1/F2/F3/MotoGP/WEC/DTM/GTWCE. Real session times across the whole site within ~90s of merge.
+- **`0.9.12`** (PR #4, merged `4274044`) — Paris's parallel contact-form work. Resend Marketplace integration installed, `RESEND_API_KEY` + `CONTACT_TO_EMAIL` wired. Sender shipped as `contact@send.paddock-tracker.com` (wrong — see `0.9.13`).
+- **`0.9.13`** (PR #5, merged `49a363b`) — Sender domain corrected to apex `contact@paddock-tracker.com`. Resend rejected `send.` subdomain with 403 because the `send.` subdomain only hosts SMTP-infra DNS records, not the addressable sending identity. Verified via direct Resend API probe. Contact form delivers end-to-end now.
+- **`0.9.14`** (PR #6, merged `5e3c8d0`) — **Calendar correctness audit.** Three coherent layers driven by user's per-series audit findings:
+  1. **Season filter** in `lib/series.ts` (Dec 1 prior-year → Feb 1 next-year window). Non-F1 Google Calendar feeds were leaking 2025 events into the 2026 calendar (MotoGP has 451 entries back to 2010; WEC has 142). Without a year filter and with `dateRangeLabel` never showing the year, 2025 Silverstone displayed as a 2026 entry. Killed everywhere in one stroke.
+  2. **WEC routing side-effect.** `/series/wec/weekend/3` was resolving to Circuit of the Americas (the 2025-09-07 Lone Star Le Mans ICS entry was poisoning array-index round assignments for R3–R5). Season filter cleans this up automatically — R3 → Le Mans, R4 → São Paulo, R5 → COTA, R6 → Fuji, R7 → Qatar, R8 → Bahrain.
+  3. **`WeekendBlock` venue/race-name label.** Cards now lead with the race name (e.g. "Canadian Grand Prix", "24 Hours of Le Mans") as an h3 above the date + sessions. Date range demoted to a thin top label. Falls back to `deriveTitleHint` parse when no rounds.json name exists.
+  4. **Open-Meteo forecast horizon** 7 → 16 days + KV cache-bust guard (`daily.length >= 14`). F1 R5 Canada Sunday weather was missing because the 7-day window stopped on May 23 (race is May 24).
+- **`0.9.15`** (PR #7, merged `dc1b0aa`) — Google Analytics 4 (`G-DDMJ2NMBWC`) wired via `next/script` `strategy="afterInteractive"` in `app/layout.tsx`. Coexists with Vercel Analytics + Speed Insights (different telemetry). Measurement ID is a public identifier, hardcoded inline.
+- **`0.9.16`** (PR #8, merged `d30cd99`) — `rounds.json` curated for F2 (14 rounds, F1-venue mapped), F3 (9 rounds), IMSA (11 with full official names), IndyCar (12 rounds R1–R10 + R15–R16, gaps left for Monday), WSBK (12 rounds by venue). Pairs with PR #6's venue-label change so cards finally show real race names.
+- **`0.9.17`** (PR #9, merged `5972df1`) — **Cron fail-closed when `CRON_SECRET` unset.** Reverses the prior fail-open default that would have turned `/api/cron/notify` + `news` + `race-week` into unauth'd spam guns if the env var ever cleared. Auth logic extracted to `lib/cron-auth.ts` (single source of truth instead of triplicated). HANDOFF landmine #6 rewritten. Surfaced by a security review pass on `/changelog`.
+- **`0.9.18`** (PR #10, merged `b49cbcc`) — **Split `CHANGELOG.md` (engineering) from `RELEASES.md` (public-facing).** `/changelog` page now reads `RELEASES.md` only; CHANGELOG.md stays git-only with file paths + function names. CLAUDE.md release-notes rule rewritten to mandate the two-file pattern. `RELEASES.md` backfilled to 0.8.0. Same security/style review pass that flagged the cron risk.
+- **`0.9.19`** (PR #11) — **Supabase v1 schema draft** at `docs/research/supabase-schema-draft.md`. 18 sections, ~800 lines, ready to `psql -f` once the project is provisioned. Plus 10 open questions for Tuesday Fotis (§17) and a 12-step migration order (§18). Closes Saturday's "Task #2 skipped — DDL doc never written". IDEAS.md + SCHEDULE.md + HANDOFF.md (this section) updated alongside.
+
+**Sunday memory updates:**
+
+- `feedback-paddock-release-notes` — rewritten for the two-file pattern (CHANGELOG.md engineering + RELEASES.md public + package.json bump on every push).
+- `project-paddock-contact-email` — added during Paris's parallel session (default `CONTACT_TO_EMAIL=pparaskevas.dev@gmail.com`).
+- `project-paddock-pre-fotis-cutoff` — still active, expires Tuesday 2026-05-19 after the Fotis sit-down.
+
+**Sunday commit count:** ~9 PRs (#3, #4, #5, #6, #7, #8, #9, #10, #11) — 5 of them mine, 2 of them Paris's parallel contact-form work, all merged same day.
 
 ---
 

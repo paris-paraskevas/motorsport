@@ -45,51 +45,53 @@ End-of-Saturday outcomes (much expanded scope vs morning plan):
 - → skipped: `#2 Apply DB practices → draft schema for our case` — research shipped, actual DDL draft doc never written.
 - → skipped: `#4 Wire weather + news into every round` — never started; needs an audit pass to verify weather (Open-Meteo, venue-local per `feedback-paddock-weather-venue-local`) and news feeds populate for every round of every series.
 
-### Sun 2026-05-17
+### Sun 2026-05-17 — massive ship day (7 versions live)
 
-**Priority 1 (first thing):** Open PR #3 with the stuck `0.9.10` + `0.9.11` commits → merge → production auto-deploys real session times across the site.
+Plan-at-start was: open PR #3, browser-verify, weather+news audit, Supabase DDL draft. Scope expanded mid-session into a full calendar-correctness audit driven by user's per-series audit findings.
 
-Then continue pre-Fotis cutoff:
+End-of-Sunday outcomes:
 
-1. **Browser-verify PR #3 once deployed** — spot-check 3 series whose next round is soon (MotoGP Catalunya was today; check IndyCar Indy 500 May 24, F1 Canada May 22-24, IMSA Detroit May 29-30, WEC Le Mans Jun 13-14).
-2. **Task #4 — weather + news audit.** For each of the 15 series, click into the next upcoming weekend, confirm weather block renders (or note which series have no weather wiring) and news feed populates (or doesn't). Output: list of gaps. Curation pass for any series missing weather/news.
-3. **Task #2 — Supabase schema DDL draft.** Use the research from `db-best-practices.md` to write a concrete schema doc (`docs/research/supabase-schema-draft.md`): tables, columns, types, FKs, status lookup, audit log, provenance columns, time model. Ready for Fotis sit-down on Tue.
-4. If time: open Norisring/WRC stage rounds for re-audit (sources may have published in the last 24h).
+- → done: ship `0.9.10` + `0.9.11` via PR #3 — full-season sessions curation + template-projected empty rounds finally on main. Real session times across all 15 series.
+- → done: ship `0.9.14` via PR #6 — **calendar correctness audit**. Season filter in `lib/series.ts` (Dec 1 prior-year → Feb 1 next-year window) kills 2025 leakage across every non-F1 series in one stroke. Side-effect: WEC R3/R4/R5 routing fixed (the 2025-09-07 COTA entry had been poisoning array-index assignments). `WeekendBlock` venue/race-name label upgrade — cards now lead with "Canadian Grand Prix" / "24 Hours of Le Mans" not just "Round X →". Open-Meteo `forecast_days` 7 → 16 + KV cache-bust guard (`daily.length >= 14`) — F1 R5 Canada Sunday weather restored.
+- → done: ship `0.9.12` + `0.9.13` via PR #4 + PR #5 — **Paris's parallel contact-form work**. Resend Marketplace integration installed, sender swap to apex `paddock-tracker.com` after `send.` subdomain rejected 403. Contact form delivers end-to-end now.
+- → done: ship `0.9.15` via PR #7 — **Google Analytics 4** wired via `next/script` `strategy="afterInteractive"` in `app/layout.tsx`. Coexists with Vercel Analytics + Speed Insights. EEA consent banner logged to IDEAS Next.
+- → done: ship `0.9.16` via PR #8 — `rounds.json` curated for F2 / F3 / IMSA / IndyCar / WSBK. Five more series gain canonical round numbers + race names; weekend cards stop array-indexing.
+- → done: ship `0.9.17` via PR #9 — **cron fail-closed** when `CRON_SECRET` is unset. Reverses the prior fail-open default that would have turned `/api/cron/notify` + `news` + `race-week` into unauth'd spam guns if the env var ever cleared. Auth logic extracted to `lib/cron-auth.ts` (single source of truth instead of triplicated). HANDOFF landmine #6 rewritten. Surfaced by a security review of `/changelog`.
+- → done: ship `0.9.18` via PR #10 — **split CHANGELOG.md (engineering) from RELEASES.md (public)**. `/changelog` page now reads `RELEASES.md` only — user-facing prose, no file paths or library names. CLAUDE.md release-notes rule rewritten to mandate the two-file pattern. RELEASES.md backfilled to 0.8.0.
+- → done: ship `0.9.19` via PR #11 — **`docs/research/supabase-schema-draft.md`** (~800 lines, 18 sections). Full v1 DDL ready to `psql -f` once the project is provisioned, plus 10 open questions for Tuesday Fotis. Closes Saturday's "Task #2 skipped — DDL doc never written".
+- → done: triaged `IDEAS.md` Now / Next, closed Sunday in SCHEDULE.md, updated `docs/HANDOFF.md` for Monday, updated `feedback-paddock-release-notes` memory to reflect the two-file split.
+- → partial: Task #4 weather + news audit. The *correctness* angle (round numbering, session times) is now solid post-PR #6 + #8. The *coverage* audit (does every series have weather wired? does every series have news?) is still pending — promoted to Now #2.
+- → deferred to Monday: IMSA P1 missing on R6–R11, FE Sanya R11 missing session times, F1 Azerbaijan `endDate` Sep 27 vs actual Sep 26.
 
-Won't touch this session: AllSportsApi integration (defer until Supabase scope decided), comments thread, predictions, anything from Parked.
-
-Active:
-_(awaiting [+Nm] prefixes)_
-
-### Sun 2026-05-17
-
-Pre-Fotis cutoff continues. Priority order:
-
-1. **Tier 1 finish** — sessions.json + rounds.json curation pass across non-F1 series with rounds in next 30d, endurance-series weekend grouping audit, ESLint cleanup + husky pre-commit, delete unused `lib/onboarding.ts`.
-2. **Tier 2 polish** — custom `app/error.tsx`, `/api/cron/health`, news-filter persistence, push click handler deep-link, DRY notifications components, hero images in push payload, fold `overview.md` into F1 About, home hero next-2-3-sessions, Settings "Your devices", install Resend.
-3. **Tier 2 pull-ups** — session cards tap-to-expand, driver season-trend chart, common topics on Rules tab, Clerk dark retheme.
-
-Won't touch this session: Supabase code, comments thread, predictions, anything from `IDEAS.md` Parked or `Killed`.
+Won't touch this session: AllSportsApi integration, comments / predictions infra, anything from `Parked` or `Killed`, `rounds.json` for the bottom 8 series (deferred to Monday Now #1).
 
 Active:
-(time-tracking starts the next session — prefix each prompt with `[+Nm]` and I append here)
+_(no [+Nm] prefixes received this session — flag if backfill needed)_
 
 ### Mon 2026-05-18
 
-Pre-Fotis cutoff continues — Tier 1+2 carry-over from Sun. Begin Tier 3 if Tier 1+2 done.
+Pre-Fotis cutoff final day. Priority order:
 
-Won't touch this session: anything kicked to post-Fotis carry-over.
+1. **`rounds.json` for the bottom 8 series** — DTM, GTWCE, NLS, NASCAR Cup, WRC, IndyCar R11–R14 + R17 (Mid-Ohio / Music City / Portland / Markham / Laguna Seca), MotoGP postponement-cascade consistency check, FE (R11 Sanya gap + venue-named rounds.json). Closes Now #1.
+2. **IMSA P1 + FE Sanya R11 + F1 Azerbaijan `endDate` curation patches.** Small Sunday-audit gaps. Closes Now #3.
+3. **Weather + news coverage audit.** For each of 15 series, click into next upcoming weekend, list whether Open-Meteo + news populate. Output: per-series gap list. Closes Now #2 partially (audit only; fixes batched separately).
+
+Won't touch this session: Supabase provisioning (Tuesday post-Fotis), SEO baseline, comments / predictions, distinct session pages, anything from `IDEAS.md Parked` or `Killed`.
 
 Active:
 _(awaiting [+Nm] prefixes)_
 
 ### Tue 2026-05-19 — Fotis sit-down day
 
-**Tier 3 investigation docs:** data-sources research first (Ergast/jolpica, MotoGP web API, FIA feeds, aggregators), then Supabase scoping doc. JS-site XHR reverse-engineering + Champions JSON cleanup investigation if time remains.
+**Sit-down agenda:** walk `docs/research/supabase-schema-draft.md` together — answer the 10 open questions in §17 (UUID v7 timing, service role split, status PK shape, JSONB scope, Schema.org generation location, audit retention, backfill noise, naming, comments/predictions launch order, Realtime). Decision per Q determines whether v1 schema goes in as drafted.
 
-**End-of-day:** pre-Fotis cutoff rule expires after the sit-down. Resume normal IDEAS.md triage. Delete `project-paddock-pre-fotis-cutoff` memory.
+**If shape holds:** kick off Supabase provisioning — Vercel Marketplace install, link to project, write env vars. Then run `001_extensions.sql` through `008_rls.sql` (the 12-step order in §18 of the schema draft).
 
-Won't touch this session: anything not Tier 1/2/3 unless explicitly pulled in during the sit-down.
+**If shape needs rework:** update `supabase-schema-draft.md` in place + re-PR. No code changes.
+
+**End-of-day:** pre-Fotis cutoff rule expires after the sit-down. Resume normal IDEAS.md triage cadence. Delete `project-paddock-pre-fotis-cutoff` memory.
+
+Won't touch this session: actual cron worker writing diff logs, JSON→table migration script (v1.5 work), live in-race data, anything from IDEAS.md Parked.
 
 Active:
 _(awaiting [+Nm] prefixes)_

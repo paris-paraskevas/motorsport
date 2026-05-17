@@ -14,17 +14,17 @@ Time-based scheduling lives in `SCHEDULE.md`.
 
 ## Now (≤ 3, in flight)
 
-1. **Browser-verify `0.9.1` fixes in a real browser.** Click through home / `/series/f1/weekend/5` (Canada Round 5) / `/series/formula-e/weekend/12` (Monaco). Confirm no 3 am leakage on date-only entries, live-now still triggers on timed sessions, FE Monaco renders the curated R9+R10 timings. Capture screenshots for the changelog.
-2. **Investigate the residual `00:00` string** on `/series/f1/weekend/5`. Pulled-out via a tabular-nums probe during 0.9.1 verification; need to confirm whether it's a legit session time or a leftover fake. Quick fix once located.
-3. **Curate `sessions.json` for one more non-F1 series.** Pick the one whose next race is closest (likely MotoGP or IMSA). Same pattern as FE Monaco — official-site search → curated timed sessions → browser-verify.
+1. **Curate `rounds.json` for the bottom 8 series** — DTM, GTWCE, NLS, NASCAR Cup, WRC, plus IndyCar R11–R14 + R17 (Mid-Ohio / Music City / Portland / Markham / Laguna Seca), MotoGP postponement-cascade consistency check, ADAC 24h, Formula E (R11 Sanya gap + venue-named rounds.json). After this lands, every series has canonical round numbers — array-index fallback is fully retired.
+2. **Wire weather + news for every series.** For each of 15 series, click into next upcoming weekend, confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) and news feed populate. Output: gap list + curation pass. Sunday's calendar-correctness work was about *correctness* of round numbering; this is the still-pending *coverage* audit.
+3. **IMSA P1 + FE Sanya R11 + F1 Azerbaijan `endDate` curation patches.** Three small gaps surfaced in Sunday's audit. IMSA R6–R11 missing Practice 1, FE Sanya R11 (Jun 20) missing session times, F1 Azerbaijan `rounds.json` says `endDate: 2026-09-27` but actual race is Saturday Sep 26.
 
 ## Next (≤ 5, queued — start within ~1–2 weeks)
 
-1. **Supabase migration scoping.** Provision via Vercel Marketplace; draft schema for sessions / standings / results / news / weather snapshots / live in-race data; draft per-series scrape boundaries (Vercel Cron + Sandbox/Playwright for JS-rendered sites). Reframe of S4. Plan first; code in a later session.
-2. **Public motorsport data sources research.** Write-up doc covering Ergast/jolpica for F1, MotoGP web API, FIA feeds, third-party aggregators. Identify which series we can pull from existing APIs vs which need custom scraping. Output: a markdown doc, not code.
-3. **Curate `rounds.json` for the remaining non-F1 series.** MotoGP, WEC, F2, F3, IndyCar, IMSA, WSBK, WRC, DTM, GT World, NASCAR Cup, NLS, FE. Replaces array-index fallback. Pairs with the sessions.json curation pass.
-4. **Audit endurance-series weekend grouping.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Verify case-by-case after rounds.json curation lands.
-5. **SEO baseline (S5).** `app/sitemap.ts`, `app/robots.ts`, JSON-LD (`SportsEvent` / `Organization` / `Person` / `BreadcrumbList`), per-page `generateMetadata`, OG image generators, canonicals.
+1. **Provision Supabase + run 001_extensions → 008_rls migrations** following `docs/research/supabase-schema-draft.md`. Comes after Tuesday Fotis sit-down where we close the 10 open questions in the doc.
+2. **Endurance-series weekend grouping audit.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Re-verify after the rounds.json curation wave.
+3. **SEO baseline (S5).** `app/sitemap.ts`, `app/robots.ts`, JSON-LD (`SportsEvent` / `Organization` / `Person` / `BreadcrumbList`), per-page `generateMetadata`, OG image generators, canonicals.
+4. **GDPR / cookie-consent banner for Google Analytics 4.** Revisit trigger: ~500 visitors/day or a real legal complaint. Today's GA wiring (PR #7) ships cookies without consent — fine for a 30-visitors/day personal project, not fine at scale.
+5. **Native non-F1 results + standings (S7).** Implement `lib/results/<slug>.ts` + `lib/standings/<slug>.ts` for MotoGP → WEC → IndyCar → NASCAR. Comes after Supabase tables land — those are the storage backing.
 
 ## Inbox (unfiltered, append-only)
 
@@ -72,6 +72,31 @@ Time-based scheduling lives in `SCHEDULE.md`.
 - Surface per-weekend car upgrades on the F1 weekend page — what each team brought to this round, sourced from the FIA Car Presentation Document or scraped from F1.com / motorsport.com. Implementation hint: RapidAPI's "Formula 1 Technical Upgrades" by SebastianL documents the data shape (stale repo but useful schema reference).
 - Live in-race data feed (lap-by-lap, telemetry, sector splits) for the live-now view on race day. Implementation hint: RapidAPI's "F1 Live Timing - Telemetry and GPS" (recently updated) is one candidate; the canonical long-term path is the Pulselive backend for MotoGP/WSBK and Jolpica live extensions for F1.
 - Embed YouTube highlights + extended-highlight videos on past weekend pages, and add dedicated season / month recap pages when a period wraps with embedded season-highlight videos + written blog text on how it went + standings snapshots at that point.
+- Distinct session pages with results / gaps / stints / pit stops once a session has finished — one page each for FP1 / FP2 / FP3 / Qualifying / Sprint / Race rather than today's roll-up. Surfaces session-level data we'll have once the S7 results work lands.
+- NASCAR practice + qualifying coverage — source publishes race-week, requires a per-week curation cron rather than annual upload like F1.
+- GTWCE deep audit — R12 (24h Spa), R13 (Magny-Cours Sprint), R16 (Barcelona Endurance) thin session data; revisit when those events get closer to confirm we've matched the FIA-published timetable.
+- Husky pre-commit hook to enforce CHANGELOG.md + RELEASES.md + package.json updated together — catches "forgot to bump version" or "engineering log updated but public-facing notes drifted" before push.
+- Reviewer's info-disclosure cleanup pass — KV key patterns (`paddock:contact:*`) and internal endpoint enumeration in old CHANGELOG entries help attackers target the surface even though no secrets leaked. Strip these from public-facing copies (RELEASES.md should be clean; CHANGELOG.md can keep them since it's git-only now).
+- UUID v7 generator helper for Supabase — drop-in when a Postgres-native v7 lands or via a `uuid_v7_generate()` plpgsql function for the high-write tables (audit log, session). Defer per `docs/research/supabase-schema-draft.md` §17 Q1.
+- Migration script `migrate_from_json.ts` — walks `content/series/**/*.json` and emits INSERT statements with `manual_override = TRUE` against the Supabase schema. v1.5 work after the schema actually exists.
+- WEC R3 Le Mans is intentionally 2-day (Jun 13–14) per FIA — already handled in `rounds.json`, but verify nothing in the endurance-grouping audit breaks on it.
+- DTM Norisring R4 sessions — awaits ADAC official schedule publication; unique split-quali format means template projection would produce wrong session titles.
+- WRC mid-season stages for Sweden, Safari Kenya, Japan, Greece, Estonia, Paraguay, Chile, Italy Sardegna, Saudi Arabia — official itineraries publish 4–6 weeks pre-rally.
+- Head-to-head comparison for drivers — pick two, see season stats, qualifying / race deltas, fastest lap, points trajectory. Possibly delivered as a magazine-style page.
+- Head-to-head comparison for constructors — same shape but team-vs-team.
+- Calendar UI — month-tabbed / swipeable view instead of one massive scroll per series. Pairs with mobile-first audit.
+- Notification badge icon refresh — try a chequered-flag motif on `public/icons/badge-96.png`. Current monochrome is functional but generic.
+- Contact form categories — dropdown for "Bug report" / "Feature request" / "Suggested change" / "General" so submissions self-triage. Today the form is plain email + body.
+- Admin UI for adding pages + content — lightweight authoring interface beyond the conversational "Claude edits files + commits" flow. Useful when Claude isn't available or for Fotis-driven content updates.
+- IA / navigation restructure pass — easier mental model. May follow user research. Suspect candidates: nest some tabs, surface "current weekend" at top of home, regroup series by category (formula / motorcycle / endurance / oval / rally).
+- "Live Now" section improvements — currently a thin pinned strip. Expand to show current session / lap / leader / gaps when live, not just "Live now: F1 Practice 2".
+- Champions tab visual redesign — better card layout, era groupings, image avatars. Pairs with the Champions JSON cleanup.
+- Notification sound refinement — per-series default sound, per-type variants, optional pre-race chime vs news ping.
+- News articles content pipeline — beyond MDX blog scaffolding (already shipped 0.8.0), set editorial direction + draft first posts. Tied to existing Parked item "Write first 2–3 MDX blog posts".
+- Make it faster — explicit performance pass beyond the audit (which is measurement only). Image optimisation, bundle size, hydration cost, route-segment caching, Suspense boundaries.
+- App best-practices pass — error boundaries on every route segment, loading states, Next.js 16 idiomatic patterns (cache directives, segment configs), proper `Suspense` boundaries with sensible fallbacks.
+- Per-session results-fetch lifecycle — when a session ends, fire Phase 1 (positions, times, basic video/news to the `result` table); fire Phase 2 a few hours / 1-2 days later (interviews, race reports, highlight videos appended to weekend news + media). Uses `session.end_instant_utc` as the trigger boundary. Implementation: Vercel cron sweep + `results_fetched_at` dedupe; not literal per-session timers. Formula E is the first concrete target — no results coverage today. Depends on Supabase tables landing + per-series fetchers (Inbox #16) + distinct session pages (Inbox #53) for full effect, but Phase 1 alone is shippable against the existing weekend page.
+- ADAC Ravenol 24h Nürburgring — special-case as a single-event series (Option B from Sunday's triage). Add a `singleEvent: true` flag to `meta.json` (or a new category `endurance_oneshot`). `app/series/[slug]/page.tsx` renders a slimmer tab set for single-event series: Calendar + About + Past Winners (rename of Champions) + officialSite link. Hide Standings / Results / Drivers-as-season-roster tabs via category check. Preserves the 0.8.0 + 0.9.10 work and represents the event honestly instead of pretending it's a multi-round championship. NLS Nürburgring is unaffected — it's a real 10-round series.
 
 ## Parked (might do, with a revisit trigger)
 
