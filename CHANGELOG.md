@@ -2,6 +2,16 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.14 — 2026-05-17
+
+### Fixed
+- **Calendar no longer mixes prior-season ICS entries into the current view.** Non-F1 ICS feeds (Google Calendar exports especially) ship multi-year archives — MotoGP's feed alone has 451 entries dating back to 2010, WEC has 142. Without a year filter, 2025 rounds leaked into the 2026 calendar, and because the date label has no year ("24-25 MAY"), 2025 Silverstone was indistinguishable from a fresh 2026 entry. Added a season window (Dec 1 prior-year → Feb 1 next-year) in `lib/series.ts` so only the declared season's sessions pass through. Kills the "phantom Round 1 Silverstone in May", "F2 19 rounds with no robust data", and similar across every non-F1 series in one stroke.
+- **WEC weekend routing fixed (`/weekend/3` now resolves to Le Mans, not COTA).** Same root cause as above: the WEC ICS feed includes a 2025-09-07 Lone Star Le Mans entry, which fell within the 365-day past window and pushed array-index round assignments out of alignment for R3-R5. With the season filter applied, the 2026 weekends correctly map: R3→Le Mans, R4→São Paulo, R5→COTA, R6→Fuji, R7→Qatar, R8→Bahrain.
+- **F1 Round 5 Canada Sunday weather restored.** Open-Meteo forecast horizon was set to 7 days; today (May 17) → only May 17-23 covered. The race is Sunday May 24, one day past the window. Bumped `forecast_days` to 16 (Open-Meteo's max) so race-week weather lands well ahead of time. Added a KV cache-bust check (`daily.length >= 14`) so existing 7-day cache entries refresh on next request instead of waiting out their 3-hour TTL.
+
+### Changed
+- **Calendar weekend cards now surface the race / venue name prominently.** Previously each card showed just the date range and a "Round X →" footer — fine on a 22-round F1 grid where everyone knows what Round 5 is, but for non-F1 series where round numbers are rolling, the destination is the primary identifier. Card structure is now: date range + tags row → bold race name (e.g. "Catalan Grand Prix", "24 Hours of Le Mans") → optional venue subtitle → session list → Round footer. Falls back to a parsed title hint when no `rounds.json` name is curated for the series.
+
 ## 0.9.13 — 2026-05-17
 
 ### Fixed

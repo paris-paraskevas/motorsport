@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Session, Weekend } from '@/lib/types';
 import { formatLocal } from '@/lib/date';
+import { weekendLabel } from '@/lib/weekend';
 
 function formatShortRange(startISO: string, endISO: string): string {
   const start = new Date(startISO + 'T00:00:00Z');
@@ -27,6 +28,9 @@ export function WeekendBlock({
   color: string;
   showNextTag?: boolean;
 }) {
+  const { title, subtitle } = weekendLabel(weekend, round);
+  const hasNamedTitle = title !== `Round ${round}`;
+
   return (
     <Link
       href={`/series/${seriesSlug}/weekend/${round}`}
@@ -34,15 +38,7 @@ export function WeekendBlock({
         weekend.isPast ? 'opacity-50 hover:opacity-80' : ''
       }`}
     >
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
-        {weekend.label && (
-          <span
-            className="inline-flex items-center text-[11px] uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: `${color}26`, color }}
-          >
-            {weekend.label}
-          </span>
-        )}
+      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
         <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">
           {weekend.dateRangeLabel}
         </span>
@@ -57,13 +53,30 @@ export function WeekendBlock({
               rescheduled
             </span>
           )}
-          {weekend.significance && weekend.significance.tier !== 'note' && (
+          {weekend.label && (
+            <span
+              className="inline-flex items-center text-[10px] uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full"
+              style={{ backgroundColor: `${color}26`, color }}
+            >
+              {weekend.label}
+            </span>
+          )}
+          {!weekend.label && weekend.significance && weekend.significance.tier !== 'note' && (
             <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
               {weekend.significance.tier}
             </span>
           )}
         </span>
       </div>
+      {hasNamedTitle && (
+        <h3 className="text-zinc-50 text-base font-semibold leading-tight mb-0.5">
+          {title}
+        </h3>
+      )}
+      {subtitle && (
+        <div className="text-xs text-zinc-500 mb-2">{subtitle}</div>
+      )}
+      {!subtitle && hasNamedTitle && <div className="mb-2" />}
       {weekend.previousStartDate && weekend.previousEndDate && (
         <div className="text-[11px] text-amber-300/80 mb-2 tnum">
           Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}

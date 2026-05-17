@@ -1,11 +1,26 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Series, SeriesMeta, SignificanceMap } from './types';
+import { Series, SeriesMeta, Session, SignificanceMap } from './types';
 import { parseIcs, fetchIcsText } from './ics';
 import { mergeSignificance } from './significance';
 import { loadMarkdownAsHtml } from './content';
 import { loadRounds } from './rounds-loader';
 import { loadSessionsOverrides, applySessionsOverrides } from './sessions-overrides';
+
+// Most non-F1 ICS feeds (Google Calendar exports especially) carry multi-year
+// history — MotoGP's feed has 451 entries going back to 2010. Without a season
+// filter, 2025 rounds leak into 2026 calendar views and look like phantom
+// future entries (the date label has no year). Window the sessions to the
+// declared season ± 2 months so genuinely cross-year season starts (FE
+// Dec → Jul, NASCAR Daytona prologue events, MotoGP shakedown) still pass.
+function filterToSeason(sessions: Session[], season: number): Session[] {
+  const min = Date.UTC(season - 1, 11, 1); // Dec 1 of prior year
+  const max = Date.UTC(season + 1, 1, 1); // Feb 1 of next year
+  return sessions.filter(s => {
+    const t = s.start.getTime();
+    return t >= min && t < max;
+  });
+}
 
 export async function loadSeriesFromDir(dir: string): Promise<Series> {
   const meta: SeriesMeta = JSON.parse(
@@ -36,7 +51,8 @@ export async function loadSeriesFromDir(dir: string): Promise<Series> {
   ]);
 
   const overridden = applySessionsOverrides(meta.slug, rawSessions, overrides);
-  const sessions = mergeSignificance(overridden, significanceMap);
+  const seasoned = filterToSeason(overridden, meta.season);
+  const sessions = mergeSignificance(seasoned, significanceMap);
 
   const [overview, drivers, significance] = await Promise.all([
     loadMarkdownAsHtml(path.join(dir, 'overview.md')),
