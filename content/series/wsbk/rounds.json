@@ -1,0 +1,17 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-02-20", "endDate": "2026-02-22", "name": "Phillip Island Round" },
+    { "round": 2, "startDate": "2026-03-27", "endDate": "2026-03-29", "name": "Portimão Round" },
+    { "round": 3, "startDate": "2026-04-17", "endDate": "2026-04-19", "name": "Assen Round" },
+    { "round": 4, "startDate": "2026-05-01", "endDate": "2026-05-03", "name": "Balaton Park Round" },
+    { "round": 5, "startDate": "2026-05-15", "endDate": "2026-05-17", "name": "Most Round" },
+    { "round": 6, "startDate": "2026-05-29", "endDate": "2026-05-31", "name": "Aragón Round" },
+    { "round": 7, "startDate": "2026-06-12", "endDate": "2026-06-14", "name": "Misano Round" },
+    { "round": 8, "startDate": "2026-07-10", "endDate": "2026-07-12", "name": "Donington Park Round" },
+    { "round": 9, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "Magny-Cours Round" },
+    { "round": 10, "startDate": "2026-09-25", "endDate": "2026-09-27", "name": "Cremona Round" },
+    { "round": 11, "startDate": "2026-10-09", "endDate": "2026-10-11", "name": "Estoril Round" },
+    { "round": 12, "startDate": "2026-10-16", "endDate": "2026-10-18", "name": "Jerez Round" }
+  ]
+}
