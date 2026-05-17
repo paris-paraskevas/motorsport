@@ -47,29 +47,25 @@ export function SeriesTabs({
             href={`${pathname}?tab=${tab.key}`}
             scroll={false}
             aria-current={isActive ? 'page' : undefined}
-            className={`group relative flex flex-col items-center justify-center gap-2 py-5 px-2 rounded-2xl border transition-all duration-200 ${
+            className={`group relative flex flex-col items-center justify-center gap-2 py-5 px-2 rounded-2xl border transition-all duration-(--duration-base) ${
               isActive
-                ? 'bg-zinc-900/80 border-zinc-700'
-                : 'bg-zinc-900/20 border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700/80'
+                ? 'bg-surface-elevated border-tint'
+                : 'bg-surface/40 border-border/60 hover:bg-surface hover:border-border-strong'
             }`}
             style={
               isActive
-                ? {
-                    borderColor: color,
-                    boxShadow: `inset 0 0 0 1px ${color}, 0 8px 24px -16px ${color}`,
-                  }
+                ? { boxShadow: `inset 0 0 0 1px ${color}, 0 8px 24px -16px ${color}` }
                 : undefined
             }
           >
             <Icon
               size={22}
-              className={isActive ? '' : 'text-zinc-400 group-hover:text-zinc-200 transition-colors'}
+              className={isActive ? 'text-tint' : 'text-text-muted group-hover:text-text transition-colors duration-(--duration-fast)'}
               strokeWidth={isActive ? 2 : 1.75}
-              style={isActive ? { color } : undefined}
             />
             <span
               className={`text-[11px] uppercase tracking-[0.12em] font-semibold text-center leading-tight ${
-                isActive ? 'text-zinc-50' : 'text-zinc-400 group-hover:text-zinc-200'
+                isActive ? 'text-text' : 'text-text-muted group-hover:text-text'
               }`}
             >
               {tab.label}

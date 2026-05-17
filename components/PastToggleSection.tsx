@@ -26,12 +26,12 @@ export function PastToggleSection({
   return (
     <section className="mb-8">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xs uppercase tracking-wider text-zinc-500">Calendar</h2>
+        <h2 className="text-xs uppercase tracking-wider text-text-faint font-semibold">Calendar</h2>
         {pastWeekends.length > 0 && (
           <button
             type="button"
             onClick={() => setShowPast(v => !v)}
-            className="text-xs text-zinc-500 hover:text-zinc-300"
+            className="text-xs text-text-faint hover:text-text-muted transition-colors duration-(--duration-fast)"
           >
             {showPast ? '− hide past' : '+ show past'}
           </button>
@@ -58,7 +58,7 @@ export function PastToggleSection({
           />
         ))}
         {upcomingWeekends.length === 0 && !showPast && (
-          <div className="text-zinc-600 text-sm">Nothing scheduled.</div>
+          <div className="text-text-faint text-sm">Nothing scheduled.</div>
         )}
       </div>
     </section>
