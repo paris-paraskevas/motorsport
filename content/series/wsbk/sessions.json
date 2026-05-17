@@ -1,0 +1,173 @@
+{
+  "season": 2026,
+  "overrides": [
+    {
+      "matchDate": "2026-02-22",
+      "round": 1,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-02-20T00:20:00Z", "end": "2026-02-20T01:05:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - FP2", "start": "2026-02-20T05:00:00Z", "end": "2026-02-20T05:45:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - FP3", "start": "2026-02-20T23:00:00Z", "end": "2026-02-20T23:30:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - Superpole", "start": "2026-02-21T00:00:00Z", "end": "2026-02-21T00:15:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - Race 1", "start": "2026-02-21T05:00:00Z", "end": "2026-02-21T05:35:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - Warm Up", "start": "2026-02-21T23:30:00Z", "end": "2026-02-21T23:45:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - Superpole Race", "start": "2026-02-22T02:00:00Z", "end": "2026-02-22T02:20:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" },
+        { "title": "WSBK - Race 2", "start": "2026-02-22T05:00:00Z", "end": "2026-02-22T05:35:00Z", "location": "Phillip Island Grand Prix Circuit, Phillip Island" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-29",
+      "round": 2,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-03-27T10:20:00Z", "end": "2026-03-27T11:05:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - FP2", "start": "2026-03-27T15:00:00Z", "end": "2026-03-27T15:45:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - FP3", "start": "2026-03-28T09:40:00Z", "end": "2026-03-28T10:10:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - Superpole", "start": "2026-03-28T11:15:00Z", "end": "2026-03-28T11:30:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - Race 1", "start": "2026-03-28T15:30:00Z", "end": "2026-03-28T16:05:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - Warm Up", "start": "2026-03-29T08:00:00Z", "end": "2026-03-29T08:15:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - Superpole Race", "start": "2026-03-29T10:10:00Z", "end": "2026-03-29T10:25:00Z", "location": "Autodromo Internacional do Algarve, Portimao" },
+        { "title": "WSBK - Race 2", "start": "2026-03-29T14:30:00Z", "end": "2026-03-29T15:05:00Z", "location": "Autodromo Internacional do Algarve, Portimao" }
+      ]
+    },
+    {
+      "matchDate": "2026-04-19",
+      "round": 3,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-04-17T08:20:00Z", "end": "2026-04-17T09:05:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - FP2", "start": "2026-04-17T13:00:00Z", "end": "2026-04-17T13:45:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - FP3", "start": "2026-04-18T07:40:00Z", "end": "2026-04-18T08:10:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - Superpole", "start": "2026-04-18T09:00:00Z", "end": "2026-04-18T09:15:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - Race 1", "start": "2026-04-18T13:30:00Z", "end": "2026-04-18T14:05:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - Warm Up", "start": "2026-04-19T07:00:00Z", "end": "2026-04-19T07:15:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - Superpole Race", "start": "2026-04-19T09:10:00Z", "end": "2026-04-19T09:25:00Z", "location": "TT Circuit Assen, Assen" },
+        { "title": "WSBK - Race 2", "start": "2026-04-19T13:30:00Z", "end": "2026-04-19T14:05:00Z", "location": "TT Circuit Assen, Assen" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-03",
+      "round": 4,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-05-01T08:20:00Z", "end": "2026-05-01T09:05:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - FP2", "start": "2026-05-01T13:00:00Z", "end": "2026-05-01T13:45:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - FP3", "start": "2026-05-02T07:40:00Z", "end": "2026-05-02T08:10:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - Superpole", "start": "2026-05-02T09:15:00Z", "end": "2026-05-02T09:30:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - Race 1", "start": "2026-05-02T13:30:00Z", "end": "2026-05-02T14:05:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - Warm Up", "start": "2026-05-03T07:00:00Z", "end": "2026-05-03T07:15:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - Superpole Race", "start": "2026-05-03T09:10:00Z", "end": "2026-05-03T09:25:00Z", "location": "Balaton Park Circuit, Balatonfokajar" },
+        { "title": "WSBK - Race 2", "start": "2026-05-03T13:30:00Z", "end": "2026-05-03T14:05:00Z", "location": "Balaton Park Circuit, Balatonfokajar" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-17",
+      "round": 5,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-05-15T08:20:00Z", "end": "2026-05-15T09:05:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - FP2", "start": "2026-05-15T13:00:00Z", "end": "2026-05-15T13:45:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - FP3", "start": "2026-05-16T07:40:00Z", "end": "2026-05-16T08:10:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - Superpole", "start": "2026-05-16T09:15:00Z", "end": "2026-05-16T09:30:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - Race 1", "start": "2026-05-16T13:30:00Z", "end": "2026-05-16T14:05:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - Warm Up", "start": "2026-05-17T07:00:00Z", "end": "2026-05-17T07:15:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - Superpole Race", "start": "2026-05-17T09:10:00Z", "end": "2026-05-17T09:25:00Z", "location": "Autodrom Most, Most" },
+        { "title": "WSBK - Race 2", "start": "2026-05-17T13:30:00Z", "end": "2026-05-17T14:05:00Z", "location": "Autodrom Most, Most" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-31",
+      "round": 6,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-05-29T08:20:00Z", "end": "2026-05-29T09:05:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - FP2", "start": "2026-05-29T13:00:00Z", "end": "2026-05-29T13:45:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - FP3", "start": "2026-05-30T07:40:00Z", "end": "2026-05-30T08:10:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - Superpole", "start": "2026-05-30T09:15:00Z", "end": "2026-05-30T09:30:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - Race 1", "start": "2026-05-30T13:30:00Z", "end": "2026-05-30T14:05:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - Warm Up", "start": "2026-05-31T07:00:00Z", "end": "2026-05-31T07:15:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - Superpole Race", "start": "2026-05-31T09:10:00Z", "end": "2026-05-31T09:25:00Z", "location": "MotorLand Aragon, Alcaniz" },
+        { "title": "WSBK - Race 2", "start": "2026-05-31T13:30:00Z", "end": "2026-05-31T14:05:00Z", "location": "MotorLand Aragon, Alcaniz" }
+      ]
+    },
+    {
+      "matchDate": "2026-06-14",
+      "round": 7,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-06-12T08:20:00Z", "end": "2026-06-12T09:05:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - FP2", "start": "2026-06-12T13:00:00Z", "end": "2026-06-12T13:45:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - FP3", "start": "2026-06-13T07:40:00Z", "end": "2026-06-13T08:10:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - Superpole", "start": "2026-06-13T09:15:00Z", "end": "2026-06-13T09:30:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - Race 1", "start": "2026-06-13T13:30:00Z", "end": "2026-06-13T14:05:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - Warm Up", "start": "2026-06-14T07:00:00Z", "end": "2026-06-14T07:15:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - Superpole Race", "start": "2026-06-14T09:10:00Z", "end": "2026-06-14T09:25:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" },
+        { "title": "WSBK - Race 2", "start": "2026-06-14T13:30:00Z", "end": "2026-06-14T14:05:00Z", "location": "Misano World Circuit Marco Simoncelli, Misano Adriatico" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-12",
+      "round": 8,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-07-10T09:20:00Z", "end": "2026-07-10T10:05:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - FP2", "start": "2026-07-10T14:00:00Z", "end": "2026-07-10T14:45:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - FP3", "start": "2026-07-11T08:40:00Z", "end": "2026-07-11T09:10:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - Superpole", "start": "2026-07-11T10:15:00Z", "end": "2026-07-11T10:30:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - Race 1", "start": "2026-07-11T14:30:00Z", "end": "2026-07-11T15:05:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - Warm Up", "start": "2026-07-12T08:00:00Z", "end": "2026-07-12T08:15:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - Superpole Race", "start": "2026-07-12T10:10:00Z", "end": "2026-07-12T10:25:00Z", "location": "Donington Park, Castle Donington" },
+        { "title": "WSBK - Race 2", "start": "2026-07-12T14:30:00Z", "end": "2026-07-12T15:05:00Z", "location": "Donington Park, Castle Donington" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-06",
+      "round": 9,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-09-04T08:20:00Z", "end": "2026-09-04T09:05:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - FP2", "start": "2026-09-04T13:00:00Z", "end": "2026-09-04T13:45:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - FP3", "start": "2026-09-05T07:40:00Z", "end": "2026-09-05T08:10:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - Superpole", "start": "2026-09-05T09:15:00Z", "end": "2026-09-05T09:30:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - Race 1", "start": "2026-09-05T13:30:00Z", "end": "2026-09-05T14:05:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - Warm Up", "start": "2026-09-06T07:00:00Z", "end": "2026-09-06T07:15:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - Superpole Race", "start": "2026-09-06T09:10:00Z", "end": "2026-09-06T09:25:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" },
+        { "title": "WSBK - Race 2", "start": "2026-09-06T13:30:00Z", "end": "2026-09-06T14:05:00Z", "location": "Circuit de Nevers Magny-Cours, Magny-Cours" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-27",
+      "round": 10,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-09-25T08:20:00Z", "end": "2026-09-25T09:05:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - FP2", "start": "2026-09-25T13:00:00Z", "end": "2026-09-25T13:45:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - FP3", "start": "2026-09-26T07:40:00Z", "end": "2026-09-26T08:10:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - Superpole", "start": "2026-09-26T09:15:00Z", "end": "2026-09-26T09:30:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - Race 1", "start": "2026-09-26T13:30:00Z", "end": "2026-09-26T14:05:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - Warm Up", "start": "2026-09-27T07:00:00Z", "end": "2026-09-27T07:15:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - Superpole Race", "start": "2026-09-27T09:10:00Z", "end": "2026-09-27T09:25:00Z", "location": "Cremona Circuit, Cremona" },
+        { "title": "WSBK - Race 2", "start": "2026-09-27T13:30:00Z", "end": "2026-09-27T14:05:00Z", "location": "Cremona Circuit, Cremona" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-11",
+      "round": 11,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-10-09T09:20:00Z", "end": "2026-10-09T10:05:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - FP2", "start": "2026-10-09T14:00:00Z", "end": "2026-10-09T14:45:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - FP3", "start": "2026-10-10T08:40:00Z", "end": "2026-10-10T09:10:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - Superpole", "start": "2026-10-10T10:15:00Z", "end": "2026-10-10T10:30:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - Race 1", "start": "2026-10-10T14:30:00Z", "end": "2026-10-10T15:05:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - Warm Up", "start": "2026-10-11T08:00:00Z", "end": "2026-10-11T08:15:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - Superpole Race", "start": "2026-10-11T10:10:00Z", "end": "2026-10-11T10:25:00Z", "location": "Circuito do Estoril, Estoril" },
+        { "title": "WSBK - Race 2", "start": "2026-10-11T14:30:00Z", "end": "2026-10-11T15:05:00Z", "location": "Circuito do Estoril, Estoril" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-18",
+      "round": 12,
+      "sessions": [
+        { "title": "WSBK - FP1", "start": "2026-10-16T08:20:00Z", "end": "2026-10-16T09:05:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - FP2", "start": "2026-10-16T13:00:00Z", "end": "2026-10-16T13:45:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - FP3", "start": "2026-10-17T07:40:00Z", "end": "2026-10-17T08:10:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - Superpole", "start": "2026-10-17T09:15:00Z", "end": "2026-10-17T09:30:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - Race 1", "start": "2026-10-17T13:30:00Z", "end": "2026-10-17T14:05:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - Warm Up", "start": "2026-10-18T07:00:00Z", "end": "2026-10-18T07:15:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - Superpole Race", "start": "2026-10-18T09:10:00Z", "end": "2026-10-18T09:25:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" },
+        { "title": "WSBK - Race 2", "start": "2026-10-18T13:30:00Z", "end": "2026-10-18T14:05:00Z", "location": "Circuito de Jerez - Angel Nieto, Jerez" }
+      ]
+    }
+  ]
+}

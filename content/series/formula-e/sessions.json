@@ -2,53 +2,158 @@
   "season": 2026,
   "overrides": [
     {
-      "matchDate": "2026-05-16",
-      "matchTitle": "Monaco",
+      "matchDate": "2025-12-06",
+      "round": 1,
       "sessions": [
-        {
-          "title": "FE Monaco E-Prix R9 - Free Practice 1",
-          "start": "2026-05-16T07:30:00+02:00",
-          "end": "2026-05-16T08:15:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco"
-        },
-        {
-          "title": "FE Monaco E-Prix R9 - Free Practice 2",
-          "start": "2026-05-16T09:10:00+02:00",
-          "end": "2026-05-16T09:45:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco"
-        },
-        {
-          "title": "FE Monaco E-Prix R9 - Qualifying",
-          "start": "2026-05-16T10:40:00+02:00",
-          "end": "2026-05-16T11:48:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco"
-        },
-        {
-          "title": "FE Monaco E-Prix R9 - Race",
-          "start": "2026-05-16T15:05:00+02:00",
-          "end": "2026-05-16T16:00:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco",
-          "significance": { "tier": "marquee", "note": "Round 9 — Monaco double-header race day 1" }
-        },
-        {
-          "title": "FE Monaco E-Prix R10 - Free Practice 3",
-          "start": "2026-05-17T08:30:00+02:00",
-          "end": "2026-05-17T09:15:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco"
-        },
-        {
-          "title": "FE Monaco E-Prix R10 - Qualifying",
-          "start": "2026-05-17T10:40:00+02:00",
-          "end": "2026-05-17T11:48:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco"
-        },
-        {
-          "title": "FE Monaco E-Prix R10 - Race",
-          "start": "2026-05-17T15:05:00+02:00",
-          "end": "2026-05-17T16:00:00+02:00",
-          "location": "Circuit de Monaco, Monte Carlo, Monaco",
-          "significance": { "tier": "marquee", "note": "Round 10 — Monaco double-header race day 2" }
-        }
+        { "title": "FE - FP1 (São Paulo R1)", "start": "2025-12-05T19:30:00Z", "end": "2025-12-05T20:10:00Z", "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil" },
+        { "title": "FE - FP2 (São Paulo R1)", "start": "2025-12-06T10:30:00Z", "end": "2025-12-06T11:10:00Z", "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil" },
+        { "title": "FE - Qualifying (São Paulo R1)", "start": "2025-12-06T12:40:00Z", "end": "2025-12-06T13:48:00Z", "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil" },
+        { "title": "FE - Race (São Paulo R1)", "start": "2025-12-06T17:05:00Z", "end": "2025-12-06T18:00:00Z", "location": "Anhembi Sambadrome Street Circuit, São Paulo, Brazil" }
+      ]
+    },
+    {
+      "matchDate": "2026-01-10",
+      "round": 2,
+      "sessions": [
+        { "title": "FE - FP1 (Mexico City R2)", "start": "2026-01-09T22:30:00Z", "end": "2026-01-09T23:10:00Z", "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico" },
+        { "title": "FE - FP2 (Mexico City R2)", "start": "2026-01-10T13:30:00Z", "end": "2026-01-10T14:10:00Z", "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico" },
+        { "title": "FE - Qualifying (Mexico City R2)", "start": "2026-01-10T15:40:00Z", "end": "2026-01-10T16:48:00Z", "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico" },
+        { "title": "FE - Race (Mexico City R2)", "start": "2026-01-10T20:05:00Z", "end": "2026-01-10T21:00:00Z", "location": "Autódromo Hermanos Rodríguez, Mexico City, Mexico" }
+      ]
+    },
+    {
+      "matchDate": "2026-01-31",
+      "round": 3,
+      "sessions": [
+        { "title": "FE - FP1 (Miami R3)", "start": "2026-01-30T22:00:00Z", "end": "2026-01-30T22:40:00Z", "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA" },
+        { "title": "FE - FP2 (Miami R3)", "start": "2026-01-31T12:30:00Z", "end": "2026-01-31T13:10:00Z", "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA" },
+        { "title": "FE - Qualifying (Miami R3)", "start": "2026-01-31T14:40:00Z", "end": "2026-01-31T15:48:00Z", "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA" },
+        { "title": "FE - Race (Miami R3)", "start": "2026-01-31T19:05:00Z", "end": "2026-01-31T20:00:00Z", "location": "Miami International Autodrome, Hard Rock Stadium, Miami, USA" }
+      ]
+    },
+    {
+      "matchDate": "2026-02-13",
+      "round": 4,
+      "sessions": [
+        { "title": "FE - FP1 (Jeddah R4)", "start": "2026-02-12T17:00:00Z", "end": "2026-02-12T17:40:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" },
+        { "title": "FE - FP2 (Jeddah R4)", "start": "2026-02-13T10:30:00Z", "end": "2026-02-13T11:10:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" },
+        { "title": "FE - Qualifying (Jeddah R4)", "start": "2026-02-13T12:40:00Z", "end": "2026-02-13T13:48:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" },
+        { "title": "FE - Race (Jeddah R4)", "start": "2026-02-13T17:05:00Z", "end": "2026-02-13T18:00:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" }
+      ]
+    },
+    {
+      "matchDate": "2026-02-14",
+      "round": 5,
+      "sessions": [
+        { "title": "FE - FP3 (Jeddah R5)", "start": "2026-02-14T10:30:00Z", "end": "2026-02-14T11:10:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" },
+        { "title": "FE - Qualifying (Jeddah R5)", "start": "2026-02-14T12:40:00Z", "end": "2026-02-14T13:48:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" },
+        { "title": "FE - Race (Jeddah R5)", "start": "2026-02-14T17:05:00Z", "end": "2026-02-14T18:00:00Z", "location": "Jeddah Corniche Circuit, Jeddah, Saudi Arabia" }
+      ]
+    },
+    {
+      "matchDate": "2026-03-21",
+      "round": 6,
+      "sessions": [
+        { "title": "FE - Shakedown (Madrid R6)", "start": "2026-03-20T13:30:00Z", "end": "2026-03-20T13:45:00Z", "location": "Circuito del Jarama, Madrid, Spain" },
+        { "title": "FE - FP1 (Madrid R6)", "start": "2026-03-20T15:30:00Z", "end": "2026-03-20T16:10:00Z", "location": "Circuito del Jarama, Madrid, Spain" },
+        { "title": "FE - FP2 (Madrid R6)", "start": "2026-03-21T07:30:00Z", "end": "2026-03-21T08:10:00Z", "location": "Circuito del Jarama, Madrid, Spain" },
+        { "title": "FE - Qualifying (Madrid R6)", "start": "2026-03-21T09:40:00Z", "end": "2026-03-21T10:48:00Z", "location": "Circuito del Jarama, Madrid, Spain" },
+        { "title": "FE - Race (Madrid R6)", "start": "2026-03-21T14:05:00Z", "end": "2026-03-21T15:00:00Z", "location": "Circuito del Jarama, Madrid, Spain" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-02",
+      "round": 7,
+      "sessions": [
+        { "title": "FE - FP1 (Berlin R7)", "start": "2026-05-01T14:00:00Z", "end": "2026-05-01T14:40:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" },
+        { "title": "FE - FP2 (Berlin R7)", "start": "2026-05-02T07:30:00Z", "end": "2026-05-02T08:10:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" },
+        { "title": "FE - Qualifying (Berlin R7)", "start": "2026-05-02T09:40:00Z", "end": "2026-05-02T10:48:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" },
+        { "title": "FE - Race (Berlin R7)", "start": "2026-05-02T14:05:00Z", "end": "2026-05-02T15:00:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-03",
+      "round": 8,
+      "sessions": [
+        { "title": "FE - FP3 (Berlin R8)", "start": "2026-05-03T07:30:00Z", "end": "2026-05-03T08:10:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" },
+        { "title": "FE - Qualifying (Berlin R8)", "start": "2026-05-03T09:40:00Z", "end": "2026-05-03T10:48:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" },
+        { "title": "FE - Race (Berlin R8)", "start": "2026-05-03T14:05:00Z", "end": "2026-05-03T15:00:00Z", "location": "Tempelhof Airport Street Circuit, Berlin, Germany" }
+      ]
+    },
+    {
+      "matchDate": "2026-05-16",
+      "round": 9,
+      "sessions": [
+        { "title": "FE Monaco E-Prix R9 - FP1", "start": "2026-05-16T05:30:00Z", "end": "2026-05-16T06:15:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco" },
+        { "title": "FE Monaco E-Prix R9 - FP2", "start": "2026-05-16T07:10:00Z", "end": "2026-05-16T07:45:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco" },
+        { "title": "FE Monaco E-Prix R9 - Qualifying", "start": "2026-05-16T08:40:00Z", "end": "2026-05-16T09:48:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco" },
+        { "title": "FE Monaco E-Prix R9 - Race", "start": "2026-05-16T13:05:00Z", "end": "2026-05-16T14:00:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco", "significance": { "tier": "marquee", "note": "Round 9 — Monaco double-header race day 1" } }
+      ]
+    },
+    {
+      "matchDate": "2026-05-17",
+      "round": 10,
+      "sessions": [
+        { "title": "FE Monaco E-Prix R10 - FP3", "start": "2026-05-17T06:30:00Z", "end": "2026-05-17T07:15:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco" },
+        { "title": "FE Monaco E-Prix R10 - Qualifying", "start": "2026-05-17T08:40:00Z", "end": "2026-05-17T09:48:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco" },
+        { "title": "FE Monaco E-Prix R10 - Race", "start": "2026-05-17T13:05:00Z", "end": "2026-05-17T14:00:00Z", "location": "Circuit de Monaco, Monte Carlo, Monaco", "significance": { "tier": "marquee", "note": "Round 10 — Monaco double-header race day 2" } }
+      ]
+    },
+    {
+      "matchDate": "2026-07-04",
+      "round": 12,
+      "sessions": [
+        { "title": "FE - FP1 (Shanghai R12)", "start": "2026-07-03T08:00:00Z", "end": "2026-07-03T08:55:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" },
+        { "title": "FE - FP2 (Shanghai R12)", "start": "2026-07-04T00:30:00Z", "end": "2026-07-04T01:25:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" },
+        { "title": "FE - Qualifying (Shanghai R12)", "start": "2026-07-04T02:40:00Z", "end": "2026-07-04T03:48:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" },
+        { "title": "FE - Race (Shanghai R12)", "start": "2026-07-04T07:05:00Z", "end": "2026-07-04T08:00:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-05",
+      "round": 13,
+      "sessions": [
+        { "title": "FE - FP3 (Shanghai R13)", "start": "2026-07-05T00:30:00Z", "end": "2026-07-05T01:25:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" },
+        { "title": "FE - Qualifying (Shanghai R13)", "start": "2026-07-05T02:40:00Z", "end": "2026-07-05T03:48:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" },
+        { "title": "FE - Race (Shanghai R13)", "start": "2026-07-05T07:05:00Z", "end": "2026-07-05T08:00:00Z", "location": "Shanghai International Circuit (short layout), Shanghai, China" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-25",
+      "round": 14,
+      "sessions": [
+        { "title": "FE - FP1 (Tokyo R14)", "start": "2026-07-24T10:00:00Z", "end": "2026-07-24T10:55:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" },
+        { "title": "FE - FP2 (Tokyo R14)", "start": "2026-07-25T04:30:00Z", "end": "2026-07-25T05:25:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" },
+        { "title": "FE - Qualifying (Tokyo R14)", "start": "2026-07-25T06:40:00Z", "end": "2026-07-25T07:48:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" },
+        { "title": "FE - Race (Tokyo R14)", "start": "2026-07-25T11:05:00Z", "end": "2026-07-25T12:00:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" }
+      ]
+    },
+    {
+      "matchDate": "2026-07-26",
+      "round": 15,
+      "sessions": [
+        { "title": "FE - FP3 (Tokyo R15)", "start": "2026-07-26T04:30:00Z", "end": "2026-07-26T05:25:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" },
+        { "title": "FE - Qualifying (Tokyo R15)", "start": "2026-07-26T06:40:00Z", "end": "2026-07-26T07:48:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" },
+        { "title": "FE - Race (Tokyo R15)", "start": "2026-07-26T11:05:00Z", "end": "2026-07-26T12:00:00Z", "location": "Tokyo Big Sight Street Circuit, Tokyo, Japan" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-15",
+      "round": 16,
+      "sessions": [
+        { "title": "FE - FP1 (London R16)", "start": "2026-08-14T14:00:00Z", "end": "2026-08-14T14:40:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK" },
+        { "title": "FE - FP2 (London R16)", "start": "2026-08-15T09:30:00Z", "end": "2026-08-15T10:10:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK" },
+        { "title": "FE - Qualifying (London R16)", "start": "2026-08-15T11:40:00Z", "end": "2026-08-15T12:48:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK" },
+        { "title": "FE - Race (London R16)", "start": "2026-08-15T16:00:00Z", "end": "2026-08-15T17:00:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK" }
+      ]
+    },
+    {
+      "matchDate": "2026-08-16",
+      "round": 17,
+      "sessions": [
+        { "title": "FE - FP3 (London R17)", "start": "2026-08-16T09:30:00Z", "end": "2026-08-16T10:10:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK" },
+        { "title": "FE - Qualifying (London R17)", "start": "2026-08-16T11:40:00Z", "end": "2026-08-16T12:48:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK" },
+        { "title": "FE - Race (London R17) — Season Finale", "start": "2026-08-16T16:00:00Z", "end": "2026-08-16T17:00:00Z", "location": "ExCeL London, Royal Victoria Dock, London, UK", "significance": { "tier": "finale", "note": "Season 12 finale at London ExCeL" } }
       ]
     }
   ]

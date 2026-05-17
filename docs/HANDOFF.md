@@ -110,21 +110,100 @@ When a curated/override file is absent, renderers fall back to the live external
 - ✅ Repo operating docs (`CLAUDE.md` + `IDEAS.md` + `SCHEDULE.md`) — DONE 2026-05-16 (`0.9.2`)
 - ✅ ESPA + extensions + Mode awareness + communication discipline + commit-attribution reversed — DONE 2026-05-16 (`0.9.3`)
 - ✅ Two-contributor workflow (`CONTRIBUTING.md` + `ONBOARDING.md` + CLAUDE.md push-to-main reversal) — DONE 2026-05-16 (`0.9.4`)
+- ✅ docs/HANDOFF.md created + memory redirect — DONE 2026-05-16 (`0.9.5`)
+- ✅ docs/HANDOFF.md flat 60-item open-items appendix — DONE 2026-05-16 (`0.9.6`)
+- ✅ Per-prompt active-time tracking (`[+Nm]` prefix → SCHEDULE.md `Active:` line) — DONE 2026-05-16 (`0.9.7`)
+- ✅ F1 2026 Bahrain + Saudi cancellations restored with banner + section render — DONE 2026-05-16 (`0.9.8`, PR #1 at `cd169b6`)
+- ✅ Postponement rendering UI + MotoGP/WEC `rounds.json` + midnight-UTC `dateOnly` detection ("3 am" fix) — DONE 2026-05-16 (`0.9.9`, PR #2 at `e0d93cf`)
+- 🟡 Full-season `sessions.json` curation across 14 series + ADAC 24h — committed but **STUCK ON BRANCH** awaiting PR #3 (`0.9.10`, commit `141de18`)
+- 🟡 Template-projected empty rounds across F1/F2/F3/MotoGP/WEC/DTM/GTWCE — committed but **STUCK ON BRANCH** awaiting PR #3 (`0.9.11`, commit `2778037`)
 - ❌ `sk_live_*` rotation — deferred
 - ❌ Contact-form email delivery — submissions stored in KV (`paddock:contact:*`); install Resend Marketplace + set `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to actually email
 - ❌ Sentry integration — pending
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
 
-## What shipped last session (2026-05-16)
+## ⚡ Next session priorities (Sunday 2026-05-17)
 
-Four versions across one session — coherent narrative: bug fixes → operating docs → process maturity → two-contributor scaffolding. Commit log: `48b7b29 → 52157da → 2da4aae`.
+**Priority 1 — Open PR #3 first thing.** Two commits are stuck on branch `feat/postponement-rendering-motogp-wec` and not yet on main. PR #2 was merged before these landed:
 
-- **`0.9.1`** — `fix(weekend): real session hours + canonical FIA round numbers`. Phantom 3 am times fixed across 13 non-F1 series via `Session.dateOnly` propagation; canonical F1 round numbers via curated `content/series/f1/rounds.json` (Canada now shows Round 5, not Round 3); `sessions.json` override loader replaces matching date-only entries with curated timed sessions; FE Monaco 2026 (rounds 9 & 10 double-header) curated. `lib/rounds.ts` split into pure + fs-loader halves so `group.ts` doesn't drag fs into the client bundle.
-- **`0.9.2`** — `docs: scaffold CLAUDE.md operating manual, IDEAS.md ledger, SCHEDULE.md`. Replaced the one-line `@AGENTS.md` shim with a real operating manual; established the Now / Next / Inbox / Parked / Killed triage discipline; day-by-day time plan format.
-- **`0.9.3`** — `docs: mature CLAUDE.md — ESPA protocol + extensions + mode awareness`. Imported ESPA from sibling projects; added seven Paddock-specific extensions (mid-failure recovery, senior-engineer self-check, pre-mortem one-liner, verify-the-obvious, plan-level negative space, memory drift check, realistic-scope-with-single-plan-focus); Mode awareness section; four communication discipline rules; commit-attribution policy reversed (no more `Co-Authored-By`).
-- **`0.9.4`** — `docs: two-contributor workflow`. `CONTRIBUTING.md` (branch / PR / review / hot-fix / conflict rules), `ONBOARDING.md` for Fotis, `CLAUDE.md` push-to-main rule reversed. Branch protection deliberately not enforced (no GitHub Pro on private repo). CI workflow parked (prior workflows always failed on first PR).
-- **`0.9.5`** — `docs: triage + handoff move`. IDEAS.md triaged; SCHEDULE.md Saturday closed and Sunday sketched; this file (`docs/HANDOFF.md`) created from the memory copy. Memory copy replaced with a one-line redirect.
+- `141de18` — `0.9.10` full-season session-time curation (15 new `sessions.json` files across all 14 series + ADAC 24h)
+- `2778037` — `0.9.11` template-projected empty rounds (62 new override blocks across F1/F2/F3/MotoGP/WEC/DTM/GTWCE)
+- `e94c13c` — `docs(schedule)` Saturday outcomes + Sunday plan (lighter, rides along)
+
+Quick command:
+```bash
+gh pr create --base main --head feat/postponement-rendering-motogp-wec \
+  --title "feat(series): full-season session times + template-projected empty rounds (0.9.10 + 0.9.11)"
+```
+
+Once merged, paddock-tracker.com auto-deploys real session times across all 15 series within ~90s. Then browser-verify with MotoGP Catalunya R6 (this weekend's race), IndyCar Indy 500 (May 24), F1 Canada (May 22-24), IMSA Detroit (May 29-30), WEC Le Mans (Jun 13-14).
+
+**Priority 2 — Task #4 weather + news audit.** Never started on Saturday. For each of 15 series, click into the next upcoming weekend, confirm Open-Meteo weather block renders (venue-local date per `feedback-paddock-weather-venue-local`) and news feed populates. Output: list of gaps + curation pass for any series missing wiring.
+
+**Priority 3 — Task #2 Supabase schema DDL draft.** Saturday produced the research (`docs/research/db-best-practices.md`) but not the actual DDL doc. Write `docs/research/supabase-schema-draft.md`: tables, columns, types, FKs, status lookup table, audit log, provenance columns (`source_id`/`fetched_at`/`verified_at`/`manual_override`/`content_hash`), time model (local + IANA tz + computed UTC instant). Ready for Tuesday Fotis sit-down.
+
+**Pre-Fotis cutoff still active** ([[project-paddock-pre-fotis-cutoff]]): Mon/Tue 2026-05-18/19 is the deadline for the open-items push. New ideas → IDEAS.md Inbox only.
+
+### Known data flags surfaced during Saturday curation (not yet fixed)
+
+- **F1 Azerbaijan `rounds.json` `endDate: 2026-09-27`** but actual race is **Saturday Sep 26** (avoids Azerbaijan Remembrance Day). The PR #3 sessions.json correctly uses `matchDate: 2026-09-26` but rounds.json should be patched for consistency.
+- **Miami F1 + F2 race times** in sessions.json reflect as-RUN (weather move) not as-scheduled. Acceptable.
+- **DTM Norisring R4** intentionally TBC — its unique split-qualifying format (QF1A → Race 1; QF2B → Race 2) means session titles would be wrong with template times. Curate when ADAC publishes 2026 schedule (~3-4 weeks pre-event).
+- **WRC stage detail** for Sweden, Safari Kenya, Japan, Greece, Estonia, Paraguay, Chile, Italy Sardegna, Saudi Arabia — official itineraries publish 4-6 weeks pre-rally.
+- **GTWCE late-event detail, NASCAR + IndyCar mid-season practice/qualifying** — sources publish race-week, not annually. Stay TBC until then.
+
+### Honest task state at end of Saturday
+
+- ✅ #1 Per-series source audit (14 series) — done
+- 🟡 #2 Apply DB practices → draft schema for our case — **research done, DDL doc skipped**, priority for Sunday
+- 🟡 #3 Make every series calendar factually accurate — **work done locally on branch, awaiting PR #3 to reach main**; residual rounds intentionally TBC per above
+- ⏳ #4 Wire weather + news into every round — **never started**, priority for Sunday
+- ✅ #5 Research DB best practices — done (`docs/research/db-best-practices.md`)
+- ✅ #6 Fix phantom Sat/Sun 03:00 — done (`0.9.9`)
+- ✅ #7 Full-season session-time curation — done locally, awaiting PR #3
+- ✅ #8 Template-projection fill for empty rounds — done locally, awaiting PR #3
+
+---
+
+## What shipped Saturday 2026-05-16 (massive session — 4 versions live + 2 versions stuck on branch)
+
+**Morning (pre-cutoff sessions):**
+
+- **`0.9.5`** (`110a378`) — `docs: triage + port handoff to docs/HANDOFF.md`. Created this file from per-user memory; memory file is now a redirect stub. IDEAS.md triaged.
+- **`0.9.6`** (`a581bfa`) — `docs(0.9.6): handoff appendix — flat 60-item open-items inventory`. Added the appendix at the bottom of this file.
+- **`0.9.7`** (`fa75ca3`) — `docs(0.9.7): per-prompt active-time tracking`. `[+Nm]` prefix protocol documented in `CLAUDE.md` Time tracking section + memory rule `feedback-paddock-time-tracking`.
+
+**Afternoon + evening (the big Saturday push — pre-Fotis cutoff scoped):**
+
+- **`0.9.8`** — PR #1 merged at `cd169b6`. **F1 cancellation render.** `content/series/f1/rounds.json` gains a `cancelledRounds[]` field; Bahrain (R4) + Saudi Arabian GP (R5) restored as cancelled entries with `originalRound`/`name`/`originalStartDate`/`originalEndDate`/`reason`/`rescheduleStatus`. New `components/CancelledRounds.tsx` exports `CancelledRoundsBanner` (compact strip near `/series/f1` page header) and `CancelledRoundsSection` (detailed cards at bottom of Calendar tab). URL stability preserved — `/series/f1/weekend/5` is still Canada, not shifted to Saudi. `SeriesRoundEntry` extended with `previousStartDate` / `previousEndDate` / `rescheduleNote` for rescheduled rounds.
+- **`0.9.9`** — PR #2 merged at `e0d93cf`. **Three coherent layers in one PR.**
+  1. **MotoGP `rounds.json`** (22 rounds incl. Qatar Apr→Nov 6-8 postponed, Portugal Nov 13→20-22 cascade, Valencia Nov 20→27-29 cascade). **WEC `rounds.json`** (8 rounds incl. Qatar 1812km Mar→Oct 22-24 postponed, Imola promoted to R1, Prologue moved to Imola Apr 14).
+  2. **Postponement rendering UI** — `rescheduled` pill + amber `Rescheduled from <date> · <note>` line in `WeekendBlock` (calendar tab cards) + `WeekendHero` (weekend detail page). Pairs with the cancellation banner from `0.9.8`. `Weekend` type extended with `previousStartDate` / `previousEndDate` / `rescheduleNote`; `lib/rounds.ts` copies these onto matched weekends.
+  3. **Midnight-UTC `dateOnly` detection** in `lib/ics.ts`. Many non-F1 ICS feeds (Google Calendar exports, ECAL, scraper-built) emit race weekends as `DTSTART:YYYYMMDDT000000Z` — midnight UTC with a time component — rather than `DTSTART;VALUE=DATE`. The `0.9.1` `dateOnly` fix only caught the explicit `VALUE=DATE` form. In Europe/Athens (UTC+3 in summer) midnight UTC rendered as "Sat 03:00" — gave the impression races started at 3 am. Parser now treats entries with both start + end at UTC midnight boundaries as effectively date-only → renders "TBC" honestly. 2 new test cases in `lib/ics.test.ts`. **Non-F1 ICS feeds now render TBC honestly across the site.**
+
+**Stuck on branch `feat/postponement-rendering-motogp-wec` — needs PR #3 Sunday:**
+
+- **`0.9.10`** (commit `141de18`) — **Full-season session-time curation across all 14 series + ADAC 24h.** Five parallel research agents produced 15 new `content/series/<slug>/sessions.json` files with venue-local→UTC datetimes for every published 2026 session. Sources cited inline in agent outputs (motogp.com, formula1.com, fiawec.com, worldsbk.com, imsa.com, indycar.com, jayski.com, fiaformulae.com, wrc.com, dtm.com, nuerburgring-langstrecken-serie.de, 24h-rennen.de + Wikipedia + motorsport.com cross-references). Coverage at commit time: F1 14 rounds; F2 4; F3 2; MotoGP 19; WSBK 12; WEC 9 matchDate blocks; IMSA 11; GTWCE 7; IndyCar ~12; NASCAR 36 + Clash + Duels + All-Star; ADAC 24h complete; FE 17; WRC Monte Carlo + Croatia + Portugal + Finland full per-stage; DTM 1; NLS all 10.
+- **`0.9.11`** (commit `2778037`) — **Template-projected empty rounds** for series with rigid weekend formats (~95% confidence). F1 +8 rounds (Britain/Netherlands/Azerbaijan/Singapore/USA/Brazil/Qatar/Abu Dhabi); F2 +10; F3 +7; MotoGP +3 (post-postponement cascade); WEC +14 matchDate blocks (R4-R8); DTM +6 (R2-R8, R4 Norisring intentionally empty); GTWCE +14 blocks (R3/R6/R7/R9/R10). F1 R9 Britain now renders Fri/Sat/Sun real session times instead of TBC.
+
+**Research docs shipped this session (live on main via PR #2):**
+
+- `docs/research/db-best-practices.md` — Postgres/Supabase schema patterns synthesizing 30+ sources. Status lookup table vs ENUM, time model (local + IANA tz + computed UTC instant with CHECK), source provenance columns, audit log shape with `material` flag, RLS recommendations, anti-patterns. Sets up Tuesday Fotis sit-down.
+- `docs/research/per-series-source-audit.md` — Source-by-source audit of all 14 series + ADAC 24h. Identifies **Jolpica F1 API** (`api.jolpi.ca/ergast/f1/`) + **Pulselive MotoGP/WSBK** (`api.motogp.pulselive.com/motogp/v1`) as the two free JSON-API upgrades to replace current ICS scraping. Everything else stays HTML scrape or curation. Includes 2026 cancellation/postponement summary across all series.
+- `docs/research/ingestion-resource-evaluation.md` — 5-link RapidAPI evaluation. Verdicts: **skip Sportbex** (betting odds only), **adopt TheSportsDB as fallback** for niche series, **borrow `maxgubler/indycar-calendar` playbook heavily** (API-key harvest from SPA HTML, diff-before-write, cancellation handling), skip `armagantrs/race-calendar` (born-dead scaffold).
+
+**RapidAPI probing (not in shipped docs, mid-session investigation):**
+
+- **AllSportsApi v2** (`allsportsapi2.p.rapidapi.com`) — Sofascore-clone, **does cover motorsport** with 13 categories: F1 (uniqueStage 40), MotoGP (17), Moto2 (15), Moto3 (16), WSBK (28), Formula E (68), WRC/Rally (36), IndyCar (67), NASCAR (Sprint Cup 18 / Camping World 82 / Xfinity 81), DTM (10), Indy Lights, Bikes, International. Working endpoints: `/api/motorsport/categories`, `/api/motorsport/stage/scheduled/{date}`, `/api/motorsport/unique-stage/{id}/season`, `/api/motorsport/stage/{stageId}/substages`, `/api/motorsport/category/{id}/stages/all`. Schema integration **deferred** — promising lead for the future automated refresh cron once Supabase lands. OpenAPI spec at `github.com/lacassef/recodexapicodeexamples/blob/master/allsportsapi/openapi/motorsport_openapi.yaml`.
+
+**Memory state at session end:**
+
+- `project-paddock-pre-fotis-cutoff` — active, expires 2026-05-19 after Fotis sit-down
+- `feedback-paddock-time-tracking` — `[+Nm]` prefix protocol (added `0.9.7`)
+- All other feedback rules unchanged.
+
+**Saturday commit count:** 4 merged to main (`f7f2aaa`, `cd169b6` merge, `a56c467`, `e0d93cf` merge) + 3 stuck on branch (`141de18`, `2778037`, `e94c13c`).
 
 ## How to use this file
 
