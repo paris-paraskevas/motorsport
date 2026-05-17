@@ -137,7 +137,7 @@ gh pr create --base main --head feat/postponement-rendering-motogp-wec \
   --title "feat(series): full-season session times + template-projected empty rounds (0.9.10 + 0.9.11)"
 ```
 
-Once merged, paddock-tracker.com auto-deploys real session times across all 15 series within ~90s. Then browser-verify with MotoGP Catalunya (was today's race), IndyCar Indy 500 (May 24), F1 Canada (May 22-24), IMSA Detroit (May 29-30), WEC Le Mans (Jun 13-14).
+Once merged, paddock-tracker.com auto-deploys real session times across all 15 series within ~90s. Then browser-verify with MotoGP Catalunya R6 (this weekend's race), IndyCar Indy 500 (May 24), F1 Canada (May 22-24), IMSA Detroit (May 29-30), WEC Le Mans (Jun 13-14).
 
 **Priority 2 — Task #4 weather + news audit.** Never started on Saturday. For each of 15 series, click into the next upcoming weekend, confirm Open-Meteo weather block renders (venue-local date per `feedback-paddock-weather-venue-local`) and news feed populates. Output: list of gaps + curation pass for any series missing wiring.
 
