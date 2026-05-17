@@ -31,7 +31,7 @@ async function sendViaResend(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Paddock Contact <onboarding@resend.dev>',
+        from: 'Paddock Contact <contact@send.paddock-tracker.com>',
         to: toAddress,
         reply_to: fromEmail,
         subject: `Paddock contact from ${fromEmail}`,
