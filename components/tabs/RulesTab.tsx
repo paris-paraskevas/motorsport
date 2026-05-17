@@ -56,7 +56,7 @@ export async function RulesTab({ series }: { series: Series }) {
             </span>
           </header>
           <div
-            className="prose prose-invert prose-sm max-w-none prose-headings:font-semibold prose-headings:text-text prose-a:text-text-muted prose-table:text-sm"
+            className="prose dark:prose-invert prose-sm max-w-none prose-headings:font-semibold prose-headings:text-text prose-a:text-text-muted prose-table:text-sm"
             dangerouslySetInnerHTML={{ __html: section.html }}
           />
           <footer className="mt-6 pt-4 border-t border-border text-xs text-text-faint">
@@ -82,7 +82,7 @@ export async function RulesTab({ series }: { series: Series }) {
             </span>
           </header>
           <div
-            className="prose prose-invert prose-sm max-w-none"
+            className="prose dark:prose-invert prose-sm max-w-none"
             dangerouslySetInnerHTML={{ __html: overview }}
           />
         </article>

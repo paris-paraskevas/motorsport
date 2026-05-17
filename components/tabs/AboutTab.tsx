@@ -22,7 +22,7 @@ export async function AboutTab({ series }: { series: Series }) {
       {overview && (
         <article
           className="rounded-xl bg-surface/40 border border-border/60 p-5 md:p-6
-                     prose prose-invert prose-sm max-w-none
+                     prose dark:prose-invert prose-sm max-w-none
                      prose-headings:tracking-tight prose-headings:text-text
                      prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-3 prose-h2:font-semibold
                      prose-p:leading-relaxed

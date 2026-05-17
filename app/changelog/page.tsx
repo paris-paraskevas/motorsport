@@ -24,7 +24,7 @@ export default async function ChangelogPage() {
       </header>
 
       <article
-        className="prose prose-invert prose-zinc max-w-none
+        className="prose dark:prose-invert prose-zinc max-w-none
                    prose-headings:tracking-tight
                    prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
                    prose-h3:text-sm prose-h3:uppercase prose-h3:tracking-[0.14em] prose-h3:text-text-faint prose-h3:font-semibold prose-h3:mt-5

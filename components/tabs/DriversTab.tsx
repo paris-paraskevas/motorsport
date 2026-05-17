@@ -106,7 +106,7 @@ export async function DriversTab({ series }: { series: Series }) {
   if (series.drivers && series.drivers.trim().length > 0) {
     return (
       <article
-        className="prose prose-invert prose-sm max-w-none rounded-xl bg-surface/40 border border-border/60 p-5"
+        className="prose dark:prose-invert prose-sm max-w-none rounded-xl bg-surface/40 border border-border/60 p-5"
         dangerouslySetInnerHTML={{ __html: series.drivers }}
       />
     );
