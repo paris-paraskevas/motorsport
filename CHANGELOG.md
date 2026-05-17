@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.9.19 — 2026-05-17
+
+### Added
+- **`docs/research/supabase-schema-draft.md` — full v1 schema draft for the Supabase migration.** 18 sections covering: extensions setup, status lookup (vs ENUM), source registry with provenance columns, the 8 core schedule tables (series / season / venue / circuit_layout / driver / team / season_entry / round / session / result), audit log via shadow-table + trigger + material flag, standings snapshot, six user-facing additive tables (comment / prediction / ledger_entry / push_subscription / user_preferences / contact_submission), RLS policies (public-read schedule, per-user user tables, app-role insert-only on audit), the canonical index set, JSON-file → table migration mapping, out-of-scope items, 10 open questions for the Tuesday Fotis sit-down, and the 12-step implementation order. Builds directly on `db-best-practices.md` + `per-series-source-audit.md`. Ready to `psql -f` once we provision the project.
+
 ## 0.9.18 — 2026-05-17
 
 ### Changed
