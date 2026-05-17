@@ -37,7 +37,7 @@ export function WeekendHero({
   const { title, subtitle } = weekendLabel(weekend, round);
 
   return (
-    <section className="relative mb-8 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/40">
+    <section className="relative mb-8 overflow-hidden rounded-3xl border border-border bg-surface/60">
       <div
         className="absolute inset-0 opacity-[0.22] pointer-events-none"
         style={{ background: `radial-gradient(circle at 0% 0%, ${color} 0%, transparent 55%)` }}
@@ -50,39 +50,36 @@ export function WeekendHero({
       <div className="relative p-6 md:p-8">
         <Link
           href={`/series/${seriesSlug}?tab=calendar`}
-          className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-zinc-400 hover:text-zinc-100 transition-colors mb-5"
+          className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast) mb-5"
         >
           <ArrowLeft size={12} />
           {seriesName}
         </Link>
 
         <div className="flex items-center gap-2.5 mb-4">
-          <span
-            className="text-[11px] uppercase tracking-[0.18em] font-semibold tabular-nums"
-            style={{ color }}
-          >
+          <span className="text-[11px] uppercase tracking-[0.18em] font-semibold tabular-nums font-mono text-tint">
             Round {round}
           </span>
           {isLive && (
             <>
-              <span className="text-zinc-700">·</span>
+              <span className="text-border-strong">·</span>
               <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-red-500/15 text-red-300 font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
                 live
               </span>
             </>
           )}
           {isPast && (
             <>
-              <span className="text-zinc-700">·</span>
-              <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-zinc-800/60 text-zinc-400 font-semibold">
+              <span className="text-border-strong">·</span>
+              <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-surface text-text-muted font-semibold">
                 past
               </span>
             </>
           )}
           {weekend.previousStartDate && weekend.previousEndDate && (
             <>
-              <span className="text-zinc-700">·</span>
+              <span className="text-border-strong">·</span>
               <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
                 rescheduled
               </span>
@@ -90,7 +87,7 @@ export function WeekendHero({
           )}
           {weekend.significance && weekend.significance.tier !== 'note' && (
             <>
-              <span className="text-zinc-700">·</span>
+              <span className="text-border-strong">·</span>
               <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
                 {weekend.significance.tier}
               </span>
@@ -98,36 +95,36 @@ export function WeekendHero({
           )}
         </div>
 
-        <h1 className="text-zinc-50 text-3xl md:text-4xl font-bold leading-[1.05] tracking-tight">
+        <h1 className="text-text text-3xl md:text-4xl font-bold leading-[1.05] tracking-tight">
           {title}
         </h1>
         {subtitle && (
-          <p className="mt-1.5 text-zinc-400 text-base">{subtitle}</p>
+          <p className="mt-1.5 text-text-muted text-base">{subtitle}</p>
         )}
 
         <div className="mt-5 flex items-baseline gap-4 flex-wrap">
-          <span className="text-lg md:text-xl font-semibold text-zinc-100 tnum">
+          <span className="text-lg md:text-xl font-semibold text-text tnum font-mono">
             {weekend.dateRangeLabel}
           </span>
           {!isPast && (
-            <span className="text-sm text-zinc-500 tnum">
+            <span className="text-sm text-text-faint tnum font-mono">
               {isLive ? 'underway' : formatRelative(start)}
             </span>
           )}
         </div>
 
         {location && (
-          <div className="mt-2 flex items-center gap-1.5 text-sm text-zinc-500">
-            <MapPin size={13} className="text-zinc-600" />
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-text-faint">
+            <MapPin size={13} className="text-text-faint" />
             <span>{location}</span>
           </div>
         )}
 
         {weekend.previousStartDate && weekend.previousEndDate && (
-          <p className="mt-3 text-sm text-amber-200/80 tnum">
+          <p className="mt-3 text-sm text-amber-200/80 tnum font-mono">
             Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}
             {weekend.rescheduleNote && (
-              <span className="text-zinc-400"> · {weekend.rescheduleNote}</span>
+              <span className="text-text-muted font-sans"> · {weekend.rescheduleNote}</span>
             )}
           </p>
         )}

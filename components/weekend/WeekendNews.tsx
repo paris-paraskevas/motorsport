@@ -44,7 +44,7 @@ export async function WeekendNews({
 
   return (
     <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-3">News this weekend</h2>
+      <h2 className="text-xs uppercase tracking-wider text-text-faint mb-3 font-semibold">News this weekend</h2>
       <div className="space-y-2">
         {inWindow.map(item => (
           <a
@@ -52,7 +52,7 @@ export async function WeekendNews({
             href={item.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block rounded-2xl bg-zinc-900/30 border border-zinc-800/60 p-4 transition-all hover:bg-zinc-900/70 hover:border-zinc-700"
+            className="group block rounded-2xl bg-surface/40 border border-border/60 p-4 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong"
           >
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span
@@ -65,22 +65,22 @@ export async function WeekendNews({
               >
                 {series.meta.name}
               </span>
-              <span className="text-zinc-700">·</span>
-              <span className="text-[10px] uppercase tracking-[0.12em] text-zinc-500 font-medium">
+              <span className="text-border-strong">·</span>
+              <span className="text-[10px] uppercase tracking-[0.12em] text-text-faint font-medium font-mono">
                 {relativeAgo(item.pubDate)}
               </span>
               <ExternalLink
                 size={12}
-                className="text-zinc-600 group-hover:text-zinc-300 transition-colors ml-auto shrink-0"
+                className="text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast) ml-auto shrink-0"
               />
             </div>
-            <h3 className="text-zinc-100 text-sm font-semibold leading-snug tracking-tight">
+            <h3 className="text-text text-sm font-semibold leading-snug tracking-tight">
               {item.title}
             </h3>
           </a>
         ))}
       </div>
-      <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-zinc-600 text-center">
+      <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-text-faint text-center">
         Source: motorsport.com
       </div>
     </section>
