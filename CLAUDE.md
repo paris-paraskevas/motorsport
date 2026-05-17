@@ -99,15 +99,19 @@ The bottleneck on this project is throughput — there are always more ideas tha
 - **Format discipline.** Adapt verbosity to task complexity. Tables only when comparing 3+ items across 3+ attributes (otherwise prose). Code blocks always language-tagged. Heading depth H2/H3 only.
 - **Ask `AskUserQuestion` when scope is unclear.** Better to lose 30s on a confirmation than ship the wrong thing.
 
-## Release notes are mandatory
+## Release notes are mandatory — two files, two audiences
 
-**Every push to `main` must include:**
-1. A new section at the top of `CHANGELOG.md`: `## X.Y.Z — YYYY-MM-DD` with `### Fixed` / `### Added` / `### Changed` subsections as appropriate. Write user-facing prose, not commit SHAs.
-2. A matching `package.json` `"version"` bump. Patch for bugfix, minor for feature, major for breaking changes.
+**Every push to `main` must update three things:**
 
-The `/changelog` page renders `CHANGELOG.md` directly and shows `package.json.version` as "currently running". A push that skips this silently lies to users about what's live.
+1. **`CHANGELOG.md` (engineering log, git-only).** New section at the top: `## X.Y.Z — YYYY-MM-DD` with `### Fixed` / `### Added` / `### Changed` subsections. This is the detailed record for contributors — file paths, function names, root-cause explanations are fine here.
+2. **`RELEASES.md` (public-facing, rendered at `/changelog`).** Matching `## X.Y.Z — YYYY-MM-DD` section, but **user-facing prose only** — what changed for visitors, not where the diff landed. No file paths, no library names, no commit SHAs. 1–3 sentences per bullet. If a change has no user-visible impact, write one sentence acknowledging it (e.g. "Internal: hardened cron auth").
+3. **`package.json` `"version"` bump.** Patch for bugfix, minor for feature, major for breaking changes.
 
-If you forget and code is already pushed, push a follow-up commit with the release notes immediately. Don't leave the changelog stale.
+The `/changelog` page reads `RELEASES.md` directly and shows `package.json.version` as "currently running". A push that skips this lies to users about what's live.
+
+**Why split:** mixing the two leaks the implementation map for free and reads as an immaturity signal to anyone evaluating Paddock (sponsors, contributors, recruiters). Engineering detail belongs in commit messages + `CHANGELOG.md` + `docs/HANDOFF.md`. The public `/changelog` is fan-facing.
+
+If you forget and code is already pushed, push a follow-up commit with both files updated immediately. Don't leave them stale.
 
 ## Critical landmines
 
@@ -132,7 +136,8 @@ Detailed rationale in the handoff. Quick-reference:
 | `tests/fixtures/` | ICS + JSON test fixtures. |
 | `memory/` (per-user, not in repo) | `project-paddock-handoff.md` is the running ops record; `feedback-*` files are rules. |
 | `IDEAS.md`, `SCHEDULE.md` | Idea ledger + time plan. Read at every session start. |
-| `CHANGELOG.md` | Public release notes. Updated on every push. |
+| `CHANGELOG.md` | Engineering release log (git-only). Updated on every push with file-path-level detail. |
+| `RELEASES.md` | Public-facing release notes (rendered at `/changelog`). Updated on every push with user-facing prose only. |
 
 ## Commit & branch conventions
 
