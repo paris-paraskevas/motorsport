@@ -22,7 +22,7 @@ export function HeaderUtils({
         type="button"
         onClick={openContactModal}
         aria-label="Contact"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
       >
         <Mail size={13} />
         <span className="hidden sm:inline">Contact</span>
@@ -32,7 +32,7 @@ export function HeaderUtils({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Buy me a coffee"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-950 bg-amber-300 hover:bg-amber-200 rounded-full px-3 py-1.5 transition-colors shadow-sm shadow-amber-500/20"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-950 bg-amber-300 hover:bg-amber-200 rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast) shadow-sm shadow-amber-500/20"
       >
         <Coffee size={13} />
         <span className="hidden sm:inline">Buy me a coffee</span>
@@ -64,7 +64,7 @@ export function HeaderUtils({
         <SignInButton mode="modal">
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
           >
             <LogIn size={13} />
             <span className="hidden sm:inline">Sign in</span>
