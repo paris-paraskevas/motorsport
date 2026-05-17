@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.12 — 2026-05-17
+
+### Fixed
+- **Contact form now actually delivers email.** Submissions previously persisted to KV (`paddock:contact:*`) but no email was sent because Resend was unconfigured — silently lost feedback. Resend Marketplace integration installed with `paddock-tracker.com` as a verified sending domain (MX/SPF/DKIM on `send.` subdomain). `RESEND_API_KEY` + `CONTACT_TO_EMAIL` wired across Production / Preview / Development. Sender swapped from Resend's sandbox (`onboarding@resend.dev`) to the verified `contact@send.paddock-tracker.com`. Replies still route to the visitor's address via the `reply_to` header.
+
 ## 0.9.11 — 2026-05-16
 
 ### Added
