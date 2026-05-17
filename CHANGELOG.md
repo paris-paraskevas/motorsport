@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.17 — 2026-05-17
+
+### Fixed
+- **Cron auth no longer fails open when `CRON_SECRET` is unset.** Previously, `authorizeCronRequest` returned `true` if the secret wasn't configured — meaning if the env var ever got cleared (which we've seen happen in this stack), `/api/cron/notify`, `/api/cron/news`, and `/api/cron/race-week` would have become unauth'd spam guns: anyone hitting them could trigger pushes to every subscriber and news emails on demand. Reversed to fail-closed: missing secret → 503, wrong secret → 401, correct secret → run. Pulled the auth logic into a single shared helper `lib/cron-auth.ts` so the security pattern lives in one place instead of triplicated across routes. Landmine #6 in `docs/HANDOFF.md` updated to reflect the new behaviour.
+
 ## 0.9.16 — 2026-05-17
 
 ### Added

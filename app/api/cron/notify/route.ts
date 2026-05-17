@@ -3,6 +3,7 @@ import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
 import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
+import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,18 +35,9 @@ function fmtTime(date: Date): string {
   }).format(date);
 }
 
-async function authorizeCronRequest(req: Request): Promise<boolean> {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return true;
-  const header = req.headers.get('authorization');
-  return header === `Bearer ${cronSecret}`;
-}
-
 export async function GET(req: Request) {
-  const authorized = await authorizeCronRequest(req);
-  if (!authorized) {
-    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
-  }
+  const auth = authorizeCronRequest(req);
+  if (auth !== 'ok') return cronAuthFailureResponse(auth);
 
   try {
     const subs = await listSubscriptions();
