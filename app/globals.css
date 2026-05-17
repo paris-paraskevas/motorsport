@@ -1,25 +1,206 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────
+ * Paddock 1.0 design tokens.
+ *
+ * Two layers:
+ *   1. Paddock tokens (--bg, --surface, --tint, etc.) — what new code uses.
+ *   2. shadcn bridge (--background, --primary, --ring, ...) wired to
+ *      Paddock tokens via var() so shadcn primitives inherit our palette
+ *      without touching their CSS classes.
+ *
+ * Light values on :root; dark overrides on .dark / [data-theme="dark"].
+ * The @media (prefers-color-scheme: dark) block activates once Stage 8
+ * lifts the forced .dark class from <html>.
+ *
+ * Per-series accent: layout sets style={{ '--tint': meta.color }} on the
+ * series root; Tailwind utility bg-tint / text-tint / ring-tint flows through.
+ * ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Paddock — light chassis ── */
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+
+  --text: #09090b;
+  --text-muted: #52525b;
+  --text-faint: #71717a;
+
+  /* Per-series accent (default = global signal-amber, overridden inline) */
+  --tint: #f59e0b;
+  --tint-contrast: #09090b;
+
+  /* Signal */
+  --live: #f59e0b;
+  --positive: #10b981;
+  --negative: #ef4444;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --radius-card: 8px;
+
+  /* ── shadcn bridge → Paddock ── */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--text);
+  --primary: var(--tint);
+  --primary-foreground: var(--tint-contrast);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--text);
+  --muted: var(--surface);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--surface);
+  --accent-foreground: var(--text);
+  --destructive: var(--negative);
+  --input: var(--border);
+  --ring: var(--tint);
+  --radius: 0.5rem;
+
+  /* Charts — recharts default series; deeper theming at Stage 7 */
+  --chart-1: var(--tint);
+  --chart-2: #38bdf8;
+  --chart-3: #a78bfa;
+  --chart-4: #f472b6;
+  --chart-5: #34d399;
+
+  /* Sidebar token group (shadcn primitives use it) */
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--tint);
+  --sidebar-primary-foreground: var(--tint-contrast);
+  --sidebar-accent: var(--surface);
+  --sidebar-accent-foreground: var(--text);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--tint);
+}
+
+.dark,
+[data-theme="dark"] {
+  --bg: #0a0a0d;
+  --surface: rgb(24 24 27 / 0.4);
+  --surface-elevated: #18181b;
+  --border: #27272a;
+  --border-strong: #3f3f46;
+
+  --text: #fafafa;
+  --text-muted: #a1a1aa;
+  --text-faint: #71717a;
+
+  --tint-contrast: #09090b;
+}
+
+/* System-driven dark — fires once Stage 8 removes the forced .dark from <html>. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a0a0d;
+    --surface: rgb(24 24 27 / 0.4);
+    --surface-elevated: #18181b;
+    --border: #27272a;
+    --border-strong: #3f3f46;
+
+    --text: #fafafa;
+    --text-muted: #a1a1aa;
+    --text-faint: #71717a;
+
+    --tint-contrast: #09090b;
+  }
+}
+
+/* Expose tokens as Tailwind utilities. */
+@theme inline {
+  /* Paddock-native */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+
+  --color-tint: var(--tint);
+  --color-tint-contrast: var(--tint-contrast);
+
+  --color-live: var(--live);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+
+  --font-mono: var(--font-geist-mono);
+
+  /* shadcn / base-nova surface for primitives */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
 
 html {
-  color-scheme: dark;
+  color-scheme: dark; /* becomes 'light dark' at Stage 8 */
 }
 
 html, body {
-  color: #fafafa;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
   overflow-x: hidden;
 }
 
-/* Layered ambient background — warm amber wash top-left,
-   cool blue wash bottom-right, faint grain over everything.
-   Mirrors the warmth of Claude's cream texture, dark-mode version. */
+/* Layered ambient background — warm amber wash top-left, cool blue wash
+   bottom-right, faint grain. A light-mode wash variant lands at Stage 8. */
 body {
-  background-color: #0a0a0d;
+  background-color: var(--bg);
   background-image:
     radial-gradient(ellipse 70% 45% at 10% -8%, rgba(251, 191, 36, 0.07) 0%, transparent 55%),
     radial-gradient(ellipse 55% 45% at 95% 105%, rgba(56, 189, 248, 0.055) 0%, transparent 60%),
@@ -35,12 +216,24 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Live pulse — used on actually-live indicators only. */
+@keyframes paddock-live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.88); }
+}
+.live-pulse {
+  animation: paddock-live-pulse 2s var(--ease-out) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-pulse { animation: none; }
+}
+
 /* Hide scrollbar for horizontal tab containers if they reappear. */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { scrollbar-width: none; }
 
-/* Wikipedia tables (Rules / History / etc.) — scroll horizontally
-   instead of pushing the page wider than the viewport. */
+/* Wikipedia tables (Rules / History / etc.) — scroll horizontally instead
+   of pushing the page wider than the viewport. Folded into tokens at Stage 6/7. */
 .wiki-table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -55,17 +248,24 @@ body {
 }
 .wiki-table th,
 .wiki-table td {
-  border: 1px solid rgb(39 39 42 / 0.8); /* zinc-800/80 */
+  border: 1px solid rgb(39 39 42 / 0.8);
   padding: 0.4rem 0.6rem;
   text-align: left;
   vertical-align: middle;
-  color: #d4d4d8; /* zinc-300 */
+  color: #d4d4d8;
 }
 .wiki-table th {
-  background: rgb(24 24 27 / 0.6); /* zinc-900/60 */
+  background: rgb(24 24 27 / 0.6);
   font-weight: 600;
   color: #fafafa;
 }
 .wiki-table tr:nth-child(even) td {
   background: rgb(24 24 27 / 0.3);
+}
+
+/* shadcn base reset — border-color + outline applied site-wide. */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
 }
