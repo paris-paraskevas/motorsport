@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.13 — 2026-05-17
+
+### Fixed
+- **Contact form sender domain corrected.** `0.9.12` shipped with the sender set to `contact@send.paddock-tracker.com`, but the Resend-verified domain is the apex `paddock-tracker.com` (the `send.` subdomain only hosts the SMTP infrastructure records, not the addressable sending identity). Resend rejected every send with `403: This API key is not authorized to send emails from send.paddock-tracker.com`, so submissions kept landing in KV with `emailed: false` and no mail left the system. Sender now reads `contact@paddock-tracker.com`. Confirmed by direct Resend API probe pre-merge.
+
 ## 0.9.12 — 2026-05-17
 
 ### Fixed
