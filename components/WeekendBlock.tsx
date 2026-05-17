@@ -34,17 +34,17 @@ export function WeekendBlock({
   return (
     <Link
       href={`/series/${seriesSlug}/weekend/${round}`}
-      className={`block rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4 transition-colors hover:bg-zinc-900/70 hover:border-zinc-700 ${
+      className={`block rounded-xl bg-surface/40 border border-border/60 p-4 transition-colors duration-(--duration-fast) hover:bg-surface hover:border-border-strong ${
         weekend.isPast ? 'opacity-50 hover:opacity-80' : ''
       }`}
     >
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">
+        <span className="text-xs uppercase tracking-wider text-text-muted font-medium font-mono tnum">
           {weekend.dateRangeLabel}
         </span>
         <span className="ml-auto flex items-center gap-1.5">
           {showNextTag && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-100 font-semibold">
+            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-text text-bg font-semibold">
               next
             </span>
           )}
@@ -69,19 +69,19 @@ export function WeekendBlock({
         </span>
       </div>
       {hasNamedTitle && (
-        <h3 className="text-zinc-50 text-base font-semibold leading-tight mb-0.5">
+        <h3 className="text-text text-base font-semibold leading-tight mb-0.5">
           {title}
         </h3>
       )}
       {subtitle && (
-        <div className="text-xs text-zinc-500 mb-2">{subtitle}</div>
+        <div className="text-xs text-text-faint mb-2">{subtitle}</div>
       )}
       {!subtitle && hasNamedTitle && <div className="mb-2" />}
       {weekend.previousStartDate && weekend.previousEndDate && (
-        <div className="text-[11px] text-amber-300/80 mb-2 tnum">
+        <div className="text-[11px] text-amber-300/80 mb-2 tnum font-mono">
           Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}
           {weekend.rescheduleNote && (
-            <span className="text-zinc-500"> · {weekend.rescheduleNote}</span>
+            <span className="text-text-faint font-sans"> · {weekend.rescheduleNote}</span>
           )}
         </div>
       )}
@@ -91,14 +91,14 @@ export function WeekendBlock({
             key={s.uid}
             className="flex items-center justify-between gap-3 text-sm py-1"
           >
-            <span className="text-zinc-200 truncate">{s.title}</span>
-            <span className="text-zinc-500 font-medium tabular-nums whitespace-nowrap">
+            <span className="text-text-muted truncate">{s.title}</span>
+            <span className="text-text-faint font-medium tabular-nums font-mono whitespace-nowrap">
               {s.dateOnly ? 'TBC' : formatLocal(s.start)}
             </span>
           </li>
         ))}
       </ul>
-      <div className="mt-3 text-[10px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">
+      <div className="mt-3 text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold">
         Round {round} <span aria-hidden>→</span>
       </div>
     </Link>

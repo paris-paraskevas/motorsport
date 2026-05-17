@@ -154,7 +154,7 @@ export function HomeContent({
               <Link
                 key={`${item.seriesSlug}-${item.session.uid}`}
                 href={liveHref}
-                className="group block relative overflow-hidden rounded-2xl border border-red-500/30 bg-zinc-900/50 transition-all hover:bg-zinc-900/80 hover:border-red-500/50"
+                className="group block relative overflow-hidden rounded-2xl border border-red-500/30 bg-surface transition-all duration-(--duration-fast) hover:bg-surface-elevated hover:border-red-500/50"
               >
                 <div
                   className="absolute inset-0 opacity-[0.10] pointer-events-none"
@@ -178,17 +178,17 @@ export function HomeContent({
                     >
                       {item.seriesName}
                     </span>
-                    <span className="text-zinc-700">·</span>
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-zinc-400 font-medium">
+                    <span className="text-border-strong">·</span>
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-text-muted font-medium font-mono">
                       started {formatRelative(item.session.start)}
                     </span>
                   </div>
-                  <div className="text-zinc-50 text-lg md:text-xl font-bold tracking-tight">
+                  <div className="text-text text-lg md:text-xl font-bold tracking-tight">
                     {item.session.title}
                   </div>
                   {item.session.location && (
-                    <div className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500">
-                      <MapPin size={12} className="text-zinc-600" />
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-text-faint">
+                      <MapPin size={12} className="text-text-faint" />
                       <span>{item.session.location.split(',')[0].trim()}</span>
                     </div>
                   )}
@@ -210,13 +210,13 @@ export function HomeContent({
           round={roundFor(hero.seriesSlug, hero.session.uid)}
         />
       ) : liveItems.length > 0 ? null : (
-        <div className="mb-8 p-5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-500 text-sm">
+        <div className="mb-8 p-5 rounded-xl bg-surface border border-border text-text-faint text-sm">
           {isEmptyFromFilter ? (
             <>
               No upcoming sessions in your followed series.{' '}
               <Link
                 href="/settings"
-                className="text-zinc-300 underline underline-offset-2 hover:text-zinc-100"
+                className="text-text-muted underline underline-offset-2 hover:text-text"
               >
                 Manage
               </Link>
@@ -230,7 +230,7 @@ export function HomeContent({
 
       {/* Tab control */}
       <div
-        className="inline-flex p-1 bg-zinc-900/60 border border-zinc-800 rounded-full mb-4"
+        className="inline-flex p-1 bg-surface border border-border rounded-full mb-4"
         role="tablist"
         aria-label="Home content"
       >
@@ -255,14 +255,14 @@ export function HomeContent({
               <button
                 type="button"
                 onClick={() => setNewsFilter(null)}
-                className={`shrink-0 text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                className={`shrink-0 text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 rounded-full border transition-colors duration-(--duration-fast) ${
                   newsFilter === null
-                    ? 'bg-zinc-100 text-zinc-950 border-zinc-100'
-                    : 'text-zinc-400 border-zinc-800 hover:text-zinc-100 hover:border-zinc-700'
+                    ? 'bg-text text-bg border-text'
+                    : 'text-text-muted border-border hover:text-text hover:border-border-strong'
                 }`}
               >
                 All
-                <span className="ml-1.5 tabular-nums opacity-70">{filteredNews.length}</span>
+                <span className="ml-1.5 tabular-nums font-mono opacity-70">{filteredNews.length}</span>
               </button>
               {seriesWithNews.map(s => {
                 const active = newsFilter === s.slug;
@@ -271,10 +271,10 @@ export function HomeContent({
                     key={s.slug}
                     type="button"
                     onClick={() => setNewsFilter(s.slug)}
-                    className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                    className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 rounded-full border transition-colors duration-(--duration-fast) ${
                       active
                         ? 'text-zinc-950 border-transparent'
-                        : 'text-zinc-400 border-zinc-800 hover:text-zinc-100 hover:border-zinc-700'
+                        : 'text-text-muted border-border hover:text-text hover:border-border-strong'
                     }`}
                     style={active ? { backgroundColor: s.color } : undefined}
                   >
@@ -283,16 +283,16 @@ export function HomeContent({
                       style={{ backgroundColor: active ? '#0a0a0a' : s.color }}
                     />
                     {s.name}
-                    <span className="tabular-nums opacity-70">{s.count}</span>
+                    <span className="tabular-nums font-mono opacity-70">{s.count}</span>
                   </button>
                 );
               })}
             </div>
           )}
           {topNews.length === 0 ? (
-            <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-8 text-center">
-              <div className="text-zinc-300 text-base font-medium mb-1">No news yet</div>
-              <div className="text-zinc-500 text-sm">
+            <div className="rounded-2xl bg-surface/60 border border-border p-8 text-center">
+              <div className="text-text text-base font-medium mb-1">No news yet</div>
+              <div className="text-text-faint text-sm">
                 {isEmptyFromFilter
                   ? 'No recent stories from your followed series.'
                   : 'Latest stories unavailable right now.'}
@@ -308,7 +308,7 @@ export function HomeContent({
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group block rounded-2xl bg-zinc-900/30 border border-zinc-800/60 p-4 transition-all hover:bg-zinc-900/70 hover:border-zinc-700"
+                    className="group block rounded-2xl bg-surface/40 border border-border/60 p-4 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong"
                   >
                     <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                       <span
@@ -321,22 +321,22 @@ export function HomeContent({
                       >
                         {item.seriesName}
                       </span>
-                      <span className="text-zinc-700">·</span>
-                      <span className="text-[10px] uppercase tracking-[0.12em] text-zinc-500 font-medium">
+                      <span className="text-border-strong">·</span>
+                      <span className="text-[10px] uppercase tracking-[0.12em] text-text-faint font-medium font-mono">
                         {relativeAgo(pubDate)}
                       </span>
                       <ExternalLink
                         size={12}
-                        className="text-zinc-600 group-hover:text-zinc-300 transition-colors ml-auto shrink-0"
+                        className="text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast) ml-auto shrink-0"
                       />
                     </div>
-                    <h3 className="text-zinc-100 text-sm font-semibold leading-snug tracking-tight">
+                    <h3 className="text-text text-sm font-semibold leading-snug tracking-tight">
                       {item.title}
                     </h3>
                   </a>
                 );
               })}
-              <div className="pt-2 text-[10px] uppercase tracking-[0.14em] text-zinc-600 text-center">
+              <div className="pt-2 text-[10px] uppercase tracking-[0.14em] text-text-faint text-center">
                 Source: motorsport.com
               </div>
             </div>
@@ -347,17 +347,17 @@ export function HomeContent({
       {tab === 'upcoming' && (
         <section>
           {byDay.length === 0 ? (
-            <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-8 text-center">
-              <div className="text-zinc-300 text-base font-medium mb-1">
+            <div className="rounded-2xl bg-surface/60 border border-border p-8 text-center">
+              <div className="text-text text-base font-medium mb-1">
                 Nothing scheduled
               </div>
-              <div className="text-zinc-500 text-sm">
+              <div className="text-text-faint text-sm">
                 {isEmptyFromFilter ? (
                   <>
                     No upcoming sessions in your followed series.{' '}
                     <Link
                       href="/settings"
-                      className="text-zinc-300 underline underline-offset-2 hover:text-zinc-100"
+                      className="text-text-muted underline underline-offset-2 hover:text-text"
                     >
                       Manage
                     </Link>
@@ -407,10 +407,10 @@ function TabButton({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`text-xs font-semibold uppercase tracking-[0.14em] px-4 py-1.5 rounded-full transition-colors ${
+      className={`text-xs font-semibold uppercase tracking-[0.14em] px-4 py-1.5 rounded-full transition-colors duration-(--duration-fast) ${
         active
-          ? 'bg-zinc-100 text-zinc-950'
-          : 'text-zinc-400 hover:text-zinc-100'
+          ? 'bg-text text-bg'
+          : 'text-text-muted hover:text-text'
       }`}
     >
       {children}

@@ -27,7 +27,7 @@ export function NextSessionCard({
   return (
     <Link
       href={href}
-      className="group relative block mb-10 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/40 transition-all duration-300 hover:bg-zinc-900/70 hover:border-zinc-700"
+      className="group relative block mb-10 overflow-hidden rounded-3xl border border-border bg-surface/60 transition-all duration-(--duration-base) hover:bg-surface hover:border-border-strong"
     >
       {/* Series-color gradient corner — subtle but distinctive */}
       <div
@@ -51,43 +51,43 @@ export function NextSessionCard({
               {seriesName}
             </span>
           </div>
-          <span className="text-[10px] uppercase tracking-[0.16em] font-semibold text-zinc-500">
+          <span className="text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint">
             Up next
           </span>
         </div>
 
-        <h2 className="text-2xl md:text-3xl text-zinc-50 font-bold leading-[1.1] tracking-tight">
+        <h2 className="text-2xl md:text-3xl text-text font-bold leading-[1.1] tracking-tight">
           {session.title}
         </h2>
 
         <div className="mt-6 flex items-baseline gap-4 flex-wrap">
-          <span className="text-lg md:text-xl font-semibold text-zinc-100 tnum">
+          <span className="text-lg md:text-xl font-semibold text-text tnum font-mono">
             {session.dateOnly ? 'This weekend' : formatRelative(session.start)}
           </span>
-          <span className="text-sm text-zinc-500 tnum">
+          <span className="text-sm text-text-faint tnum font-mono">
             {session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}
           </span>
         </div>
 
         {session.location && (
-          <div className="mt-2 flex items-center gap-1.5 text-sm text-zinc-500">
-            <MapPin size={13} className="text-zinc-600" />
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-text-faint">
+            <MapPin size={13} className="text-text-faint" />
             <span>{session.location.split(',')[0].trim()}</span>
           </div>
         )}
 
         {weather && w && (
-          <div className="mt-4 inline-flex items-center gap-2 text-xs text-zinc-300 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1.5">
+          <div className="mt-4 inline-flex items-center gap-2 text-xs text-text-muted bg-surface border border-border rounded-full px-3 py-1.5">
             <span aria-hidden>{w.emoji}</span>
             <span className="font-medium">{w.label}</span>
-            <span className="text-zinc-500">·</span>
-            <span className="tabular-nums">
+            <span className="text-text-faint">·</span>
+            <span className="tabular-nums font-mono">
               {Math.round(weather.maxC)}° / {Math.round(weather.minC)}°
             </span>
             {weather.precipProb >= 30 && (
               <>
-                <span className="text-zinc-500">·</span>
-                <span className="tabular-nums text-sky-300">
+                <span className="text-text-faint">·</span>
+                <span className="tabular-nums font-mono text-sky-300">
                   {Math.round(weather.precipProb)}% rain
                 </span>
               </>
@@ -95,7 +95,7 @@ export function NextSessionCard({
           </div>
         )}
 
-        <div className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+        <div className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium text-text-muted group-hover:text-text transition-colors duration-(--duration-fast)">
           {round ? 'Open weekend' : 'Open series'}
           <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
