@@ -7,7 +7,7 @@ export function StaleBanner({
 }) {
   if (!configured) {
     return (
-      <div className="text-zinc-500 text-xs mb-3">
+      <div className="text-text-faint text-xs mb-3">
         No feed configured — placeholder data only.
       </div>
     );

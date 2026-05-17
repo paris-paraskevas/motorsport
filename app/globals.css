@@ -3,7 +3,9 @@
 @import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
+/* Tailwind v4 dark variant — system-driven via prefers-color-scheme.
+   .dark class also still works for opt-in scopes (e.g. Clerk modal). */
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *), @media (prefers-color-scheme: dark));
 
 /* ─────────────────────────────────────────────────────────────
  * Paddock 1.0 design tokens.
@@ -14,9 +16,8 @@
  *      Paddock tokens via var() so shadcn primitives inherit our palette
  *      without touching their CSS classes.
  *
- * Light values on :root; dark overrides on .dark / [data-theme="dark"].
- * The @media (prefers-color-scheme: dark) block activates once Stage 8
- * lifts the forced .dark class from <html>.
+ * Light values on :root; dark via prefers-color-scheme media query.
+ * Force-mode escape hatches: [data-theme="dark"] and [data-theme="light"].
  *
  * Per-series accent: layout sets style={{ '--tint': meta.color }} on the
  * series root; Tailwind utility bg-tint / text-tint / ring-tint flows through.
@@ -88,6 +89,7 @@
   --sidebar-ring: var(--tint);
 }
 
+/* Manual force-dark scope. */
 .dark,
 [data-theme="dark"] {
   --bg: #0a0a0d;
@@ -103,7 +105,7 @@
   --tint-contrast: #09090b;
 }
 
-/* System-driven dark — fires once Stage 8 removes the forced .dark from <html>. */
+/* System-driven dark — applies unless user has explicitly forced light. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0a0a0d;
@@ -186,7 +188,7 @@
 }
 
 html {
-  color-scheme: dark; /* becomes 'light dark' at Stage 8 */
+  color-scheme: light dark;
 }
 
 html, body {
@@ -197,18 +199,38 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Layered ambient background — warm amber wash top-left, cool blue wash
-   bottom-right, faint grain. A light-mode wash variant lands at Stage 8. */
+/* Layered ambient background — light + dark variants both keyed off tokens.
+   The wash colors themselves stay literal because they are deliberate
+   atmospheric warmth/coolness, not chassis values. */
 body {
   background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 70% 45% at 10% -8%, rgba(245, 158, 11, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 95% 105%, rgba(56, 189, 248, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(0, 0, 0, 0.015) 0%, transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feComponentTransfer><feFuncA type='linear' slope='0.03'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-attachment: fixed, fixed, fixed, fixed;
+  background-size: auto, auto, auto, 200px 200px;
+  min-height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"] body) {
+    background-image:
+      radial-gradient(ellipse 70% 45% at 10% -8%, rgba(251, 191, 36, 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at 95% 105%, rgba(56, 189, 248, 0.055) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 50% -15%, rgba(255, 255, 255, 0.022) 0%, transparent 60%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feComponentTransfer><feFuncA type='linear' slope='0.05'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+}
+
+[data-theme="dark"] body,
+.dark body {
   background-image:
     radial-gradient(ellipse 70% 45% at 10% -8%, rgba(251, 191, 36, 0.07) 0%, transparent 55%),
     radial-gradient(ellipse 55% 45% at 95% 105%, rgba(56, 189, 248, 0.055) 0%, transparent 60%),
     radial-gradient(ellipse 80% 50% at 50% -15%, rgba(255, 255, 255, 0.022) 0%, transparent 60%),
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feComponentTransfer><feFuncA type='linear' slope='0.05'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  background-attachment: fixed, fixed, fixed, fixed;
-  background-size: auto, auto, auto, 200px 200px;
-  min-height: 100vh;
 }
 
 /* Tabular numerals — used for times, points, positions. */
@@ -232,8 +254,8 @@ body {
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { scrollbar-width: none; }
 
-/* Wikipedia tables (Rules / History / etc.) — scroll horizontally instead
-   of pushing the page wider than the viewport. Folded into tokens at Stage 6/7. */
+/* Wikipedia tables (Rules / History / etc.) — token-driven so they
+   re-skin under light mode automatically. */
 .wiki-table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -248,19 +270,19 @@ body {
 }
 .wiki-table th,
 .wiki-table td {
-  border: 1px solid rgb(39 39 42 / 0.8);
+  border: 1px solid var(--border);
   padding: 0.4rem 0.6rem;
   text-align: left;
   vertical-align: middle;
-  color: #d4d4d8;
+  color: var(--text-muted);
 }
 .wiki-table th {
-  background: rgb(24 24 27 / 0.6);
+  background: var(--surface);
   font-weight: 600;
-  color: #fafafa;
+  color: var(--text);
 }
 .wiki-table tr:nth-child(even) td {
-  background: rgb(24 24 27 / 0.3);
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
 }
 
 /* shadcn base reset — border-color + outline applied site-wide. */

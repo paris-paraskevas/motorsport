@@ -64,8 +64,8 @@ export default async function RootLayout({
         },
       }}
     >
-      <html lang="en" className={`${GeistSans.className} ${GeistMono.variable} dark`}>
-        <body className="min-h-screen bg-zinc-950 text-zinc-100">
+      <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
+        <body className="min-h-screen bg-bg text-text">
           <AppShell seriesList={seriesList}>{children}</AppShell>
           <Analytics />
           <SpeedInsights />
