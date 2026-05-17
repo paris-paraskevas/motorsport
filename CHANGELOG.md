@@ -1,6 +1,11 @@
 # Changelog
 
-All notable changes to Paddock are recorded here. Newest first.
+All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
+
+## 0.9.18 — 2026-05-17
+
+### Changed
+- **Split `CHANGELOG.md` (this file, engineering log) from `RELEASES.md` (public-facing prose).** A security/style pass on `/changelog` flagged that the rendered changelog was reading like commit messages — entries like "Added a season window (Dec 1 prior-year → Feb 1 next-year) in `lib/series.ts`" leak the implementation map for free and signal immaturity to anyone evaluating Paddock (sponsors, contributors, recruiters). Engineering detail now stays here in `CHANGELOG.md`; `/changelog` page reads from a new `RELEASES.md` which carries the same version structure but with user-facing prose only (no file paths, no library names, no commit SHAs, 1–3 sentences per bullet). Updated `CLAUDE.md` release-notes rule to mandate updating both files on every push. Backfilled `RELEASES.md` with public-facing copy for every version back to 0.8.0.
 
 ## 0.9.17 — 2026-05-17
 

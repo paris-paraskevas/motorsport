@@ -6,7 +6,7 @@ export const dynamic = 'force-static';
 
 export default async function ChangelogPage() {
   const html = await loadMarkdownAsHtml(
-    path.join(process.cwd(), 'CHANGELOG.md'),
+    path.join(process.cwd(), 'RELEASES.md'),
   );
 
   return (
