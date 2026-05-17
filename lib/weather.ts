@@ -48,7 +48,7 @@ async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast
     latitude: String(lat),
     longitude: String(lon),
     daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,weather_code',
-    forecast_days: '7',
+    forecast_days: '16',
     timezone: 'auto',
     wind_speed_unit: 'kmh',
   });
@@ -94,8 +94,10 @@ async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast
 }
 
 /**
- * Fetch a 7-day forecast for a venue, caching in Vercel KV for ~3 hours so
- * repeated requests for the same coordinates don't hammer Open-Meteo.
+ * Fetch a 16-day forecast for a venue, caching in Vercel KV for ~3 hours so
+ * repeated requests for the same coordinates don't hammer Open-Meteo. 16 days
+ * is Open-Meteo's max horizon and covers race-week + the next weekend's race
+ * (F1 R5 Canada race was missing weather under the prior 7-day setting).
  */
 export async function fetchWeather(
   lat: number,
@@ -103,9 +105,16 @@ export async function fetchWeather(
 ): Promise<WeatherForecast | null> {
   if (isKvConfigured()) {
     const cached = await kv.get<WeatherForecast>(cacheKey(lat, lon));
-    // Old cache entries pre-date utcOffsetSeconds; refresh them so venue-local
-    // date math doesn't trip over a missing field.
-    if (cached && typeof cached.utcOffsetSeconds === 'number') return cached;
+    // Old cache entries pre-date utcOffsetSeconds or were limited to a 7-day
+    // horizon; refresh them so venue-local date math + multi-week race coverage
+    // stay healthy.
+    if (
+      cached &&
+      typeof cached.utcOffsetSeconds === 'number' &&
+      cached.daily.length >= 14
+    ) {
+      return cached;
+    }
   }
   const fresh = await fetchOpenMeteo(lat, lon);
   if (!fresh) return null;
