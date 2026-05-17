@@ -55,8 +55,8 @@ function formatDate(date: Date): string {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-6 text-center">
-      <div className="text-zinc-400 text-sm">{message}</div>
+    <div className="rounded-xl bg-surface/40 border border-border/60 p-6 text-center">
+      <div className="text-text-muted text-sm">{message}</div>
     </div>
   );
 }
@@ -64,26 +64,26 @@ function EmptyState({ message }: { message: string }) {
 function ResultRow({ entry }: { entry: RaceResultEntry }) {
   return (
     <li className="flex items-baseline gap-3 py-2">
-      <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
+      <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-zinc-100 text-sm font-medium truncate">
+          <span className="text-text text-sm font-medium truncate">
             {entry.driverName}
           </span>
           {entry.driverCode ? (
-            <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded">
+            <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
               {entry.driverCode}
             </span>
           ) : null}
         </div>
-        <div className="text-zinc-400 text-xs truncate">{entry.team}</div>
+        <div className="text-text-muted text-xs truncate">{entry.team}</div>
       </div>
-      <span className="text-zinc-400 text-[11px] font-mono tabular-nums text-right w-20 truncate">
+      <span className="text-text-muted text-[11px] font-mono tabular-nums text-right w-20 truncate">
         {entry.time ?? entry.status}
       </span>
-      <span className="text-zinc-100 text-sm font-mono tabular-nums text-right w-10">
+      <span className="text-text text-sm font-mono tabular-nums text-right w-10">
         {entry.points}
       </span>
     </li>
@@ -95,12 +95,12 @@ function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolea
   return (
     <details open={defaultOpen} className="group">
       <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <span className="w-6 text-zinc-500 text-sm font-mono tabular-nums text-right">
+        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
           {race.round}
         </span>
         <div className="flex-1 min-w-0">
-          <div className="text-zinc-100 text-sm font-medium truncate">{race.raceName}</div>
-          <div className="text-zinc-500 text-xs truncate">
+          <div className="text-text text-sm font-medium truncate">{race.raceName}</div>
+          <div className="text-text-faint text-xs truncate">
             {formatDate(race.date)}
             {winner ? ` · winner: ${winner.driverName}` : ''}
             {winner ? ` (${winner.team})` : ''}
@@ -108,10 +108,10 @@ function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolea
         </div>
         <ChevronDown
           size={16}
-          className="text-zinc-500 transition-transform group-open:rotate-180 shrink-0"
+          className="text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-9 mt-2 mb-2 divide-y divide-zinc-800/60 border-l border-zinc-800/60 pl-3">
+      <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
         {race.results.slice(0, 10).map(entry => (
           <ResultRow key={`${entry.position}-${entry.driverName}`} entry={entry} />
         ))}
@@ -123,11 +123,11 @@ function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolea
 function SeasonResultsPanel({ races }: { races: RaceResult[] }) {
   const sorted = [...races].sort((a, b) => b.round - a.round);
   return (
-    <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
-      <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
         Season results
       </h2>
-      <ul className="divide-y divide-zinc-800/60">
+      <ul className="divide-y divide-border/60">
         {sorted.map((r, idx) => (
           <li key={r.round} className="py-1">
             <RoundRow race={r} defaultOpen={idx === 0} />
@@ -141,15 +141,15 @@ function SeasonResultsPanel({ races }: { races: RaceResult[] }) {
 function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string }) {
   const label = hostnameOf(officialStandingsUrl);
   return (
-    <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-6 text-center">
-      <p className="text-zinc-300 text-sm mb-4">
+    <div className="rounded-xl bg-surface/40 border border-border/60 p-6 text-center">
+      <p className="text-text-muted text-sm mb-4">
         Race-by-race results are on the official site.
       </p>
       <a
         href={officialStandingsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-sm font-medium transition-colors"
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-border hover:bg-border-strong text-text text-sm font-medium transition-colors duration-(--duration-fast)"
       >
         {label} <span aria-hidden>→</span>
       </a>
@@ -172,8 +172,8 @@ export async function ResultsTab({ series }: { series: Series }) {
     const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
-        <section className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-4">
-          <h2 className="text-zinc-200 text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
             Drivers&apos; season trend
           </h2>
           <SeasonTrendChart
@@ -188,7 +188,7 @@ export async function ResultsTab({ series }: { series: Series }) {
             href={SOURCE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-zinc-500 hover:text-zinc-400 text-xs transition-colors"
+            className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
           >
             Source: jolpi.ca (Ergast mirror) →
           </a>

@@ -30,7 +30,6 @@ function pickColor(idx: number): string {
 }
 
 export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendData) {
-  // Show top 6 drivers by total points by default; user can toggle individuals.
   const ranked = useMemo(
     () =>
       [...drivers].sort(
@@ -52,7 +51,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
 
   if (data.length === 0 || drivers.length === 0) {
     return (
-      <div className="text-zinc-500 text-sm text-center py-8">
+      <div className="text-text-faint text-sm text-center py-8">
         No trend data yet — first race results will populate this.
       </div>
     );
@@ -63,28 +62,28 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
       <div className="h-72 md:h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 6, right: 12, bottom: 6, left: 0 }}>
-            <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <CartesianGrid stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="round"
-              stroke="rgba(255,255,255,0.4)"
-              tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.6)' }}
+              stroke="var(--text-faint)"
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               tickLine={false}
             />
             <YAxis
-              stroke="rgba(255,255,255,0.4)"
-              tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.6)' }}
+              stroke="var(--text-faint)"
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               tickLine={false}
               width={32}
             />
             <Tooltip
               contentStyle={{
-                background: '#0a0a0d',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--surface-elevated)',
+                border: '1px solid var(--border)',
                 borderRadius: 8,
                 fontSize: 12,
               }}
-              labelStyle={{ color: '#fafafa', fontWeight: 600 }}
-              itemStyle={{ color: '#d4d4d8' }}
+              labelStyle={{ color: 'var(--text)', fontWeight: 600 }}
+              itemStyle={{ color: 'var(--text-muted)' }}
               labelFormatter={(label) => {
                 const round = Number(label);
                 const point = data.find(d => d.round === round);
@@ -117,18 +116,18 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
               key={d.name}
               type="button"
               onClick={() => toggle(d.name)}
-              className={`inline-flex items-center gap-1.5 text-[11px] font-medium rounded-full px-2.5 py-1 border transition-colors ${
+              className={`inline-flex items-center gap-1.5 text-[11px] font-medium rounded-full px-2.5 py-1 border transition-colors duration-(--duration-fast) ${
                 on
-                  ? 'border-zinc-700 text-zinc-100 bg-zinc-900/60'
-                  : 'border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700'
+                  ? 'border-border-strong text-text bg-surface'
+                  : 'border-border text-text-faint hover:text-text-muted hover:border-border-strong'
               }`}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: on ? colour : '#3f3f46' }}
+                style={{ backgroundColor: on ? colour : 'var(--border-strong)' }}
               />
               {d.code ?? d.name}
-              <span className="tabular-nums opacity-70">{totalsByDriver[d.name] ?? 0}</span>
+              <span className="tabular-nums font-mono opacity-70">{totalsByDriver[d.name] ?? 0}</span>
             </button>
           );
         })}

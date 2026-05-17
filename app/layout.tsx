@@ -4,6 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import { AppShell } from '@/components/AppShell';
 import { loadAllSeriesMeta } from '@/lib/series';
 import './globals.css';
@@ -63,8 +64,8 @@ export default async function RootLayout({
         },
       }}
     >
-      <html lang="en" className={`${GeistSans.className} dark`}>
-        <body className="min-h-screen bg-zinc-950 text-zinc-100">
+      <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
+        <body className="min-h-screen bg-bg text-text">
           <AppShell seriesList={seriesList}>{children}</AppShell>
           <Analytics />
           <SpeedInsights />

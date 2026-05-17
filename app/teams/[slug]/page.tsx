@@ -39,7 +39,7 @@ export default async function TeamPage({
   return (
     <div
       className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
-      style={{ ['--accent' as string]: accent } as React.CSSProperties}
+      style={{ '--tint': accent } as React.CSSProperties}
     >
       <div
         className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
@@ -56,7 +56,7 @@ export default async function TeamPage({
 
       <Link
         href={`/series/${team.seriesSlug}?tab=drivers`}
-        className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors mb-6"
+        className="inline-flex items-center gap-1 text-xs font-medium text-text-faint hover:text-text-muted transition-colors duration-(--duration-fast) mb-6"
       >
         <ChevronLeft size={14} />
         Back to {team.seriesName} drivers
@@ -81,15 +81,15 @@ export default async function TeamPage({
         </div>
 
         <h1
-          className="text-zinc-50 text-4xl md:text-5xl font-bold tracking-tight leading-tight"
+          className="text-text text-4xl md:text-5xl font-bold tracking-tight leading-tight"
           style={team.color ? { borderLeft: `4px solid ${team.color}`, paddingLeft: '0.75rem' } : undefined}
         >
           {team.name}
         </h1>
       </header>
 
-      <section className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-5 md:p-6">
-        <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500 font-semibold mb-3">
+      <section className="rounded-2xl bg-surface/40 border border-border/60 p-5 md:p-6">
+        <div className="text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-3">
           Drivers
         </div>
         <ul className="space-y-1">
@@ -97,18 +97,18 @@ export default async function TeamPage({
             <li key={d.slug}>
               <Link
                 href={`/drivers/${d.slug}`}
-                className="group flex items-baseline gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-zinc-900/60 transition-colors"
+                className="group flex items-baseline gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-surface transition-colors duration-(--duration-fast)"
               >
                 {d.number != null && (
-                  <span className="text-[11px] tabular-nums font-mono text-zinc-500 w-8 text-right">
+                  <span className="text-[11px] tabular-nums font-mono text-text-faint w-8 text-right">
                     #{d.number}
                   </span>
                 )}
-                <span className="flex-1 text-zinc-100 text-base font-medium group-hover:text-white">
+                <span className="flex-1 text-text text-base font-medium group-hover:text-tint transition-colors duration-(--duration-fast)">
                   {d.name}
                 </span>
                 {d.code && (
-                  <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded">
+                  <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
                     {d.code}
                   </span>
                 )}

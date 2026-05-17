@@ -21,33 +21,33 @@ export async function AboutTab({ series }: { series: Series }) {
     <div className="space-y-4">
       {overview && (
         <article
-          className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-5 md:p-6
-                     prose prose-invert prose-sm max-w-none
-                     prose-headings:tracking-tight prose-headings:text-zinc-100
+          className="rounded-xl bg-surface/40 border border-border/60 p-5 md:p-6
+                     prose dark:prose-invert prose-sm max-w-none
+                     prose-headings:tracking-tight prose-headings:text-text
                      prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-3 prose-h2:font-semibold
                      prose-p:leading-relaxed
-                     prose-strong:text-zinc-100"
+                     prose-strong:text-text"
           dangerouslySetInnerHTML={{ __html: overview }}
         />
       )}
       {summary && (
-        <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-5">
-          <h2 className="text-zinc-100 text-lg font-semibold mb-3">
+        <div className="rounded-xl bg-surface/40 border border-border/60 p-5">
+          <h2 className="text-text text-lg font-semibold mb-3">
             About {series.meta.name}
           </h2>
           {summary.description && (
-            <p className="text-zinc-400 text-sm mb-3">{summary.description}</p>
+            <p className="text-text-muted text-sm mb-3">{summary.description}</p>
           )}
-          <blockquote className="border-l-2 border-zinc-700 pl-4 text-zinc-300 text-sm leading-relaxed">
+          <blockquote className="border-l-2 border-border-strong pl-4 text-text-muted text-sm leading-relaxed">
             {firstSentences(summary.extract, 3)}
           </blockquote>
-          <div className="mt-4 text-xs text-zinc-500">
+          <div className="mt-4 text-xs text-text-faint">
             Source:{' '}
             <a
               href={summary.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-zinc-400 hover:text-zinc-200 underline underline-offset-2"
+              className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
             >
               Wikipedia &rarr;
             </a>

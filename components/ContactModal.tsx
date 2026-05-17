@@ -80,20 +80,20 @@ export function ContactModal() {
       onClick={() => setOpen(false)}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-zinc-950 border border-zinc-800 shadow-2xl shadow-black/60 overflow-hidden"
+        className="w-full max-w-md rounded-2xl bg-surface-elevated border border-border shadow-2xl shadow-black/60 overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         <div className="p-5 md:p-6">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
-              <Mail size={18} className="text-zinc-400" />
-              <h2 className="text-zinc-50 text-base font-semibold">Contact</h2>
+              <Mail size={18} className="text-text-muted" />
+              <h2 className="text-text text-base font-semibold">Contact</h2>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close"
-              className="p-1.5 -mr-1.5 text-zinc-400 hover:text-zinc-100 rounded-lg hover:bg-zinc-900 transition-colors"
+              className="p-1.5 -mr-1.5 text-text-muted hover:text-text rounded-lg hover:bg-surface transition-colors duration-(--duration-fast)"
             >
               <X size={18} />
             </button>
@@ -101,25 +101,25 @@ export function ContactModal() {
 
           <form onSubmit={submit} className="space-y-3">
             <label className="block">
-              <span className="block text-xs text-zinc-400 mb-1.5">Your email</span>
+              <span className="block text-xs text-text-muted mb-1.5">Your email</span>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast)"
               />
             </label>
             <label className="block">
-              <span className="block text-xs text-zinc-400 mb-1.5">Message</span>
+              <span className="block text-xs text-text-muted mb-1.5">Message</span>
               <textarea
                 required
                 rows={5}
                 value={message}
                 onChange={e => setMessage(e.target.value)}
                 placeholder="What's on your mind?"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors resize-none"
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast) resize-none"
               />
             </label>
 
@@ -137,14 +137,14 @@ export function ContactModal() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-sm font-medium text-zinc-500 hover:text-zinc-200 px-3 py-2 transition-colors"
+                className="text-sm font-medium text-text-faint hover:text-text px-3 py-2 transition-colors duration-(--duration-fast)"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!valid || submitting}
-                className="text-sm font-medium text-zinc-950 bg-zinc-100 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-full px-4 py-2 transition-colors"
+                className="text-sm font-medium text-bg bg-text hover:bg-text-muted disabled:opacity-50 disabled:cursor-not-allowed rounded-full px-4 py-2 transition-colors duration-(--duration-fast)"
               >
                 {submitting ? 'Sending…' : 'Send'}
               </button>

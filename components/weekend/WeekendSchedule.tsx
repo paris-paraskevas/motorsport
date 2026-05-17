@@ -14,11 +14,11 @@ export function WeekendSchedule({
 
   return (
     <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-3">Schedule</h2>
-      <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 overflow-hidden">
+      <h2 className="text-xs uppercase tracking-wider text-text-faint mb-3 font-semibold">Schedule</h2>
+      <div className="rounded-2xl bg-surface/40 border border-border/60 overflow-hidden">
         {byDay.map((day, dayIdx) => (
-          <div key={day.label} className={dayIdx > 0 ? 'border-t border-zinc-800/60' : undefined}>
-            <div className="px-4 pt-3 pb-2 text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">
+          <div key={day.label} className={dayIdx > 0 ? 'border-t border-border/60' : undefined}>
+            <div className="px-4 pt-3 pb-2 text-[11px] uppercase tracking-[0.14em] text-text-faint font-semibold">
               {day.label}
             </div>
             <ul>
@@ -28,7 +28,7 @@ export function WeekendSchedule({
                 return (
                   <li
                     key={s.uid}
-                    className={`flex items-center gap-3 px-4 py-2.5 border-t border-zinc-800/40 ${
+                    className={`flex items-center gap-3 px-4 py-2.5 border-t border-border/40 ${
                       isPast ? 'opacity-50' : ''
                     }`}
                   >
@@ -38,12 +38,12 @@ export function WeekendSchedule({
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap min-w-0">
-                        <span className="text-zinc-100 text-sm font-medium truncate">
+                        <span className="text-text text-sm font-medium truncate">
                           {s.title}
                         </span>
                         {isLive && (
                           <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-300 font-semibold">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
                             live
                           </span>
                         )}
@@ -57,7 +57,7 @@ export function WeekendSchedule({
                         <div className="text-xs text-amber-200/70 mt-0.5">{s.significance.note}</div>
                       )}
                     </div>
-                    <span className="text-zinc-400 text-sm font-medium tabular-nums whitespace-nowrap">
+                    <span className="text-text-muted text-sm font-medium tabular-nums font-mono whitespace-nowrap">
                       {s.dateOnly ? 'TBC' : formatLocal(s.start)}
                     </span>
                   </li>

@@ -22,9 +22,9 @@ export async function NewsTab({ series }: { series: Series }) {
   if (items.length === 0) {
     const officialSite = series.meta.officialSite;
     return (
-      <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-6 md:p-8 text-center">
-        <div className="text-zinc-300 text-base font-medium mb-1">News</div>
-        <div className="text-zinc-500 text-sm mb-5 max-w-xs mx-auto">
+      <div className="rounded-2xl bg-surface/40 border border-border/60 p-6 md:p-8 text-center">
+        <div className="text-text text-base font-medium mb-1">News</div>
+        <div className="text-text-faint text-sm mb-5 max-w-xs mx-auto">
           {hasFeed
             ? 'Latest stories unavailable right now.'
             : `No news feed configured for ${series.meta.name}.`}
@@ -34,7 +34,7 @@ export async function NewsTab({ series }: { series: Series }) {
             href={officialSite}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
           >
             Visit official site
             <ExternalLink size={12} />
@@ -52,34 +52,34 @@ export async function NewsTab({ series }: { series: Series }) {
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="group block rounded-2xl bg-zinc-900/30 border border-zinc-800/60 p-4 md:p-5 transition-all hover:bg-zinc-900/70 hover:border-zinc-700"
+          className="group block rounded-2xl bg-surface/40 border border-border/60 p-4 md:p-5 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong"
         >
           <div className="flex items-start justify-between gap-3 mb-2">
-            <h3 className="text-zinc-50 text-base md:text-lg font-semibold leading-tight tracking-tight">
+            <h3 className="text-text text-base md:text-lg font-semibold leading-tight tracking-tight">
               {item.title}
             </h3>
             <ExternalLink
               size={14}
-              className="text-zinc-600 group-hover:text-zinc-300 transition-colors shrink-0 mt-1"
+              className="text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast) shrink-0 mt-1"
             />
           </div>
           {item.description && (
-            <p className="text-sm text-zinc-400 leading-relaxed line-clamp-3">
+            <p className="text-sm text-text-muted leading-relaxed line-clamp-3">
               {item.description}
             </p>
           )}
-          <div className="mt-3 text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">
+          <div className="mt-3 text-[11px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
             {relativeAgo(item.pubDate)} · Motorsport.com
           </div>
         </a>
       ))}
-      <div className="pt-2 text-xs text-zinc-500 text-center">
+      <div className="pt-2 text-xs text-text-faint text-center">
         Source:{' '}
         <a
           href="https://www.motorsport.com/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-zinc-400 hover:text-zinc-200 underline underline-offset-2"
+          className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
         >
           motorsport.com ↗
         </a>

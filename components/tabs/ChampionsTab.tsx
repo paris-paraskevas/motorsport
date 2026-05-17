@@ -55,18 +55,18 @@ export async function ChampionsTab({ series }: { series: Series }) {
 
   if (champions.length === 0) {
     return (
-      <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/60 p-8 text-center">
-        <div className="text-zinc-300 text-base font-medium mb-1">
+      <div className="rounded-xl bg-surface/40 border border-border/60 p-8 text-center">
+        <div className="text-text text-base font-medium mb-1">
           No champions data
         </div>
-        <div className="text-zinc-500 text-sm mb-4">
+        <div className="text-text-faint text-sm mb-4">
           We couldn&apos;t parse a champions table for {series.meta.name}.
         </div>
         <a
           href={pageUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block text-zinc-300 text-sm underline underline-offset-4 hover:text-white"
+          className="inline-block text-text-muted text-sm underline underline-offset-4 hover:text-text transition-colors duration-(--duration-fast)"
         >
           View on Wikipedia
         </a>
@@ -82,42 +82,42 @@ export async function ChampionsTab({ series }: { series: Series }) {
         <details
           key={group.decade}
           open={idx === 0}
-          className="group rounded-xl bg-zinc-900/40 border border-zinc-800/60 overflow-hidden"
+          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
         >
-          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-zinc-900/70 transition-colors">
-            <span className="text-zinc-100 text-base font-semibold tracking-tight">
+          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
+            <span className="text-text text-base font-semibold tracking-tight">
               {group.label}
             </span>
-            <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">
+            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
               {group.champions.length} {group.champions.length === 1 ? 'champion' : 'champions'}
             </span>
           </summary>
-          <div className="divide-y divide-zinc-800/40 border-t border-zinc-800/60">
+          <div className="divide-y divide-border/40 border-t border-border/60">
             {group.champions.map((c, i) => (
               <div
                 key={`${c.year}-${i}`}
                 className="px-4 py-2.5"
               >
                 <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
-                  <div className="text-zinc-400 tabular-nums text-sm font-medium tnum">
+                  <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
                     {c.year}
                   </div>
-                  <div className="text-zinc-100 text-sm leading-snug">
+                  <div className="text-text text-sm leading-snug">
                     {c.driver}
                   </div>
-                  <div className="text-xs text-zinc-400 leading-snug">
+                  <div className="text-xs text-text-muted leading-snug">
                     {c.constructor ?? ''}
                   </div>
                 </div>
                 <div className="sm:hidden">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-zinc-400 tabular-nums text-sm font-medium tnum w-12 shrink-0">
+                    <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                       {c.year}
                     </span>
-                    <span className="text-zinc-100 text-sm">{c.driver}</span>
+                    <span className="text-text text-sm">{c.driver}</span>
                   </div>
                   {c.constructor && (
-                    <div className="ml-[3.75rem] mt-0.5 text-[11px] text-zinc-500">
+                    <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
                       {c.constructor}
                     </div>
                   )}
@@ -127,7 +127,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
           </div>
         </details>
       ))}
-      <div className="px-2 py-2 text-[11px] text-zinc-500">
+      <div className="px-2 py-2 text-[11px] text-text-faint">
         {sourceLabel === 'curated' ? (
           <span>Source: curated</span>
         ) : (
@@ -135,7 +135,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
             href={pageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-zinc-300"
+            className="hover:text-text-muted transition-colors duration-(--duration-fast)"
           >
             Source: Wikipedia →
           </a>

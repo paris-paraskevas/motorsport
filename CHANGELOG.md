@@ -2,6 +2,30 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.0 — 2026-05-17
+
+### Added
+- **Paddock 1.0 design system.** Semantic CSS variable tokens (`--bg`, `--surface{,-elevated}`, `--border{,-strong}`, `--text{,-muted,-faint}`, `--tint{,-contrast}`, `--live`, `--positive`, `--negative`, `--duration-{fast,base}`, `--ease-out`, `--radius-card`) live on `:root`, with dark overrides under `.dark` / `[data-theme="dark"]` and a `@media (prefers-color-scheme: dark)` block for system-driven dark. shadcn token names (`--background`, `--primary`, `--ring`, etc.) are bridged via `var()` so primitives inherit Paddock's palette without rewriting their classes. All exposed as Tailwind utilities (`bg-bg`, `text-text`, `border-border`, `bg-tint`, `text-tint-contrast`, etc.) through `@theme inline`. Spec: `docs/design/paddock-1.0.md`.
+- **shadcn/ui (`base-nova` preset on Tailwind v4 + Base UI primitives).** `button`, `dialog`, `sheet`, `tabs`, `popover`, `command`, `sonner`, `skeleton`, `tooltip`, plus `input` / `textarea` / `input-group` as transitives. `lib/utils.ts` `cn()` helper. `components.json` configured to use our token names. `Toaster` mounted in `AppShell`; `TooltipProvider` wraps the shell with `delay={300}`.
+- **Geist Mono.** `geist/font/mono` loaded as a CSS variable in `app/layout.tsx`; `--font-mono` exposed in `@theme inline` so the Tailwind `font-mono` utility uses it. Applied to every numeric/time surface (session times, weekend date ranges, weather temps, standings positions/points, relative timestamps, year labels, version string) while prose stays Geist Sans.
+- **Per-series accent system.** `app/series/[slug]/page.tsx`, `app/series/[slug]/weekend/[round]/page.tsx`, `app/drivers/[slug]/page.tsx`, `app/teams/[slug]/page.tsx` set `style={{ '--tint': meta.color }}` on the page wrapper. Series tint flows through every descendant via `text-tint`, `bg-tint`, `border-tint`, `ring-tint`. SeriesTabs active state composes the Tailwind tint with an inline `boxShadow` ring in the literal color.
+- **Live-pulse keyframe** (`.live-pulse`, 2s ease-in-out scale + opacity) respecting `prefers-reduced-motion`.
+
+### Changed
+- **Lifted forced `dark` class from `<html>`.** `app/layout.tsx` now renders `<html className={`${GeistSans.className} ${GeistMono.variable}`}>` without a forced dark class, and `<body>` uses `bg-bg text-text`. `html { color-scheme: light dark; }` tells the UA to render form controls per active mode. `@custom-variant dark` now fires on `.dark` / `[data-theme="dark"]` **OR** `@media (prefers-color-scheme: dark)`, so the Tailwind `dark:` modifier works in either path.
+- **Body wash now has both light + dark variants.** Light: amber + sky tints with darker-on-light alphas. Dark: original warm amber + cool sky over `#0a0a0d`. Both fixed-attached, both with subtle grain noise SVG. Targeted via `@media (prefers-color-scheme: dark)` plus explicit `.dark body` / `[data-theme="dark"] body` overrides.
+- **All visible surfaces migrated zinc-hardcoded → tokens.** `AppShell`, `Footer`, `HeaderUtils`, `HomeContent`, `NextSessionCard`, `FilteredSessions`, `SessionCard`, `WeekendBlock`, `DayHeader`, `WeekendHero`, `WeekendSchedule`, `WeekendWeatherStrip`, `WeekendNews`, `WeekendStandingsSnapshot`, `SeriesTabs`, all `components/tabs/*`, `PastToggleSection`, `SeasonTrendChart` (recharts grid/axis/tooltip now use `var(--border)` / `var(--text-muted)` / `var(--surface-elevated)`), `ContactModal`, `CookieBanner`, `StaleBanner`, `CancelledRoundsSection`, `/about`, `/blog` index, `/blog/[slug]`, `/calendar`, `/changelog`, `/not-found`, `/series/[slug]`, `/series/[slug]/weekend/[round]`, `/drivers/[slug]`, `/teams/[slug]`.
+- **`prose-invert` → `dark:prose-invert`** in `app/changelog/page.tsx`, `app/blog/[slug]/page.tsx`, `components/tabs/{HistoryTab,RulesTab,DriversTab,AboutTab}.tsx`. Without this, MDX/HTML prose rendered as white text on light backgrounds.
+- **Live-state badges intentionally keep literal red** (`bg-red-500/15 text-red-300`) — motorsport convention: red flags, red lights, red broadcast indicator. The `--live` token (amber) is reserved for non-broadcast "active" states.
+- **Sonner Toaster shed its `next-themes` dep.** `components/ui/sonner.tsx` now uses `theme="system"` directly; we don't ship `next-themes`.
+- **`wiki-table` styling** in `globals.css` now references `--border` / `--surface` / `--text` / `--text-muted` so Rules / History tables re-skin in light mode automatically. Even-row stripe uses `color-mix(in srgb, var(--surface) 50%, transparent)`.
+
+### Notes / known v1.1 follow-ups
+- **Clerk `appearance`** in `app/layout.tsx` is still dark-tuned (hardcoded `colorBackground: '#0a0a0a'` etc.). Sign-in / Sign-up modal renders dark even when the rest of the site is in light mode. Clerk variables don't appear to accept `var()` references; fix likely via `@clerk/themes`'s `dark` / `system` baseTheme.
+- **PWA-only modals still zinc-hardcoded:** `OnboardingWizard`, `EnableNotifications`, `PWAInstallPrompt`, `NotifPrefsSection`, `SettingsClient`. Low-visibility surfaces — show on first install / from inside the Clerk user button — so the light-mode mismatch is rare in practice.
+- **`components/mdx/mdx-components.tsx`** untouched; blog detail prose styles will lean on Tailwind typography defaults under both modes. Acceptable until we have more than a handful of MDX posts.
+- **Sidebar `--tint` flow.** On a series route, the page wrapper sets `--tint` but the persistent left sidebar lives outside that scope. Drawer's active-series link still shows the global signal-amber rather than the series color. Lifting `--tint` to `<html>` requires a server-side route lookup per request; deferred.
+
 ## 0.9.19 — 2026-05-17
 
 ### Added

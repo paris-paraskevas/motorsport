@@ -97,7 +97,10 @@ export default async function WeekendPage({
   return (
     <div
       className="relative max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
-      style={{ ['--series-color' as string]: color } as React.CSSProperties}
+      style={{
+        '--tint': color,
+        ['--series-color' as string]: color,
+      } as React.CSSProperties}
     >
       <div
         className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
@@ -126,7 +129,7 @@ export default async function WeekendPage({
 
       <WeekendNews series={series} weekend={weekend} />
 
-      <p className="mt-10 text-center text-[11px] uppercase tracking-[0.16em] text-zinc-600">
+      <p className="mt-10 text-center text-[11px] uppercase tracking-[0.16em] text-text-faint">
         Predictions and comments coming soon
       </p>
     </div>

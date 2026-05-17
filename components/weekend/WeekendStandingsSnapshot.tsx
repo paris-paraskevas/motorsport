@@ -67,28 +67,28 @@ export async function WeekendStandingsSnapshot({
     return (
       <section className="mb-8">
         <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-          <h2 className="text-xs uppercase tracking-wider text-zinc-500">Standings</h2>
-          <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-600 font-semibold">
+          <h2 className="text-xs uppercase tracking-wider text-text-faint font-semibold">Standings</h2>
+          <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
             {label}
           </span>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-4">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-400 font-semibold mb-2">
+          <div className="rounded-2xl bg-surface/40 border border-border/60 p-4">
+            <div className="text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
               Drivers · top {DRIVER_ROWS}
             </div>
-            <ul className="divide-y divide-zinc-800/60">
+            <ul className="divide-y divide-border/60">
               {drivers.map(d => (
                 <li key={`${d.position}-${d.driverName}`} className="flex items-baseline gap-3 py-1.5">
-                  <span className="w-5 text-zinc-500 text-xs font-mono tabular-nums text-right">
+                  <span className="w-5 text-text-faint text-xs font-mono tabular-nums text-right">
                     {d.position}
                   </span>
-                  <span className="flex-1 min-w-0 text-zinc-100 text-sm font-medium truncate">
+                  <span className="flex-1 min-w-0 text-text text-sm font-medium truncate">
                     {d.driverName}
                   </span>
-                  <span className="text-zinc-400 text-xs truncate max-w-[8rem]">{d.team}</span>
-                  <span className="text-zinc-100 text-sm font-mono tabular-nums text-right w-10">
+                  <span className="text-text-muted text-xs truncate max-w-[8rem]">{d.team}</span>
+                  <span className="text-text text-sm font-mono tabular-nums text-right w-10">
                     {d.points}
                   </span>
                 </li>
@@ -96,20 +96,20 @@ export async function WeekendStandingsSnapshot({
             </ul>
           </div>
 
-          <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-4">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-zinc-400 font-semibold mb-2">
+          <div className="rounded-2xl bg-surface/40 border border-border/60 p-4">
+            <div className="text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
               Constructors · top {CONSTRUCTOR_ROWS}
             </div>
-            <ul className="divide-y divide-zinc-800/60">
+            <ul className="divide-y divide-border/60">
               {constructors.map(c => (
                 <li key={`${c.position}-${c.name}`} className="flex items-baseline gap-3 py-1.5">
-                  <span className="w-5 text-zinc-500 text-xs font-mono tabular-nums text-right">
+                  <span className="w-5 text-text-faint text-xs font-mono tabular-nums text-right">
                     {c.position}
                   </span>
-                  <span className="flex-1 min-w-0 text-zinc-100 text-sm font-medium truncate">
+                  <span className="flex-1 min-w-0 text-text text-sm font-medium truncate">
                     {c.name}
                   </span>
-                  <span className="text-zinc-100 text-sm font-mono tabular-nums text-right w-10">
+                  <span className="text-text text-sm font-mono tabular-nums text-right w-10">
                     {c.points}
                   </span>
                 </li>
@@ -126,14 +126,14 @@ export async function WeekendStandingsSnapshot({
   return (
     <section className="mb-8">
       <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-        <h2 className="text-xs uppercase tracking-wider text-zinc-500">Standings</h2>
-        <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-600 font-semibold">{label}</span>
+        <h2 className="text-xs uppercase tracking-wider text-text-faint font-semibold">Standings</h2>
+        <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">{label}</span>
       </div>
       <a
         href={series.meta.officialStandingsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="block rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-5 text-center text-zinc-300 text-sm hover:bg-zinc-900/70 hover:border-zinc-700 transition-colors"
+        className="block rounded-2xl bg-surface/40 border border-border/60 p-5 text-center text-text-muted text-sm hover:bg-surface hover:border-border-strong transition-colors duration-(--duration-fast)"
       >
         Live standings on {host} <span aria-hidden>→</span>
       </a>

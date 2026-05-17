@@ -36,30 +36,30 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
 
   return (
     <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-zinc-500 mb-3">Weather</h2>
+      <h2 className="text-xs uppercase tracking-wider text-text-faint mb-3 font-semibold">Weather</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
         {tiles.map(({ iso, daily }) => {
           const w = weatherLabel(daily.weatherCode);
           return (
             <div
               key={iso}
-              className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-3"
+              className="rounded-2xl bg-surface/40 border border-border/60 p-3"
             >
-              <div className="text-[11px] uppercase tracking-[0.12em] font-semibold text-zinc-500">
+              <div className="text-[11px] uppercase tracking-[0.12em] font-semibold text-text-faint font-mono">
                 {dayLabel(iso)}
               </div>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-xl" aria-hidden>{w.emoji}</span>
-                <span className="text-zinc-100 text-base font-semibold tabular-nums">
+                <span className="text-text text-base font-semibold tabular-nums font-mono">
                   {Math.round(daily.maxC)}°
                 </span>
-                <span className="text-zinc-500 text-sm tabular-nums">
+                <span className="text-text-faint text-sm tabular-nums font-mono">
                   {Math.round(daily.minC)}°
                 </span>
               </div>
-              <div className="mt-1 text-xs text-zinc-400 truncate">{w.label}</div>
+              <div className="mt-1 text-xs text-text-muted truncate">{w.label}</div>
               {daily.precipProb >= 30 && (
-                <div className="mt-1 text-[11px] text-sky-300 tabular-nums">
+                <div className="mt-1 text-[11px] text-sky-300 tabular-nums font-mono">
                   {Math.round(daily.precipProb)}% rain
                 </div>
               )}
@@ -67,7 +67,7 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
           );
         })}
       </div>
-      <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-zinc-600">
+      <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-text-faint">
         Source: Open-Meteo · {circuit.name}
       </div>
     </section>

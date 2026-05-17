@@ -74,6 +74,7 @@ export default async function SeriesPage({
       className="relative max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
       style={
         {
+          '--tint': color,
           '--series-color': color,
         } as React.CSSProperties
       }
@@ -94,19 +95,16 @@ export default async function SeriesPage({
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-3">
           <span
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: color, boxShadow: `0 0 14px ${color}` }}
+            className="w-2.5 h-2.5 rounded-full bg-tint"
+            style={{ boxShadow: `0 0 14px ${color}` }}
           />
-          <span
-            className="text-[11px] uppercase tracking-[0.18em] font-semibold"
-            style={{ color }}
-          >
+          <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-tint">
             {series.meta.name}
           </span>
         </div>
-        <h1 className="text-zinc-50 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
-          <span className="tnum">{series.meta.season}</span>{' '}
-          <span className="text-zinc-400 font-medium">season</span>
+        <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+          <span className="tnum font-mono">{series.meta.season}</span>{' '}
+          <span className="text-text-muted font-medium">season</span>
         </h1>
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>

@@ -21,8 +21,6 @@ export function FilteredSessions({
 }) {
   const { followed, hydrated } = useFollowedSeries();
 
-  // Server-render + first client paint: show everything. After hydration,
-  // apply the user's follow filter if configured.
   const filtered =
     hydrated && followed !== null
       ? items.filter(i => followed.includes(i.seriesSlug))
@@ -38,23 +36,23 @@ export function FilteredSessions({
   if (byDay.length === 0) {
     const isFiltered = followed !== null && followed.length < items.length;
     return (
-      <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-8 text-center">
-        <div className="text-zinc-300 text-base font-medium mb-1">
+      <div className="rounded-2xl bg-surface/60 border border-border p-8 text-center">
+        <div className="text-text text-base font-medium mb-1">
           Nothing scheduled
         </div>
         {isFiltered ? (
-          <div className="text-zinc-500 text-sm">
+          <div className="text-text-faint text-sm">
             No upcoming sessions in your followed series.{' '}
             <Link
               href="/settings"
-              className="text-zinc-300 underline underline-offset-2 hover:text-zinc-100"
+              className="text-text-muted underline underline-offset-2 hover:text-text"
             >
               Manage
             </Link>
             .
           </div>
         ) : (
-          <div className="text-zinc-500 text-sm">
+          <div className="text-text-faint text-sm">
             Nothing in the next window across the configured series.
           </div>
         )}

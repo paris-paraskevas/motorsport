@@ -27,11 +27,11 @@ export function SessionCard({
   return (
     <Link
       href={href}
-      className={`group relative flex items-stretch gap-3 pl-3 pr-3 py-3 rounded-lg bg-zinc-900/30 border border-zinc-800/50 mb-1.5 transition-all hover:bg-zinc-900/60 hover:border-zinc-700/80 ${
+      className={`group relative flex items-stretch gap-3 pl-3 pr-3 py-3 rounded-lg bg-surface/40 border border-border/60 mb-1.5 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong ${
         isPast ? 'opacity-45' : ''
       }`}
     >
-      {/* Left accent bar */}
+      {/* Left accent bar — series color */}
       <span
         className="self-stretch w-[3px] rounded-full shrink-0"
         style={{ backgroundColor: color, opacity: isPast ? 0.5 : 0.85 }}
@@ -39,34 +39,30 @@ export function SessionCard({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap min-w-0">
-          <span className="text-[15px] text-zinc-50 font-semibold tracking-tight truncate min-w-0 flex-1 basis-full">
+          <span className="text-[15px] text-text font-semibold tracking-tight truncate min-w-0 flex-1 basis-full">
             {session.title}
           </span>
           {isLive && (
             <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-300 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
               live
             </span>
           )}
           {session.significance && (
             <span
-              className="text-[10px] uppercase tracking-[0.12em] px-2 py-0.5 rounded-full font-semibold"
-              style={{
-                backgroundColor: 'rgba(251, 191, 36, 0.10)',
-                color: '#fcd34d',
-              }}
+              className="text-[10px] uppercase tracking-[0.12em] px-2 py-0.5 rounded-full font-semibold bg-amber-500/10 text-amber-300"
             >
               {session.significance.tier}
             </span>
           )}
         </div>
-        <div className="text-xs text-zinc-500 mt-0.5 flex items-center gap-1.5 min-w-0 tnum">
+        <div className="text-xs text-text-faint mt-0.5 flex items-center gap-1.5 min-w-0 tnum font-mono">
           <span>{session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}</span>
           {session.location && (
             <>
-              <span className="text-zinc-700">·</span>
-              <MapPin size={11} className="text-zinc-600 shrink-0" />
-              <span className="truncate">{session.location.split(',')[0].trim()}</span>
+              <span className="text-border-strong">·</span>
+              <MapPin size={11} className="text-text-faint shrink-0" />
+              <span className="truncate font-sans">{session.location.split(',')[0].trim()}</span>
             </>
           )}
         </div>
@@ -74,13 +70,13 @@ export function SessionCard({
           <div className="text-xs text-amber-200/70 mt-1">{session.significance.note}</div>
         )}
         {weather && w && !isPast && (
-          <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] text-zinc-400">
+          <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] text-text-muted">
             <span aria-hidden>{w.emoji}</span>
-            <span className="tabular-nums">
+            <span className="tabular-nums font-mono">
               {Math.round(weather.maxC)}°/{Math.round(weather.minC)}°
             </span>
             {weather.precipProb >= 30 && (
-              <span className="tabular-nums text-sky-300">
+              <span className="tabular-nums font-mono text-sky-300">
                 · {Math.round(weather.precipProb)}% rain
               </span>
             )}
@@ -88,7 +84,7 @@ export function SessionCard({
         )}
       </div>
 
-      <span className="text-xs font-medium text-zinc-400 tnum self-center whitespace-nowrap">
+      <span className="text-xs font-medium text-text-muted tnum font-mono self-center whitespace-nowrap">
         {session.dateOnly ? 'TBC' : formatRelative(session.start)}
       </span>
     </Link>

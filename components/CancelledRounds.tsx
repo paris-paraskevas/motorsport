@@ -44,18 +44,18 @@ export function CancelledRoundsSection({
   if (!cancelledRounds || cancelledRounds.length === 0) return null;
   return (
     <section className="mt-12">
-      <h2 className="text-zinc-200 text-base font-semibold mb-3">
+      <h2 className="text-text text-base font-semibold mb-3">
         Cancelled this season
       </h2>
       <ul className="space-y-3">
         {cancelledRounds.map(round => (
           <li
             key={`${round.originalRound}-${round.name}`}
-            className="rounded-md border border-zinc-800 bg-zinc-900/40 p-4"
+            className="rounded-md border border-border bg-surface/40 p-4"
           >
             <div className="flex items-baseline justify-between gap-3 mb-1">
-              <div className="text-zinc-200 text-sm font-medium">
-                <span className="text-zinc-500 tnum mr-2">
+              <div className="text-text text-sm font-medium">
+                <span className="text-text-faint tnum font-mono mr-2">
                   R{round.originalRound}
                 </span>
                 {round.name}
@@ -64,17 +64,17 @@ export function CancelledRoundsSection({
                 Cancelled
               </span>
             </div>
-            <div className="text-zinc-500 text-xs tnum mb-2">
+            <div className="text-text-faint text-xs tnum font-mono mb-2">
               Originally {formatRange(round.originalStartDate, round.originalEndDate)}
             </div>
             {round.reason && (
-              <div className="text-zinc-400 text-xs mb-1">
-                <span className="text-zinc-500">Reason:</span> {round.reason}
+              <div className="text-text-muted text-xs mb-1">
+                <span className="text-text-faint">Reason:</span> {round.reason}
               </div>
             )}
             {round.rescheduleStatus && (
-              <div className="text-zinc-400 text-xs">
-                <span className="text-zinc-500">Reschedule:</span>{' '}
+              <div className="text-text-muted text-xs">
+                <span className="text-text-faint">Reschedule:</span>{' '}
                 {round.rescheduleStatus}
               </div>
             )}
