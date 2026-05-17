@@ -1,0 +1,16 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-01-22", "endDate": "2026-01-25", "name": "Rolex 24 At Daytona" },
+    { "round": 2, "startDate": "2026-03-18", "endDate": "2026-03-21", "name": "Mobil 1 Twelve Hours of Sebring" },
+    { "round": 3, "startDate": "2026-04-17", "endDate": "2026-04-18", "name": "Acura Grand Prix of Long Beach" },
+    { "round": 4, "startDate": "2026-05-01", "endDate": "2026-05-03", "name": "Monterey SportsCar Championship" },
+    { "round": 5, "startDate": "2026-05-29", "endDate": "2026-05-30", "name": "Chevrolet Detroit Sports Car Classic" },
+    { "round": 6, "startDate": "2026-06-26", "endDate": "2026-06-28", "name": "Sahlen's Six Hours of The Glen" },
+    { "round": 7, "startDate": "2026-07-10", "endDate": "2026-07-12", "name": "Chevrolet Grand Prix" },
+    { "round": 8, "startDate": "2026-07-31", "endDate": "2026-08-02", "name": "Motul SportsCar Endurance Grand Prix" },
+    { "round": 9, "startDate": "2026-08-21", "endDate": "2026-08-23", "name": "Michelin GT Challenge at VIR" },
+    { "round": 10, "startDate": "2026-09-18", "endDate": "2026-09-20", "name": "TireRack.com Battle on the Bricks" },
+    { "round": 11, "startDate": "2026-10-01", "endDate": "2026-10-03", "name": "Motul Petit Le Mans" }
+  ]
+}

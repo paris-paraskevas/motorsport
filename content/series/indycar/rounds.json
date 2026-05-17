@@ -1,0 +1,17 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-02-27", "endDate": "2026-03-01", "name": "Firestone Grand Prix of St. Petersburg" },
+    { "round": 2, "startDate": "2026-03-06", "endDate": "2026-03-07", "name": "Good Ranchers 250 (Phoenix Raceway)" },
+    { "round": 3, "startDate": "2026-03-13", "endDate": "2026-03-15", "name": "Java House Grand Prix of Arlington" },
+    { "round": 4, "startDate": "2026-03-27", "endDate": "2026-03-29", "name": "Children's of Alabama Indy Grand Prix" },
+    { "round": 5, "startDate": "2026-04-17", "endDate": "2026-04-19", "name": "Acura Grand Prix of Long Beach" },
+    { "round": 6, "startDate": "2026-05-08", "endDate": "2026-05-09", "name": "Sonsio Grand Prix at the Brickyard" },
+    { "round": 7, "startDate": "2026-05-22", "endDate": "2026-05-24", "name": "110th Indianapolis 500" },
+    { "round": 8, "startDate": "2026-05-30", "endDate": "2026-05-31", "name": "Chevrolet Detroit Grand Prix" },
+    { "round": 9, "startDate": "2026-06-06", "endDate": "2026-06-07", "name": "Bommarito Automotive Group 500 (Gateway)" },
+    { "round": 10, "startDate": "2026-06-19", "endDate": "2026-06-21", "name": "XPEL Grand Prix at Road America" },
+    { "round": 15, "startDate": "2026-08-29", "endDate": "2026-08-29", "name": "Hy-Vee Milwaukee Mile Race 1" },
+    { "round": 16, "startDate": "2026-08-30", "endDate": "2026-08-30", "name": "Hy-Vee Milwaukee Mile Race 2" }
+  ]
+}

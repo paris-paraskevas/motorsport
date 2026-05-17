@@ -2,6 +2,20 @@
 
 All notable changes to Paddock are recorded here. Newest first.
 
+## 0.9.16 — 2026-05-17
+
+### Added
+- **`rounds.json` curated for F2, F3, IMSA, IndyCar, WSBK.** Five more series now have canonical round numbers + race names instead of the array-index fallback. After PR #6's calendar venue-label change, weekend cards on these series finally show the actual race name (e.g. "Phillip Island Round", "Rolex 24 At Daytona", "110th Indianapolis 500", "Acura Grand Prix of Long Beach") above the date label.
+  - **F2** — 14 rounds, names mapped from F1 venues (F2 supports the F1 weekends).
+  - **F3** — 9 rounds (R1, R3–R10), same mapping.
+  - **IMSA** — 11 rounds with full official race names (Rolex 24, Twelve Hours of Sebring, Acura Grand Prix of Long Beach, Sahlen's Six Hours of The Glen, Motul Petit Le Mans, etc.) and weekend date ranges from the curated `sessions.json`.
+  - **WSBK** — 12 rounds named by venue (Phillip Island, Portimão, Assen, Balaton Park, Most, Aragón, Misano, Donington Park, Magny-Cours, Cremona, Estoril, Jerez).
+  - **IndyCar** — 12 rounds with full names (R1–R10 + R15–R16 Milwaukee doubleheader). R11–R14 (Mid-Ohio, Music City, Portland, Markham) and R17 (Laguna Seca finale) left out for now — they fall through to array-index numbering until `sessions.json` curation lands for those events.
+
+### Notes
+- For F3, R2 is intentionally absent from `rounds.json` because its session data isn't curated yet. URL `/series/f3/weekend/2` will 404 until that round's `sessions.json` block is filled. All other F3 rounds resolve correctly.
+- Partial `rounds.json` (e.g. IndyCar R11–R14 gap) coexists fine with `assignRoundsToWeekends`: matched weekends get canonical numbers from rounds.json, unmatched fall through to array-index. Provided the chronological order matches the canonical numbering — which it does post-season-filter — gap rounds end up with the right number anyway.
+
 ## 0.9.15 — 2026-05-17
 
 ### Added
