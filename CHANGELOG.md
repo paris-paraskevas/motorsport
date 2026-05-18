@@ -2,6 +2,7 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+<<<<<<< HEAD
 ## 0.10.19 — 2026-05-19
 
 ### Fixed
@@ -13,6 +14,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 ### Notes
 - The publisher ID for the Funding Choices URL is derived from `ADSENSE_CLIENT_ID` by stripping the `ca-` prefix (`ca-pub-3573600995951624` → `pub-3573600995951624`). Single source of truth.
 - Consent Mode v2 defaults (`denied` for everything) remain in place as a safety net for the case where Funding Choices fails to load (ad blocker, network error). GA + AdSense stay in deny state until the CMP explicitly updates via `gtag('consent', 'update', ...)`.
+=======
+## 0.10.20 — 2026-05-19
+
+### Reverted
+- **`public/icons/badge-96.png` and `scripts/gen-badge.py`** restored to the pre-0.10.15 4×3 chequer + pole design. The 2×2 redesign was visually too sparse and the user's status-bar test still wasn't satisfying. Keeping the original silhouette. Version skips 0.10.19 (held by the open Funding Choices PR #31).
+
+### Changed
+- **`components/PushSoundPlayer.tsx`** — `audio.volume` raised from `0.6` to `1.0`. The 0.6 cap added in 0.10.6 made the F1-radio cue too quiet to notice; running at the asset's native volume now.
+>>>>>>> 60bc8ec (docs(changelog): add 0.10.20 entry (missed in previous commit due to mid-edit reload))
 
 ## 0.10.18 — 2026-05-19
 
