@@ -74,25 +74,45 @@ Won't touch this session: Supabase code, comments thread, predictions, anything 
 Active:
 (time-tracking starts the next session — prefix each prompt with `[+Nm]` and I append here)
 
-### Mon 2026-05-18
+### Mon 2026-05-18 → Tue 2026-05-19 — rolled into one marathon session
 
-Pre-Fotis cutoff continues — Tier 1+2 carry-over from Sun. Begin Tier 3 if Tier 1+2 done.
+19 PRs shipped, versions 0.10.4 → 0.10.22. Pre-Fotis cutoff drained.
 
-Won't touch this session: anything kicked to post-Fotis carry-over.
+PR-by-PR (in order):
+
+- → done: #16 (0.10.4) AdSense snippet + Consent Mode v2 default state in `app/layout.tsx`. Defaults all denied; AdSense + GA load but suppress cookies until consent updates.
+- → done: #17 (0.10.5) `public/ads.txt` with IAB-compliant publisher line.
+- → done: #18 (0.10.6) foreground push-sound playback. SW posts `paddock:push-sound` to visible clients; `<PushSoundPlayer>` plays an F1-radio cue at vol 0.6 (later raised to 1.0).
+- → done: #19 (0.10.7) per-page browser-tab titles (`title.template: '%s — Paddock'`) + chequered-flag favicon (`app/icon.png`).
+- → done: #20 (0.10.8) calendar month-by-month navigator on `/calendar` and per-series Calendar tab. Retired `PastToggleSection`.
+- → done: #21 (0.10.9) consent-script ordering fix. Curl of prod showed AdSense rendering before consent-default in `<head>` because Next App Router reorders raw `<script>` tags. Switched both to `<Script strategy="...">`.
+- → done: #22 (0.10.10) F1 curated champions 1950–2025 with inline WCC indicator. User disliked layout.
+- → done: #23 (0.10.11) ChampionsTab rewritten — Drivers' / Constructors' as two distinct sections instead of inline WCC.
+- → done: #24 (0.10.12) MotoGP curated champions 1949–2025 + manufacturers' titles.
+- → done: #25 (0.10.13) batched curated champions for the remaining 7 series — WSBK, WEC, IMSA, DTM, GTWC, F2 (+GP2), F3 (+GP3).
+- → done: #26 (0.10.14) `constructorChampion` gap-fill for F2 / F3 / WSBK / IMSA.
+- → done: #27 (0.10.15) notification badge redesign — 2×2 chequer. Later reverted.
+- → done: #28 (0.10.16) legal pages × 5: `/privacy`, `/terms`, `/cookies`, `/accessibility`, `/do-not-sell`. Plus Consent Mode v2 update wiring on persist, GPC honoring, Vercel KV consent log API, Footer expansion.
+- → done: #29 (0.10.17) GFM tables on the legal pages — added `remark-gfm` to the markdown pipeline.
+- → done: #30 (0.10.18) removed the custom `<CookieBanner>` per user, deferred to Google's published CMP only.
+- → done: #31 (0.10.19) explicit Funding Choices snippet (`?ers=1`) to force CMP fetch independent of AdSense approval state. **CMP still not displaying — AdSense site approval is the gate.** Pinned for re-verify in HANDOFF.
+- → done: #32 (0.10.20) badge revert to original 4×3 + pole, push-sound volume 0.6 → 1.0, pinned the Google CMP / AdSense-approval reminder.
+- → done: #33 (0.10.21) WSBK manufacturers' 1988–2001 filled in (P1.15). WSBK now 38/38 entries complete on both driver + constructorChampion.
+- → done: #34 (0.10.22) GTWC Endurance Cup as a third section (P1.14). `Champion` type gains `secondaryDriver` / `secondaryTeam` / `secondaryLabel`; new `<SecondarySection>` subcomponent.
+
+Champions data shipped — 14 of 15 series now curated end-to-end (every series except ADAC where Champions tab is "Past Winners" with a different shape — already curated in 0.10.3 from yesterday).
+
+Outcomes vs original Monday-evening 4-priority plan:
+
+- → done: AdSense (#16, #21, #17, #30, #31). Banner **still gated by AdSense approval** — Funding Choices server hasn't started serving the published message yet. Pinned in HANDOFF for re-verify when AdSense status flips.
+- → done: notification sound (#18, #32 vol bump). Background custom sound still requires native wrapper (parked).
+- → done: privacy + ToC + cookies (#28). Two `<!-- TODO confirm -->` markers in `privacy.md` + `terms.md` for governing law and contact email (defaults: Greece/Thessaloniki, pparaskevas.dev@gmail.com).
+- → skipped: Speed Insights US-perf investigation. Out of bandwidth. Re-queued for next session.
+
+Beyond the original plan: month-by-month calendars (#20), per-page browser titles + chequered-flag favicon (#19), 9 champions PRs covering all 15 series in full (#22, #23, #24, #25, #26, #33, #34), badge revert (#32).
 
 Active:
-_(awaiting [+Nm] prefixes)_
-
-### Tue 2026-05-19 — Fotis sit-down day
-
-**Tier 3 investigation docs:** data-sources research first (Ergast/jolpica, MotoGP web API, FIA feeds, aggregators), then Supabase scoping doc. JS-site XHR reverse-engineering + Champions JSON cleanup investigation if time remains.
-
-**End-of-day:** pre-Fotis cutoff rule expires after the sit-down. Resume normal IDEAS.md triage. Delete `project-paddock-pre-fotis-cutoff` memory.
-
-Won't touch this session: anything not Tier 1/2/3 unless explicitly pulled in during the sit-down.
-
-Active:
-_(awaiting [+Nm] prefixes)_
+_(no `[+Nm]` prefixes captured — wall-clock approx 6h across the two nominal days)_
 
 ---
 
