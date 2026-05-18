@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.17 — 2026-05-19
+
+### Fixed
+- **Markdown tables now render** on `/privacy`, `/cookies`, and any other markdown-driven page. `lib/content.ts` chained `remark-gfm` into the pipeline before `remark-html`. CommonMark (which `remark` parses by default) has no concept of pipe-table syntax, so the GFM tables we wrote in the legal markdown files rendered as raw `| Column | Column |` text in 0.10.16 — visible in user screenshots from `/privacy` and `/cookies` shortly after merge. Adding `remark-gfm` enables GFM tables, strikethrough, autolinks, and task lists across the existing `loadMarkdownAsHtml` consumers (`/changelog` is unchanged in shape — its content doesn't currently use tables, but the pipeline will now handle them if added).
+
 ## 0.10.16 — 2026-05-19
 
 ### Added
