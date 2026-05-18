@@ -1,14 +1,14 @@
 [
-  { "year": 2025, "driver": "Kelvin van der Linde, Charles Weerts", "constructor": "Team WRT" },
-  { "year": 2024, "driver": "Lucas Auer, Maro Engel", "constructor": "Team WRT" },
-  { "year": 2023, "driver": "Timur Boguslavskiy, Raffaele Marciello", "constructor": "AKKodis ASP Team" },
-  { "year": 2022, "driver": "Raffaele Marciello", "constructor": "AKKodis ASP Team" },
-  { "year": 2021, "driver": "Dries Vanthoor, Charles Weerts", "constructor": "Team WRT" },
-  { "year": 2020, "driver": "Timur Boguslavskiy", "constructor": "Belgian Audi Club Team WRT" },
-  { "year": 2019, "driver": "Andrea Caldarelli, Marco Mapelli", "constructor": "Orange1 FFF Racing Team (Blancpain GT Series)" },
-  { "year": 2018, "driver": "Raffaele Marciello", "constructor": "SMP Racing by AKKA ASP (Blancpain GT Series)" },
-  { "year": 2017, "driver": "Mirko Bortolotti, Christian Engelhart", "constructor": "GRT Grasser Racing Team (Blancpain GT Series)" },
-  { "year": 2016, "driver": "Dominik Baumann, Maximilian Buhk", "constructor": "HTP Motorsport (Blancpain GT Series)" },
-  { "year": 2015, "driver": "Robin Frijns", "constructor": "Belgian Audi Club Team WRT (Blancpain GT Series)" },
-  { "year": 2014, "driver": "Laurens Vanthoor", "constructor": "Belgian Audi Club Team WRT (Blancpain GT Series)" }
+  { "year": 2025, "driver": "Kelvin van der Linde, Charles Weerts", "constructor": "Team WRT", "secondaryDriver": "Alessio Picariello, Sven Müller, Patric Niederhauser", "secondaryTeam": "Rutronik Racing", "secondaryLabel": "Endurance Cup" },
+  { "year": 2024, "driver": "Lucas Auer, Maro Engel", "constructor": "Team WRT", "secondaryDriver": "Alessandro Pier Guidi, Alessio Rovera", "secondaryTeam": "AF Corse - Francorchamps Motors", "secondaryLabel": "Endurance Cup" },
+  { "year": 2023, "driver": "Timur Boguslavskiy, Raffaele Marciello", "constructor": "AKKodis ASP Team", "secondaryDriver": "Jules Gounon, Timur Boguslavskiy, Raffaele Marciello", "secondaryTeam": "AKKodis ASP Team", "secondaryLabel": "Endurance Cup" },
+  { "year": 2022, "driver": "Raffaele Marciello", "constructor": "AKKodis ASP Team", "secondaryDriver": "Jules Gounon, Daniel Juncadella, Raffaele Marciello", "secondaryTeam": "AKKodis ASP Team", "secondaryLabel": "Endurance Cup" },
+  { "year": 2021, "driver": "Dries Vanthoor, Charles Weerts", "constructor": "Team WRT", "secondaryDriver": "Alessandro Pier Guidi, Nicklas Nielsen, Côme Ledogar", "secondaryTeam": "Team WRT", "secondaryLabel": "Endurance Cup" },
+  { "year": 2020, "driver": "Timur Boguslavskiy", "constructor": "Belgian Audi Club Team WRT", "secondaryDriver": "Alessandro Pier Guidi", "secondaryTeam": "AF Corse", "secondaryLabel": "Endurance Cup" },
+  { "year": 2019, "driver": "Andrea Caldarelli, Marco Mapelli", "constructor": "Orange1 FFF Racing Team (Blancpain GT Series)", "secondaryDriver": "Andrea Caldarelli, Marco Mapelli", "secondaryTeam": "Orange1 FFF Racing Team", "secondaryLabel": "Endurance Cup" },
+  { "year": 2018, "driver": "Raffaele Marciello", "constructor": "SMP Racing by AKKA ASP (Blancpain GT Series)", "secondaryDriver": "Yelmer Buurman, Maro Engel, Luca Stolz", "secondaryTeam": "Black Falcon", "secondaryLabel": "Endurance Cup" },
+  { "year": 2017, "driver": "Mirko Bortolotti, Christian Engelhart", "constructor": "GRT Grasser Racing Team (Blancpain GT Series)", "secondaryDriver": "Mirko Bortolotti, Andrea Caldarelli, Christian Engelhart", "secondaryTeam": "Bentley Team M-Sport", "secondaryLabel": "Endurance Cup" },
+  { "year": 2016, "driver": "Dominik Baumann, Maximilian Buhk", "constructor": "HTP Motorsport (Blancpain GT Series)", "secondaryDriver": "Rob Bell, Côme Ledogar, Shane van Gisbergen", "secondaryTeam": "Garage 59", "secondaryLabel": "Endurance Cup" },
+  { "year": 2015, "driver": "Robin Frijns", "constructor": "Belgian Audi Club Team WRT (Blancpain GT Series)", "secondaryDriver": "Alex Buncombe, Katsumasa Chiyo, Wolfgang Reip", "secondaryTeam": "Belgian Audi Club Team WRT", "secondaryLabel": "Endurance Cup" },
+  { "year": 2014, "driver": "Laurens Vanthoor", "constructor": "Belgian Audi Club Team WRT (Blancpain GT Series)", "secondaryDriver": "Laurens Vanthoor", "secondaryTeam": "Belgian Audi Club Team WRT", "secondaryLabel": "Endurance Cup" }
 ]

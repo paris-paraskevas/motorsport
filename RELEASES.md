@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.22 — 2026-05-19
+
+GT World Challenge Champions tab — Endurance Cup section added.
+
+- **The GT World Challenge Europe Champions tab now has three sections.** The existing Overall (Drivers') section stays at the top, and a new **Endurance Cup** section sits below it with year-by-year winners back to 2014 — Pier Guidi/Rovera (AF Corse) 2024, Marciello's three-peat era at AKKodis ASP, Garage 59 in 2016, and so on. Split years where the Overall and Endurance winners are different teams are now visible side-by-side.
+
 ## 0.10.21 — 2026-05-19
 
 WorldSBK Champions tab — end-to-end manufacturers' history.
