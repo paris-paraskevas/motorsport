@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.20 — 2026-05-19
+
+Notification badge restored, push sound louder.
+
+- **Notification badge icon back to the original 4×3 chequered-flag-with-pole design.** The 2×2 redesign was too sparse — going back to what worked.
+- **Push notification sound runs at full volume** now. The previous 0.6 cap made it too quiet to notice — restored to the asset's native level.
+
 ## 0.10.19 — 2026-05-19
 
 The EU cookie banner now actually shows up.

@@ -23,7 +23,7 @@ export function PushSoundPlayer() {
     const onMessage = (event: MessageEvent) => {
       if (!isPushSoundMessage(event.data)) return;
       const audio = new Audio(event.data.payload.sound);
-      audio.volume = 0.6;
+      audio.volume = 1.0;
       // Autoplay may be blocked without a recent user gesture (mobile in
       // particular). We silently swallow the rejection — the visible
       // notification is still shown by the service worker.
