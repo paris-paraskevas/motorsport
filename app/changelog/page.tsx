@@ -1,8 +1,13 @@
 import path from 'path';
+import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
 import { APP_VERSION } from '@/lib/version';
 
 export const dynamic = 'force-static';
+
+export const metadata: Metadata = {
+  title: 'Changelog',
+};
 
 export default async function ChangelogPage() {
   const html = await loadMarkdownAsHtml(

@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 
 export const revalidate = 21600;
+
+export const metadata: Metadata = {
+  title: 'About',
+};
 
 export default async function About() {
   const all = await loadAllSeries();

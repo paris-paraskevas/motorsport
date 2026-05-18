@@ -18,7 +18,10 @@ const ADSENSE_CLIENT_ID = 'ca-pub-3573600995951624';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: SITE_TITLE,
+  title: {
+    default: `${SITE_TITLE} — Personal motorsport companion`,
+    template: `%s — ${SITE_TITLE}`,
+  },
   description: SITE_DESCRIPTION,
   manifest: '/manifest.json',
   openGraph: {

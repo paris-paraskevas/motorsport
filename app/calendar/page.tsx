@@ -1,8 +1,13 @@
+import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 import { FilteredSessions } from '@/components/FilteredSessions';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Calendar',
+};
 
 export default async function CalendarPage() {
   const all = await loadAllSeries();
