@@ -72,7 +72,7 @@ export function SeriesTabs({
                 isActive ? 'text-text' : 'text-text-muted group-hover:text-text'
               }`}
             >
-              {tab.label}
+              {singleEvent && tab.key === 'champions' ? 'Past Winners' : tab.label}
             </span>
           </Link>
         );

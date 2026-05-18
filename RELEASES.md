@@ -2,6 +2,15 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.2 — 2026-05-18
+
+Polish wave — small wins across notifications, errors, contact form, and ADAC content.
+
+- **Notification icon is now a chequered flag.** When you get a push notification on Android, the status-bar icon reads as motorsport-coded instead of a generic shape.
+- **Friendlier error page.** If something breaks while loading a page, you'll see a Paddock "Yellow flag" screen with a Try Again button instead of a raw stack trace.
+- **Contact form gets categories.** Pick "Bug report", "Feature request", "Suggested change", or "General" — submissions self-sort in the inbox.
+- **ADAC 24h Past Winners filled in.** Ten years of winning teams + driver lineups (2015–2024). The tab is also renamed from "Champions" to "Past Winners" since ADAC is one annual race, not a championship.
+
 ## 0.10.1 — 2026-05-18
 
 Calendar accuracy pass + ADAC page cleanup.

@@ -10,11 +10,20 @@ export function openContactModal() {
   window.dispatchEvent(new Event(CONTACT_OPEN_EVENT));
 }
 
+const CATEGORIES = [
+  { value: 'general', label: 'General' },
+  { value: 'bug', label: 'Bug report' },
+  { value: 'feature', label: 'Feature request' },
+  { value: 'suggestion', label: 'Suggested change' },
+] as const;
+type Category = (typeof CATEGORIES)[number]['value'];
+
 export function ContactModal() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [category, setCategory] = useState<Category>('general');
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
@@ -22,6 +31,7 @@ export function ContactModal() {
     const onOpen = () => {
       setResult(null);
       setMessage('');
+      setCategory('general');
       if (isLoaded && isSignedIn && user) {
         const primary = user.primaryEmailAddress?.emailAddress ?? '';
         setEmail(primary);
@@ -51,7 +61,7 @@ export function ContactModal() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, message }),
+        body: JSON.stringify({ email, message, category }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -110,6 +120,18 @@ export function ContactModal() {
                 placeholder="you@example.com"
                 className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast)"
               />
+            </label>
+            <label className="block">
+              <span className="block text-xs text-text-muted mb-1.5">Category</span>
+              <select
+                value={category}
+                onChange={e => setCategory(e.target.value as Category)}
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast)"
+              >
+                {CATEGORIES.map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
             </label>
             <label className="block">
               <span className="block text-xs text-text-muted mb-1.5">Message</span>
