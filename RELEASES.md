@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.3 — 2026-05-18
+
+ADAC 24h Nürburgring Past Winners — full history.
+
+- **53 editions of the 24 Hours of Nürburgring** (1970 through 2025) now live on the ADAC Past Winners tab — winning teams, full driver lineups, and chassis for every year the race was run. Skipped years (1974, 1975, 1983 — race not held) are correctly absent. Previous version of this list covered only the last 10 editions.
+
 ## 0.10.2 — 2026-05-18
 
 Polish wave — small wins across notifications, errors, contact form, and ADAC content.

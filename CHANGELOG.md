@@ -2,6 +2,14 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.3 — 2026-05-18
+
+### Fixed
+- **ADAC `champions.json` was incomplete.** 0.10.2 shipped with only 10 entries (2015–2024). The 24h Nürburgring has been run since 1970 — 53 actual editions through 2025 (race not held in 1974, 1975, 1983). Expanded to the full historical record sourced from the 24 Hours of Nürburgring Wikipedia article + the per-year race articles (2024, 2025) via WebFetch. Each entry now has the winning team, full driver lineup, and chassis. The prior 2024 entry had the team and car right but partially wrong drivers — corrected to Ricardo Feller / Dennis Marschall / Christopher Mies / Frank Stippler (Scherer Sport PHX, Audi R8 LMS Evo II).
+
+### Notes
+- 2025 winner added: Rowe Racing BMW M4 GT3 Evo — Augusto Farfus, Jesse Krohn, Raffaele Marciello, Kelvin van der Linde (classified as winner after a late penalty for race-long leader Manthey Racing).
+
 ## 0.10.2 — 2026-05-18
 
 ### Added
