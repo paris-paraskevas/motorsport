@@ -18,6 +18,9 @@ export interface SeriesMeta {
   seasonPage?: string;
   officialStandingsUrl?: string;
   officialSite?: string;
+  /** True for single-event series (one annual race, not a championship).
+   *  Drives a slimmer tab set: Calendar + About + Champions only. */
+  singleEvent?: boolean;
 }
 
 export interface DriverStanding {

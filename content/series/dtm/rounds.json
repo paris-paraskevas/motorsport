@@ -1,0 +1,12 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-04-24", "endDate": "2026-04-26", "name": "Red Bull Ring Round" },
+    { "round": 2, "startDate": "2026-05-22", "endDate": "2026-05-24", "name": "Zandvoort Round" },
+    { "round": 3, "startDate": "2026-06-19", "endDate": "2026-06-21", "name": "Lausitzring Round" },
+    { "round": 5, "startDate": "2026-07-24", "endDate": "2026-07-26", "name": "Motorsport Arena Oschersleben Round" },
+    { "round": 6, "startDate": "2026-08-14", "endDate": "2026-08-16", "name": "Nürburgring Round" },
+    { "round": 7, "startDate": "2026-09-11", "endDate": "2026-09-13", "name": "Sachsenring Round" },
+    { "round": 8, "startDate": "2026-10-09", "endDate": "2026-10-11", "name": "Hockenheimring Round" }
+  ]
+}

@@ -12,9 +12,19 @@ export const TABS = [
 
 export type TabKey = typeof TABS[number]['key'];
 
-export function resolveTab(value: string | string[] | undefined): TabKey {
+/** Tabs that make sense for a single-event series (one annual race,
+ *  not a championship). Standings / Results / Drivers / News don't apply. */
+export const SINGLE_EVENT_TAB_KEYS = ['calendar', 'about', 'history', 'champions'] as const;
+
+export function tabsFor(singleEvent: boolean | undefined): typeof TABS[number][] {
+  if (!singleEvent) return [...TABS];
+  return TABS.filter(t => (SINGLE_EVENT_TAB_KEYS as readonly string[]).includes(t.key));
+}
+
+export function resolveTab(value: string | string[] | undefined, singleEvent?: boolean): TabKey {
   const v = Array.isArray(value) ? value[0] : value;
-  const match = TABS.find(t => t.key === v);
+  const allowed = tabsFor(singleEvent);
+  const match = allowed.find(t => t.key === v);
   return match?.key ?? 'calendar';
 }
 

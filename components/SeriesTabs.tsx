@@ -13,7 +13,7 @@ import {
   Trophy,
   LucideIcon,
 } from 'lucide-react';
-import { TABS, TabKey } from '@/lib/tabs';
+import { TABS, TabKey, tabsFor } from '@/lib/tabs';
 
 const ICONS: Record<TabKey, LucideIcon> = {
   calendar: Calendar,
@@ -30,15 +30,19 @@ const ICONS: Record<TabKey, LucideIcon> = {
 export function SeriesTabs({
   color,
   activeTab,
+  singleEvent,
 }: {
   color: string;
   activeTab: TabKey;
+  singleEvent?: boolean;
 }) {
   const pathname = usePathname();
+  const tabs = tabsFor(singleEvent);
+  const cols = singleEvent ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3';
 
   return (
-    <nav className="grid grid-cols-3 gap-2 md:gap-3 mb-8" aria-label="Series sections">
-      {TABS.map(tab => {
+    <nav className={`grid ${cols} gap-2 md:gap-3 mb-8`} aria-label="Series sections">
+      {tabs.map(tab => {
         const isActive = tab.key === activeTab;
         const Icon = ICONS[tab.key];
         return (

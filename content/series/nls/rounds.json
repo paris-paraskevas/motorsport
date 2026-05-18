@@ -1,0 +1,15 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-03-14", "endDate": "2026-03-14", "name": "71st ADAC Westfalenfahrt" },
+    { "round": 2, "startDate": "2026-03-21", "endDate": "2026-03-21", "name": "58th ADAC Barbarossapreis" },
+    { "round": 3, "startDate": "2026-04-11", "endDate": "2026-04-11", "name": "57th Adenauer ADAC Rundstrecken-Trophy" },
+    { "round": 4, "startDate": "2026-04-18", "endDate": "2026-04-18", "name": "ADAC 24h Qualifiers — Saturday" },
+    { "round": 5, "startDate": "2026-04-19", "endDate": "2026-04-19", "name": "ADAC 24h Qualifiers — Sunday" },
+    { "round": 6, "startDate": "2026-06-20", "endDate": "2026-06-20", "name": "1st ADAC Eifel Trophy" },
+    { "round": 7, "startDate": "2026-08-01", "endDate": "2026-08-01", "name": "6h ADAC Ruhr-Pokal-Rennen" },
+    { "round": 8, "startDate": "2026-09-12", "endDate": "2026-09-12", "name": "65th ADAC Reinoldus-Langstreckenrennen" },
+    { "round": 9, "startDate": "2026-09-13", "endDate": "2026-09-13", "name": "ADAC Barbarossapreis (Round 9)" },
+    { "round": 10, "startDate": "2026-10-10", "endDate": "2026-10-10", "name": "2nd NLS Sportwarte-Trophy" }
+  ]
+}

@@ -2,6 +2,26 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.1 — 2026-05-18
+
+### Added
+- **`rounds.json` for the bottom 8 series.** DTM (7 rounds, R4 Norisring intentionally absent — split-quali format awaits ADAC schedule), NLS (10 rounds with full ADAC race titles), GT World Challenge Europe (10 rounds — Paul Ricard/Brands Hatch/Monza/Spa/Misano/Magny-Cours/Nürburgring/Zandvoort/Barcelona/Portimão), Formula E Season 12 (17 rounds including the Sanya R11 placeholder at 2026-06-20), NASCAR Cup (36 points races with full sponsor titles), WRC (4 confirmed rallies — Monte-Carlo, Croatia, Portugal, Finland; mid-season stays TBC), IndyCar gap fill (R11 Music City Nashville Superspeedway, R12 Portland, R13 Markham, R14 Washington D.C., R17 Laguna Seca finale — verified against indycar.com Schedule via WebFetch since the earlier handoff had the venue order wrong). After this, array-index fallback is fully retired for matched weekends across all 15 series.
+- **`SeriesMeta.singleEvent?: boolean`** in `lib/types.ts`. Distinguishes series that are a single annual race (ADAC Ravenol 24h) from real championships (everything else). Drives a slimmer tab set.
+- **`tabsFor(singleEvent)` + `SINGLE_EVENT_TAB_KEYS`** in `lib/tabs.ts`. Returns the filtered TABS array — Calendar, About, History, Champions only — when the flag is set. `resolveTab()` also respects the flag so a stale `?tab=results` URL on a singleEvent series falls back to Calendar.
+
+### Fixed
+- **F1 Azerbaijan 2026 `endDate` Sep 27 → Sep 26** in `content/series/f1/rounds.json`. Race runs Saturday (Remembrance Day). `sessions.json` already had `matchDate: 2026-09-26`; rounds.json was the lone outlier still showing Sep 27 in the calendar card date range.
+
+### Changed
+- **`SeriesTabs` accepts a `singleEvent?` prop.** When true, renders the filtered tab list at 2-col mobile / 4-col md+ instead of the standard 3-col×3-row grid. `app/series/[slug]/page.tsx` passes `series.meta.singleEvent`.
+- **`content/series/adac-ravenol-24h/meta.json`** gains `"singleEvent": true`.
+
+### Notes / known v1.1 follow-ups
+- **IMSA Practice 1 sessions still missing on R6–R11.** Per-race timetables publish race-week, not annually. Deferred until each race week.
+- **FE Sanya R11 session times still pending.** Round date is in rounds.json (2026-06-20); session block in `content/series/formula-e/sessions.json` still missing. Adds when FIA Formula E publishes the timetable.
+- **WRC R2/R3/R5/R7-R9/R11-R13** stay as array-index fallback. Stage data publishes 4-6 weeks pre-rally per organiser convention.
+- **"Champions" tab label** stays as-is for ADAC even though it functionally lists past 24h winners. Renaming to "Past Winners" for singleEvent series is a small future polish.
+
 ## 0.10.0 — 2026-05-17
 
 ### Added
