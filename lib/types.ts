@@ -60,7 +60,13 @@ export interface RaceResult {
 export interface Champion {
   year: number;
   driver: string;
+  /** The driver's team in their championship-winning season. */
   constructor?: string;
+  /** The winning constructor in the same season's Constructors' Championship,
+   * when distinct from `constructor`. Useful for F1, where the World
+   * Drivers' Championship and World Constructors' Championship can be won
+   * by different teams in the same year (e.g. 1981, 2024). */
+  constructorChampion?: string;
   points?: number;
 }
 

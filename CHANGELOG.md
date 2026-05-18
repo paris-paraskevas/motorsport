@@ -2,6 +2,15 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.10 — 2026-05-18
+
+### Added
+- **`content/series/f1/champions.json`** — full curated F1 World Drivers' Champions 1950–2025 (76 entries) including the World Constructors' Champion for each year from 1958 (inception of the WCC) onward. Sourced from Wikipedia's "List of Formula One World Drivers' Champions" and "List of Formula One World Constructors' Champions" via WebFetch. ChampionsTab will now bypass the Wikipedia scraper for F1 and use this curated file (the scraper was returning drivers only — no WCC data).
+- **`Champion.constructorChampion?: string`** added to `lib/types.ts`. Holds the WCC team for that season when distinct from `constructor` (the driver champion's team). Used to surface F1's "split" years (e.g. 1981 Piquet/Brabham + Williams WCC; 2024 Verstappen/Red Bull + McLaren WCC).
+
+### Changed
+- **`components/tabs/ChampionsTab.tsx`** — when `constructorChampion` is set AND differs from `constructor`, append a small `WCC: <team>` indicator beside the driver's team. Same-team years stay clean (no clutter on 80%+ of F1 rows where the driver's team also won the WCC).
+
 ## 0.10.9 — 2026-05-18
 
 ### Fixed
