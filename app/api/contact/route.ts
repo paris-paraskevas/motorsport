@@ -8,6 +8,16 @@ export const dynamic = 'force-dynamic';
 const MAX_MESSAGE_LEN = 4000;
 const MIN_MESSAGE_LEN = 5;
 
+const CATEGORIES = ['bug', 'feature', 'suggestion', 'general'] as const;
+type Category = (typeof CATEGORIES)[number];
+
+const CATEGORY_LABEL: Record<Category, string> = {
+  bug: 'Bug report',
+  feature: 'Feature request',
+  suggestion: 'Suggested change',
+  general: 'General',
+};
+
 function isKvConfigured(): boolean {
   return Boolean(
     process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN,
@@ -17,11 +27,14 @@ function isKvConfigured(): boolean {
 async function sendViaResend(
   fromEmail: string,
   message: string,
+  category: Category,
   userId: string | null,
 ): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   const toAddress = process.env.CONTACT_TO_EMAIL;
   if (!apiKey || !toAddress) return { ok: false, error: 'resend not configured' };
+
+  const categoryLabel = CATEGORY_LABEL[category];
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -34,8 +47,8 @@ async function sendViaResend(
         from: 'Paddock Contact <contact@paddock-tracker.com>',
         to: toAddress,
         reply_to: fromEmail,
-        subject: `Paddock contact from ${fromEmail}`,
-        text: `From: ${fromEmail}${userId ? ` (clerk user: ${userId})` : ''}\n\n${message}`,
+        subject: `[${categoryLabel}] Paddock contact from ${fromEmail}`,
+        text: `Category: ${categoryLabel}\nFrom: ${fromEmail}${userId ? ` (clerk user: ${userId})` : ''}\n\n${message}`,
       }),
     });
     if (!res.ok) {
@@ -49,7 +62,7 @@ async function sendViaResend(
 }
 
 export async function POST(req: Request) {
-  let body: { email?: unknown; message?: unknown };
+  let body: { email?: unknown; message?: unknown; category?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -58,6 +71,10 @@ export async function POST(req: Request) {
 
   const email = typeof body.email === 'string' ? body.email.trim() : '';
   const message = typeof body.message === 'string' ? body.message.trim() : '';
+  const rawCategory = typeof body.category === 'string' ? body.category : 'general';
+  const category: Category = (CATEGORIES as readonly string[]).includes(rawCategory)
+    ? (rawCategory as Category)
+    : 'general';
 
   if (!email || !email.includes('@') || email.length > 200) {
     return NextResponse.json({ error: 'invalid email' }, { status: 400 });
@@ -80,11 +97,11 @@ export async function POST(req: Request) {
   const record = {
     email,
     message,
+    category,
     userId,
     createdAt: new Date().toISOString(),
   };
 
-  // Persist to KV when available (queryable inbox).
   if (isKvConfigured()) {
     const key = `paddock:contact:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
     try {
@@ -94,8 +111,7 @@ export async function POST(req: Request) {
     }
   }
 
-  // Best-effort email via Resend if configured.
-  const sent = await sendViaResend(email, message, userId);
+  const sent = await sendViaResend(email, message, category, userId);
 
   return NextResponse.json({
     ok: true,
