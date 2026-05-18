@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.19 — 2026-05-19
+
+The EU cookie banner now actually shows up.
+
+- **Google's consent banner now displays** on first visit for EEA/UK/Swiss visitors. The previous release wired Google's CMP as the consent surface, but it was held back by AdSense's pre-approval review gating — the banner didn't fetch its message. Adding the explicit "eager mode" Funding Choices snippet bypasses that gating.
+- Confirmed working independently of AdSense site approval — the banner displays during review, not only after.
+
 ## 0.10.18 — 2026-05-19
 
 One cookie banner, not two.
