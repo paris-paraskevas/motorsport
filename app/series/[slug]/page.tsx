@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { listSeriesSlugs, loadSeries } from '@/lib/series';
+import type { Metadata } from 'next';
+import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '@/lib/series';
 import { resolveTab, labelForTab, TabKey } from '@/lib/tabs';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
@@ -22,6 +23,20 @@ export const dynamic = 'force-dynamic';
 export async function generateStaticParams() {
   const slugs = await listSeriesSlugs();
   return slugs.map(slug => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const meta = await loadSeriesMeta(slug);
+    return { title: meta.name };
+  } catch {
+    return { title: 'Series not found' };
+  }
 }
 
 function renderTab(activeTab: TabKey, series: Series) {

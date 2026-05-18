@@ -18,9 +18,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const driver = await findDriverBySlug(slug);
-  if (!driver) return { title: 'Driver not found · Paddock' };
+  if (!driver) return { title: 'Driver not found' };
   return {
-    title: `${driver.name} · Paddock`,
+    title: driver.name,
     description: `${driver.name}, ${driver.team} (${driver.seriesName}).`,
   };
 }

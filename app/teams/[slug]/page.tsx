@@ -18,9 +18,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const team = await findTeamBySlug(slug);
-  if (!team) return { title: 'Team not found · Paddock' };
+  if (!team) return { title: 'Team not found' };
   return {
-    title: `${team.name} · Paddock`,
+    title: team.name,
     description: `${team.name} — ${team.seriesName} lineup and details.`,
   };
 }

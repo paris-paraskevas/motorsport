@@ -2,6 +2,19 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.7 — 2026-05-18
+
+### Added
+- **`title.template: '%s — Paddock'`** in `app/layout.tsx` root `metadata`. The root now exposes a `default` title for the home page ("Paddock — Personal motorsport companion") and a `template` for every child page. A page that exports `title: '<page>'` resolves to "<page> — Paddock" in the browser tab.
+- **Per-page `metadata` exports** on the 7 routes that previously fell back to the root title: `/about` → "About", `/calendar` → "Calendar", `/changelog` → "Changelog", `/settings` → "Settings", `/sign-in` → "Sign in", `/sign-up` → "Sign up". `/series/[slug]` now has its own `generateMetadata` that reads `loadSeriesMeta(slug)` and returns the series name (e.g. "Formula 1 — Paddock").
+- **`app/icon.png`** — copy of `public/icons/icon-192.png` (the Paddock chequered-flag logo, 1.5 KB). Next 16 auto-generates the `<link rel="icon">` and `<link rel="apple-touch-icon">` tags from this file. Replaces the stale generic favicon that was reading as a dark triangle on most browser tabs.
+
+### Changed
+- **Stripped ` · Paddock` suffix** from 4 existing metadata files (`app/blog/page.tsx`, `app/blog/[slug]/page.tsx`, `app/drivers/[slug]/page.tsx`, `app/teams/[slug]/page.tsx`). The new title template appends `— Paddock` automatically; the hardcoded mid-dot suffix would have caused "X · Paddock — Paddock" doubling.
+
+### Removed
+- **`app/favicon.ico`** — replaced by `app/icon.png`. Next 16's icon precedence prefers `app/icon.*` so keeping both files would have left two competing favicon sources; deleting the stale `.ico` keeps a single source of truth.
+
 ## 0.10.6 — 2026-05-18
 
 ### Added

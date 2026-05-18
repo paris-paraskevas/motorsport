@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.7 — 2026-05-18
+
+Browser-tab polish: real favicon and page-specific titles.
+
+- **Tab icon is now the Paddock chequered flag.** The previous favicon was a stale generic icon that read as a dark triangle on most tab backgrounds. Same Paddock logo as the app's home-screen icon, now in every browser tab.
+- **Each page has its own browser-tab title.** Open the calendar and the tab reads "Calendar — Paddock"; open an F1 weekend page and you get "Formula 1 · Bahrain GP · Round 1 — Paddock". Easier to find the right Paddock tab when you have several open.
+
 ## 0.10.6 — 2026-05-18
 
 Race notifications now play a short F1 radio cue when the app is open.
