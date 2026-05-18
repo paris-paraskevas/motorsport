@@ -1,0 +1,14 @@
+[
+  { "year": 2025, "driver": "Kelvin van der Linde, Charles Weerts", "constructor": "Team WRT" },
+  { "year": 2024, "driver": "Lucas Auer, Maro Engel", "constructor": "Team WRT" },
+  { "year": 2023, "driver": "Timur Boguslavskiy, Raffaele Marciello", "constructor": "AKKodis ASP Team" },
+  { "year": 2022, "driver": "Raffaele Marciello", "constructor": "AKKodis ASP Team" },
+  { "year": 2021, "driver": "Dries Vanthoor, Charles Weerts", "constructor": "Team WRT" },
+  { "year": 2020, "driver": "Timur Boguslavskiy", "constructor": "Belgian Audi Club Team WRT" },
+  { "year": 2019, "driver": "Andrea Caldarelli, Marco Mapelli", "constructor": "Orange1 FFF Racing Team (Blancpain GT Series)" },
+  { "year": 2018, "driver": "Raffaele Marciello", "constructor": "SMP Racing by AKKA ASP (Blancpain GT Series)" },
+  { "year": 2017, "driver": "Mirko Bortolotti, Christian Engelhart", "constructor": "GRT Grasser Racing Team (Blancpain GT Series)" },
+  { "year": 2016, "driver": "Dominik Baumann, Maximilian Buhk", "constructor": "HTP Motorsport (Blancpain GT Series)" },
+  { "year": 2015, "driver": "Robin Frijns", "constructor": "Belgian Audi Club Team WRT (Blancpain GT Series)" },
+  { "year": 2014, "driver": "Laurens Vanthoor", "constructor": "Belgian Audi Club Team WRT (Blancpain GT Series)" }
+]

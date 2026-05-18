@@ -1,0 +1,18 @@
+[
+  { "year": 2025, "driver": "Rafael Câmara", "constructor": "Trident" },
+  { "year": 2024, "driver": "Leonardo Fornaroli", "constructor": "Trident" },
+  { "year": 2023, "driver": "Gabriel Bortoleto", "constructor": "Trident" },
+  { "year": 2022, "driver": "Victor Martins", "constructor": "ART Grand Prix" },
+  { "year": 2021, "driver": "Dennis Hauger", "constructor": "Prema Racing" },
+  { "year": 2020, "driver": "Oscar Piastri", "constructor": "Prema Racing" },
+  { "year": 2019, "driver": "Robert Shwartzman", "constructor": "Prema Racing" },
+  { "year": 2018, "driver": "Anthoine Hubert", "constructor": "ART Grand Prix (GP3 Series)", "constructorChampion": "ART Grand Prix" },
+  { "year": 2017, "driver": "George Russell", "constructor": "ART Grand Prix (GP3 Series)", "constructorChampion": "ART Grand Prix" },
+  { "year": 2016, "driver": "Charles Leclerc", "constructor": "ART Grand Prix (GP3 Series)", "constructorChampion": "ART Grand Prix" },
+  { "year": 2015, "driver": "Esteban Ocon", "constructor": "ART Grand Prix (GP3 Series)", "constructorChampion": "ART Grand Prix" },
+  { "year": 2014, "driver": "Alex Lynn", "constructor": "Carlin (GP3 Series)", "constructorChampion": "Carlin" },
+  { "year": 2013, "driver": "Daniil Kvyat", "constructor": "MW Arden (GP3 Series)", "constructorChampion": "ART Grand Prix" },
+  { "year": 2012, "driver": "Mitch Evans", "constructor": "MW Arden (GP3 Series)", "constructorChampion": "Lotus GP" },
+  { "year": 2011, "driver": "Valtteri Bottas", "constructor": "Lotus ART (GP3 Series)", "constructorChampion": "Lotus ART" },
+  { "year": 2010, "driver": "Esteban Gutiérrez", "constructor": "ART Grand Prix (GP3 Series)", "constructorChampion": "ART Grand Prix" }
+]

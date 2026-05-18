@@ -2,6 +2,20 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.13 — 2026-05-18
+
+Champions tabs are now correct on every series.
+
+- **WorldSBK Champions tab** now lists every riders' champion 1988–2025 with the bike manufacturer for each year.
+- **WEC** now lists the top-class drivers and Manufacturers' Champions 2012–2025 (Audi → Toyota → Porsche → Ferrari, with the 2018–19 super season counted under 2019).
+- **IMSA** top-class champions (Prototype/DPi/GTP era) 2014–2025 with driver crew, team, and chassis.
+- **DTM** champions covering the original 1984–1996 era and the modern 2000–2025 era (1997–1999 not held). Both drivers and manufacturers as two sections.
+- **GT World Challenge Europe** overall drivers' champions 2014–2025 including the Blancpain GT Series era through 2019.
+- **F2** drivers + teams continuously from GP2 in 2005 to F2 in 2025.
+- **F3** drivers + teams continuously from GP3 in 2010 to F3 in 2025.
+
+Previously these tabs were either empty or showed broken Wikipedia-scrape output; all are now curated. Where a series has separately-named Constructors'/Manufacturers'/Teams' Championships, they get their own labelled section. Single-class series show just the drivers' list.
+
 ## 0.10.12 — 2026-05-18
 
 MotoGP champions are now live.

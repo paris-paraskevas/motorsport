@@ -2,6 +2,18 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.13 — 2026-05-18
+
+### Added
+- **Curated `champions.json` files for the remaining seven series** that were previously falling back to the broken Wikipedia scraper. All sourced via WebFetch from per-series Wikipedia pages (parallel fetch), then hand-curated into the standard `{year, driver, constructor, constructorChampion?}` shape. `ChampionsTab` picks the curated file up automatically and renders the two-section layout for series that supply `constructorChampion`, single-section otherwise.
+  - **`content/series/wsbk/champions.json`** — WorldSBK riders' champions 1988–2025 (38 entries). Single section (rider + bike). Manufacturers' Championship is not surfaced in this PR because Wikipedia doesn't publish it as a clean year-by-year table; can be added later if the user wants.
+  - **`content/series/wec/champions.json`** — FIA WEC top-class drivers + Manufacturers' Champions 2012–2025 (13 entries; no 2018 row because the 2018–19 super season is counted under 2019). Two sections.
+  - **`content/series/imsa/champions.json`** — IMSA SportsCar Championship top-class (Prototype → DPi → GTP) drivers + team 2014–2025 (12 entries). Single section. Note: the championship in its current form started in 2014; pre-2014 was American Le Mans Series + Grand-Am Rolex (separate championships) and is intentionally not back-filled.
+  - **`content/series/dtm/champions.json`** — DTM drivers + Manufacturers' Champions, original era 1984–1996 (no manufacturers' title 1984–90) + modern era 2000–2025. 1997–1999 not held (series re-launched in 2000). Two sections.
+  - **`content/series/gt-world/champions.json`** — GT World Challenge Europe (formerly Blancpain GT Series) overall drivers' champions 2014–2025 (12 entries). Single section.
+  - **`content/series/f2/champions.json`** — FIA Formula 2 (2017–2025) + predecessor GP2 Series (2005–2016) drivers + teams. GP2 era entries carry Teams' Champion as `constructorChampion`; F2 era doesn't (Wikipedia article didn't list it cleanly, can add later). Two sections.
+  - **`content/series/f3/champions.json`** — FIA Formula 3 (2019–2025) + predecessor GP3 Series (2010–2018) drivers + teams. GP3 era entries carry Teams' Champion as `constructorChampion`. Two sections.
+
 ## 0.10.12 — 2026-05-18
 
 ### Added
