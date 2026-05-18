@@ -123,7 +123,40 @@ When a curated/override file is absent, renderers fall back to the live external
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
 
-## ⚡ Next session priorities (Sunday 2026-05-17)
+## ⚡ Next session priorities (post-2026-05-19 marathon close)
+
+**Pre-Fotis cutoff is over.** Mon/Tue 2026-05-18 → 2026-05-19 ran as one continuous marathon — 19 PRs shipped, versions 0.10.4 through 0.10.22. Full PR-by-PR list in `SCHEDULE.md`. Resume normal IDEAS.md triage.
+
+**Top of the queue:**
+
+1. **Fotis sit-down on `docs/research/supabase-schema-draft.md`.** Walk it together, close the 10 open questions in §17 (UUID v7 timing, service-role split, status PK shape, JSONB scope, JSON-LD location, audit retention, content_hash backfill, naming convention, comments/predictions order, Realtime adoption), then start the 12-step migration order in §18 if shape holds. This is IDEAS Now #1.
+2. **Watch for AdSense approval flip.** Status was "Getting ready / Review requested" at session close. Funding Choices server isn't serving the published "European regulations message" until approval lands — see Pinned reminders above for the diagnostic checklist. When AdSense console "Messages shown" counter goes 0 → ≥1, the CMP banner is live. If approval lands and the banner still doesn't fire, fallback is to reintroduce a custom in-app banner (git history under `feat/legal-pages` has the full `CookieBanner.tsx` from before 0.10.18).
+3. **Speed Insights US-perf investigation.** Was the 4th item on Monday's plan, skipped — out of bandwidth. Dashboard: `https://vercel.com/<org>/motorsport/speed-insights` filtered by North America. Likely culprits: no US function region, `force-dynamic` everywhere, third-party fetch overhead. Standalone session.
+
+**Two confirm-or-swap markers left in legal markdown** (`content/legal/privacy.md`, `content/legal/terms.md` — search for `<!-- TODO confirm -->`):
+- Governing law / jurisdiction defaulted to **Greece (Thessaloniki courts)**.
+- Privacy contact email defaulted to **pparaskevas.dev@gmail.com**.
+
+Both fine to leave as-is; swap if you want different.
+
+**Champions data is now complete** end-to-end across all 15 series:
+
+| Series | Driver coverage | Constructor coverage | Other sections |
+|---|---|---|---|
+| F1 | 1950–2025 | 1958–2025 | — |
+| MotoGP | 1949–2025 | 1949–2025 (Manufacturers') | — |
+| WSBK | 1988–2025 | 1988–2025 (Manufacturers') | — |
+| WEC | 2012–2025 (no 2018) | 2012–2025 (Manufacturers') | — |
+| IMSA | 2014–2025 (top class) | 2014–2025 (Manufacturers') | — |
+| DTM | 1984–96 + 2000–25 | 1991–96 + 2000–25 (Manufacturers') | — |
+| GTWC | 2014–2025 (Overall) | — | Endurance Cup 2014–2025 (3rd section) |
+| F2 | 2005–2025 (GP2+F2) | 2005–2025 (Teams') | — |
+| F3 | 2010–2025 (GP3+F3) | 2010–2025 (Teams') | — |
+| ADAC | (Past Winners — singleEvent) | — | — |
+
+No outstanding champions tasks. The 2-section / 3-section layout in `ChampionsTab` is the live shape.
+
+## ⚓ Stale section retained for history — Sunday 2026-05-17 plan
 
 **Priority 1 — Open PR #3 first thing.** Two commits are stuck on branch `feat/postponement-rendering-motogp-wec` and not yet on main. PR #2 was merged before these landed:
 
