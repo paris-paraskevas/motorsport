@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.18 — 2026-05-19
+
+One cookie banner, not two.
+
+- **Paddock now uses Google's certified Consent Management Platform** (Funding Choices) for the EU cookie banner. The custom in-app banner has been removed so there's a single consent UI to interact with. You can re-open Google's banner at any time via the small "Consent" / shield icon Google injects on the page.
+- **Privacy / Cookies / Do Not Sell pages updated** to describe how to manage preferences through Google's CMP rather than the old custom banner.
+- **No-banner fallback:** if Google's CMP ever fails to display, ad and analytics cookies remain denied by default — there's no silent tracking gap.
+
 ## 0.10.17 — 2026-05-19
 
 Tables on the policy pages now actually render.

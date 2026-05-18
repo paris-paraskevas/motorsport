@@ -1,7 +1,6 @@
 import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
-import { ReopenConsentButton } from '@/components/ReopenConsentButton';
 
 export const dynamic = 'force-static';
 
@@ -34,16 +33,6 @@ export default async function DoNotSellPage() {
                    prose-a:text-text prose-a:underline-offset-4"
         dangerouslySetInnerHTML={{ __html: html }}
       />
-
-      <div className="mt-8 rounded-2xl border border-border bg-surface/40 p-5 md:p-6">
-        <div className="text-text text-base font-semibold mb-2">
-          Opt out right now
-        </div>
-        <p className="text-sm text-text-muted leading-relaxed mb-4">
-          Re-open the consent banner and turn off the Marketing category to immediately stop ad-sharing on this device.
-        </p>
-        <ReopenConsentButton />
-      </div>
     </div>
   );
 }

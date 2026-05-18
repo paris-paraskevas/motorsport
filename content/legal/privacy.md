@@ -38,7 +38,7 @@ See Clerk's own privacy policy at https://clerk.com/legal/privacy.
 - Email address (if you provide one), message body, optional category. Stored short-term in Vercel KV and delivered to the operator inbox via Resend.
 
 ### When you give cookie consent
-- A consent record (timestamp, categories chosen, consent version, anonymous identifier) is stored both in your browser's local storage and on our server (Vercel KV) so we can demonstrate compliance. Retained for **24 months** then deleted.
+- Your consent decision is captured and stored by **Google's Consent Management Platform** (Funding Choices). Google sets cookies such as `FCCDCF` on `paddock-tracker.com` to remember your choice across visits. We do not maintain a separate consent log on our side.
 
 ## 3. Why we collect it (lawful basis under GDPR)
 
@@ -81,7 +81,7 @@ Vercel and Google process data in the United States. Clerk processes data in the
 | Account data | Until you delete the account |
 | Push subscriptions | Until you disable notifications |
 | Contact-form submissions | 12 months in KV; emails kept per your inbox |
-| Cookie consent record | 24 months |
+| Cookie consent record | Held by Google's CMP per Google's retention policy |
 | Local-storage preferences | Until you clear browser storage |
 
 ## 7. Your rights
@@ -99,9 +99,9 @@ Californian residents additionally have rights under the **CCPA/CPRA**, includin
 
 To exercise any of these rights, email **pparaskevas.dev@gmail.com** with the request. We will respond within 30 days.
 
-## 8. Global Privacy Control (GPC)
+## 8. Cookie consent
 
-If your browser sends the **Global Privacy Control** signal, we treat it as a request to opt out of advertising/analytics tracking — equivalent to choosing "Reject non-essential" in our cookie banner. You don't need to do anything extra.
+For visitors in the EEA, UK, and Switzerland we use **Google's certified Consent Management Platform** (Funding Choices) to display a consent banner on first visit. You can re-open Google's consent UI at any time via the small "Consent" / shield icon on the page. Outside those regions cookies for analytics/advertising remain off by default until you opt in via the same UI.
 
 ## 9. Children
 
