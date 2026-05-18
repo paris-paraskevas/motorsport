@@ -107,6 +107,11 @@ export async function ChampionsTab({ series }: { series: Series }) {
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
                     {c.constructor ?? ''}
+                    {c.constructorChampion && c.constructorChampion !== c.constructor && (
+                      <span className="ml-2 text-[10px] text-text-faint">
+                        WCC: {c.constructorChampion}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="sm:hidden">
@@ -119,6 +124,9 @@ export async function ChampionsTab({ series }: { series: Series }) {
                   {c.constructor && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
                       {c.constructor}
+                      {c.constructorChampion && c.constructorChampion !== c.constructor && (
+                        <span className="ml-2">WCC: {c.constructorChampion}</span>
+                      )}
                     </div>
                   )}
                 </div>

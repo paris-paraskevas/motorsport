@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.10 — 2026-05-18
+
+F1 champions are now correct and include constructors.
+
+- **F1 Champions tab now shows both drivers and constructors.** Every year from 1950 to 2025 is listed with the World Drivers' Champion and (from 1958 onward) the World Constructors' Champion. When the driver and the constructor are from different teams — like 1981 (Piquet/Brabham, Williams WCC), 2008 (Hamilton/McLaren, Ferrari WCC), or 2024 (Verstappen/Red Bull, McLaren WCC) — both are surfaced clearly.
+- **Source is now curated**, replacing the previous live scrape from Wikipedia that returned drivers only.
+
 ## 0.10.9 — 2026-05-18
 
 Internal: fixed a script-ordering bug in the consent and ad-tracking setup so the "deny by default" signal is now guaranteed to fire before any ad or analytics script loads. Visible behaviour unchanged for users; only relevant if you were already inspecting the cookies/consent state in DevTools.
