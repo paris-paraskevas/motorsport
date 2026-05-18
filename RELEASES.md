@@ -2,6 +2,10 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.5 — 2026-05-18
+
+Internal: authorized-seller declaration added at `/ads.txt`, required by the advertising industry standard for ads to serve once AdSense approves the site.
+
 ## 0.10.4 — 2026-05-18
 
 Cookie & ad-tracking groundwork.
