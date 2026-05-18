@@ -2,11 +2,17 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.11 — 2026-05-18
+
+F1 Champions tab — clearer layout.
+
+- **Drivers' Championship and Constructors' Championship are now two separate, clearly labelled sections.** Each is decade-grouped exactly like before. Replaces the inline `WCC: <team>` indicator from 0.10.10. The Drivers' section covers 1950–2025; the Constructors' section covers 1958 (its inception) to 2025.
+
 ## 0.10.10 — 2026-05-18
 
 F1 champions are now correct and include constructors.
 
-- **F1 Champions tab now shows both drivers and constructors.** Every year from 1950 to 2025 is listed with the World Drivers' Champion and (from 1958 onward) the World Constructors' Champion. When the driver and the constructor are from different teams — like 1981 (Piquet/Brabham, Williams WCC), 2008 (Hamilton/McLaren, Ferrari WCC), or 2024 (Verstappen/Red Bull, McLaren WCC) — both are surfaced clearly.
+- **F1 Champions tab now shows both drivers and constructors.** Every year from 1950 to 2025 is listed with the World Drivers' Champion and (from 1958 onward) the World Constructors' Champion. When the driver and the constructor are from different teams — like 1981 (Piquet/Brabham, Williams WCC), 2008 (Hamilton/McLaren, Ferrari WCC), or 2024 (Verstappen/Red Bull, McLaren WCC) — the constructors' champion is surfaced as a small inline indicator. (Replaced in 0.10.11 by a cleaner two-section layout.)
 - **Source is now curated**, replacing the previous live scrape from Wikipedia that returned drivers only.
 
 ## 0.10.9 — 2026-05-18
