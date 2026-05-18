@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.15 — 2026-05-18
+
+Notification badge — readable again on Android.
+
+- **The push-notification icon in your status bar is no longer a tiny white blob.** Redrawn as a bolder 2×2 chequered pattern that actually reads at the size Android shrinks it to. Same motorsport-coded chequered-flag motif, just with fewer/larger cells so it survives the downscale to ~24px.
+
 ## 0.10.14 — 2026-05-18
 
 More champions, fewer gaps.
