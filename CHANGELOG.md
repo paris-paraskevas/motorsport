@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.15 — 2026-05-18
+
+### Changed
+- **`public/icons/badge-96.png` redesigned** to read at Android status-bar scale (~24px). The previous 4×3 chequer + pole collapsed into an unrecognisable small white rectangle once Android applied its silhouette mask + downscale (user-reported with screenshot). Replaced with a **2×2 chequered grid, no pole, generous 4px transparent gutter** — only two diagonally-opposite cells are opaque, the other two stay transparent. At 24px the alternating pattern now actually reads as a chequered motif rather than a solid blob. `scripts/gen-badge.py` updated accordingly; running `python scripts/gen-badge.py` regenerates the asset deterministically.
+
 ## 0.10.14 — 2026-05-18
 
 ### Added
