@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.21 — 2026-05-19
+
+WorldSBK Champions tab — end-to-end manufacturers' history.
+
+- **WSBK's Manufacturers' Championship section now covers 1988 through 2025 in full** — the 1988–2001 gap from earlier in the day is filled in. The Ducati-on-Ducati dominance era (1991–1996, 1998–2001) is now visible, plus the three "split" years where the riders' champion's bike wasn't the manufacturers' winner: 1990 (Roche/Ducati vs Honda), 1993 (Russell/Kawasaki vs Ducati), 2000 (Edwards/Honda vs Ducati).
+
 ## 0.10.20 — 2026-05-19
 
 Notification badge restored, push sound louder.
