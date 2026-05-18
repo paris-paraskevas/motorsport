@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.12 — 2026-05-18
+
+### Added
+- **`content/series/motogp/champions.json`** — full curated 500cc / MotoGP premier-class champions from inception (1949) through 2025 (77 entries). Each year carries the riders' champion, their bike manufacturer (`constructor` field), and the separate Manufacturers' Champion (`constructorChampion` field). Sourced via WebFetch from Wikipedia's "List of 500cc/MotoGP World Riders' Champions" and "List of Grand Prix motorcycle racing World Constructors' Champions". The MotoGP Champions tab now renders the two-section layout (Drivers' Championship + Constructors' Championship) introduced in 0.10.11, replacing the previously-failing Wikipedia scraper output.
+
 ## 0.10.11 — 2026-05-18
 
 ### Changed
