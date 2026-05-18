@@ -2,6 +2,20 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.2 — 2026-05-18
+
+### Added
+- **Custom `app/error.tsx`** — token-driven Paddock "Yellow flag" page replaces Next.js's default error screen for render-time errors. Includes a Try Again button (`reset()`) and a Home link. Logs to console; production telemetry continues to flow through Vercel Analytics + Speed Insights. Mirrors the not-found.tsx layout for visual consistency.
+- **Chequered-flag notification badge** at `public/icons/badge-96.png`. `scripts/gen-badge.py` now draws a 4×3 alternating-square grid inside the flag area (white-on-transparent so Android's silhouette mask still renders correctly). Service-worker config unchanged — same path.
+- **Contact form category dropdown** in `ContactModal`. Four options — Bug report / Feature request / Suggested change / General. Posted with the request body in `/api/contact`; `route.ts` validates against the enum, defaults unknown values to `general`. Resend subject reads `[<category>] Paddock contact from …` so the inbox self-sorts. KV record gains a `category` field.
+- **ADAC Ravenol 24h `champions.json`** — 10 years of winners (2015–2024) with full 4-driver lineups + team and chassis. Sourced from Wikipedia's 24 Hours of Nürburgring article via WebFetch. 2024 entry is best-effort; verify with official ADAC records when curated.
+
+### Changed
+- **`SeriesTabs` renames the 'Champions' tab label → 'Past Winners'** when `singleEvent` is true. Internal tab key stays `champions` so `?tab=champions` URLs and `ChampionsTab` rendering are unchanged; only the visible nav label flips. NLS keeps 'Champions'.
+
+### Notes
+- **Notification sound — researched, deferred.** Web Push Notification API does not expose a `sound` parameter for custom audio in PWAs across browsers. Android: respects the OS-level notification channel default; iOS PWA: no custom sounds at all. Path forward requires native wrapping (TWA on Android, Capacitor/native shell on iOS), which is parked behind the "Split Web app from Play Store / App Store" IDEAS item. No code change shipped; entry stays in IDEAS Inbox.
+
 ## 0.10.1 — 2026-05-18
 
 ### Added
