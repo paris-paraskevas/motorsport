@@ -16,6 +16,11 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 - **GitHub CLI authed** as `paris-paraskevas` with `repo` + `workflow` scopes. **Vercel CLI** previously installed; reinstall via `npm i -g vercel` if a session needs it.
 - **Current version:** see `package.json`. Bump on every push (`feedback-paddock-release-notes` rule, `CONTRIBUTING.md` mandate).
 
+## ⚡ Pinned reminders (post-2026-05-19)
+
+- **Re-verify Google CMP banner displays once AdSense site approval lands.** As of session close 2026-05-19, AdSense status is "Getting ready / Review requested" and the published "European regulations message" was not being served by Google's CMP server (Messages shown: 0). The explicit Funding Choices snippet with `?ers=1` was added in 0.10.19 — bootstraps the FC infrastructure but the message body itself is gated behind site approval. Check AdSense console → Privacy & messaging → European regulations → Messages shown counter. When it goes from 0 → ≥1, the banner is live. If even post-approval the banner still doesn't fire, fallback is to reintroduce a custom in-app banner (previously lived as `components/CookieBanner.tsx` until 0.10.18 — see git history for the full implementation).
+- **Pre-Fotis cutoff lifted at end of 2026-05-19.** Tuesday sit-down on `docs/research/supabase-schema-draft.md` is now the active blocker for the database work in IDEAS Now #1.
+
 ## Critical landmines — do not break
 
 Detailed in inline comments + memory rules. Quick reference:

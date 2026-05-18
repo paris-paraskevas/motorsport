@@ -28,6 +28,8 @@ Time-based scheduling lives in `SCHEDULE.md`.
 
 ## Inbox (unfiltered, append-only)
 
+- Re-verify Google CMP banner displays once AdSense approves the site — currently held back by pre-approval gating despite the explicit `?ers=1` Funding Choices snippet shipped in 0.10.19. Check AdSense console "Messages shown" counter; flip from 0 → ≥1 means it's live.
+
 - Research live in-race data feeds (sector times, leaderboard, gaps, tyre choices) for F1, MotoGP, WEC, FE, IndyCar.
 - Reverse-engineer fiaformulae.com / motogp.com / nascar.com XHR endpoints to see if unsigned JSON can replace Playwright.
 - Decide Sandbox/Playwright vs third-party aggregator vs curation-first for JS-rendered official sites.
