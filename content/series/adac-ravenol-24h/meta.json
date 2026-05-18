@@ -6,5 +6,6 @@
   "season": 2026,
   "category": "endurance",
   "wikipediaPage": "24_Hours_of_Nürburgring",
-  "officialSite": "https://www.24h-rennen.de/en/"
+  "officialSite": "https://www.24h-rennen.de/en/",
+  "singleEvent": true
 }

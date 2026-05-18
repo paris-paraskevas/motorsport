@@ -65,7 +65,7 @@ export default async function SeriesPage({
     notFound();
   }
 
-  const activeTab = resolveTab(tab);
+  const activeTab = resolveTab(tab, series.meta.singleEvent);
 
   const color = series.meta.color;
 
@@ -111,7 +111,7 @@ export default async function SeriesPage({
 
       <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />
 
-      <SeriesTabs color={color} activeTab={activeTab} />
+      <SeriesTabs color={color} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
       <div>{renderTab(activeTab, series)}</div>
     </div>
