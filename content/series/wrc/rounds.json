@@ -1,0 +1,9 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-01-22", "endDate": "2026-01-25", "name": "Rallye Monte-Carlo" },
+    { "round": 4, "startDate": "2026-04-09", "endDate": "2026-04-12", "name": "Croatia Rally" },
+    { "round": 6, "startDate": "2026-05-07", "endDate": "2026-05-10", "name": "Vodafone Rally de Portugal" },
+    { "round": 10, "startDate": "2026-07-30", "endDate": "2026-08-02", "name": "Secto Rally Finland" }
+  ]
+}

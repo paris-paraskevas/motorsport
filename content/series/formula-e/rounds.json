@@ -1,0 +1,22 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2025-12-05", "endDate": "2025-12-06", "name": "São Paulo E-Prix" },
+    { "round": 2, "startDate": "2026-01-09", "endDate": "2026-01-10", "name": "Mexico City E-Prix" },
+    { "round": 3, "startDate": "2026-01-30", "endDate": "2026-01-31", "name": "Miami E-Prix" },
+    { "round": 4, "startDate": "2026-02-12", "endDate": "2026-02-13", "name": "Jeddah E-Prix — Race 1" },
+    { "round": 5, "startDate": "2026-02-14", "endDate": "2026-02-14", "name": "Jeddah E-Prix — Race 2" },
+    { "round": 6, "startDate": "2026-03-20", "endDate": "2026-03-21", "name": "Madrid E-Prix" },
+    { "round": 7, "startDate": "2026-05-01", "endDate": "2026-05-02", "name": "Berlin E-Prix — Race 1" },
+    { "round": 8, "startDate": "2026-05-03", "endDate": "2026-05-03", "name": "Berlin E-Prix — Race 2" },
+    { "round": 9, "startDate": "2026-05-16", "endDate": "2026-05-16", "name": "Monaco E-Prix — Race 1" },
+    { "round": 10, "startDate": "2026-05-17", "endDate": "2026-05-17", "name": "Monaco E-Prix — Race 2" },
+    { "round": 11, "startDate": "2026-06-20", "endDate": "2026-06-20", "name": "Sanya E-Prix" },
+    { "round": 12, "startDate": "2026-07-03", "endDate": "2026-07-04", "name": "Shanghai E-Prix — Race 1" },
+    { "round": 13, "startDate": "2026-07-05", "endDate": "2026-07-05", "name": "Shanghai E-Prix — Race 2" },
+    { "round": 14, "startDate": "2026-07-24", "endDate": "2026-07-25", "name": "Tokyo E-Prix — Race 1" },
+    { "round": 15, "startDate": "2026-07-26", "endDate": "2026-07-26", "name": "Tokyo E-Prix — Race 2" },
+    { "round": 16, "startDate": "2026-08-14", "endDate": "2026-08-15", "name": "London E-Prix — Race 1" },
+    { "round": 17, "startDate": "2026-08-16", "endDate": "2026-08-16", "name": "London E-Prix — Race 2 (Season Finale)" }
+  ]
+}

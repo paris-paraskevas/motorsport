@@ -11,7 +11,12 @@
     { "round": 8, "startDate": "2026-05-30", "endDate": "2026-05-31", "name": "Chevrolet Detroit Grand Prix" },
     { "round": 9, "startDate": "2026-06-06", "endDate": "2026-06-07", "name": "Bommarito Automotive Group 500 (Gateway)" },
     { "round": 10, "startDate": "2026-06-19", "endDate": "2026-06-21", "name": "XPEL Grand Prix at Road America" },
-    { "round": 15, "startDate": "2026-08-29", "endDate": "2026-08-29", "name": "Hy-Vee Milwaukee Mile Race 1" },
-    { "round": 16, "startDate": "2026-08-30", "endDate": "2026-08-30", "name": "Hy-Vee Milwaukee Mile Race 2" }
+    { "round": 11, "startDate": "2026-07-17", "endDate": "2026-07-19", "name": "Borchetta Bourbon Music City Grand Prix (Nashville Superspeedway)" },
+    { "round": 12, "startDate": "2026-08-07", "endDate": "2026-08-09", "name": "OnlyBulls Grand Prix of Portland" },
+    { "round": 13, "startDate": "2026-08-14", "endDate": "2026-08-16", "name": "Ontario Honda Dealers Indy at Markham" },
+    { "round": 14, "startDate": "2026-08-21", "endDate": "2026-08-23", "name": "Freedom 250 Grand Prix of Washington, D.C." },
+    { "round": 15, "startDate": "2026-08-29", "endDate": "2026-08-29", "name": "Snap-on Makers and Fixers 250 (Milwaukee Mile Race 1)" },
+    { "round": 16, "startDate": "2026-08-30", "endDate": "2026-08-30", "name": "Snap-on Milwaukee Mile 250 (Race 2)" },
+    { "round": 17, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "WeatherTech Raceway Laguna Seca (Season Finale)" }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "season": 2026,
+  "rounds": [
+    { "round": 1, "startDate": "2026-04-10", "endDate": "2026-04-11", "name": "6 Hours of Paul Ricard" },
+    { "round": 2, "startDate": "2026-05-02", "endDate": "2026-05-03", "name": "Brands Hatch Sprint" },
+    { "round": 3, "startDate": "2026-05-29", "endDate": "2026-05-31", "name": "3 Hours of Monza" },
+    { "round": 4, "startDate": "2026-06-27", "endDate": "2026-06-28", "name": "CrowdStrike 24 Hours of Spa" },
+    { "round": 5, "startDate": "2026-07-17", "endDate": "2026-07-19", "name": "Misano Sprint" },
+    { "round": 6, "startDate": "2026-08-01", "endDate": "2026-08-02", "name": "Magny-Cours Sprint" },
+    { "round": 7, "startDate": "2026-08-28", "endDate": "2026-08-30", "name": "3 Hours of Nürburgring" },
+    { "round": 8, "startDate": "2026-09-18", "endDate": "2026-09-20", "name": "Zandvoort Sprint" },
+    { "round": 9, "startDate": "2026-10-02", "endDate": "2026-10-04", "name": "3 Hours of Barcelona" },
+    { "round": 10, "startDate": "2026-10-16", "endDate": "2026-10-18", "name": "3 Hours of Portimão" }
+  ]
+}
