@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.17 — 2026-05-19
+
+Tables on the policy pages now actually render.
+
+- **Privacy Policy and Cookie Policy tables** are now formatted as proper tables instead of raw `| Column | Column |` text. Affects only the appearance of `/privacy` and `/cookies` that shipped a few minutes ago in 0.10.16.
+
 ## 0.10.16 — 2026-05-19
 
 Legal pages + real cookie consent.
