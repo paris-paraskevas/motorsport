@@ -2,6 +2,15 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.4 — 2026-05-18
+
+### Added
+- **Google AdSense verification snippet** in `app/layout.tsx` `<head>`. Native `<script async crossorigin>` per Google's exact snippet for client `ca-pub-3573600995951624`. Placed in `<head>` so the AdSense crawler reads it from the initial HTML on first crawl.
+- **Google Consent Mode v2 default state** as a synchronous inline `<script id="consent-default">` in `<head>`, ahead of both AdSense and GA. Sets `ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage` to `denied` with `wait_for_update: 500`. Every visitor (fresh or returning) loads AdSense + GA with ad/analytics cookies suppressed until consent updates. Cookie banner → `gtag('consent', 'update', …)` wiring lands in a follow-up PR.
+
+### Changed
+- **`ga-init` script slimmed.** The shared `window.dataLayer` and `gtag` function are now defined in the head-injected `consent-default` script (runs synchronously before any other script). `ga-init` is reduced to `gtag('js', new Date()); gtag('config', GA_ID);` — both calls reuse the head-defined `gtag`.
+
 ## 0.10.3 — 2026-05-18
 
 ### Fixed

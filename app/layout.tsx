@@ -14,6 +14,7 @@ const SITE_TITLE = 'Paddock';
 const SITE_DESCRIPTION =
   'Personal motorsport companion — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more.';
 const GA_MEASUREMENT_ID = 'G-DDMJ2NMBWC';
+const ADSENSE_CLIENT_ID = 'ca-pub-3573600995951624';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -65,6 +66,29 @@ export default async function RootLayout({
       }}
     >
       <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
+        <head>
+          <script
+            id="consent-default"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('consent', 'default', {
+                  ad_storage: 'denied',
+                  ad_user_data: 'denied',
+                  ad_personalization: 'denied',
+                  analytics_storage: 'denied',
+                  wait_for_update: 500
+                });
+              `,
+            }}
+          />
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+            crossOrigin="anonymous"
+          />
+        </head>
         <body className="min-h-screen bg-bg text-text">
           <AppShell seriesList={seriesList}>{children}</AppShell>
           <Analytics />
@@ -75,8 +99,6 @@ export default async function RootLayout({
           />
           <Script id="ga-init" strategy="afterInteractive">
             {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', '${GA_MEASUREMENT_ID}');
             `}

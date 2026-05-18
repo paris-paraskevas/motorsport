@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.4 — 2026-05-18
+
+Cookie & ad-tracking groundwork.
+
+- **Ad and analytics cookies are now suppressed by default** for every visitor — fresh and returning — until explicit consent. Internally, Paddock now signals "deny" for ad storage, ad personalization, and analytics storage at page load. The cookie banner UI that lets you update this choice gets wired into these signals in the next release.
+- **Google AdSense verification snippet added.** No ads are displayed yet — this is the inclusion step Google requires before reviewing the site for ad serving.
+
 ## 0.10.3 — 2026-05-18
 
 ADAC 24h Nürburgring Past Winners — full history.
