@@ -2,6 +2,17 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.14 — 2026-05-18
+
+More champions, fewer gaps.
+
+- **F2 Champions tab** now shows the Teams' Champion alongside the Drivers' Champion for every year — was previously only for the GP2 predecessor era (2005–2016). The split years where the title-winning driver wasn't on the title-winning team are now surfaced (2017 Leclerc/Prema → Russian Time, 2018 Russell/ART → Carlin, 2019 de Vries/ART → DAMS).
+- **F3 Champions tab** same treatment for the FIA F3 era (2019–2025). Splits like 2021 Hauger/Prema → Trident, 2022–24 ART/Trident drivers → Prema Racing teams are now visible.
+- **WorldSBK Champions tab** now has a Manufacturers' Championship section for 2002–2025. Rea's Kawasaki dynasty 2015–2020 plus the recent Ducati manufacturers' stranglehold are surfaced.
+- **IMSA Champions tab** now has a Manufacturers' Championship section. The 2014–2016 Chevrolet → 2017–2018 Cadillac → 2019–2020 Acura → 2021 Cadillac → 2022 Acura → 2023 Cadillac → 2024–2025 Porsche story is now visible alongside the winning crews.
+
+GTWC Endurance Cup champions are coming in a follow-up — they need a small schema change because Endurance is a parallel drivers' championship, not a constructor column.
+
 ## 0.10.13 — 2026-05-18
 
 Champions tabs are now correct on every series.

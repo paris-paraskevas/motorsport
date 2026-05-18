@@ -1,14 +1,14 @@
 [
-  { "year": 2025, "driver": "Matt Campbell, Mathieu Jaminet", "constructor": "Porsche Penske Motorsport — Porsche 963 (GTP)" },
-  { "year": 2024, "driver": "Dane Cameron, Felipe Nasr", "constructor": "Porsche Penske Motorsport — Porsche 963 (GTP)" },
-  { "year": 2023, "driver": "Pipo Derani, Alexander Sims", "constructor": "Whelen Cadillac Racing — Cadillac V-LMDh (GTP)" },
-  { "year": 2022, "driver": "Tom Blomqvist, Oliver Jarvis", "constructor": "Meyer Shank Racing — Acura ARX-05 (DPi)" },
-  { "year": 2021, "driver": "Felipe Nasr, Pipo Derani", "constructor": "Whelen Engineering Racing — Cadillac DPi-V.R (DPi)" },
-  { "year": 2020, "driver": "Hélio Castroneves, Ricky Taylor", "constructor": "Acura Team Penske — Acura ARX-05 (DPi)" },
-  { "year": 2019, "driver": "Dane Cameron, Juan Pablo Montoya", "constructor": "Acura Team Penske — Acura ARX-05 (DPi)" },
-  { "year": 2018, "driver": "Eric Curran, Felipe Nasr", "constructor": "Action Express Racing — Cadillac DPi-V.R (DPi)" },
-  { "year": 2017, "driver": "Jordan Taylor, Ricky Taylor", "constructor": "Wayne Taylor Racing — Cadillac DPi-V.R (DPi)" },
-  { "year": 2016, "driver": "Dane Cameron, Eric Curran", "constructor": "Action Express Racing — Corvette DP (Prototype)" },
-  { "year": 2015, "driver": "João Barbosa, Christian Fittipaldi", "constructor": "Action Express Racing — Corvette DP (Prototype)" },
-  { "year": 2014, "driver": "João Barbosa, Christian Fittipaldi", "constructor": "Action Express Racing — Corvette DP (Prototype)" }
+  { "year": 2025, "driver": "Matt Campbell, Mathieu Jaminet", "constructor": "Porsche Penske Motorsport — Porsche 963 (GTP)", "constructorChampion": "Porsche" },
+  { "year": 2024, "driver": "Dane Cameron, Felipe Nasr", "constructor": "Porsche Penske Motorsport — Porsche 963 (GTP)", "constructorChampion": "Porsche" },
+  { "year": 2023, "driver": "Pipo Derani, Alexander Sims", "constructor": "Whelen Cadillac Racing — Cadillac V-LMDh (GTP)", "constructorChampion": "Cadillac" },
+  { "year": 2022, "driver": "Tom Blomqvist, Oliver Jarvis", "constructor": "Meyer Shank Racing — Acura ARX-05 (DPi)", "constructorChampion": "Acura" },
+  { "year": 2021, "driver": "Felipe Nasr, Pipo Derani", "constructor": "Whelen Engineering Racing — Cadillac DPi-V.R (DPi)", "constructorChampion": "Cadillac" },
+  { "year": 2020, "driver": "Hélio Castroneves, Ricky Taylor", "constructor": "Acura Team Penske — Acura ARX-05 (DPi)", "constructorChampion": "Acura" },
+  { "year": 2019, "driver": "Dane Cameron, Juan Pablo Montoya", "constructor": "Acura Team Penske — Acura ARX-05 (DPi)", "constructorChampion": "Acura" },
+  { "year": 2018, "driver": "Eric Curran, Felipe Nasr", "constructor": "Action Express Racing — Cadillac DPi-V.R (DPi)", "constructorChampion": "Cadillac" },
+  { "year": 2017, "driver": "Jordan Taylor, Ricky Taylor", "constructor": "Wayne Taylor Racing — Cadillac DPi-V.R (DPi)", "constructorChampion": "Cadillac" },
+  { "year": 2016, "driver": "Dane Cameron, Eric Curran", "constructor": "Action Express Racing — Corvette DP (Prototype)", "constructorChampion": "Chevrolet" },
+  { "year": 2015, "driver": "João Barbosa, Christian Fittipaldi", "constructor": "Action Express Racing — Corvette DP (Prototype)", "constructorChampion": "Chevrolet" },
+  { "year": 2014, "driver": "João Barbosa, Christian Fittipaldi", "constructor": "Action Express Racing — Corvette DP (Prototype)", "constructorChampion": "Chevrolet" }
 ]
