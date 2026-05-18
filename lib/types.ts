@@ -67,6 +67,14 @@ export interface Champion {
    * Drivers' Championship and World Constructors' Championship can be won
    * by different teams in the same year (e.g. 1981, 2024). */
   constructorChampion?: string;
+  /** Optional secondary drivers' championship in the same season. Used by
+   * GT World Challenge Europe for the Endurance Cup, which runs in parallel
+   * to the Overall championship with different winners most years. */
+  secondaryDriver?: string;
+  secondaryTeam?: string;
+  /** Display label for the secondary championship section (e.g.
+   * "Endurance Cup"). Falls back to "Secondary" if not provided. */
+  secondaryLabel?: string;
   points?: number;
 }
 
