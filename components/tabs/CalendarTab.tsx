@@ -1,28 +1,29 @@
 import { Series } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
-import { PastToggleSection } from '@/components/PastToggleSection';
+import { MonthScopedWeekends } from '@/components/MonthScopedWeekends';
 import { CancelledRoundsSection } from '@/components/CancelledRounds';
 
 export function CalendarTab({ series }: { series: Series }) {
   const now = new Date();
-  const weekends = groupByWeekend(series.sessions, now, series.rounds).map(weekend => ({
-    weekend,
-    round: weekend.round,
-  }));
-  const pastWeekends = weekends.filter(w => w.weekend.isPast);
-  const upcomingWeekends = weekends.filter(w => !w.weekend.isPast);
-  const nextWeekendKey = upcomingWeekends[0]?.weekend.key;
+  const weekends = groupByWeekend(series.sessions, now, series.rounds).map(
+    weekend => ({
+      weekend,
+      round: weekend.round,
+    }),
+  );
+  const nextWeekendKey = weekends.find(w => !w.weekend.isPast)?.weekend.key;
 
   return (
     <>
-      <PastToggleSection
-        pastWeekends={pastWeekends}
-        upcomingWeekends={upcomingWeekends}
+      <MonthScopedWeekends
+        weekends={weekends}
         color={series.meta.color}
         seriesSlug={series.meta.slug}
         nextWeekendKey={nextWeekendKey}
       />
-      <CancelledRoundsSection cancelledRounds={series.rounds?.cancelledRounds} />
+      <CancelledRoundsSection
+        cancelledRounds={series.rounds?.cancelledRounds}
+      />
     </>
   );
 }
