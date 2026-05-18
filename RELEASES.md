@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.6 — 2026-05-18
+
+Race notifications now play a short F1 radio cue when the app is open.
+
+- **Notifications get a sound** when you have Paddock open in a tab. Quick F1 team-radio chirp so you don't miss a session start while reading something else. Notifications that arrive while the app is closed or in the background continue to use your system's default notification sound — adding a custom one there requires a native app wrapper, which stays on the roadmap.
+- **iOS heads-up:** browser restrictions on iOS Safari still mute custom audio for installed web apps. Android and desktop Chrome/Edge are the platforms that benefit today.
+
 ## 0.10.5 — 2026-05-18
 
 Internal: authorized-seller declaration added at `/ads.txt`, required by the advertising industry standard for ads to serve once AdSense approves the site.

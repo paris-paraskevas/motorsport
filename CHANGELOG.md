@@ -2,6 +2,20 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.6 — 2026-05-18
+
+### Added
+- **Foreground push-sound playback.** When a web push arrives while a Paddock window is visible, `app/sw.ts` now suppresses the OS notification sound and posts a `paddock:push-sound` message to every visible client. The new `<PushSoundPlayer>` client component (mounted via `AppShell`) listens for that message and plays `public/sounds/f1-radio-notification.mp3` via the `Audio` API at volume 0.6. Autoplay rejections are swallowed silently — if a recent user gesture is missing (mobile lockscreen, idle tab), the audio fails quietly while the visible notification still shows.
+- **`public/sounds/f1-radio-notification.mp3`** — 22.8 KB, 128 kbps stereo MP3, ~1s F1 team-radio cue. User-supplied asset.
+- **`components/PushSoundPlayer.tsx`** — client-only `useEffect` listener on `navigator.serviceWorker.message`. Type-guards the message via `isPushSoundMessage` so unrelated SW messages are ignored.
+
+### Changed
+- **`app/sw.ts` push handler** rewrapped in `event.waitUntil(async () => …)` so it can `clients.matchAll` before deciding the notification's `silent`/`vibrate` options. Logic: `suppressSystemSound = hasVisibleClient || callerMuted`. When suppressed, vibrate is also `undefined`. Background notifications (no visible client) behave exactly as before — same OS-default sound + vibrate pattern.
+
+### Notes
+- **Background notifications unchanged.** Web Push API still does not expose custom audio for background notifications in any PWA browser. Native wrapper (TWA on Android, Capacitor on iOS) is the only real fix and stays parked behind "Split Web app from Play Store / App Store" in `IDEAS.md`.
+- **iOS Safari foreground:** `Audio.play()` without a user gesture is reliably blocked on iOS Safari PWAs. Expected behaviour is no sound on iOS — handled silently by the `.catch(() => {})` swallow. Visible notification still renders. Android Chrome and desktop Chrome/Edge are where this feature actually plays audio.
+
 ## 0.10.5 — 2026-05-18
 
 ### Added

@@ -11,6 +11,7 @@ import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
 import { PWAInstallPrompt } from './PWAInstallPrompt';
+import { PushSoundPlayer } from './PushSoundPlayer';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -138,6 +139,7 @@ export function AppShell({
       <CookieBanner />
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
+      <PushSoundPlayer />
       <Toaster position="bottom-right" closeButton richColors />
     </TooltipProvider>
   );
