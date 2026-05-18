@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.12 — 2026-05-18
+
+MotoGP champions are now live.
+
+- **MotoGP Champions tab shows the full premier-class history** from 1949 to 2025 — 77 years of riders' champions plus their bike manufacturer, and the separate Manufacturers' Championship in its own section. Covers the 500cc era (1949–2001) and MotoGP era (2002–present) as one continuous list. Same layout as the F1 tab: Drivers' Championship and Constructors' Championship are two distinct, decade-grouped sections.
+
 ## 0.10.11 — 2026-05-18
 
 F1 Champions tab — clearer layout.
