@@ -7,15 +7,15 @@ function wikipediaUrl(pageTitle: string): string {
   return `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
 }
 
-interface DecadeGroup {
+interface DecadeGroup<T extends { year: number }> {
   decade: number;
   label: string;
-  champions: Champion[];
+  rows: T[];
 }
 
-function groupByDecade(champions: Champion[]): DecadeGroup[] {
-  const buckets = new Map<number, Champion[]>();
-  for (const c of champions) {
+function groupByDecade<T extends { year: number }>(items: T[]): DecadeGroup<T>[] {
+  const buckets = new Map<number, T[]>();
+  for (const c of items) {
     const decade = Math.floor(c.year / 10) * 10;
     if (!buckets.has(decade)) buckets.set(decade, []);
     buckets.get(decade)!.push(c);
@@ -23,10 +23,121 @@ function groupByDecade(champions: Champion[]): DecadeGroup[] {
   const groups = [...buckets.entries()].map(([decade, list]) => ({
     decade,
     label: `${decade}s`,
-    champions: list.sort((a, b) => b.year - a.year),
+    rows: list.sort((a, b) => b.year - a.year),
   }));
   groups.sort((a, b) => b.decade - a.decade);
   return groups;
+}
+
+interface ConstructorChampion {
+  year: number;
+  team: string;
+}
+
+function DriversSection({ champions }: { champions: Champion[] }) {
+  const groups = groupByDecade(champions);
+  return (
+    <div className="space-y-3">
+      {groups.map((group, idx) => (
+        <details
+          key={group.decade}
+          open={idx === 0}
+          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
+        >
+          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
+            <span className="text-text text-base font-semibold tracking-tight">
+              {group.label}
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
+              {group.rows.length}{' '}
+              {group.rows.length === 1 ? 'champion' : 'champions'}
+            </span>
+          </summary>
+          <div className="divide-y divide-border/40 border-t border-border/60">
+            {group.rows.map((c, i) => (
+              <div key={`${c.year}-${i}`} className="px-4 py-2.5">
+                <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
+                  <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
+                    {c.year}
+                  </div>
+                  <div className="text-text text-sm leading-snug">
+                    {c.driver}
+                  </div>
+                  <div className="text-xs text-text-muted leading-snug">
+                    {c.constructor ?? ''}
+                  </div>
+                </div>
+                <div className="sm:hidden">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
+                      {c.year}
+                    </span>
+                    <span className="text-text text-sm">{c.driver}</span>
+                  </div>
+                  {c.constructor && (
+                    <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
+                      {c.constructor}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+function ConstructorsSection({
+  champions,
+}: {
+  champions: ConstructorChampion[];
+}) {
+  const groups = groupByDecade(champions);
+  return (
+    <div className="space-y-3">
+      {groups.map((group, idx) => (
+        <details
+          key={group.decade}
+          open={idx === 0}
+          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
+        >
+          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
+            <span className="text-text text-base font-semibold tracking-tight">
+              {group.label}
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
+              {group.rows.length}{' '}
+              {group.rows.length === 1 ? 'champion' : 'champions'}
+            </span>
+          </summary>
+          <div className="divide-y divide-border/40 border-t border-border/60">
+            {group.rows.map((c, i) => (
+              <div key={`${c.year}-${i}`} className="px-4 py-2.5">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
+                    {c.year}
+                  </span>
+                  <span className="text-text text-sm leading-snug">
+                    {c.team}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-3">
+      {children}
+    </h2>
+  );
 }
 
 export async function ChampionsTab({ series }: { series: Series }) {
@@ -38,11 +149,16 @@ export async function ChampionsTab({ series }: { series: Series }) {
   if (curated && curated.length > 0) {
     champions = [...curated].sort((a, b) => b.year - a.year);
     sourceLabel = 'curated';
-    pageUrl = wikipediaUrl(series.meta.championsPage ?? series.meta.wikipediaPage ?? '');
+    pageUrl = wikipediaUrl(
+      series.meta.championsPage ?? series.meta.wikipediaPage ?? '',
+    );
   } else {
     const candidates: string[] = [];
     if (series.meta.championsPage) candidates.push(series.meta.championsPage);
-    if (series.meta.wikipediaPage && series.meta.wikipediaPage !== series.meta.championsPage) {
+    if (
+      series.meta.wikipediaPage &&
+      series.meta.wikipediaPage !== series.meta.championsPage
+    ) {
       candidates.push(series.meta.wikipediaPage);
     }
     if (candidates.length === 0) {
@@ -50,7 +166,9 @@ export async function ChampionsTab({ series }: { series: Series }) {
     }
     champions = await fetchChampions(candidates);
     sourceLabel = 'Wikipedia';
-    pageUrl = wikipediaUrl(series.meta.championsPage ?? series.meta.wikipediaPage ?? '');
+    pageUrl = wikipediaUrl(
+      series.meta.championsPage ?? series.meta.wikipediaPage ?? '',
+    );
   }
 
   if (champions.length === 0) {
@@ -74,81 +192,48 @@ export async function ChampionsTab({ series }: { series: Series }) {
     );
   }
 
-  const groups = groupByDecade(champions);
+  const constructorChampions: ConstructorChampion[] = champions
+    .filter(c => !!c.constructorChampion)
+    .map(c => ({ year: c.year, team: c.constructorChampion! }));
+  const hasConstructorChampionship = constructorChampions.length > 0;
+
+  const sourceFooter = (
+    <div className="px-2 py-2 text-[11px] text-text-faint">
+      {sourceLabel === 'curated' ? (
+        <span>Source: curated</span>
+      ) : (
+        <a
+          href={pageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-text-muted transition-colors duration-(--duration-fast)"
+        >
+          Source: Wikipedia →
+        </a>
+      )}
+    </div>
+  );
+
+  if (!hasConstructorChampionship) {
+    return (
+      <>
+        <DriversSection champions={champions} />
+        {sourceFooter}
+      </>
+    );
+  }
 
   return (
-    <div className="space-y-3">
-      {groups.map((group, idx) => (
-        <details
-          key={group.decade}
-          open={idx === 0}
-          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
-        >
-          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
-            <span className="text-text text-base font-semibold tracking-tight">
-              {group.label}
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-              {group.champions.length} {group.champions.length === 1 ? 'champion' : 'champions'}
-            </span>
-          </summary>
-          <div className="divide-y divide-border/40 border-t border-border/60">
-            {group.champions.map((c, i) => (
-              <div
-                key={`${c.year}-${i}`}
-                className="px-4 py-2.5"
-              >
-                <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
-                  <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
-                    {c.year}
-                  </div>
-                  <div className="text-text text-sm leading-snug">
-                    {c.driver}
-                  </div>
-                  <div className="text-xs text-text-muted leading-snug">
-                    {c.constructor ?? ''}
-                    {c.constructorChampion && c.constructorChampion !== c.constructor && (
-                      <span className="ml-2 text-[10px] text-text-faint">
-                        WCC: {c.constructorChampion}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="sm:hidden">
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
-                      {c.year}
-                    </span>
-                    <span className="text-text text-sm">{c.driver}</span>
-                  </div>
-                  {c.constructor && (
-                    <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      {c.constructor}
-                      {c.constructorChampion && c.constructorChampion !== c.constructor && (
-                        <span className="ml-2">WCC: {c.constructorChampion}</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </details>
-      ))}
-      <div className="px-2 py-2 text-[11px] text-text-faint">
-        {sourceLabel === 'curated' ? (
-          <span>Source: curated</span>
-        ) : (
-          <a
-            href={pageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-text-muted transition-colors duration-(--duration-fast)"
-          >
-            Source: Wikipedia →
-          </a>
-        )}
-      </div>
+    <div className="space-y-8">
+      <section>
+        <SectionHeading>Drivers&apos; Championship</SectionHeading>
+        <DriversSection champions={champions} />
+      </section>
+      <section>
+        <SectionHeading>Constructors&apos; Championship</SectionHeading>
+        <ConstructorsSection champions={constructorChampions} />
+      </section>
+      {sourceFooter}
     </div>
   );
 }

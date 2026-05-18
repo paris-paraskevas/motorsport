@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.11 — 2026-05-18
+
+### Changed
+- **`components/tabs/ChampionsTab.tsx`** rewritten to render **two clearly distinct labelled sections** — `Drivers' Championship` and `Constructors' Championship` — when the curated data contains any `constructorChampion` entries. Replaces the inline `WCC: <team>` indicator shipped in 0.10.10, which the user disliked as visually cluttered. Each section keeps the decade-grouped collapsible layout. For series with no constructor data (everything except F1 right now), the component still renders the single drivers-only list as before. Extracted `DriversSection` and `ConstructorsSection` subcomponents to keep `ChampionsTab` itself focused on data loading and layout. `groupByDecade` is now generic over `{year: number}` so both sections share it.
+
 ## 0.10.10 — 2026-05-18
 
 ### Added
@@ -9,7 +14,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 - **`Champion.constructorChampion?: string`** added to `lib/types.ts`. Holds the WCC team for that season when distinct from `constructor` (the driver champion's team). Used to surface F1's "split" years (e.g. 1981 Piquet/Brabham + Williams WCC; 2024 Verstappen/Red Bull + McLaren WCC).
 
 ### Changed
-- **`components/tabs/ChampionsTab.tsx`** — when `constructorChampion` is set AND differs from `constructor`, append a small `WCC: <team>` indicator beside the driver's team. Same-team years stay clean (no clutter on 80%+ of F1 rows where the driver's team also won the WCC).
+- **`components/tabs/ChampionsTab.tsx`** — when `constructorChampion` is set AND differs from `constructor`, append a small `WCC: <team>` indicator beside the driver's team. Same-team years stay clean (no clutter on 80%+ of F1 rows where the driver's team also won the WCC). (Superseded by 0.10.11.)
 
 ## 0.10.9 — 2026-05-18
 
