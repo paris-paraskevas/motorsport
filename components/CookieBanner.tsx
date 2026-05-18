@@ -10,10 +10,66 @@ import {
 } from '@/lib/consent';
 
 const CONSENT_CHANGED_EVENT = 'paddock:consent-changed';
+const ANON_ID_KEY = 'paddock:consent-id';
 
 export function dispatchConsentChanged() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
+}
+
+/**
+ * Mirror the user's per-category choice into Google Consent Mode v2 so
+ * GA / AdSense react immediately. Defaults set in app/layout.tsx are
+ * 'denied' for everything; this updates them on user action.
+ */
+function updateGtagConsent(c: ConsentCategories): void {
+  if (typeof window === 'undefined') return;
+  const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
+    .gtag;
+  if (typeof gtag !== 'function') return;
+  gtag('consent', 'update', {
+    ad_storage: c.marketing ? 'granted' : 'denied',
+    ad_user_data: c.marketing ? 'granted' : 'denied',
+    ad_personalization: c.marketing ? 'granted' : 'denied',
+    analytics_storage: c.analytics ? 'granted' : 'denied',
+  });
+}
+
+/**
+ * Best-effort server-side consent log so we can demonstrate compliance
+ * with GDPR Article 7(1). Stored in Vercel KV by /api/consent. Failure
+ * is silent — local storage remains the authoritative record.
+ */
+function logConsentToServer(c: ConsentCategories): void {
+  if (typeof window === 'undefined') return;
+  let anonymousId = window.localStorage.getItem(ANON_ID_KEY);
+  if (!anonymousId) {
+    anonymousId =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    try {
+      window.localStorage.setItem(ANON_ID_KEY, anonymousId);
+    } catch {
+      /* ignore */
+    }
+  }
+  fetch('/api/consent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ categories: c, version: 1, anonymousId }),
+    keepalive: true,
+  }).catch(() => {
+    /* best effort */
+  });
+}
+
+function gpcEnabled(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return (
+    (navigator as unknown as { globalPrivacyControl?: boolean })
+      .globalPrivacyControl === true
+  );
 }
 
 export function CookieBanner() {
@@ -23,6 +79,18 @@ export function CookieBanner() {
 
   useEffect(() => {
     const decided = getConsent();
+
+    // Honour Global Privacy Control: if the browser asserts GPC and the
+    // user hasn't explicitly decided yet, auto-record a deny and skip
+    // the banner. They can still re-open via the Cookie Policy page.
+    if (!decided && gpcEnabled()) {
+      setConsent(REJECT_ALL);
+      updateGtagConsent(REJECT_ALL);
+      logConsentToServer(REJECT_ALL);
+      dispatchConsentChanged();
+      return;
+    }
+
     if (!decided) setVisible(true);
 
     const onReopen = () => {
@@ -40,6 +108,8 @@ export function CookieBanner() {
 
   const persist = (categories: ConsentCategories) => {
     setConsent(categories);
+    updateGtagConsent(categories);
+    logConsentToServer(categories);
     dispatchConsentChanged();
     setVisible(false);
     setCustomizing(false);
