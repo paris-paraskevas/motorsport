@@ -2,6 +2,18 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.19 — 2026-05-19
+
+### Fixed
+- **Google CMP consent banner did not display** despite the "European regulations message" being Published in the AdSense console. Diagnosed via DevTools: `window.googlefc` resolved as an object (FC bootstrapped via `adsbygoogle.js`) but no `fundingchoicesmessages.google.com` fetch fired, so no banner. Root cause: the AdSense account is still under review ("Getting ready" / "Review requested"). For accounts pre-approval, the `adsbygoogle.js` base tag bootstraps the FC object but **does not** fetch the message body until the site is approved. The explicit Funding Choices snippet with `?ers=1` (eager mode) bypasses this gating.
+
+### Added
+- **Explicit Funding Choices snippet** in `app/layout.tsx`: `<Script src="https://fundingchoicesmessages.google.com/i/pub-3573600995951624?ers=1" strategy="afterInteractive" />` plus the standard `googlefcPresent` iframe-signal helper inline. With this snippet, the CMP fetches the message body and displays the consent banner regardless of approval state.
+
+### Notes
+- The publisher ID for the Funding Choices URL is derived from `ADSENSE_CLIENT_ID` by stripping the `ca-` prefix (`ca-pub-3573600995951624` → `pub-3573600995951624`). Single source of truth.
+- Consent Mode v2 defaults (`denied` for everything) remain in place as a safety net for the case where Funding Choices fails to load (ad blocker, network error). GA + AdSense stay in deny state until the CMP explicitly updates via `gtag('consent', 'update', ...)`.
+
 ## 0.10.18 — 2026-05-19
 
 ### Removed
