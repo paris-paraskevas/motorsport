@@ -2,6 +2,18 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.14 — 2026-05-18
+
+### Added
+- **F2, F3, WSBK, and IMSA `champions.json` gap-fill for `constructorChampion`.** Every Champions tab on these four series now renders the two-section layout (Drivers' Championship + Constructors'/Teams'/Manufacturers' Championship) end-to-end:
+  - **F2**: Teams' Champion added for the FIA F2 era (2017–2025) — was previously only set for the GP2 predecessor era. Sourced from Wikipedia FIA F2 article Teams' Champions table via WebFetch.
+  - **F3**: Teams' Champion added for the FIA F3 era (2019–2025) — same gap, same fix.
+  - **WSBK**: Manufacturers' Champion added for 2002–2025 (24 years). 1988–2001 still without manufacturers' data — that span isn't on the WSBK Wikipedia article as a clean table; deferred to a separate task (per-season pages).
+  - **IMSA**: Manufacturers' Champion (top class — Prototype → DPi → GTP era) added for 2014–2025 (12 years). Sourced from the IMSA SportsCar Championship Wikipedia article "Manufacturers" table.
+
+### Notes
+- **GTWC Endurance Cup deferred.** The user also asked for the Endurance Cup champions to be surfaced. The Endurance Cup is a parallel drivers' championship — not a constructor/manufacturer column — so it doesn't fit cleanly into the existing `{driver, constructor, constructorChampion}` schema. Tracked as a follow-up: extend `Champion` with secondary-championship fields, then curate Endurance Cup data 2011–2025.
+
 ## 0.10.13 — 2026-05-18
 
 ### Added
