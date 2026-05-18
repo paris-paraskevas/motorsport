@@ -98,6 +98,9 @@ When a curated/override file is absent, renderers fall back to the live external
 
 ## Infra ledger
 
+- ✅ **Paddock 1.0 cross-device restyle** — token system + shadcn primitives + Geist Mono + per-series tint + system-driven light/dark + 8 surface-bounded commits. DONE 2026-05-17 (`0.10.0`, PR #12 merged `b6b2e23`)
+- ✅ **Monday data wave** — rounds.json for the bottom 8 series (DTM/NLS/GTWCE/FE/NASCAR/WRC/IndyCar fill); F1 Azerbaijan endDate Sep 27→26; ADAC `singleEvent` flag + slim 4-tab set. After this, array-index fallback is fully retired for matched weekends across all 15 series. DONE 2026-05-18 (`0.10.1`, PR #13 merged)
+- ✅ **Polish wave** — chequered-flag notification badge, custom `app/error.tsx`, contact-form category dropdown (Bug/Feature/Suggestion/General), ADAC `champions.json` curated (10 years 2015–2024), 'Past Winners' label for `singleEvent` series, notification-sound research deferred (Web Push API limitation). 2026-05-18 (`0.10.2`, **PR #14 open — awaiting merge**)
 - ✅ Clerk Production — DONE 2026-05-14
 - ✅ `paddock-tracker.com` custom domain + Vercel DNS + Let's Encrypt SSL — DONE 2026-05-14
 - ✅ `CRON_SECRET` (Vercel all scopes + GitHub Actions) — DONE 2026-05-15
@@ -123,7 +126,50 @@ When a curated/override file is absent, renderers fall back to the live external
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
 
-## ⚡ Next session priorities (Sunday 2026-05-17)
+## ⚡ Next session priorities (Tuesday evening 2026-05-18 onwards)
+
+**Priority 0 — Merge PR #14 (0.10.2 polish wave).** If Fotis tests fine and CI is green, squash-merge and let Vercel deploy. Branch: `feat/polish-wave`. Five surface-bounded commits + version bump. Notification sound was researched and parked behind native-app-wrapper item.
+
+**Priority 1 — Tuesday Fotis sit-down (date 2026-05-19, in-person).** Walk `docs/research/supabase-schema-draft.md` together. Close the 10 open questions in §17:
+1. UUID v7 timing (Postgres-native vs plpgsql helper)
+2. Service role split (`paddock_cron` / `paddock_admin` / `paddock_app`)
+3. Status PK shape (TEXT lookup vs UUID surrogate)
+4. JSONB scope in `result.raw_payload`
+5. Schema.org JSON-LD generation location (DB view vs app layer)
+6. Audit log retention policy
+7. content_hash backfill noise
+8. Naming convention confirmation
+9. Comments + predictions launch order
+10. Supabase Realtime adoption
+
+If shape holds → start the 12-step migration order in §18. If shape needs rework → update doc in place, re-PR.
+
+**Priority 2 — Weather + news coverage audit (15 series).** Never run since Sunday's commitment. For each series, click into the next upcoming weekend and confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) and the news feed both populate. Output: per-series gap list + curation pass for anything thin. Open-ended in length; budget 90 min, can stretch.
+
+**Priority 3 — Endurance weekend-grouping audit.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Now that rounds.json is curated across all 15 series, verify each endurance race renders as a single weekend instead of multiple shorter ones.
+
+**Priority 4 — SEO baseline (S5).** `app/sitemap.ts`, `app/robots.ts`, JSON-LD per page (`SportsEvent` per session, `Organization` per series, `Person` per driver, `BreadcrumbList` on detail pages), per-page `generateMetadata`, OG image generators, canonicals. Pairs with fan-intent keywords (schedule / programme / where to watch / live stream / timetable).
+
+### Pre-Fotis cutoff EXPIRES end of Tuesday 2026-05-19
+
+Memory `project-paddock-pre-fotis-cutoff` was active Saturday → Tuesday. After Tuesday's sit-down, normal IDEAS.md triage cadence resumes (no more "Inbox-only" rule for new ideas).
+
+### Known curation gaps not yet filled (per 0.10.1 notes)
+
+- **IMSA Practice 1 on R6–R11** — per-race timetables publish race-week, not annually. Add as each race approaches.
+- **FE Sanya R11 session times** — round date placed at 2026-06-20 in `rounds.json`; session block in `sessions.json` still missing. Fill when FIA Formula E publishes the timetable.
+- **WRC mid-season stages** (R2/R3/R5/R7-R9/R11-R13) — stage-level detail publishes 4–6 weeks pre-rally per organiser convention.
+- **DTM Norisring R4** — intentionally TBC (split-quali format awaits ADAC schedule).
+- **NASCAR + IndyCar practice/qualifying mid-season** — race-week publication.
+
+### Known v1.1 follow-ups from Paddock 1.0 restyle
+
+- Clerk modal still dark-tuned (variables don't accept `var()`; needs `@clerk/themes` `dark` or `system` baseTheme).
+- PWA-only modals still zinc-hardcoded — `OnboardingWizard`, `EnableNotifications`, `PWAInstallPrompt`, `NotifPrefsSection`, `SettingsClient`. Low-vis; v1.1.
+- `components/mdx/mdx-components.tsx` untouched. Blog detail prose uses Tailwind defaults under both modes — acceptable until more posts.
+- Sidebar `--tint` doesn't pick up active series color on `/series/<slug>` routes (sidebar is outside the page-wrapper scope). Lift to `<html>` requires server-side route lookup; deferred.
+
+## Archived: Next session priorities (Sunday 2026-05-17)
 
 **Priority 1 — Open PR #3 first thing.** Two commits are stuck on branch `feat/postponement-rendering-motogp-wec` and not yet on main. PR #2 was merged before these landed:
 
