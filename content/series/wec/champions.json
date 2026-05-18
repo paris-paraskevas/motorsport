@@ -1,0 +1,15 @@
+[
+  { "year": 2025, "driver": "James Calado, Antonio Giovinazzi, Alessandro Pier Guidi", "constructor": "Ferrari AF Corse — Ferrari 499P", "constructorChampion": "Ferrari" },
+  { "year": 2024, "driver": "Kévin Estre, André Lotterer, Laurens Vanthoor", "constructor": "Porsche Penske Motorsport — Porsche 963", "constructorChampion": "Porsche" },
+  { "year": 2023, "driver": "Sébastien Buemi, Brendon Hartley, Ryō Hirakawa", "constructor": "Toyota Gazoo Racing — Toyota GR010 Hybrid", "constructorChampion": "Toyota" },
+  { "year": 2022, "driver": "Sébastien Buemi, Brendon Hartley, Ryō Hirakawa", "constructor": "Toyota Gazoo Racing — Toyota GR010 Hybrid", "constructorChampion": "Toyota" },
+  { "year": 2021, "driver": "Mike Conway, Kamui Kobayashi, José María López", "constructor": "Toyota Gazoo Racing — Toyota GR010 Hybrid", "constructorChampion": "Toyota" },
+  { "year": 2020, "driver": "Mike Conway, Kamui Kobayashi, José María López", "constructor": "Toyota Gazoo Racing — Toyota TS050 Hybrid (2019–20 super season)", "constructorChampion": "Toyota" },
+  { "year": 2019, "driver": "Sébastien Buemi, Fernando Alonso, Kazuki Nakajima", "constructor": "Toyota Gazoo Racing — Toyota TS050 Hybrid (2018–19 super season)", "constructorChampion": "Toyota" },
+  { "year": 2017, "driver": "Timo Bernhard, Brendon Hartley, Earl Bamber", "constructor": "Porsche Team — Porsche 919 Hybrid", "constructorChampion": "Porsche" },
+  { "year": 2016, "driver": "Marc Lieb, Romain Dumas, Neel Jani", "constructor": "Porsche Team — Porsche 919 Hybrid", "constructorChampion": "Porsche" },
+  { "year": 2015, "driver": "Timo Bernhard, Mark Webber, Brendon Hartley", "constructor": "Porsche Team — Porsche 919 Hybrid", "constructorChampion": "Porsche" },
+  { "year": 2014, "driver": "Anthony Davidson, Sébastien Buemi", "constructor": "Toyota Racing — Toyota TS040 Hybrid", "constructorChampion": "Toyota" },
+  { "year": 2013, "driver": "Allan McNish, Tom Kristensen, Loïc Duval", "constructor": "Audi Sport Team Joest — Audi R18 e-tron quattro", "constructorChampion": "Audi" },
+  { "year": 2012, "driver": "André Lotterer, Benoît Tréluyer, Marcel Fässler", "constructor": "Audi Sport Team Joest — Audi R18 e-tron quattro", "constructorChampion": "Audi" }
+]
