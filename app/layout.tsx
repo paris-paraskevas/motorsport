@@ -69,33 +69,29 @@ export default async function RootLayout({
       }}
     >
       <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
-        <head>
-          <script
-            id="consent-default"
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('consent', 'default', {
-                  ad_storage: 'denied',
-                  ad_user_data: 'denied',
-                  ad_personalization: 'denied',
-                  analytics_storage: 'denied',
-                  wait_for_update: 500
-                });
-              `,
-            }}
-          />
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-          />
-        </head>
         <body className="min-h-screen bg-bg text-text">
+          <Script id="consent-default" strategy="beforeInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                analytics_storage: 'denied',
+                wait_for_update: 500
+              });
+            `}
+          </Script>
           <AppShell seriesList={seriesList}>{children}</AppShell>
           <Analytics />
           <SpeedInsights />
+          <Script
+            id="adsense-init"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+          />
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
             strategy="afterInteractive"
