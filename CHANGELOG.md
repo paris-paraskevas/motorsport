@@ -2,6 +2,11 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.5 — 2026-05-18
+
+### Added
+- **`public/ads.txt`** — IAB-compliant authorized-seller declaration for AdSense. Single line: `google.com, pub-3573600995951624, DIRECT, f08c47fec0942fa0`. Required for ad serving; without it AdSense will not show ads even after site approval. Vercel serves files in `public/` from the domain root, so this resolves at `https://paddock-tracker.com/ads.txt`. Closes the "Ads.txt status: Not found" warning in the AdSense console.
+
 ## 0.10.4 — 2026-05-18
 
 ### Added
