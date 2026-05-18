@@ -2,6 +2,14 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.9 — 2026-05-18
+
+### Fixed
+- **Consent Mode v2 default state was firing AFTER AdSense, not before** (PR #16 regression). The raw inline `<script>` tags in `<head>` were being reordered by Next 16 App Router — confirmed via `curl https://paddock-tracker.com/` byte positions: `pagead2.googlesyndication.com` script at byte 1620, `id="consent-default"` script at byte 3811. AdSense's async fetch was racing the consent default. Switched the consent-default script to `<Script strategy="beforeInteractive">` (deterministically injected into initial HTML *before* any module per Next 16 docs) and moved AdSense to `<Script strategy="afterInteractive">` (runs post-hydration, well after consent default). Order is now strategy-driven, not JSX-position-driven. GA scripts remain `afterInteractive` and still reuse the head-defined `gtag`/`dataLayer`.
+
+### Notes
+- **Existing cookies persist until expiry.** Visitors who hit paddock-tracker.com before 2026-05-18 18:42 UTC (when PR #16 originally deployed) have `_ga`, `_gcl_au`, etc. from before consent default existed. To verify the fix takes effect, clear cookies and reload in an incognito window.
+
 ## 0.10.8 — 2026-05-18
 
 ### Added

@@ -2,6 +2,10 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.9 — 2026-05-18
+
+Internal: fixed a script-ordering bug in the consent and ad-tracking setup so the "deny by default" signal is now guaranteed to fire before any ad or analytics script loads. Visible behaviour unchanged for users; only relevant if you were already inspecting the cookies/consent state in DevTools.
+
 ## 0.10.8 — 2026-05-18
 
 Calendars are now month-by-month.
