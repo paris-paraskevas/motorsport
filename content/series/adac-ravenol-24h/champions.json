@@ -1,0 +1,12 @@
+[
+  { "year": 2024, "driver": "Sheldon van der Linde, Robin Frijns, Kelvin van der Linde, Ricardo Feller", "constructor": "Scherer Sport PHX — Audi R8 LMS GT3 Evo II" },
+  { "year": 2023, "driver": "Frikadelli Racing Team lineup", "constructor": "Frikadelli Racing — Ferrari 296 GT3" },
+  { "year": 2022, "driver": "Christopher Mies, Ricardo Feller, Frédéric Vervisch, Dries Vanthoor", "constructor": "Scherer Sport Team Phoenix — Audi R8 LMS GT3 Evo II" },
+  { "year": 2021, "driver": "Matteo Cairoli, Michael Christensen, Kévin Estre, Lars Kern", "constructor": "Manthey Racing — Porsche 911 GT3 R" },
+  { "year": 2020, "driver": "Nicky Catsburg, Nick Yelloly, Alexander Sims, John Edwards", "constructor": "Rowe Racing — BMW M6 GT3" },
+  { "year": 2019, "driver": "Pierre Kaffer, Frank Stippler, Frédéric Vervisch, Dries Vanthoor", "constructor": "Audi Sport Team Phoenix — Audi R8 LMS Evo" },
+  { "year": 2018, "driver": "Nick Tandy, Patrick Pilet, Earl Bamber, Frédéric Makowiecki", "constructor": "Manthey Racing — Porsche 911 GT3 R" },
+  { "year": 2017, "driver": "Connor De Phillippi, Christopher Mies, Markus Winkelhock, Kelvin van der Linde", "constructor": "Audi Sport Team Land — Audi R8 LMS" },
+  { "year": 2016, "driver": "Maro Engel, Adam Christodoulou, Manuel Metzger, Bernd Schneider", "constructor": "AMG Team Black Falcon — Mercedes-AMG GT3" },
+  { "year": 2015, "driver": "Nico Müller, Christopher Haase, Christian Mamerow, René Rast", "constructor": "Audi Sport Team WRT — Audi R8 LMS" }
+]
