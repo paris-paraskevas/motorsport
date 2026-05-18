@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.1 — 2026-05-18
+
+Calendar accuracy pass + ADAC page cleanup.
+
+- **Real race names everywhere.** DTM, NLS, GT World Challenge, Formula E, NASCAR Cup, WRC, and IndyCar weekend cards now show the actual race name above each date — "68th Daytona 500", "CrowdStrike 24 Hours of Spa", "São Paulo E-Prix", "Rallye Monte-Carlo", and so on. Previously these series showed a generic round number.
+- **F1 Azerbaijan corrected.** The Baku race runs Saturday Sep 26 (Remembrance Day), not Sunday Sep 27. Calendar card date range now reflects this.
+- **ADAC 24h page is no longer pretending to be a championship.** The Standings, Results, Drivers, News, and Rules tabs are hidden — only Calendar, About, History, and Champions (past winners) remain. NLS still shows the full tab set since it's a real 10-round series.
+
 ## 0.10.0 — 2026-05-17
 
 Cross-device visual refresh — Paddock 1.0.
