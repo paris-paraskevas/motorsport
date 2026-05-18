@@ -2,6 +2,20 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.8 — 2026-05-18
+
+### Added
+- **`components/MonthNavigator.tsx`** — shared month-by-month navigator (`←` / month-label dropdown / `→`). Renders only months that have content. Prev/next skip empty months by virtue of the input list being pre-filtered.
+- **`lib/months.ts`** — month-key helpers: `monthKey(Date) → 'YYYY-MM'` (user-local), `monthLabel('YYYY-MM') → 'Mar 2026'`, `currentMonthKey()`, and `pickDefaultMonth(months[])` (prefers current month → nearest upcoming → most recent past).
+- **`components/MonthScopedWeekends.tsx`** — new client wrapper used by `CalendarTab`. Owns the selected-month state, filters the weekend list, renders the navigator + the existing `<WeekendBlock>` grid. Replaces the past-toggle behaviour.
+
+### Changed
+- **`components/FilteredSessions.tsx`** (`/calendar`) — now month-scoped. Defaults to current month if the followed-series filter has content there, otherwise nearest upcoming. When the `followed` set changes and the selected month becomes empty, the effective selected month auto-resolves to a valid one (derived on render, no `useEffect` thrash).
+- **`components/tabs/CalendarTab.tsx`** — rewritten as a thin wrapper that hands the weekend list to `<MonthScopedWeekends>`. No more `PastToggleSection` import.
+
+### Removed
+- **`components/PastToggleSection.tsx`** — past weekends are now naturally browseable via the month navigator's `←` arrow. The `+ show past` toggle is gone; the file's only consumer was `CalendarTab`, so the file is deleted outright.
+
 ## 0.10.7 — 2026-05-18
 
 ### Added

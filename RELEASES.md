@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.8 — 2026-05-18
+
+Calendars are now month-by-month.
+
+- **Both calendars** — the global one at `/calendar` and the Calendar tab on every series page — now show **one month at a time**. Pick a month from the dropdown, or step through with the arrows on either side. Defaults to the current month if there's anything in it, otherwise jumps to the nearest month that does.
+- **Past weekends are browseable.** Previously a "+ show past" toggle revealed earlier rounds in one big block. Now you just hit the back arrow to land on whichever past month you want — same place all past content lives, no extra toggle.
+- **Empty months don't show up.** If a series has nothing in November, November isn't in the dropdown — arrow navigation skips it too.
+
 ## 0.10.7 — 2026-05-18
 
 Browser-tab polish: real favicon and page-specific titles.
