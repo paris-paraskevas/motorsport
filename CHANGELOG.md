@@ -2,6 +2,19 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.18 — 2026-05-19
+
+### Removed
+- **Custom `<CookieBanner>` component** (`components/CookieBanner.tsx`) and its supporting bits: `components/ReopenConsentButton.tsx`, `lib/consent.ts`, `app/api/consent/route.ts`, the "Cookie preferences" buttons in `Footer.tsx` and `SettingsClient.tsx`, the `ReopenConsentButton` mounts on `/cookies` and `/do-not-sell`. AdSense's published Google CMP (Funding Choices, "European regulations message") is now the single source of consent UI. Verified Published in the AdSense console Privacy & messaging screen before this PR was opened.
+
+### Changed
+- **`content/legal/cookies.md`, `do-not-sell.md`, `privacy.md`** updated to describe Google's CMP as the consent surface (banner appears in EEA/UK/Swiss regions; re-open via Google's injected "Consent"/shield icon). Removed references to our deprecated server-side consent record; consent is now stored by Google (e.g. `FCCDCF` cookie on `paddock-tracker.com`).
+- **`app/layout.tsx`** consent-default `<Script>` left in place. Google's CMP integrates with Consent Mode v2 and will issue `gtag('consent', 'update', ...)` directly when the user makes a choice, so removing our own update path is intentional.
+
+### Notes
+- **If Google's CMP does not display** on the deployed site for EU visitors, check AdSense console → Privacy & messaging → European regulations → Status. The message must read "Published" and the Publish toggle must be ON. Confirmed in the user's AdSense screenshot prior to this PR.
+- **Consent Mode v2 defaults** (everything `denied` until updated) stay in `app/layout.tsx`. If Google's CMP fails to load or is suppressed by an ad blocker, GA and AdSense remain in deny state — no silent tracking.
+
 ## 0.10.17 — 2026-05-19
 
 ### Fixed

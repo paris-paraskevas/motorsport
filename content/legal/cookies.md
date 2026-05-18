@@ -49,23 +49,20 @@ Clerk uses its own product analytics (Segment, PostHog) and an ad-conversion ide
 
 ## How to control them
 
-### In our banner
-The first time you visit, a banner appears at the bottom of the page with three choices: **Accept all**, **Reject non-essential**, and **Customize** (per-category toggles).
+### The consent banner
+For visitors in the EEA, UK, and Switzerland, Paddock uses **Google's certified Consent Management Platform** (Funding Choices) to display a consent banner on first visit. The banner offers a **Consent** option to accept advertising/analytics cookies, and a **Manage options** option to choose categories individually.
 
-If you reject non-essential cookies (or simply do nothing), only strictly-necessary cookies are set. Analytics and advertising scripts still load on the page but Google Consent Mode v2 is set to `denied`, so they suppress cookies and use cookieless pings only.
+If you reject (or simply do nothing), only strictly-necessary cookies are set. Analytics and advertising scripts still load on the page but **Google Consent Mode v2** is set to `denied`, so they suppress cookies and fall back to cookieless pings.
 
 ### Changing your mind later
-There is a **"Cookie preferences"** link in the page footer that re-opens the banner. You can change your choice at any time, and we update the consent signals immediately.
-
-### Global Privacy Control
-If your browser sends the **Global Privacy Control** signal (e.g. Firefox setting, the Privacy Badger extension), we treat it as a "Reject non-essential" choice. You do not need to interact with the banner.
+You can re-open Google's consent UI any time. Google's CMP exposes a re-open mechanism on the page (typically a small "Consent" or shield icon in the corner) once you have made an initial choice. Your update is applied immediately site-wide.
 
 ### Browser controls
 You can also block or delete cookies from your browser settings. This may break authentication and stop us from remembering your preferences.
 
 ## Consent record
 
-When you make a choice in the banner, we store a record (timestamp, categories chosen, consent version, anonymous identifier) both in your browser's local storage and on our server, for **24 months**, so we can demonstrate that you consented. We do not store your IP address with this record.
+Google's Consent Management Platform stores your consent decision on Google's infrastructure. We do not maintain a separate server-side log; we rely on Google's CMP and on the cookies it sets (such as `FCCDCF`) to remember your choice across visits.
 
 ## Changes to this policy
 

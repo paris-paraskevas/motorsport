@@ -1,4 +1,3 @@
-'use client';
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 
@@ -38,17 +37,6 @@ export function Footer() {
         <FooterLink href="/accessibility">Accessibility</FooterLink>
         <Sep />
         <FooterLink href="/do-not-sell">Do Not Sell or Share</FooterLink>
-        <Sep />
-        <button
-          type="button"
-          onClick={() => {
-            if (typeof window === 'undefined') return;
-            window.dispatchEvent(new Event('paddock:reopen-consent'));
-          }}
-          className="hover:text-text transition-colors duration-(--duration-fast)"
-        >
-          Cookie preferences
-        </button>
       </div>
     </footer>
   );

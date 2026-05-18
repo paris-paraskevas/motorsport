@@ -1,7 +1,6 @@
 import path from 'path';
 import type { Metadata } from 'next';
 import { loadMarkdownAsHtml } from '@/lib/content';
-import { ReopenConsentButton } from '@/components/ReopenConsentButton';
 
 export const dynamic = 'force-static';
 
@@ -37,16 +36,6 @@ export default async function CookiesPage() {
                    prose-td:border prose-td:border-border prose-td:px-3 prose-td:py-2 prose-td:align-top"
         dangerouslySetInnerHTML={{ __html: html }}
       />
-
-      <div className="mt-8 rounded-2xl border border-border bg-surface/40 p-5 md:p-6">
-        <div className="text-text text-base font-semibold mb-2">
-          Change your cookie preferences
-        </div>
-        <p className="text-sm text-text-muted leading-relaxed mb-4">
-          Re-open the consent banner to update which categories you allow. Your choice is saved immediately and applied site-wide.
-        </p>
-        <ReopenConsentButton />
-      </div>
     </div>
   );
 }

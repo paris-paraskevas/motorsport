@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { Footer } from './Footer';
-import { CookieBanner } from './CookieBanner';
 import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
@@ -136,7 +135,6 @@ export function AppShell({
         <Footer />
       </main>
 
-      <CookieBanner />
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
       <PushSoundPlayer />

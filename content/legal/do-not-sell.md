@@ -14,13 +14,11 @@ We use **Google AdSense** to display ads on the Site. Under the CCPA's broad def
 
 ## How to opt out
 
-You can opt out of sharing for advertising in three ways:
+You can opt out of sharing for advertising in two ways:
 
-1. **Cookie banner.** Choose **Reject non-essential** or open **Customize** and turn off the **Marketing** toggle. This sets Google Consent Mode to `ad_storage: denied` and `ad_personalization: denied`, suppressing ad cookies and personalised targeting.
+1. **Through Google's consent UI.** On EEA/UK/Swiss IPs a banner appears on first visit. From California you can re-open Google's consent UI at any time via the small "Consent" / shield icon Google injects on the page. Choose to reject, or open Manage options and turn off the advertising category. This sets Google Consent Mode to `ad_storage: denied` and `ad_personalization: denied`, suppressing ad cookies and personalised targeting.
 
-2. **Global Privacy Control.** If your browser sends the GPC signal, we automatically treat it as an opt-out. No further action needed.
-
-3. **Email request.** Send a request to **pparaskevas.dev@gmail.com** stating that you are a California resident and that you wish to opt out of sharing under the CCPA. We will confirm within 15 days.
+2. **Email request.** Send a request to **pparaskevas.dev@gmail.com** stating that you are a California resident and that you wish to opt out of sharing under the CCPA. We will confirm within 15 days.
 
 ## Other CCPA / CPRA rights
 
