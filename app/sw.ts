@@ -47,6 +47,8 @@ interface PushPayload {
 // Picked to read against the black launcher icon background.
 const ACCENT_COLOR = '#e10600';
 
+const FOREGROUND_SOUND_URL = '/sounds/f1-radio-notification.mp3';
+
 self.addEventListener('push', (event: PushEvent) => {
   if (!event.data) return;
   let payload: PushPayload = {};
@@ -56,22 +58,50 @@ self.addEventListener('push', (event: PushEvent) => {
     payload = { title: 'Paddock', body: event.data.text() };
   }
   const title = payload.title ?? 'Paddock';
-  // NotificationOptions in TS doesn't surface `image`/`color`/`actions`, but
-  // Chromium honours all of them. Cast through `unknown` to allow without `any`.
-  const options = {
-    body: payload.body ?? 'Tap to open Paddock.',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/badge-96.png',
-    tag: payload.tag,
-    data: { url: payload.url ?? '/', ...(payload.data ?? {}) },
-    image: payload.image,
-    color: payload.color ?? ACCENT_COLOR,
-    actions: payload.actions ?? [],
-    silent: payload.silent === true,
-    vibrate: payload.silent === true ? undefined : [80, 40, 80],
-    timestamp: Date.now(),
-  } as unknown as NotificationOptions;
-  event.waitUntil(self.registration.showNotification(title, options));
+
+  event.waitUntil(
+    (async () => {
+      const clients = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+      const visibleClients = clients.filter(
+        c => c.visibilityState === 'visible',
+      );
+      const hasVisibleClient = visibleClients.length > 0;
+      const callerMuted = payload.silent === true;
+      // Suppress the OS notification sound when the app is foregrounded — we'll
+      // play our own audio cue via the visible client so the two don't overlap.
+      const suppressSystemSound = hasVisibleClient || callerMuted;
+
+      // NotificationOptions in TS doesn't surface `image`/`color`/`actions`, but
+      // Chromium honours all of them. Cast through `unknown` to allow without `any`.
+      const options = {
+        body: payload.body ?? 'Tap to open Paddock.',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/badge-96.png',
+        tag: payload.tag,
+        data: { url: payload.url ?? '/', ...(payload.data ?? {}) },
+        image: payload.image,
+        color: payload.color ?? ACCENT_COLOR,
+        actions: payload.actions ?? [],
+        silent: suppressSystemSound,
+        vibrate: suppressSystemSound ? undefined : [80, 40, 80],
+        timestamp: Date.now(),
+      } as unknown as NotificationOptions;
+
+      await self.registration.showNotification(title, options);
+
+      if (hasVisibleClient && !callerMuted) {
+        for (const client of visibleClients) {
+          client.postMessage({
+            type: 'paddock:push-sound',
+            payload: { sound: FOREGROUND_SOUND_URL },
+          });
+        }
+      }
+    })(),
+  );
 });
 
 self.addEventListener('notificationclick', (event: NotificationEvent) => {
