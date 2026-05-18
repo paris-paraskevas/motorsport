@@ -2,6 +2,30 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.16 — 2026-05-19
+
+### Added
+- **Five new legal/policy pages** rendered from markdown via the existing `loadMarkdownAsHtml` pipeline (same pattern as `/changelog`):
+  - `/privacy` — Privacy Policy covering GDPR/ePrivacy disclosures: data we collect (Clerk auth, push subs, localStorage prefs, contact form, server logs, consent record), purposes per lawful basis, processors (Clerk, Vercel, Google Analytics, AdSense, Cloudflare via Clerk, Resend, Open-Meteo, Wikipedia, jolpica), retention table, user rights, GPC honouring, children policy, contact, supervisory authority (HDPA for Greece).
+  - `/terms` — Terms of Service: service description ("best-effort, AS IS"), accounts, acceptable use, IP, liability disclaimer with consumer-protection carve-out, modifications, governing law = Greece (Thessaloniki).
+  - `/cookies` — Cookie Policy: category table, cookie inventory (strictly necessary / functional / analytics / marketing), withdraw mechanism, GPC note, consent record retention.
+  - `/accessibility` — Accessibility Statement: WCAG 2.2 AA target, known limitations, reporting channel.
+  - `/do-not-sell` — CCPA "Do Not Sell or Share My Personal Information" — confirms no sale, treats AdSense sharing as CCPA-defined sharing, three opt-out paths, full CCPA rights.
+  - Source markdown lives under `content/legal/*.md`. Each page route is `force-static`. Two pages (`/cookies`, `/do-not-sell`) embed a `<ReopenConsentButton>` that dispatches `paddock:reopen-consent` to re-open the banner.
+- **`<ReopenConsentButton>`** — small client component that fires the existing `paddock:reopen-consent` event the cookie banner already listens for. Mounted on `/cookies` and `/do-not-sell`.
+- **`POST /api/consent`** (`app/api/consent/route.ts`) — server-side consent log to satisfy GDPR Article 7(1). Persists each consent change to Vercel KV at key `consent:<timestamp>:<anonId>` with 24-month TTL. Includes `userId` when authed (via Clerk's `auth()`), null otherwise. Best-effort: returns `{ ok: true, persisted: false }` if KV is misconfigured so the UX doesn't block.
+- **Footer expanded** with Privacy / Terms / Cookies / Accessibility / Do Not Sell or Share / Cookie preferences entries. The "Cookie preferences" entry is a button (not a link) that dispatches `paddock:reopen-consent`.
+
+### Changed
+- **`components/CookieBanner.tsx`** now wires the missing pieces from PR #16:
+  - On every persist (`Accept all` / `Reject non-essential` / custom save), calls `gtag('consent', 'update', { ad_storage, ad_user_data, ad_personalization, analytics_storage })` mapping each banner category to Consent Mode v2 keys. GA and AdSense react immediately — no page refresh needed.
+  - On every persist, POSTs the chosen categories + anonymous identifier + version to `/api/consent` via `fetch` with `keepalive: true`. Errors are swallowed; localStorage remains the authoritative record.
+  - On mount, if the user has **not** yet decided AND `navigator.globalPrivacyControl === true`, the banner auto-persists `REJECT_ALL`, calls `gtag('consent', 'update', { all denied })`, logs the GPC-derived decision to the server, and never renders. The user can still re-open from the Cookie Policy page or footer to override.
+
+### Notes
+- **Two `<!-- TODO confirm -->` markers** left in `privacy.md` and `terms.md` for governing law (Greece / Thessaloniki) and contact email (`pparaskevas.dev@gmail.com`). Swap if you want a different jurisdiction or email.
+- **Page versioning.** Material changes to any legal page should bump a release-notes entry mentioning the page name. The `_Last updated: YYYY-MM-DD_` line in each markdown is the authoritative date users see.
+
 ## 0.10.15 — 2026-05-18
 
 ### Changed

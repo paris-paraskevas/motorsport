@@ -2,6 +2,16 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.16 — 2026-05-19
+
+Legal pages + real cookie consent.
+
+- **Five new policy pages**: `/privacy`, `/terms`, `/cookies`, `/accessibility`, and `/do-not-sell`. All linked from the footer. Covers what data we collect, who we share it with, your rights under GDPR/ePrivacy and (for California visitors) CCPA, the full cookie inventory, our accessibility target, and a dedicated opt-out path for CCPA "sharing" of personal information for advertising.
+- **The cookie banner now actually controls what fires.** Accepting or rejecting a category instantly updates Google's consent signals on the page — no refresh needed. Analytics and ad cookies remain suppressed unless you've opted in. Previously the banner only stored your choice locally without telling Google.
+- **Global Privacy Control respected.** If your browser sends the GPC signal (Firefox setting, the Privacy Badger extension, others), Paddock automatically treats it as a "reject non-essential" choice and skips the banner.
+- **Cookie preferences are always reachable.** A "Cookie preferences" button now lives in the footer, and `/cookies` and `/do-not-sell` both have a button that re-opens the banner so you can change your mind any time.
+- **Consent record kept for 24 months** on Paddock's server so we can prove the choice was yours. Stored anonymously (no IP, no email) unless you're signed in, in which case your account is tagged so we can honour deletion requests.
+
 ## 0.10.15 — 2026-05-18
 
 Notification badge — readable again on Android.
