@@ -3,7 +3,7 @@ import { loadAllSeries } from '@/lib/series';
 import { FilteredSessions } from '@/components/FilteredSessions';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Calendar',
