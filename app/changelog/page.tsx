@@ -7,6 +7,8 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Changelog',
+  description:
+    'What shipped recently in Paddock — the currently running version plus a public log of fixes, features, and improvements.',
 };
 
 export default async function ChangelogPage() {

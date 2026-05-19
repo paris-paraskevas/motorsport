@@ -6,6 +6,8 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Cookie Policy',
+  description:
+    'How Paddock uses cookies and similar technologies — analytics, push notifications, and ads — plus how to manage your consent choices.',
 };
 
 export default async function CookiesPage() {

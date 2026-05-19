@@ -32,6 +32,17 @@ export async function GET() {
     })
     .join('\n');
 
+  // lastBuildDate tracks content freshness, not response time, so RSS clients
+  // (and Google) only re-poll when posts actually change.
+  const lastBuildDate =
+    posts.length > 0
+      ? new Date(
+          Math.max(
+            ...posts.map(p => new Date(p.frontmatter.publishedAt).getTime()),
+          ),
+        ).toUTCString()
+      : new Date(0).toUTCString();
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -40,6 +51,14 @@ export async function GET() {
     <description>${escapeXml(SITE_DESCRIPTION)}</description>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
     <language>en</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
+    <ttl>60</ttl>
+    <category>Sports/Motorsport</category>
+    <image>
+      <url>${SITE_URL}/icons/icon-192.png</url>
+      <title>${escapeXml(SITE_TITLE)}</title>
+      <link>${SITE_URL}</link>
+    </image>
 ${items}
   </channel>
 </rss>`;

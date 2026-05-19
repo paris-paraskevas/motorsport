@@ -2,6 +2,16 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.31 — 2026-05-19
+
+A second pass of search-engine-and-AI-crawler improvements. Internal — no visible UI change.
+
+- **Sign-in, sign-up, and settings pages now ask search engines not to index them.** Those pages have no public content to rank, so they shouldn't show up in Google results when someone searches the site by name. The Calendar, About, Changelog, and the five legal pages each now also have their own short description, so Google can show something useful and specific in the search snippet instead of repeating the site-wide tagline.
+- **Race-weekend and session dates are now marked up in a machine-readable format.** Search engines, calendar tools, and AI assistants can now extract the exact start time of any session on the site directly from the page — not just the human-readable "Sat 12:30" string. Same content on screen; richer signal underneath.
+- **Outbound news links no longer pass ranking authority off-site.** When Paddock links out to a motorsport.com article or an official series site, those links now carry the standard `nofollow` hint search engines use to mark "this is a discovery link, not an endorsement". The on-screen behaviour is unchanged.
+- **The RSS feed is more polite to aggregators.** It now tells subscribers when it last actually changed (rather than re-claiming "fresh" on every poll), what category it belongs to, and where to find the Paddock logo for display in their reader.
+- **Google can now show larger images** from Paddock in Search and Discover. Until today the platform default was a small thumbnail; the new setting allows the full image.
+
 ## 0.10.30 — 2026-05-19
 
 Search engines and AI crawlers can now find every page on the site.

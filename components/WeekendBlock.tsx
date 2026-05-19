@@ -30,6 +30,7 @@ export function WeekendBlock({
 }) {
   const { title, subtitle } = weekendLabel(weekend, round);
   const hasNamedTitle = title !== `Round ${round}`;
+  const weekendStartISO = weekend.sessions[0]?.start.toISOString().slice(0, 10);
 
   return (
     <Link
@@ -39,9 +40,12 @@ export function WeekendBlock({
       }`}
     >
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className="text-xs uppercase tracking-wider text-text-muted font-medium font-mono tnum">
+        <time
+          dateTime={weekendStartISO}
+          className="text-xs uppercase tracking-wider text-text-muted font-medium font-mono tnum"
+        >
           {weekend.dateRangeLabel}
-        </span>
+        </time>
         <span className="ml-auto flex items-center gap-1.5">
           {showNextTag && (
             <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-text text-bg font-semibold">
@@ -92,9 +96,18 @@ export function WeekendBlock({
             className="flex items-center justify-between gap-3 text-sm py-1"
           >
             <span className="text-text-muted truncate">{s.title}</span>
-            <span className="text-text-faint font-medium tabular-nums font-mono whitespace-nowrap">
-              {s.dateOnly ? 'TBC' : formatLocal(s.start)}
-            </span>
+            {s.dateOnly ? (
+              <span className="text-text-faint font-medium tabular-nums font-mono whitespace-nowrap">
+                TBC
+              </span>
+            ) : (
+              <time
+                dateTime={s.start.toISOString()}
+                className="text-text-faint font-medium tabular-nums font-mono whitespace-nowrap"
+              >
+                {formatLocal(s.start)}
+              </time>
+            )}
           </li>
         ))}
       </ul>

@@ -57,7 +57,15 @@ export function SessionCard({
           )}
         </div>
         <div className="text-xs text-text-faint mt-0.5 flex items-center gap-1.5 min-w-0 tnum font-mono">
-          <span>{session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}</span>
+          <time
+            dateTime={
+              session.dateOnly
+                ? session.start.toISOString().slice(0, 10)
+                : session.start.toISOString()
+            }
+          >
+            {session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}
+          </time>
           {session.location && (
             <>
               <span className="text-border-strong">·</span>

@@ -6,6 +6,8 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Impressum',
+  description:
+    'Verantwortlich nach § 18 Abs. 2 MStV und § 5 DDG — Kontakt und Anschrift für paddock-tracker.com.',
 };
 
 export default async function ImpressumPage() {

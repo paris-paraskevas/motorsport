@@ -6,6 +6,8 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Do Not Sell or Share',
+  description:
+    'Exercise your CCPA/CPRA right to opt out of the sale or sharing of personal information on Paddock — including the GPC signal we honor.',
 };
 
 export default async function DoNotSellPage() {
