@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.32 — 2026-05-19
+
+Search-engine quality fixes flagged by Bing the moment the sitemap landed there, plus a follow-up pass on the per-series pages. Internal — no visible UI change.
+
+- **Each tab on a series page now has its own search-engine title and description.** Until today, every tab on `/series/f1` — Calendar, History, Champions, Standings, News, Drivers, Rules, About, Results — shared the same `<title>` and meta description. Google sees that as nine copies of the same page and only ranks one. Each tab now has a distinct title (e.g. "F1 champions — full list, year by year") and a description that fits what the tab actually shows.
+- **The home page now has a richer page title and a hidden top-level heading,** both flagged by Bing's URL inspector as quality gaps after we submitted the sitemap there. The visible page is unchanged; the underlying signals search engines and screen readers see are now correct.
+- **Canonical URLs across `/series/[slug]` are now explicit.** The bare series URL and the default-tab URL both point to the same canonical, so Google doesn't see them as competing duplicates. Tabs that are real distinct content (history, champions, etc.) get their own canonical.
+
 ## 0.10.31 — 2026-05-19
 
 A second pass of search-engine-and-AI-crawler improvements. Internal — no visible UI change.

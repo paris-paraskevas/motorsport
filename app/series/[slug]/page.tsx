@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '@/lib/series';
-import { resolveTab, labelForTab, TabKey } from '@/lib/tabs';
+import { resolveTab, labelForTab, describeTab, TabKey } from '@/lib/tabs';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
@@ -27,13 +27,29 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const { tab: rawTab } = await searchParams;
   try {
     const meta = await loadSeriesMeta(slug);
-    return { title: meta.name };
+    const tab = resolveTab(rawTab, meta.singleEvent);
+    const { title, description } = describeTab(tab, meta.name, meta.season);
+    // Canonical strategy: the calendar tab is the bare-path landing, so its
+    // canonical collapses to /series/[slug]. Every other tab canonicals to its
+    // own ?tab=X URL — distinct title + description make it a real indexable
+    // page, not a duplicate. When B11 lands path-based tabs, this flips from
+    // ?tab=X to /series/[slug]/[tab].
+    const canonical =
+      tab === 'calendar' ? `/series/${slug}` : `/series/${slug}?tab=${tab}`;
+    return {
+      title,
+      description,
+      alternates: { canonical },
+    };
   } catch {
     return { title: 'Series not found' };
   }

@@ -2,6 +2,28 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.32 — 2026-05-19
+
+Bing Webmaster Tools URL-inspector for the home page flagged two SEO/GEO errors immediately after the 0.10.31 sitemap submission: **"Title too short"** and **"H1 tag missing"**. Both fixed here, alongside the previously-queued **B7** bundle from Track B (tab-aware metadata + canonicals on `/series/[slug]` — kills the 9× duplicate-title cannibalization across the tab variants).
+
+### Added
+- **Home page now has its own `metadata`** in `app/page.tsx`. Previously the home inherited the layout's default title (`"Paddock — Personal motorsport companion"`, ~40 chars). Replaced with an absolute title (`title: { absolute: 'Paddock — Live F1, MotoGP, WEC, IndyCar & NASCAR schedule' }`, 57 chars) using `Metadata.title.absolute` so the layout's `%s — Paddock` template doesn't append a second "Paddock". A home-specific description, narrower than the site-wide one, was added at the same time, plus `alternates.canonical: '/'`. The layout's `default` title is now strictly the fallback for any page that forgets to set one (currently none — every page has its own).
+- **`<h1 className="sr-only">`** at the top of `HomeContent.tsx` — a single visually-hidden H1 carrying the full long-form description (`"Paddock — live motorsport schedule and news across F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more"`). Visually invisible (Tailwind's `sr-only` utility = `position:absolute; width:1px; height:1px; clip:rect(0,0,0,0); overflow:hidden`). Semantically the page now has exactly one H1, satisfying both Bing's error condition and WCAG 2.4.6 (headings describe topic). The visible page header on `/series/[slug]` ("2026 season") was already an H1 — different scope, different fix.
+- **`describeTab(key, seriesName, season)`** helper in `lib/tabs.ts`. Returns `{ title, description }` strings tailored per tab — calendar / news / standings / results / drivers / rules / about / history / champions. Each title kept in the 40–50-char range so the layout's `%s — Paddock` template suffix lands the rendered title around 55–65 chars (Google's mobile SERP truncation is ~60). Descriptions kept under ~155 chars.
+
+### Changed
+- **`app/series/[slug]/page.tsx` `generateMetadata`** now reads `searchParams` (was: only `params`), resolves the tab via the existing `resolveTab` helper, and emits per-tab `title` + `description` + `alternates.canonical`. **Canonical strategy:**
+  - When the resolved tab is `calendar` (the default landing — both `/series/f1` and `/series/f1?tab=calendar` resolve here), canonical points to the bare `/series/${slug}`. Collapses two URLs into one indexable canonical and prevents the calendar-vs-bare-path duplicate signal Google would otherwise see.
+  - When the resolved tab is anything else, canonical points to its own `?tab=X` URL. Each non-calendar tab is now a distinct indexable page with a distinct title and description.
+  - When B11 (path-based tab routes) lands, the canonical pattern flips from `?tab=X` to `/series/${slug}/${tab}` with a one-line edit. Until then, the search-engine surface area is ~135 indexable URLs (15 series × 9 tabs) where it was previously ~15 (one per series, plus 8× duplicate-title noise each).
+
+### Notes
+- Bing's URL inspector also flagged 1 markup type ("OpenGraph" — informational, not an error). Confirmed the existing OG block in `app/layout.tsx` is what it picked up; nothing to fix.
+- Pre-mortem from the Phase-1 plan ("per-tab title might still be too generic to differentiate in Google's eyes") stands: this PR removes the cannibalization signal (different titles) but doesn't guarantee differentiation in rankings. The actual content of each tab will determine ranking, which is a B-content concern — out of scope here.
+- `next build` confirmed `/series/[slug]` stays `ƒ Dynamic` (already was; the new `searchParams` read on `generateMetadata` doesn't change rendering mode). All other routes unchanged.
+- Test suite stays at 89/89.
+- B7 effort budget was 1–2h; actual time ~45m. Helped by the existing `resolveTab` + `labelForTab` helpers in `lib/tabs.ts` and the fact that page metadata was already in the Next.js App Router shape.
+
 ## 0.10.31 — 2026-05-19
 
 Bundle B2 + B3 + B4 + B5 + B6 + B-discover from Track B (the "cheap wins" sub-bundles, interleaved per the post-playbook priority order in `docs/HANDOFF.md`). All SEO/GEO metadata; no UI changes.
