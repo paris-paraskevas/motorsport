@@ -2,6 +2,15 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.36 — 2026-05-19
+
+### Fixed
+
+- **`lib/wikipedia-season.ts`** — Wikipedia season-page scrape now strips inline `<style>` blocks and `.legend` / `.legend-color` / `.legend-text` decoration spans before extracting cell text. Without this, cheerio's `.text()` pulls Wikipedia's CSS rules into the driver-name string. Visible on the IndyCar 2026 Drivers tab for the A. J. Foyt Enterprises entry as:
+  > Caio Collet .mw-parser-output .legend{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .legend-color{display:inline-block;min-width:1.25em;height:1.25em;line-height:1.25;margin:1px 0;text-align:center;border:1px solid black;background-color:transparent;color:black}.mw-parser-output .legend-text{} R Santino Ferrucci
+  
+  The trailing `R` is a `<span class="legend-text">R</span>` rookie marker. Fix applied in both `cellText` (used for the team-name column) and `extractDrivers` (used for the driver-name column) cheerio helpers. Affects every series using the live Wikipedia driver-list fallback — every series currently, until `content/series/<slug>/drivers.json` lands per-series. New vitest case `LEGEND_STYLE_LEAK_HTML` reproduces the IndyCar scenario; 12/12 tests pass.
+
 ## 0.10.35 — 2026-05-19
 
 Docs-only — closes 2026-05-19 with first perf-baseline capture + Wed 2026-05-20 work queue.

@@ -233,6 +233,42 @@ const JUNK_TEAM_HTML = `
 </body></html>
 `;
 
+// Wikipedia season tables embed inline <style> blocks for .legend
+// decorations + <span class="legend-text">R</span> rookie markers.
+// Without stripping these before .text() extraction, cheerio pulls the
+// raw CSS rules into the driver-name string. Visible on the IndyCar
+// 2026 Drivers tab as
+//   "Caio Collet .mw-parser-output .legend{page-break-inside:avoid;
+//    break-inside:avoid-column}.mw-parser-output .legend-color{...}
+//    .mw-parser-output .legend-text{} R Santino Ferrucci"
+// for the A. J. Foyt Enterprises entry.
+const LEGEND_STYLE_LEAK_HTML = `
+<!DOCTYPE html>
+<html><body>
+<table class="wikitable">
+  <tbody>
+    <tr><th>Team</th><th>Drivers</th></tr>
+    <tr>
+      <td>A. J. Foyt Enterprises</td>
+      <td>Caio Collet<br><style>.mw-parser-output .legend{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .legend-color{display:inline-block;min-width:1.25em;height:1.25em;line-height:1.25;margin:1px 0;text-align:center;border:1px solid black;background-color:transparent;color:black}.mw-parser-output .legend-text{}</style><span class="legend"><span class="legend-color"></span><span class="legend-text">R</span></span><br>Santino Ferrucci</td>
+    </tr>
+    <tr>
+      <td>Chip Ganassi Racing</td>
+      <td>Alex Palou<br>Scott Dixon</td>
+    </tr>
+    <tr>
+      <td>Team Penske</td>
+      <td>Josef Newgarden<br>Scott McLaughlin</td>
+    </tr>
+    <tr>
+      <td>Andretti Global</td>
+      <td>Kyle Kirkwood<br>Marcus Ericsson</td>
+    </tr>
+  </tbody>
+</table>
+</body></html>
+`;
+
 const NO_TABLE_HTML = `
 <!DOCTYPE html>
 <html><body><p>Prose only, no tables present.</p></body></html>
@@ -342,6 +378,21 @@ describe('fetchSeasonLineup', () => {
     expect(lineup[2].drivers).toEqual(['Charles Leclerc', 'Lewis Hamilton']);
     expect(lineup[3].team).toBe('Red Bull');
     expect(lineup[3].drivers).toEqual(['Max Verstappen', 'Yuki Tsunoda']);
+  });
+
+  it('strips Wikipedia <style> blocks and .legend rookie-marker spans from driver cells', async () => {
+    mockFetchOnceOk(LEGEND_STYLE_LEAK_HTML);
+    const lineup = await fetchSeasonLineup('2026_IndyCar_Series_season');
+    expect(lineup).toHaveLength(4);
+    expect(lineup[0].team).toBe('A. J. Foyt Enterprises');
+    // Pre-fix produced 3 entries: ['Caio Collet', '.mw-parser-output ...R', 'Santino Ferrucci'].
+    // Fix collapses to 2 clean driver names.
+    expect(lineup[0].drivers).toEqual(['Caio Collet', 'Santino Ferrucci']);
+    for (const driver of lineup[0].drivers) {
+      expect(driver).not.toMatch(/\.mw-parser-output/);
+      expect(driver).not.toMatch(/legend/);
+      expect(driver).not.toMatch(/\{/);
+    }
   });
 
   it('rejects a lineup that has fewer than 4 credible teams', async () => {

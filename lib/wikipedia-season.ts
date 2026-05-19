@@ -62,7 +62,14 @@ function isLikelyNumericName(value: string): boolean {
 const BRACKET_ANNOTATION_RE = /\[[^\]]{1,15}\]/g;
 
 function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
-  return $(el)
+  // Clone + strip Wikipedia's inline <style> blocks and .legend decoration
+  // spans before text extraction. Without this, cheerio's .text() pulls the
+  // CSS rules (".mw-parser-output .legend{page-break-inside:avoid;...}") into
+  // the cell string — visible on Drivers tabs for any series using the live
+  // Wikipedia scrape fallback.
+  const $el = $(el).clone();
+  $el.find('style, .legend, .legend-color, .legend-text').remove();
+  return $el
     .text()
     .replace(BRACKET_ANNOTATION_RE, '')
     .replace(/\s+/g, ' ')
@@ -76,7 +83,11 @@ function cellText($: cheerio.CheerioAPI, el: AnyNode): string {
 function extractDrivers($: cheerio.CheerioAPI, el: Element): string[] {
   const $cell = $(el).clone();
   $cell.find('br').replaceWith('\n');
-  $cell.find('sup').remove(); // strip footnote refs etc.
+  // Strip footnote refs (<sup>), inline <style> blocks Wikipedia embeds for
+  // .legend decoration, and the .legend spans themselves — these include
+  // <span class="legend-text">R</span> rookie markers that would otherwise
+  // appear as a stray "R" between driver names on the IndyCar Drivers tab.
+  $cell.find('sup, style, .legend').remove();
   const raw = $cell
     .text()
     .replace(BRACKET_ANNOTATION_RE, '')

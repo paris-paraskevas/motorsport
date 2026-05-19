@@ -2,6 +2,10 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.36 — 2026-05-19
+
+Fixed a rendering bug on per-series Drivers tabs where Wikipedia CSS markup was leaking into the driver list — most visible on **IndyCar**, where the A. J. Foyt Enterprises entry showed a wall of `.mw-parser-output .legend{...}` style declarations between Caio Collet and Santino Ferrucci. Now strips those decorations cleanly. Affected any series relying on the live Wikipedia driver-list fallback.
+
 ## 0.10.35 — 2026-05-19
 
 Internal: captured the first performance baseline (desktop + mobile field + lab data) and queued tomorrow's mobile-performance work. No visible change.

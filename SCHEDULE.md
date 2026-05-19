@@ -209,7 +209,35 @@ Fifth (and final) mini-session same calendar day. Operator landed PSI desktop sc
 Active:
 _(no `[+Nm]` prefixes captured this session)_
 
+### Tue 2026-05-19 — continued — IndyCar pivot + Fotis onboarding
+
+Sixth sub-session same calendar day. Two parallel streams in flight:
+
+- **Fotis onboarding (in progress).** Reading `CONTRIBUTING.md` + `ONBOARDING.md` before the Supabase sit-down. Pre-`docs/research/supabase-schema-draft.md` walkthrough phase.
+- **IndyCar pivot.** Operator spotted a Wikipedia-CSS leak in the IndyCar Drivers tab (`.mw-parser-output .legend{...}` block rendering between Caio Collet and Santino Ferrucci on A.J. Foyt Enterprises). Production bug → drove a scope pivot from "Bing fixes first" to "IndyCar end-to-end first". Phasing:
+
+  | Phase | Scope | Effort | Status |
+  |---|---|---|---|
+  | 1 | Strip Wikipedia `<style>` / CSS leak in season scrape (likely `lib/wikipedia-season.ts`) — affects ALL series using the live scrape fallback, not just IndyCar | 30 min | Pending |
+  | 2 | Write `content/series/indycar/drivers.json` from agent output → activate `/drivers/<slug>` + `/teams/<slug>` for IndyCar. **End-to-end Phase 0 validation done on IndyCar instead of MotoGP** | 45 min | Pending |
+  | 3 | IndyCar standings — `lib/standings/indycar.ts` + `StandingsTab` wire + cron | 2–3 h | **Source-probe-gated** — depends on indycar.com being non-SPA |
+  | 4 | IndyCar results — `lib/results/indycar.ts` + `ResultsTab` wire + cron | 2–3 h | Same gate |
+  | 5 | IndyCar history essay — `content/series/indycar/history.md` F1-template | Operator-paced | Parallel |
+
+**Bing fixes (originally 0.10.36) deferred to Wed 2026-05-20.** Three issues bundled: sitemap orphan-round filter (8 weekend 404s — FE doubleheaders + IndyCar Milwaukee R2 + NLS Sunday qualifier) + weekend title truncation (11 pages >70 chars) + RELEASES.md `# Releases` strip (1 multi-h1 on /changelog).
+
+**a11y quick-wins (originally 0.10.37)** — also pushed forward; sequence behind Wed Bing fixes.
+
+**Drivers.json batch for remaining 6 Tier-1 series** (motogp, wsbk, f2, f3, formula-e, dtm) — agent outputs in hand, awaiting Phase 0 validation on IndyCar first; then bulk-commit. Currently parked until IndyCar Phase 2 ships.
+
+**Tier 2 drivers.json** (wec, imsa, gt-world, nls, wrc, nascar-cup, adac-ravenol-24h) — not dispatched yet, follow-on after Tier 1 lands.
+
+Active:
+_(no `[+Nm]` prefixes captured this session)_
+
 ### Wed 2026-05-20 — planned
+
+**Priority 0 (deferred from Tue) — Bing scan fixes.** Three issues from the Bing Webmaster Tools Site Scan completed 2026-05-19: 8 weekend pages returning HTTP 404 (sitemap orphans from multi-race weekends — FE doubleheaders, IndyCar Milwaukee R2, NLS Sunday qualifier), 11 weekend pages with `<title>` >70 chars, 1 page with multiple `<h1>` (/changelog). Three small fixes, ~45 min total. Land before B-perf so the sitemap stops shipping broken promises.
 
 **Priority 1 — B-perf, multi-PR.** Baselines: `docs/perf-baselines.md` (2026-05-19 row). Mobile RES 76 / LCP 3.67 s / TTFB 3.17 s / CLS 0.11. Desktop PSI surfaced 616 KiB unused JS (Clerk 224 / AdSense 157 / FundingChoices 98 / GTM 64 / other 73) + CSS critical path blocking to 2 s + 7 long main-thread tasks. Mobile-first indexing means this suppresses every other signal we shipped — load-bearing.
 
