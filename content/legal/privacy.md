@@ -10,11 +10,13 @@ If you do not agree with this policy, please do not use the Site.
 
 ## 1. Who is the data controller
 
+<!-- Address block — preserve the two trailing spaces on each line; they're the markdown hard-break and our pipeline strips raw HTML <br/> tags. -->
+
 For the purposes of the GDPR and equivalent laws, the data controller is:
 
-**Paris Paraskevas**
-Andrea Papandreou 23, Melissokhori
-41500 Larissa
+**Paris Paraskevas**  
+Andrea Papandreou 23, Melissokhori  
+41500 Larissa  
 Greece (EU)
 
 Email: **pparaskevas.dev@gmail.com**

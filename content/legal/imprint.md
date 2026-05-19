@@ -4,11 +4,13 @@ _Last updated: 2026-05-19_
 
 Information disclosed in accordance with § 5 DDG (Germany) and equivalent legal disclosure obligations in other EEA jurisdictions. Also accessible at [/impressum](/impressum).
 
+<!-- Address block — preserve the two trailing spaces on each line; they're the markdown hard-break and our pipeline strips raw HTML <br/> tags. -->
+
 ## Service provider
 
-**Paris Paraskevas**
-Andrea Papandreou 23, Melissokhori
-41500 Larissa
+**Paris Paraskevas**  
+Andrea Papandreou 23, Melissokhori  
+41500 Larissa  
 Greece
 
 ## Contact
@@ -23,9 +25,9 @@ None. The operator is a private individual and is not VAT-registered.
 
 Editorial responsibility for journalistic-editorial content on this Site, including the blog at [/blog](/blog):
 
-**Paris Paraskevas**
-Andrea Papandreou 23, Melissokhori
-41500 Larissa
+**Paris Paraskevas**  
+Andrea Papandreou 23, Melissokhori  
+41500 Larissa  
 Greece
 
 ## Liability for content

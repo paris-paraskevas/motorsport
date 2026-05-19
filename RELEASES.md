@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.24 — 2026-05-19
+
+Postal-address blocks on the legal pages now render properly across multiple lines.
+
+- **Imprint and privacy pages** were rendering the operator's address as one long inline line directly after the version-0.10.23 release. The address is now formatted as the four-line block it was always meant to be.
+
 ## 0.10.23 — 2026-05-19
 
 Imprint page added; privacy policy now lists the operator's full postal address.
