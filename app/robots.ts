@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,7 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/settings', '/sign-in', '/sign-up'],
       },
     ],
-    sitemap: 'https://paddock-tracker.com/sitemap.xml',
-    host: 'https://paddock-tracker.com',
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

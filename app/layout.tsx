@@ -7,12 +7,9 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { AppShell } from '@/components/AppShell';
 import { loadAllSeriesMeta } from '@/lib/series';
+import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import './globals.css';
 
-const SITE_URL = 'https://paddock-tracker.com';
-const SITE_TITLE = 'Paddock';
-const SITE_DESCRIPTION =
-  'Personal motorsport companion — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more.';
 const GA_MEASUREMENT_ID = 'G-DDMJ2NMBWC';
 const ADSENSE_CLIENT_ID = 'ca-pub-3573600995951624';
 
