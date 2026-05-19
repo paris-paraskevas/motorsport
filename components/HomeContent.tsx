@@ -133,6 +133,10 @@ export function HomeContent({
 
   return (
     <>
+      <h1 className="sr-only">
+        Paddock — live motorsport schedule and news across F1, MotoGP, WEC,
+        Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
+      </h1>
       {liveItems.length > 0 && (
         <section className="mb-6">
           <div className="inline-flex items-center gap-2 mb-3">

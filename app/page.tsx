@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 import { HomeContent } from '@/components/HomeContent';
 import { fetchAggregatedNews } from '@/lib/news';
@@ -6,6 +7,15 @@ import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } fr
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
 export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Paddock — Live F1, MotoGP, WEC, IndyCar & NASCAR schedule',
+  },
+  description:
+    'Live motorsport schedule and news across F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more — in your local time.',
+  alternates: { canonical: '/' },
+};
 
 async function weatherForSessions(
   candidates: Array<{ session: { uid: string; start: Date; location?: string; title: string } }>,
