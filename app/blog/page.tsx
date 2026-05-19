@@ -5,7 +5,8 @@ export const revalidate = 300;
 
 export const metadata = {
   title: 'Blog',
-  description: 'Analysis, recaps, and opinion across motorsport championships.',
+  description:
+    'Original analysis, race recaps, championship deep-dives, and commentary across F1, MotoGP, WEC, IndyCar, NASCAR and more motorsport categories.',
 };
 
 function formatDate(iso: string): string {

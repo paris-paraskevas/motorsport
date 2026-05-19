@@ -66,6 +66,7 @@ export async function generateMetadata(
       `${series.meta.name} ${label} timetable`,
       `${series.meta.name} ${label} live stream`,
     ],
+    alternates: { canonical: `/series/${slug}/weekend/${round}` },
     openGraph: { title: fullTitle, description },
   };
 }
