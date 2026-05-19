@@ -2,6 +2,12 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.26 — 2026-05-19
+
+Internal: site-wide security headers.
+
+- **Hardened the default browser security policy** for paddock-tracker.com. HTTPS is now enforced for all subdomains, the site is no longer embeddable in third-party iframes, MIME-type sniffing is disabled, the referrer policy is tightened on cross-origin requests, and several sensor APIs (camera, microphone, geolocation) plus the Topics / FLoC advertising signals are explicitly denied. No user-visible behaviour change.
+
 ## 0.10.25 — 2026-05-19
 
 Internal: push-unsubscribe is ownership-checked; contact-form submissions auto-expire after 12 months.
