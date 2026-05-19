@@ -150,6 +150,36 @@ Seven PRs touched today, versions 0.10.35 → 0.10.40. Six merged at audit time;
 
 ---
 
+## Drivers.json gap audit (added post-initial-write per operator directive)
+
+Operator stated at session close: "we have drivers for formula 3 (we NEED drivers for formula 2 they are missing), we are missing formula e drivers too and in fact we are missing drivers in all categories other than f1 f3 and indycar."
+
+**Glob-verified state on `main` at session close (post PR #58 merge):**
+
+| Series | `content/series/<slug>/drivers.json` on main | Routes activated |
+|---|---|---|
+| indycar | ✓ (PR #55, merged 0.10.37) | `/drivers/<slug>` + `/teams/<slug>` for 26 + 10 entries |
+| f1 | ✓ (PR #58, merged 0.10.40) | `/drivers/<slug>` + `/teams/<slug>` for 22 + 11 entries |
+| **f3** | ❌ NO — operator's mental model said yes; reality is no | live-Wikipedia fallback via `lib/wikipedia-season.ts` renders driver names on `/series/f3?tab=drivers`, so the tab LOOKS populated, but **the curated file does not exist**. `/drivers/<slug>` for F3 drivers still 404s. |
+| f2, motogp, wsbk, formula-e, dtm | ❌ no | Wikipedia fallback if `seasonPage` is in `meta.json`, else placeholder |
+| wec, imsa, gt-world, nls, wrc, nascar-cup, adac-ravenol-24h | ❌ no | same |
+
+**Net gap: 13 series need curated `drivers.json`** (12 truly missing + F3 which the operator believed was already covered).
+
+**Agent outputs already in conversation context (6 of 13):** motogp, wsbk, f2, f3, formula-e, dtm — dispatched earlier today as the Tier-1 batch; only IndyCar shipped. The 6 outputs are ready to validate + commit.
+
+**Still to dispatch (7 of 13):** wec, imsa, gt-world, nls, wrc, nascar-cup, adac-ravenol-24h. Tier-2 series — endurance / rally complexity (multi-car teams, rotating crews, rally co-drivers) needs careful prompting.
+
+**Recommended sequence (added to Wed-Sat plan in `SCHEDULE.md`):**
+- **Wed AM** — dispatch 7 Tier-2 agents in background while doing IndyCar results + F1 sprint/points work in foreground.
+- **Wed PM** — web-search-verify the 6 Tier-1 outputs in hand per `feedback-paddock-search-for-missing-data` rule; bulk-commit as one PR.
+- **Thu AM** — process the 7 Tier-2 agent returns; bulk-commit as a second PR.
+- **Sat** — sitemap inclusion of `/drivers/<slug>` + `/teams/<slug>` once all 15 series have drivers.json — sitemap grows once across ~400 new URLs instead of piecemeal. IndexNow push afterwards.
+
+**Why Playwright is NOT needed for drivers.json work:** Wikipedia season pages are SSR'd; agents WebFetch directly. Playwright is reserved for SPA-rendered live-data sources (MotoGP results on motogp.com, WEC results on fiawec.com, FE results on fiaformulae.com) per Thu-Fri's blitz plan — those need browser execution to hit the JSON XHRs.
+
+**Risk:** F3 operator-confidence mismatch was a useful flag. **Recommend a smoke audit early Wed (~10 min):** click into every `/series/<slug>?tab=drivers` tab and read the footer label. "Source: curated" = `drivers.json` fired; "Source: Wikipedia →" = live scrape fallback. The footer label disambiguates which path fired, so we know exactly which series the Wikipedia fallback is masking.
+
 ## Open risks at session close
 
 1. **F1 Sprint races missing from `/series/f1?tab=results`** (operator-reported). Check `lib/results/f1.ts` Jolpica payload structure; sprints may need separate query (`/sprint/{season}`) or schema extension. Wed work.

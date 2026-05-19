@@ -253,7 +253,23 @@ Seventh sub-session same calendar day. Operator's directive shifted from B-perf-
 Active:
 _(no `[+Nm]` prefixes captured this session)_
 
-### Wed 2026-05-20 — planned — week-blitz day 1 (IndyCar + F1 bugs + Bing fixes)
+### Drivers.json gap audit (operator-flagged at session close)
+
+Glob-verified state on `main` at session close: **only `indycar` (0.10.37) and `f1` (0.10.40, PR #58 just merged)** have curated `drivers.json`. Every other series — including F3, which the operator believed was covered — needs the file. F3's `/series/f3?tab=drivers` tab is populated by the live-Wikipedia fallback in `lib/wikipedia-season.ts`, not by curated data; `/drivers/<f3-driver-slug>` still 404s. **Net gap: 13 series.**
+
+Agent outputs already in conversation context for 6 of 13 (motogp, wsbk, f2, f3, formula-e, dtm — Tier-1 batch dispatched earlier today; only IndyCar shipped). 7 still to dispatch (wec, imsa, gt-world, nls, wrc, nascar-cup, adac-ravenol-24h — Tier-2 with endurance / rally complexity).
+
+**Bulk-commit sequence woven into the Wed-Sat plan below:**
+- **Wed AM:** dispatch 7 Tier-2 agents in background while doing IndyCar results + F1 sprint/points work in foreground.
+- **Wed PM:** web-search-verify 6 in-hand Tier-1 outputs per `feedback-paddock-search-for-missing-data` rule; bulk-commit as one PR.
+- **Thu AM:** process the 7 Tier-2 agent returns; bulk-commit as a second PR.
+- **Sat:** sitemap inclusion of `/drivers/<slug>` + `/teams/<slug>` once all 15 series have drivers.json — sitemap grows once across ~400 new URLs. IndexNow push afterwards.
+
+**Smoke audit early Wed (~10 min):** click into every `/series/<slug>?tab=drivers` tab. Footer label disambiguates: "Source: curated" = drivers.json fired; "Source: Wikipedia →" = live scrape fallback. Logs current state explicitly so we know which series the Wikipedia fallback is masking and which are placeholder.
+
+**Playwright is NOT needed for drivers.json bulk-commit** — Wikipedia season pages are SSR'd; agents WebFetch directly. Playwright is reserved for the SPA-rendered live-data sources (motogp.com, fiawec.com, fiaformulae.com) per Thu-Fri's blitz plan.
+
+### Wed 2026-05-20 — planned — week-blitz day 1 (IndyCar + F1 bugs + Bing fixes + Tier-1 drivers.json)
 
 **Day 1 of the Tue → Sun 5-day data-ingestion blitz.** Per operator directive: standings + results + drivers + teams + history for every series by Sunday. B-perf is **deferred to Mon 5/25** so this week stays focused on the data layer.
 
@@ -274,7 +290,9 @@ _(no `[+Nm]` prefixes captured this session)_
 - First pass MVP: position + points + wins for F1 and IndyCar drivers (only series with live standings). Country / headshot can be Phase 2.
 - ~2-3 h.
 
-**Priority 5 — Cron infrastructure scaffolding** for the per-session refresh architecture:
+**Priority 5 — Tier-1 drivers.json bulk-commit (6 series):** validate the 6 agent outputs already in conversation context (motogp, wsbk, f2, **f3**, formula-e, dtm). Web-search-verify each per `feedback-paddock-search-for-missing-data` rule. Bulk-commit as one PR with all 6 new `content/series/<slug>/drivers.json` files. F3 is in this batch — operator's mental model thought F3 was covered; reality is only the Wikipedia fallback was rendering. **Dispatch the 7 Tier-2 agents in background early AM** (wec, imsa, gt-world, nls, wrc, nascar-cup, adac-ravenol-24h) so their outputs are ready Thu. ~1-2 h Wed PM total.
+
+**Priority 6 — Cron infrastructure scaffolding** for the per-session refresh architecture:
 - Master cron reading `sessions.json` → enqueueing per-session scrape jobs at `session.end + 30 min`.
 - Vercel Sandbox setup for Playwright-driven SPA scraping (will use for MotoGP / WEC / IMSA later this week).
 - KV-based result storage as bridge until Supabase.
