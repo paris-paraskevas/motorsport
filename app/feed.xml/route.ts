@@ -33,15 +33,17 @@ export async function GET() {
     .join('\n');
 
   // lastBuildDate tracks content freshness, not response time, so RSS clients
-  // (and Google) only re-poll when posts actually change.
-  const lastBuildDate =
+  // (and Google) only re-poll when posts actually change. Omit entirely when
+  // there are no posts — better silent than emitting an obviously bogus epoch
+  // date that aggregators will either ignore or treat as a dead feed.
+  const lastBuildDateTag =
     posts.length > 0
-      ? new Date(
+      ? `<lastBuildDate>${new Date(
           Math.max(
             ...posts.map(p => new Date(p.frontmatter.publishedAt).getTime()),
           ),
-        ).toUTCString()
-      : new Date(0).toUTCString();
+        ).toUTCString()}</lastBuildDate>\n    `
+      : '';
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -51,8 +53,7 @@ export async function GET() {
     <description>${escapeXml(SITE_DESCRIPTION)}</description>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
     <language>en</language>
-    <lastBuildDate>${lastBuildDate}</lastBuildDate>
-    <ttl>60</ttl>
+    ${lastBuildDateTag}<ttl>60</ttl>
     <category>Sports/Motorsport</category>
     <image>
       <url>${SITE_URL}/icons/icon-192.png</url>

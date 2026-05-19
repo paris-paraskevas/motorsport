@@ -8,6 +8,9 @@ import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendStandingsSnapshot } from '@/components/weekend/WeekendStandingsSnapshot';
 import { WeekendNews } from '@/components/weekend/WeekendNews';
+import { JsonLd } from '@/components/JsonLd';
+import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -91,9 +94,14 @@ export default async function WeekendPage({
   if (!weekend) notFound();
 
   const now = new Date();
-  const { end } = weekendStartEnd(weekend);
+  const { start, end } = weekendStartEnd(weekend);
   const isPast = end.getTime() < now.getTime();
   const color = series.meta.color;
+  const { title: weekendTitleLabel } = weekendLabel(weekend, round);
+  const eventName =
+    weekendTitleLabel === `Round ${round}`
+      ? `${series.meta.name} Round ${round}`
+      : `${series.meta.name} — ${weekendTitleLabel}`;
 
   return (
     <div
@@ -103,6 +111,27 @@ export default async function WeekendPage({
         ['--series-color' as string]: color,
       } as React.CSSProperties}
     >
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Home', url: SITE_URL },
+          { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
+          {
+            name: eventName,
+            url: `${SITE_URL}/series/${slug}/weekend/${round}`,
+          },
+        ])}
+      />
+      <JsonLd
+        data={sportsEventLd({
+          weekend,
+          series,
+          slug,
+          round,
+          title: eventName,
+          startDate: start,
+          endDate: end,
+        })}
+      />
       <div
         className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
         style={{

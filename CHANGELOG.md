@@ -2,6 +2,59 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.34 — 2026-05-19
+
+**B8** — JSON-LD structured data across the site. Plus a one-line fix to a self-inflicted bug in the 0.10.31 RSS hardening that the post-PR-#50 verification sweep caught.
+
+### Added — JSON-LD bundle (B8)
+
+Per Track B audit + the SEO/GEO playbook's chapter on Schema.org. Five of the six originally-scoped schemas ship here; **ProfilePage** is deferred because `/drivers/[slug]` + `/teams/[slug]` still 404 until `content/series/*/drivers.json` lands (B-content workstream).
+
+- **`lib/json-ld.ts`** — typed builders for the five schemas. Pure functions; no I/O. Exposes stable `@id` constants (`ORG_ID = ${SITE_URL}/#org`, `WEBSITE_ID = ${SITE_URL}/#website`) so other schemas can reference the canonical site identity via `{ '@id': ORG_ID }` instead of redeclaring Organization on every page. Cuts payload size and gives Google a deterministic identity graph.
+- **`components/JsonLd.tsx`** — one server component, one `<script type="application/ld+json">` per call. Escapes `<` → `<` in the stringified body so an HTML-parser-level `</script>` breakout is impossible even if any user-controlled string ever sneaks into a JSON-LD payload. SSR-only — no client JS, no hydration. Matches the playbook's "Don't inject canonicals or JSON-LD via client JavaScript" guardrail.
+
+#### Schemas + page wiring
+
+| Schema | Pages |
+|---|---|
+| `Organization` + `WebSite` | `app/page.tsx` (home only — per playbook, `@id` lets every other schema reference these without re-declaring) |
+| `BreadcrumbList` (≥2 items) | `app/calendar`, `app/about`, `app/changelog`, `app/blog`, `app/blog/[slug]`, `app/series/[slug]`, `app/series/[slug]/weekend/[round]` |
+| `SportsEvent` | `app/series/[slug]/weekend/[round]/page.tsx` — one per weekend (not per session). Per the playbook's "highest-leverage enriched-result type" call-out for motorsport. |
+| `Article` | `app/blog/[slug]/page.tsx` — published date doubles as modified date (no edit tracking yet); `image` only emitted when `heroImage` frontmatter present, otherwise omitted (better than fake-default). |
+
+#### Decisions taken
+
+- **No `SearchAction` on `WebSite`.** Google sunset the sitelinks searchbox in 2024 per the playbook + handoff. The schema-without-searchbox still earns the site-name display in branded SERP results, which is the remaining value.
+- **`SportsEvent.location.address` omitted.** We have freeform session.location strings (e.g. `"Silverstone Circuit, Towcester, UK"`) but no normalized `PostalAddress`. Spec-valid to emit `Place` with `name` only; Rich Results Test may warn but the schema still validates. Wiring full addresses needs circuit data — defer to B-content / S6.
+- **No `subEvent` array on `SportsEvent`.** The playbook flagged "open question: one event per weekend or one per session with `superEvent` chain". One-per-weekend chosen as the conservative start. Rich Results Test will tell us whether the per-session granularity is worth the markup cost.
+- **BreadcrumbList scope = Tier 1 + Tier 2 pages only.** The 7 legal pages (privacy/terms/cookies/accessibility/do-not-sell/imprint/impressum) skipped this round — they're 2-item breadcrumbs (`Home > Legal Page`) with low crawl-value relative to the markup churn. Add when bandwidth is free.
+- **`Article.author` hardcoded to `"Paris Paraskevas"`.** Single-author site for now; when contributor #2 (Fotis) starts authoring, switch to `frontmatter.author` with a fallback.
+
+### Fixed
+
+- **`app/feed.xml/route.ts`** — `<lastBuildDate>Thu, 01 Jan 1970 00:00:00 GMT</lastBuildDate>` was emitting on every deploy because `content/posts/` is empty and my 0.10.31 fallback path was `new Date(0).toUTCString()` (Unix epoch). RSS aggregators that respect `lastBuildDate` would either ignore the field as obviously bogus, or de-prioritize the feed because nothing has "changed" since 1970. Caught by the post-PR-#50 verification curl sweep. **Fix:** omit the `<lastBuildDate>` tag entirely when there are zero posts. Spec says the field is optional; silent > bogus.
+
+### Verified
+
+- `tsc --noEmit` clean.
+- `next build` clean. All routes unchanged in render mode.
+- `vitest run` — 89/89 pass.
+- Build log shows no schema-specific warnings.
+
+### Test plan after deploy
+
+- Paste `https://paddock-tracker.com/` into the [Rich Results Test](https://search.google.com/test/rich-results) — expect `Organization` + `WebSite` detected, no errors.
+- Test `https://paddock-tracker.com/series/f1/weekend/9` — expect `SportsEvent` + `BreadcrumbList`. Validate that the `location` warning (no `address`) is the only soft signal.
+- Test `https://paddock-tracker.com/blog/<any-post>` if posts exist — expect `Article` + `BreadcrumbList`.
+- Curl `/feed.xml` — confirm `<lastBuildDate>` no longer present (until a post lands).
+- Bing URL Inspector "Live URL" tab on home — expect the existing "Markup type" indicator to now show 2 types (was 1 — OpenGraph only).
+
+### Notes
+
+- `ProfilePage` ships when `content/series/*/drivers.json` lands. The builder is intentionally NOT in `lib/json-ld.ts` yet — easier to design once we have real driver/team page shape.
+- `SoftwareApplication` (B8b in the audit) gated on `aggregateRating` per the playbook. Park until a real review surface exists.
+- If/when B11 (path-based tabs) lands, the `BreadcrumbList` items on `/series/[slug]` may grow a third tier (`Home > Series > Tab`). The builder already accepts an arbitrary number of items.
+
 ## 0.10.33 — 2026-05-19
 
 **IndexNow** — push protocol that lets Bing / Yandex / Seznam know about new and updated URLs without waiting for them to crawl us. Plus two small carry-overs from the prior session's SEO scrutiny: a missing `alternates.canonical` on the weekend page, and a sharper `/blog` description.

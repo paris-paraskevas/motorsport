@@ -5,6 +5,9 @@ import { ChevronLeft } from 'lucide-react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { listPostSlugs, loadPost } from '@/lib/posts';
 import { mdxComponents } from '@/components/mdx/mdx-components';
+import { JsonLd } from '@/components/JsonLd';
+import { articleLd, breadcrumbLd } from '@/lib/json-ld';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,8 +57,18 @@ export default async function PostPage({
   const post = await loadPost(slug);
   if (!post) notFound();
 
+  const postUrl = `${SITE_URL}/blog/${slug}`;
+
   return (
     <div className="max-w-2xl lg:max-w-3xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Home', url: SITE_URL },
+          { name: 'Blog', url: `${SITE_URL}/blog` },
+          { name: post.frontmatter.title, url: postUrl },
+        ])}
+      />
+      <JsonLd data={articleLd({ post, url: postUrl })} />
       <Link
         href="/blog"
         className="inline-flex items-center gap-1 text-xs font-medium text-text-faint hover:text-text-muted transition-colors duration-(--duration-fast) mb-6"

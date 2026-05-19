@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.34 — 2026-05-19
+
+Internal: structured-data markup so search engines and AI assistants understand what each page is, plus a one-line follow-up fix on the RSS feed.
+
+- **Pages now carry Schema.org structured data.** Every weekend page declares itself as a sports event with start time, end time, location, and championship organizer. Every blog post declares its author, publish date, and headline. The home page declares the site identity. Every nested page declares its breadcrumb hierarchy (home → section → page). Search engines and LLM assistants use this markup to surface richer results and to disambiguate what each URL is about. No visible change.
+- **RSS feed no longer emits a 1970 "last updated" date** when the blog is empty. RSS aggregators that respect that field would have either ignored it or treated the feed as dead. Now it's simply omitted until the first post is published.
+
 ## 0.10.33 — 2026-05-19
 
 Internal: faster Bing / DuckDuckGo / ChatGPT Search indexing, plus two small polish edits on blog and weekend pages.

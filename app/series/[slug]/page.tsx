@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '@/lib/series';
 import { resolveTab, labelForTab, describeTab, TabKey } from '@/lib/tabs';
+import { JsonLd } from '@/components/JsonLd';
+import { breadcrumbLd } from '@/lib/json-ld';
+import { SITE_URL } from '@/lib/site';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
@@ -110,6 +113,12 @@ export default async function SeriesPage({
         } as React.CSSProperties
       }
     >
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Home', url: SITE_URL },
+          { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
+        ])}
+      />
       {/* Series-color wash — subtle, only at top, only on this page */}
       <div
         className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
