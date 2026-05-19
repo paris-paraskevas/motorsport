@@ -2,6 +2,30 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.28 — 2026-05-19
+
+### Added
+- **F1 History tab now renders curated content** from `content/series/f1/history.md` instead of dumping Wikipedia article HTML via `dangerouslySetInnerHTML`. The new content is a ~545-word three-section piece (Origin / Turning points / Today's shape) cited against Tier-0 / Tier-1 / Tier-3 / Tier-4 sources (15 footnotes: Formula1.com, FIA archives, Doug Nye's *Autocourse History of the Grand Prix Car*, 8W/Forix "Defining moments," Motor Sport Magazine, Autosport, The Race, Joe Saward, StatsF1). Renders an "Authored by Paris Paraskevas. Last updated 19 May 2026." byline at the bottom of the tab, sourced from the markdown frontmatter.
+- **`docs/content-authoring/`** infrastructure for prose-content authoring across the per-series literacy tabs:
+  - `README.md` — the canonical drafting protocol + 12 article-authoring principles (Wikipedia MoS, Nielsen Norman Group, GOV.UK content design, WCAG 2.2 §3.1.5).
+  - `SOURCES.md` — 31-source tiered list (Tier 0 print canon / Tier 1 governing / Tier 2 specialist journalism / Tier 3 statistical / Tier 4 specialist deep history / Tier 5 community / Tier 6 video).
+  - `drafts/f1-history.md` — the working draft + iteration log (drafts 1 → 4) + long-form decade-by-decade alternate (~1000 w) preserved for future driver / team / season-recap pages.
+- **`loadMarkdownWithFrontmatter`** function in `lib/content.ts` — returns `{ html, frontmatter }` for any markdown file. Used by `HistoryTab` / `RulesTab` to read the `author` and `last-updated` frontmatter fields for the byline. `loadMarkdownAsHtml` is preserved unchanged for backwards compatibility with the legal pages and `/changelog`.
+
+### Changed
+- **`components/tabs/HistoryTab.tsx`** rewritten as a markdown-content renderer. Reads `content/series/<slug>/history.md`; falls back to `PlaceholderTab` when the file is missing or empty. All 14 series other than F1 currently show the placeholder.
+- **`components/tabs/RulesTab.tsx`** rewritten on the same pattern. Reads `content/series/<slug>/rules.md`; falls back to `PlaceholderTab` (all 15 series, until Rules content lands). The "Further reading" external-sources card (official site + standings URL) is preserved and renders independently of the markdown content.
+
+### Removed
+- **`lib/wikipedia-article.ts`** — the `fetchWikipediaSection(page, headings)` helper is dead code after the `HistoryTab` and `RulesTab` refactors. Closes the four problems the Wikipedia-dump pattern caused on those tabs: CC BY-SA licence-attribution drift, duplicate-content SEO drag, outbound-link authority leakage to en.wikipedia.org, and the Wikimedia image hot-link policy violation.
+- The `Wikipedia` source badge in the tab footer is also gone — the new tabs cite their sources inline via markdown footnotes.
+
+### Notes
+- Closes Track A, PR A5 (the original Wikipedia-content removal item from the post-marathon legal/risk closure track), albeit through a different route than the handoff originally envisioned: the handoff proposed deleting the Wikipedia path + shipping infra + 3 series (F1, MotoGP, WEC) filled. This PR delivers infra + F1 only; MotoGP and WEC come as per-series follow-ups under the same template established here. The other 12 series ship as separate PRs once their content is drafted under the workflow in `docs/content-authoring/README.md`.
+- `lib/wikipedia.ts` (general summary fetcher, still used by `AboutTab`), `lib/wikipedia-season.ts` (live driver-lineup scrape until per-series `drivers.json` files exist), and `lib/wikipedia-champions.ts` (still referenced by `ChampionsTab` though champions are curated end-to-end now) are unchanged. They have legitimate consumers and will be retired individually as those consumers transition.
+- `series.meta.wikipediaPage` field unchanged — still referenced by `AboutTab`, `ChampionsTab`, and `DriversTab`.
+- F1 history content is ~545 words across three H2 sections (Origin / Turning points / Today's shape), with the Turning points block subdivided into H3 (Technical revolutions / Safety reform / Contested championships). Followed all 12 article-authoring principles in `docs/content-authoring/README.md`; the principle-by-principle audit lives in the iteration log in `docs/content-authoring/drafts/f1-history.md`.
+
 ## 0.10.27 — 2026-05-19
 
 ### Changed
