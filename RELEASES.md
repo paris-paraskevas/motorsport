@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.29 — 2026-05-19
+
+Two small follow-up fixes for the F1 History tab introduced yesterday.
+
+- **Clicking the citation superscript now scrolls to the footnote** (and the `↩` backref scrolls back up). In 0.10.28 the link target IDs had an extra prefix that no anchor matched, so clicks updated the URL but the page stayed put.
+- **The byline at the bottom of the History tab now shows the "Last updated" date** alongside the author, as intended.
+
 ## 0.10.28 — 2026-05-19
 
 The F1 History tab now reads as Paddock, not Wikipedia.
