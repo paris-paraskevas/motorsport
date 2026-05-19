@@ -9,13 +9,20 @@ const MONTHS = [
 ];
 
 function formatLastUpdated(value: unknown): string | null {
-  if (typeof value !== 'string') return null;
-  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!iso) return value;
-  const day = parseInt(iso[3], 10);
-  const monthIndex = parseInt(iso[2], 10) - 1;
-  const year = iso[1];
-  if (!MONTHS[monthIndex]) return value;
+  // gray-matter parses YAML `last-updated: 2026-05-19` as a Date object,
+  // not a string. Handle both forms.
+  let iso: string | null = null;
+  if (typeof value === 'string') iso = value;
+  else if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    iso = value.toISOString().slice(0, 10);
+  }
+  if (!iso) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m) return iso;
+  const day = parseInt(m[3], 10);
+  const monthIndex = parseInt(m[2], 10) - 1;
+  const year = m[1];
+  if (!MONTHS[monthIndex]) return iso;
   return `${day} ${MONTHS[monthIndex]} ${year}`;
 }
 

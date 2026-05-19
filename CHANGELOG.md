@@ -2,6 +2,18 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.29 — 2026-05-19
+
+### Fixed
+- **Footnote anchors on the F1 History tab now scroll on click.** The 0.10.28 markdown pipeline rendered footnote IDs with a doubled `user-content-` prefix (`id="user-content-user-content-fn-1"`) while the corresponding hrefs only carried a single prefix (`href="#user-content-fn-1"`), so clicking a citation superscript updated the URL hash but no element on the page matched the target and the scroll never happened. Backref `↩` links were broken in the same direction. Root cause: `remark-html` (via `mdast-util-to-hast`) silently drops the `clobberPrefix` option passed in its top-level options object — the prefix gets re-applied during the HAST conversion on top of the already-prefixed IDs that `remark-gfm`'s footnote extension emits. Fix: a `normaliseFootnoteIds(html)` post-process pass in `lib/content.ts` that strips the doubled prefix off IDs (`id="user-content-user-content-` → `id="user-content-`). Applied to both `loadMarkdownAsHtml` and `loadMarkdownWithFrontmatter`. Operator-curated markdown does not produce raw `id="user-content-user-content-` strings, so the replace is precise.
+
+- **"Last updated" date now renders in the History tab byline.** The 0.10.28 byline rendered as "Authored by Paris Paraskevas." with no date. The `formatLastUpdated` helper in `HistoryTab.tsx` and `RulesTab.tsx` checked `typeof value === 'string'` only, but `gray-matter` parses YAML `last-updated: 2026-05-19` as a JavaScript `Date` object (per YAML spec). Fix: the helper now also accepts `Date` instances and converts via `toISOString().slice(0, 10)` before the existing parse-and-reformat path. Both tabs render "Authored by Paris Paraskevas. Last updated 19 May 2026." now.
+
+### Notes
+- Both fixes verified against `lib/content.ts` rendering in isolation (every `href="#user-content-..."` now has a matching `id="user-content-..."`; zero orphan hrefs) and against the actual rendered F1 History tab in a local dev server.
+- A cleaner long-term fix for the footnote-ID double-prefix would be to switch the markdown pipeline from `remark-html` to a `unified()` chain that uses `remark-rehype` directly (which DOES honour `clobberPrefix`). That requires installing `rehype-stringify` as a new dependency. Tracked separately; not in this PR. The post-process pass is precise and unambiguous against operator-curated content.
+- Test suite unchanged at 82/82.
+
 ## 0.10.28 — 2026-05-19
 
 ### Added

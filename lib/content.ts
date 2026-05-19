@@ -4,6 +4,18 @@ import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkHtml from 'remark-html';
 
+// remark-html (via mdast-util-to-hast) double-applies the clobber prefix to
+// footnote element IDs but only single-applies it to the corresponding hrefs,
+// so the in-page scroll-to-footnote behaviour silently breaks. remark-html
+// silently drops `clobberPrefix` options, and rehype-stringify isn't an
+// existing dependency, so the pragmatic fix is a post-process pass that
+// normalises the doubled prefix on IDs. Only affects footnote-related IDs
+// (the only IDs the pipeline generates from operator-curated markdown);
+// operator content does not contain raw `id="user-content-user-content-"`.
+function normaliseFootnoteIds(html: string): string {
+  return html.replace(/id="user-content-user-content-/g, 'id="user-content-');
+}
+
 export async function loadMarkdownAsHtml(filePath: string): Promise<string> {
   let raw: string;
   try {
@@ -17,7 +29,7 @@ export async function loadMarkdownAsHtml(filePath: string): Promise<string> {
     .use(remarkGfm)
     .use(remarkHtml)
     .process(content);
-  return processed.toString();
+  return normaliseFootnoteIds(processed.toString());
 }
 
 export interface MarkdownDocument {
@@ -40,5 +52,5 @@ export async function loadMarkdownWithFrontmatter(
     .use(remarkGfm)
     .use(remarkHtml)
     .process(content);
-  return { html: processed.toString(), frontmatter: data };
+  return { html: normaliseFootnoteIds(processed.toString()), frontmatter: data };
 }
