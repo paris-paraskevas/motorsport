@@ -12,7 +12,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Paddock — Live F1, MotoGP, WEC, IndyCar & NASCAR schedule',
+    absolute: 'Paddock Tracker — Live F1, MotoGP, WEC, IndyCar & NASCAR schedule',
   },
   description:
     'Live motorsport schedule and news across F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more — in your local time.',

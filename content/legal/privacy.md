@@ -2,9 +2,9 @@
 
 _Last updated: 2026-05-19_
 
-This Privacy Policy explains what personal data Paddock collects, how it is used, who it is shared with, how long it is kept, and the rights you have over it. It applies to https://paddock-tracker.com (the "Site").
+This Privacy Policy explains what personal data Paddock Tracker collects, how it is used, who it is shared with, how long it is kept, and the rights you have over it. It applies to https://paddock-tracker.com (the "Site").
 
-Paddock is operated as a personal project by Paris Paraskevas. Contact: **pparaskevas.dev@gmail.com**.
+Paddock Tracker is operated as a personal project by Paris Paraskevas. Contact: **pparaskevas.dev@gmail.com**.
 
 If you do not agree with this policy, please do not use the Site.
 
@@ -116,7 +116,7 @@ For visitors in the EEA, UK, and Switzerland we use **Google's certified Consent
 
 ## 9. Children
 
-Paddock is not directed at children under 13 (or 16 in some jurisdictions). We do not knowingly collect data from children. If you believe a child has provided us data, contact us and we will delete it.
+Paddock Tracker is not directed at children under 13 (or 16 in some jurisdictions). We do not knowingly collect data from children. If you believe a child has provided us data, contact us and we will delete it.
 
 ## 10. Security
 

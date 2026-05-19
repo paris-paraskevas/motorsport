@@ -20,7 +20,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border mt-12">
       <div className="max-w-2xl lg:max-w-5xl mx-auto px-4 md:px-6 lg:px-8 py-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-faint">
-        <span className="tnum font-mono">Paddock v{APP_VERSION}</span>
+        <span className="tnum font-mono">Paddock Tracker v{APP_VERSION}</span>
         <Sep />
         <FooterLink href="/changelog">Release notes</FooterLink>
         <Sep />

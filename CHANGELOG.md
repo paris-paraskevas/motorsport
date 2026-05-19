@@ -2,6 +2,44 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.38 — 2026-05-19
+
+### Changed
+
+**Site-wide brand rename: "Paddock" → "Paddock Tracker"** for all user-facing surfaces. Driven by Google's SERP title-rewrite collapsing the home `<title>` down to just the brand name ("Paddock") because that's what `Organization.name` + `WebSite.name` in our JSON-LD declared (PR #51 / 0.10.34). "Paddock" alone is too generic in SERP (F1 paddock, horse paddock, clothing brand) — "Paddock Tracker" disambiguates and aligns with the `paddock-tracker.com` domain.
+
+Internal short-form "Paddock" preserved in collaboration / engineering docs per operator decision: this `CHANGELOG.md`, `CLAUDE.md`, `AGENTS.md`, `IDEAS.md`, `SCHEDULE.md`, `docs/HANDOFF.md`, `docs/perf-baselines.md`, `docs/seo-geo-playbook.md`, `docs/audit-seo-geo-2026-05-19.md`, `docs/content-authoring/*`, `docs/design/paddock-1.0.md`, `docs/research/*`, `memory/*`. Also untouched: `app/globals.css` (design-token comments reference the "Paddock 1.0" versioned design system identifier), `content/series/adac-ravenol-24h/sessions.json` ("Paddock Scrutineering building" is the literal Nürburgring venue location).
+
+#### Source-of-truth changes (cascade everywhere via imports)
+
+- **`lib/site.ts`** — `SITE_TITLE: 'Paddock' → 'Paddock Tracker'`. Imported by `app/layout.tsx`, `app/feed.xml/route.ts` (had a duplicate local constant — both updated), `lib/json-ld.ts`. Drives `<title>` template (`'%s — Paddock Tracker'`), OpenGraph + Twitter card titles, RSS channel title.
+- **`lib/json-ld.ts`** — `Organization` + `WebSite` schemas now expose `name: SITE_TITLE` (auto-resolves to "Paddock Tracker") with `alternateName: 'Paddock'` (flipped from prior — was "Paddock Tracker" as the alternate of "Paddock"). Google reads `name` as the primary site identity for SERP brand display.
+- **`public/manifest.json`** — `name: "Paddock Tracker"`. **`short_name: "Paddock"` deliberately preserved** — PWA homescreen icons need <12 chars; "Paddock Tracker" is 15.
+
+#### Direct edits across user-facing surfaces
+
+- **App pages with metadata:** `app/page.tsx` (home `<title>`), `app/about/page.tsx`, `app/changelog/page.tsx`, `app/accessibility/page.tsx`, `app/cookies/page.tsx`, `app/do-not-sell/page.tsx`, `app/privacy/page.tsx`, `app/terms/page.tsx` — descriptions.
+- **OG image:** `app/opengraph-image.tsx` — `alt` text + the rendered text inside the 1200×630 PNG.
+- **APIs / service worker:** `app/api/contact/route.ts` (Resend `from` display name + email subject prefix), `app/api/push/test/route.ts` (push test notification title), `app/sw.ts` (push notification fallback title + body).
+- **Components:** `components/AppShell.tsx` (mobile header label + sidebar brand label), `components/Footer.tsx` (version footer), `components/HomeContent.tsx` (sr-only H1), `components/PWAInstallPrompt.tsx` (install prompts).
+- **Content:** `content/legal/privacy.md`, `content/legal/terms.md`, `content/legal/cookies.md`, `content/legal/accessibility.md`, `content/legal/do-not-sell.md` (Cookie Policy table "Provider" column updated; lowercase `paddock:consent` localStorage keys preserved).
+- **Public-facing docs:** `public/llms.txt`, `RELEASES.md`, `README.md`, `CONTRIBUTING.md`, `ONBOARDING.md`.
+- **Misc strings:** `lib/tabs.ts` (about-tab description + JSDoc title-template comment).
+- **User-Agent strings:** `lib/news.ts` + `scripts/audit-wikipedia.mjs` — `'Paddock-PWA'` → `'PaddockTracker-PWA'` (no space inside the UA identifier per HTTP-UA convention).
+
+### Post-deploy actions
+
+- **Operator** — GSC → URL Inspection → Request Indexing for `/` (accelerates Google re-crawl).
+- **Operator** — Bing Webmaster Tools → URL Submission for `/` (Bing usually refreshes within 1-3 days).
+- **Claude** — `npm run indexnow:submit` after merge (auto-pings Bing / Yandex / DuckDuckGo / Seznam / others).
+- **SERP title refresh ETA:** ~1-2 weeks Google, ~1-3 days Bing. Re-crawl ≠ title rewrite — Google's title-rendering pipeline is separate from indexing and updates on its own algorithmic timeline.
+
+### Verified
+
+- `tsc --noEmit` clean.
+- `vitest run` — 90/90 tests pass (existing suite, no new tests for the rename — it's a literal text replacement, not behavior).
+- Spot-checked `manifest.json` (`name` updated, `short_name` preserved), `lib/json-ld.ts` (`alternateName` correctly flipped to `'Paddock'`), no `'Paddock Tracker Tracker'` double-replacement anywhere.
+
 ## 0.10.37 — 2026-05-19
 
 ### Added

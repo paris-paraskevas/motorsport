@@ -2,7 +2,7 @@
 
 _Last updated: 2026-05-19_
 
-Paddock aims to be usable by everyone. This statement describes the accessibility status of the Site, known limitations, and how to reach us if something blocks you from using it.
+Paddock Tracker aims to be usable by everyone. This statement describes the accessibility status of the Site, known limitations, and how to reach us if something blocks you from using it.
 
 ## Standard
 

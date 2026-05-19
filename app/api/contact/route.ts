@@ -44,10 +44,10 @@ async function sendViaResend(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Paddock Contact <contact@paddock-tracker.com>',
+        from: 'Paddock Tracker Contact <contact@paddock-tracker.com>',
         to: toAddress,
         reply_to: fromEmail,
-        subject: `[${categoryLabel}] Paddock contact from ${fromEmail}`,
+        subject: `[${categoryLabel}] Paddock Tracker contact from ${fromEmail}`,
         text: `Category: ${categoryLabel}\nFrom: ${fromEmail}${userId ? ` (clerk user: ${userId})` : ''}\n\n${message}`,
       }),
     });

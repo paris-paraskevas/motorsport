@@ -1,4 +1,4 @@
-# Paddock
+# Paddock Tracker
 
 Personal motorsport companion — live calendar, weekend pages, news, weather, and standings across F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more.
 

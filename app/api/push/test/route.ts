@@ -38,7 +38,7 @@ export async function POST() {
     let evicted = 0;
     for (const { subscription } of subs) {
       const result = await sendPushTo(subscription, {
-        title: 'Paddock — test',
+        title: 'Paddock Tracker — test',
         body: 'Push notifications are wired up. You\'ll hear about upcoming sessions.',
         url: '/',
         tag: 'paddock-test',

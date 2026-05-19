@@ -6,7 +6,7 @@ Under the **California Consumer Privacy Act (CCPA)** and the **California Privac
 
 ## We do not sell personal information
 
-Paddock does not sell personal information for money or other valuable consideration.
+Paddock Tracker does not sell personal information for money or other valuable consideration.
 
 ## We do share for advertising
 

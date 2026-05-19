@@ -56,7 +56,7 @@ export function AppShell({
             href="/"
             className="ml-2 text-text font-semibold text-base tracking-tight"
           >
-            Paddock
+            Paddock Tracker
           </Link>
           <HeaderUtils className="ml-auto" seriesList={seriesList} />
         </div>
@@ -90,7 +90,7 @@ export function AppShell({
             href="/"
             className="text-text font-semibold text-lg tracking-tight"
           >
-            Paddock
+            Paddock Tracker
           </Link>
           <button
             type="button"

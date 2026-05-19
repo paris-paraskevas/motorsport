@@ -1,6 +1,14 @@
 # Releases
 
-What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
+What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
+
+## 0.10.38 — 2026-05-19
+
+**Renamed: "Paddock" → "Paddock Tracker"** everywhere on the site. Same product, more specific name — aligned with the `paddock-tracker.com` domain. The rename touches the browser tab title, the PWA app name, sidebar brand label, footer version line, RSS feed title, push notification titles, OG image, contact form email subject, and all legal pages.
+
+- The home-screen icon label still reads "Paddock" — icon labels need short text and "Paddock Tracker" is too long for that surface.
+- **No data or settings affected** — your followed series, push subscriptions, sign-in account, and consent choices are unchanged.
+- **Search engines need time to catch up.** Google can take ~1-2 weeks to reflect the new name in search results; Bing typically refreshes within 1-3 days. We've pushed an explicit re-index request for both.
 
 ## 0.10.37 — 2026-05-19
 
@@ -26,7 +34,7 @@ Internal: structured-data markup so search engines and AI assistants understand 
 
 Internal: faster Bing / DuckDuckGo / ChatGPT Search indexing, plus two small polish edits on blog and weekend pages.
 
-- **Paddock now uses IndexNow** — a free push protocol Microsoft built so search engines learn about new pages without waiting to crawl them. Effective immediately for **Bing**, **DuckDuckGo** (uses Bing), **Yahoo**, **Ecosia**, **Qwant**, **ChatGPT Search**, **Copilot**, **Yandex**, and **Seznam**. No effect on Google (different protocol) or Brave (no protocol; relies on organic crawling).
+- **Paddock Tracker now uses IndexNow** — a free push protocol Microsoft built so search engines learn about new pages without waiting to crawl them. Effective immediately for **Bing**, **DuckDuckGo** (uses Bing), **Yahoo**, **Ecosia**, **Qwant**, **ChatGPT Search**, **Copilot**, **Yandex**, and **Seznam**. No effect on Google (different protocol) or Brave (no protocol; relies on organic crawling).
 - **The blog index page now has a more specific description** for search engine snippets — naming the series we cover rather than the generic site-wide tagline.
 - **Weekend pages now declare their canonical URL explicitly** — closes a small SEO gap where Google had to infer the canonical form from context. No visible change.
 
@@ -44,15 +52,15 @@ A second pass of search-engine-and-AI-crawler improvements. Internal — no visi
 
 - **Sign-in, sign-up, and settings pages now ask search engines not to index them.** Those pages have no public content to rank, so they shouldn't show up in Google results when someone searches the site by name. The Calendar, About, Changelog, and the five legal pages each now also have their own short description, so Google can show something useful and specific in the search snippet instead of repeating the site-wide tagline.
 - **Race-weekend and session dates are now marked up in a machine-readable format.** Search engines, calendar tools, and AI assistants can now extract the exact start time of any session on the site directly from the page — not just the human-readable "Sat 12:30" string. Same content on screen; richer signal underneath.
-- **Outbound news links no longer pass ranking authority off-site.** When Paddock links out to a motorsport.com article or an official series site, those links now carry the standard `nofollow` hint search engines use to mark "this is a discovery link, not an endorsement". The on-screen behaviour is unchanged.
-- **The RSS feed is more polite to aggregators.** It now tells subscribers when it last actually changed (rather than re-claiming "fresh" on every poll), what category it belongs to, and where to find the Paddock logo for display in their reader.
-- **Google can now show larger images** from Paddock in Search and Discover. Until today the platform default was a small thumbnail; the new setting allows the full image.
+- **Outbound news links no longer pass ranking authority off-site.** When Paddock Tracker links out to a motorsport.com article or an official series site, those links now carry the standard `nofollow` hint search engines use to mark "this is a discovery link, not an endorsement". The on-screen behaviour is unchanged.
+- **The RSS feed is more polite to aggregators.** It now tells subscribers when it last actually changed (rather than re-claiming "fresh" on every poll), what category it belongs to, and where to find the Paddock Tracker logo for display in their reader.
+- **Google can now show larger images** from Paddock Tracker in Search and Discover. Until today the platform default was a small thumbnail; the new setting allows the full image.
 
 ## 0.10.30 — 2026-05-19
 
 Search engines and AI crawlers can now find every page on the site.
 
-- **Paddock now publishes a `robots.txt` and a `sitemap.xml`.** Until today, Google and other search engines had to guess which pages exist on paddock-tracker.com — they could only discover pages they happened to follow links into. Now they get a full list of every public URL: the home page, calendar, blog, about, changelog, all 15 series pages, every race-weekend page, and the legal pages. Search Console can ingest the sitemap directly; indexing should accelerate from "1 page found" toward full coverage over the next few weeks.
+- **Paddock Tracker now publishes a `robots.txt` and a `sitemap.xml`.** Until today, Google and other search engines had to guess which pages exist on paddock-tracker.com — they could only discover pages they happened to follow links into. Now they get a full list of every public URL: the home page, calendar, blog, about, changelog, all 15 series pages, every race-weekend page, and the legal pages. Search Console can ingest the sitemap directly; indexing should accelerate from "1 page found" toward full coverage over the next few weeks.
 - **A new `llms.txt` file** at the site root gives AI assistants (ChatGPT, Claude, Perplexity, Gemini and others) the same kind of map. Where `sitemap.xml` is the machine format Google reads, `llms.txt` is the markdown format LLM crawlers prefer.
 - No visible UI change.
 
@@ -65,7 +73,7 @@ Two small follow-up fixes for the F1 History tab introduced yesterday.
 
 ## 0.10.28 — 2026-05-19
 
-The F1 History tab now reads as Paddock, not Wikipedia.
+The F1 History tab now reads as Paddock Tracker, not Wikipedia.
 
 - **Original F1 history content** at [/series/f1?tab=history](/series/f1?tab=history). About 545 words across three sections — Origin, Turning points, Today's shape — with all the things you'd expect (Fangio, the rear-engine revolution, Lauda 1976, Imola 1994) plus the title-decider controversies (Suzuka 1989 and 1990, Adelaide 1994, Jerez 1997, Crashgate 2008, Abu Dhabi 2021). Cited inline against authoritative motorsport sources — Formula1.com, FIA archives, Doug Nye's *Autocourse History of the Grand Prix Car*, 8W/Forix, Motor Sport Magazine, Autosport, The Race, Joe Saward, StatsF1. No more Wikipedia article dump on the tab.
 - **An authored byline at the bottom** of the History tab. Will appear on every series's History tab as their content lands.
@@ -101,7 +109,7 @@ Postal-address blocks on the legal pages now render properly across multiple lin
 
 Imprint page added; privacy policy now lists the operator's full postal address.
 
-- **Paddock now has an Imprint page** at [/imprint](/imprint), also reachable at [/impressum](/impressum). It sets out who runs the Site, where they are, how to reach them, and who is editorially responsible for the blog content. German and other EEA visitors expect this as a matter of course; it is now linked from the footer.
+- **Paddock Tracker now has an Imprint page** at [/imprint](/imprint), also reachable at [/impressum](/impressum). It sets out who runs the Site, where they are, how to reach them, and who is editorially responsible for the blog content. German and other EEA visitors expect this as a matter of course; it is now linked from the footer.
 - **Privacy policy controller section** now lists the operator's full postal address alongside the email, satisfying GDPR's identity-and-contact disclosure requirements for an EU-served audience.
 
 ## 0.10.22 — 2026-05-19
@@ -134,7 +142,7 @@ The EU cookie banner now actually shows up.
 
 One cookie banner, not two.
 
-- **Paddock now uses Google's certified Consent Management Platform** (Funding Choices) for the EU cookie banner. The custom in-app banner has been removed so there's a single consent UI to interact with. You can re-open Google's banner at any time via the small "Consent" / shield icon Google injects on the page.
+- **Paddock Tracker now uses Google's certified Consent Management Platform** (Funding Choices) for the EU cookie banner. The custom in-app banner has been removed so there's a single consent UI to interact with. You can re-open Google's banner at any time via the small "Consent" / shield icon Google injects on the page.
 - **Privacy / Cookies / Do Not Sell pages updated** to describe how to manage preferences through Google's CMP rather than the old custom banner.
 - **No-banner fallback:** if Google's CMP ever fails to display, ad and analytics cookies remain denied by default — there's no silent tracking gap.
 
@@ -150,9 +158,9 @@ Legal pages + real cookie consent.
 
 - **Five new policy pages**: `/privacy`, `/terms`, `/cookies`, `/accessibility`, and `/do-not-sell`. All linked from the footer. Covers what data we collect, who we share it with, your rights under GDPR/ePrivacy and (for California visitors) CCPA, the full cookie inventory, our accessibility target, and a dedicated opt-out path for CCPA "sharing" of personal information for advertising.
 - **The cookie banner now actually controls what fires.** Accepting or rejecting a category instantly updates Google's consent signals on the page — no refresh needed. Analytics and ad cookies remain suppressed unless you've opted in. Previously the banner only stored your choice locally without telling Google.
-- **Global Privacy Control respected.** If your browser sends the GPC signal (Firefox setting, the Privacy Badger extension, others), Paddock automatically treats it as a "reject non-essential" choice and skips the banner.
+- **Global Privacy Control respected.** If your browser sends the GPC signal (Firefox setting, the Privacy Badger extension, others), Paddock Tracker automatically treats it as a "reject non-essential" choice and skips the banner.
 - **Cookie preferences are always reachable.** A "Cookie preferences" button now lives in the footer, and `/cookies` and `/do-not-sell` both have a button that re-opens the banner so you can change your mind any time.
-- **Consent record kept for 24 months** on Paddock's server so we can prove the choice was yours. Stored anonymously (no IP, no email) unless you're signed in, in which case your account is tagged so we can honour deletion requests.
+- **Consent record kept for 24 months** on Paddock Tracker's server so we can prove the choice was yours. Stored anonymously (no IP, no email) unless you're signed in, in which case your account is tagged so we can honour deletion requests.
 
 ## 0.10.15 — 2026-05-18
 
@@ -220,14 +228,14 @@ Calendars are now month-by-month.
 
 Browser-tab polish: real favicon and page-specific titles.
 
-- **Tab icon is now the Paddock chequered flag.** The previous favicon was a stale generic icon that read as a dark triangle on most tab backgrounds. Same Paddock logo as the app's home-screen icon, now in every browser tab.
-- **Each page has its own browser-tab title.** Open the calendar and the tab reads "Calendar — Paddock"; open an F1 weekend page and you get "Formula 1 · Bahrain GP · Round 1 — Paddock". Easier to find the right Paddock tab when you have several open.
+- **Tab icon is now the Paddock Tracker chequered flag.** The previous favicon was a stale generic icon that read as a dark triangle on most tab backgrounds. Same Paddock Tracker logo as the app's home-screen icon, now in every browser tab.
+- **Each page has its own browser-tab title.** Open the calendar and the tab reads "Calendar — Paddock Tracker"; open an F1 weekend page and you get "Formula 1 · Bahrain GP · Round 1 — Paddock Tracker". Easier to find the right Paddock Tracker tab when you have several open.
 
 ## 0.10.6 — 2026-05-18
 
 Race notifications now play a short F1 radio cue when the app is open.
 
-- **Notifications get a sound** when you have Paddock open in a tab. Quick F1 team-radio chirp so you don't miss a session start while reading something else. Notifications that arrive while the app is closed or in the background continue to use your system's default notification sound — adding a custom one there requires a native app wrapper, which stays on the roadmap.
+- **Notifications get a sound** when you have Paddock Tracker open in a tab. Quick F1 team-radio chirp so you don't miss a session start while reading something else. Notifications that arrive while the app is closed or in the background continue to use your system's default notification sound — adding a custom one there requires a native app wrapper, which stays on the roadmap.
 - **iOS heads-up:** browser restrictions on iOS Safari still mute custom audio for installed web apps. Android and desktop Chrome/Edge are the platforms that benefit today.
 
 ## 0.10.5 — 2026-05-18
@@ -238,7 +246,7 @@ Internal: authorized-seller declaration added at `/ads.txt`, required by the adv
 
 Cookie & ad-tracking groundwork.
 
-- **Ad and analytics cookies are now suppressed by default** for every visitor — fresh and returning — until explicit consent. Internally, Paddock now signals "deny" for ad storage, ad personalization, and analytics storage at page load. The cookie banner UI that lets you update this choice gets wired into these signals in the next release.
+- **Ad and analytics cookies are now suppressed by default** for every visitor — fresh and returning — until explicit consent. Internally, Paddock Tracker now signals "deny" for ad storage, ad personalization, and analytics storage at page load. The cookie banner UI that lets you update this choice gets wired into these signals in the next release.
 - **Google AdSense verification snippet added.** No ads are displayed yet — this is the inclusion step Google requires before reviewing the site for ad serving.
 
 ## 0.10.3 — 2026-05-18
@@ -252,7 +260,7 @@ ADAC 24h Nürburgring Past Winners — full history.
 Polish wave — small wins across notifications, errors, contact form, and ADAC content.
 
 - **Notification icon is now a chequered flag.** When you get a push notification on Android, the status-bar icon reads as motorsport-coded instead of a generic shape.
-- **Friendlier error page.** If something breaks while loading a page, you'll see a Paddock "Yellow flag" screen with a Try Again button instead of a raw stack trace.
+- **Friendlier error page.** If something breaks while loading a page, you'll see a Paddock Tracker "Yellow flag" screen with a Try Again button instead of a raw stack trace.
 - **Contact form gets categories.** Pick "Bug report", "Feature request", "Suggested change", or "General" — submissions self-sort in the inbox.
 - **ADAC 24h Past Winners filled in.** Ten years of winning teams + driver lineups (2015–2024). The tab is also renamed from "Champions" to "Past Winners" since ADAC is one annual race, not a championship.
 
@@ -266,7 +274,7 @@ Calendar accuracy pass + ADAC page cleanup.
 
 ## 0.10.0 — 2026-05-17
 
-Cross-device visual refresh — Paddock 1.0.
+Cross-device visual refresh — Paddock Tracker 1.0.
 
 - **The site now follows your system theme.** Light during the day, dark at night — switches automatically with your phone or laptop. Race weekends in low light feel right; daytime checks no longer blind you.
 - **Each series page takes on its championship's color.** Open F1 and the active tab glows red. MotoGP turns orange. IMSA blue. WSBK red. Series identity is visible everywhere — round labels, focus rings, the next-up card.
@@ -332,7 +340,7 @@ Race-weekend pages launched. Every round on every series gets its own page: hero
 
 ## 0.8.0 — 2026-05-15
 
-Paddock goes live on `paddock-tracker.com`. Custom domain, sign-in with Google, Vercel Analytics, Live-now pinned strip when any followed-series session is in progress, MDX blog at /blog, driver and team detail pages, full season results on F1, season trend charts, expanded standings, branded notifications with mute-series action, weather forecast on the next-session card, and an unlocked auth model (everything is browseable signed-out — accounts only unlock personalisation like push and follow lists).
+Paddock Tracker goes live on `paddock-tracker.com`. Custom domain, sign-in with Google, Vercel Analytics, Live-now pinned strip when any followed-series session is in progress, MDX blog at /blog, driver and team detail pages, full season results on F1, season trend charts, expanded standings, branded notifications with mute-series action, weather forecast on the next-session card, and an unlocked auth model (everything is browseable signed-out — accounts only unlock personalisation like push and follow lists).
 
 ## Pre-0.8.0
 
