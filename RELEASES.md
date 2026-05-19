@@ -2,6 +2,10 @@
 
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.41 — 2026-05-19
+
+Internal: session-end audit + plan for the rest of the week. No visible change.
+
 ## 0.10.39 — 2026-05-19
 
 **IndyCar standings are now live on the site.** Open `/series/indycar?tab=standings` to see the full 2026 drivers' championship — position, name, team, points, wins. Refreshed hourly from the official IndyCar source (`indycar.com/Standings`), with manual overrides supported for DSQ / penalty corrections.

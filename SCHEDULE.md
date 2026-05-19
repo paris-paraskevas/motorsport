@@ -235,42 +235,96 @@ Sixth sub-session same calendar day. Two parallel streams in flight:
 Active:
 _(no `[+Nm]` prefixes captured this session)_
 
-### Wed 2026-05-20 — planned
+### Tue 2026-05-19 — late-night extension — IndyCar standings + F1 drivers.json + week pivot
 
-**Priority 0 (deferred from Tue) — Bing scan fixes.** Three issues from the Bing Webmaster Tools Site Scan completed 2026-05-19: 8 weekend pages returning HTTP 404 (sitemap orphans from multi-race weekends — FE doubleheaders, IndyCar Milwaukee R2, NLS Sunday qualifier), 11 weekend pages with `<title>` >70 chars, 1 page with multiple `<h1>` (/changelog). Three small fixes, ~45 min total. Land before B-perf so the sitemap stops shipping broken promises.
+Seventh sub-session same calendar day. Operator's directive shifted from B-perf-Wed → data-ingestion blitz Tue→Sun. Shipped:
 
-**Priority 1 — B-perf, multi-PR.** Baselines: `docs/perf-baselines.md` (2026-05-19 row). Mobile RES 76 / LCP 3.67 s / TTFB 3.17 s / CLS 0.11. Desktop PSI surfaced 616 KiB unused JS (Clerk 224 / AdSense 157 / FundingChoices 98 / GTM 64 / other 73) + CSS critical path blocking to 2 s + 7 long main-thread tasks. Mobile-first indexing means this suppresses every other signal we shipped — load-bearing.
+- → done: **PR #57 (0.10.39)** — live IndyCar standings via `indycar.com/Standings` SSR scrape; `lib/standings/indycar.ts` parses `data-driver-data` JSON attributes from each row; `StandingsTab` dispatch extended to indycar; 7 vitest cases. **First non-F1 series with live standings.** Self-corrected my earlier wrong claim that "indycar.com is SPA" — that probe hit the lowercase `/stats/standings/drivers` SPA route; the canonical `/Standings` (capital S — the URL in `meta.json:officialStandingsUrl`) is SSR'd.
+- → done: **PR #58 (0.10.40)** — F1 2026 drivers.json (11 teams × 2 drivers = 22-car grid incl. Cadillac as 11th team, Norris #1 as defending champion, Antonelli at Mercedes, Audi rename, Hadjar at Red Bull, Lawson+Lindblad at Racing Bulls, Bearman+Ocon at Haas, Colapinto at Alpine). Activates `/drivers/<slug>` + `/teams/<slug>` for all 22 + 11 entries. Same belt-and-suspenders pattern as IndyCar drivers.json — bypasses live Wikipedia scrape entirely for F1.
+- → done: **PR #59 (0.10.41)** — this PR. `docs/audits/session-audit-2026-05-19.md` (comprehensive senior-dev audit of all 7 PRs today) + Wed-Sun blitz plan added to SCHEDULE.md + queue items captured (F1 sprints bug, F1 results points bug, driver/team page enrichment, every-session-URL architecture).
 
-Sequence:
+**Operator new directives received this session:**
+- Driver/team pages must "reflect what they should" — enrich with current standings position / points / wins / country / headshot.
+- F1 Sprint races are missing from `/series/f1?tab=results` (bug).
+- Points on F1 results graph are wrong (bug).
+- Make every session of every weekend of every series its own URL (architecture).
+- Week deadline: all standings + results + drivers + teams + history by Sun 5/24.
 
-1. **`0.10.36` — quick-wins.** Preconnect `clerk.paddock-tracker.com` (90 ms LCP saving) + `aria-label="Buy me a coffee"` on the mobile-header Coffee button (Accessibility 90 → 95+) + footer touch-target spacing for Release notes / Cookies / About / Accessibility / Imprint (Best Practices 81 → 90+) + lazy + `width`/`height` on Wikipedia History tab `<img>` (CLS prevention) + audit Clerk sign-in flow against `avoid-intrusive-interstitials` (likely no-op, verify). **~30 min, low risk.**
-2. **`0.10.37` — third-party deferral.** `next/script strategy="lazyOnload"` on AdSense (`adsbygoogle` + `show_ads_impl`) + GTM. Verify FundingChoices CMP fires first (consent gate is non-negotiable for GDPR). Optionally Partytown for GTM to push it off the main thread. **~1–2 h, medium risk.** Est ~319 KiB unused JS recovered + meaningful TBT relief from the 7 long tasks.
-3. **`0.10.38` — Clerk lazy boundary.** Audit which routes actually need Clerk runtime. `<ClerkProvider>` **must stay synchronous at root** (Clerk requirement — don't break this). Header `<UserButton>` + in-page Clerk widgets via `next/dynamic` with `ssr: false`. Verify on preview deploy: anonymous → sign-in → settings → push-notification enable → sign-out, all clean. **~1–2 h, medium-high risk.** Est ~225 KiB unused JS recovered.
-4. **`0.10.39` — CSS critical-path.** Investigate why two CSS bundles block render until ~2 s. Likely Tailwind v4 / Next 16 quirk — **check `node_modules/next/dist/docs/` first per AGENTS.md** before touching config. Likely fixes: inline critical CSS, preload hints, route-segment CSS splitting. **~1–2 h, medium risk.** Target: LCP <2.5 s.
+Active:
+_(no `[+Nm]` prefixes captured this session)_
 
-**Out of B-perf scope (separate sessions):**
-- **B9 server-render** — `<HomeContent>` / `<FilteredSessions>` / `<MonthScopedWeekends>` to server. `/` is RES 67 mobile / 73 desktop — the offender route on both platforms; biggest LCP lever. Stays separate unless 0.10.36–39 fail to clear the bar. Listed in HANDOFF Next-session pickup as slot 3.
-- **`next/image` migration** site-wide — escalate only if 0.10.37–38 don't clear the unused-JS bar.
+### Wed 2026-05-20 — planned — week-blitz day 1 (IndyCar + F1 bugs + Bing fixes)
 
-**Won't touch:** AdSense removal (revenue) or FundingChoices removal (GDPR-mandated CMP) — only defer them.
+**Day 1 of the Tue → Sun 5-day data-ingestion blitz.** Per operator directive: standings + results + drivers + teams + history for every series by Sunday. B-perf is **deferred to Mon 5/25** so this week stays focused on the data layer.
 
-**Operator session-start checks (run before touching code):**
-- GSC Performance report — first real query data may now be populated (24–72 h after sitemap submission).
-- Bing Webmaster Tools discovered-URL count — should have climbed from 1.
-- Bing Site Scan results — was "Queued" 2026-05-19.
-- Rich Results Test on `/`, `/series/f1/weekend/9`, any blog post — confirm B8 JSON-LD schemas validate cleanly.
+**Priority 1 — Bing scan fixes** (deferred two days now; ship first to clear the queue). Three issues from the Bing Webmaster Tools Site Scan: 8 weekend 404s (FE doubleheader / IndyCar Milwaukee R2 / NLS Sunday qualifier orphans — sitemap-only filter needed in `lib/sitemap-data.ts`), 11 weekend titles >70 chars (truncate in `app/series/[slug]/weekend/[round]/page.tsx:generateMetadata`), 1 multi-h1 on `/changelog` (strip `# Releases` from `RELEASES.md`). ~45 min, one PR.
 
-**Verification gates:**
-- PSI mobile re-run after every PR; target Perf ≥75 + LCP <2.5 s + TBT <300 ms before declaring B-perf done.
-- Browser-verify home + calendar + a weekend page on a real mobile device per `feedback-paddock-debug-with-own-eyes`.
-- Append a fresh `docs/perf-baselines.md` row 24–72 h after the last B-perf PR lands so Vercel SI field data has time to refresh.
+**Priority 2 — IndyCar end-to-end completion:**
+- **Per-race results** — `lib/results/indycar.ts` parser; either scrape `indycar.com/results/<event-slug>` if SSR'd, or per-event JSON endpoint if discoverable in `data-driver-data` event sub-objects. Wire into `ResultsTab`. ~2 h.
+- **Sitemap inclusion** of `/drivers/<slug>` + `/teams/<slug>` for IndyCar + F1 (now that both have curated drivers.json). Extend `lib/sitemap-data.ts` to iterate `loadAllDrivers()` / `loadAllTeams()` from `lib/people.ts`. ~30 min.
 
-**Pre-mortem:** Most likely failure mode is 0.10.38 breaks Clerk session detection or sign-in by lazy-loading too aggressively. Mitigation: keep `<ClerkProvider>` at root, only lazy components that consume `useUser()` / `useAuth()` at render time, verify the full anonymous → sign-in → settings → push-enable → sign-out flow on preview before merge.
+**Priority 3 — F1 bug fixes** (operator-reported):
+- **F1 Sprint races missing from results tab.** Audit `lib/results/f1.ts` Jolpica payload — does it include Sprint? Schema extension may be needed: `RaceResult.sprintResult` field or separate `sprintResults` array. Wire into `ResultsTab` UI.
+- **F1 results points wrong on the results graph.** Could be in the parser (Jolpica response misread) or display (chart math). Investigate then fix.
+- Combined: ~2-3 h, one PR.
 
-After B-perf: pick from the Track B priority list in `docs/HANDOFF.md` → Active workstream → "Next-session pickup".
+**Priority 4 — Driver / team page enrichment** (operator: "make driver and team pages reflect what they should"):
+- Driver page: lookup current standings position + points + wins (call `fetchF1Standings` / `fetchIndyCarStandings` based on seriesSlug); country flag if data available; headshot if scrapeable.
+- Team page: aggregate drivers' standings positions; team total points; team logo if URL available in standings scrape.
+- First pass MVP: position + points + wins for F1 and IndyCar drivers (only series with live standings). Country / headshot can be Phase 2.
+- ~2-3 h.
+
+**Priority 5 — Cron infrastructure scaffolding** for the per-session refresh architecture:
+- Master cron reading `sessions.json` → enqueueing per-session scrape jobs at `session.end + 30 min`.
+- Vercel Sandbox setup for Playwright-driven SPA scraping (will use for MotoGP / WEC / IMSA later this week).
+- KV-based result storage as bridge until Supabase.
+- ~2 h (scaffolding only; per-series implementations in Thu-Fri).
+
+**Won't touch this session:** B-perf items (deferred to next Mon), other series' standings (Thu-Sat), every-session-URL routing (architectural; Thu-Sat).
+
+**Day-1 PR budget:** ~6-8 PRs (Bing fixes / IndyCar results / sitemap / F1 sprints+points fix / driver-team enrichment / cron scaffold). Aggressive.
 
 Active:
 _(awaiting [+Nm] prefixes)_
+
+### Thu 2026-05-21 — planned — week-blitz day 2 (MotoGP + WSBK)
+
+**Pulselive JSON API** (per `docs/research/per-series-source-audit.md`) — MotoGP at `api.motogp.pulselive.com/motogp/v1/` and WSBK at parallel paths. Free, unsigned, structured JSON. Pattern mirrors `lib/standings/f1.ts` Jolpica integration.
+
+- **MotoGP:** `lib/standings/motogp.ts` (riders' championship + manufacturers') + `lib/results/motogp.ts` per-race. Wire into `StandingsTab` + `ResultsTab`.
+- **WSBK:** same pattern at the parallel Pulselive endpoint.
+- **MotoGP + WSBK drivers.json bulk-commit** — agent outputs from yesterday already in hand; web-search per `feedback-paddock-search-for-missing-data` rule before commit.
+
+Sandbox + Playwright setup proven on one SPA target as warmup for Fri (WEC / IMSA / FE all SPA).
+
+### Fri 2026-05-22 — planned — week-blitz day 3 (WEC + IMSA + Formula E)
+
+SPA scrapers via **Vercel Sandbox** + Playwright. Per audit: fiawec.com (SPA), imsa.com (SPA), fiaformulae.com (SPA).
+
+- WEC: standings + results + drivers.json bulk-commit (agent output in hand).
+- IMSA: same.
+- Formula E: same. FE has split-season numbering (2025-26 = Season 12).
+
+**Defense-in-depth:** Wikipedia season-page scrape as backup source for each. Wire a fallback chain `primary → wikipedia → null` in each `lib/standings/<slug>.ts`.
+
+### Sat 2026-05-23 — planned — week-blitz day 4 (everything else)
+
+Bulk day — F2 + F3 + DTM + GTWC + NLS + NASCAR + WRC + ADAC.
+
+- Per-series standings + results scrapers — each ~1-2 h.
+- **drivers.json bulk-commit** for the remaining 13 series (F2/F3/Formula E/DTM agent outputs already in hand from yesterday; WEC/IMSA/GT World/NLS/WRC/NASCAR-Cup/ADAC need dispatch).
+- **Sitemap regeneration** — once all 15 series have drivers.json, the `/drivers/<slug>` + `/teams/<slug>` URLs land in the sitemap (~400 new indexable URLs).
+- IndexNow push for all the new URLs.
+
+### Sun 2026-05-24 — planned — week-blitz day 5 (history + verification)
+
+- **History essays** — operator drafts MotoGP / WEC / IndyCar following the F1 history template (`drafts/f1-history.md` workflow). ~3-4 h each.
+- **Verification day** — browser-test all 15 series tabs (drivers / standings / results / history); confirm crons running; verify sitemap growth; PSI re-baseline append to `docs/perf-baselines.md`.
+- **Buffer** — fix anything that broke during the bulk-commit week.
+
+### Mon 2026-05-25 — planned — B-perf catch-up burst
+
+**B-perf, all 4 PRs in one day** if the week's data work stays on track. Preconnect Clerk subdomain + Coffee `aria-label` + footer touch-target spacing + 3rd-party deferral (AdSense + GTM lazyOnload) + Clerk lazy boundary + CSS critical-path. Target mobile Perf ≥75 + LCP <2.5 s + TBT <300 ms. PSI re-baseline append after deploy.
 
 ---
 

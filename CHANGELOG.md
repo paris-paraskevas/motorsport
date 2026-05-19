@@ -2,6 +2,30 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.41 — 2026-05-19
+
+Docs-only. Closes Tue 2026-05-19 with comprehensive senior-dev audit + the Tue → Sun 5-day data-ingestion blitz plan.
+
+### Added
+
+- **`docs/audits/session-audit-2026-05-19.md`** — senior-dev audit of all 7 PRs shipped today (0.10.35 → 0.10.40 + this PR). Per-PR robustness check, ESPA discipline retrospective, open risks at session close, and recommendations. Covers: perf-baselines doc (0.10.35), Wikipedia CSS leak fix (0.10.36), IndyCar drivers.json (0.10.37), sitewide rename (0.10.38), live IndyCar standings (0.10.39), F1 drivers.json (0.10.40).
+
+### Changed
+
+- **`SCHEDULE.md`** — Tue 2026-05-19 closed with seventh sub-section recording late-night IndyCar standings + F1 drivers + week pivot. Wed 2026-05-20 entry rewritten as **day 1 of the Tue → Sun 5-day blitz**: Bing scan fixes (deferred two days now), IndyCar results parser + sitemap inclusion of /drivers + /teams, F1 sprint + points bug fixes (operator-reported), driver/team page enrichment first pass, Vercel Cron + Sandbox scaffolding. Thu (MotoGP + WSBK via Pulselive), Fri (WEC + IMSA + FE via Sandbox/Playwright), Sat (F2/F3/DTM/GTWC/NLS/NASCAR/WRC/ADAC bulk + drivers.json batch + sitemap regeneration + IndexNow push), Sun (history essays + verification) all stubbed concretely. Mon 2026-05-25 added as B-perf catch-up burst (deferred from this week).
+
+### Operator-set queue items captured
+
+- F1 Sprint races missing from /series/f1?tab=results — audit `lib/results/f1.ts` Jolpica payload, schema extension if needed. Wed work.
+- F1 results points wrong on the results graph — bug in parser or display layer. Wed work.
+- Driver/team pages must "reflect what they should" — enrich with current standings position / points / wins / country flag / headshot. Wed-Thu work.
+- Every session of every weekend of every series must be its own URL. ~2,100 new URLs (15 × ~20 × ~7). Multi-day architecture; Thu-Sat work.
+- All standings + results + drivers + teams + history complete by Sun 5/24.
+
+### Notes
+
+- B-perf moved out of this week. Mobile RES 76 / LCP 3.67 s / TTFB 3.17 s remains in production through Sunday. Audit flags this as a real risk — mobile-first indexing dampens every SEO signal shipped this week (rename, drivers.json activation, standings) until perf improves. Mon 5/25 dedicated catch-up burst scheduled.
+
 ## 0.10.39 — 2026-05-19
 
 ### Added
