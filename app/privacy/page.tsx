@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    "Paddock's privacy policy — what we collect, how long we keep it, your GDPR/UK GDPR rights, and how to reach us with a request.",
+    "Paddock Tracker's privacy policy — what we collect, how long we keep it, your GDPR/UK GDPR rights, and how to reach us with a request.",
 };
 
 export default async function PrivacyPage() {

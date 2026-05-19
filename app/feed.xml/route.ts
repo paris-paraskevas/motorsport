@@ -3,7 +3,7 @@ import { loadAllPosts } from '@/lib/posts';
 export const dynamic = 'force-dynamic';
 
 const SITE_URL = 'https://paddock-tracker.com';
-const SITE_TITLE = 'Paddock';
+const SITE_TITLE = 'Paddock Tracker';
 const SITE_DESCRIPTION =
   'Analysis, recaps, and opinion across motorsport championships.';
 

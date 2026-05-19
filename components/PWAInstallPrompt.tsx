@@ -103,7 +103,7 @@ export function PWAInstallPrompt() {
           <Download size={18} className="text-amber-300 shrink-0 mt-0.5" />
           <div className="flex-1">
             <div className="text-zinc-100 text-sm font-semibold">
-              Install Paddock as an app
+              Install Paddock Tracker as an app
             </div>
             <p className="text-zinc-400 text-xs mt-0.5 leading-relaxed">
               Faster launch, full-screen, push notifications.
@@ -125,7 +125,7 @@ export function PWAInstallPrompt() {
           <div className="flex items-center gap-2 mb-1">
             <Download size={16} className="text-amber-300" />
             <div className="text-zinc-100 text-sm font-semibold">
-              Install Paddock on your iPhone
+              Install Paddock Tracker on your iPhone
             </div>
           </div>
           <p className="text-zinc-400 text-xs leading-relaxed">

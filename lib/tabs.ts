@@ -37,7 +37,7 @@ export function labelForTab(key: TabKey): string {
  * Differentiating these is the B7 fix — without it, all 9 tabs share the same
  * `<title>` and Google treats them as duplicate content of the bare series URL.
  *
- * Final rendered title gets the layout's `%s — Paddock` template appended, so
+ * Final rendered title gets the layout's `%s — Paddock Tracker` template appended, so
  * each return value here should land around 40–50 chars to stay under Google's
  * ~60-char SERP truncation after the suffix.
  */
@@ -80,7 +80,7 @@ export function describeTab(
     case 'about':
       return {
         title: `About ${seriesName} — data sources and notes`,
-        description: `How Paddock covers ${seriesName}: data sources, freshness, and what's curated versus fetched live.`,
+        description: `How Paddock Tracker covers ${seriesName}: data sources, freshness, and what's curated versus fetched live.`,
       };
     case 'history':
       return {

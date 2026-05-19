@@ -1,4 +1,4 @@
-# Contributing to Paddock
+# Contributing to Paddock Tracker
 
 Two-person codebase: Paris (paris-paraskevas) and Fotis. Trust-based discipline replaces enforced branch protection. The rules below are the social contract — break them rarely and explain why when you do.
 

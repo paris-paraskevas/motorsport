@@ -6,9 +6,9 @@ By using https://paddock-tracker.com (the "Site"), you agree to these Terms of S
 
 The Site is operated by Paris Paraskevas as a personal project. Contact: **pparaskevas.dev@gmail.com**.
 
-## 1. What Paddock is
+## 1. What Paddock Tracker is
 
-Paddock is a personal motorsport companion that aggregates publicly-available schedule, weather, results, and reference data across motorsport championships. It is informational only and is provided as a hobby project.
+Paddock Tracker is a personal motorsport companion that aggregates publicly-available schedule, weather, results, and reference data across motorsport championships. It is informational only and is provided as a hobby project.
 
 ## 2. No warranty
 
@@ -35,8 +35,8 @@ We may suspend or terminate accounts that violate these rules.
 
 ## 5. Intellectual property
 
-- The Paddock name, design, code, and curated editorial content (blog posts, championship descriptions, etc.) are the property of the operator. You may not copy or republish them without permission.
-- Race series names, team names, driver names, logos, marks, schedules and results belong to the respective rights holders (FIA, Formula One Group, Dorna, IMSA, ADAC, etc.). Paddock surfaces this information for informational purposes only.
+- The Paddock Tracker name, design, code, and curated editorial content (blog posts, championship descriptions, etc.) are the property of the operator. You may not copy or republish them without permission.
+- Race series names, team names, driver names, logos, marks, schedules and results belong to the respective rights holders (FIA, Formula One Group, Dorna, IMSA, ADAC, etc.). Paddock Tracker surfaces this information for informational purposes only.
 - Third-party data is sourced from Wikipedia (CC BY-SA), official series sites, Open-Meteo (open data), and similar sources, each attributed where rendered.
 
 ## 6. User-submitted content

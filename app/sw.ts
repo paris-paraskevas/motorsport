@@ -55,9 +55,9 @@ self.addEventListener('push', (event: PushEvent) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { title: 'Paddock', body: event.data.text() };
+    payload = { title: 'Paddock Tracker', body: event.data.text() };
   }
-  const title = payload.title ?? 'Paddock';
+  const title = payload.title ?? 'Paddock Tracker';
 
   event.waitUntil(
     (async () => {
@@ -77,7 +77,7 @@ self.addEventListener('push', (event: PushEvent) => {
       // NotificationOptions in TS doesn't surface `image`/`color`/`actions`, but
       // Chromium honours all of them. Cast through `unknown` to allow without `any`.
       const options = {
-        body: payload.body ?? 'Tap to open Paddock.',
+        body: payload.body ?? 'Tap to open Paddock Tracker.',
         icon: '/icons/icon-192.png',
         badge: '/icons/badge-96.png',
         tag: payload.tag,

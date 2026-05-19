@@ -2,7 +2,7 @@
 
 _Last updated: 2026-05-19_
 
-This Cookie Policy explains what cookies and similar local-storage technologies Paddock uses, why they are used, and how you can control them.
+This Cookie Policy explains what cookies and similar local-storage technologies Paddock Tracker uses, why they are used, and how you can control them.
 
 For a broader explanation of how we handle your personal data, see the [Privacy Policy](/privacy).
 
@@ -26,13 +26,13 @@ Cookies are small text files placed on your device when you visit a website. Sim
 |---|---|---|---|
 | `__cf_bm`, `_cfuvid` | Cloudflare (via Clerk) | Bot mitigation on auth requests | Session / 1 year |
 | `__client`, `__client_uat`, `__session_*`, `__refresh_*`, `__clerk_db_jwt_*`, `clerk_active_context` | Clerk | Authentication session | Up to 1 year |
-| `paddock:consent` (localStorage) | Paddock | Your cookie-consent choice | Until you clear it |
-| `paddock:followed-series`, `paddock:theme`, and similar (localStorage) | Paddock | Your in-app preferences | Until you clear them |
+| `paddock:consent` (localStorage) | Paddock Tracker | Your cookie-consent choice | Until you clear it |
+| `paddock:followed-series`, `paddock:theme`, and similar (localStorage) | Paddock Tracker | Your in-app preferences | Until you clear them |
 
 ### Functional
 | Name | Owner | Purpose | Duration |
 |---|---|---|---|
-| Push subscription record (Vercel KV) | Paddock | Sending race notifications when you've enabled them | Until you disable notifications |
+| Push subscription record (Vercel KV) | Paddock Tracker | Sending race notifications when you've enabled them | Until you disable notifications |
 
 ### Analytics (only after you grant consent)
 | Name | Owner | Purpose | Duration |
@@ -50,7 +50,7 @@ Clerk uses its own product analytics (Segment, PostHog) and an ad-conversion ide
 ## How to control them
 
 ### The consent banner
-For visitors in the EEA, UK, and Switzerland, Paddock uses **Google's certified Consent Management Platform** (Funding Choices) to display a consent banner on first visit. The banner offers a **Consent** option to accept advertising/analytics cookies, and a **Manage options** option to choose categories individually.
+For visitors in the EEA, UK, and Switzerland, Paddock Tracker uses **Google's certified Consent Management Platform** (Funding Choices) to display a consent banner on first visit. The banner offers a **Consent** option to accept advertising/analytics cookies, and a **Manage options** option to choose categories individually.
 
 If you reject (or simply do nothing), only strictly-necessary cookies are set. Analytics and advertising scripts still load on the page but **Google Consent Mode v2** is set to `denied`, so they suppress cookies and fall back to cookieless pings.
 

@@ -1,7 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import type { NewsItem } from './types';
 
-const UA = 'Paddock-PWA (https://paddock-tracker.com)';
+const UA = 'PaddockTracker-PWA (https://paddock-tracker.com)';
 const BASE = 'https://www.motorsport.com/rss';
 const MAX_ITEMS = 10;
 const MAX_PER_SERIES_AGGREGATE = 3;

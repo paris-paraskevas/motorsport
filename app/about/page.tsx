@@ -9,7 +9,7 @@ export const revalidate = 21600;
 export const metadata: Metadata = {
   title: 'About',
   description:
-    'How Paddock works: data sources for each championship, refresh cadence, freshness indicators, and what powers the live timeline.',
+    'How Paddock Tracker works: data sources for each championship, refresh cadence, freshness indicators, and what powers the live timeline.',
 };
 
 export default async function About() {

@@ -21,7 +21,7 @@ export function organizationLd(): object {
     '@type': 'Organization',
     '@id': ORG_ID,
     name: SITE_TITLE,
-    alternateName: 'Paddock Tracker',
+    alternateName: 'Paddock',
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     logo: {
@@ -42,7 +42,7 @@ export function websiteLd(): object {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
     name: SITE_TITLE,
-    alternateName: 'Paddock Tracker',
+    alternateName: 'Paddock',
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     publisher: { '@id': ORG_ID },

@@ -1,15 +1,15 @@
-# Paddock
+# Paddock Tracker
 
 > Cross-series motorsport calendar, schedules, results, standings, drivers, and champions data for 15 championships — Formula 1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM, F2, F3, WSBK, GT World Challenge, Nürburgring Langstrecken-Serie, and the ADAC Ravenol 24h Nürburgring.
 
-Paddock aggregates 15 motorsport championships in one place: race calendars in venue-local time, weather forecasts, news feeds, results and standings (where curated), and historical champions data going back as far as 1949. Open-access PWA at paddock-tracker.com; no paywall.
+Paddock Tracker aggregates 15 motorsport championships in one place: race calendars in venue-local time, weather forecasts, news feeds, results and standings (where curated), and historical champions data going back as far as 1949. Open-access PWA at paddock-tracker.com; no paywall.
 
 ## Entry points
 - [Home](https://paddock-tracker.com): Cross-series next-session timeline.
 - [Calendar](https://paddock-tracker.com/calendar): Every session in date order, filterable by series.
 - [Blog](https://paddock-tracker.com/blog): Original motorsport analysis.
 - [Changelog](https://paddock-tracker.com/changelog): Site release notes.
-- [About](https://paddock-tracker.com/about): What Paddock is and how it is built.
+- [About](https://paddock-tracker.com/about): What Paddock Tracker is and how it is built.
 
 ## Series
 - [Formula 1](https://paddock-tracker.com/series/f1): F1 calendar, weekend schedules, drivers, champions 1950–2025.

@@ -1,6 +1,6 @@
-# Onboarding to Paddock — for Fotis
+# Onboarding to Paddock Tracker — for Fotis
 
-Welcome. Paddock is the motorsport-companion web app at [paddock-tracker.com](https://paddock-tracker.com). This doc gets you contributing in ~1 hour.
+Welcome. Paddock Tracker is the motorsport-companion web app at [paddock-tracker.com](https://paddock-tracker.com). This doc gets you contributing in ~1 hour.
 
 ## What it is
 

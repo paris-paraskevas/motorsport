@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 export const metadata: Metadata = {
   title: 'Accessibility',
   description:
-    "Paddock's accessibility commitment — the standards we target (WCAG 2.2), known gaps, and how to report a barrier.",
+    "Paddock Tracker's accessibility commitment — the standards we target (WCAG 2.2), known gaps, and how to report a barrier.",
 };
 
 export default async function AccessibilityPage() {
