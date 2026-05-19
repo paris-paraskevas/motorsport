@@ -2,6 +2,10 @@
 
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.41 — 2026-05-19
+
+Internal: session-end audit + plan for the rest of the week. No visible change.
+
 ## 0.10.40 — 2026-05-19
 
 **Every 2026 F1 driver and team now has their own page.** Open `/drivers/lando-norris`, `/drivers/lewis-hamilton`, `/teams/mclaren`, `/teams/cadillac` — all 22 drivers and 11 teams on the 2026 F1 grid are reachable directly. Previously these URLs returned "Driver not found" / "Team not found"; the data is now curated. The Drivers tab on the F1 series page also reads from this curated list instead of scraping Wikipedia, so the rendering issue fixed in 0.10.36 can't ever fire on F1 again.
