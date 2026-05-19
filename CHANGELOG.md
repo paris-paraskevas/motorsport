@@ -2,6 +2,19 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.37 — 2026-05-19
+
+### Added
+
+- **`content/series/indycar/drivers.json`** — full 2026 IndyCar Series entry list curated end-to-end. 10 teams × 26 drivers (Penske, Ganassi, Andretti, Arrow McLaren each 3-car; RLL 3-car including **Mick Schumacher #47**; Foyt, ECR, Meyer Shank, Juncos Hollinger, Dale Coyne 2-car). Each team carries livery primary color; each driver carries permanent car number. Source: parallel research agent synthesizing Wikipedia 2026 IndyCar season page + motorsport-press cross-references; operator verified team naming ("A.J. Foyt Racing" not "Enterprises"). **PREMA Racing intentionally excluded** — 2026 full-season status uncertain at the time of curation; revisit when confirmed.
+
+### Behavioral effects (no code changed)
+
+- **`/series/indycar?tab=drivers`** now renders from `loadCuratedDrivers()` instead of falling through to `lib/wikipedia-season.ts`. This bypasses the live Wikipedia scrape entirely for IndyCar (belt-and-suspenders with the 0.10.36 CSS-leak fix — the leak path no longer fires for IndyCar at all).
+- **`/drivers/<slug>` routes activated** for all 26 IndyCar drivers (e.g. `/drivers/alex-palou`, `/drivers/mick-schumacher`). Previously 404; now render with team affiliation + car number per `app/drivers/[slug]/page.tsx`.
+- **`/teams/<slug>` routes activated** for all 10 IndyCar teams (e.g. `/teams/team-penske`, `/teams/a-j-foyt-racing`). Previously 404; now render full driver lineup per `app/teams/[slug]/page.tsx`.
+- ~36 new indexable URLs reachable via internal links from `/series/indycar`. **Sitemap inclusion deferred** to the follow-up Tier-1 drivers.json batch so the sitemap grows once across all curated series instead of piecemeal.
+
 ## 0.10.36 — 2026-05-19
 
 ### Fixed
