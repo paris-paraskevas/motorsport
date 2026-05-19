@@ -2,6 +2,15 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.24 — 2026-05-19
+
+### Fixed
+- **Postal-address blocks now render as multi-line** on `/imprint`, `/impressum`, and `/privacy` §1. The 0.10.23 PR wrote the address blocks as raw newline-separated lines inside a paragraph; CommonMark treats those as soft breaks (= spaces), so the rendered output collapsed to `Paris Paraskevas Andrea Papandreou 23, Melissokhori 41500 Larissa Greece` on a single inline line. Switched the address lines to use the markdown native hard-break convention (two trailing spaces at end of each line → `<br>` in the rendered HTML) across the two affected files (`content/legal/imprint.md` — Service provider + § 18 Abs. 2 MStV blocks; `content/legal/privacy.md` — §1 controller block). Each block is preceded by an HTML-comment note documenting the convention so a future contributor doesn't strip the trailing spaces by accident.
+
+### Notes
+- Initially tried switching the `loadMarkdownAsHtml` pipeline in `lib/content.ts` to `{ sanitize: false }` so raw `<br />` tags would survive — that broke an existing test in `lib/series.test.ts` that depends on HTML comments (the `<!-- TODO: author -->` placeholder pattern) being sanitised away from placeholder series-overview / drivers / significance markdown. Reverted and took the trailing-two-spaces path, which is also the markdown-native answer and keeps the pipeline behaviour identical for the other 12 consumers of `loadMarkdownAsHtml`.
+- Caught on production by the operator within minutes of merging 0.10.23. Root cause was a missed browser-verify before requesting the merge — the test suite + lint + typecheck all passed (markdown is not type-checked or linted), so the bug only surfaces in the rendered output. A render-pipeline regression test was considered and rejected as over-engineering for a one-line markdown convention.
+
 ## 0.10.23 — 2026-05-19
 
 ### Added
