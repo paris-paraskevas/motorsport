@@ -37,6 +37,8 @@ export function Footer() {
         <FooterLink href="/accessibility">Accessibility</FooterLink>
         <Sep />
         <FooterLink href="/do-not-sell">Do Not Sell or Share</FooterLink>
+        <Sep />
+        <FooterLink href="/imprint">Imprint</FooterLink>
       </div>
     </footer>
   );
