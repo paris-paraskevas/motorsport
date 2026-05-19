@@ -1,0 +1,41 @@
+# Paddock
+
+> Cross-series motorsport calendar, schedules, results, standings, drivers, and champions data for 15 championships — Formula 1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM, F2, F3, WSBK, GT World Challenge, Nürburgring Langstrecken-Serie, and the ADAC Ravenol 24h Nürburgring.
+
+Paddock aggregates 15 motorsport championships in one place: race calendars in venue-local time, weather forecasts, news feeds, results and standings (where curated), and historical champions data going back as far as 1949. Open-access PWA at paddock-tracker.com; no paywall.
+
+## Entry points
+- [Home](https://paddock-tracker.com): Cross-series next-session timeline.
+- [Calendar](https://paddock-tracker.com/calendar): Every session in date order, filterable by series.
+- [Blog](https://paddock-tracker.com/blog): Original motorsport analysis.
+- [Changelog](https://paddock-tracker.com/changelog): Site release notes.
+- [About](https://paddock-tracker.com/about): What Paddock is and how it is built.
+
+## Series
+- [Formula 1](https://paddock-tracker.com/series/f1): F1 calendar, weekend schedules, drivers, champions 1950–2025.
+- [MotoGP](https://paddock-tracker.com/series/motogp): MotoGP calendar, champions 1949–2025.
+- [World Endurance Championship (WEC)](https://paddock-tracker.com/series/wec): WEC calendar, champions 2012–2025.
+- [World Superbike (WSBK)](https://paddock-tracker.com/series/wsbk): WSBK calendar, champions 1988–2025.
+- [Formula E](https://paddock-tracker.com/series/formula-e): Formula E calendar.
+- [IndyCar](https://paddock-tracker.com/series/indycar): IndyCar calendar.
+- [NASCAR Cup Series](https://paddock-tracker.com/series/nascar-cup): NASCAR Cup calendar.
+- [IMSA SportsCar Championship](https://paddock-tracker.com/series/imsa): IMSA calendar, champions 2014–2025.
+- [Formula 2 (F2)](https://paddock-tracker.com/series/f2): F2 calendar, champions 2005–2025 (incl. GP2).
+- [Formula 3 (F3)](https://paddock-tracker.com/series/f3): F3 calendar, champions 2010–2025 (incl. GP3).
+- [DTM](https://paddock-tracker.com/series/dtm): DTM calendar, champions 1984–2025.
+- [GT World Challenge](https://paddock-tracker.com/series/gt-world): GTWC calendar, champions 2014–2025.
+- [World Rally Championship (WRC)](https://paddock-tracker.com/series/wrc): WRC calendar with stage timetables.
+- [Nürburgring Langstrecken-Serie (NLS)](https://paddock-tracker.com/series/nls): NLS calendar.
+- [ADAC Ravenol 24h Nürburgring](https://paddock-tracker.com/series/adac-ravenol-24h): 24h race calendar and past winners.
+
+## Feeds
+- [RSS feed](https://paddock-tracker.com/feed.xml): Blog posts and release notes.
+
+## Optional
+- [Privacy Policy](https://paddock-tracker.com/privacy): GDPR-compliant privacy practices.
+- [Terms of Service](https://paddock-tracker.com/terms): Site usage terms.
+- [Cookie Policy](https://paddock-tracker.com/cookies): Cookie inventory and Consent Mode details.
+- [Accessibility](https://paddock-tracker.com/accessibility): WCAG 2.2 commitments.
+- [Do Not Sell or Share My Information](https://paddock-tracker.com/do-not-sell): CCPA/GPC opt-out.
+- [Imprint (English)](https://paddock-tracker.com/imprint): DDG §5 imprint.
+- [Impressum (Deutsch)](https://paddock-tracker.com/impressum): § 5 DDG Impressum.
