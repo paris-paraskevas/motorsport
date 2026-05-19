@@ -115,31 +115,97 @@ When a curated/override file is absent, renderers fall back to the live external
 - ✅ Per-prompt active-time tracking (`[+Nm]` prefix → SCHEDULE.md `Active:` line) — DONE 2026-05-16 (`0.9.7`)
 - ✅ F1 2026 Bahrain + Saudi cancellations restored with banner + section render — DONE 2026-05-16 (`0.9.8`, PR #1 at `cd169b6`)
 - ✅ Postponement rendering UI + MotoGP/WEC `rounds.json` + midnight-UTC `dateOnly` detection ("3 am" fix) — DONE 2026-05-16 (`0.9.9`, PR #2 at `e0d93cf`)
-- 🟡 Full-season `sessions.json` curation across 14 series + ADAC 24h — committed but **STUCK ON BRANCH** awaiting PR #3 (`0.9.10`, commit `141de18`)
-- 🟡 Template-projected empty rounds across F1/F2/F3/MotoGP/WEC/DTM/GTWCE — committed but **STUCK ON BRANCH** awaiting PR #3 (`0.9.11`, commit `2778037`)
+- ✅ Full-season `sessions.json` curation across 14 series + ADAC 24h — DONE 2026-05-17 (`0.9.10`, commit `141de18`, merged via PR #3)
+- ✅ Template-projected empty rounds across F1/F2/F3/MotoGP/WEC/DTM/GTWCE — DONE 2026-05-17 (`0.9.11`, commit `2778037`, merged via PR #3)
+- ✅ Champions data curated end-to-end across all 15 series — DONE 2026-05-18/19 (Mon/Tue marathon, `0.10.4`–`0.10.22`)
+- ✅ Track A · A1 — imprint page + privacy postal address — DONE 2026-05-19 (`0.10.23`, PR #36)
+- ✅ Track A · A2 + A3 — push-unsubscribe ownership + contact 12-month TTL — DONE 2026-05-19 (`0.10.25`, PR #38)
+- ✅ Track A · A4a — site-wide security headers — DONE 2026-05-19 (`0.10.26`, PR #39)
+- ✅ Track A · A4b — ISR with 5-min revalidate on `/`, `/calendar`, `/blog` — DONE 2026-05-19 (`0.10.27`, PR #40)
+- ✅ Track A · A5 — F1 history tab + content-authoring infrastructure (other 14 series + Rules tabs parked) — DONE 2026-05-19 (`0.10.28`, PR #41; markdown-render follow-up `0.10.29`, PR #42)
 - ❌ `sk_live_*` rotation — deferred
 - ❌ Contact-form email delivery — submissions stored in KV (`paddock:contact:*`); install Resend Marketplace + set `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to actually email
 - ❌ Sentry integration — pending
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
 
-## ⚡ Next session priorities (post-2026-05-19 marathon close)
+## ⚡ Active workstream (post-2026-05-19 — Track A complete, Track B starting)
 
-**Pre-Fotis cutoff is over.** Mon/Tue 2026-05-18 → 2026-05-19 ran as one continuous marathon — 19 PRs shipped, versions 0.10.4 through 0.10.22. Full PR-by-PR list in `SCHEDULE.md`. Resume normal IDEAS.md triage.
+### Track A — legal/risk closure — DONE
 
-**Top of the queue:**
+All shipped today (2026-05-19) on top of the 19-PR Mon/Tue marathon. Versions 0.10.23 → 0.10.29 across 7 PRs.
 
-1. **Fotis sit-down on `docs/research/supabase-schema-draft.md`.** Walk it together, close the 10 open questions in §17 (UUID v7 timing, service-role split, status PK shape, JSONB scope, JSON-LD location, audit retention, content_hash backfill, naming convention, comments/predictions order, Realtime adoption), then start the 12-step migration order in §18 if shape holds. This is IDEAS Now #1.
-2. **Watch for AdSense approval flip.** Status was "Getting ready / Review requested" at session close. Funding Choices server isn't serving the published "European regulations message" until approval lands — see Pinned reminders above for the diagnostic checklist. When AdSense console "Messages shown" counter goes 0 → ≥1, the CMP banner is live. If approval lands and the banner still doesn't fire, fallback is to reintroduce a custom in-app banner (git history under `feat/legal-pages` has the full `CookieBanner.tsx` from before 0.10.18).
-3. **Speed Insights US-perf investigation.** Was the 4th item on Monday's plan, skipped — out of bandwidth. Dashboard: `https://vercel.com/<org>/motorsport/speed-insights` filtered by North America. Likely culprits: no US function region, `force-dynamic` everywhere, third-party fetch overhead. Standalone session.
+| PR | Version | Item | Commit |
+|---|---|---|---|
+| #36 | 0.10.23 | **A1** — imprint + privacy postal address | `a5ddbfc` |
+| #37 | 0.10.24 | imprint address line-break fix (markdown `<br>` rendering) | `fe73fb6` |
+| #38 | 0.10.25 | **A2 + A3** — push-unsubscribe ownership + contact 12-month TTL | `db9e64b` |
+| #39 | 0.10.26 | **A4a** — security headers (HSTS extend, nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy) | `d414ef3` |
+| #40 | 0.10.27 | **A4b** — ISR with 5-min revalidate on `/`, `/calendar`, `/blog` | `093f4bd` |
+| #41 | 0.10.28 | **A5** — F1 history tab + content-authoring infrastructure | `29a965e` |
+| #42 | 0.10.29 | markdown footnote anchor + byline date follow-up | `bcd4b39` |
 
-**Two confirm-or-swap markers left in legal markdown** (`content/legal/privacy.md`, `content/legal/terms.md` — search for `<!-- TODO confirm -->`):
-- Governing law / jurisdiction defaulted to **Greece (Thessaloniki courts)**.
-- Privacy contact email defaulted to **pparaskevas.dev@gmail.com**.
+**Scope delivered vs originally specified for A5:** the handoff envisioned A5 as Wikipedia-content removal + F1 / MotoGP / WEC content + infrastructure. Delivered: F1 only + infrastructure under `docs/content-authoring/`. MotoGP, WEC, and the remaining 12 series are parked under the content workstream below.
 
-Both fine to leave as-is; swap if you want different.
+Two confirm-or-swap markers in legal markdown are RESOLVED (removed during A1, PR #36):
+- Governing law / jurisdiction: Greece (Thessaloniki courts) — confirmed.
+- Privacy contact email: `pparaskevas.dev@gmail.com` — confirmed.
 
-**Champions data is now complete** end-to-end across all 15 series:
+### Active: Track B — SEO + GEO foundation
+
+Driven by `docs/audit-seo-geo-2026-05-19.md` (now committed to the repo). 10-pillar discoverability audit against 0.10.22; 22 fixes grouped into 12 bundles below.
+
+**Next session begins with RESEARCH, not implementation.** The operator will share authoritative SEO + GEO best-practice sources at session start. Work is to audit Paddock against those sources + the existing 10-pillar audit, then update this handoff with a sharper Track B plan before any code lands.
+
+#### Session-start protocol for the next session
+
+1. **Ask the operator about Google indexing status.** At close of 2026-05-19, `site:paddock-tracker.com` returned **1 result** — the home page only — and the SERP "looks kinda shit" per the operator. **The operator has a screenshot to share at session start.** Ask for it explicitly before any planning.
+2. **The desired end-state is Google sitelinks** — the rich SERP result that shows a main link plus indented mini-links to specific subpages (Formula 1, Calendar, Blog, Sign in, etc.). Track B's success metric is: a `site:paddock-tracker.com` query, or a "paddock" branded search, returns a sitelinks-style result rather than a single thin home-page link.
+3. **Operator will share a couple of links to authoritative SEO + GEO best-practice sources** before proposing any work. Take those first.
+4. **Research-first:** audit Paddock against the operator-provided sources + the existing audit. Update the bundle list below if the research surfaces anything the existing audit missed (sitelinks specifically — the existing audit names Google sitelinks once, in passing under "Organization JSON-LD"; the path to actually earning sitelinks needs more research).
+5. **Only then plan the implementation order.** B1 is the likely first bundle (manifests are a prerequisite for Google to crawl anything else) but the research may reorder.
+
+#### Track B bundles — current understanding, subject to research
+
+| # | Bundle | Effort | Audit ref |
+|---|---|---|---|
+| B1 | Discoverability manifests — `app/robots.ts`, `app/sitemap.ts`, `public/llms.txt` | ~1.5 h | Cheap-wins 1, 2, 3 |
+| B2 | Noindex on `/sign-in`, `/sign-up`, `/settings` | ~5 min | Cheap-win 5 |
+| B3 | `rel="nofollow"` on outbound news + ≤120-char excerpts | ~15 min | Cheap-win 6 |
+| B4 | Per-route descriptions on `/calendar`, `/about`, `/changelog`, all legal pages | ~20 min | Cheap-win 8 |
+| B5 | `<time dateTime=…>` markup on `WeekendBlock` + `CalendarTab` | ~20 min | Cheap-win 9 |
+| B6 | RSS hardening (`lastBuildDate`, `image`, `category`) | ~30 min | Cheap-win 10 |
+| B7 | Tab-aware metadata + canonicals on `/series/[slug]` | 1–2 h | Medium-lift 11 |
+| B8 | JSON-LD emitters — `Organization`, `WebSite` (+ `SearchAction` for sitelinks), `SportsEvent`, `BreadcrumbList` | 3–4 h | Medium-lift 12, Appendix B |
+| B9 | Server-render home + calendar bodies (split `<HomeContent>` / `<FilteredSessions>`) | 2–3 h | Medium-lift 13 |
+| B10 | Per-segment OG images (`app/series/[slug]/opengraph-image.tsx`, weekend variant) | ~2 h | Medium-lift 17 |
+| B11 | Path-based tab routes (`/series/[slug]/[tab]`) — pairs with Track C Phase 2 | 1–2 days | Bigger 18 |
+| B12 | Greek `/el/` route tree (`next-intl`) | 3–5 days | Bigger 20 |
+
+**Search Console + Bing verification** (audit cheap-win 4) sits outside the bundles — depends on the DNS TXT verification the operator is handling externally. Once it lands, the `metadata.verification` field in `app/layout.tsx` is a 5-minute add.
+
+**Audit items already covered by Track A — cross off:**
+- A4b shipped ISR on content routes (audit cheap-win 7).
+- A4a shipped security headers (audit Pillar 1 partial).
+- A5 shipped Wikipedia removal from History/Rules tabs for F1 (audit medium-lift 14 option (a) — F1 done; other 14 series + all Rules tabs are in the content workstream below).
+
+### Parked: content workstream
+
+F1 history shipped as the worked example of the per-series literacy-tab template. Workflow + sources documented in `docs/content-authoring/README.md` + `SOURCES.md` + `drafts/f1-history.md`. **All other content pages remain to be done.** Resume after Track B is largely landed:
+
+- MotoGP, WEC, and the other 12 series History tabs (template + workflow are ready; each follows the F1 pattern).
+- All 15 Rules tabs (`content/series/<slug>/rules.md` slot wired in `RulesTab.tsx`).
+- `content/series/*/drivers.json` fill for all 15 series — currently absent, blocks `/drivers/[slug]` and `/teams/[slug]` (both 404 today; ~400 indexable URLs once filled).
+- Driver / team page planning + content (shape, data sources, schema markup).
+- 3+ blog posts under `content/posts/` to make `/blog` a real surface (currently empty state).
+
+### Other pinned items carried over from the marathon close
+
+- **AdSense approval still in progress.** Status was "Getting ready / Review requested" at the Mon/Tue close. When the AdSense console "Messages shown" counter goes 0 → ≥1, the CMP banner is live in production. If approval lands and the banner still doesn't fire, fallback is to reintroduce a custom in-app banner (git history under `feat/legal-pages` has the full `CookieBanner.tsx` from before 0.10.18).
+- **Speed Insights US-perf investigation.** Skipped from the Mon/Tue plan. Dashboard at `https://vercel.com/<org>/motorsport/speed-insights` filtered by North America. Earlier suspicion: no US function region, `force-dynamic` everywhere, third-party fetch overhead. Note: `/`, `/calendar`, `/blog` are now ISR (post-A4b) — re-investigate against the new baseline. Standalone session when bandwidth allows.
+- **Fotis sit-down on `docs/research/supabase-schema-draft.md`.** Was originally tonight's plan. May be in progress / done by next session — verify state before planning Track C work.
+
+### Champions data is now complete end-to-end across all 15 series:
 
 | Series | Driver coverage | Constructor coverage | Other sections |
 |---|---|---|---|
