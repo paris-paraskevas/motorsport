@@ -140,7 +140,7 @@ When a curated/override file is absent, renderers fall back to the live external
 
 ## ⚡ Active workstream (post-2026-05-19 — Track A + most of Track B complete)
 
-**Quick state:** Track A shipped (versions 0.10.23 → 0.10.29, 7 PRs). Track B shipped 11 of ~18 bundles today (0.10.30 → 0.10.34, 7 PRs). Site is sitemap-submitted to Google + Bing + Brave + IndexNow. Mobile Perf 39 is now the load-bearing problem — **B-perf is the next session's #1 pick**, gated on operator sharing a desktop PageSpeed screenshot.
+**Quick state:** Track A shipped (versions 0.10.23 → 0.10.29, 7 PRs). Track B shipped 11 of ~18 bundles today (0.10.30 → 0.10.34, 7 PRs). Site is sitemap-submitted to Google + Bing + Brave + IndexNow. Baselines captured 2026-05-19 → `docs/perf-baselines.md` (Vercel SI mobile RES 76 / LCP 3.67 s / TTFB 3.17 s; PSI desktop 616 KiB unused JS broken down by bucket). Mobile is the load-bearing problem — **B-perf is the next session's #1 pick**, 4-PR plan sequenced in `SCHEDULE.md` Wed 2026-05-20 entry.
 
 ### Track A — legal/risk closure — DONE
 
@@ -172,7 +172,7 @@ Pop into a new session and pick from the top:
 
 | Priority | Bundle | Effort | Operator prerequisite | Notes |
 |---|---|---|---|---|
-| **1** | **B-perf** — mobile-perf pass | 4–6 h (multi-PR) | **Share desktop PageSpeed Insights screenshot at session start.** Only mobile numbers in hand. | Mobile Perf 39 / LCP 5.2s / TBT 5340ms / 661 KiB unused JS. THIS IS THE LOAD-BEARING PROBLEM. Mobile-first indexing means perf actively suppresses every other signal. Folds the pinned "Speed Insights US-perf" item. |
+| **1** | **B-perf** — mobile-perf pass | 4–6 h (multi-PR) | Baselines captured 2026-05-19 → `docs/perf-baselines.md`. | 4-PR sequenced plan in `SCHEDULE.md` Wed 2026-05-20 entry. Biggest levers (post-desktop-diagnostics): Clerk lazy ~225 KiB, 3rd-party deferral of AdSense+GTM+FundingChoices ~319 KiB, preconnect Clerk subdomain (90 ms LCP), CSS critical-path. Mobile-first indexing means this suppresses every other signal — load-bearing. Folds the pinned "Speed Insights US-perf" item. |
 | **2** | **B-content** — fill 14 history + 15 rules tabs + 3–5 blog posts | 80–130 h (multi-session) | None | F1 history is the template (PR #41). Workflow + sources in `docs/content-authoring/README.md` + `SOURCES.md`. Suggested order: MotoGP → WEC → IndyCar histories first. |
 | **3** | **B9** — server-render home + calendar bodies | 2–3 h | None | Helps both perf AND non-JS-aware LLM crawlers. Split `<HomeContent>` / `<FilteredSessions>` into server-side renderers. |
 | **4** | **B10** — per-segment OG images | ~2 h | None | `app/series/[slug]/opengraph-image.tsx` + weekend variant. Folds B-discover's ≥1200×675 Discover-grade sizing. |

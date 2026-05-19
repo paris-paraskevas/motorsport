@@ -14,8 +14,8 @@ Time-based scheduling lives in `SCHEDULE.md`.
 
 ## Now (≤ 3, in flight)
 
-1. **Pre-Fotis Track B push (tonight 2026-05-19).** Ship all single-session Track B bundles before Fotis arrives for the Supabase onboarding meeting. Sequence: bridge work → cheap wins (B2–B6) → B-monitor → B7 → B8 → B-perf → B9 → B10. Multi-day bundles (B11, B12, B-content) deferred. See `SCHEDULE.md` current-day entry and `docs/HANDOFF.md` Track B section for full priority.
-2. **Fotis Supabase sit-down (tonight 2026-05-19).** Walk `docs/research/supabase-schema-draft.md` together, close the 10 open questions in §17. If shape holds → start the 12-step migration order in §18.
+1. **B-perf execution (Wed 2026-05-20).** Multi-PR mobile-perf push. Baselines captured in `docs/perf-baselines.md`; 4-PR sequenced plan in `SCHEDULE.md` Wed entry. Biggest levers: Clerk lazy (~225 KiB unused JS), 3rd-party deferral of AdSense+GTM+FundingChoices (~319 KiB), preconnect `clerk.paddock-tracker.com` (90 ms LCP), CSS critical-path. Target mobile Perf ≥75 / LCP ≤2.5 s. B9 server-render stays as a separate session.
+2. **Fotis Supabase sit-down.** Walk `docs/research/supabase-schema-draft.md` together, close the 10 open questions in §17. If shape holds → start the 12-step migration order in §18. Verify state at session start — per HANDOFF "may be in progress / done by next session".
 3. **Weather + news coverage audit (15 series).** For each series, click into the next upcoming weekend and confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) + news feed populate. Output: per-series gap list + curation pass.
 
 ## Next (≤ 5, queued — start within ~1–2 weeks)

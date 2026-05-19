@@ -2,6 +2,10 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.35 — 2026-05-19
+
+Internal: captured the first performance baseline (desktop + mobile field + lab data) and queued tomorrow's mobile-performance work. No visible change.
+
 ## 0.10.34 — 2026-05-19
 
 Internal: structured-data markup so search engines and AI assistants understand what each page is, plus a one-line follow-up fix on the RSS feed.
