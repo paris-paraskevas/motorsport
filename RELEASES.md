@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.25 — 2026-05-19
+
+Internal: push-unsubscribe is ownership-checked; contact-form submissions auto-expire after 12 months.
+
+- **Push-notification unsubscribe now verifies ownership.** The "turn off notifications for this browser" endpoint previously trusted any caller that knew the browser's push endpoint string. It now confirms the caller is the same signed-in user who originally subscribed (or that both are anonymous). No user-visible behaviour change for the common path.
+- **Contact-form submissions are now kept for 12 months and then automatically removed,** matching the retention promise on the privacy page. Previously they were stored indefinitely.
+
 ## 0.10.24 — 2026-05-19
 
 Postal-address blocks on the legal pages now render properly across multiple lines.
