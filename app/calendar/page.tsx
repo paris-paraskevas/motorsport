@@ -7,6 +7,8 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Calendar',
+  description:
+    'Upcoming F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA and more sessions in one timeline — month-by-month, in your local time.',
 };
 
 export default async function CalendarPage() {

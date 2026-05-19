@@ -51,7 +51,7 @@ export async function WeekendNews({
             key={item.link}
             href={item.link}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             className="group block rounded-2xl bg-surface/40 border border-border/60 p-4 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong"
           >
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -66,9 +66,12 @@ export async function WeekendNews({
                 {series.meta.name}
               </span>
               <span className="text-border-strong">·</span>
-              <span className="text-[10px] uppercase tracking-[0.12em] text-text-faint font-medium font-mono">
+              <time
+                dateTime={item.pubDate.toISOString()}
+                className="text-[10px] uppercase tracking-[0.12em] text-text-faint font-medium font-mono"
+              >
                 {relativeAgo(item.pubDate)}
-              </span>
+              </time>
               <ExternalLink
                 size={12}
                 className="text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast) ml-auto shrink-0"

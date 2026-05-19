@@ -2,6 +2,28 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.31 — 2026-05-19
+
+Bundle B2 + B3 + B4 + B5 + B6 + B-discover from Track B (the "cheap wins" sub-bundles, interleaved per the post-playbook priority order in `docs/HANDOFF.md`). All SEO/GEO metadata; no UI changes.
+
+### Added
+- **Site-wide `robots.googleBot` metadata** in `app/layout.tsx`: `max-image-preview: 'large'`, `max-snippet: -1`, `max-video-preview: -1`. Bundle **B-discover**. Unlocks Google Discover eligibility (which gates large image rendering on `max-image-preview:large`) and removes the implicit ~160-character snippet cap when Google chooses to render a longer excerpt for a long-form post. The corresponding OG image size requirement (≥1200×675) is already met by the existing `app/opengraph-image.tsx` generator at 1200×630 — close enough; the Discover-grade ≥1200×675 target rolls into bundle B10 when per-segment OG images land.
+- **Per-route `metadata.description`** on `/calendar`, `/about`, `/changelog`, `/privacy`, `/terms`, `/cookies`, `/accessibility`, `/do-not-sell`, `/imprint`, `/impressum`. Bundle **B4**. Each kept under ~155 characters (Google's mobile snippet ceiling) and written so the meta description doubles as the SERP description. Until today these pages inherited `SITE_DESCRIPTION` from the root layout, which gave 10 different routes the same description — a duplicate-content signal. The impressum page description is intentionally in German.
+- **`<time dateTime>` markup** wrapping every visible session/weekend time on `components/WeekendBlock.tsx`, `components/weekend/WeekendHero.tsx`, `components/weekend/WeekendSchedule.tsx`, `components/SessionCard.tsx`, and the news item timestamps on `components/tabs/NewsTab.tsx` + `components/weekend/WeekendNews.tsx`. Bundle **B5**. `dateTime` attribute carries the full ISO-8601 instant (e.g. `2026-05-24T14:00:00.000Z`) for timed sessions and the date-only form (e.g. `2026-05-24`) for sessions flagged `dateOnly`. Weekend-range labels carry the start-day ISO date — a multi-day `<time>` range would need two siblings, not worth the markup cost for the marginal gain. Establishes the semantic-time scaffolding that bundle B8's `SportsEvent` JSON-LD will reuse for `startDate` / `endDate`.
+- **RSS channel metadata** in `app/feed.xml/route.ts`: `<lastBuildDate>` (derived from `Math.max(...posts.map(p => publishedAt))`, not response time — so RSS aggregators only re-poll when content actually changes), `<ttl>60</ttl>` (cache hint), `<category>Sports/Motorsport</category>`, `<image>` block pointing at `/icons/icon-192.png`. Bundle **B6**.
+
+### Changed
+- **`robots: { index: false, follow: false }`** added to `/sign-in`, `/sign-up`, `/settings` page metadata. Bundle **B2**. `index:false` keeps these out of SERP results entirely (auth pages have no public content worth ranking); `follow:false` is set because outbound links on these pages (Clerk-rendered nav, Settings link to series management) don't deserve PageRank flow from a noindexed page. The audit's cheap-win 5 specified noindex only; the follow rule is an upgrade after rechecking Google's "Robots meta tag" doc.
+- **`rel="nofollow noopener noreferrer"`** on every outbound news link rendered by `components/tabs/NewsTab.tsx` (3 spots: per-item article link, "Visit official site" fallback button, source attribution at bottom) and `components/weekend/WeekendNews.tsx` (1 spot: per-item article link). Bundle **B3**. The motorsport.com / official-site links are user-content discovery destinations, not endorsements — `nofollow` stops PageRank from leaking out to feeds we don't curate. Inline `<time dateTime>` markup was added at the same time to the relative-ago timestamp on both renderers, since the markup change was already in-flight on the same DOM nodes.
+- **News-item excerpts trimmed to ≤120 characters** server-side in `NewsTab.tsx`, with a "…" suffix when truncated. Bundle **B3**. The existing `line-clamp-3` CSS rule already prevented visual overflow, but the underlying HTML still carried the full motorsport.com description string — search engines saw bloated, repetitive descriptions across every series's News tab. 120 chars × 3 lines is a reasonable upper bound at the rendered font size; truncation is at character boundary (good enough for English; will need revisiting if Greek `/el/` ships in bundle B12).
+
+### Notes
+- **18 small edits across 13 files** — exactly the shape promised on Track B for the cheap-wins interleave. No new dependencies, no new files, no UI-visible change in normal flow.
+- `next build` confirmed all 10 legal/about/changelog pages stay `○ Static`. `/sign-in`, `/sign-up`, `/settings` stay `ƒ Dynamic` (their robots:false metadata is rendered into the page head per-request, but the dynamic flag is from `force-dynamic`/Clerk's session-bound behaviour, not from this PR).
+- Test suite stays at 89/89 — these changes are all in components/pages outside the `lib/**` test-discovery scope.
+- The `<time>` wrapping deliberately uses the existing CSS-class strings on the parent `span`, so visual output is byte-identical. The `dateTime` attribute is machine-readable only.
+- **Why these six bundles bundled together:** all are metadata-only cheap wins (~5–30 min each per the audit), all touch routing/layout/render code paths but no business logic, all are safe to ship together with one CHANGELOG entry. Order 7 in the post-playbook priority list per `docs/HANDOFF.md` Active workstream.
+
 ## 0.10.30 — 2026-05-19
 
 ### Added

@@ -57,9 +57,18 @@ export function WeekendSchedule({
                         <div className="text-xs text-amber-200/70 mt-0.5">{s.significance.note}</div>
                       )}
                     </div>
-                    <span className="text-text-muted text-sm font-medium tabular-nums font-mono whitespace-nowrap">
-                      {s.dateOnly ? 'TBC' : formatLocal(s.start)}
-                    </span>
+                    {s.dateOnly ? (
+                      <span className="text-text-muted text-sm font-medium tabular-nums font-mono whitespace-nowrap">
+                        TBC
+                      </span>
+                    ) : (
+                      <time
+                        dateTime={s.start.toISOString()}
+                        className="text-text-muted text-sm font-medium tabular-nums font-mono whitespace-nowrap"
+                      >
+                        {formatLocal(s.start)}
+                      </time>
+                    )}
                   </li>
                 );
               })}

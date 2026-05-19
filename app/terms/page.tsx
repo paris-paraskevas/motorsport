@@ -6,6 +6,8 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
+  description:
+    "Paddock's terms of service — acceptable use, the rules around content and accounts, account termination, and limits of warranty.",
 };
 
 export default async function TermsPage() {

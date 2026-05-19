@@ -103,9 +103,12 @@ export function WeekendHero({
         )}
 
         <div className="mt-5 flex items-baseline gap-4 flex-wrap">
-          <span className="text-lg md:text-xl font-semibold text-text tnum font-mono">
+          <time
+            dateTime={start.toISOString().slice(0, 10)}
+            className="text-lg md:text-xl font-semibold text-text tnum font-mono"
+          >
             {weekend.dateRangeLabel}
-          </span>
+          </time>
           {!isPast && (
             <span className="text-sm text-text-faint tnum font-mono">
               {isLive ? 'underway' : formatRelative(start)}
