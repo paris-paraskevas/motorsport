@@ -2,6 +2,17 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.27 — 2026-05-19
+
+### Changed
+- **`/`, `/calendar`, `/blog` are now ISR-rendered** with a 5-minute revalidate window instead of `force-dynamic`. The build report confirms the conversion — all three now show as `○ Static` with `Revalidate: 5m` in `next build` output, where they were previously dynamic and re-rendered server-side on every request. Vercel will now cache the SSR HTML at the edge for 300 s, serve stale-while-revalidate on cache miss, and trigger a background re-render on next request after expiry. Concrete saving: every request to `/` was previously a fresh `loadAllSeries()` (15 ICS fetches + weather forecasts + news RSS aggregation) — now amortised across 5-minute windows.
+
+### Notes
+- Closes Track A, PR A4b of the post-marathon legal/risk closure track — but only partially. The handoff also asked for `/series/[slug]` to be cached. That route reads `searchParams.tab` server-side, which **forces Next.js to keep the route dynamic regardless of any `revalidate` directive**. ISR for `/series/[slug]` is deferred to Track C Phase 2 (path-based tab routing — replacing `?tab=foo` with `/series/[slug]/[tab]`), which is also SEO audit item #18. Once tabs are paths, the same `revalidate = 300` change applies.
+- **Personalization safety verified:** `app/page.tsx`, `app/calendar/page.tsx`, `app/blog/page.tsx` do not call server-side `auth()`, `cookies()`, or `headers()`. The auth UI (`<UserButton>` / `<SignInButton>`) lives in `components/HeaderUtils.tsx` which is `'use client'` and hydrates auth state from cookies on the browser. SSR HTML is the same for every visitor, so caching it `public` at the CDN does not leak signed-in state.
+- **Race-day staleness tradeoff:** the home and calendar pages filter sessions by `session.end >= now` where `now = new Date()`. With a 5-minute revalidate, that `now` is up to 5 minutes stale. A session that ended in the last 5 minutes will still appear in the "upcoming" list briefly; a session that started in the last 5 minutes will not yet show as "Live now". Acceptable in exchange for the perf+cost win and aligned with how the original audit framed it.
+- **The handoff's `next.config.ts headers()` + `proxy.ts` middleware override plan turned out unnecessary.** Empirical investigation showed that `clerkMiddleware()` does **not** rewrite Cache-Control headers — the `private, no-cache, no-store` seen on production `/` was set by Next.js's `force-dynamic` directive itself (verified by comparing routes: force-static / revalidate-set routes get `public, max-age=0, must-revalidate`, force-dynamic gets `private, no-store`). The page-level `revalidate` directive is therefore the right lever, and the middleware acrobatics are not required.
+
 ## 0.10.26 — 2026-05-19
 
 ### Added

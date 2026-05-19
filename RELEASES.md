@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.27 — 2026-05-19
+
+The home page, calendar, and blog now load from CDN cache instead of running server-side on every visit.
+
+- **Faster repeat visits.** The Home page, Calendar, and Blog are now cached at Vercel's edge for 5 minutes, then refreshed in the background. The first visitor in each 5-minute window pays the rendering cost; everyone else in that window gets the page near-instantly. No user-visible change to what's on the page beyond the speed difference, except: race-day "next session" countdowns may lag by up to 5 minutes.
+- **Series pages and live-data routes are unchanged.** The per-series page still re-renders on every visit, so its data is always fresh — that's deliberate while the live-now strip on those pages is the source of truth for race weekends.
+
 ## 0.10.26 — 2026-05-19
 
 Internal: site-wide security headers.

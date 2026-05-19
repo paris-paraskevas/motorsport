@@ -5,7 +5,7 @@ import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 async function weatherForSessions(
   candidates: Array<{ session: { uid: string; start: Date; location?: string; title: string } }>,
