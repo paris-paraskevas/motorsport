@@ -1,0 +1,92 @@
+{
+  "teams": [
+    {
+      "name": "Mercedes",
+      "color": "#27F4D2",
+      "drivers": [
+        { "name": "George Russell", "code": "RUS", "number": 63 },
+        { "name": "Kimi Antonelli", "code": "ANT", "number": 12 }
+      ]
+    },
+    {
+      "name": "McLaren",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Lando Norris", "code": "NOR", "number": 1 },
+        { "name": "Oscar Piastri", "code": "PIA", "number": 81 }
+      ]
+    },
+    {
+      "name": "Ferrari",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "Charles Leclerc", "code": "LEC", "number": 16 },
+        { "name": "Lewis Hamilton", "code": "HAM", "number": 44 }
+      ]
+    },
+    {
+      "name": "Aston Martin",
+      "color": "#229971",
+      "drivers": [
+        { "name": "Fernando Alonso", "code": "ALO", "number": 14 },
+        { "name": "Lance Stroll", "code": "STR", "number": 18 }
+      ]
+    },
+    {
+      "name": "Williams",
+      "color": "#64C4FF",
+      "drivers": [
+        { "name": "Alexander Albon", "code": "ALB", "number": 23 },
+        { "name": "Carlos Sainz", "code": "SAI", "number": 55 }
+      ]
+    },
+    {
+      "name": "Red Bull Racing",
+      "color": "#1E3A8A",
+      "drivers": [
+        { "name": "Max Verstappen", "code": "VER", "number": 3 },
+        { "name": "Isack Hadjar", "code": "HAD", "number": 6 }
+      ]
+    },
+    {
+      "name": "Racing Bulls",
+      "color": "#6692FF",
+      "drivers": [
+        { "name": "Liam Lawson", "code": "LAW", "number": 30 },
+        { "name": "Arvid Lindblad", "code": "LIN", "number": 41 }
+      ]
+    },
+    {
+      "name": "Audi",
+      "color": "#00352F",
+      "drivers": [
+        { "name": "Nico Hülkenberg", "code": "HUL", "number": 27 },
+        { "name": "Gabriel Bortoleto", "code": "BOR", "number": 5 }
+      ]
+    },
+    {
+      "name": "Haas",
+      "color": "#B6BABD",
+      "drivers": [
+        { "name": "Esteban Ocon", "code": "OCO", "number": 31 },
+        { "name": "Oliver Bearman", "code": "BEA", "number": 87 }
+      ]
+    },
+    {
+      "name": "Alpine",
+      "color": "#0093CC",
+      "drivers": [
+        { "name": "Pierre Gasly", "code": "GAS", "number": 10 },
+        { "name": "Franco Colapinto", "code": "COL", "number": 43 }
+      ]
+    },
+    {
+      "name": "Cadillac",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Sergio Pérez", "code": "PER", "number": 11 },
+        { "name": "Valtteri Bottas", "code": "BOT", "number": 77 }
+      ]
+    }
+  ]
+}
