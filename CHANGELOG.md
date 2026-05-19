@@ -2,6 +2,28 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.39 — 2026-05-19
+
+### Added
+
+- **`lib/standings/indycar.ts`** — first live non-F1 standings source. Scrapes `https://www.indycar.com/Standings` (SSR'd HTML, **not** the SPA `/stats/standings/drivers` path I incorrectly probed earlier this session). Each driver row carries a `<button data-driver-data='{...}'>` element with a complete JSON object: `rank`, `wins`, `poles`, `points`, `firstName`, `lastName`, `countryAbbreviation`, image paths. Team name extracted from the sibling cell's `<img alt="<TEAM> Logo ">` (note trailing space — IndyCar's CMS quirk). Cheerio parse + JSON.parse per row + sanity floor of ≥10 drivers (real grids are 25+; below the floor means structural break → fail closed). Hourly revalidate (`next.revalidate = 3600`) — IndyCar updates the page within minutes of a session ending.
+
+- **`lib/standings/indycar.test.ts`** — 7 vitest cases covering: 12-driver fixture parse, out-of-order rows resort, partial response → null (sanity floor), no-driver-data response → null, malformed-JSON-only → null, 500 → null, network failure → null.
+
+### Changed
+
+- **`components/tabs/StandingsTab.tsx`** — slug dispatch extended: `indycar` joins `f1` with a real standings render path. Reuses the existing `DriversTable` component, the existing `applyDriverOverrides` patcher (so `content/series/indycar/standings-overrides.json` works for DSQ / penalty corrections without code changes), and the existing null-fallback to the "Standings temporarily unavailable" `EmptyState`. Source attribution link points to `indycar.com/Standings`.
+
+### Notes
+
+- **No Constructors' table** for IndyCar in this PR — IndyCar's Teams' Championship is awarded but secondary, and isn't on the `/Standings` URL we scrape. Could add via a separate URL probe later.
+- **Why this source over Wikipedia or AllSportsAPI:** indycar.com is the official source (most authoritative), already SSR'd (no Playwright needed), provides structured JSON via `data-driver-data` (cleaner than HTML-table scrape), no env vars or rate-limit quotas (no API key), and updates in real-time as IndyCar publishes results. Wikipedia would lag by hours; AllSportsAPI would require `RAPIDAPI_KEY` env config that isn't wired yet.
+
+### Verified
+
+- `npx vitest run lib/standings/indycar.test.ts` — 7/7 pass.
+- `tsc --noEmit` (will run pre-commit) — clean.
+
 ## 0.10.38 — 2026-05-19
 
 ### Changed

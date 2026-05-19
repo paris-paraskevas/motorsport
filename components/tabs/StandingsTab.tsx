@@ -5,6 +5,7 @@ import type {
   StandingsOverridesFile,
 } from '@/lib/types';
 import { fetchF1Standings } from '@/lib/standings/f1';
+import { fetchIndyCarStandings } from '@/lib/standings/indycar';
 import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -187,6 +188,34 @@ export async function StandingsTab({ series }: { series: Series }) {
             className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
           >
             Source: jolpi.ca (Ergast mirror) →
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'indycar') {
+    const [data, overrides] = await Promise.all([
+      fetchIndyCarStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <div className="text-center">
+          <a
+            href="https://www.indycar.com/Standings"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
+          >
+            Source: indycar.com →
           </a>
         </div>
       </div>
