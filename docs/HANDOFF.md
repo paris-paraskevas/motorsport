@@ -153,34 +153,43 @@ Two confirm-or-swap markers in legal markdown are RESOLVED (removed during A1, P
 
 ### Active: Track B — SEO + GEO foundation
 
-Driven by `docs/audit-seo-geo-2026-05-19.md` (now committed to the repo). 10-pillar discoverability audit against 0.10.22; 22 fixes grouped into 12 bundles below.
+Driven by `docs/audit-seo-geo-2026-05-19.md` (committed to the repo). 10-pillar discoverability audit against `0.10.22`; 22 fixes grouped into 12 bundles + 1 new bundle (**B-perf**) added 2026-05-19 post-research.
 
-**Next session begins with RESEARCH, not implementation.** The operator will share authoritative SEO + GEO best-practice sources at session start. Work is to audit Paddock against those sources + the existing 10-pillar audit, then update this handoff with a sharper Track B plan before any code lands.
+#### Research phase — DONE 2026-05-19
 
-#### Session-start protocol for the next session
+Synthesis from Google SEO Starter Guide (operator-provided authoritative source) + operator's PageSpeed mobile run + GSC just-verified state + 15 dashboard screenshots:
 
-1. **Ask the operator about Google indexing status.** At close of 2026-05-19, `site:paddock-tracker.com` returned **1 result** — the home page only — and the SERP "looks kinda shit" per the operator. **The operator has a screenshot to share at session start.** Ask for it explicitly before any planning.
-2. **The desired end-state is Google sitelinks** — the rich SERP result that shows a main link plus indented mini-links to specific subpages (Formula 1, Calendar, Blog, Sign in, etc.). Track B's success metric is: a `site:paddock-tracker.com` query, or a "paddock" branded search, returns a sitelinks-style result rather than a single thin home-page link.
-3. **Operator will share a couple of links to authoritative SEO + GEO best-practice sources** before proposing any work. Take those first.
-4. **Research-first:** audit Paddock against the operator-provided sources + the existing audit. Update the bundle list below if the research surfaces anything the existing audit missed (sitelinks specifically — the existing audit names Google sitelinks once, in passing under "Organization JSON-LD"; the path to actually earning sitelinks needs more research).
-5. **Only then plan the implementation order.** B1 is the likely first bundle (manifests are a prerequisite for Google to crawl anything else) but the research may reorder.
+- **The Starter Guide does NOT publish a sitelinks playbook.** It acknowledges sitelinks exist but offers no operational path. The existing audit's intuition (Organization + WebSite + SearchAction + clean nav + differentiated titles) is the best operational signal available; the rest is Google's algorithm watching aggregate signals over time.
+- **Sitelinks-timeline reality:** site is 4 days old. Sitelinks are an algorithmic decision Google makes weeks-to-months after a site has indexed coverage + authority signals. **Track B success metric is reset to "qualified for sitelinks (structural prereqs shipped)"**, not "sitelinks displayed in SERP". The latter is a 1–3 month metric minimum.
+- **Two flavors of sitelinks have different prereqs.** `WebSite` + `potentialAction: SearchAction` JSON-LD gates the sitelinks **searchbox** (in-SERP search input). The sitelinks **mini-links** (Calendar / Blog / Sign in / etc.) are gated by internal-link hierarchy + authority + age. B8 ships both schemas; only the searchbox path is fully under our control.
+- **Starter Guide confirms (no audit changes needed):** sitemap + robots optional but recommended; quality original content beats keyword density; internal navigation drives crawl efficiency (not rankings directly); `nofollow` on untrusted outbound links (audit B3 confirmed); CSS/JS must be accessible to Googlebot (already true).
+- **Starter Guide debunks (worth noting):** E-E-A-T is explicitly NOT a ranking factor per Google; no "magical word count" exists; keyword-rich URLs have "hardly any effect beyond breadcrumbs". Audit Pillar 5 content recommendations (quality + uniqueness) remain right; keyword-density framing common in SEO advice is debunked.
+- **Performance hard data (mobile, from operator screenshots):** Perf **39** / a11y 90 / BP 100 / SEO 100. LCP 5.2s, TBT 5340ms, Speed Index 9.5s, FCP 2.6s, CLS 0.001. 661 KiB unused JS, 7.2s JS execution, 15.0s main-thread, 20 long tasks. A11y -10 from "Buttons do not have an accessible name". Sharpens audit Pillar 8 `BEST_EFFORT` into hard data → justifies promoting the handoff's pinned-and-deferred "Speed Insights US-perf" item into a real Track B bundle (**B-perf**).
+- **Desktop PageSpeed numbers MISSING.** PageSpeed Insights page is a JS-rendered SPA — WebFetch couldn't extract them. **Operator: share a desktop PageSpeed screenshot at session start of B-perf bundle.**
+- **GSC just-verified state.** 0 sitemaps submitted, no robots.txt detected, 1 HTTPS critical issue, all reports "processing data". Real indexing data lands ~24h after B1 ships and sitemap is submitted in GSC.
+- **DDG SERP for `site:paddock-tracker.com`:** 1 result (home page). Title + description render correctly — the "looks shit" feel is thin index coverage, not bad metadata. B1 fixes coverage; metadata is downstream.
 
-#### Track B bundles — current understanding, subject to research
+~~Session-start protocol~~ — DONE. Operator shared 15 dashboard screenshots + the SEO Starter Guide. Research synthesized; bundle list updated below.
 
-| # | Bundle | Effort | Audit ref |
-|---|---|---|---|
-| B1 | Discoverability manifests — `app/robots.ts`, `app/sitemap.ts`, `public/llms.txt` | ~1.5 h | Cheap-wins 1, 2, 3 |
-| B2 | Noindex on `/sign-in`, `/sign-up`, `/settings` | ~5 min | Cheap-win 5 |
-| B3 | `rel="nofollow"` on outbound news + ≤120-char excerpts | ~15 min | Cheap-win 6 |
-| B4 | Per-route descriptions on `/calendar`, `/about`, `/changelog`, all legal pages | ~20 min | Cheap-win 8 |
-| B5 | `<time dateTime=…>` markup on `WeekendBlock` + `CalendarTab` | ~20 min | Cheap-win 9 |
-| B6 | RSS hardening (`lastBuildDate`, `image`, `category`) | ~30 min | Cheap-win 10 |
-| B7 | Tab-aware metadata + canonicals on `/series/[slug]` | 1–2 h | Medium-lift 11 |
-| B8 | JSON-LD emitters — `Organization`, `WebSite` (+ `SearchAction` for sitelinks), `SportsEvent`, `BreadcrumbList` | 3–4 h | Medium-lift 12, Appendix B |
-| B9 | Server-render home + calendar bodies (split `<HomeContent>` / `<FilteredSessions>`) | 2–3 h | Medium-lift 13 |
-| B10 | Per-segment OG images (`app/series/[slug]/opengraph-image.tsx`, weekend variant) | ~2 h | Medium-lift 17 |
-| B11 | Path-based tab routes (`/series/[slug]/[tab]`) — pairs with Track C Phase 2 | 1–2 days | Bigger 18 |
-| B12 | Greek `/el/` route tree (`next-intl`) | 3–5 days | Bigger 20 |
+#### Track B bundles — priority updated 2026-05-19 post-research
+
+New entry **B-perf** added for the mobile-Performance crisis. Existing bundle numbering preserved; the Priority column is the new order to ship in.
+
+| # | Bundle | Effort | Audit ref | Priority |
+|---|---|---|---|---|
+| **B1** | Discoverability manifests — `app/robots.ts`, `app/sitemap.ts`, `public/llms.txt` | ~1.5 h | Cheap-wins 1, 2, 3 | **1 — in flight 2026-05-19** |
+| **B-perf** | Mobile-perf pass — reduce unused JS, code-split, fix `Cache-Control: no-store` on non-ISR routes, lazy-load below-fold, button a11y names. Folds the pinned "Speed Insights US-perf" handoff item. | 4–6 h (multi-PR) | Pillar 8 + PageSpeed data | **2** |
+| B8 | JSON-LD emitters — `Organization`, `WebSite` (+ `SearchAction`), `SportsEvent`, `BreadcrumbList` | 3–4 h | Medium-lift 12, Appendix B | **3** (direct sitelinks signal) |
+| B7 | Tab-aware metadata + canonicals on `/series/[slug]` | 1–2 h | Medium-lift 11 | **4** (kills duplicate-title cannibalization) |
+| B2 | Noindex on `/sign-in`, `/sign-up`, `/settings` | ~5 min | Cheap-win 5 | 5 (cheap-wins interleave) |
+| B3 | `rel="nofollow"` on outbound news + ≤120-char excerpts | ~15 min | Cheap-win 6 | 5 |
+| B4 | Per-route descriptions on `/calendar`, `/about`, `/changelog`, all legal pages | ~20 min | Cheap-win 8 | 5 |
+| B5 | `<time dateTime=…>` markup on `WeekendBlock` + `CalendarTab` | ~20 min | Cheap-win 9 | 5 |
+| B6 | RSS hardening (`lastBuildDate`, `image`, `category`) | ~30 min | Cheap-win 10 | 5 |
+| B9 | Server-render home + calendar bodies (split `<HomeContent>` / `<FilteredSessions>`) | 2–3 h | Medium-lift 13 | 6 (helps perf + non-JS LLM crawlers) |
+| B10 | Per-segment OG images (`app/series/[slug]/opengraph-image.tsx`, weekend variant) | ~2 h | Medium-lift 17 | 7 |
+| B11 | Path-based tab routes (`/series/[slug]/[tab]`) — pairs with Track C Phase 2 | 1–2 days | Bigger 18 | 8 (defer) |
+| B12 | Greek `/el/` route tree (`next-intl`) | 3–5 days | Bigger 20 | 9 (defer) |
 
 **Search Console + Bing verification** (audit cheap-win 4) sits outside the bundles — depends on the DNS TXT verification the operator is handling externally. Once it lands, the `metadata.verification` field in `app/layout.tsx` is a 5-minute add.
 

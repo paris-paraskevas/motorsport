@@ -142,6 +142,28 @@ Next session per the handoff: **Track B — SEO + GEO**, research-first. Operato
 Active:
 _(no `[+Nm]` prefixes captured this session)_
 
+### Tue 2026-05-19 — continued — Track B research + B1 manifests
+
+Third session same calendar day. Research-first per handoff protocol.
+
+Operator-provided artifacts at session start:
+- Authoritative source: Google SEO Starter Guide (`developers.google.com/search/docs/fundamentals/seo-starter-guide`).
+- PageSpeed runs (mobile + desktop) for `paddock-tracker.com`. Mobile screenshots in hand: Perf 39 / LCP 5.2s / TBT 5340ms / 661 KiB unused JS / 20 long tasks. Desktop URL only — fetch numbers.
+- 15 dashboard screenshots: GSC just-verified (0 sitemaps, no robots.txt detected, 1 HTTPS critical, all reports processing), AdSense "Getting ready" (unchanged), GA4 31 users / 48 sessions MTD, DDG SERP shows home page only.
+
+Plan:
+1. WebFetch Google SEO Starter Guide — cross-reference against `docs/audit-seo-geo-2026-05-19.md`. Surface anything the 10-pillar audit missed (existing audit already covers sitelinks `WebSite + SearchAction` in Appendix B; checking for misses).
+2. WebFetch desktop PageSpeed run — capture numbers for the desktop/mobile comparison.
+3. Update `docs/HANDOFF.md` Track B section: fold perf into a new **B-perf** bundle, reorder priority (B1 → B-perf → B8 → B7 → cheap wins → B9 → B10 → B11 → B12), add sitelinks-timeline reality note (4–12 weeks after indexing coverage exists, not 1 week).
+4. **Ship B1** — `app/robots.ts` + `app/sitemap.ts` + `public/llms.txt`. Branch `feat/seo-b1-manifests` → PR → squash-merge. Bumps `0.10.29` → `0.10.30`. CHANGELOG + RELEASES updated per release-notes rule.
+
+**Won't touch this session:** B-perf code, B8 JSON-LD, B7 tab metadata, any UI/component code, Wikipedia-content removal for the other 14 series, Greek route tree, GSC verification field (DNS TXT not yet landed per handoff). AdSense CMP status pinned for re-verify. The pinned "Speed Insights US-perf" handoff item folds into the future B-perf bundle.
+
+**Pre-mortem (one line):** the most likely failure is WebFetch returning a JS-rendered shell for PageSpeed desktop without extractable numbers — fallback is to ask the operator for a screenshot.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
