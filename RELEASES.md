@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.33 — 2026-05-19
+
+Internal: faster Bing / DuckDuckGo / ChatGPT Search indexing, plus two small polish edits on blog and weekend pages.
+
+- **Paddock now uses IndexNow** — a free push protocol Microsoft built so search engines learn about new pages without waiting to crawl them. Effective immediately for **Bing**, **DuckDuckGo** (uses Bing), **Yahoo**, **Ecosia**, **Qwant**, **ChatGPT Search**, **Copilot**, **Yandex**, and **Seznam**. No effect on Google (different protocol) or Brave (no protocol; relies on organic crawling).
+- **The blog index page now has a more specific description** for search engine snippets — naming the series we cover rather than the generic site-wide tagline.
+- **Weekend pages now declare their canonical URL explicitly** — closes a small SEO gap where Google had to infer the canonical form from context. No visible change.
+
 ## 0.10.32 — 2026-05-19
 
 Search-engine quality fixes flagged by Bing the moment the sitemap landed there, plus a follow-up pass on the per-series pages. Internal — no visible UI change.

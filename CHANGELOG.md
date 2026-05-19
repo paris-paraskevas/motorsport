@@ -2,6 +2,41 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.33 — 2026-05-19
+
+**IndexNow** — push protocol that lets Bing / Yandex / Seznam know about new and updated URLs without waiting for them to crawl us. Plus two small carry-overs from the prior session's SEO scrutiny: a missing `alternates.canonical` on the weekend page, and a sharper `/blog` description.
+
+### Background — why IndexNow
+
+Bing has only indexed the home page of `paddock-tracker.com` even though the sitemap was submitted in 0.10.30 and confirmed Success / 226 URLs discovered in Bing Webmaster Tools. The "Bing crawl is slow on a 4-day-old domain" problem cascades onto everything that mirrors Bing's index — DuckDuckGo, Yahoo, Ecosia, Qwant, **ChatGPT Search, and Copilot**. The whole Bing-family LLM-search surface area is effectively invisible until Bing's crawler catches up.
+
+IndexNow is the Microsoft-backed accelerator. POST a JSON body to `api.indexnow.org/IndexNow` with `host` + `key` + `keyLocation` + `urlList`; IndexNow verifies the key file at `${SITE_URL}/${INDEXNOW_KEY}.txt`, then nudges Bing (and Yandex + Seznam) to crawl those URLs sooner. Free, no auth, no env var, intentionally-public key.
+
+Google does **not** participate in IndexNow — Google has its own protocol (GSC + sitemap ping). Brave Search does **not** either — Brave-Crawler is organic-only. So IndexNow's reach is exactly: Bing + Yandex + Seznam, plus everything downstream that uses those indices.
+
+### Added
+- **`INDEXNOW_KEY`** + **`INDEXNOW_KEY_LOCATION`** in `lib/site.ts`. Hardcoded UUIDv4 (`9a3e7f2c-8b4d-4c1a-a5e6-d7f8b9c0e1d2`). IndexNow keys are public-by-design per the protocol spec — the key file at the domain root proves ownership; the key string in source allows no impersonation because an attacker can't also serve the matching `.txt` from `paddock-tracker.com`. Net storage decision: source file, no env var.
+- **`public/9a3e7f2c-8b4d-4c1a-a5e6-d7f8b9c0e1d2.txt`** — static asset served by Vercel's CDN, contents = the key string. IndexNow verifies ownership by GETting this file and confirming the response body equals the key it received in the POST. Vercel serves `/public/*` directly with no runtime cost. Chose a static file over an `app/[key].txt/route.ts` dynamic route because (a) deterministic, (b) doesn't collide with future text files like `humans.txt` or `security.txt`, (c) matches the existing `llms.txt` serving pattern.
+- **`lib/indexnow.ts`** — `submitUrl(url)` + `submitUrls(urls[])`. Batches at 1,000 URLs/request (the IndexNow spec allows up to 10,000 but a smaller cap is safer for memory + timeouts). Fire-and-forget — failures `console.warn` and continue; never throws. The function signature accepts an array because the typical caller is the full-sitemap script, not a per-URL hook.
+- **`scripts/submit-sitemap-to-indexnow.ts`** — reads `buildSitemapEntries()` from `lib/sitemap-data.ts`, extracts `url` from each entry, calls `submitUrls`. Logs the prepared count and outcome per batch. Exits 0 on completion, 1 only on fatal errors (which would be a bug — network errors are warned, not raised).
+- **`npm run indexnow:submit`** — `tsx scripts/submit-sitemap-to-indexnow.ts`. `tsx` added as a devDep (`^4.22.3`) to run the TypeScript file with project module resolution.
+- **`README.md`** rewritten from the 3-line stub it was. Documents the IndexNow flow, key location + rotation procedure, manual-submission command, and **explicitly notes that IndexNow does not help Google or Brave** so future contributors don't expect cross-engine coverage from this lever alone.
+
+### Changed
+- **`app/series/[slug]/weekend/[round]/page.tsx`** — `generateMetadata` now sets `alternates.canonical: \`/series/${slug}/weekend/${round}\``. Path-relative to match the pattern PR #49 introduced for `/series/[slug]`. Without this, Google was treating the weekend URL as canonical to itself only by inference; explicit beats implicit.
+- **`app/blog/page.tsx`** description sharpened from `"Analysis, recaps, and opinion across motorsport championships."` (51 chars) to `"Original analysis, race recaps, championship deep-dives, and commentary across F1, MotoGP, WEC, IndyCar, NASCAR and more motorsport categories."` (142 chars). Series names act as content fingerprints search engines and AI crawlers use to disambiguate the topic of a thin landing page.
+
+### Verified
+- `tsc --noEmit` clean.
+- `next build` clean.
+- `vitest run` — 89/89 pass.
+- Local script run against live IndexNow API returned **403 on the batch of 226 URLs** — this is expected and correct: the key file is not yet live on production paddock-tracker.com (it ships in this PR). IndexNow's 403 response code means "key not yet validatable at the keyLocation", which is exactly the state pre-deploy. A re-run after PR merge + Vercel deploy will return 200/202.
+
+### Notes
+- IndexNow is **not** wired into the build pipeline or any deploy hook in this PR. Manual-first per the task brief. Once we confirm a live submission returns 200/202 and Bing's URL count starts climbing, the next decision is whether to wire it into a `postdeploy` Vercel hook or a cron job that compares the current sitemap to a previous snapshot and only submits the diff.
+- The IndexNow protocol spec doesn't require `Cache-Control` headers on the key file; Vercel serves `public/*.txt` with sensible defaults.
+- Possible follow-up: extend the script to also push `/feed.xml` (not in the sitemap), `/robots.txt`, and `/llms.txt` as discoverable-but-non-sitemap resources. Likely diminishing returns; ship and watch first.
+
 ## 0.10.32 — 2026-05-19
 
 Bing Webmaster Tools URL-inspector for the home page flagged two SEO/GEO errors immediately after the 0.10.31 sitemap submission: **"Title too short"** and **"H1 tag missing"**. Both fixed here, alongside the previously-queued **B7** bundle from Track B (tab-aware metadata + canonicals on `/series/[slug]` — kills the 9× duplicate-title cannibalization across the tab variants).
