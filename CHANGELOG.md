@@ -2,6 +2,20 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.26 — 2026-05-19
+
+### Added
+- **Site-wide security headers** via a new `async headers()` block in `next.config.ts`. Applied to every route (`source: "/:path*"`):
+  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` — extends the previous platform default (`max-age=63072000` only) to include subdomain coverage and signal preload-list readiness. Browser-level preloading still requires a separate submission to `hstspreload.org`; this directive is the prerequisite.
+  - `X-Content-Type-Options: nosniff` — prevents MIME-type sniffing on script / stylesheet responses.
+  - `X-Frame-Options: DENY` — blocks any embedding of paddock-tracker.com in an iframe. Clerk's hosted-component iframe lives on the `clerk.paddock-tracker.com` subdomain (embeds INTO our pages, not out), so this doesn't affect the sign-in flow. The modern equivalent is CSP `frame-ancestors`, deferred to a later CSP PR.
+  - `Referrer-Policy: strict-origin-when-cross-origin` — same-origin requests carry the full URL, cross-origin carries only the origin, downgraded requests carry nothing.
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=()` — denies all four listed sensors / advertising signals. `interest-cohort` is the FLoC opt-out; `browsing-topics` is FLoC's successor (the Topics API).
+
+### Notes
+- Closes Track A, PR A4a of the post-marathon legal/risk closure track. **A4b — `Cache-Control` override on content routes** (`/`, `/calendar`, `/series/*`, `/blog`, `/about`, `/changelog` → `public, s-maxage=300, stale-while-revalidate=86400`) — is deferred to its own PR because `clerkMiddleware()` in `proxy.ts` re-sets `Cache-Control: private, no-cache, no-store` on every protected response, overriding anything `next.config.ts headers()` would emit. A4b will need a `proxy.ts` modification to override Clerk's cache header for the content route list, plus its own pre-mortem for stale race-weekend data risk.
+- CSP is intentionally not included in this PR — it's a separate workstream (multiple iterations to allow AdSense / GA / Clerk / Funding Choices / Vercel Analytics / Speed Insights all the right `script-src` / `connect-src` / `frame-src` entries without breaking).
+
 ## 0.10.25 — 2026-05-19
 
 ### Fixed
