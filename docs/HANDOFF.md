@@ -123,13 +123,24 @@ When a curated/override file is absent, renderers fall back to the live external
 - ✅ Track A · A4a — site-wide security headers — DONE 2026-05-19 (`0.10.26`, PR #39)
 - ✅ Track A · A4b — ISR with 5-min revalidate on `/`, `/calendar`, `/blog` — DONE 2026-05-19 (`0.10.27`, PR #40)
 - ✅ Track A · A5 — F1 history tab + content-authoring infrastructure (other 14 series + Rules tabs parked) — DONE 2026-05-19 (`0.10.28`, PR #41; markdown-render follow-up `0.10.29`, PR #42)
+- ✅ Track B · B1 — robots.ts + sitemap.ts + llms.txt — DONE 2026-05-19 (`0.10.30`, PR #45 + fix-up `8178d05`)
+- ✅ Track B · B2 + B3 + B4 + B5 + B6 + B-discover — cheap wins — DONE 2026-05-19 (`0.10.31`, PR #48)
+- ✅ Track B · Bing fixes + B7 — home title/H1 + tab-aware metadata — DONE 2026-05-19 (`0.10.32`, PR #49)
+- ✅ Track B · IndexNow + weekend canonical + /blog desc — DONE 2026-05-19 (`0.10.33`, PR #50)
+- ✅ Track B · B8 JSON-LD + RSS lastBuildDate fix — DONE 2026-05-19 (`0.10.34`, PR #51)
+- ✅ Google Search Console — sitemap.xml submitted + Success — DONE 2026-05-19
+- ✅ Bing Webmaster Tools — sitemap.xml submitted + Processing → Success — DONE 2026-05-19
+- ✅ Brave Search — home URL submitted via `search.brave.com/submit-url` — DONE 2026-05-19
+- ✅ IndexNow — first push 226 URLs accepted HTTP 200 — DONE 2026-05-19
+- ✅ Contact-form email delivery — Resend Marketplace installed + `RESEND_API_KEY` + `CONTACT_TO_EMAIL` wired — DONE 2026-05-19 (operator-confirmed)
 - ❌ `sk_live_*` rotation — deferred
-- ❌ Contact-form email delivery — submissions stored in KV (`paddock:contact:*`); install Resend Marketplace + set `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to actually email
 - ❌ Sentry integration — pending
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
 
-## ⚡ Active workstream (post-2026-05-19 — Track A complete, Track B starting)
+## ⚡ Active workstream (post-2026-05-19 — Track A + most of Track B complete)
+
+**Quick state:** Track A shipped (versions 0.10.23 → 0.10.29, 7 PRs). Track B shipped 11 of ~18 bundles today (0.10.30 → 0.10.34, 7 PRs). Site is sitemap-submitted to Google + Bing + Brave + IndexNow. Mobile Perf 39 is now the load-bearing problem — **B-perf is the next session's #1 pick**, gated on operator sharing a desktop PageSpeed screenshot.
 
 ### Track A — legal/risk closure — DONE
 
@@ -155,6 +166,27 @@ Two confirm-or-swap markers in legal markdown are RESOLVED (removed during A1, P
 
 Driven by `docs/audit-seo-geo-2026-05-19.md` (10-pillar discoverability audit, baseline `0.10.22`) + `docs/seo-geo-playbook.md` (152-doc Google Search Central synthesis, May 2026 source-truth reference). The audit + playbook are the strategy refs; this section is the **state of execution**.
 
+#### ⏭ Next-session pickup — remaining Track B, in priority order
+
+Pop into a new session and pick from the top:
+
+| Priority | Bundle | Effort | Operator prerequisite | Notes |
+|---|---|---|---|---|
+| **1** | **B-perf** — mobile-perf pass | 4–6 h (multi-PR) | **Share desktop PageSpeed Insights screenshot at session start.** Only mobile numbers in hand. | Mobile Perf 39 / LCP 5.2s / TBT 5340ms / 661 KiB unused JS. THIS IS THE LOAD-BEARING PROBLEM. Mobile-first indexing means perf actively suppresses every other signal. Folds the pinned "Speed Insights US-perf" item. |
+| **2** | **B-content** — fill 14 history + 15 rules tabs + 3–5 blog posts | 80–130 h (multi-session) | None | F1 history is the template (PR #41). Workflow + sources in `docs/content-authoring/README.md` + `SOURCES.md`. Suggested order: MotoGP → WEC → IndyCar histories first. |
+| **3** | **B9** — server-render home + calendar bodies | 2–3 h | None | Helps both perf AND non-JS-aware LLM crawlers. Split `<HomeContent>` / `<FilteredSessions>` into server-side renderers. |
+| **4** | **B10** — per-segment OG images | ~2 h | None | `app/series/[slug]/opengraph-image.tsx` + weekend variant. Folds B-discover's ≥1200×675 Discover-grade sizing. |
+| **5** | **B-monitor** — operational runbook | ~30 min | None | Markdown only. New doc. |
+| **6** | **B11** — path-based tab routes `/series/[slug]/[tab]` | 1–2 days | None | Deferred multi-day. When it lands, flip the canonical strategy from `?tab=X` to path with a one-line edit in `app/series/[slug]/page.tsx`. |
+| **7** | **B12** — Greek `/el/` route tree | 3–5 days | None | Deferred multi-day. `next-intl`. |
+| **8** | **B8b** — `SoftwareApplication` schema | parked | Real reviews exist (aggregateRating) | Builder intentionally not in `lib/json-ld.ts` yet. |
+
+**Operator wait-and-watch** (no Claude work, just observe):
+- **GSC Performance report** — populates ~24–72h after PR #51 deploy. Real queries Paddock matches, CTR, impressions, position.
+- **Bing Webmaster Tools** — discovered-URL count should climb from 1 → 226 over the next few days as IndexNow + sitemap propagate.
+- **Rich Results Test** on a deployed page — paste `/`, `/series/f1/weekend/9`, any blog post into [search.google.com/test/rich-results](https://search.google.com/test/rich-results). Expect Organization + WebSite + BreadcrumbList + SportsEvent + Article detected cleanly.
+- **Bing Site Scan** results when complete (was "Queued" at last check; sitemap.xml-driven scan of all 226 URLs).
+
 #### Research — DONE (three rounds)
 
 1. **Session-start brief, 2026-05-19** — operator shared SEO Starter Guide + 15 GSC/AdSense/GA4 dashboards + PageSpeed mobile screenshots (Perf 39/100, LCP 5.2s, TBT 5340ms, 661 KiB unused JS). Fed into B1 priority decision.
@@ -171,27 +203,28 @@ Driven by `docs/audit-seo-geo-2026-05-19.md` (10-pillar discoverability audit, b
 - **Path-based tabs (B11) more urgent than originally positioned** — duplicate-title cannibalization across 9 `?tab=` variants is exactly the antipattern `title-link` doc warns against. Was bundle #11 in the audit; promoted to slot 6 in the post-playbook order.
 - **`llms.txt` explicitly disclaimed by Google as "AEO hack"** but kept as a forward-compatible hedge for non-Google LLM crawlers (Cursor / IDE agents, OAI-SearchBot occasionally).
 
-#### Track B bundle priority — post-playbook (2026-05-19)
+#### Shipped Track B (2026-05-19 — 7 PRs, versions 0.10.30 → 0.10.34)
 
-Four new bundles surfaced: **B-perf** (mobile-perf pass), **B-content** (fill 14 history + 15 rules tabs + initial blog posts), **B-discover** (Discover-grade image meta), **B-monitor** (operational runbook). **B8b** (SoftwareApplication) deferred. Existing bundle numbering preserved.
-
-| Order | Bundle | Effort | Status |
+| PR | Version | Bundle(s) | What |
 |---|---|---|---|
-| 1 | **B1** — robots.txt / sitemap.xml / llms.txt | 1.5 h | ✅ DONE (0.10.30, PR #45 + fix-up `8178d05`) |
-| 2 | **B-perf (NEW)** — mobile-perf pass | 4–6 h (multi-PR) | pending |
-| 3 | **B8** — JSON-LD (Organization + WebSite + BreadcrumbList + SportsEvent + Article + ProfilePage) | 3–4 h | pending |
-| 4 | **B7** — tab-aware metadata + canonical | 1–2 h | pending |
-| 5 | **B-content (NEW)** — fill 14 history + 15 rules tabs + 3–5 blog posts | 80–130 h | multi-session — schedule separately |
-| 6 | **B11** — path-based tab routes (`/series/[slug]/[tab]`) | 1–2 days | deferred — multi-day |
-| 7 | B2 noindex + B3 nofollow + B4 descriptions + B5 `<time>` + B6 RSS — cheap wins interleaved | ~90 min total | pending |
-| 8 | **B-discover (NEW)** — `max-image-preview:large` meta + Discover-grade OG image sizes (≥1200×675) | ~30 min meta + folds into B10 | pending |
-| 9 | **B9** — server-render home + calendar bodies | 2–3 h | pending |
-| 10 | **B10** — per-segment OG images | ~2 h | pending |
-| 11 | **B-monitor (NEW)** — operational runbook (markdown only) | ~30 min | pending |
-| 12 | **B12** — Greek `/el/` route tree | 3–5 days | deferred — multi-day |
-| 13 | **B8b (DEFERRED)** — `SoftwareApplication` schema | gated on `aggregateRating` (need real reviews) | parked |
+| #44 | — | research | docs(track-b): research synthesis + B-perf bundle + sitelinks-timeline reset |
+| #45 + fix-up `8178d05` | 0.10.30 | **B1** | `app/robots.ts` + `app/sitemap.ts` + `public/llms.txt`. Sitemap = 226 URLs. |
+| #46 | — | research | docs(seo-geo): 152-doc Google Search Central playbook (`docs/seo-geo-playbook.md`) |
+| #47 | — | research | docs(track-b): handoff refresh for execution phase |
+| #48 | 0.10.31 | **B2 + B3 + B4 + B5 + B6 + B-discover** | noindex on /sign-in /sign-up /settings + nofollow on outbound news + per-route descriptions across 10 pages + `<time dateTime>` markup + RSS `<lastBuildDate>` / `<ttl>` / `<category>` / `<image>` + site-wide `googleBot.max-image-preview:large` |
+| #49 | 0.10.32 | **Bing fixes + B7** | Home `<title>` lengthened to 57 chars + sr-only `<h1>` + tab-aware `generateMetadata` on `/series/[slug]` emitting per-tab title/description/canonical via new `describeTab()` helper |
+| #50 | 0.10.33 | **IndexNow + canonicals** | Full IndexNow protocol implementation (`lib/indexnow.ts` + `scripts/submit-sitemap-to-indexnow.ts` + `npm run indexnow:submit` + key file at `public/<key>.txt`) + weekend page `alternates.canonical` + sharper `/blog` description. README.md rewritten from stub. |
+| #51 | 0.10.34 | **B8 + RSS fix** | 5 Schema.org schemas (Organization + WebSite + BreadcrumbList + SportsEvent + Article) via new `lib/json-ld.ts` + `components/JsonLd.tsx` server component. RSS `<lastBuildDate>` no longer emits Unix epoch when posts empty. |
 
-**Search Console + Bing verification:** Google Search Console verified (post-B1 sitemap submission expected this session). **Bing Webmaster Tools verification + sitemap submission pending** — operator action. `metadata.verification` field in `app/layout.tsx` is a 5-min add once DNS TXT lands externally.
+**External operator actions completed today:**
+
+- ✅ Google Search Console — sitemap.xml submitted, Status: Success, 226 URLs discovered.
+- ✅ Bing Webmaster Tools — sitemap.xml submitted, Status: Processing. Site Scan queued.
+- ✅ Brave Search — home URL submitted via `search.brave.com/submit-url`. No further submission portal exists for Brave.
+- ✅ IndexNow first push — 226 URLs accepted HTTP 200 (after the live key file went up post-PR-#50 deploy).
+- ✅ Bing URL-inspector confirmed 0 SEO/GEO issues on `paddock-tracker.com/` after PR #49 deploy ("Live URL" tab).
+
+**Still pending external:** GSC `metadata.verification` field in `app/layout.tsx` — 5-min add once DNS TXT lands externally.
 
 **Audit items already covered by Track A — crossed off:**
 - A4b shipped ISR on content routes (audit cheap-win 7).

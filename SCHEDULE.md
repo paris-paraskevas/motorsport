@@ -166,21 +166,48 @@ Categorically out-of-scope (multi-day per playbook, can't physically fit): **B11
 
 Plan, sequenced by leverage:
 
-1. **Bridge work** — `docs/HANDOFF.md` Track B refresh + this `SCHEDULE.md` entry + `IDEAS.md` triage. ~30 min, docs PR.
-2. **Cheap wins bundle** — B2 noindex auth + B3 nofollow news + B4 per-route descriptions + B5 `<time dateTime>` + B6 RSS hardening + B-discover meta. ~90 min, feat PR (0.10.31).
-3. **B-monitor runbook** — new markdown doc, no code. ~30 min, docs PR.
-4. **B7** — tab-aware metadata + canonical on `/series/[slug]`. 1–2 h, feat PR (0.10.32).
-5. **B8** — JSON-LD (Organization + WebSite + BreadcrumbList + SportsEvent + Article + ProfilePage). 3–4 h, feat PR (0.10.33).
-6. **B-perf** — split into ≥2 sub-PRs (bundle/unused-JS reduction; lazy-load + button a11y names). 4–6 h, feat PRs (0.10.34 / 0.10.35).
-7. **B9** — server-render home + calendar bodies. 2–3 h, feat PR (0.10.36).
-8. **B10** — per-segment OG images (series + weekend variants), folds the rest of B-discover. ~2 h, feat PR (0.10.37).
+1. **Bridge work** — `docs/HANDOFF.md` Track B refresh + this `SCHEDULE.md` entry + `IDEAS.md` triage.
+2. **Cheap wins bundle** — B2 + B3 + B4 + B5 + B6 + B-discover.
+3. **B-monitor runbook** — new markdown doc, no code.
+4. **B7** — tab-aware metadata + canonical on `/series/[slug]`.
+5. **B8** — JSON-LD bundle.
+6. **B-perf** — split into ≥2 sub-PRs.
+7. **B9** — server-render home + calendar bodies.
+8. **B10** — per-segment OG images.
 
-**Won't touch this session:** B11, B12, B-content (all multi-day), B8b (gated on aggregateRating), any new infrastructure, any UI redesign beyond what bundles require.
+Outcomes:
 
-**Pre-mortem (one line):** the most likely failure is sequencing fatigue — B8 + B-perf are the heaviest bundles in the middle of the queue; if they overrun, B9 and B10 slip to next session. That's acceptable.
+- → done: **PR #48 (0.10.31) — B2 + B3 + B4 + B5 + B6 + B-discover cheap wins.** 21 source files, 23 edits, no UI change. All metadata-only.
+- → done: **PR #49 (0.10.32) — Bing URL-inspector fixes (home title 57 chars + sr-only H1) + B7 tab-aware metadata + canonicals.** New `describeTab()` helper in `lib/tabs.ts`. Bing Live URL inspector confirmed 0 SEO/GEO issues after deploy.
+- → done: **PR #50 (0.10.33) — IndexNow protocol + weekend canonical + sharper /blog description.** Full IndexNow shipped: key file, `lib/indexnow.ts`, `scripts/submit-sitemap-to-indexnow.ts`, `npm run indexnow:submit`, README rewrite. First live push accepted 226 URLs at HTTP 200.
+- → done: **PR #51 (0.10.34) — B8 JSON-LD bundle (5 schemas) + RSS lastBuildDate bug fix.** New `lib/json-ld.ts` + `components/JsonLd.tsx`. 8 pages wired. ProfilePage deferred to B-content. RSS no longer emits Unix-epoch `<lastBuildDate>` when posts are empty (self-inflicted bug from 0.10.31 surfaced by post-PR-#50 verification sweep).
+- → done: **External actions — sitemap submitted to GSC + Bing + Brave; IndexNow first run successful.** All three search engines now know about the 226 URLs.
+- → skipped: **B-monitor runbook** — not done; queued for next session. Low effort (~30 min).
+- → skipped: **B-perf** — blocked on operator desktop PageSpeed Insights screenshot. Mobile-only numbers in hand. Explicit blocker.
+- → skipped: **B9 server-render bodies, B10 per-segment OG images** — bandwidth ran out after B8. Queued for next session.
+
+**Beyond plan:**
+- → done: Three rounds of mid-session ESPA — caught (a) stale prompt proposing brand rename to "Paddock Tracker", (b) duplicate scope vs PR #48 + #49, (c) the IndexNow path that became PR #50. Senior-dev pushback worked as intended.
+- → done: Post-PR-#50 verification curl sweep across 27 production signals. 26 passed; surfaced the RSS lastBuildDate Unix-epoch bug which folded into PR #51.
+
+**State at session close:** Track B 11 of ~18 bundles shipped. Next session: **B-perf** is #1 pick (after operator screenshot). Full priority list in `docs/HANDOFF.md` → Active workstream → "Next-session pickup".
 
 Active:
-_(awaiting [+Nm] prefixes)_
+_(no `[+Nm]` prefixes captured this session; wall-clock approx 6h across the four sessions today; aggregate calendar-day shipping: 11 PRs #41 → #51, versions 0.10.28 → 0.10.34)_
+
+### Next session — Wed 2026-05-20 (stub)
+
+**Priority 1 — B-perf, multi-PR.** Mobile Perf 39 / LCP 5.2s / TBT 5340ms / 661 KiB unused JS. This is the load-bearing problem after today's Track B sweep — mobile-first indexing means perf actively suppresses every other signal we shipped.
+
+**Operator session-start prerequisite:** share a desktop PageSpeed Insights screenshot. Only mobile numbers in hand; need the desktop comparison to scope the per-platform attack.
+
+**Concurrent operator actions to check before starting:**
+- GSC Performance report — first real query data may now be populated (24–72h after sitemap submission).
+- Bing Webmaster Tools discovered-URL count — should have climbed from 1.
+- Bing Site Scan — was "Queued" at last check; results may be in.
+- Rich Results Test on `/`, `/series/f1/weekend/9`, any blog post — confirm B8 JSON-LD validates cleanly.
+
+After B-perf: pick from the Track B priority list in `docs/HANDOFF.md` → Active workstream → "Next-session pickup".
 
 ---
 
