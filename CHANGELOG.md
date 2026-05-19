@@ -2,6 +2,21 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.23 — 2026-05-19
+
+### Added
+- **Imprint page** at `/imprint` (English entry) and `/impressum` (German alias). Both routes render the same source markdown via `loadMarkdownAsHtml` from `content/legal/imprint.md`. Sections: service provider (Paris Paraskevas, Andrea Papandreou 23, Melissokhori, 41500 Larissa, Greece), contact email, VAT-ID stated as "None" (operator is not VAT-registered), § 18 Abs. 2 MStV editorial responsibility block (named operator with the same postal address, covering blog content at `/blog`), § 7–10 DDG liability-for-content language, liability-for-links, copyright, EU ODR platform link. Both routes mirror the existing `app/privacy/page.tsx` shape (`force-static`, `loadMarkdownAsHtml`, same prose typography classes). Linked from `components/Footer.tsx` after the Do Not Sell entry. Closes Track A, PR A1 of the post-marathon legal/risk track.
+
+### Changed
+- **`content/legal/privacy.md` §1** — controller block now lists the full postal address (Paris Paraskevas, Andrea Papandreou 23, Melissokhori, 41500 Larissa, Greece) plus contact email, and cross-links the new Imprint page. GDPR Art. 13 requires controller identity + contact details to be available to data subjects; with a publicly-served EU-targeted Site and AdSense loading, the postal address is the load-bearing piece that was missing.
+- **`content/legal/privacy.md` §12** — removed the `<!-- TODO confirm -->` placeholder marker; jurisdiction (Greece / Thessaloniki courts) and contact email (pparaskevas.dev@gmail.com) are now confirmed defaults rather than placeholders.
+- **`content/legal/terms.md` §9** — removed the matching `<!-- TODO confirm -->` placeholder marker.
+
+### Notes
+- The address rendered on `/imprint` and `/privacy` is the operator's residence. DDG §5 strictly requires a real street address, not a P.O. box. Phone is deliberately omitted (email satisfies the "rapid electronic contact" requirement). VAT-ID line states "None" rather than being omitted, to make the absence explicit rather than implied.
+- `/impressum` exists as a German-language entry-point URL only — German visitors expect this URL by convention. Page content remains in English (consistent with the rest of the site); the legal substance is identical either way.
+- §18 Abs. 2 MStV editorial responsibility is included even though `/blog` currently has no published posts. The route is shipped and reachable, and the obligation attaches to the offering of journalistic-editorial content, not to the existence of specific posts.
+
 ## 0.10.21 — 2026-05-19
 
 ### Added

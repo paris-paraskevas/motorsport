@@ -57,8 +57,6 @@ Nothing in these terms excludes liability that cannot be excluded under applicab
 
 These terms are governed by the laws of **Greece**. Any dispute arising under or in connection with these terms will be subject to the exclusive jurisdiction of the **competent courts of Thessaloniki, Greece**, without prejudice to mandatory consumer-protection venues in your country of residence.
 
-<!-- TODO confirm: jurisdiction. Defaulting to Greece (Thessaloniki) based on operator's location. Change if you want elsewhere. -->
-
 ## 10. Changes to these terms
 
 We may update these terms from time to time. The "Last updated" date reflects the most recent change. Material changes will be announced in the [release notes](/changelog). Continued use of the Site after a change constitutes acceptance.

@@ -2,6 +2,13 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.23 — 2026-05-19
+
+Imprint page added; privacy policy now lists the operator's full postal address.
+
+- **Paddock now has an Imprint page** at [/imprint](/imprint), also reachable at [/impressum](/impressum). It sets out who runs the Site, where they are, how to reach them, and who is editorially responsible for the blog content. German and other EEA visitors expect this as a matter of course; it is now linked from the footer.
+- **Privacy policy controller section** now lists the operator's full postal address alongside the email, satisfying GDPR's identity-and-contact disclosure requirements for an EU-served audience.
+
 ## 0.10.22 — 2026-05-19
 
 GT World Challenge Champions tab — Endurance Cup section added.

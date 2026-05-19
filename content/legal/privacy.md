@@ -10,7 +10,16 @@ If you do not agree with this policy, please do not use the Site.
 
 ## 1. Who is the data controller
 
-For the purposes of the GDPR and equivalent laws, the data controller is the operator of Paddock listed above, based in **Greece (EU)**. There is no Data Protection Officer; reach out at the contact email.
+For the purposes of the GDPR and equivalent laws, the data controller is:
+
+**Paris Paraskevas**
+Andrea Papandreou 23, Melissokhori
+41500 Larissa
+Greece (EU)
+
+Email: **pparaskevas.dev@gmail.com**
+
+There is no Data Protection Officer; reach out at the contact email. The full operator information is also available on the [Imprint page](/imprint).
 
 ## 2. Data we collect
 
@@ -120,5 +129,3 @@ We may update this policy from time to time. The "Last updated" date at the top 
 For any privacy question or to exercise your rights:
 
 **pparaskevas.dev@gmail.com**
-
-<!-- TODO confirm: jurisdiction is Greece (Thessaloniki courts) — change if needed. Email is pparaskevas.dev@gmail.com — change if needed. -->
