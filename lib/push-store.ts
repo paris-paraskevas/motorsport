@@ -33,6 +33,23 @@ export async function deleteSubscription(endpoint: string): Promise<void> {
   await kv.del(`${KEY_PREFIX}${id}`);
 }
 
+export async function getSubscription(
+  endpoint: string,
+): Promise<StoredSubscription | null> {
+  if (!isKvConfigured()) return null;
+  const id = endpointHash(endpoint);
+  const value = await kv.get<StoredSubscription>(`${KEY_PREFIX}${id}`);
+  return value ?? null;
+}
+
+export function isSubscriptionOwner(
+  sub: StoredSubscription | null,
+  callerId: string | null,
+): boolean {
+  if (!sub) return false;
+  return sub.userId === callerId;
+}
+
 export async function listSubscriptions(): Promise<StoredSubscription[]> {
   if (!isKvConfigured()) return [];
   const keys: string[] = [];

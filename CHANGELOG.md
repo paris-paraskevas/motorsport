@@ -2,6 +2,19 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.25 — 2026-05-19
+
+### Fixed
+- **`POST /api/push/unsubscribe` now verifies ownership** before deleting the stored subscription. Previously the route called `deleteSubscription(body.endpoint)` with zero auth check, so any caller in possession of an endpoint string could unsubscribe any browser's push subscription — including signed-in users' subscriptions from a different account. Now: the route reads the caller's Clerk session, fetches the stored subscription via the new `getSubscription(endpoint)` helper, and returns 403 unless `subscription.userId === auth().userId` (both null is the anonymous–anonymous match case, both sides string is the normal signed-in case). If the subscription doesn't exist the route returns 200 (idempotent — already gone, nothing to refuse). Edge case noted in an inline comment: users who subscribed while signed-out and then signed in will get 403 on server-side unsub; they can still unsubscribe browser-side via `pushManager.unsubscribe()` and the next push send prunes the stale entry via the 404/410 cleanup path in `lib/push.ts`.
+- **`POST /api/contact` now stores submissions with a 12-month TTL** (`{ ex: 60 * 60 * 24 * 365 }`) to match the retention table in `/privacy`. Previously `kv.set(key, record)` was unbounded — submissions accumulated indefinitely while the privacy policy promised 12 months. Both a compliance drift and an unbounded-KV-growth risk in one line.
+
+### Added
+- **`lib/push-store.ts`** — new `getSubscription(endpoint)` (lookup by `endpointHash` key) + `isSubscriptionOwner(sub, callerId)` pure helper for ownership comparison. The ownership predicate is split out so it can be unit-tested without mocking Clerk or KV.
+- **`lib/push.test.ts`** — six new tests exercising the four ownership outcomes (matched userIds → allow, mismatched userIds → deny, both null → allow, mixed null/string in either direction → deny) plus the missing-subscription case. Test suite now 82 / 82.
+
+### Notes
+- Closes Track A, PR A2 + A3 of the post-marathon legal/risk closure track per `docs/HANDOFF.md`. A2 (ownership) and A3 (TTL) were bundled as the handoff suggested — both small fixes, both in `app/api/`, both straightforward audit-driven.
+
 ## 0.10.24 — 2026-05-19
 
 ### Fixed

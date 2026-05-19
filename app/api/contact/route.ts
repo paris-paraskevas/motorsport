@@ -105,7 +105,8 @@ export async function POST(req: Request) {
   if (isKvConfigured()) {
     const key = `paddock:contact:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
     try {
-      await kv.set(key, record);
+      // 12-month retention to match the privacy policy retention table.
+      await kv.set(key, record, { ex: 60 * 60 * 24 * 365 });
     } catch {
       /* don't block on KV failure */
     }
