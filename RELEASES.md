@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.28 — 2026-05-19
+
+The F1 History tab now reads as Paddock, not Wikipedia.
+
+- **Original F1 history content** at [/series/f1?tab=history](/series/f1?tab=history). About 545 words across three sections — Origin, Turning points, Today's shape — with all the things you'd expect (Fangio, the rear-engine revolution, Lauda 1976, Imola 1994) plus the title-decider controversies (Suzuka 1989 and 1990, Adelaide 1994, Jerez 1997, Crashgate 2008, Abu Dhabi 2021). Cited inline against authoritative motorsport sources — Formula1.com, FIA archives, Doug Nye's *Autocourse History of the Grand Prix Car*, 8W/Forix, Motor Sport Magazine, Autosport, The Race, Joe Saward, StatsF1. No more Wikipedia article dump on the tab.
+- **An authored byline at the bottom** of the History tab. Will appear on every series's History tab as their content lands.
+- **The other 14 series and all Rules tabs** show a "Coming soon" placeholder for now. MotoGP and WEC History come in follow-up releases; the other 12 series and the Rules tabs after that.
+
 ## 0.10.27 — 2026-05-19
 
 The home page, calendar, and blog now load from CDN cache instead of running server-side on every visit.
