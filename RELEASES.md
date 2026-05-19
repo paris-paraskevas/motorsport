@@ -2,6 +2,11 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.37 — 2026-05-19
+
+- **IndyCar 2026 drivers and teams pages are now live.** Every IndyCar driver on the 2026 grid — all 26 across 10 teams — has their own page at `/drivers/<name>`, with team affiliation and car number. Every team has a page at `/teams/<name>` listing its full driver lineup. Previously these URLs returned "Driver not found" / "Team not found"; the data is now curated end-to-end.
+- The **Drivers tab on the IndyCar series page** now reads from this curated list rather than scraping Wikipedia, so the rendering issue fixed in 0.10.36 can't ever fire on IndyCar again.
+
 ## 0.10.36 — 2026-05-19
 
 Fixed a rendering bug on per-series Drivers tabs where Wikipedia CSS markup was leaking into the driver list — most visible on **IndyCar**, where the A. J. Foyt Enterprises entry showed a wall of `.mw-parser-output .legend{...}` style declarations between Caio Collet and Santino Ferrucci. Now strips those decorations cleanly. Affected any series relying on the live Wikipedia driver-list fallback.

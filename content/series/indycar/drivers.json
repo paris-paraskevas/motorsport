@@ -1,0 +1,89 @@
+{
+  "teams": [
+    {
+      "name": "Team Penske",
+      "color": "#FFD100",
+      "drivers": [
+        { "name": "Josef Newgarden", "number": 2 },
+        { "name": "Scott McLaughlin", "number": 3 },
+        { "name": "David Malukas", "number": 12 }
+      ]
+    },
+    {
+      "name": "Chip Ganassi Racing",
+      "color": "#E10600",
+      "drivers": [
+        { "name": "Kyffin Simpson", "number": 8 },
+        { "name": "Scott Dixon", "number": 9 },
+        { "name": "Alex Palou", "number": 10 }
+      ]
+    },
+    {
+      "name": "Andretti Global",
+      "color": "#000000",
+      "drivers": [
+        { "name": "Will Power", "number": 26 },
+        { "name": "Kyle Kirkwood", "number": 27 },
+        { "name": "Marcus Ericsson", "number": 28 }
+      ]
+    },
+    {
+      "name": "Arrow McLaren",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Pato O'Ward", "number": 5 },
+        { "name": "Nolan Siegel", "number": 6 },
+        { "name": "Christian Lundgaard", "number": 7 }
+      ]
+    },
+    {
+      "name": "Rahal Letterman Lanigan Racing",
+      "color": "#E2231A",
+      "drivers": [
+        { "name": "Graham Rahal", "number": 15 },
+        { "name": "Louis Foster", "number": 45 },
+        { "name": "Mick Schumacher", "number": 47 }
+      ]
+    },
+    {
+      "name": "A.J. Foyt Racing",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Caio Collet", "number": 4 },
+        { "name": "Santino Ferrucci", "number": 14 }
+      ]
+    },
+    {
+      "name": "Ed Carpenter Racing",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Alexander Rossi", "number": 20 },
+        { "name": "Christian Rasmussen", "number": 21 }
+      ]
+    },
+    {
+      "name": "Meyer Shank Racing",
+      "color": "#1A1A1A",
+      "drivers": [
+        { "name": "Felix Rosenqvist", "number": 60 },
+        { "name": "Marcus Armstrong", "number": 66 }
+      ]
+    },
+    {
+      "name": "Juncos Hollinger Racing",
+      "color": "#000000",
+      "drivers": [
+        { "name": "Rinus VeeKay", "number": 76 },
+        { "name": "Sting Ray Robb", "number": 77 }
+      ]
+    },
+    {
+      "name": "Dale Coyne Racing",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Romain Grosjean", "number": 18 },
+        { "name": "Dennis Hauger", "number": 19 }
+      ]
+    }
+  ]
+}
