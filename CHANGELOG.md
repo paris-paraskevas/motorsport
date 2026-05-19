@@ -2,6 +2,29 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.35 — 2026-05-19
+
+Docs-only — closes 2026-05-19 with first perf-baseline capture + Wed 2026-05-20 work queue.
+
+### Added
+
+- **`docs/perf-baselines.md`** — time-series baseline doc (append-only by date). Captures Vercel Speed Insights field data (RES + CWV + per-route + per-country) and PSI lab data (LCP critical path + unused-JS breakdown + long-task count) for both desktop and mobile, plus targets table, gap analysis, derived workstream priorities, and a fixed measurement protocol. First row: 2026-05-19 — Mobile RES 76 / LCP 3.67 s / TTFB 3.17 s the load-bearing problem; `/` (RES 67) is the offender route on both platforms.
+- **Memory `project-paddock-perf-baselines.md`** — pointer to the file + when-to-read / when-to-update / what's-captured contract. Added to `MEMORY.md` index.
+
+### Changed
+
+- **`SCHEDULE.md`** — Wed 2026-05-20 stub replaced with a concrete 4-PR B-perf plan derived from the PSI desktop diagnostics: 0.10.36 quick-wins (preconnect `clerk.paddock-tracker.com` + Coffee button `aria-label` + footer touch-target spacing + Wikipedia History `<img>` lazy + intrusive-interstitial audit) → 0.10.37 third-party deferral (AdSense + GTM via `next/script lazyOnload`, ~319 KiB recovery) → 0.10.38 Clerk lazy-boundary (`<UserButton>` + widgets via `next/dynamic`, ~225 KiB recovery, keep `<ClerkProvider>` synchronous at root) → 0.10.39 CSS critical-path. B9 server-render kept as a separate session. Plus the operator session-start checks + verification gates.
+- **`docs/HANDOFF.md`** — Active-workstream Quick-state preamble updated: B-perf no longer "gated on operator screenshot" since screenshots landed 2026-05-19. Next-session pickup B-perf row's operator-prerequisite column now points at `docs/perf-baselines.md` + the SCHEDULE.md entry.
+- **`IDEAS.md`** — Now slot 1 ("Pre-Fotis Track B push tonight") was stale-done → replaced with B-perf execution (Wed 2026-05-20). Now slot 2 (Fotis Supabase sit-down) carried with a "verify state at session start" qualifier. Now slot 3 (weather + news coverage audit) carried unchanged.
+
+### Removed
+
+- **Memory `project-paddock-pre-fotis-cutoff.md`** + its `MEMORY.md` line — expired 2026-05-19. The cutoff was the rule "clear open items by Mon/Tue 2026-05-18/19; new ideas → Inbox only, do not pivot." Both Mon and Tue shipped on plan (19 + 14 = 33 PRs across the marathon + Track A + Track B). Rule no longer applies; deleted rather than archived.
+
+### Verified
+
+- `git restore public/sw.js` cleared a Serwist build artifact (CRLF re-write + minor minified-bundle drift) before committing. No behavior change.
+
 ## 0.10.34 — 2026-05-19
 
 **B8** — JSON-LD structured data across the site. Plus a one-line fix to a self-inflicted bug in the 0.10.31 RSS hardening that the post-PR-#50 verification sweep caught.

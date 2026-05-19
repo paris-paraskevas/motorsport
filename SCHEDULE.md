@@ -195,19 +195,54 @@ Outcomes:
 Active:
 _(no `[+Nm]` prefixes captured this session; wall-clock approx 6h across the four sessions today; aggregate calendar-day shipping: 11 PRs #41 → #51, versions 0.10.28 → 0.10.34)_
 
-### Next session — Wed 2026-05-20 (stub)
+### Tue 2026-05-19 — continued — baseline capture + Wed work queue
 
-**Priority 1 — B-perf, multi-PR.** Mobile Perf 39 / LCP 5.2s / TBT 5340ms / 661 KiB unused JS. This is the load-bearing problem after today's Track B sweep — mobile-first indexing means perf actively suppresses every other signal we shipped.
+Fifth (and final) mini-session same calendar day. Operator landed PSI desktop screenshots + Vercel Speed Insights desktop + mobile views; B-perf is no longer screenshot-blocked. This session captures the baselines durably and converts the Wed stub into a concrete plan.
 
-**Operator session-start prerequisite:** share a desktop PageSpeed Insights screenshot. Only mobile numbers in hand; need the desktop comparison to scope the per-platform attack.
+- → done: `docs/perf-baselines.md` created — first time-series baseline row. Vercel SI desktop RES 95 / mobile RES 76; PSI desktop LCP critical path 2,037 ms + 616 KiB unused JS broken down (Clerk 224 / AdSense 157 / FundingChoices 98 / GTM 64 / other 73) + 7 long main-thread tasks; PSI mobile Best Practices 81 + Accessibility 90 (Perf section not captured this snapshot — flagged for recapture).
+- → done: `SCHEDULE.md` Wed 2026-05-20 stub replaced with 4-PR B-perf sequence (0.10.36 quick-wins → 0.10.37 3rd-party deferral → 0.10.38 Clerk lazy → 0.10.39 CSS critical-path) + B9 server-render kept as separate session.
+- → done: `docs/HANDOFF.md` Active-workstream Quick-state + B-perf row cross-ref to `docs/perf-baselines.md`.
+- → done: `IDEAS.md` Now slot 1 ("Pre-Fotis Track B push tonight") → replaced with "B-perf execution (Wed 2026-05-20)". Slots 2 (Fotis Supabase) + 3 (weather + news audit) carried.
+- → done: memory `project-paddock-perf-baselines.md` added + `MEMORY.md` index line. Expired `project-paddock-pre-fotis-cutoff.md` removed (cutoff date reached, rule no longer applies).
+- → done: ship `0.10.35` (docs-only, no behavior change) — CHANGELOG + RELEASES + package.json all bumped.
 
-**Concurrent operator actions to check before starting:**
-- GSC Performance report — first real query data may now be populated (24–72h after sitemap submission).
+Active:
+_(no `[+Nm]` prefixes captured this session)_
+
+### Wed 2026-05-20 — planned
+
+**Priority 1 — B-perf, multi-PR.** Baselines: `docs/perf-baselines.md` (2026-05-19 row). Mobile RES 76 / LCP 3.67 s / TTFB 3.17 s / CLS 0.11. Desktop PSI surfaced 616 KiB unused JS (Clerk 224 / AdSense 157 / FundingChoices 98 / GTM 64 / other 73) + CSS critical path blocking to 2 s + 7 long main-thread tasks. Mobile-first indexing means this suppresses every other signal we shipped — load-bearing.
+
+Sequence:
+
+1. **`0.10.36` — quick-wins.** Preconnect `clerk.paddock-tracker.com` (90 ms LCP saving) + `aria-label="Buy me a coffee"` on the mobile-header Coffee button (Accessibility 90 → 95+) + footer touch-target spacing for Release notes / Cookies / About / Accessibility / Imprint (Best Practices 81 → 90+) + lazy + `width`/`height` on Wikipedia History tab `<img>` (CLS prevention) + audit Clerk sign-in flow against `avoid-intrusive-interstitials` (likely no-op, verify). **~30 min, low risk.**
+2. **`0.10.37` — third-party deferral.** `next/script strategy="lazyOnload"` on AdSense (`adsbygoogle` + `show_ads_impl`) + GTM. Verify FundingChoices CMP fires first (consent gate is non-negotiable for GDPR). Optionally Partytown for GTM to push it off the main thread. **~1–2 h, medium risk.** Est ~319 KiB unused JS recovered + meaningful TBT relief from the 7 long tasks.
+3. **`0.10.38` — Clerk lazy boundary.** Audit which routes actually need Clerk runtime. `<ClerkProvider>` **must stay synchronous at root** (Clerk requirement — don't break this). Header `<UserButton>` + in-page Clerk widgets via `next/dynamic` with `ssr: false`. Verify on preview deploy: anonymous → sign-in → settings → push-notification enable → sign-out, all clean. **~1–2 h, medium-high risk.** Est ~225 KiB unused JS recovered.
+4. **`0.10.39` — CSS critical-path.** Investigate why two CSS bundles block render until ~2 s. Likely Tailwind v4 / Next 16 quirk — **check `node_modules/next/dist/docs/` first per AGENTS.md** before touching config. Likely fixes: inline critical CSS, preload hints, route-segment CSS splitting. **~1–2 h, medium risk.** Target: LCP <2.5 s.
+
+**Out of B-perf scope (separate sessions):**
+- **B9 server-render** — `<HomeContent>` / `<FilteredSessions>` / `<MonthScopedWeekends>` to server. `/` is RES 67 mobile / 73 desktop — the offender route on both platforms; biggest LCP lever. Stays separate unless 0.10.36–39 fail to clear the bar. Listed in HANDOFF Next-session pickup as slot 3.
+- **`next/image` migration** site-wide — escalate only if 0.10.37–38 don't clear the unused-JS bar.
+
+**Won't touch:** AdSense removal (revenue) or FundingChoices removal (GDPR-mandated CMP) — only defer them.
+
+**Operator session-start checks (run before touching code):**
+- GSC Performance report — first real query data may now be populated (24–72 h after sitemap submission).
 - Bing Webmaster Tools discovered-URL count — should have climbed from 1.
-- Bing Site Scan — was "Queued" at last check; results may be in.
-- Rich Results Test on `/`, `/series/f1/weekend/9`, any blog post — confirm B8 JSON-LD validates cleanly.
+- Bing Site Scan results — was "Queued" 2026-05-19.
+- Rich Results Test on `/`, `/series/f1/weekend/9`, any blog post — confirm B8 JSON-LD schemas validate cleanly.
+
+**Verification gates:**
+- PSI mobile re-run after every PR; target Perf ≥75 + LCP <2.5 s + TBT <300 ms before declaring B-perf done.
+- Browser-verify home + calendar + a weekend page on a real mobile device per `feedback-paddock-debug-with-own-eyes`.
+- Append a fresh `docs/perf-baselines.md` row 24–72 h after the last B-perf PR lands so Vercel SI field data has time to refresh.
+
+**Pre-mortem:** Most likely failure mode is 0.10.38 breaks Clerk session detection or sign-in by lazy-loading too aggressively. Mitigation: keep `<ClerkProvider>` at root, only lazy components that consume `useUser()` / `useAuth()` at render time, verify the full anonymous → sign-in → settings → push-enable → sign-out flow on preview before merge.
 
 After B-perf: pick from the Track B priority list in `docs/HANDOFF.md` → Active workstream → "Next-session pickup".
+
+Active:
+_(awaiting [+Nm] prefixes)_
 
 ---
 
