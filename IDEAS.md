@@ -14,17 +14,19 @@ Time-based scheduling lives in `SCHEDULE.md`.
 
 ## Now (≤ 3, in flight)
 
-1. **Tuesday Fotis sit-down (2026-05-19).** Walk `docs/research/supabase-schema-draft.md` together, close the 10 open questions in §17 (UUID v7 timing, service role split, status PK shape, JSONB scope, JSON-LD location, audit retention, content_hash backfill, naming convention, comments/predictions order, Realtime adoption). If shape holds → start the 12-step migration order in §18.
-2. **Weather + news coverage audit (15 series).** For each series, click into the next upcoming weekend and confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) + news feed populate. Output: per-series gap list + curation pass. Calendar correctness landed in 0.9.14; this is the still-pending coverage angle.
-3. **ADAC Champions tab → curated past winners.** With the singleEvent slim tab set live (0.10.1), the Champions tab is now a fan's main destination on `/series/adac-ravenol-24h`. Today's Wikipedia scrape may not produce a clean list — verify and curate `content/series/adac-ravenol-24h/champions.json` if needed.
+1. **Pre-Fotis Track B push (tonight 2026-05-19).** Ship all single-session Track B bundles before Fotis arrives for the Supabase onboarding meeting. Sequence: bridge work → cheap wins (B2–B6) → B-monitor → B7 → B8 → B-perf → B9 → B10. Multi-day bundles (B11, B12, B-content) deferred. See `SCHEDULE.md` current-day entry and `docs/HANDOFF.md` Track B section for full priority.
+2. **Fotis Supabase sit-down (tonight 2026-05-19).** Walk `docs/research/supabase-schema-draft.md` together, close the 10 open questions in §17. If shape holds → start the 12-step migration order in §18.
+3. **Weather + news coverage audit (15 series).** For each series, click into the next upcoming weekend and confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) + news feed populate. Output: per-series gap list + curation pass.
 
 ## Next (≤ 5, queued — start within ~1–2 weeks)
 
-1. **Supabase provisioning + run migrations 001 → 008.** Post-Fotis sit-down. Provision the project via Vercel Marketplace, then execute the 12-step plan from §18 of the schema draft.
-2. **Endurance-series weekend grouping audit.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Verify case-by-case now that rounds.json curation has landed across all 15 series.
-3. **SEO baseline (S5).** `app/sitemap.ts`, `app/robots.ts`, JSON-LD (`SportsEvent` per session, `Organization` per series, `Person` per driver, `BreadcrumbList` on detail pages), per-page `generateMetadata`, OG image generators, canonicals. Fan-intent keywords (schedule / programme / where to watch / live stream / timetable) across every page.
-4. **Curation patches deferred from 0.10.1.** IMSA Practice 1 on R6–R11 (per-race timetable lookups — publishes race-week), FE Sanya R11 session times (waiting on official Formula E timetable). Knock these out as a small bundled PR when the timetables drop.
-5. **Native non-F1 results + standings (S7).** Implement `lib/results/<slug>.ts` + `lib/standings/<slug>.ts`. Order: MotoGP → WEC → IndyCar → NASCAR. Depends on the Supabase storage tables landing first.
+1. **Supabase provisioning + run migrations 001 → 008.** Post-Fotis sit-down. Provision via Vercel Marketplace, then execute the 12-step plan from §18 of the schema draft.
+2. **Track B continuation — multi-day bundles.** **B-content** (fill 14 history tabs + 15 rules tabs + 3–5 blog posts, 80–130 h, multi-session, follow F1 history template), **B11** (path-based tab routes `/series/[slug]/[tab]`, 1–2 days), **B12** (Greek `/el/` route tree via `next-intl`, 3–5 days). All deferred from the 2026-05-19 push; see `docs/seo-geo-playbook.md` Part 4 for scope. Supersedes the old "SEO baseline (S5)" entry which is now executed in pieces under Track B.
+3. **ADAC Champions tab → curated past winners.** With the singleEvent slim tab set live (0.10.1), the Champions tab is now a fan's main destination on `/series/adac-ravenol-24h`. Today's Wikipedia scrape may not produce a clean list — verify and curate `content/series/adac-ravenol-24h/champions.json` if needed.
+4. **Endurance-series weekend grouping audit.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Verify case-by-case now that rounds.json curation has landed across all 15 series.
+5. **Curation patches deferred from 0.10.1.** IMSA Practice 1 on R6–R11 (per-race timetable lookups — publishes race-week), FE Sanya R11 session times (waiting on official Formula E timetable). Bundled PR when timetables drop.
+
+_(Native non-F1 results + standings, S7 — depends on Supabase storage tables landing first. Stays queued behind item 1.)_
 
 ## Inbox (unfiltered, append-only)
 
@@ -105,6 +107,7 @@ Time-based scheduling lives in `SCHEDULE.md`.
 - **Another "Claude design" depth pass** for background warmth and global theming. Why parked: Paddock 1.0 restyle just shipped (0.10.0). Revisit after the next user-research pass surfaces specific complaints.
 - **Era markers / sparklines on Champions tab.** Why parked: relies on having clean curated champions data per series; current scrape is fragile. Revisit after the Champions JSON cleanup.
 - **GDPR / cookie-consent banner for Google Analytics 4.** Why parked: shipped 0.9.15 GA4 sets cookies without consent — fine for ~30 visitors/day, not fine at scale. Revisit at ~500 visitors/day or a real legal complaint.
+- **B8b — SoftwareApplication JSON-LD on `/`.** Why parked: per `docs/seo-geo-playbook.md` Part 4, semantic fit is perfect (`WebApplication` + `applicationCategory: "SportsApplication"`) but the schema's `aggregateRating` / `review` requirement is a hard blocker. Emitting without yields invalid markup + zero rich-result eligibility. Revisit when Paddock has either real user-review infrastructure or at least one editorial review to cite. Annual re-evaluation.
 
 ## Killed (won't do — with one-line why)
 

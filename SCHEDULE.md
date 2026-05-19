@@ -144,22 +144,40 @@ _(no `[+Nm]` prefixes captured this session)_
 
 ### Tue 2026-05-19 — continued — Track B research + B1 manifests
 
-Third session same calendar day. Research-first per handoff protocol.
+Third session same calendar day. Research-first per handoff protocol. Outcomes:
 
-Operator-provided artifacts at session start:
-- Authoritative source: Google SEO Starter Guide (`developers.google.com/search/docs/fundamentals/seo-starter-guide`).
-- PageSpeed runs (mobile + desktop) for `paddock-tracker.com`. Mobile screenshots in hand: Perf 39 / LCP 5.2s / TBT 5340ms / 661 KiB unused JS / 20 long tasks. Desktop URL only — fetch numbers.
-- 15 dashboard screenshots: GSC just-verified (0 sitemaps, no robots.txt detected, 1 HTTPS critical, all reports processing), AdSense "Getting ready" (unchanged), GA4 31 users / 48 sessions MTD, DDG SERP shows home page only.
+- → done: PR #44 — docs(track-b) research synthesis + B-perf bundle + sitelinks-timeline reset (operator screenshots + SEO Starter Guide). Merged.
+- → done: PR #45 — feat(seo) B1 discoverability manifests 0.10.30 — `app/robots.ts` + `app/sitemap.ts` + `public/llms.txt`. Initial commit `8b552cf`; self-review + web-research fix-up commit `8178d05` (dropped `lastmod`/`priority`/`changefreq`, fixed `host:` format, split sitemap into `lib/sitemap-data.ts` + thin wrapper, added 7 vitest cases, restructured llms.txt with `## Optional`). Merged.
+- → done: PR #46 — docs(seo-geo) comprehensive playbook from 152 Google Search Central docs at `docs/seo-geo-playbook.md` (2 447 lines, 8 parallel research agents). Surfaced four new bundles (B-perf, B-content, B-discover, B-monitor) + B8b deferred + priority reshuffle. Merged.
 
-Plan:
-1. WebFetch Google SEO Starter Guide — cross-reference against `docs/audit-seo-geo-2026-05-19.md`. Surface anything the 10-pillar audit missed (existing audit already covers sitelinks `WebSite + SearchAction` in Appendix B; checking for misses).
-2. WebFetch desktop PageSpeed run — capture numbers for the desktop/mobile comparison.
-3. Update `docs/HANDOFF.md` Track B section: fold perf into a new **B-perf** bundle, reorder priority (B1 → B-perf → B8 → B7 → cheap wins → B9 → B10 → B11 → B12), add sitelinks-timeline reality note (4–12 weeks after indexing coverage exists, not 1 week).
-4. **Ship B1** — `app/robots.ts` + `app/sitemap.ts` + `public/llms.txt`. Branch `feat/seo-b1-manifests` → PR → squash-merge. Bumps `0.10.29` → `0.10.30`. CHANGELOG + RELEASES updated per release-notes rule.
+Material reframings from PR #46 research:
+- Sitelinks searchbox retired Google 2024 — `WebSite + SearchAction` not the searchbox gateway anymore.
+- Sitelinks mini-links realistic timeline: 6–12+ months, not 4–12 weeks.
+- Bing Webmaster Tools is the GEO unlock — ChatGPT search uses Bing's index. New operator action.
 
-**Won't touch this session:** B-perf code, B8 JSON-LD, B7 tab metadata, any UI/component code, Wikipedia-content removal for the other 14 series, Greek route tree, GSC verification field (DNS TXT not yet landed per handoff). AdSense CMP status pinned for re-verify. The pinned "Speed Insights US-perf" handoff item folds into the future B-perf bundle.
+Active:
+_(no `[+Nm]` prefixes captured this session; wall-clock approx 4h)_
 
-**Pre-mortem (one line):** the most likely failure is WebFetch returning a JS-rendered shell for PageSpeed desktop without extractable numbers — fallback is to ask the operator for a screenshot.
+### Tue 2026-05-19 — continued — pre-Fotis full Track B push
+
+Fourth session same calendar day. **Operator directive:** all Track B bundles that fit in a session, before Fotis arrives tonight for Supabase onboarding.
+
+Categorically out-of-scope (multi-day per playbook, can't physically fit): **B11** (path-based tabs, 1–2 days), **B12** (Greek route tree, 3–5 days), **B-content** (14 history tabs + 15 rules tabs + 3–5 blog posts, 80–130 h). All deferred to dedicated future sessions.
+
+Plan, sequenced by leverage:
+
+1. **Bridge work** — `docs/HANDOFF.md` Track B refresh + this `SCHEDULE.md` entry + `IDEAS.md` triage. ~30 min, docs PR.
+2. **Cheap wins bundle** — B2 noindex auth + B3 nofollow news + B4 per-route descriptions + B5 `<time dateTime>` + B6 RSS hardening + B-discover meta. ~90 min, feat PR (0.10.31).
+3. **B-monitor runbook** — new markdown doc, no code. ~30 min, docs PR.
+4. **B7** — tab-aware metadata + canonical on `/series/[slug]`. 1–2 h, feat PR (0.10.32).
+5. **B8** — JSON-LD (Organization + WebSite + BreadcrumbList + SportsEvent + Article + ProfilePage). 3–4 h, feat PR (0.10.33).
+6. **B-perf** — split into ≥2 sub-PRs (bundle/unused-JS reduction; lazy-load + button a11y names). 4–6 h, feat PRs (0.10.34 / 0.10.35).
+7. **B9** — server-render home + calendar bodies. 2–3 h, feat PR (0.10.36).
+8. **B10** — per-segment OG images (series + weekend variants), folds the rest of B-discover. ~2 h, feat PR (0.10.37).
+
+**Won't touch this session:** B11, B12, B-content (all multi-day), B8b (gated on aggregateRating), any new infrastructure, any UI redesign beyond what bundles require.
+
+**Pre-mortem (one line):** the most likely failure is sequencing fatigue — B8 + B-perf are the heaviest bundles in the middle of the queue; if they overrun, B9 and B10 slip to next session. That's acceptable.
 
 Active:
 _(awaiting [+Nm] prefixes)_
