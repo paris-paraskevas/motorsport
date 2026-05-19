@@ -2,6 +2,14 @@
 
 What's new in Paddock. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.30 — 2026-05-19
+
+Search engines and AI crawlers can now find every page on the site.
+
+- **Paddock now publishes a `robots.txt` and a `sitemap.xml`.** Until today, Google and other search engines had to guess which pages exist on paddock-tracker.com — they could only discover pages they happened to follow links into. Now they get a full list of every public URL: the home page, calendar, blog, about, changelog, all 15 series pages, every race-weekend page, and the legal pages. Search Console can ingest the sitemap directly; indexing should accelerate from "1 page found" toward full coverage over the next few weeks.
+- **A new `llms.txt` file** at the site root gives AI assistants (ChatGPT, Claude, Perplexity, Gemini and others) the same kind of map. Where `sitemap.xml` is the machine format Google reads, `llms.txt` is the markdown format LLM crawlers prefer.
+- No visible UI change.
+
 ## 0.10.29 — 2026-05-19
 
 Two small follow-up fixes for the F1 History tab introduced yesterday.

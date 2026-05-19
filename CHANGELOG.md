@@ -2,6 +2,21 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.30 — 2026-05-19
+
+### Added
+- **`app/robots.ts`** — Next.js 16 file convention generating `/robots.txt`. Allows all crawlers, disallows `/api/`, `/settings`, `/sign-in`, `/sign-up`, references `/sitemap.xml`, declares `host: 'https://paddock-tracker.com'`. No per-LLM-bot rules — explicit allow/disallow for `GPTBot` / `ClaudeBot` / `PerplexityBot` / `Google-Extended` etc. deferred until the operator decides on training-corpus opt-in/out (default = allow per the Robots Exclusion Standard catch-all).
+- **`app/sitemap.ts`** — Next.js 16 file convention generating `/sitemap.xml`. Enumerates 12 static URLs (home, calendar, blog, about, changelog, 5 legal pages, imprint + impressum) + 15 series index pages + every non-cancelled weekend round from `content/series/<slug>/rounds.json` (14 series × ~20 rounds = ~280 weekend URLs). `lastModified` is `new Date()` for static pages and the round's `startDate` for weekend pages. `changeFrequency` advisory: `daily` for home / calendar / series, `weekly` for weekends, `monthly` for about, `yearly` for legal. `priority` advisory: 1.0 home, 0.9 calendar + series, 0.7 weekends, 0.6 blog, 0.5 about + changelog, 0.3 legal. `/drivers/[slug]` and `/teams/[slug]` deliberately omitted — they 404 today because `content/series/*/drivers.json` files don't exist yet. `/blog/[slug]` omitted — `content/posts/` is empty.
+- **`public/llms.txt`** — community-convention LLM affordance file in `llmstxt.org` format. H1 site name + blockquote one-line summary + paragraph context, then `## Entry points`, `## Series`, `## Policies and legal`, `## Feeds` sections with markdown links. ~40 lines. **Not a Google-blessed standard** — the SEO Starter Guide does not mention `llms.txt`. The file is a hedge for non-JS LLM crawlers (CCBot, Bytespider, the older GPTBot ingest path, ClaudeBot's index path, PerplexityBot's index path) that prefer pre-digested structured site maps.
+
+### Notes
+- This is **B1 of Track B** per `docs/audit-seo-geo-2026-05-19.md` (cheap-wins 1, 2, 3) and per the updated bundle priority in `docs/HANDOFF.md` (research-phase synthesis 2026-05-19). Unblocks GSC sitemap submission and the indexing wave that should accumulate over the following weeks.
+- `next build` confirms both files emit as static: `○ /robots.txt` and `○ /sitemap.xml` appear in the build output as prerendered static content. No runtime cost.
+- Sitemap intentionally does NOT declare `alternates.languages` — the Greek `/el/` route tree is bundle B12, deferred. Once it ships, the localization will be a per-URL `alternates.languages` add to the existing sitemap entries (not a new sitemap file).
+- GSC `metadata.verification` field NOT added in this PR — the DNS TXT verification is being handled externally by the operator and hasn't landed yet. Will follow as a 5-minute add once the TXT is live (handoff "Search Console + Bing verification" line item).
+- `robots.txt` does not set `crawlDelay` — Googlebot ignores it, and the site can comfortably handle the natural crawl rate.
+- The sitemap URLs do not carry query-string variants. `?tab=` permutations on `/series/[slug]` (history / champions / standings / rules / drivers / news / about / results) are intentionally omitted — they would multiply the sitemap by 9× while sharing identical `<title>` (audit Pillar 2 HIGH). The tab-aware metadata + canonical fix is bundle B7; path-based tabs are bundle B11.
+
 ## 0.10.29 — 2026-05-19
 
 ### Fixed
