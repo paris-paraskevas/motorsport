@@ -24,7 +24,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 - `npx vitest run lib/standings/indycar.test.ts` — 7/7 pass.
 - `tsc --noEmit` (will run pre-commit) — clean.
 
-## 0.10.38 — 2026-05-19
+## 0.10.40 — 2026-05-19
+
+### Added
+
+- **`content/series/f1/drivers.json`** — full 2026 F1 grid curated end-to-end. 11 teams × 2 drivers = 22-car grid (10 incumbent teams + **Cadillac** as 11th, debuting 2026 with Sergio Pérez #11 and Valtteri Bottas #77). Each team carries livery primary color; each driver carries 3-letter code + permanent number. Notable 2026 storylines reflected: Antonelli #12 at Mercedes alongside Russell; Bortoleto #5 + Hülkenberg #27 at the renamed Audi (formerly Sauber); Hadjar #6 promoted to Red Bull Racing alongside Verstappen #3; Lawson + Lindblad #41 at Racing Bulls; Bearman #87 + Ocon #31 at Haas; Colapinto #43 at Alpine; **Norris carrying #1 as defending champion** (per F1 regulation 33.1 — title holder may use #1 for the season after winning). Source: parallel research agent synthesizing Wikipedia 2026 F1 article + F1.com cross-references.
+
+### Behavioral effects (no code changed)
+
+- **`/series/f1?tab=drivers`** now reads from `loadCuratedDrivers()` instead of falling through to `lib/wikipedia-season.ts`. Bypasses the live Wikipedia scrape entirely for F1 — same belt-and-suspenders pattern as IndyCar `0.10.37`.
+- **`/drivers/<slug>` routes activated** for all 22 F1 drivers (e.g. `/drivers/lando-norris`, `/drivers/kimi-antonelli`, `/drivers/oliver-bearman`). Previously 404 because no curated drivers.json existed for F1.
+- **`/teams/<slug>` routes activated** for all 11 F1 teams (e.g. `/teams/mclaren`, `/teams/cadillac`, `/teams/audi`).
+- **~33 new indexable URLs** reachable via internal links from `/series/f1`. Sitemap inclusion still deferred (will land after all 15 series have drivers.json, so the sitemap grows once instead of piecemeal).
+
+### Notes
+
+- This brings the curated drivers.json count to **2 of 15 series**: F1 (this PR) and IndyCar (PR #55 / `0.10.37`). The 5 remaining Tier-1 agents (MotoGP, WSBK, F2, F3, Formula E, DTM) returned output earlier today but are awaiting validation + web-search per-series before bulk-commit. The Tier-2 series (WEC, IMSA, GT World, NLS, WRC, NASCAR, ADAC) haven't been dispatched.
+
+## 0.10.39 — 2026-05-19
 
 ### Changed
 
