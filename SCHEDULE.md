@@ -397,8 +397,76 @@ Won't touch this session: any impl code, dispatch wiring, drivers.json content. 
 
 Pre-mortem: most likely failure mode — a research agent returns confident with a source that's actually 403'd / reCAPTCHA'd / SPA-rendered when probed. Mitigation: the agent prompt requires an actual HTTP probe response paste; absence = brief rejected.
 
+Phase 1 outcomes (all 12 + Flashscore returned):
+
+- → done: **all 12 per-series briefs returned with live HTTP probes pasted.** No brief rejected. Several surprises beat the prior audit:
+  - **NLS PDF is direct-download, not reCAPTCHA-walled** as the Saturday 5/16 audit claimed. `teilnehmer.vln.de/.../Klassensieger-Trophaee 2026.pdf` returns 200 / 919KB / `application/pdf` over plain curl. pdftotext-parseable.
+  - **racing-reference.info returns 200, not 403** as the existing `lib/results/nascar-cup.ts:6` code comment claims. The comment is stale; per-race classification tables with 45+ rows including owner team available.
+  - **IMSA has a clean JSON API** at `imsa.results.alkamelcloud.com` — IMSA's official timing partner, every session of every round, unauthenticated. Beats the assumed PDF-behind-reCAPTCHA path. Wikipedia cites Alkamel as its primary source.
+  - **WEC stash parser based on hallucinated URLs.** Two of its three standings URLs return 404. Fresh impl from `fiawec.com /en/page/manufacturers-classification` (single SSR page hosts ALL standings tables) supersedes.
+  - **F3 root cause located:** `lib/results/f3.ts:33` Sprint scale `[15,12,10,8,6,4,2,1]` is wrong (correct: `[10,9,8,7,6,5,4,3,2,1]`) AND Melbourne SR was a half-distance red-flag race scoring 5-4-3-2-1 top 5 only. Fix = migrate both parsers to read `__NEXT_DATA__.RacePoints` (authoritative FIA value) like F2 does.
+  - **Formula E R7-R10 have a clean upstream:** `motorsportweek.com/{date}/formula-e-2026-{slug}-e-prix-race-{N}-results/` returns WordPress `wp-block-table` SSR with full 20-driver classifications for all 4 missing rounds. Beats curated overrides.
+- → done: **Flashscore evaluation:** not viable. 100% SPA across all 15 series (no `__NEXT_DATA__`, no inline JSON), hostile `robots.txt` for AI/scraper UAs, and the 4 series we need most (IMSA / GT-World / NLS / ADAC) return 404 entirely. Documented in HANDOFF as a "do not pursue" source.
+
+**Locked-in source picks (one per error-row series):**
+
+| Series | Issue | Source picked | Conf |
+|---|---|---|---|
+| f3 | std/res disagree + drv | Migrate to `__NEXT_DATA__.RacePoints` like F2 | H |
+| indycar | results | Wikipedia season Driver_standings table | M |
+| formula-e R7-R10 | full-class + drv | motorsportweek.com per-event SSR | H |
+| motogp | std+res+drv | Pulselive JSON API | H |
+| wec | std+res+drv | fiawec.com `/en/page/manufacturers-classification` SSR | H |
+| imsa | results full-class | Alkamel Systems JSON API | H |
+| nascar-cup | full-class + drv | racing-reference.info per-race | H |
+| gt-world | results | Existing parser + SRO points scale module | H |
+| wrc | full-class + drv | Wikipedia per-rally articles | H |
+| dtm | std+res+drv | motorsport.com/dtm SSR | H |
+| nls | std+res+drv | teilnehmer.vln.de PDF + Wikipedia raw wikitext | H |
+| f2 | drv only | 5-source cross-verified (Wiki + FIA + Formula Scout + AutoHebdo + WebSearch) | H |
+
+**Operator decisions captured via AskUserQuestion:**
+- MotoGP Manufacturers' Championship: skip for v1 (FIM aggregation rule, riders-only).
+- NASCAR results team field: owner team (`23XI Racing`), not manufacturer (`Toyota`).
+- WRC drivers.json schema: single CuratedDriverEntry per crew with optional new `coDriverName` field.
+- Phase 2 PR sequence: approved as proposed, starting with 0.11.16 F3 reconciliation.
+
+**Phase 2 PR sequence (locked — renumbered after theme toggle absorbed 0.12.0):**
+
+```
+0.12.0   feat(theme) + chore: dark/light toggle + session wrap (this PR, #76)
+0.12.1   fix(f3): reconciliation
+0.12.2   feat(indycar): results
+0.12.3   feat(formula-e): R7-R10 full-class + restore trend chart
+0.12.4   feat(motogp): standings + results
+0.12.5   feat(wec): standings + results (fresh impl from fiawec.com)
+0.12.6   feat(imsa): results (Alkamel JSON API)
+0.12.7   feat(nascar-cup): full-class results
+0.12.8   feat(gt-world): results + points scale
+0.12.9   feat(wrc): per-rally full-class
+0.12.10  feat(dtm): standings + results
+0.12.11  feat(nls): standings + results (PDF + Wiki cross-verify)
+0.13.0   feat(drivers): bulk drivers.json × 13 series
+```
+
 Active:
 _(awaiting [+Nm] prefixes)_
+
+### Wed 2026-05-20 — continued — operator added dark/light theme toggle to PR #76
+
+Operator surfaced one new feature request mid-session: "what would it take to add a theme button to change from dark to light and light to dark next to contact button like a small item batches to this pr".
+
+ESPA outcome:
+- Verified the obvious: `app/globals.css` already has dual-theme tokens (light on `:root`, dark via `prefers-color-scheme` + `[data-theme="dark"]` / `[data-theme="light"]` escape hatches). next-themes dep in package.json but unused. Toggle is genuinely small.
+- Asked via AskUserQuestion: bundle into PR #76 vs separate PR vs F3-PR-bundle. Operator picked "bundle into PR #76, bump to 0.12.0 minor (Recommended)".
+- Phase 2 sequence renumbered: F3 reconciliation slides from 0.11.16 to 0.12.1; original 0.12.0 drivers.json bulk slides to 0.13.0.
+
+Built:
+- `components/ThemeToggle.tsx` — Sun/Moon button, vanilla state (no next-themes dep), 29×29 SSR placeholder, localStorage `'paddock-theme'`.
+- `app/layout.tsx` — inline `<script>` as first body child reading the same localStorage key and applying `data-theme` synchronously before paint (FOUC prevention).
+- `components/HeaderUtils.tsx` — `<ThemeToggle />` mounted immediately to the right of Contact button.
+
+Next sub-session: 0.12.1 F3 reconciliation impl.
 
 ### Thu 2026-05-21 — planned — week-blitz day 2 (MotoGP + WSBK)
 

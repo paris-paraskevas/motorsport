@@ -4,9 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.11.15 — 2026-05-20
+## 0.12.0 — 2026-05-20
 
-End-of-day wrap from the 0.11.x continuation session. No behavior change. Opens the Phase 1 research wave for the 12-error sweep.
+Two unrelated tracks bundled into one PR: end-of-day wrap from the 0.11.x continuation session (chore, docs + orphan parsers) plus the first user-facing theme toggle. Minor-bump because the toggle is a new feature.
+
+### Added
+
+- **`components/ThemeToggle.tsx`** — dark/light theme switcher. Sun/Moon icon, mounted in `HeaderUtils` immediately to the right of the Contact button. Reads/writes `localStorage['paddock-theme']` (values `'light'` | `'dark'`); falls back to `prefers-color-scheme` when unset. The toggle sets `document.documentElement.dataset.theme` which the existing `app/globals.css` already routes to the right CSS-variable set via the `[data-theme="dark"]` / `[data-theme="light"]` escape hatches plus `@custom-variant dark (...)`. No `next-themes` dep added — the existing dual-token CSS makes vanilla state + one effect sufficient. A 29×29 placeholder renders during SSR/pre-hydration to reserve layout space without flashing the wrong icon.
+- **`app/layout.tsx`** — inline `<script>` as first child of `<body>` reading the same localStorage key and applying `data-theme` synchronously before paint. Prevents flash-of-wrong-theme on hard refresh / first-paint hydration when a non-default preference is saved. Wrapped in try/catch for environments where localStorage is unavailable (incognito/SSR).
 
 ### Chore
 
@@ -21,7 +26,7 @@ End-of-day wrap from the 0.11.x continuation session. No behavior change. Opens 
 
 ### Why this version exists
 
-Per the `feedback-paddock-release-notes` rule, every push to main bumps the version + `CHANGELOG.md` + `RELEASES.md`. This is a chore-only push that opens the research-first track for fixing the 12 operator-flagged per-series errors (F2 / F3 / FE / IndyCar / IMSA / NLS / DTM / GTWC / MotoGP / WRC / NASCAR / WEC).
+Two reasons in one PR. (a) Per the `feedback-paddock-release-notes` rule, every push to main bumps the version + `CHANGELOG.md` + `RELEASES.md`; the working-tree wrap from the 0.11.x continuation session needed a home. (b) Operator requested a dark/light theme toggle as a small bundleable item; the toggle is a user-facing feature so this push goes from patch to minor and absorbs the chore wrap. Phase 2 of the 12-error sweep starts at 0.12.1 (was originally planned as 0.11.16).
 
 ## 0.11.14 — 2026-05-20
 

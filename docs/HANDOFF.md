@@ -213,6 +213,70 @@ Status matrix as of 0.11.14 prod (operator browser-verified). "✅" = live + cor
 - Untracked: `docs/handoff-2026-05-20-session-end.md` (point-in-time snapshot from morning), `lib/results/gt-world.{ts,test.ts}` (orphan from agent — GTWCE results parser exists, dispatch deferred), `lib/results/imsa.{ts,test.ts}` (orphan — IMSA results parser exists, dispatch deferred).
 - The two `lib/results/{gt-world,imsa}.{ts,test.ts}` files reference each series' standings file as a type import; they compile cleanly against current main. Safe to defer or commit as `chore: track GTWCE + IMSA results parsers (dispatch pending)`.
 
+### Phase 1 research wave outcomes (2026-05-20 evening)
+
+ESPA outcome from operator's "fix these 12 errors properly" directive: research-first, three phases. Phase 1 dispatched 12 parallel research-only agents (no Write, no worktree isolation) + a follow-up Flashscore evaluation. All briefs returned with live HTTP probes.
+
+**Locked-in source picks per error-row series:**
+
+| Series | Issue | Source | Conf |
+|---|---|---|---|
+| f3 | std/res disagree + drv | Migrate to `__NEXT_DATA__.RacePoints` like F2 | H |
+| indycar | results | Wikipedia season Driver_standings table | M |
+| formula-e R7-R10 | full-class + drv | motorsportweek.com per-event SSR | H |
+| motogp | std+res+drv | Pulselive JSON API | H |
+| wec | std+res+drv | fiawec.com `/en/page/manufacturers-classification` SSR | H |
+| imsa | results full-class | **Alkamel Systems JSON API** at `imsa.results.alkamelcloud.com` | H |
+| nascar-cup | full-class + drv | racing-reference.info per-race | H |
+| gt-world | results | Existing parser + SRO points scale module (25-18-15-12-...-1 + 1.5× Paul Ricard + Spa 3-stage) | H |
+| wrc | full-class + drv | Wikipedia per-rally articles (`/wiki/2026_Rally_de_Portugal` etc) | H |
+| dtm | std+res+drv | motorsport.com/dtm SSR | H |
+| nls | std+res+drv | **teilnehmer.vln.de PDF (no reCAPTCHA — prior audit wrong)** | H |
+| f2 | drv only | 5-source cross-verified | H |
+
+**Flashscore explicitly rejected as a source.** Probed `robots.txt` + `sitemap.xml` first. 100% SPA across 15 series — every standings/calendar/results URL returns 200 but zero data in initial HTML (no `__NEXT_DATA__`, no inline JSON, hydrated via undocumented `/x/feed/...` XHR). 4 series we need most (IMSA, GT-World, NLS, ADAC-24h) return 404 entirely. `robots.txt` bans CCBot/Bytespider/Diffbot/Meta/AI2Bot/cohere-ai/YouBot/etc. Stay away.
+
+**Material findings that override prior assumptions:**
+
+1. **NLS PDFs are direct-download.** Saturday 5/16 audit said reCAPTCHA-walled. False — `teilnehmer.vln.de/download.php?file=teilnehmer/Tabellenstaende/Klassensieger-Trophaee%202026.pdf` returns 200 + `application/pdf` over plain curl.
+2. **racing-reference.info returns 200, not 403.** Stale code comment in `lib/results/nascar-cup.ts:6` is misleading. Full per-race classification with owner team available.
+3. **IMSA has a clean official JSON API** at `imsa.results.alkamelcloud.com/Results/<season>/<event>/...JSON`. Beats the assumed PDF-behind-reCAPTCHA path. Wikipedia per-event articles cite Alkamel as their primary source. Sibling `05_Results by Class_Race_Official.JSON` pre-buckets data by class.
+4. **WEC stash parser unusable.** Prior agent's stash@{0} used URLs invented from search snippets; 2/3 standings URLs are 404. Fresh impl from `fiawec.com /en/page/manufacturers-classification` (one SSR page hosts ALL standings) supersedes. Keep stash's types + race-ids + dispatch wiring; discard the parser code.
+5. **F3 root cause:** `lib/results/f3.ts:33` Sprint scale `[15,12,10,8,6,4,2,1]` is wrong (correct: `[10,9,8,7,6,5,4,3,2,1]`) AND Melbourne SR was a half-distance red-flag race scoring 5-4-3-2-1 top 5 only. Fix = migrate both parsers to read `__NEXT_DATA__.RacePoints` (FIA-authoritative) like F2.
+6. **Formula E R7-R10 have a clean upstream:** `motorsportweek.com/{YYYY}/{MM}/{DD}/formula-e-{YYYY}-{slug}-e-prix-race-{N}-results/` returns WP `wp-block-table` SSR with full 20-driver classifications. Beats both Wikipedia stubs AND curated overrides for these 4 rounds.
+
+**Operator decisions locked via AskUserQuestion this session:**
+
+- Multi-class crew schema: optional `carNumber` per `CuratedDriverEntry` (backwards-compatible).
+- WRC schema: single entry per crew with new optional `coDriverName` field.
+- MotoGP Manufacturers' Championship: skip for v1 (FIM aggregation rule out of scope).
+- NASCAR results team field: owner team (`23XI Racing`), not manufacturer.
+
+**Phase 2 PR sequence (locked — renumbered after theme toggle absorbed 0.12.0):**
+
+| Ver | Scope | Source | Est |
+|---|---|---|---|
+| 0.12.0 | feat(theme) + chore: dark/light toggle + session wrap | n/a (CSS already dual) | shipped this PR |
+| 0.12.1 | fix(f3) reconciliation | __NEXT_DATA__.RacePoints | 1-2h |
+| 0.12.2 | feat(indycar) results | Wikipedia season Driver_standings | 1.5h |
+| 0.12.3 | feat(formula-e) R7-R10 full-class + restore trend chart | motorsportweek.com | 2h |
+| 0.12.4 | feat(motogp) standings + results | Pulselive JSON | 2-3h |
+| 0.12.5 | feat(wec) standings + results | fiawec.com SSR | 2-3h |
+| 0.12.6 | feat(imsa) full-class results | Alkamel JSON | 1.5-2h |
+| 0.12.7 | feat(nascar-cup) full-class results | racing-reference.info | 1.5h |
+| 0.12.8 | feat(gt-world) results + points module | SRO regs | 1-1.5h |
+| 0.12.9 | feat(wrc) per-rally full-class | Wikipedia /wiki/2026_<Rally> | 2h |
+| 0.12.10 | feat(dtm) standings + results | motorsport.com/dtm | 2h |
+| 0.12.11 | feat(nls) standings + results | teilnehmer.vln.de PDF + Wikipedia | 2-3h |
+| 0.13.0 | feat(drivers) bulk drivers.json × 13 series | per-series | multi-session |
+
+**Process rules locked for Phase 2:**
+
+- One PR per series. No bundling across series unless strictly necessary.
+- Browser-verify on Vercel preview before merge (chart-vs-standings invariant gets explicit check).
+- Tests against real fetched fixtures, not synthetic ones (yesterday's FE colspan bug shipped because fixtures didn't match real Wikipedia structure).
+- No new abstractions until a real second consumer (per CLAUDE.md working agreement).
+
 ### Stale section retained for history — pre-2026-05-20 active workstream below
 
 ### Track A — legal/risk closure — DONE
