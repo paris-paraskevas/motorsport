@@ -97,6 +97,7 @@ _(Native non-F1 results + standings, S7 — depends on Supabase storage tables l
 - Sidebar `--tint` follow-up — requires a server-side route lookup per request to determine the active series.
 - Champions tab label for singleEvent series — rename "Champions" → "Past Winners" since it's functionally a list of 24h winners rather than season champions.
 - WeekendMedia content seed — `content/series/<slug>/media.json` with YouTube highlight IDs + circuit imagery for the next 4 race weekends.
+- User-authored blogs + threads with review-then-publish moderation flow; likely needs Supabase auth + role-based privileges; research existing UGC blog platforms (Substack, Ghost, Discourse threads) for prior art before designing.
 
 ## Parked (might do, with a revisit trigger)
 

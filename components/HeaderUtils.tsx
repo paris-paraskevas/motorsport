@@ -4,6 +4,7 @@ import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { openContactModal } from './ContactModal';
 import { SettingsClient } from './SettingsClient';
+import { ThemeToggle } from './ThemeToggle';
 
 const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
@@ -27,6 +28,7 @@ export function HeaderUtils({
         <Mail size={13} />
         <span className="hidden sm:inline">Contact</span>
       </button>
+      <ThemeToggle />
       <a
         href={COFFEE_URL}
         target="_blank"

@@ -1,8 +1,12 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
-## 0.11.15 — 2026-05-20
+## 0.12.0 — 2026-05-20
 
-**Internal: end-of-day housekeeping.** No user-visible change. Background tidy-up of session notes + two parser modules tracked for a future release. Up next: a research-first sweep across 12 series with thin live-data coverage — Formula E doubleheaders, IndyCar results, MotoGP everything, IMSA per-event, NLS / DTM / WEC standings, plus driver / team curation across every series that doesn't have it yet.
+**Dark / light theme toggle.** A small Sun/Moon button now sits next to the Contact button in the header. Tap it to flip Paddock between dark and light themes — your choice is remembered locally so it stays put the next time you open the app, on any device. If you never tap it, the site continues to follow your operating system's preference like before.
+
+The light/dark CSS was already in place under the hood; this release wires the user-controllable switch on top of it. No layout jumps, no flash of the wrong theme on refresh.
+
+Internal: also bundles end-of-day housekeeping (session notes + two parser modules tracked for an upcoming release). Up next: a research-first sweep across 12 series with thin live-data coverage — Formula E doubleheaders, IndyCar results, MotoGP everything, IMSA per-event, NLS / DTM / WEC standings, plus driver / team curation across every series that doesn't have it yet.
 
 ## 0.11.14 — 2026-05-20
 
