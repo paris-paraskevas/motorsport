@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { fetchF1LastRace, fetchF1SeasonResults } from './f1';
+import { fetchF1LastRace, fetchF1SeasonResults, fetchF1SeasonSprints } from './f1';
 
 const lastRaceFixture = {
   MRData: {
@@ -177,5 +177,137 @@ describe('fetchF1SeasonResults', () => {
     );
     const races = await fetchF1SeasonResults();
     expect(races).toEqual([]);
+  });
+});
+
+const sprintFixture = {
+  MRData: {
+    RaceTable: {
+      Races: [
+        {
+          round: '2',
+          raceName: 'Chinese Grand Prix',
+          date: '2026-03-15',
+          Circuit: { circuitName: 'Shanghai International Circuit' },
+          SprintResults: [
+            {
+              position: '1',
+              points: '8',
+              Driver: { givenName: 'George', familyName: 'Russell', code: 'RUS' },
+              Constructor: { name: 'Mercedes' },
+              status: 'Finished',
+              Time: { time: '33:38.998' },
+            },
+            {
+              position: '2',
+              points: '7',
+              Driver: { givenName: 'Charles', familyName: 'Leclerc', code: 'LEC' },
+              Constructor: { name: 'Ferrari' },
+              status: 'Finished',
+              Time: { time: '+0.674' },
+            },
+            {
+              position: '3',
+              points: '6',
+              Driver: { givenName: 'Lewis', familyName: 'Hamilton', code: 'HAM' },
+              Constructor: { name: 'Ferrari' },
+              status: 'Finished',
+            },
+          ],
+        },
+        {
+          round: '4',
+          raceName: 'Miami Grand Prix',
+          date: '2026-05-03',
+          Circuit: { circuitName: 'Miami International Autodrome' },
+          SprintResults: [
+            {
+              position: '1',
+              points: '8',
+              Driver: { givenName: 'Lando', familyName: 'Norris', code: 'NOR' },
+              Constructor: { name: 'McLaren' },
+              status: 'Finished',
+            },
+          ],
+        },
+      ],
+    },
+  },
+};
+
+function mockSprintFetch(payload: unknown, ok = true) {
+  return vi.fn(async () => ({
+    ok,
+    json: async () => payload,
+  }) as Response);
+}
+
+describe('fetchF1SeasonSprints', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('parses sprint payload SprintResults[] into RaceResult[] with points + positions', async () => {
+    vi.stubGlobal('fetch', mockSprintFetch(sprintFixture));
+    const sprints = await fetchF1SeasonSprints();
+    expect(sprints).toHaveLength(2);
+    expect(sprints[0].round).toBe(2);
+    expect(sprints[0].raceName).toBe('Chinese Grand Prix');
+    expect(sprints[0].results).toHaveLength(3);
+    expect(sprints[0].results[0]).toEqual({
+      position: 1,
+      driverName: 'George Russell',
+      driverCode: 'RUS',
+      team: 'Mercedes',
+      status: 'Finished',
+      time: '33:38.998',
+      points: 8,
+    });
+    expect(sprints[1].round).toBe(4);
+    expect(sprints[1].results[0].driverName).toBe('Lando Norris');
+    expect(sprints[1].results[0].points).toBe(8);
+  });
+
+  it('returns empty array on fetch failure', async () => {
+    vi.stubGlobal('fetch', mockSprintFetch(sprintFixture, false));
+    const sprints = await fetchF1SeasonSprints();
+    expect(sprints).toEqual([]);
+  });
+
+  it('returns empty array when fetch throws', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('network down');
+      }),
+    );
+    const sprints = await fetchF1SeasonSprints();
+    expect(sprints).toEqual([]);
+  });
+
+  it('returns empty array when SprintResults is missing on a race entry', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockSprintFetch({
+        MRData: {
+          RaceTable: {
+            Races: [
+              {
+                round: '2',
+                raceName: 'Chinese Grand Prix',
+                date: '2026-03-15',
+                Circuit: { circuitName: 'Shanghai International Circuit' },
+                // No SprintResults field at all
+              },
+            ],
+          },
+        },
+      }),
+    );
+    const sprints = await fetchF1SeasonSprints();
+    expect(sprints).toEqual([]);
   });
 });

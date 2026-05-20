@@ -5,7 +5,7 @@ import type {
   RaceResultEntry,
   ResultsOverridesFile,
 } from '@/lib/types';
-import { fetchF1SeasonResults } from '@/lib/results/f1';
+import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
@@ -232,8 +232,9 @@ function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string })
 
 export async function ResultsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
-    const [races, overrides] = await Promise.all([
+    const [races, sprints, overrides] = await Promise.all([
       fetchF1SeasonResults(),
+      fetchF1SeasonSprints(),
       loadResultsOverrides(series.meta.slug),
     ]);
     if (races.length === 0) {
@@ -242,7 +243,10 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    const trend = buildSeasonTrendData(merged);
+    // Sprint points fold into the same x-axis round as the parent race.
+    // SeasonResultsPanel below keeps showing GPs only — adding sprint cards
+    // would clutter the panel; the chart math is what users need fixed.
+    const trend = buildSeasonTrendData(merged, sprints);
     return (
       <div className="space-y-4">
         <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
