@@ -45,6 +45,42 @@ interface SecondaryChampion {
 const LINK_CLASS =
   'hover:text-text underline-offset-4 hover:underline transition-colors duration-(--duration-fast)';
 
+// Wikipedia's champions tables decorate repeated names with annotations like
+// "Alex Palou (1)", "Alex Palou (2)" for successive titles, and occasional
+// markers ("*", "†", "‡"). Strip those for slug-matching, but display the
+// original text. Without this, only the un-annotated first title links.
+function nameForSlugMatch(name: string): string {
+  return name
+    .replace(/\s*\([^)]*\)\s*$/g, '')
+    .replace(/\s*[*†‡]+\s*$/g, '')
+    .trim();
+}
+
+// Champions tables and current drivers.json can disagree on team-name form
+// (e.g. champions: "Red Bull"; drivers.json: "Red Bull Racing"). Build a slug
+// → canonical-href map so a champion name slug-matches via the suffix-stripped
+// alias but the Link still routes to the real team page slug.
+const TEAM_SUFFIX_STRIP = /\s+(Racing|F1 Team|GP|Team)$/i;
+
+function TeamLinkResolver({
+  name,
+  teamSlugMap,
+}: {
+  name: string;
+  teamSlugMap: Map<string, string>;
+}) {
+  const slug = slugify(nameForSlugMatch(name));
+  const canonical = teamSlugMap.get(slug);
+  if (canonical) {
+    return (
+      <Link href={`/teams/${canonical}`} className={LINK_CLASS}>
+        {name}
+      </Link>
+    );
+  }
+  return <>{name}</>;
+}
+
 function DriverCell({
   name,
   driverSlugs,
@@ -52,7 +88,7 @@ function DriverCell({
   name: string;
   driverSlugs: Set<string>;
 }) {
-  const slug = slugify(name);
+  const slug = slugify(nameForSlugMatch(name));
   if (driverSlugs.has(slug)) {
     return (
       <Link href={`/drivers/${slug}`} className={LINK_CLASS}>
@@ -65,30 +101,22 @@ function DriverCell({
 
 function TeamCell({
   name,
-  teamSlugs,
+  teamSlugMap,
 }: {
   name: string;
-  teamSlugs: Set<string>;
+  teamSlugMap: Map<string, string>;
 }) {
-  const slug = slugify(name);
-  if (teamSlugs.has(slug)) {
-    return (
-      <Link href={`/teams/${slug}`} className={LINK_CLASS}>
-        {name}
-      </Link>
-    );
-  }
-  return <>{name}</>;
+  return <TeamLinkResolver name={name} teamSlugMap={teamSlugMap} />;
 }
 
 function DriversSection({
   champions,
   driverSlugs,
-  teamSlugs,
+  teamSlugMap,
 }: {
   champions: Champion[];
   driverSlugs: Set<string>;
-  teamSlugs: Set<string>;
+  teamSlugMap: Map<string, string>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -120,7 +148,7 @@ function DriversSection({
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
                     {c.constructor ? (
-                      <TeamCell name={c.constructor} teamSlugs={teamSlugs} />
+                      <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
                     ) : (
                       ''
                     )}
@@ -137,7 +165,7 @@ function DriversSection({
                   </div>
                   {c.constructor && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      <TeamCell name={c.constructor} teamSlugs={teamSlugs} />
+                      <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
                     </div>
                   )}
                 </div>
@@ -152,10 +180,10 @@ function DriversSection({
 
 function ConstructorsSection({
   champions,
-  teamSlugs,
+  teamSlugMap,
 }: {
   champions: ConstructorChampion[];
-  teamSlugs: Set<string>;
+  teamSlugMap: Map<string, string>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -183,7 +211,7 @@ function ConstructorsSection({
                     {c.year}
                   </span>
                   <span className="text-text text-sm leading-snug">
-                    <TeamCell name={c.team} teamSlugs={teamSlugs} />
+                    <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
                   </span>
                 </div>
               </div>
@@ -198,11 +226,11 @@ function ConstructorsSection({
 function SecondarySection({
   champions,
   driverSlugs,
-  teamSlugs,
+  teamSlugMap,
 }: {
   champions: SecondaryChampion[];
   driverSlugs: Set<string>;
-  teamSlugs: Set<string>;
+  teamSlugMap: Map<string, string>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -234,7 +262,7 @@ function SecondarySection({
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
                     {c.team ? (
-                      <TeamCell name={c.team} teamSlugs={teamSlugs} />
+                      <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
                     ) : (
                       ''
                     )}
@@ -251,7 +279,7 @@ function SecondarySection({
                   </div>
                   {c.team && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      <TeamCell name={c.team} teamSlugs={teamSlugs} />
+                      <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
                     </div>
                   )}
                 </div>
@@ -285,9 +313,19 @@ export async function ChampionsTab({ series }: { series: Series }) {
     curatedDrivers?.teams.flatMap(t => t.drivers.map(d => slugify(d.name))) ??
       [],
   );
-  const teamSlugs = new Set(
-    curatedDrivers?.teams.map(t => slugify(t.name)) ?? [],
-  );
+  // Team-slug map: every slug variant points to the canonical drivers.json slug,
+  // so the champion text "Red Bull" matches and links to /teams/red-bull-racing
+  // (the real page). Suffix-stripped aliases handle the common "X Racing" /
+  // "X F1 Team" / "X GP" / "X Team" forms.
+  const teamSlugMap = new Map<string, string>();
+  for (const t of curatedDrivers?.teams ?? []) {
+    const canonical = slugify(t.name);
+    teamSlugMap.set(canonical, canonical);
+    const stripped = slugify(t.name.replace(TEAM_SUFFIX_STRIP, ''));
+    if (stripped !== canonical && !teamSlugMap.has(stripped)) {
+      teamSlugMap.set(stripped, canonical);
+    }
+  }
 
   let champions: Champion[];
   let sourceLabel: string;
@@ -379,7 +417,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
         <DriversSection
           champions={champions}
           driverSlugs={driverSlugs}
-          teamSlugs={teamSlugs}
+          teamSlugMap={teamSlugMap}
         />
         {sourceFooter}
       </>
@@ -393,7 +431,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
         <DriversSection
           champions={champions}
           driverSlugs={driverSlugs}
-          teamSlugs={teamSlugs}
+          teamSlugMap={teamSlugMap}
         />
       </section>
       {hasConstructorChampionship && (
@@ -401,7 +439,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
           <SectionHeading>Constructors&apos; Championship</SectionHeading>
           <ConstructorsSection
             champions={constructorChampions}
-            teamSlugs={teamSlugs}
+            teamSlugMap={teamSlugMap}
           />
         </section>
       )}
@@ -411,7 +449,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
           <SecondarySection
             champions={secondaryChampions}
             driverSlugs={driverSlugs}
-            teamSlugs={teamSlugs}
+            teamSlugMap={teamSlugMap}
           />
         </section>
       )}

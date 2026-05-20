@@ -2,6 +2,27 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.44 — 2026-05-20
+
+Champions-tab clickability — name normalisation + team alias suffix-strip (PR A2). Two real bugs in 0.10.43's clickability shipped silently.
+
+### Changed
+
+- **`components/tabs/ChampionsTab.tsx`** — slug matching now uses a `nameForSlugMatch()` normaliser that strips trailing parentheticals (`(1)`, `(2)`, `(1-4)`) and trailing markers (`*`, `†`, `‡`) before slug compare. Wikipedia's champions tables annotate repeated names with successive title-count markers (e.g. IndyCar lists "Álex Palou (1)", "Álex Palou (2)", "Álex Palou (3)", "Álex Palou (4)"); without normalisation only the un-annotated row links. Display text is unchanged — only the slug-match key is normalised.
+- Same file — `teamSlugs: Set<string>` replaced by `teamSlugMap: Map<string, string>`. The map carries every slug variant pointing to the canonical drivers.json team slug. Champion text "Red Bull" (no suffix) matches the suffix-stripped alias against drivers.json team "Red Bull Racing" and links to `/teams/red-bull-racing` (the real page slug). Suffix pattern strips `(Racing|F1 Team|GP|Team)$` (case-insensitive). New helper `TeamLinkResolver` wraps the lookup so `TeamCell` stays a thin shim. The single F1 current team affected was Red Bull (10 historic title rows + ongoing); other current teams (Mercedes, McLaren, Ferrari, Williams) already matched exactly.
+
+### Verified
+
+- `npx tsc --noEmit` clean.
+- `npm test` — 97/97 pass.
+- No orphan `teamSlugs` references in ChampionsTab.tsx after refactor (grep gate).
+- Pre-2026 champion teams with no current `/teams/<slug>` page (Brawn GP, Lotus, Cooper, BRM, Tyrrell, Matra, Maserati, Alfa Romeo, Renault, Benetton, Brabham) continue to render as plain text — the suffix-strip cannot conjure pages that don't exist.
+
+### Pre-merge audit
+
+- Suffix-strip false-positive analysis: pattern `(Racing|F1 Team|GP|Team)$` only fires when the suffix appears at end of string. "Aston Martin" stays `aston-martin`; "Aston Martin F1 Team" would also map to `aston-martin`. Both legitimate current Aston Martin entities. No champion entries today have this collision pattern.
+- The map design keeps the **drivers.json side as the source of truth** for canonical hrefs — champion text variations all resolve to the same real page slug. No risk of links to non-existent pages.
+
 ## 0.10.43 — 2026-05-20
 
 Champions-tab clickability follow-up (PR A1). 0.10.42 announced the Champions-tab driver/team clickability but the actual code patch was missed during the bundled commit — release notes shipped a feature that wasn't there. 0.10.43 ships the patch.
