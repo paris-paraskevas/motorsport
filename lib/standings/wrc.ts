@@ -149,11 +149,27 @@ function findTableAfterHeading(
         '';
       if (!pat.test(id)) return;
 
-      let cursor = heading.next();
+      // Wikipedia (2024+) wraps headings in <div class="mw-heading"> so the
+      // semantic "next sibling" is the div's sibling, not the h3's sibling.
+      // Walking heading.next() directly returns the .mw-editsection chrome
+      // inside the wrapper and the loop exits with nothing — which is what
+      // caused the 0.11.9 WRC parser to fail closed on production Wikipedia
+      // even though local synthetic fixtures (without the wrapper) passed.
+      const parent = heading.parent();
+      const startEl = parent.hasClass('mw-heading') ? parent : heading;
+      let cursor = startEl.next();
       while (cursor.length > 0) {
         // Stop at the next heading of the same or higher level so a missing
         // table doesn't accidentally pick up an unrelated downstream one.
+        // Handle both the bare-heading and the mw-heading-wrapped forms.
         if (cursor.is('h2') || (heading.is('h3') && cursor.is('h3'))) break;
+        if (cursor.hasClass('mw-heading')) {
+          const innerH = cursor.find('h2, h3').first();
+          if (innerH.length > 0) {
+            const innerLevel = (innerH.get(0) as { tagName?: string }).tagName?.toLowerCase();
+            if (innerLevel === 'h2' || (heading.is('h3') && innerLevel === 'h3')) break;
+          }
+        }
         if (cursor.is('table.wikitable')) {
           found = cursor;
           return;

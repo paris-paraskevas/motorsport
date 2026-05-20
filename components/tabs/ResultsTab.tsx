@@ -329,25 +329,26 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // 0.11.6 restored: lib/results/formula-e.ts now scrapes per-E-Prix
-    // Wikipedia articles for full classification, so buildSeasonTrendData
-    // can plot real cumulative points across the field. Rounds where the
-    // per-event scrape failed fall back to a single winners-only entry and
-    // render as flat rows (RoundRow detects the shape).
-    const trend = buildSeasonTrendData(merged);
+    // Trend chart removed in 0.11.11 (was restored in 0.11.6/0.11.8). The
+    // per-event Wikipedia article scrape only succeeds for rounds whose
+    // articles include full classification tables — at session checkpoint
+    // that meant Berlin R7/R8 and Monaco R9/R10 fell back to winners-only,
+    // so the chart underreported each driver's points by ~30-40pts vs the
+    // standings tab (e.g. Evans 89/128). Per the cross-cutting invariant
+    // in CHANGELOG.md, a chart whose totals disagree with the standings
+    // tab erodes trust; better to drop it until either Wikipedia editors
+    // catch up on the missing per-event articles OR
+    // `content/series/formula-e/results-overrides.json` curates the
+    // affected rounds manually (5-source rule). The flat-row accordion
+    // continues to render whatever per-round data we have.
+    const heading =
+      merged.some(r => r.results.length > 1) &&
+      merged.every(r => r.results.length > 1)
+        ? 'Season results'
+        : 'Race results — partial classification';
     return (
       <div className="space-y-4">
-        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
-            Drivers&apos; season trend
-          </h2>
-          <SeasonTrendChart
-            data={trend.data}
-            drivers={trend.drivers}
-            totalsByDriver={trend.totalsByDriver}
-          />
-        </section>
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} heading={heading} />
         <SourceLink
           href={FORMULA_E_SOURCE_URL}
           label="en.wikipedia.org (2025–26 Formula E)"

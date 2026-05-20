@@ -4,6 +4,33 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.12 — 2026-05-20
+
+Hot-fix bundle for the post-#71 production audit. Three bugs surfaced after WRC + FE classification landed: WRC was completely unavailable, FE standings showed "Unknown" for every team, FE trend chart undercounted by ~30-40pts per driver vs the standings tab. (Originally numbered 0.11.10; renumbered to 0.11.12 because PR #72's GTWCE standings took 0.11.11 ahead of merge.)
+
+### Fixed
+
+- **`lib/standings/wrc.ts` + `lib/results/wrc.ts`** (WRC unavailability). Wikipedia (2024+) wraps `<h2>` / `<h3>` headings in a `<div class="mw-heading">` so `heading.next()` returns the `.mw-editsection` chrome inside the wrapper, never the section content that follows. The 0.11.9 parser walked the heading directly and exited the loop without finding any table — production rendered "Standings are temporarily unavailable" + "Results are temporarily unavailable" across `/series/wrc`. Both `findTableAfterHeading` (standings) and `findCalendarTable` (results) now detect the wrapper and walk siblings of the div instead. Verified against live `2026_World_Rally_Championship` HTML: Drivers' table 32 rows, Co-Drivers' 32 rows, Manufacturers' 12 rows. Synthetic-fixture tests still pass (`parent.hasClass('mw-heading') ? parent : heading` ternary keeps bare-heading fixtures working).
+- **`lib/standings/formula-e.ts`** (FE standings "Unknown" team). Wikipedia's FE Drivers' Championship table omits the team column — points-per-round cells take its slot. The 0.11.0+ parser defaulted to literal `"Unknown"` for the team field, which `DriversTable` then rendered as a faint subtitle under every driver name. Changed the default to `""`; `DriversTable` already guards on `d.team ? <div>...</div> : null` so the line just doesn't render when there's no team data. Curate `content/series/formula-e/drivers.json` to surface real per-driver teams (deferred). Test fixture updated.
+- **`components/tabs/ResultsTab.tsx`** (FE trend chart correctness). 0.11.6/0.11.8 restored the season-trend chart on the assumption that all completed rounds' per-event Wikipedia articles include full classification tables. At session checkpoint that's true for São Paulo / Mexico City / Miami / Jeddah (R4+R5) / Madrid / Berlin R7's parent article BUT NOT for Berlin R8, Monaco R9, Monaco R10 — those rounds' Wikipedia articles are season-summary stubs only (no Pos/Driver/Team/Time/Retired/Points headers). The parser correctly falls back to winners-only per-round (status='Race winner', points=25 only for the winner), but `buildSeasonTrendData` then undercounted every other driver's points for those four rounds, producing the operator-reported 89/79/73/71/66 chart vs 128/101/109/83/103/80 standings mismatch. Dropped the chart from the FE dispatch (restoring the 0.11.4 behaviour) until either Wikipedia editors catch up on per-event classifications or a curated `content/series/formula-e/results-overrides.json` backfills the affected rounds (5-source-rule curation — deferred to a focused session). Panel heading now reads "Race results — partial classification" when any round is winners-only, "Season results" otherwise.
+
+### Test
+
+- `lib/standings/formula-e.test.ts` fixture updated for the new empty-string team default.
+- 32 test files / 243 tests pass.
+- `npx tsc --noEmit` clean.
+
+### Verified
+
+- WRC fix verified against live Wikipedia HTML via a one-off node script: all three championship tables resolve to non-empty cheerio Cheerio objects with their expected row counts.
+- FE fixes verified by re-reading the dispatch code and the test fixture; live browser verification deferred to post-merge preview.
+
+### Out of scope / follow-up
+
+- **FE per-event classification backfill via curation.** When Wikipedia editors haven't written up a recent round (Berlin R7-R8, Monaco R9-R10 at this checkpoint), only winners-only data is available. Curate `content/series/formula-e/results-overrides.json` with hand-entered per-position classifications cross-verified against fiaformulae.com / motorsportweek.com / the-race.com / autosport.com / motorsport.com (5-source rule per `feedback-paddock-search-for-missing-data`). Estimated 4 hours for the 4 affected rounds.
+- **FE drivers.json.** Curated team mapping. Same scope as the broader 0.12.0 drivers.json bulk-commit across 13 non-F1/non-IndyCar series.
+- **Restore the FE trend chart** simultaneously when either of the above lands.
+
 ## 0.11.11 — 2026-05-20
 
 GT World Challenge Europe standings on `/series/gt-world?tab=standings`. Six tables wired (Overall + Sprint Cup + Endurance Cup, each with Drivers + Teams). Results dispatch deferred — GTWCE per-event parser returns crew + team + lap-time but no per-position points, which would violate the cross-series chart-vs-standings invariant. (Originally planned as 0.11.10; renumbered to 0.11.11 because PR #73's WRC+FE hot-fix took 0.11.10.)
