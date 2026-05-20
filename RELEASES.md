@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.1 — 2026-05-20
+
+**F3 standings + results now agree on every driver's points total.** Ugochukwu was showing 25 on `/series/f3?tab=standings` but 26 on `/series/f3?tab=results` — Melbourne's Sprint Race was a half-distance red-flag, and Paddock was awarding him 1 point for P8 from a generic scale instead of the 0 the FIA records under the reduced-distance rule.
+
+Both tabs now read their per-race points from the same FIA-published source. As a small side win, the F3 drivers tab also picks up a real team name for every driver (the rendered HTML the prior parser scraped didn't expose it).
+
+No other changes.
+
 ## 0.12.0 — 2026-05-20
 
 **Dark / light theme toggle.** A small Sun/Moon button now sits next to the Contact button in the header. Tap it to flip Paddock between dark and light themes — your choice is remembered locally so it stays put the next time you open the app, on any device. If you never tap it, the site continues to follow your operating system's preference like before.

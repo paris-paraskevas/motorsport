@@ -468,6 +468,16 @@ Built:
 
 Next sub-session: 0.12.1 F3 reconciliation impl.
 
+### Wed 2026-05-20 — continued — 0.12.1 F3 reconciliation shipped
+
+First Phase 2 impl PR. Migrated `lib/standings/f3.ts` + `lib/results/f3.ts` to read FIA's `__NEXT_DATA__.Standings[].RacePoints` directly (mirrors `lib/standings/f2.ts` + `lib/results/f2.ts` pattern with the canonical-points lookup added on top).
+
+Diagnosis (per the Phase 1 brief): `lib/results/f3.ts:33` had `SPRINT_POINTS = [15, 12, 10, 8, 6, 4, 2, 1]` — wrong values AND wrong length (correct F3 sprint scale is `[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]`). But even fixing that doesn't account for Melbourne 2026 Sprint Race being a half-distance red-flag (FIA awards a truncated `5-4-3-2-1` to top 5 only). The architectural fix was to stop computing from position entirely and read points from RacePoints (the FIA's authoritative value that already accounts for red-flag-reduced, pole bonus, and fastest-lap bonus).
+
+Side win: `__NEXT_DATA__` exposes `TeamName` per driver where the rendered standings HTML didn't. So driver rows now ship real team strings instead of the empty placeholder the previous parser surfaced.
+
+- → done: ship `0.12.1` PR `fix/f3-reconciliation-2026-05-20`. 34 test files / 265 tests pass; tsc clean. Standings + results tabs now agree on Ugochukwu's 25 pts (FR P1 = 25, SR P8 = 0 under reduced scoring).
+
 ### Thu 2026-05-21 — planned — week-blitz day 2 (MotoGP + WSBK)
 
 **Pulselive JSON API** (per `docs/research/per-series-source-audit.md`) — MotoGP at `api.motogp.pulselive.com/motogp/v1/` and WSBK at parallel paths. Free, unsigned, structured JSON. Pattern mirrors `lib/standings/f1.ts` Jolpica integration.
