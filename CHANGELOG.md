@@ -2,6 +2,33 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.11.4 — 2026-05-20
+
+Formula E results UX cleanup. Two bugs surfaced in post-#66 production audit (logged in `docs/handoff-2026-05-20-session-end.md` addendum as B1 + B2): the season-trend chart was actively misleading, and the per-race accordion expanded into a fake 1-row classification.
+
+### Fixed
+
+- **`components/tabs/ResultsTab.tsx`** (B1) — dropped `SeasonTrendChart` from the `formula-e` dispatch entirely. `lib/results/formula-e.ts` only emits one `RaceResultEntry` per race (the winner) at `position: 1` with `points: 25`. `buildSeasonTrendData()` then plotted every driver plateauing at 25 pts after their first race win, which contradicted the standings tab's totals (Evans 128 / Rowland 109 / Mortara 103 at session checkpoint). Removed both the chart `<section>` block and the `buildSeasonTrendData(merged)` call. Restore the chart once FE results parses full per-event classifications (per-E-Prix Wikipedia page scrape — design in 0.11.4+ follow-up). Imports of `buildSeasonTrendData` / `SeasonTrendChart` kept because F1 dispatch still uses them.
+- **`components/tabs/ResultsTab.tsx`** (B2) — `RoundRow` now detects winners-only mode (`results.length === 1 && results[0].status === 'Race winner'`) and renders a flat `<div>` summary row instead of an expandable `<details>` accordion. Same summary content (round / race name / date / winner-driver / winner-team) appears in both modes; only the expandable per-entry list goes away when there's nothing meaningful to expand into. Data-driven check, not series-aware — protects against future parsers that emit winners-only data without us remembering to update dispatch.
+- **Panel heading on FE** — `SeasonResultsPanel` heading changed from the default "Season results" to "Race winners by round" via the existing `heading` prop, so the limitation is signposted in the UI instead of hidden.
+
+### Test
+
+- No new tests. `RoundRow` is a presentational sub-component without isolated test coverage; the change is rendering-only and the existing `lib/results/formula-e.test.ts` cases continue to pass.
+- `npx tsc --noEmit` clean.
+- `npm test` — 240/240 pass.
+
+### Verified
+
+- `/series/formula-e?tab=results` on local dev — confirmed no trend chart renders, all 7 currently-parsing rounds render as flat rows with "round · race name · date · winner: driver (team)" summary, no fake 1-row accordion expansion.
+- `/series/f1?tab=results` — confirmed F1 still renders the trend chart + expandable full-classification accordions (no regression).
+
+### Follow-up items (carry-forward)
+
+- Restore an FE season-trend chart once `lib/results/formula-e.ts` parses full per-race classifications (per-E-Prix Wikipedia page scrape design — multi-hour scope; queued post-0.11.7).
+- Refresh `lib/results/formula-e.test.ts` fixture from live Wikipedia HTML so the rowspan code path is exercised (carry-over from 0.11.3).
+- Curated `content/series/formula-e/results-overrides.json` for the Mexico City "Citroën Racing" Wikipedia row.
+
 ## 0.11.3 — 2026-05-20
 
 Formula E **results** still empty after 0.11.2's standings fix — separate bug, separate fix.

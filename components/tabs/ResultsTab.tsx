@@ -100,6 +100,31 @@ function ResultRow({ entry }: { entry: RaceResultEntry }) {
 
 function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolean }) {
   const winner = race.results.find(r => r.position === 1) ?? race.results[0];
+  // Winners-only mode: some parsers (currently FE) emit a single RaceResultEntry
+  // per race carrying just the winner. Expanding into the per-entry accordion
+  // then shows a misleading "1 Winner Race winner 25" 1-row classification.
+  // Detect that shape and render a flat row instead of an expandable <details>.
+  const isWinnersOnly =
+    race.results.length === 1 && race.results[0].status === 'Race winner';
+
+  if (isWinnersOnly) {
+    return (
+      <div className="flex items-baseline gap-3 py-2">
+        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+          {race.round}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-text text-sm font-medium truncate">{race.raceName}</div>
+          <div className="text-text-faint text-xs truncate">
+            {formatDate(race.date)}
+            {winner ? ` · winner: ${winner.driverName}` : ''}
+            {winner ? ` (${winner.team})` : ''}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <details open={defaultOpen} className="group">
       <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -297,20 +322,14 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    const trend = buildSeasonTrendData(merged);
+    // No SeasonTrendChart: lib/results/formula-e.ts emits one entry per race
+    // (the winner). buildSeasonTrendData accumulates per-entry points so the
+    // chart plateaus every driver at 25 pts after their first win — useless
+    // and actively misleading vs the standings tab. Restore the chart when
+    // FE results parses full classifications (per-event page scrape).
     return (
       <div className="space-y-4">
-        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
-            Drivers&apos; season trend
-          </h2>
-          <SeasonTrendChart
-            data={trend.data}
-            drivers={trend.drivers}
-            totalsByDriver={trend.totalsByDriver}
-          />
-        </section>
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} heading="Race winners by round" />
         <SourceLink
           href={FORMULA_E_SOURCE_URL}
           label="en.wikipedia.org (2025–26 Formula E)"

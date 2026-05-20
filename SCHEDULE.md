@@ -305,6 +305,37 @@ Agent outputs already in conversation context for 6 of 13 (motogp, wsbk, f2, f3,
 Active:
 _(awaiting [+Nm] prefixes)_
 
+### Wed 2026-05-20 — continued — 0.11.0 → 0.11.3 shipped + 0.11.4 + WRC/GTWCE/IMSA dispatch
+
+The Wed planned outcomes diverged from scope — instead of "Bing fixes / IndyCar results / sitemap / F1 sprint fix / driver-team enrichment / cron scaffold", the day delivered a 0.11.x scraper sweep across 5 new series + a 3-PR FE bug cycle. Logged in `docs/handoff-2026-05-20-session-end.md`. Outcomes:
+
+- → done: 0.10.42 PR #60 — PR A quick-wins (countdown all 15 series / WRC Japan R7 / weekend title trim / RELEASES H1 strip).
+- → done: 0.10.43 PR #61 — Champions clickability patch (the one 0.10.42 announced but missed).
+- → done: 0.10.44 PR #62 — Champions name normalize + team alias suffix-strip (Red Bull + Palou 1-4).
+- → done: 0.11.0 PR #63 — live standings + results across F2 / F3 / Formula E / NASCAR / WSBK (5 new series). 32 test files / 240 tests.
+- → done: 0.11.1 PR #64 — FE Wikipedia URL switch (REST → /wiki/). Didn't fix the bug; colspan was the real cause.
+- → done: 0.11.2 PR #65 — FE colspan-aware index translation. THE actual standings fix.
+- → done: 0.11.3 PR #66 — FE results date fallback (sibling Calendar table lookup + season-end placeholder) + rowspan filter (skip doubleheader 2nd-race rows). Prod-verified.
+- → skipped: original Wed plan items (B-perf deferred to Mon 5/25, IndyCar results + F1 sprint fix + driver-team enrichment + cron scaffold all deferred).
+
+Continuation session plan (this evening / next sub-session):
+
+1. **0.11.4** (~30 min) — FE results UX cleanup [B1+B2 from addendum]. `components/tabs/ResultsTab.tsx` formula-e branch: drop misleading `SeasonTrendChart` (winners-only data plateaus every driver at 25 pts) and collapse fake 1-row "Race winner 25" accordion to flat summary row. CHANGELOG + RELEASES + bump. One PR.
+2. **0.11.5** (~45 min) — WRC dispatch wiring. Lib files already untracked in working tree (`lib/standings/wrc.ts` + `lib/results/wrc.ts` + tests). Drivers' + Co-Drivers' + Manufacturers' three-table render.
+3. **0.11.6** (~45 min) — GTWCE dispatch wiring. 3-section Overall + Sprint Cup + Endurance Cup dispatch. Multi-driver crews — `team: ''` honest.
+4. **0.11.7** (~45 min) — IMSA dispatch wiring. 4-class GTP / LMP2 / GTD Pro / GTD multi-class layout.
+
+Renumbering note: addendum reserved 0.11.5 for IndyCar paste, but that's deferred (agent report may not be on disk → verify-or-rewrite risk). IndyCar paste slides to 0.11.8+.
+
+Won't touch this session: 0.11.5 IndyCar paste (deferred), WEC stash recovery (0.11.8+), 0.12.0 drivers.json bulk, B-perf, B-content, every-session-URL routing.
+
+PR shape: one PR per series (three PRs for 0.11.6 family) — per operator directive. Smaller blast radius, easier rollback per series.
+
+Pre-mortem: most likely failure mode is the three series' dispatch additions sharing the same `StandingsTab` / `ResultsTab` files and causing merge friction across the per-series branches. Mitigation: WRC merges first, then GTWCE rebases on it, then IMSA rebases on that.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
 ### Thu 2026-05-21 — planned — week-blitz day 2 (MotoGP + WSBK)
 
 **Pulselive JSON API** (per `docs/research/per-series-source-audit.md`) — MotoGP at `api.motogp.pulselive.com/motogp/v1/` and WSBK at parallel paths. Free, unsigned, structured JSON. Pattern mirrors `lib/standings/f1.ts` Jolpica integration.
