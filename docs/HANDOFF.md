@@ -138,9 +138,82 @@ When a curated/override file is absent, renderers fall back to the live external
 - ❌ GitHub Actions CI workflow — parked (`IDEAS.md` Parked section)
 - ❌ Vercel Pro upgrade — not needed yet; Paris remains sole steward on Hobby, Fotis works via GitHub previews
 
-## ⚡ Active workstream (post-2026-05-19 — Track A + most of Track B complete)
+## ⚡ Active workstream (post-2026-05-20 — 0.11.x scraper sweep)
 
-**Quick state:** Track A shipped (versions 0.10.23 → 0.10.29, 7 PRs). Track B shipped 11 of ~18 bundles today (0.10.30 → 0.10.34, 7 PRs). Site is sitemap-submitted to Google + Bing + Brave + IndexNow. Baselines captured 2026-05-19 → `docs/perf-baselines.md` (Vercel SI mobile RES 76 / LCP 3.67 s / TTFB 3.17 s; PSI desktop 616 KiB unused JS broken down by bucket). Mobile is the load-bearing problem — **B-perf is the next session's #1 pick**, 4-PR plan sequenced in `SCHEDULE.md` Wed 2026-05-20 entry.
+**Quick state:** Production at 0.11.14. Today shipped **9 PRs** (#67-#75) on top of the morning's 0.11.0-0.11.3 sweep. **Live standings now ship on F1, F2, F3, IndyCar, FE, NASCAR, WSBK, WRC, GTWCE, IMSA.** Live results ship on F1, F2, F3, FE, NASCAR, WSBK, WRC. Missing: MotoGP, WEC, DTM, NLS, ADAC 24h, Moto2/3, IMSA results, GTWCE results.
+
+**Cross-cutting invariant locked-in (CHANGELOG.md top):** season-trend chart totals MUST match the standings tab. Drop the chart for any series whose results parser emits winners-only or partial data. Currently F1 is the only series shipping a chart. FE chart dropped because Berlin R8 / Monaco R9-R10 Wikipedia articles are stubs without full classification.
+
+### Today's ship list (2026-05-20 continuation, 9 PRs)
+
+| PR | Version | What | Notes |
+|---|---|---|---|
+| #67 | 0.11.4 | FE results UX cleanup | Drop misleading trend chart + collapse 1-row accordion |
+| #68 | 0.11.5 | F1 chart sprint points fix | Fetches Jolpica `/current/sprint.json`; chart matches standings 17/17 |
+| #69 | 0.11.7 | F2/F3 KV cache + parallel fan-out | Agent-shipped. Per-season 3h TTL |
+| #70 | 0.11.6 | FE per-event subpage scrape | Agent-shipped. 10/10 races + DS Penske team alias |
+| #71 | 0.11.9 | WRC dispatch | DriversTable + ConstructorsTable parameterised with `heading?` prop |
+| #72 | 0.11.11 | GTWCE standings dispatch | 6 tables; results deferred (no points data) |
+| #73 | 0.11.10 | post-#71 hot-fix | WRC mw-heading + FE team="" + FE chart drop |
+| #74 | 0.11.13 | IMSA standings dispatch | 11 tables across 4 classes, class-first grouping |
+| #75 | 0.11.14 | post-#73 hot-fix | WRC results section-priority + FE doubleheader child dates |
+
+### Critical landmines added today (carry-forward)
+
+- **Wikipedia 2024+ wraps `<h2>`/`<h3>` in `<div class="mw-heading">`.** Parsers that walk `heading.next()` siblings find only `.mw-editsection` chrome. Walk `parent.next()` instead when parent has class `mw-heading`. Bit WRC after PR #71.
+- **Wikipedia season pages (WRC 2026+) split Calendar vs Results.** Calendar table has rounds + dates but NO winner column. Results table is under separate `Results_and_standings` → `Season_summary` heading. Parsers must require a winner column on the candidate table to avoid the Calendar.
+- **FE doubleheader child rows have only [round, date] cells physically.** E-Prix / Country / Circuit are rowspanned from parent and absent from the row's `<td>` children. Reading date at logical-header index returns empty. Fallback: scan all cells right-to-left for the first parseable date.
+- **Cross-series invariant** documented in CHANGELOG.md top header. Don't ship a trend chart without full per-driver per-round point data.
+
+### Next-session pickup — priority order
+
+| Priority | Bundle | Effort | Notes |
+|---|---|---|---|
+| **1** | **FE per-event classification curation** | ~3-4h | Hand-enter Berlin R7/R8 + Monaco R9-R10 classifications to `content/series/formula-e/results-overrides.json` via 5-source rule per `feedback-paddock-search-for-missing-data`. Then restore the FE trend chart. |
+| **2** | **MotoGP results** (paste from BLOCKED agent report) | ~1.5h | Pulselive JSON API at `api.motogp.pulselive.com/motogp/v1/`. Full design in handoff (0.11.5/0.11.12 expected, will be 0.11.15+). |
+| **3** | **IndyCar results** (paste from BLOCKED agent report) | ~30m | Wikipedia 2026 IndyCar Series page. Full parser design + 17-round abbrev list in handoff. |
+| **4** | **WEC stash recovery** from `agent-leakage-2026-05-20-defer` | ~1h | Multi-class Hypercar + LMGT3 standings + results. |
+| **5** | **DTM + NLS write-from-research** | ~3h | DTM from motorsport.com; NLS from Wikipedia 2026 NLS wikitables (Gesamtwertung + Klassensieger). |
+| **6** | **0.12.0 drivers.json bulk-commit** | 5-10h multi-session | Curate 13 series (folds FE drivers.json — fixes the "Unknown" team line at the renderer source). |
+| **7** | **IA redesign + path-based routing** | 2-3 days | `/series/[slug]/[tab]` URLs. Multi-day. |
+| **8** | **0.14.0 histories + Moto2/3** | 50+h authoring | User-paced. |
+| **9** | **0.15.0 enrichment** | 80+h | Photos + bios + past champions across drivers.json. |
+| **10** | **B-perf catch-up** | 4-6h | Mobile-first perf audit, deferred since 2026-05-19. Targets in `docs/perf-baselines.md`. |
+| **11** | **1.0.0 brand moment** | when ready | Reserve for feature-complete signal. |
+
+### Per-series error inventory (operator-flagged at session close)
+
+Status matrix as of 0.11.14 prod (operator browser-verified). "✅" = live + correct; "⚠️" = partial / data-quality issue; "❌" = not wired.
+
+| Series | Standings | Results | Drivers (curated) | Notes |
+|---|---|---|---|---|
+| F1 | ✅ | ✅ | ✅ | All good. Sprint points fixed in 0.11.5. |
+| F2 | ✅ | ✅ | ❌ | `content/series/f2/drivers.json` needed |
+| F3 | ⚠️ | ⚠️ | ❌ | **Standings / results points DISAGREE** — addendum B4 had Ugochukwu 25 vs 26; needs deeper diagnosis. Also no drivers.json. |
+| Formula E | ✅ (team line hidden) | ⚠️ | ❌ | R7-R10 (Berlin / Monaco) still winners-only — Wikipedia per-event articles are stubs. Curate `results-overrides.json` to backfill, then restore trend chart. No drivers.json. |
+| IndyCar | ✅ | ❌ | ✅ | Results dispatch never landed — BLOCKED agent paste pending. |
+| IMSA | ✅ | ❌ | ❌ | Results parser exists in `lib/results/imsa.ts` (winners-only per class) but dispatch not wired in 0.11.13 (would violate chart-vs-standings invariant). No drivers. |
+| NLS | ❌ | ❌ | ❌ | DTM/NLS write-from-research bucket. NLS data thin upstream — see addendum 0.11.6 section. |
+| DTM | ❌ | ❌ | ❌ | DTM/NLS write-from-research. Primary source: motorsport.com SSR. |
+| GTWC | ✅ | ❌ | ❌ | Results parser exists in `lib/results/gt-world.ts` but emits no per-position points (SRO data limitation) — dispatch deferred per invariant. No drivers. |
+| MotoGP | ❌ | ❌ | ❌ | BLOCKED agent had full Pulselive impl in report; paste pending. |
+| WSBK | ✅ | ✅ | ❌ | All works. No drivers.json. |
+| WRC | ✅ | ❌ (?) | ❌ | Operator reports results still unavailable — but PR #75 fix shipped. **Investigate first thing**: ISR cache stale OR fix incomplete. The fix swaps heading priority to `Results_and_standings` → `Season_summary`. Verified locally with cheerio against live HTML. No drivers.json. |
+| NASCAR | ✅ | ⚠️ | ❌ | Results emit winners-only (no full classification). Same parser limitation as WRC + IMSA. No drivers.json. |
+| FIA WEC | ❌ | ❌ | ❌ | Stash recovery from `agent-leakage-2026-05-20-defer` pending. |
+| ADAC 24h | ❌ | ❌ | ❌ | Single-event series; future scope. |
+
+**Patterns:**
+- **drivers.json gap is 13 series** (everything except F1 + IndyCar). Folds into 0.12.0 bulk-commit.
+- **Results "winners-only" pattern** affects NASCAR, FE (partial), and any future Wikipedia-season-page-only series. Each needs per-event scraping or curated overrides to satisfy the chart-vs-standings invariant.
+- **WRC results post-#75** needs first-thing-tomorrow verification. If ISR cache stale, wait ≥1h or trigger a redeploy. If fix incomplete, debug with the node-script pattern used today.
+
+### Working-tree state at session end
+
+- Untracked: `docs/handoff-2026-05-20-session-end.md` (point-in-time snapshot from morning), `lib/results/gt-world.{ts,test.ts}` (orphan from agent — GTWCE results parser exists, dispatch deferred), `lib/results/imsa.{ts,test.ts}` (orphan — IMSA results parser exists, dispatch deferred).
+- The two `lib/results/{gt-world,imsa}.{ts,test.ts}` files reference each series' standings file as a type import; they compile cleanly against current main. Safe to defer or commit as `chore: track GTWCE + IMSA results parsers (dispatch pending)`.
+
+### Stale section retained for history — pre-2026-05-20 active workstream below
 
 ### Track A — legal/risk closure — DONE
 

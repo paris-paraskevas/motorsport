@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.15 — 2026-05-20
+
+End-of-day wrap from the 0.11.x continuation session. No behavior change. Opens the Phase 1 research wave for the 12-error sweep.
+
+### Chore
+
+- **`docs/handoff-2026-05-20-session-end.md`** committed — point-in-time snapshot of 0.11.0 → 0.11.14 ship outcomes, the original 47-bug-list disposition, the 0.11.x detailed roadmap, and 0.12.0+ minor-bump scope. Reads alongside `docs/HANDOFF.md` at next-session start.
+- **`lib/results/gt-world.{ts,test.ts}`** committed — orphan parser, dispatch-deferred per chart-vs-standings invariant. GTWCE per-event Race Results table reads Pos + Car# + Class + Drivers + Team + Car + Time + Laps + Gap but no per-position points. SRO doesn't publish a points scale, so a chart would lie about totals vs the standings tab. `ResultsTab` continues to render the link-out card to gt-world-challenge-europe.com until either curated per-position points overrides land or a non-SRO source with full scoring surfaces.
+- **`lib/results/imsa.{ts,test.ts}`** committed — orphan parser, dispatch-deferred per same invariant. Wikipedia 2026 IMSA Race Results section emits per-class winning crew (#car + team + drivers) only — no per-position classification. Per-event IMSA classifications live in PDFs behind reCAPTCHA on imsa.com. `ResultsTab` continues link-out.
+- **`SCHEDULE.md`** + **`docs/HANDOFF.md`** committed — session-2026-05-20 outcomes plus the Phase 1 research-wave plan locked in via ESPA + AskUserQuestion this session (multi-class crew schema = Option 3, agents = no worktree isolation, source tier = official API > official SSR > aggregator > Wikipedia, drivers.json folded into the same 12-agent wave).
+
+### Test
+
+- 34 test files / 266 tests still pass. `npx tsc --noEmit` clean.
+
+### Why this version exists
+
+Per the `feedback-paddock-release-notes` rule, every push to main bumps the version + `CHANGELOG.md` + `RELEASES.md`. This is a chore-only push that opens the research-first track for fixing the 12 operator-flagged per-series errors (F2 / F3 / FE / IndyCar / IMSA / NLS / DTM / GTWC / MotoGP / WRC / NASCAR / WEC).
+
 ## 0.11.14 — 2026-05-20
 
 Two post-#73 hot-fixes that surfaced via operator browser-verify:

@@ -336,6 +336,70 @@ Pre-mortem: most likely failure mode is the three series' dispatch additions sha
 Active:
 _(awaiting [+Nm] prefixes)_
 
+### Wed 2026-05-20 — closed — massive 9-PR continuation session
+
+After the original Wed plan + 0.11.0-0.11.3 morning sweep, this continuation session shipped 9 more PRs (#67-#75), versions 0.11.4 → 0.11.14. The merge cycle cost real time — operator merged in their own order which forced rebase chains across half the branches.
+
+PRs shipped (merge order matches commit order on main):
+
+- → done: **#67 — 0.11.4** FE results UX cleanup (drop misleading SeasonTrendChart, collapse fake 1-row accordion to flat summary).
+- → done: **#68 — 0.11.5** F1 chart Sprint points fix. Confirmed 17/17 non-zero drivers now match standings 1:1.
+- → done: **#69 — 0.11.7** F2/F3 results KV cache + parallel fan-out. Agent-shipped. Test count 200 → 256.
+- → done: **#70 — 0.11.6** FE per-event subpage scrape for full classification. Agent-shipped. 10/10 races including 3 doubleheaders.
+- → done: **#71 — 0.11.9** WRC dispatch (Drivers + Co-Drivers + Manufacturers tables; results winners-by-round). DriversTable + ConstructorsTable parameterised with optional `heading?` prop.
+- → done: **#72 — 0.11.11** GTWCE standings dispatch (Overall + Sprint Cup + Endurance Cup × Drivers + Teams = 6 tables). Results deferred (no per-position points in SRO data).
+- → done: **#73 — 0.11.10** post-#71 hot-fix: WRC mw-heading wrapper + FE standings team="" (was "Unknown") + FE trend chart dropped (Berlin R8 / Monaco R9-R10 articles are stubs, undercount by 30-40pts).
+- → done: **#74 — 0.11.13** IMSA standings dispatch (4 classes × Drivers/Teams/Manufacturers = 11 tables, class-first grouping; LMP2 no manufacturers).
+- → done: **#75 — 0.11.14** post-#73 hot-fix: WRC results parser priority swap (was matching Calendar table without winner column; now matches Season summary first) + FE doubleheader child-row date fallback (R5/R8/R10 no longer "1 Jan 2026" placeholder).
+
+Production state per `/series/<slug>` at session end:
+- ✅ F1, F2, F3, IndyCar, FE, NASCAR, WSBK, WRC, GTWCE, IMSA — live standings.
+- ✅ F1, F2, F3, FE, NASCAR, WSBK, WRC — live results.
+- ❌ MotoGP, IMSA, WEC, DTM, NLS, ADAC 24h, Moto2/3 — link-out only.
+
+Cross-series invariant locked in CHANGELOG.md (top): season-trend chart totals MUST match the standings tab. Charts dropped from WRC, GTWCE, IMSA, FE (post-#73) until full per-position data lands. F1 chart only one currently shipping; it matches standings.
+
+Key things learned this session:
+- **Wikipedia 2024+ wraps headings in `<div class="mw-heading">`.** Parsers that walk `heading.next()` siblings need to walk parent's siblings instead. Caught the hard way on WRC after PR #71 deployed.
+- **Wikipedia season pages split Calendar vs Results sections in 2026 WRC.** The Calendar table has rounds + dates but NO winner column. Results table is under a separate Results_and_standings section. Parser must require winner column in candidate-confirmation.
+- **FE Wikipedia doubleheader child rows have only [round, date] physically present** (E-Prix / Country / Circuit rowspan from parent). Date column at logical-header index reads empty.
+- **Cross-series invariant:** trend chart cannot ship when results parser is winners-only. Locked into CHANGELOG.md header.
+- **PR rebase cycles are expensive.** Each operator merge of another PR forces all open PRs to rebase. Strategy: ship hot-fixes as standalone PRs; defer feature PRs when many are open.
+
+Won't touch this session (now closed): IMSA results dispatch (no per-event data), FE results-overrides curation (Berlin/Monaco backfill), WEC stash recovery, MotoGP paste, IndyCar results paste, DTM/NLS write, drivers.json bulk, IA redesign, histories, enrichment, B-perf.
+
+Active:
+_(no [+Nm] prefixes captured; wall-clock approximately 8-10h across the continuation session)_
+
+### Wed 2026-05-20 — new sub-session — Phase 1 research wave for 12-series error sweep
+
+Operator surfaced 12 per-series errors and asked to ESPA fixing them properly — "i dont want iterations of me merging and being dissapointed to see your work was shit and didnt work". Plan deviates from the original Thu MotoGP+WSBK day because the operator wants ALL 12 fixed properly, not just the easy 2.
+
+ESPA outcome: research-first, three phases. This session covers Phase 1 only.
+
+Decisions locked in via AskUserQuestion this session:
+- Multi-class crew schema for WEC / IMSA / GTWC / NLS / WRC drivers.json — Option 3: optional `carNumber` per `CuratedDriverEntry`. Backwards-compatible `lib/types.ts` extension.
+- Research agents: NO worktree isolation. Yesterday's WEC agent leaked files into main with isolation due to absolute-path resolution; research-only prompts don't need it.
+- Source-tier preference: official API > official SSR > aggregator > Wikipedia. Wikipedia as fallback ONLY when tiers 1-3 unavailable, and even then require full-classification verification (no winners-only acceptance).
+- drivers.json research folded into the same 12-agent wave (one agent per series returns both the standings/results source brief AND the drivers.json brief for that series).
+
+Plan:
+
+- → 0.11.15 — chore wrap (commit working-tree state from yesterday + open the research track). Foreground.
+- Dispatch 12 parallel research-only agents — one per error-row series. Constraints baked in: no Write tool, no worktree isolation, must include actual HTTP probe response in the returned brief (no probe = brief rejected and re-dispatched), must consider non-Wikipedia primary sources first.
+- Aggregate 12 briefs into `docs/research-2026-05-20-phase1-briefs.md`. One row per series: source chosen / confidence H/M/L / blockers / open questions.
+- Walk through the doc with operator. Get explicit source approval per series before any impl is written.
+- Update SCHEDULE.md + HANDOFF.md with the Phase 2 PR sequence as locked by the briefs review.
+
+Phase 2 (next 2-3 sessions) ships impl PRs one per series, ordered by post-research confidence + difficulty. Phase 3 (0.12.0) consolidates drivers.json across 13 series.
+
+Won't touch this session: any impl code, dispatch wiring, drivers.json content. Phase 1 is research-only. The whole point is to NOT ship code without source-tier approval.
+
+Pre-mortem: most likely failure mode — a research agent returns confident with a source that's actually 403'd / reCAPTCHA'd / SPA-rendered when probed. Mitigation: the agent prompt requires an actual HTTP probe response paste; absence = brief rejected.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
 ### Thu 2026-05-21 — planned — week-blitz day 2 (MotoGP + WSBK)
 
 **Pulselive JSON API** (per `docs/research/per-series-source-audit.md`) — MotoGP at `api.motogp.pulselive.com/motogp/v1/` and WSBK at parallel paths. Free, unsigned, structured JSON. Pattern mirrors `lib/standings/f1.ts` Jolpica integration.
