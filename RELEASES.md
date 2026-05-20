@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.9 — 2026-05-20
+
+**WRC standings + results now live.** Open `/series/wrc?tab=standings` for Drivers / Co-Drivers / Manufacturers championship tables, and `/series/wrc?tab=results` for the round-by-round winning crew + manufacturer through Round 7 (Rally Japan). No more click-out to wrc.com for the championship picture.
+
+A round listing shows the winning crew (driver + co-driver + manufacturer) only — Wikipedia's season-table is winners-only, and per-rally top-10 classification needs a follow-up parser against the per-rally pages. As with Formula E before 0.11.8, the season-trend chart is deliberately omitted until full per-position points are available.
+
 ## 0.11.8 — 2026-05-20
 
 **Formula E results now show the full classification per race, just like Formula 1.** Open `/series/formula-e?tab=results` and click any round to expand the top 10 — full positions, gaps, points, and retirement reasons for every classified driver, not just the winner. Doubleheader weekends (Jeddah, Berlin, Monaco) now ship both races independently instead of dropping the Sunday race.

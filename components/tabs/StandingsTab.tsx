@@ -11,6 +11,7 @@ import { fetchIndyCarStandings } from '@/lib/standings/indycar';
 import { fetchFormulaEStandings } from '@/lib/standings/formula-e';
 import { fetchNascarCupStandings } from '@/lib/standings/nascar-cup';
 import { fetchWsbkStandings } from '@/lib/standings/wsbk';
+import { fetchWRCStandings } from '@/lib/standings/wrc';
 import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -72,11 +73,17 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
-function DriversTable({ drivers }: { drivers: DriverStanding[] }) {
+function DriversTable({
+  drivers,
+  heading = 'Drivers',
+}: {
+  drivers: DriverStanding[];
+  heading?: string;
+}) {
   return (
     <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
       <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
-        Drivers
+        {heading}
       </h2>
       <ul className="divide-y divide-border/60">
         {drivers.map(d => (
@@ -115,11 +122,17 @@ function DriversTable({ drivers }: { drivers: DriverStanding[] }) {
   );
 }
 
-function ConstructorsTable({ constructors }: { constructors: ConstructorStanding[] }) {
+function ConstructorsTable({
+  constructors,
+  heading = 'Constructors',
+}: {
+  constructors: ConstructorStanding[];
+  heading?: string;
+}) {
   return (
     <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
       <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
-        Constructors
+        {heading}
       </h2>
       <ul className="divide-y divide-border/60">
         {constructors.map(c => (
@@ -330,6 +343,44 @@ export async function StandingsTab({ series }: { series: Series }) {
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
         <SourceLink href={NASCAR_SOURCE_URL} label="Wikipedia (2026 NASCAR Cup Series)" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'wrc') {
+    const [data, overrides] = await Promise.all([
+      fetchWRCStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    // WRC co-drivers share the championship structure with drivers (same row
+    // shape: position / name / total). Map to DriverStanding so the existing
+    // DriversTable renders them — empty `team` on each is honest (Wikipedia's
+    // co-drivers' table doesn't carry the team name in the row).
+    const coDriversAsDrivers: DriverStanding[] = data.coDrivers.map(cd => ({
+      position: cd.position,
+      driverName: cd.coDriverName,
+      team: cd.team,
+      points: cd.points,
+    }));
+    const manufacturers = applyConstructorOverrides(
+      data.manufacturers,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} heading="Drivers" />
+        <DriversTable drivers={coDriversAsDrivers} heading="Co-Drivers" />
+        <ConstructorsTable constructors={manufacturers} heading="Manufacturers" />
+        <SourceLink
+          href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
+          label="en.wikipedia.org (2026 WRC)"
+        />
       </div>
     );
   }
