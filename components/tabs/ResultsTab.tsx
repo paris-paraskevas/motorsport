@@ -11,6 +11,7 @@ import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
+import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
 import { SeasonTrendChart } from '@/components/SeasonTrendChart';
@@ -100,12 +101,14 @@ function ResultRow({ entry }: { entry: RaceResultEntry }) {
 
 function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolean }) {
   const winner = race.results.find(r => r.position === 1) ?? race.results[0];
-  // Winners-only mode: some parsers (currently FE) emit a single RaceResultEntry
-  // per race carrying just the winner. Expanding into the per-entry accordion
-  // then shows a misleading "1 Winner Race winner 25" 1-row classification.
-  // Detect that shape and render a flat row instead of an expandable <details>.
+  // Winners-only mode: some parsers (FE pre-classification-scrape, WRC's
+  // calendar-row parse) emit a single RaceResultEntry per race carrying just
+  // the winner. Expanding into the per-entry accordion then shows a misleading
+  // "1 Winner 25" 1-row classification. Detect that shape and render a flat
+  // row instead of an expandable <details>. Status discriminator is permissive
+  // — FE uses 'Race winner', WRC uses 'Winner'; both signal incomplete data.
   const isWinnersOnly =
-    race.results.length === 1 && race.results[0].status === 'Race winner';
+    race.results.length === 1 && /^(race\s+)?winner$/i.test(race.results[0].status);
 
   if (isWinnersOnly) {
     return (
@@ -381,6 +384,33 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SourceLink
           href={NASCAR_SOURCE_URL}
           label="Wikipedia (2026 NASCAR Cup Series)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'wrc') {
+    const [races, overrides] = await Promise.all([
+      fetchWRCSeasonResults(series.meta.season),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    // No SeasonTrendChart: WRC's calendar-table parse emits one winner entry
+    // per rally (driver / co-driver / team), not a full top-10 classification.
+    // Adding a chart with winners-only data would violate the cross-series
+    // chart-vs-standings invariant (see CHANGELOG 0.11.5 header). When per-
+    // rally Wikipedia pages or wrc.com classification data lands, restore.
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} heading="Rally winners by round" />
+        <SourceLink
+          href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
+          label="en.wikipedia.org (2026 WRC)"
         />
       </div>
     );

@@ -4,6 +4,32 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.9 — 2026-05-20
+
+WRC live standings + results on `/series/wrc`. First rally / non-circuit series wired in the 0.11.x scraper sweep.
+
+### Added
+
+- **`lib/standings/wrc.ts` + `.test.ts`** — Wikipedia 2026 WRC season page parser. Extracts Drivers' / Co-Drivers' / Manufacturers' championship tables by heading anchor (matching id patterns like `/Drivers'?_World_Championship/i`), falls back across legacy heading variants for resilience. wrc.com is bot-blocked by Akamai (403) so Wikipedia is primary; wrc.com is a best-effort first attempt that fails closed cleanly. New `CoDriverStanding` interface mirrors `DriverStanding` with `coDriverName` field. Sanity floors: drivers ≥ 5, manufacturers ≥ 2 (Rally1 has 8 regulars across 3 teams).
+- **`lib/results/wrc.ts` + `.test.ts`** — Wikipedia 2026 WRC season-page Calendar/Results table parser. Emits one `RaceResult` per completed rally carrying the winning crew (`{winner} / {co-driver}` as combined driverName, manufacturer team, `status: 'Winner'`, `points: 25`). Per-rally top-10 classification + stage-win + Power-Stage bonus require per-rally Wikipedia pages or wrc.com — intentionally out of scope for v1 (consistent with the cross-series invariant: don't ship a chart we can't back, so no trend chart for WRC).
+- **`components/tabs/StandingsTab.tsx`** — WRC dispatch case. Renders three stacked tables: Drivers, Co-Drivers (mapped to DriverStanding shape via inline transform — same renderer, different heading), Manufacturers. `DriversTable` + `ConstructorsTable` now accept a `heading?` prop (defaults preserve existing F1/F2/F3/etc. behaviour).
+- **`components/tabs/ResultsTab.tsx`** — WRC dispatch case. `SeasonResultsPanel` with `heading="Rally winners by round"`. No `SeasonTrendChart` — see invariant header at top of this file. `RoundRow`'s winners-only detector regex broadened from literal `'Race winner'` to `/^(race\s+)?winner$/i` so both FE (`'Race winner'`) and WRC (`'Winner'`) parsers trigger the flat-row collapse.
+
+### Test
+
+- 17 new tests (9 in `lib/standings/wrc.test.ts`, 8 in `lib/results/wrc.test.ts`). All pass.
+- `npx tsc --noEmit` clean.
+
+### Verified
+
+- Local dev server: `/series/wrc?tab=standings` shows three stacked tables (Drivers / Co-Drivers / Manufacturers). `/series/wrc?tab=results` shows the flat winners-by-round list with no fake accordion.
+
+### Out of scope / follow-up
+
+- Per-rally top-10 classification. Requires either per-rally Wikipedia pages or a non-bot-blocked source for wrc.com. Same pattern as FE before 0.11.8 — when implemented, restore the trend chart for WRC simultaneously.
+- WRC2 / WRC3 / Junior class standings — separate Wikipedia pages, deferred to a follow-up PR.
+- Stage-by-stage data + Power-Stage bonus — even further out.
+
 ## 0.11.8 — 2026-05-20
 
 Formula E results — full per-driver classification per round, F1-style. Replaces the winners-only emission shipped in 0.11.0–0.11.4. Restores the drivers' season-trend chart (dropped in 0.11.4 because winners-only data was misleading). (Originally planned as 0.11.6; renumbered to 0.11.8 because PR #69's 0.11.7 perf fix merged first.)
