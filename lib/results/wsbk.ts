@@ -1,0 +1,321 @@
+import type { RaceResult, RaceResultEntry } from '@/lib/types';
+
+export type { RaceResult, RaceResultEntry };
+
+// Same Pulselive backend as the standings loader — see `lib/standings/wsbk.ts`
+// header comment for the host justification.
+const API_BASE = 'https://api.wsbk.pulselive.com';
+
+// WorldSBK round = Race 1 (Sat) + Superpole Race (Sun, 10 laps, half-ish
+// points) + Race 2 (Sun). Session source_ids: 001 = RC1, 002 = SPRC,
+// 003 = RC2. `short_name` strings from the API confirm this mapping.
+// Treat each as its own RaceResult so the SeasonResultsPanel can render
+// three distinct cards per weekend.
+interface WsbkSessionDef {
+  sourceId: string;
+  shortName: 'RC1' | 'SPRC' | 'RC2';
+  label: 'Race 1' | 'Superpole Race' | 'Race 2';
+  order: number;
+}
+
+const RACE_SESSIONS: WsbkSessionDef[] = [
+  { sourceId: '001', shortName: 'RC1', label: 'Race 1', order: 1 },
+  { sourceId: '002', shortName: 'SPRC', label: 'Superpole Race', order: 2 },
+  { sourceId: '003', shortName: 'RC2', label: 'Race 2', order: 3 },
+];
+
+// Sanity floor — Class A WorldSBK grid is 24+ riders. Anything under 8 means
+// the result feed is structurally broken; skip that session rather than
+// rendering a half-empty card.
+const MIN_FINISHERS = 8;
+
+interface JsonApiResource {
+  type: string;
+  id: string;
+  attributes?: Record<string, unknown>;
+  relationships?: Record<string, { data?: { type: string; id: string } }>;
+}
+
+interface JsonApiEnvelope {
+  data?: JsonApiResource[];
+  included?: JsonApiResource[];
+}
+
+function asString(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
+}
+
+function asNumber(v: unknown): number | undefined {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string') {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
+function buildIncludedMap(
+  included: JsonApiResource[] | undefined,
+): Record<string, Record<string, JsonApiResource>> {
+  const map: Record<string, Record<string, JsonApiResource>> = {};
+  if (!Array.isArray(included)) return map;
+  for (const item of included) {
+    if (!item?.type || !item?.id) continue;
+    if (!map[item.type]) map[item.type] = {};
+    map[item.type][item.id] = item;
+  }
+  return map;
+}
+
+async function fetchJson<T>(url: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+      },
+      next: { revalidate: 3600 },
+    } as RequestInit);
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+// WorldSBK points table — official FIM scale. Race 1 + Race 2 award full
+// championship points 25-1 down to 15th. Superpole Race awards half-ish
+// points 12-1 down to 9th. The API does NOT echo points in the per-result
+// row (it carries laps/time/status only), so we derive them locally.
+// This keeps the loader self-contained and stable against future API drift.
+const FULL_RACE_POINTS = [25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+const SUPERPOLE_POINTS = [12, 9, 7, 6, 5, 4, 3, 2, 1];
+
+function pointsForPosition(
+  position: number,
+  sessionKind: WsbkSessionDef['shortName'],
+  status: string | undefined,
+): number {
+  if (status && /^(?:dns|dnq|exc|dsq)/i.test(status)) return 0;
+  if (!Number.isFinite(position) || position < 1) return 0;
+  const table = sessionKind === 'SPRC' ? SUPERPOLE_POINTS : FULL_RACE_POINTS;
+  return table[position - 1] ?? 0;
+}
+
+interface ParsedSessionResults {
+  results: RaceResultEntry[];
+  sessionShortName: WsbkSessionDef['shortName'];
+}
+
+function parseSessionResults(
+  env: JsonApiEnvelope,
+  sessionKind: WsbkSessionDef['shortName'],
+): ParsedSessionResults | null {
+  const rows = env?.data;
+  if (!Array.isArray(rows) || rows.length === 0) return null;
+
+  // Per-session included uses SINGULAR keys (`rider`, `team`, `session`),
+  // unlike the standings endpoint which uses PLURAL (`riders`, `teams`).
+  // The two-shape design appears intentional in the Pulselive backend; we
+  // accept both for forward-compatibility.
+  const included = buildIncludedMap(env.included);
+  const riders = { ...(included['rider'] || {}), ...(included['riders'] || {}) };
+  const teams = { ...(included['team'] || {}), ...(included['teams'] || {}) };
+
+  const entries: RaceResultEntry[] = [];
+  for (const row of rows) {
+    if (!row || row.type !== 'results') continue;
+    const position = asNumber(row.attributes?.position);
+    const status = asString(row.attributes?.status) ?? 'Unknown';
+    const timeMs = asNumber(row.attributes?.time);
+
+    if (position == null) continue;
+
+    const riderRef = row.relationships?.rider?.data;
+    const teamRef = row.relationships?.team?.data;
+    if (!riderRef?.id || !teamRef?.id) continue;
+
+    const rider = riders[riderRef.id];
+    const team = teams[teamRef.id];
+    const givenName = asString(rider?.attributes?.name);
+    const familyName = asString(rider?.attributes?.surname);
+    const teamName = asString(team?.attributes?.name);
+    if (!givenName || !familyName || !teamName) continue;
+
+    entries.push({
+      position,
+      driverName: `${givenName} ${familyName}`.trim(),
+      team: teamName,
+      status,
+      // `time` field carries cumulative race time in milliseconds for the
+      // winner and gap-to-leader (also ms) for everyone else. The payload
+      // does not differentiate the two, so we render position-1's time as
+      // the total ("h:mm:ss.xxx") and everyone else's as a "+gap".
+      time:
+        typeof timeMs === 'number' && timeMs > 0
+          ? position === 1
+            ? formatRaceTime(timeMs)
+            : `+${formatGap(timeMs)}`
+          : undefined,
+      points: pointsForPosition(position, sessionKind, status),
+    });
+  }
+
+  // Floor counts total ROWS (including DNFs/retired). Anything under 8 means
+  // the feed is broken, not that the race was short.
+  if (entries.length < MIN_FINISHERS) return null;
+
+  return {
+    results: entries.sort((a, b) => a.position - b.position),
+    sessionShortName: sessionKind,
+  };
+}
+
+function formatRaceTime(ms: number): string {
+  const totalSeconds = ms / 1000;
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds - hours * 3600 - minutes * 60;
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${seconds.toFixed(3).padStart(6, '0')}`;
+  }
+  return `${minutes}:${seconds.toFixed(3).padStart(6, '0')}`;
+}
+
+function formatGap(ms: number): string {
+  if (ms < 60_000) {
+    return `${(ms / 1000).toFixed(3)}s`;
+  }
+  const minutes = Math.floor(ms / 60_000);
+  const seconds = (ms % 60_000) / 1000;
+  return `${minutes}:${seconds.toFixed(3).padStart(6, '0')}`;
+}
+
+interface RoundDescriptor {
+  sourceId: string; // e.g. "POR"
+  briefDescription: string; // e.g. "Portimao"
+  description: string; // e.g. "Portuguese Round"
+  startDate: Date;
+  status: string; // "FINISHED" | "NOT-STARTED" | ...
+  sequenceOrder: number; // championship round number
+  circuit?: string;
+}
+
+function parseRounds(env: JsonApiEnvelope): RoundDescriptor[] {
+  const rows = env?.data;
+  if (!Array.isArray(rows)) return [];
+
+  const included = buildIncludedMap(env.included);
+  const circuits = included['circuits'] || {};
+
+  const out: RoundDescriptor[] = [];
+  for (const row of rows) {
+    if (row?.type !== 'rounds') continue;
+    const sourceId = asString(row.attributes?.source_id);
+    const description = asString(row.attributes?.description) ?? '';
+    const brief = asString(row.attributes?.brief_description) ?? '';
+    const startStr = asString(row.attributes?.start_date);
+    const status = asString(row.attributes?.status) ?? 'UNKNOWN';
+    const seq = asNumber(row.attributes?.sequence_order);
+    if (!sourceId || !startStr || seq == null) continue;
+    const startDate = new Date(startStr);
+    if (Number.isNaN(startDate.getTime())) continue;
+    const circuitRef = row.relationships?.circuit?.data;
+    const circuitName =
+      asString(circuits[circuitRef?.id ?? '']?.attributes?.name) ?? undefined;
+    out.push({
+      sourceId,
+      briefDescription: brief,
+      description,
+      startDate,
+      status,
+      sequenceOrder: seq,
+      circuit: circuitName,
+    });
+  }
+  return out.sort((a, b) => a.sequenceOrder - b.sequenceOrder);
+}
+
+/**
+ * Fetch all finished WorldSBK rounds in the given season and expand each
+ * one to three RaceResult entries (Race 1 → Superpole Race → Race 2) when
+ * those sessions have results. Empty array on outright failure or
+ * empty season.
+ *
+ * Each RaceResult.round is the canonical championship round number;
+ * multiple RaceResults can share the same round (three sessions per
+ * weekend). The `raceName` carries the session label so the
+ * SeasonResultsPanel renders three distinct cards per round.
+ */
+export async function fetchWsbkSeasonResults(
+  season: number,
+): Promise<RaceResult[]> {
+  const roundsEnv = await fetchJson<JsonApiEnvelope>(
+    `${API_BASE}/wsbk-events/v1/seasons/${season}/rounds`,
+  );
+  if (!roundsEnv) return [];
+
+  const rounds = parseRounds(roundsEnv);
+  const finished = rounds.filter(r => r.status === 'FINISHED');
+  if (finished.length === 0) return [];
+
+  const out: RaceResult[] = [];
+
+  // Fetch sessions per round in parallel; for each finished round we issue
+  // 3 result fetches in parallel (R1/SP/R2). Rate-of-load is modest — 12
+  // rounds × 3 = 36 calls across a full season.
+  await Promise.all(
+    finished.map(async round => {
+      const sessionResults = await Promise.all(
+        RACE_SESSIONS.map(async sess => {
+          const url = `${API_BASE}/wsbk-results/v1/seasons/${season}/categories/SBK/rounds/${round.sourceId}/sessions/${sess.sourceId}/results`;
+          const env = await fetchJson<JsonApiEnvelope>(url);
+          if (!env) return null;
+          const parsed = parseSessionResults(env, sess.shortName);
+          if (!parsed) return null;
+          return { def: sess, parsed };
+        }),
+      );
+
+      for (const item of sessionResults) {
+        if (!item) continue;
+        out.push({
+          round: round.sequenceOrder,
+          raceName: `${round.description || round.briefDescription} — ${item.def.label}`,
+          date: round.startDate,
+          circuit: round.circuit ?? round.briefDescription,
+          results: item.parsed.results,
+        });
+      }
+    }),
+  );
+
+  // Stable order: most recent round first, then R1 → SP → R2 within a round.
+  return out.sort((a, b) => {
+    if (a.round !== b.round) return b.round - a.round;
+    return orderOf(a.raceName) - orderOf(b.raceName);
+  });
+}
+
+function orderOf(raceName: string): number {
+  if (/Superpole Race/i.test(raceName)) return 2;
+  if (/Race 2/i.test(raceName)) return 3;
+  return 1; // Race 1 default
+}
+
+/**
+ * Fetch only the most-recently-finished round's Race 2. Convenience wrapper
+ * for the weekend / "last race" views. Returns null if no round has
+ * finished yet.
+ */
+export async function fetchWsbkLastRace(season: number): Promise<RaceResult | null> {
+  const all = await fetchWsbkSeasonResults(season);
+  if (all.length === 0) return null;
+  // fetchWsbkSeasonResults sorts by round desc then session order; the top
+  // round's Race 2 is the canonical "last race".
+  const topRound = all[0].round;
+  const sameRound = all.filter(r => r.round === topRound);
+  const race2 = sameRound.find(r => /Race 2/i.test(r.raceName));
+  return race2 ?? sameRound[sameRound.length - 1] ?? null;
+}

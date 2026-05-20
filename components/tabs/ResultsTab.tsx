@@ -6,12 +6,20 @@ import type {
   ResultsOverridesFile,
 } from '@/lib/types';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
+import { fetchF2SeasonResults } from '@/lib/results/f2';
+import { fetchF3SeasonResults } from '@/lib/results/f3';
+import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
+import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
+import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
 import { SeasonTrendChart } from '@/components/SeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
+const FORMULA_E_SOURCE_URL =
+  'https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship';
+const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series';
 
 function applyResultsOverrides(
   races: RaceResult[],
@@ -120,21 +128,61 @@ function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolea
   );
 }
 
-function SeasonResultsPanel({ races }: { races: RaceResult[] }) {
-  const sorted = [...races].sort((a, b) => b.round - a.round);
+function SeasonResultsPanel({
+  races,
+  heading = 'Season results',
+  preserveOrder = false,
+}: {
+  races: RaceResult[];
+  heading?: string;
+  // When true, caller has already ordered the array — don't resort (WSBK
+  // emits R1 / SP / R2 per round and wants R2 last per weekend).
+  preserveOrder?: boolean;
+}) {
+  // Most recent round first. Within a round (F2/F3 ship Feature + Sprint
+  // sharing one round number) the Feature race surfaces first because it
+  // pays more points and is the headline weekend winner most readers expect.
+  const sorted = preserveOrder
+    ? races
+    : [...races].sort((a, b) => {
+        if (b.round !== a.round) return b.round - a.round;
+        const aFeature = /feature/i.test(a.raceName);
+        const bFeature = /feature/i.test(b.raceName);
+        if (aFeature && !bFeature) return -1;
+        if (!aFeature && bFeature) return 1;
+        return 0;
+      });
   return (
     <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
       <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
-        Season results
+        {heading}
       </h2>
       <ul className="divide-y divide-border/60">
         {sorted.map((r, idx) => (
-          <li key={r.round} className="py-1">
+          // raceName participates in the key because some series (WSBK, F2,
+          // F3) emit multiple RaceResults per round (Race 1 / Superpole / Race
+          // 2 — or Feature / Sprint) sharing the same round number.
+          <li key={`${r.round}-${r.raceName}`} className="py-1">
             <RoundRow race={r} defaultOpen={idx === 0} />
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+function SourceLink({ href, label }: { href: string; label: string }) {
+  return (
+    <div className="text-center">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
+      >
+        Source: {label} →
+      </a>
+    </div>
   );
 }
 
@@ -183,16 +231,142 @@ export async function ResultsTab({ series }: { series: Series }) {
           />
         </section>
         <SeasonResultsPanel races={merged} />
-        <div className="text-center">
-          <a
-            href={SOURCE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
-          >
-            Source: jolpi.ca (Ergast mirror) →
-          </a>
-        </div>
+        <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'f2') {
+    const [data, overrides] = await Promise.all([
+      fetchF2SeasonResults(),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (data.feature.length === 0 && data.sprint.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const feature = applyResultsOverrides(data.feature, overrides);
+    const sprint = applyResultsOverrides(data.sprint, overrides);
+    return (
+      <div className="space-y-4">
+        {feature.length > 0 ? (
+          <SeasonResultsPanel races={feature} heading="Feature races" />
+        ) : null}
+        {sprint.length > 0 ? (
+          <SeasonResultsPanel races={sprint} heading="Sprint races" />
+        ) : null}
+        <SourceLink
+          href="https://www.fiaformula2.com/Results"
+          label="fiaformula2.com"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'f3') {
+    const [races, overrides] = await Promise.all([
+      fetchF3SeasonResults(series.meta.season),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} />
+        <SourceLink
+          href="https://www.fiaformula3.com/Results"
+          label="fiaformula3.com"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'formula-e') {
+    const [races, overrides] = await Promise.all([
+      fetchFormulaESeasonResults(),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    const trend = buildSeasonTrendData(merged);
+    return (
+      <div className="space-y-4">
+        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+            Drivers&apos; season trend
+          </h2>
+          <SeasonTrendChart
+            data={trend.data}
+            drivers={trend.drivers}
+            totalsByDriver={trend.totalsByDriver}
+          />
+        </section>
+        <SeasonResultsPanel races={merged} />
+        <SourceLink
+          href={FORMULA_E_SOURCE_URL}
+          label="en.wikipedia.org (2025–26 Formula E)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'nascar-cup') {
+    const rounds =
+      series.rounds?.rounds.map(r => ({
+        round: r.round,
+        startDate: r.startDate,
+        name: r.name,
+      })) ?? [];
+    if (rounds.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const [races, overrides] = await Promise.all([
+      fetchNascarCupSeasonResults({ rounds }),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} />
+        <SourceLink
+          href={NASCAR_SOURCE_URL}
+          label="Wikipedia (2026 NASCAR Cup Series)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'wsbk') {
+    const [races, overrides] = await Promise.all([
+      fetchWsbkSeasonResults(series.meta.season),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} preserveOrder />
+        <SourceLink href="https://www.worldsbk.com/en/results" label="worldsbk.com" />
       </div>
     );
   }

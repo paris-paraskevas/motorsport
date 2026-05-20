@@ -2,6 +2,60 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.11.0 — 2026-05-20
+
+**Live standings + results across 5 new series.** Minor bump — substantial product moment. Live data goes from "F1 + IndyCar only" to "F1 + IndyCar + F2 + F3 + Formula E + NASCAR Cup + WSBK". Seven of the 15 series now ship live standings and results without a click-out to an official site.
+
+This is **batch 1 of the 0.11.x scraper sweep**. Remaining series (WRC, GTWCE, IMSA — multi-class endurance; WEC; MotoGP, DTM, NLS, IndyCar-results — BLOCKED on parallel-agent integration; ADAC 24h, Moto2, Moto3 — N/A or pending provisioning) follow as 0.11.1 / 0.11.2 patches.
+
+### Added
+
+- **`lib/standings/{f2,f3,formula-e,nascar-cup,wsbk}.ts`** — five new live-standings loaders. Patterns:
+  - **F2**: cheerio + browser-UA against `fiaformula2.com/Standings/Driver` + `/Team`. Reads the embedded `__NEXT_DATA__` JSON blob rather than the visible HTML table — more robust per-row payload (Position / DriverID / TLA / FullName / TeamName / TotalPoints / RacePoints).
+  - **F3**: same pattern via `fiaformula3.com/Standings/Driver|Team`. F3 standings page exposes abbreviated driver names + 3-letter codes only — no team column on the drivers page; `team: ''` is honest. `DriversTable` UI now hides the team line when empty (instead of rendering an empty `<div>`).
+  - **Formula E**: Wikipedia 2025-26 season-page scrape (FE official site is full SPA, no XHR endpoint reachable). Drivers + teams from championship tables. Schema-stable header detection (Pos / Driver / Pts).
+  - **NASCAR Cup**: Wikipedia 2026 season-page scrape (nascar.com / jayski.com / racing-reference.info all Cloudflare-block server-side fetches). Drivers + manufacturers from championship tables.
+  - **WSBK**: Pulselive JSON API at `api.wsbk.pulselive.com/wsbk-results/v1/...` — same family as MotoGP's Pulselive. Riders + manufacturers, fail-closed at ≥10 riders / ≥3 manufacturers. Hourly revalidate matches IndyCar/F1 pattern.
+
+- **`lib/results/{f2,f3,formula-e,nascar-cup,wsbk}.ts`** — five new race-results loaders:
+  - **F2**: Feature + Sprint races per round. Round numbering preserved across both. Points computed from finish position via official tables.
+  - **F3**: same Feature + Sprint pattern via `fiaformula3.com/Results?raceid=N`. Skips empty future-round tables.
+  - **Formula E**: race-winners-per-round from the same Wikipedia season page (FE Wikipedia table only carries winners, not full finishing order — winners-only emit one `RaceResultEntry` per race at position 1, 25 pts).
+  - **NASCAR Cup**: race-by-race winners from Wikipedia. Phase 1 = winners; full finishing positions deferred to Phase 2 (per-race subpage scrape).
+  - **WSBK**: per-round expansion to three `RaceResult` entries — Race 1 + Superpole Race + Race 2 — sharing the canonical round number, distinguished by `raceName`. Local points table (FIM 25-20-16-... for full races, 12-9-7-... for Superpole).
+
+- **`lib/{standings,results}/{f2,f3,formula-e,nascar-cup,wsbk}.test.ts`** — 10 new vitest files. Suite goes from 16 files / 97 tests → 32 files / 240 tests (143 new tests).
+
+### Changed
+
+- **`components/tabs/StandingsTab.tsx`** — five new dispatch cases (f2 / f3 / formula-e / nascar-cup / wsbk) wired alongside the existing f1 + indycar. New shared `SourceLink` helper de-duplicates the eight near-identical source-attribution links that previously duplicated the markup.
+- **`components/tabs/StandingsTab.tsx`** — `DriversTable` now elides the team-name line when empty (F3 has no team column on the standings page). Was unconditional `<div>{d.team}</div>`.
+- **`components/tabs/ResultsTab.tsx`** — five new dispatch cases. New shared `SourceLink` helper.
+- **`components/tabs/ResultsTab.tsx`** — `SeasonResultsPanel` gained `heading?` (default "Season results") and `preserveOrder?` (default false) props. F2 uses `heading` to split Feature + Sprint into labelled panels; WSBK uses `preserveOrder` so its R1/SP/R2-within-round ordering isn't resorted. Composite key `${round}-${raceName}` so multi-race-per-round series don't collide React keys. Sort tweak: within a round, prefer Feature over Sprint (F2/F3 readability).
+
+### Verified
+
+- `npx tsc --noEmit` clean.
+- `npm test` — 240/240 pass across 32 files.
+- All 5 new series compose cleanly into the unified dispatch — no shared-state collisions, each fetch is independent and fail-closes per existing pattern.
+- Pre-2026 fallback (LinkOutCard / PlaceholderTab) preserved for the 8 remaining series.
+
+### Deferred to 0.11.x patches
+
+- WRC (drivers + co-drivers + manufacturers, Wikipedia primary, wrc.com Akamai-blocked) — worktree branch ready at `scraper/wrc-standings-results`.
+- GTWCE (Overall / Sprint / Endurance 3-section dispatch) — `scraper/gt-world-standings-results`.
+- IMSA (4-class GTP / LMP2 / GTD Pro / GTD multi-class) — `scraper/imsa-standings-results`.
+- WEC (2-class Hypercar / LMGT3 multi-class) — in the agent-leakage stash; needs recovery.
+- MotoGP (Pulselive JSON, implementation in BLOCKED agent's report) — needs paste.
+- DTM (research-only completion) — needs writing.
+- NLS (research-only completion) — needs writing.
+- IndyCar results (Wikipedia season parser, in BLOCKED agent's report) — needs paste.
+- F1 Sprint races + season-trend points fix — separate small bug.
+
+### Versioning note
+
+Per the agreed SemVer discipline (CHANGELOG entry 0.10.42 → 0.10.43 → 0.10.44 retrospective), this is the first MINOR bump in the 0.11.x line. 0.10.42's countdown timer was minor-bump-worthy in hindsight but shipped under patch; discipline starts here. The full 0.11.x line will ship the scraper sweep across all 15 series before 0.12.0 (IA redesign).
+
 ## 0.10.44 — 2026-05-20
 
 Champions-tab clickability — name normalisation + team alias suffix-strip (PR A2). Two real bugs in 0.10.43's clickability shipped silently.

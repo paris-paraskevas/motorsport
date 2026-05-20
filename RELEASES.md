@@ -1,5 +1,19 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.0 — 2026-05-20
+
+**Live standings and results across five more series.** Before today, only F1 and IndyCar had live championship tables — every other series clicked you out to its official site. As of 0.11.0, the following five join the live-data club:
+
+- **Formula 2** — Drivers' + Teams' standings, plus Feature and Sprint race results per round
+- **Formula 3** — same shape (drivers / teams / Feature / Sprint)
+- **Formula E** — Drivers' + Teams' standings, race winners per round, season-trend chart
+- **NASCAR Cup Series** — Drivers' + Manufacturers' standings, race-by-race winners
+- **WORLDSBK** — Riders' + Manufacturers' standings, Race 1 / Superpole Race / Race 2 results per round
+
+Open `/series/f2?tab=standings`, `/series/f3?tab=results`, `/series/formula-e?tab=standings`, `/series/nascar-cup?tab=results`, `/series/wsbk?tab=results` — they should all populate without clicking out. All data refreshes hourly, with manual-override slots wired (so we can correct DSQs and penalties without a code deploy).
+
+**This is batch 1 of the 0.11.x scraper sweep.** Remaining series (WRC, GTWCE, IMSA, WEC, MotoGP, DTM, NLS, IndyCar race-by-race) follow in subsequent 0.11.x releases.
+
 ## 0.10.44 — 2026-05-20
 
 **Two Champions-tab clickability fixes**:

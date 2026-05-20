@@ -5,11 +5,19 @@ import type {
   StandingsOverridesFile,
 } from '@/lib/types';
 import { fetchF1Standings } from '@/lib/standings/f1';
+import { fetchF2Standings } from '@/lib/standings/f2';
+import { fetchF3Standings } from '@/lib/standings/f3';
 import { fetchIndyCarStandings } from '@/lib/standings/indycar';
+import { fetchFormulaEStandings } from '@/lib/standings/formula-e';
+import { fetchNascarCupStandings } from '@/lib/standings/nascar-cup';
+import { fetchWsbkStandings } from '@/lib/standings/wsbk';
 import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
+const FORMULA_E_SOURCE_URL =
+  'https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship';
+const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series';
 
 function applyDriverOverrides(
   drivers: DriverStanding[],
@@ -90,7 +98,9 @@ function DriversTable({ drivers }: { drivers: DriverStanding[] }) {
                   </span>
                 ) : null}
               </div>
-              <div className="text-text-muted text-xs truncate">{d.team}</div>
+              {d.team ? (
+                <div className="text-text-muted text-xs truncate">{d.team}</div>
+              ) : null}
             </div>
             <span className="text-text text-sm font-mono tabular-nums text-right w-14">
               {d.points}
@@ -130,6 +140,21 @@ function ConstructorsTable({ constructors }: { constructors: ConstructorStanding
         ))}
       </ul>
     </section>
+  );
+}
+
+function SourceLink({ href, label }: { href: string; label: string }) {
+  return (
+    <div className="text-center">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
+      >
+        Source: {label} →
+      </a>
+    </div>
   );
 }
 
@@ -180,16 +205,61 @@ export async function StandingsTab({ series }: { series: Series }) {
       <div className="space-y-4">
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
-        <div className="text-center">
-          <a
-            href={SOURCE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
-          >
-            Source: jolpi.ca (Ergast mirror) →
-          </a>
-        </div>
+        <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'f2') {
+    const [data, overrides] = await Promise.all([
+      fetchF2Standings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <ConstructorsTable constructors={constructors} />
+        <SourceLink
+          href="https://www.fiaformula2.com/Standings/Driver"
+          label="fiaformula2.com"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'f3') {
+    const [data, overrides] = await Promise.all([
+      fetchF3Standings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <ConstructorsTable constructors={constructors} />
+        <SourceLink
+          href="https://www.fiaformula3.com/Standings/Driver"
+          label="fiaformula3.com"
+        />
       </div>
     );
   }
@@ -208,16 +278,82 @@ export async function StandingsTab({ series }: { series: Series }) {
     return (
       <div className="space-y-4">
         <DriversTable drivers={drivers} />
-        <div className="text-center">
-          <a
-            href="https://www.indycar.com/Standings"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-faint hover:text-text-muted text-xs transition-colors duration-(--duration-fast)"
-          >
-            Source: indycar.com →
-          </a>
-        </div>
+        <SourceLink href="https://www.indycar.com/Standings" label="indycar.com" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'formula-e') {
+    const [data, overrides] = await Promise.all([
+      fetchFormulaEStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <ConstructorsTable constructors={constructors} />
+        <SourceLink
+          href={FORMULA_E_SOURCE_URL}
+          label="en.wikipedia.org (2025–26 Formula E)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'nascar-cup') {
+    const [data, overrides] = await Promise.all([
+      fetchNascarCupStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <ConstructorsTable constructors={constructors} />
+        <SourceLink href={NASCAR_SOURCE_URL} label="Wikipedia (2026 NASCAR Cup Series)" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'wsbk') {
+    const [data, overrides] = await Promise.all([
+      fetchWsbkStandings(series.meta.season),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <ConstructorsTable constructors={constructors} />
+        <SourceLink href="https://www.worldsbk.com/en/standings" label="worldsbk.com" />
       </div>
     );
   }
