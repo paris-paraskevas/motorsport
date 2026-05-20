@@ -1,5 +1,12 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.4 — 2026-05-20
+
+**Formula E results tab now reads honestly.** Two small but actively-misleading bits of UI cleared up:
+
+- The drivers' season-trend chart is gone from the Formula E results tab. The chart was showing every winning driver's line plateauing at 25 points right after their race win, while the standings tab said Evans had 128, Rowland 109, Mortara 103 — total mismatch. Until we have full per-race finishing positions on Formula E (not just race winners), the chart can't tell the truth, so it's better not to show it. F1 still has its trend chart unchanged.
+- Each Formula E race card no longer expands into a fake 1-row "Race winner 25 points" classification. The card itself already names the winner and team — the misleading expand has been removed. F1, NASCAR, WSBK and others keep their full expandable race-by-race rankings.
+
 ## 0.11.3 — 2026-05-20
 
 **Formula E results now actually load.** 0.11.2 fixed standings but results still showed "temporarily unavailable" — different table on Wikipedia, different bug. The results table has no Date column at all and the parser was throwing every row away for missing a date. Now it derives dates from the sibling Calendar table and falls back to a season-end placeholder if neither has them. Seven Season 12 races (São Paulo, Mexico City, Miami, Jeddah, Madrid, Berlin, Monaco) should populate. Three doubleheader second-races (Jeddah-2, Berlin-2, Monaco-2) currently get dropped due to a rowspan-inheritance edge case — follow-up to recover them.
