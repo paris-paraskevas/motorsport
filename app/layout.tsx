@@ -78,6 +78,13 @@ export default async function RootLayout({
     >
       <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
         <body className="min-h-screen bg-bg text-text">
+          {/* Theme bootstrap — sync apply saved preference before paint to prevent FOUC.
+              Runs as the first body child so [data-theme] is set before AppShell renders. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{var t=localStorage.getItem('paddock-theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t;}}catch(e){}})();`,
+            }}
+          />
           <Script id="consent-default" strategy="beforeInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
