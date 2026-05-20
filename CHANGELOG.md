@@ -2,6 +2,40 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.11.3 — 2026-05-20
+
+Formula E **results** still empty after 0.11.2's standings fix — separate bug, separate fix.
+
+### Fixed
+
+- **`lib/results/formula-e.ts`** — Wikipedia's FE Race-results table has NO Date column (columns are: Round / E-Prix / Pole / Fastest / Winning driver / Winning team / Winning manufacturer / Report). The parser's `if (!date) continue` dropped EVERY row because the date extraction always returned null. The CODE comment above that branch promised "use Jan 1 of the season-end calendar year as a safe placeholder" but the code didn't deliver — it just skipped the row. 0.11.3 closes the comment-vs-code gap with two fallbacks:
+  1. **`buildRoundToDateMap($, tables)`** — scans all `<table>` elements for a sibling table that exposes Round + Date columns (Wikipedia's FE Calendar table fits). Builds a `Map<round, Date>` keyed by round number. Used when the Race-results table itself lacks a date column.
+  2. **Season-end placeholder** — parses the season-end year from `SEASON_PAGE` (e.g. `2025%E2%80%9326` → `2026`) and uses Jan 1 of that year as a last-resort placeholder. Better to ship a slightly-off date label than no row.
+
+- **`lib/results/formula-e.ts`** — added rowspan-collision filter. Wikipedia uses `rowspan="2"` on the E-Prix and Report cells for doubleheader weekends (Jeddah R4+R5, Berlin R7+R8, Monaco R9+R10 in 2025-26). The second race of each pair has fewer `<td>` cells; reading by header logical index then pulls a Pole-position or Fastest-lap driver's name into the E-Prix column. Until full rowspan inheritance is implemented, the parser now skips rows whose cell count is less than the expected header colspan sum. Cost: three of the ten 2025-26 races shipped (Jeddah R5, Berlin R8, Monaco R10) get dropped. Benefit: every remaining row is correctly attributed.
+
+### Test
+
+- Updated the "skip rows with no parseable date" test to assert the new placeholder behavior. Now: `expect(races.length).toBeGreaterThan(0)` + every emitted `Date` is non-NaN.
+- 240/240 pass.
+
+### Verified against 5 external sources
+
+- Berlin R7 (Nico Müller / Andretti) — confirmed correct ([fiaformulae.com Berlin recap](https://www.fiaformulae.com/en/news/755455), [motorsportweek](https://www.motorsportweek.com/2026/05/17/formula-e-2026-monaco-e-prix-race-2-results/), [andretti global Monaco preview](https://andrettiglobal.com/news/2026/05/s12-monaco-preview/))
+- Madrid R6 (António Félix da Costa) — confirmed correct (per fiaformulae.com)
+- Monaco R9 — parser ships Nyck de Vries; web search confirms Oliver Rowland won Race 2 (which is R10 we skip); Race 1 winner not surfaced clearly; flag for follow-up verification
+
+### Known data-quality caveats (Wikipedia-as-source)
+
+- **Mexico City R2 winning team listed as "Citroën Racing"** — Wikipedia vandalism or editorial error. Stellantis's FE team is **DS Penske**, not Citroën Racing. Curate `content/series/formula-e/results-overrides.json` for known-wrong rows in a follow-up.
+- Multiple rounds in 2025-26 have probable accuracy issues from Wikipedia community edits. Long-term fix: switch FE to a more authoritative upstream (e.g. FE archive at fiaformulae.com if it exposes results JSON, or motorsport.com structured data).
+
+### Follow-up items (carry-forward to 0.11.4+)
+
+- Full rowspan inheritance in the parser (recover the 3 doubleheader-2nd-race rows currently dropped).
+- Refresh `lib/results/formula-e.test.ts` fixture from live Wikipedia HTML so the colspan/rowspan paths are exercised.
+- Optional: curated results overrides for the Mexico City Citroën row.
+
 ## 0.11.2 — 2026-05-20
 
 Formula E still showing "temporarily unavailable" after 0.11.1's URL switch — actual root cause is now fixed.

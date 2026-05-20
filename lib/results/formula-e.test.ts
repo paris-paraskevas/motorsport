@@ -185,11 +185,19 @@ describe('fetchFormulaESeasonResults', () => {
     expect(races).toEqual([]);
   });
 
-  it('skips rows with no parseable date rather than emitting bogus dates', async () => {
-    // Without dates anywhere, every row should be skipped → empty array
+  it('falls back to a season-end placeholder date when no Date column or Calendar table provides one', async () => {
+    // Updated in 0.11.3: Wikipedia's actual FE Race-results table has no
+    // Date column. Skipping every dateless row dropped the entire results
+    // tab to "temporarily unavailable" — the bug 0.11.3 fixes. Parser now
+    // emits a placeholder date (Jan 1 of the season-end year) when neither
+    // the results table nor a sibling Calendar table supplies one. Better
+    // to ship a row with a slightly-off date label than no row at all.
     mockFetchOk(NO_DATE_HTML);
     const races = await fetchFormulaESeasonResults();
-    expect(races).toEqual([]);
+    expect(races.length).toBeGreaterThan(0);
+    for (const r of races) {
+      expect(Number.isNaN(r.date.getTime())).toBe(false);
+    }
   });
 
   it('returns an empty array on 500 without throwing', async () => {
