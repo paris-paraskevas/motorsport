@@ -1,5 +1,12 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.44 — 2026-05-20
+
+**Two Champions-tab clickability fixes**:
+
+- **Red Bull's constructor entries now link.** Until today the Champions tab listed Red Bull as a championship-winning team but the name stayed as plain text — even though the current Red Bull team page already exists. The mismatch was a small naming difference ("Red Bull" on the champion row, "Red Bull Racing" on the team page); both now resolve to the same page.
+- **Repeat champions like Álex Palou now link on every title row, not just one.** The IndyCar champions table marks successive titles with `(1)`, `(2)`, `(3)`, `(4)` after the name; only the first row was matching the driver page. All four now route through to `/drivers/alex-palou`.
+
 ## 0.10.43 — 2026-05-20
 
 **Champion names now actually link to driver and team pages.** 0.10.42 announced this feature but the code change was missed — the names still rendered as plain text. 0.10.43 ships the patch. Open any series' Champions tab and click a current-grid name (Norris, Hamilton, Piastri on F1; Palou on IndyCar) — it opens their driver page. Past champions whose pages we don't have yet (Schumacher, Senna, Fangio) stay as plain text, since linking to a 404 would be worse than no link.
