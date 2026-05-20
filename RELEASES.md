@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.1 — 2026-05-20
+
+**Formula E standings + results now actually load.** 0.11.0 shipped the Formula E scraper but the production fetch hit a Wikipedia endpoint variant that the parser couldn't handle, so the page silently showed "temporarily unavailable" even though tests passed locally. Switched to the same Wikipedia endpoint the working NASCAR and WRC scrapers use.
+
 ## 0.11.0 — 2026-05-20
 
 **Live standings and results across five more series.** Before today, only F1 and IndyCar had live championship tables — every other series clicked you out to its official site. As of 0.11.0, the following five join the live-data club:

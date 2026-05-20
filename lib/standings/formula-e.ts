@@ -20,7 +20,14 @@ export type { DriverStanding, ConstructorStanding };
 // and let StandingsTab render its "temporarily unavailable" empty state. We do
 // NOT ship a partial table.
 const SEASON_PAGE = '2025%E2%80%9326_Formula_E_World_Championship';
-const REST_BASE = 'https://en.wikipedia.org/api/rest_v1/page/html';
+// Use the standard /wiki/ URL — matches the pattern used by lib/standings/
+// nascar-cup.ts and lib/standings/wrc.ts (both verified working in prod).
+// Wikipedia's REST API at /api/rest_v1/page/html returns Parsoid-wrapped HTML
+// whose section-element nesting confuses the column-detection heuristics
+// here, causing both parseDrivers and parseTeams to silently return null →
+// the "temporarily unavailable" empty state in production despite the data
+// being live. Standard wiki HTML is what other scrapers consume.
+const WIKI_BASE = 'https://en.wikipedia.org/wiki';
 
 // FE grids are 22 drivers across 11 teams. <12 means we landed on the wrong
 // table (entries list, points-system explanation, etc.) — fail closed.
@@ -297,8 +304,12 @@ export async function fetchFormulaEStandings(): Promise<{
 } | null> {
   let html: string;
   try {
-    const res = await fetch(`${REST_BASE}/${SEASON_PAGE}`, {
-      headers: { Accept: 'text/html' },
+    const res = await fetch(`${WIKI_BASE}/${SEASON_PAGE}`, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        Accept: 'text/html',
+      },
       // Hourly revalidate — Wikipedia editors tend to update the standings
       // tables within a few hours of each E-Prix finish.
       next: { revalidate: 3600 },

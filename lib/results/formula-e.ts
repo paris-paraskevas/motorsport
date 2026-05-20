@@ -9,7 +9,10 @@ export type { RaceResult, RaceResultEntry };
 // SPA and results.fiaformulae.com is access-restricted, so Wikipedia's
 // already-edited race-results table is the most reliable public source).
 const SEASON_PAGE = '2025%E2%80%9326_Formula_E_World_Championship';
-const REST_BASE = 'https://en.wikipedia.org/api/rest_v1/page/html';
+// See lib/standings/formula-e.ts header for the rationale on /wiki/ vs
+// /api/rest_v1/. tl;dr: REST Parsoid HTML breaks the column-detection
+// heuristics; standard wiki HTML is what other working scrapers consume.
+const WIKI_BASE = 'https://en.wikipedia.org/wiki';
 
 // FE's Season 12 calendar has 17 rounds. <3 rounds parsed = we landed on the
 // wrong table (a 2-row summary, the points-scheme table, etc.) → fail closed.
@@ -328,8 +331,12 @@ export async function fetchFormulaESeasonResults(): Promise<RaceResult[]> {
   // without further branching.
   let html: string;
   try {
-    const res = await fetch(`${REST_BASE}/${SEASON_PAGE}`, {
-      headers: { Accept: 'text/html' },
+    const res = await fetch(`${WIKI_BASE}/${SEASON_PAGE}`, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        Accept: 'text/html',
+      },
       // Hourly revalidate — Wikipedia editors update the race-results
       // table within a few hours of each E-Prix finish.
       next: { revalidate: 3600 },
