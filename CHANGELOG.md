@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.11 — 2026-05-20
+
+GT World Challenge Europe standings on `/series/gt-world?tab=standings`. Six tables wired (Overall + Sprint Cup + Endurance Cup, each with Drivers + Teams). Results dispatch deferred — GTWCE per-event parser returns crew + team + lap-time but no per-position points, which would violate the cross-series chart-vs-standings invariant. (Originally planned as 0.11.10; renumbered to 0.11.11 because PR #73's WRC+FE hot-fix took 0.11.10.)
+
+### Added
+
+- **`components/tabs/StandingsTab.tsx`** — GTWCE dispatch case. Reads `fetchGtWorldStandings(season)` and renders six sections in priority order: Overall Drivers → Overall Teams → Sprint Cup Drivers → Sprint Cup Teams → Endurance Cup Drivers → Endurance Cup Teams. Each section guarded by a length-check so empty sub-championships hide cleanly (early-season the Sprint Cup or Endurance Cup tables may be empty before their first event).
+- **`lib/standings/gt-world.ts` + `.test.ts`** — SRO standings scraper for the three GTWCE championships. Includes a `SEASON_ID_BY_YEAR` map (2026 → 26) because SRO's site uses an internal season-slot ID, not the calendar year. 10 tests passing.
+
+### Test
+
+- `lib/standings/gt-world.test.ts` — 10 tests, all pass.
+- `npx tsc --noEmit` clean.
+
+### Out of scope / follow-up
+
+- Results dispatch. GTWCE per-event scrapes return `GtWorldRaceResultEntry[]` with multi-driver crews, car number, team, time, laps, and gap — but no per-position points. SRO's point system is per-cup (Pro / Gold / Silver / Bronze) and varies per race format. Without per-position points the trend chart would either lie or sit unbuildable; ResultsTab dispatch deferred until that's resolved. Until then, the ?tab=results page renders the existing `LinkOutCard` to gt-world-challenge-europe.com.
+- Manufacturers tab. SRO publishes a Manufacturers' Championship for GT3 makes (Audi, BMW, McLaren, Mercedes-AMG, Porsche). Could ship as a fourth section under each cup; deferred.
+
 ## 0.11.9 — 2026-05-20
 
 WRC live standings + results on `/series/wrc`. First rally / non-circuit series wired in the 0.11.x scraper sweep.

@@ -12,6 +12,7 @@ import { fetchFormulaEStandings } from '@/lib/standings/formula-e';
 import { fetchNascarCupStandings } from '@/lib/standings/nascar-cup';
 import { fetchWsbkStandings } from '@/lib/standings/wsbk';
 import { fetchWRCStandings } from '@/lib/standings/wrc';
+import { fetchGtWorldStandings } from '@/lib/standings/gt-world';
 import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -380,6 +381,55 @@ export async function StandingsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'gt-world') {
+    const [data, overrides] = await Promise.all([
+      fetchGtWorldStandings(series.meta.season),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    // Three championships × {drivers, teams} = 6 tables. Render Overall first
+    // because it's the marquee championship (decides the headline title), then
+    // Sprint Cup + Endurance Cup as the two sub-championships. Each gets its
+    // own pair of tables with explicit headings so a reader scanning the page
+    // never has to wonder which championship they're looking at.
+    const overallDrivers = applyDriverOverrides(data.overall.drivers, overrides?.drivers);
+    const overallTeams = applyConstructorOverrides(data.overall.teams, overrides?.constructors);
+    const sprintDrivers = applyDriverOverrides(data.sprint.drivers, overrides?.drivers);
+    const sprintTeams = applyConstructorOverrides(data.sprint.teams, overrides?.constructors);
+    const enduranceDrivers = applyDriverOverrides(data.endurance.drivers, overrides?.drivers);
+    const enduranceTeams = applyConstructorOverrides(data.endurance.teams, overrides?.constructors);
+    return (
+      <div className="space-y-4">
+        {overallDrivers.length > 0 ? (
+          <DriversTable drivers={overallDrivers} heading="Overall — Drivers" />
+        ) : null}
+        {overallTeams.length > 0 ? (
+          <ConstructorsTable constructors={overallTeams} heading="Overall — Teams" />
+        ) : null}
+        {sprintDrivers.length > 0 ? (
+          <DriversTable drivers={sprintDrivers} heading="Sprint Cup — Drivers" />
+        ) : null}
+        {sprintTeams.length > 0 ? (
+          <ConstructorsTable constructors={sprintTeams} heading="Sprint Cup — Teams" />
+        ) : null}
+        {enduranceDrivers.length > 0 ? (
+          <DriversTable drivers={enduranceDrivers} heading="Endurance Cup — Drivers" />
+        ) : null}
+        {enduranceTeams.length > 0 ? (
+          <ConstructorsTable constructors={enduranceTeams} heading="Endurance Cup — Teams" />
+        ) : null}
+        <SourceLink
+          href="https://www.gt-world-challenge-europe.com/standings"
+          label="gt-world-challenge-europe.com"
         />
       </div>
     );
