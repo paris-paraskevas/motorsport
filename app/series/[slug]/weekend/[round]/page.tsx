@@ -51,9 +51,14 @@ export async function generateMetadata(
   const weekend = weekendFor(series, round);
   if (!weekend) return { title: 'Weekend not found' };
   const { title: label } = weekendLabel(weekend, round);
-  const fullTitle = label === `Round ${round}`
+  const baseTitle = label === `Round ${round}`
     ? `${series.meta.name} · Round ${round}`
     : `${series.meta.name} · ${label} · Round ${round}`;
+  // Google's title display caps around 60 chars and the layout appends
+  // " — Paddock Tracker" (17 chars) so dynamic portion budget is ~43 chars.
+  // Cap conservatively at 60 to leave room for the suffix without ellipsis
+  // ever showing on common combinations.
+  const fullTitle = baseTitle.length > 60 ? `${baseTitle.slice(0, 59)}…` : baseTitle;
   const description = `${series.meta.name} Round ${round} — ${label}. ${weekend.dateRangeLabel}. Schedule, weather, standings, news. Where to watch live.`;
   return {
     title: fullTitle,
