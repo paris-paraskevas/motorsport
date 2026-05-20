@@ -4,6 +4,45 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.8 — 2026-05-20
+
+Formula E results — full per-driver classification per round, F1-style. Replaces the winners-only emission shipped in 0.11.0–0.11.4. Restores the drivers' season-trend chart (dropped in 0.11.4 because winners-only data was misleading). (Originally planned as 0.11.6; renumbered to 0.11.8 because PR #69's 0.11.7 perf fix merged first.)
+
+### Added
+
+- **`lib/results/formula-e.ts`** — two-stage scrape:
+  1. **Discovery layer.** The season-page Race-results table is parsed as before to identify which rounds have happened. The "Report" column hyperlink is now extracted — Wikipedia anchors each completed round to a year-specific per-event article (`/wiki/2025_São_Paulo_ePrix`, `/wiki/2026_Mexico_City_ePrix`, …). For doubleheader weekends the Report cell carries `rowspan="2"`, so the same URL maps to two consecutive rounds.
+  2. **Classification layer.** For each unique per-event URL the parser fetches the article (browser User-Agent, hourly ISR revalidate) and finds every wikitable whose header matches the canonical FE race-results signature (`Pos. | No. | Driver | Team | Laps | Time/Retired | Grid | Points`). Singleheaders produce one table; doubleheaders produce two (matching the article's `Race one` / `Race two` H3 structure). The first table maps to the lower round, the second to the higher.
+- **Position parser handles non-numeric labels** (`DNF`, `DSQ`, `DNS`, `DNQ`, `NC`, `Ret`, `EX`). Those rows get `position: 100` so they sort to the bottom, the `Time/Retired` cell becomes the `status` field (e.g. "Collision damage", "Spun out"), and `time` is left undefined.
+- **Points parser** strips trailing footnote markers and only attributes the leading integer (the race-points value). Fastest-lap bonus rendering on Wikipedia (e.g. "12+3") is intentionally NOT decoded — the +N digit is ambiguous between a 1-3pt FL bonus and a footnote ref number, and over-attributing is worse than under-attributing by 1pt for the chart's purposes.
+- **Team-name alias map** `Citroën Racing` / `Citroën` / `Citroen` → `DS Penske`. Wikipedia community edits the FE season page inconsistently — Cassidy and Vergne's team is listed as "Citroën Racing" on multiple per-event articles and the season page, but the canonical entrant name per fiaformulae.com / motorsportweek.com / the-race.com / autosport.com / dspenske.com (the 5-source rule) is **DS Penske**. The alias is applied uniformly at both the season-row layer (winners-only fallback) and the classification-row layer (full per-event). Adding more known-wrong rows is a one-line edit in `TEAM_ALIASES`.
+
+### Changed
+
+- **`components/tabs/ResultsTab.tsx`** — `formula-e` dispatch restored to F1-style layout: `Drivers' season trend` chart back at the top, panel heading reverts to the default "Season results". `RoundRow`'s existing winners-only detection (added in 0.11.4) naturally handles rounds where the per-event scrape fell back to a winners-only entry — those still render as flat summary rows without an accordion.
+
+### Fallback behaviour
+
+- Per-event fetch returns non-200 / unparseable HTML → emit a single `RaceResultEntry` for the winner (position=1, status='Race winner', 25pts) using season-row driver+team. This preserves the 0.11.3 baseline behaviour for any round whose article hasn't been written yet.
+- Doubleheader article exists but only one classification table is present → first round gets the classification, second round gets winners-only.
+- Season-page fetch fails or yields <3 parseable rounds → `[]`, ResultsTab renders "temporarily unavailable" empty state. Same fail-closed contract as 0.11.0+.
+
+### Test
+
+- `lib/results/formula-e.test.ts` rewritten for the two-stage pipeline. Fixtures include a 10-round season-page table with `rowspan="2"` Report cells on the three doubleheader parents (Jeddah R4, Berlin R7, Monaco R9); a full São Paulo classification (20 rows: 13 finishers + 7 DNFs); a Mexico City classification (20 rows verifying the Citroën Racing alias on Cassidy and Vergne); a Jeddah doubleheader article with 2 classification tables.
+- 10 tests for `formula-e.test.ts` (up from 8). `npx tsc --noEmit` clean.
+
+### Verified
+
+- Browser navigation to `/series/formula-e?tab=results` planned for post-PR-merge preview. Live Wikipedia per-event articles confirmed to exist for all 10 completed rounds via WebFetch (São Paulo, Mexico City, Miami, Jeddah, Madrid, Berlin, Monaco — Jeddah/Berlin/Monaco each one shared article for both rounds of the doubleheader).
+
+### Known limitations & follow-up
+
+- **Fastest-lap bonus not attributed.** Wikipedia formats FL points as a trailing `+N` digit on the points cell, ambiguous with footnote ref numbers. Decoding would require parsing the original `<sup>` references before they're stripped. Logged as a follow-up; the trend-chart impact is at most 1pt per FL per driver per race.
+- **Team-name aliases are hardcoded.** Curated `content/series/formula-e/results-overrides.json` would be more flexible but adds an ops loop for every Wikipedia edit war. Keeping in code until a second known-wrong row surfaces.
+- **No driverCode populated.** Per-event articles don't expose driver code consistently. F1 has it from jolpica; FE doesn't. Not blocking; ResultsTab handles undefined `driverCode`.
+- **No data-source for un-raced rounds 11-17.** Sanya, Shanghai, Tokyo, London articles will be empty stubs until those rounds race; they're filtered out at the season-row layer (em-dash / TBA detection).
+
 ## 0.11.7 — 2026-05-20
 
 Perf fix for `/series/f2?tab=results` and `/series/f3?tab=results` — both pages were taking 2-3s to load in production while F1 / NASCAR / Formula E loaded instantly. Per the post-#67 handoff addendum (B5), root cause was the N+1 fan-out fetch pattern: each render hit the standings page for the season manifest, then fanned out one HTTP request per round (~10-14 rounds), with no KV-backed cache to short-circuit the repeat work.

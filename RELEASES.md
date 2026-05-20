@@ -1,5 +1,15 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.8 — 2026-05-20
+
+**Formula E results now show the full classification per race, just like Formula 1.** Open `/series/formula-e?tab=results` and click any round to expand the top 10 — full positions, gaps, points, and retirement reasons for every classified driver, not just the winner. Doubleheader weekends (Jeddah, Berlin, Monaco) now ship both races independently instead of dropping the Sunday race.
+
+**The drivers' season-trend chart is back.** With real per-position points for every driver across every round, the chart finally tells the same story as the standings tab — Evans, Rowland, Mortara curves now diverge round-by-round instead of plateauing at 25pts after each driver's first win.
+
+**Mexico City team correction.** The Wikipedia source repeatedly lists Cassidy and Vergne under "Citroën Racing", which is editorially incorrect — both drive for DS Penske, Stellantis's Formula E team. Paddock now normalises this name across all rounds.
+
+If a per-race Wikipedia article hasn't been written up yet, that round still shows the winner as a flat summary row (same as before). No round is dropped because of a missing article.
+
 ## 0.11.7 — 2026-05-20
 
 **Formula 2 and Formula 3 results tabs are fast now.** Both pages were taking 2-3 seconds to load — every visit was re-doing about a dozen separate requests to the official FIA sites in the background just to render the season. Now the season's results are kept in a short-lived shared cache for three hours, so the second visitor onwards gets an instant page. Cold loads, when the cache is empty, are also faster because Formula 3 used to fetch each round one-after-another and now fetches them in parallel like Formula 2 already did.
