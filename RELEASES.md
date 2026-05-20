@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.15 — 2026-05-20
+
+**Internal: end-of-day housekeeping.** No user-visible change. Background tidy-up of session notes + two parser modules tracked for a future release. Up next: a research-first sweep across 12 series with thin live-data coverage — Formula E doubleheaders, IndyCar results, MotoGP everything, IMSA per-event, NLS / DTM / WEC standings, plus driver / team curation across every series that doesn't have it yet.
+
 ## 0.11.14 — 2026-05-20
 
 Two post-#73 fixes:
