@@ -3,29 +3,130 @@ import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
 
-const DRIVERS_URL = 'https://www.fiaformula3.com/Standings/Driver';
-const TEAMS_URL = 'https://www.fiaformula3.com/Standings/Team';
+const DRIVER_STANDINGS_URL = 'https://www.fiaformula3.com/Standings/Driver';
+const TEAM_STANDINGS_URL = 'https://www.fiaformula3.com/Standings/Team';
 
-// FIA F3 grids run ~30 drivers + ~10 teams. Anything substantially below the
-// expected size signals a structurally-broken response (CMS change, bot wall,
-// SSR fallback shell) and we fail closed rather than ship a misleading partial
-// table. Floor for drivers chosen well above the 18 drivers required to start
-// a Sprint Race, well below the 30-car grid.
+// FIA F3 grids are ~30 drivers + ~10 teams. Anything substantially below
+// signals a structurally-broken response (CMS change, bot wall, SSR fallback
+// shell) and we fail closed.
 const MIN_DRIVERS = 10;
 const MIN_TEAMS = 6;
 
-// Standard browser UA. The FIA Formula 3 (Next.js) site occasionally serves a
-// trimmed SPA shell to non-browser User-Agents; a Chromium UA returns the SSR
-// HTML with the standings tables baked in.
-const BROWSER_UA =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+// Feature Race win awards 25 points. Mirrors F2 standings — "wins" counts
+// Feature-Race wins only (consistent with F1's "Grand Prix wins" semantic).
+const FR_WIN_POINTS = 25;
+
+interface NextDataStandingRow {
+  Position?: number;
+  CarNumber?: number;
+  DriverID?: number;
+  TeamID?: number;
+  TLA?: string;
+  DisplayName?: string;
+  FullName?: string;
+  CountryCode?: string;
+  TeamName?: string | null;
+  TotalPoints?: number;
+  // [SR, FR] pairs per round. null slot = round not yet raced; numeric 0 =
+  // started but did not score, or red-flag-reduced scoring placed the driver
+  // outside the points-paying band.
+  RacePoints?: Array<Array<number | null>>;
+}
+
+interface NextDataStandingsPage {
+  props?: {
+    pageProps?: {
+      pageData?: {
+        Standings?: NextDataStandingRow[];
+      };
+    };
+  };
+}
+
+function extractNextData(html: string): unknown | null {
+  try {
+    const $ = cheerio.load(html);
+    const raw = $('script#__NEXT_DATA__').first().html();
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function countFeatureWins(racePoints: Array<Array<number | null>> | undefined): number {
+  if (!Array.isArray(racePoints)) return 0;
+  let wins = 0;
+  for (const pair of racePoints) {
+    if (!Array.isArray(pair) || pair.length < 2) continue;
+    if (pair[1] === FR_WIN_POINTS) wins += 1;
+  }
+  return wins;
+}
+
+function parseDrivers(html: string): DriverStanding[] | null {
+  const data = extractNextData(html) as NextDataStandingsPage | null;
+  const list = data?.props?.pageProps?.pageData?.Standings;
+  if (!Array.isArray(list)) return null;
+
+  const drivers: DriverStanding[] = [];
+  for (const row of list) {
+    const position = Number(row?.Position);
+    const points = Number(row?.TotalPoints);
+    const driverName = row?.FullName ?? row?.DisplayName;
+    if (!Number.isFinite(position) || !Number.isFinite(points)) continue;
+    if (!driverName) continue;
+    drivers.push({
+      position,
+      driverName,
+      driverCode: row?.TLA,
+      // F3 __NEXT_DATA__ exposes TeamName per driver where the rendered HTML
+      // table omitted it — migration win on top of the red-flag scoring fix.
+      // Two MX reserves (CAR, RIV) carry TeamName=null in the live payload;
+      // surface them as an empty string so the row renders without a team
+      // label rather than dropping the row entirely.
+      team: row?.TeamName ?? '',
+      points,
+      wins: countFeatureWins(row?.RacePoints),
+    });
+  }
+
+  if (drivers.length < MIN_DRIVERS) return null;
+  return drivers.sort((a, b) => a.position - b.position);
+}
+
+function parseConstructors(html: string): ConstructorStanding[] | null {
+  const data = extractNextData(html) as NextDataStandingsPage | null;
+  const list = data?.props?.pageProps?.pageData?.Standings;
+  if (!Array.isArray(list)) return null;
+
+  const constructors: ConstructorStanding[] = [];
+  for (const row of list) {
+    const position = Number(row?.Position);
+    const points = Number(row?.TotalPoints);
+    const name = row?.FullName ?? row?.DisplayName;
+    if (!Number.isFinite(position) || !Number.isFinite(points)) continue;
+    if (!name) continue;
+    constructors.push({
+      position,
+      name,
+      points,
+      wins: countFeatureWins(row?.RacePoints),
+    });
+  }
+
+  if (constructors.length < MIN_TEAMS) return null;
+  return constructors.sort((a, b) => a.position - b.position);
+}
 
 async function fetchHtml(url: string): Promise<string | null> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': BROWSER_UA, Accept: 'text/html' },
-      // Hourly revalidate matches IndyCar and is in line with how often FIA F3
-      // updates standings (within an hour of each race finish).
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        Accept: 'text/html',
+      },
       next: { revalidate: 3600 },
     } as RequestInit);
     if (!res.ok) return null;
@@ -35,95 +136,19 @@ async function fetchHtml(url: string): Promise<string | null> {
   }
 }
 
-// The driver standings table on fiaformula3.com uses an abbreviated driver
-// label ("U. Ugochukwu") in `.visible-desktop-up` and a 3-letter code ("UGO")
-// in `.visible-desktop-down`. The page never serves a full name — we honour
-// what the upstream shows. The team column does not exist on this page; the
-// team standings page is parsed separately.
-function parseDrivers(html: string): DriverStanding[] | null {
-  const $ = cheerio.load(html);
-  const rows = $('table.table-bordered tbody tr');
-  if (rows.length === 0) return null;
-
-  const drivers: DriverStanding[] = [];
-  rows.each((_, el) => {
-    const $row = $(el);
-    const positionText = $row.find('.driver-name-wrapper .pos').first().text().trim();
-    const driverName = $row
-      .find('.driver-name .visible-desktop-up')
-      .first()
-      .text()
-      .trim();
-    const driverCode = $row
-      .find('.driver-name .visible-desktop-down')
-      .first()
-      .text()
-      .trim();
-    const pointsText = $row.find('.total-points').first().text().trim();
-
-    const position = Number(positionText);
-    const points = Number(pointsText);
-    if (!Number.isFinite(position) || !Number.isFinite(points)) return;
-    if (!driverName) return;
-
-    drivers.push({
-      position,
-      driverName,
-      driverCode: driverCode || undefined,
-      // The upstream driver standings table omits the team column entirely.
-      // Empty string is the honest representation; the StandingsTab is free
-      // to elide it. We deliberately do not cross-reference the team page
-      // here — that ordering is fragile and we'd silently mislabel rookies
-      // mid-season.
-      team: '',
-      points,
-    });
-  });
-
-  if (drivers.length < MIN_DRIVERS) return null;
-  return drivers.sort((a, b) => a.position - b.position);
-}
-
-function parseTeams(html: string): ConstructorStanding[] | null {
-  const $ = cheerio.load(html);
-  const rows = $('table.table-bordered tbody tr');
-  if (rows.length === 0) return null;
-
-  const teams: ConstructorStanding[] = [];
-  rows.each((_, el) => {
-    const $row = $(el);
-    const positionText = $row.find('.driver-name-wrapper .pos').first().text().trim();
-    const name = $row
-      .find('.driver-name .visible-desktop-up')
-      .first()
-      .text()
-      .trim();
-    const pointsText = $row.find('.total-points').first().text().trim();
-
-    const position = Number(positionText);
-    const points = Number(pointsText);
-    if (!Number.isFinite(position) || !Number.isFinite(points)) return;
-    if (!name) return;
-
-    teams.push({ position, name, points });
-  });
-
-  if (teams.length < MIN_TEAMS) return null;
-  return teams.sort((a, b) => a.position - b.position);
-}
-
 export async function fetchF3Standings(): Promise<{
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];
 } | null> {
   const [driverHtml, teamHtml] = await Promise.all([
-    fetchHtml(DRIVERS_URL),
-    fetchHtml(TEAMS_URL),
+    fetchHtml(DRIVER_STANDINGS_URL),
+    fetchHtml(TEAM_STANDINGS_URL),
   ]);
   if (!driverHtml || !teamHtml) return null;
 
   const drivers = parseDrivers(driverHtml);
-  const constructors = parseTeams(teamHtml);
+  const constructors = parseConstructors(teamHtml);
   if (!drivers || !constructors) return null;
+
   return { drivers, constructors };
 }

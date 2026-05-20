@@ -1,256 +1,239 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fetchF3Standings } from './f3';
 
-// HTML fixtures mirror the actual fiaformula3.com SSR layout: a
-// `.table.table-bordered` with a thead listing each round and a tbody where
-// each driver/team row has a `.driver-name-wrapper > .pos` for the position
-// and a `.total-points` cell for the championship total. The driver rows
-// additionally embed a `.visible-desktop-up` (full shorthand name) and a
-// `.visible-desktop-down` (3-letter code).
+// Mirrors the fiaformula3.com SSR shape: a Next.js __NEXT_DATA__ JSON payload
+// mounted at script#__NEXT_DATA__. The standings parser reads from that JSON
+// via cheerio; surrounding markup is irrelevant.
+function html(payload: unknown): string {
+  return `<!doctype html><html><head><title>F3</title>` +
+    `<script id="__NEXT_DATA__" type="application/json">` +
+    `${JSON.stringify(payload)}` +
+    `</script></head><body><div id="__next"></div></body></html>`;
+}
 
 function driverRow(opts: {
-  pos: number;
+  position: number;
+  driverID?: number;
+  tla: string;
+  fullName: string;
+  team: string | null;
+  totalPoints: number;
+  racePoints?: Array<Array<number | null>>;
+}) {
+  return {
+    Position: opts.position,
+    CarNumber: opts.position + 10,
+    DriverID: opts.driverID ?? 1400 + opts.position,
+    TLA: opts.tla,
+    DisplayName: opts.fullName.split(' ').map((part, i) => (i === 0 ? part[0] + '.' : part)).join(' '),
+    FullName: opts.fullName,
+    CountryCode: 'XX',
+    TeamName: opts.team,
+    TotalPoints: opts.totalPoints,
+    RacePoints:
+      opts.racePoints ??
+      Array.from({ length: 9 }, () => [null, null] as Array<number | null>),
+  };
+}
+
+function teamRow(opts: {
+  position: number;
   name: string;
-  code: string;
-  points: number;
-}): string {
-  return `
-    <tr>
-      <td class="sticky-col col-three driver-name-col">
-        <div class="driver-name-wrapper">
-          <div class="arrow-white"><span class="team-color"></span></div>
-          <div class="pos">${opts.pos}</div>
-          <div class="driver-name">
-            <span class="visible-desktop-up">${opts.name}</span>
-            <span class="visible-desktop-down">${opts.code}</span>
-          </div>
-        </div>
-      </td>
-      <td class="sticky-col col-four"><div class="total-points">${opts.points}</div></td>
-    </tr>
-  `;
+  totalPoints: number;
+  racePoints?: Array<Array<number | null>>;
+}) {
+  return {
+    Position: opts.position,
+    TeamID: 200 + opts.position,
+    TLA: opts.name,
+    DisplayName: opts.name,
+    FullName: opts.name,
+    CountryCode: 'XX',
+    TotalPoints: opts.totalPoints,
+    RacePoints:
+      opts.racePoints ??
+      Array.from({ length: 9 }, () => [null, null] as Array<number | null>),
+  };
 }
 
-function teamRow(opts: { pos: number; name: string; points: number }): string {
-  // Team rows reuse the same `.driver-name-wrapper / .pos / .driver-name`
-  // markup as the driver standings — the FIA template doesn't bother
-  // renaming the wrapping classes. Both up/down spans hold the same team
-  // name (the upstream page doesn't have an abbreviation for teams).
-  return `
-    <tr>
-      <td class="sticky-col col-three driver-name-col">
-        <div class="driver-name-wrapper">
-          <div class="arrow-white"><span class="team-color"></span></div>
-          <div class="pos">${opts.pos}</div>
-          <div class="driver-name">
-            <span class="visible-desktop-up">${opts.name}</span>
-            <span class="visible-desktop-down">${opts.name}</span>
-          </div>
-        </div>
-      </td>
-      <td class="sticky-col col-four"><div class="total-points">${opts.points}</div></td>
-    </tr>
-  `;
-}
+const FULL_DRIVER_FIXTURE = html({
+  props: {
+    pageProps: {
+      pageData: {
+        Standings: [
+          // Ugochukwu: SR P8 scored 0 (red-flag-reduced), FR P1 scored 25.
+          // TotalPoints = 25 — matches the operator-flagged Ugochukwu 25 case
+          // and proves the parser surfaces the FIA-authoritative total, not
+          // a (1 + 25) = 26 recomputed-from-position figure.
+          driverRow({ position: 1, tla: 'UGO', fullName: 'Ugo Ugochukwu', team: 'Campos Racing', totalPoints: 25,
+            racePoints: [[0, 25], ...Array.from({ length: 8 }, () => [null, null] as Array<number | null>)] }),
+          driverRow({ position: 2, tla: 'BAD', fullName: 'Brando Badoer', team: 'Rodin Motorsport', totalPoints: 18 }),
+          driverRow({ position: 3, tla: 'STR', fullName: 'Noah Strømsted', team: 'TRIDENT', totalPoints: 18 }),
+          driverRow({ position: 4, tla: 'KAT', fullName: 'Taito Kato', team: 'ART Grand Prix', totalPoints: 16 }),
+          driverRow({ position: 5, tla: 'EDE', fullName: 'Enzo Deligny', team: 'Van Amersfoort Racing', totalPoints: 12 }),
+          driverRow({ position: 6, tla: 'BDE', fullName: 'Bruno Del Pino', team: 'Van Amersfoort Racing', totalPoints: 13,
+            racePoints: [[5, 13], ...Array.from({ length: 8 }, () => [null, null] as Array<number | null>)] }),
+          driverRow({ position: 7, tla: 'NAK', fullName: 'Jin Nakamura', team: 'Hitech', totalPoints: 8 }),
+          driverRow({ position: 8, tla: 'GLA', fullName: 'Maciej Gładysz', team: 'ART Grand Prix', totalPoints: 6 }),
+          driverRow({ position: 9, tla: 'LAC', fullName: 'Nicola Lacorte', team: 'DAMS Lucas Oil', totalPoints: 4 }),
+          driverRow({ position: 10, tla: 'WHA', fullName: 'James Wharton', team: 'PREMA Racing', totalPoints: 2 }),
+          driverRow({ position: 11, tla: 'NAE', fullName: 'Théophile Naël', team: 'Campos Racing', totalPoints: 1 }),
+          driverRow({ position: 12, tla: 'BAR', fullName: 'Fernando Barrichello', team: 'AIX Racing', totalPoints: 0 }),
+          // Two MX reserves carry TeamName=null in the live payload; the
+          // parser must keep them (the row contributes a stub entry) rather
+          // than dropping outright.
+          driverRow({ position: 31, tla: 'CAR', fullName: 'Jesse Carrasquedo', team: null, totalPoints: 0 }),
+          driverRow({ position: 32, tla: 'RIV', fullName: 'Ernesto Rivera', team: null, totalPoints: 0 }),
+        ],
+      },
+    },
+  },
+});
 
-const FULL_DRIVERS_HTML = `
-<!DOCTYPE html><html><body>
-<table class="table table-bordered">
-  <thead><tr><th class="sticky-col col-three driver-name-col"><div class="heading">Driver</div></th><th class="sticky-col col-four"><div class="heading">Points</div></th></tr></thead>
-  <tbody>
-    ${driverRow({ pos: 1, name: 'U. Ugochukwu', code: 'UGO', points: 25 })}
-    ${driverRow({ pos: 2, name: 'B. Del Pino', code: 'BDE', points: 18 })}
-    ${driverRow({ pos: 3, name: 'F. Slater', code: 'SLA', points: 18 })}
-    ${driverRow({ pos: 4, name: 'T. Kato', code: 'KAT', points: 16 })}
-    ${driverRow({ pos: 5, name: 'E. Deligny', code: 'EDE', points: 12 })}
-    ${driverRow({ pos: 6, name: 'N. Lacey', code: 'LAC', points: 10 })}
-    ${driverRow({ pos: 7, name: 'O. Stenshorne', code: 'STE', points: 8 })}
-    ${driverRow({ pos: 8, name: 'C. Wurtz', code: 'WUR', points: 6 })}
-    ${driverRow({ pos: 9, name: 'M. Smal', code: 'SMA', points: 4 })}
-    ${driverRow({ pos: 10, name: 'J. Cordeel', code: 'COR', points: 2 })}
-    ${driverRow({ pos: 11, name: 'R. Camara', code: 'CAM', points: 1 })}
-    ${driverRow({ pos: 12, name: 'D. David', code: 'DAV', points: 0 })}
-  </tbody>
-</table>
-</body></html>
-`;
+const FULL_TEAM_FIXTURE = html({
+  props: {
+    pageProps: {
+      pageData: {
+        Standings: [
+          teamRow({ position: 1, name: 'Campos Racing', totalPoints: 35,
+            racePoints: [[1, 25], ...Array.from({ length: 8 }, () => [0, 0] as Array<number | null>)] }),
+          teamRow({ position: 2, name: 'Van Amersfoort Racing', totalPoints: 25 }),
+          teamRow({ position: 3, name: 'Rodin Motorsport', totalPoints: 22 }),
+          teamRow({ position: 4, name: 'TRIDENT', totalPoints: 20 }),
+          teamRow({ position: 5, name: 'ART Grand Prix', totalPoints: 18 }),
+          teamRow({ position: 6, name: 'Hitech', totalPoints: 8 }),
+          teamRow({ position: 7, name: 'DAMS Lucas Oil', totalPoints: 4 }),
+          teamRow({ position: 8, name: 'PREMA Racing', totalPoints: 2 }),
+          teamRow({ position: 9, name: 'MP Motorsport', totalPoints: 0 }),
+          teamRow({ position: 10, name: 'AIX Racing', totalPoints: 0 }),
+        ],
+      },
+    },
+  },
+});
 
-const FULL_TEAMS_HTML = `
-<!DOCTYPE html><html><body>
-<table class="table table-bordered">
-  <thead><tr><th class="sticky-col col-three driver-name-col"><div class="heading">Team</div></th><th class="sticky-col col-four"><div class="heading">Points</div></th></tr></thead>
-  <tbody>
-    ${teamRow({ pos: 1, name: 'Van Amersfoort Racing', points: 30 })}
-    ${teamRow({ pos: 2, name: 'Campos Racing', points: 27 })}
-    ${teamRow({ pos: 3, name: 'ART Grand Prix', points: 26 })}
-    ${teamRow({ pos: 4, name: 'TRIDENT', points: 22 })}
-    ${teamRow({ pos: 5, name: 'PREMA Racing', points: 18 })}
-    ${teamRow({ pos: 6, name: 'MP Motorsport', points: 12 })}
-    ${teamRow({ pos: 7, name: 'Hitech Pulse-Eight', points: 10 })}
-    ${teamRow({ pos: 8, name: 'Rodin Motorsport', points: 8 })}
-  </tbody>
-</table>
-</body></html>
-`;
+const PARTIAL_DRIVER_FIXTURE = html({
+  props: { pageProps: { pageData: { Standings: [
+    driverRow({ position: 1, tla: 'UGO', fullName: 'Ugo Ugochukwu', team: 'Campos Racing', totalPoints: 25 }),
+    driverRow({ position: 2, tla: 'BAD', fullName: 'Brando Badoer', team: 'Rodin Motorsport', totalPoints: 18 }),
+  ]}}},
+});
 
-const SHELL_HTML = `<!DOCTYPE html><html><body><p>Site temporarily unavailable.</p></body></html>`;
+const MISSING_PAYLOAD_FIXTURE = `<!doctype html><html><body><p>Maintenance.</p></body></html>`;
 
-function mockFetch(htmlByUrlSubstring: Record<string, { ok?: boolean; html?: string; throws?: boolean }>) {
-  return vi.fn(async (url: string) => {
-    for (const [substr, cfg] of Object.entries(htmlByUrlSubstring)) {
-      if (url.includes(substr)) {
-        if (cfg.throws) throw new Error('network down');
-        return {
-          ok: cfg.ok ?? true,
-          status: cfg.ok === false ? 500 : 200,
-          text: async () => cfg.html ?? '',
-        } as Response;
-      }
+function mockFetch(driverHtml: string | null, teamHtml: string | null, driverOk = true, teamOk = true) {
+  globalThis.fetch = vi.fn(async (url: string | URL) => {
+    const u = String(url);
+    if (u.includes('/Standings/Driver')) {
+      if (driverHtml === null) throw new Error('network down');
+      return { ok: driverOk, status: driverOk ? 200 : 500, text: async () => driverHtml } as Response;
+    }
+    if (u.includes('/Standings/Team')) {
+      if (teamHtml === null) throw new Error('network down');
+      return { ok: teamOk, status: teamOk ? 200 : 500, text: async () => teamHtml } as Response;
     }
     return { ok: false, status: 404, text: async () => '' } as Response;
-  });
+  }) as unknown as typeof fetch;
 }
 
 describe('fetchF3Standings', () => {
+  const originalFetch = globalThis.fetch;
+
   beforeEach(() => {
     vi.restoreAllMocks();
   });
   afterEach(() => {
-    vi.restoreAllMocks();
+    globalThis.fetch = originalFetch;
   });
 
-  it('parses driver + team standings into typed shapes', async () => {
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { html: FULL_DRIVERS_HTML },
-        '/Standings/Team': { html: FULL_TEAMS_HTML },
-      }),
-    );
+  it('parses both standings pages into typed drivers + constructors', async () => {
+    mockFetch(FULL_DRIVER_FIXTURE, FULL_TEAM_FIXTURE);
     const result = await fetchF3Standings();
     expect(result).not.toBeNull();
-    expect(result!.drivers).toHaveLength(12);
+    expect(result!.drivers).toHaveLength(14);
+    // Ugochukwu's TotalPoints from FIA is 25 — not the (1 + 25) = 26 the
+    // pre-migration parser surfaced. This is the operator-flagged bug.
     expect(result!.drivers[0]).toEqual({
       position: 1,
-      driverName: 'U. Ugochukwu',
+      driverName: 'Ugo Ugochukwu',
       driverCode: 'UGO',
-      team: '',
+      team: 'Campos Racing',
       points: 25,
+      // RacePoints: [[0,25],...] → 1 Feature-Race win (25) at R1
+      wins: 1,
     });
-    expect(result!.drivers[3].driverName).toBe('T. Kato');
+    expect(result!.drivers[3].driverName).toBe('Taito Kato');
     expect(result!.drivers[3].driverCode).toBe('KAT');
     expect(result!.drivers[3].points).toBe(16);
 
-    expect(result!.constructors).toHaveLength(8);
+    expect(result!.constructors).toHaveLength(10);
     expect(result!.constructors[0]).toEqual({
       position: 1,
-      name: 'Van Amersfoort Racing',
-      points: 30,
+      name: 'Campos Racing',
+      points: 35,
+      wins: 1,
     });
-    expect(result!.constructors[2].name).toBe('ART Grand Prix');
+    expect(result!.constructors[2].name).toBe('Rodin Motorsport');
   });
 
-  it('resorts drivers by position even when the table emits them out of order', async () => {
-    const reversed = `
-      <html><body><table class="table table-bordered"><tbody>
-        ${driverRow({ pos: 12, name: 'L', code: 'L12', points: 0 })}
-        ${driverRow({ pos: 11, name: 'K', code: 'K11', points: 1 })}
-        ${driverRow({ pos: 10, name: 'J', code: 'J10', points: 2 })}
-        ${driverRow({ pos: 9, name: 'I', code: 'I09', points: 4 })}
-        ${driverRow({ pos: 8, name: 'H', code: 'H08', points: 6 })}
-        ${driverRow({ pos: 7, name: 'G', code: 'G07', points: 8 })}
-        ${driverRow({ pos: 6, name: 'F', code: 'F06', points: 10 })}
-        ${driverRow({ pos: 5, name: 'E', code: 'E05', points: 12 })}
-        ${driverRow({ pos: 4, name: 'D', code: 'D04', points: 15 })}
-        ${driverRow({ pos: 3, name: 'C', code: 'C03', points: 18 })}
-        ${driverRow({ pos: 2, name: 'B', code: 'B02', points: 22 })}
-        ${driverRow({ pos: 1, name: 'A', code: 'A01', points: 25 })}
-      </tbody></table></body></html>
-    `;
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { html: reversed },
-        '/Standings/Team': { html: FULL_TEAMS_HTML },
-      }),
-    );
+  it('preserves reserves whose TeamName is null with an empty team string', async () => {
+    mockFetch(FULL_DRIVER_FIXTURE, FULL_TEAM_FIXTURE);
     const result = await fetchF3Standings();
     expect(result).not.toBeNull();
-    expect(result!.drivers.map(d => d.position)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-    ]);
-    expect(result!.drivers[0].driverName).toBe('A');
+    const carrasquedo = result!.drivers.find(d => d.driverCode === 'CAR');
+    expect(carrasquedo).toBeDefined();
+    expect(carrasquedo!.team).toBe('');
+    expect(carrasquedo!.driverName).toBe('Jesse Carrasquedo');
   });
 
-  it('returns null when fewer than 10 drivers parsed (sanity floor)', async () => {
-    const tooSmall = `
-      <html><body><table class="table table-bordered"><tbody>
-        ${driverRow({ pos: 1, name: 'A', code: 'A01', points: 25 })}
-        ${driverRow({ pos: 2, name: 'B', code: 'B02', points: 18 })}
-        ${driverRow({ pos: 3, name: 'C', code: 'C03', points: 15 })}
-      </tbody></table></body></html>
-    `;
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { html: tooSmall },
-        '/Standings/Team': { html: FULL_TEAMS_HTML },
-      }),
+  it('sorts drivers and constructors by position', async () => {
+    const reversedDrivers = JSON.parse(
+      FULL_DRIVER_FIXTURE.match(/__NEXT_DATA__" type="application\/json">([\s\S]+?)<\/script>/)![1],
     );
+    reversedDrivers.props.pageProps.pageData.Standings.reverse();
+    const reversedTeams = JSON.parse(
+      FULL_TEAM_FIXTURE.match(/__NEXT_DATA__" type="application\/json">([\s\S]+?)<\/script>/)![1],
+    );
+    reversedTeams.props.pageProps.pageData.Standings.reverse();
+    mockFetch(html(reversedDrivers), html(reversedTeams));
+    const result = await fetchF3Standings();
+    expect(result).not.toBeNull();
+    expect(result!.drivers.map(d => d.position).slice(0, 5)).toEqual([1, 2, 3, 4, 5]);
+    expect(result!.constructors.map(c => c.position).slice(0, 5)).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('returns null when driver standings has fewer than 10 entries (sanity floor)', async () => {
+    mockFetch(PARTIAL_DRIVER_FIXTURE, FULL_TEAM_FIXTURE);
     const result = await fetchF3Standings();
     expect(result).toBeNull();
   });
 
-  it('returns null when fewer than 6 teams parsed (sanity floor)', async () => {
-    const tooFewTeams = `
-      <html><body><table class="table table-bordered"><tbody>
-        ${teamRow({ pos: 1, name: 'A', points: 30 })}
-        ${teamRow({ pos: 2, name: 'B', points: 25 })}
-      </tbody></table></body></html>
-    `;
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { html: FULL_DRIVERS_HTML },
-        '/Standings/Team': { html: tooFewTeams },
-      }),
-    );
+  it('returns null when constructor standings has fewer than 6 entries (sanity floor)', async () => {
+    const partialTeams = html({
+      props: { pageProps: { pageData: { Standings: [
+        teamRow({ position: 1, name: 'Campos Racing', totalPoints: 35 }),
+        teamRow({ position: 2, name: 'Van Amersfoort Racing', totalPoints: 25 }),
+      ]}}},
+    });
+    mockFetch(FULL_DRIVER_FIXTURE, partialTeams);
     const result = await fetchF3Standings();
     expect(result).toBeNull();
   });
 
-  it('returns null when SSR shell renders no table (CMS regression)', async () => {
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { html: SHELL_HTML },
-        '/Standings/Team': { html: FULL_TEAMS_HTML },
-      }),
-    );
+  it('returns null when __NEXT_DATA__ is missing from the page', async () => {
+    mockFetch(MISSING_PAYLOAD_FIXTURE, FULL_TEAM_FIXTURE);
     const result = await fetchF3Standings();
     expect(result).toBeNull();
   });
 
-  it('returns null when the driver endpoint returns 500', async () => {
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { ok: false, html: 'Internal Server Error' },
-        '/Standings/Team': { html: FULL_TEAMS_HTML },
-      }),
-    );
+  it('returns null when either fetch is not ok', async () => {
+    mockFetch(FULL_DRIVER_FIXTURE, FULL_TEAM_FIXTURE, true, false);
     const result = await fetchF3Standings();
     expect(result).toBeNull();
   });
 
-  it('returns null when fetch throws', async () => {
-    vi.stubGlobal(
-      'fetch',
-      mockFetch({
-        '/Standings/Driver': { throws: true },
-        '/Standings/Team': { html: FULL_TEAMS_HTML },
-      }),
-    );
+  it('returns null when either fetch throws', async () => {
+    mockFetch(null, FULL_TEAM_FIXTURE);
     const result = await fetchF3Standings();
     expect(result).toBeNull();
   });
