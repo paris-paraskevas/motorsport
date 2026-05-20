@@ -2,6 +2,25 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.11.1 — 2026-05-20
+
+Formula E standings + results showing "temporarily unavailable" in production despite the parser passing 240/240 tests locally — fixed.
+
+### Fixed
+
+- **`lib/standings/formula-e.ts` + `lib/results/formula-e.ts`** — switched the upstream URL from Wikipedia's REST API (`/api/rest_v1/page/html/<page>`) to the standard `/wiki/<page>` endpoint. Two changes:
+  1. **URL**: REST returns Parsoid HTML whose `<section>`-wrapped nesting confused the column-detection heuristics enough that both `parseDrivers` and `parseTeams` silently returned null in prod (fail-closed → "temporarily unavailable"). Standard `/wiki/` HTML is what the working Wikipedia-sourced scrapers (`lib/standings/nascar-cup.ts`, `lib/standings/wrc.ts`) consume.
+  2. **Browser User-Agent header** added — matches the pattern from `lib/standings/indycar.ts`. Wikipedia serves the same content but the explicit UA short-circuits any bot-mitigation path that Vercel's outbound IPs might have triggered.
+
+### Verified
+
+- `npx tsc --noEmit` clean.
+- `npm test` — 240/240 pass (tests use static HTML fixtures so the URL change doesn't affect them; parser code is unchanged).
+
+### Pre-mortem (carried forward)
+
+If `/series/formula-e?tab=standings` still shows "temporarily unavailable" after the deploy lands, the next hypothesis is Wikipedia's table structure differs between REST and standard HTML in a way the parser doesn't handle. In that case the fix is fixture-driven — refresh the test fixture from the live standard-wiki HTML and adjust the column-detection if needed. WSBK (Pulselive JSON, separate code path) is unaffected.
+
 ## 0.11.0 — 2026-05-20
 
 **Live standings + results across 5 new series.** Minor bump — substantial product moment. Live data goes from "F1 + IndyCar only" to "F1 + IndyCar + F2 + F3 + Formula E + NASCAR Cup + WSBK". Seven of the 15 series now ship live standings and results without a click-out to an official site.
