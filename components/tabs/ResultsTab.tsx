@@ -326,14 +326,25 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // No SeasonTrendChart: lib/results/formula-e.ts emits one entry per race
-    // (the winner). buildSeasonTrendData accumulates per-entry points so the
-    // chart plateaus every driver at 25 pts after their first win — useless
-    // and actively misleading vs the standings tab. Restore the chart when
-    // FE results parses full classifications (per-event page scrape).
+    // 0.11.6 restored: lib/results/formula-e.ts now scrapes per-E-Prix
+    // Wikipedia articles for full classification, so buildSeasonTrendData
+    // can plot real cumulative points across the field. Rounds where the
+    // per-event scrape failed fall back to a single winners-only entry and
+    // render as flat rows (RoundRow detects the shape).
+    const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} heading="Race winners by round" />
+        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+            Drivers&apos; season trend
+          </h2>
+          <SeasonTrendChart
+            data={trend.data}
+            drivers={trend.drivers}
+            totalsByDriver={trend.totalsByDriver}
+          />
+        </section>
+        <SeasonResultsPanel races={merged} />
         <SourceLink
           href={FORMULA_E_SOURCE_URL}
           label="en.wikipedia.org (2025–26 Formula E)"
