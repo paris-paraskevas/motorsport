@@ -1,0 +1,335 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { fetchF2SeasonResults } from './f2';
+
+function nextDataHtml(payload: unknown): string {
+  return `<!doctype html><html><head>` +
+    `<script id="__NEXT_DATA__" type="application/json">` +
+    `${JSON.stringify(payload)}` +
+    `</script></head><body></body></html>`;
+}
+
+function manifestPayload(opts: { races: Array<{ raceId: number; round?: number; circuit?: string; startDate?: string; endDate?: string; provisional?: boolean; sessions?: Array<'SR' | 'FR' | 'Qual' | 'Prac'> }> }) {
+  return {
+    props: {
+      pageProps: {
+        pageData: {
+          Standings: Array.from({ length: 16 }, (_, i) => ({
+            Position: i + 1,
+            FullName: `Driver ${i + 1}`,
+            TeamName: 'Team A',
+            TotalPoints: 0,
+            RacePoints: Array.from({ length: opts.races.length }, () => [null, null]),
+          })),
+          SeasonRaces: opts.races.map((r, idx) => ({
+            RaceId: r.raceId,
+            CircuitShortName: r.circuit ?? `Circuit ${idx + 1}`,
+            Provisional: r.provisional ?? false,
+            RaceStartDate: r.startDate ?? '2026-03-06',
+            RaceEndDate: r.endDate ?? '2026-03-08',
+            Sessions: (r.sessions ?? ['SR', 'FR']).map(s => ({ SessionShortName: s })),
+          })),
+        },
+      },
+    },
+  };
+}
+
+function resultsPayload(opts: {
+  raceId: number;
+  round: number;
+  country?: string;
+  circuit?: string;
+  startDate?: string;
+  endDate?: string;
+  feature?: Array<ResultRow>;
+  sprint?: Array<ResultRow>;
+  hideSprint?: boolean;
+  hideFeature?: boolean;
+}) {
+  const session = (shortName: 'SR' | 'FR', results: Array<ResultRow>, hidden: boolean) => ({
+    SessionShortName: shortName,
+    SessionType: 'RESULT',
+    HideSessionResult: hidden,
+    SessionResultsAvailable: !hidden,
+    Results: results.map(r => ({
+      DriverId: r.driverId ?? null,
+      FinishPosition: r.finishPosition,
+      DriverForename: r.forename,
+      DriverSurname: r.surname,
+      TLA: r.tla,
+      DriverDisplayName: `${r.forename[0]}. ${r.surname}`,
+      TeamName: r.team,
+      CarNumber: r.carNumber ?? 0,
+      LapsCompleted: r.lapsCompleted ?? 25,
+      TimeOrFinishReason: r.time ?? null,
+      Gap: r.gap ?? null,
+      Interval: r.interval ?? null,
+      Speed: '143.8',
+      Best: '1:56.0',
+      BestLap: '22',
+      ResultStatus: r.resultStatus ?? null,
+      DisplayFinishPosition: r.displayFinishPosition ?? (r.finishPosition != null ? String(r.finishPosition) : 'DNF'),
+    })),
+  });
+  return {
+    props: {
+      pageProps: {
+        pageData: {
+          RaceId: opts.raceId,
+          SeasonId: 183,
+          SeasonName: 'Formula 2 2026',
+          CountryName: opts.country ?? 'USA',
+          CountryCode: 'US',
+          RoundNumber: opts.round,
+          Provisional: false,
+          RaceStartDate: opts.startDate ?? '2026-05-01',
+          RaceEndDate: opts.endDate ?? '2026-05-03',
+          CircuitInformation: { CircuitId: 1, CircuitName: opts.circuit ?? 'Miami International Autodrome' },
+          SessionResults: [
+            // Practice + qualifying interleaved as on the real page — parser
+            // must locate FR/SR by SessionShortName rather than relying on
+            // array index.
+            { SessionShortName: 'Prac', SessionType: 'PRACTICE', Results: [] },
+            { SessionShortName: 'Qual', SessionType: 'QUALIFYING', Results: [] },
+            session('SR', opts.sprint ?? [], opts.hideSprint ?? false),
+            session('FR', opts.feature ?? [], opts.hideFeature ?? false),
+          ],
+        },
+      },
+    },
+  };
+}
+
+interface ResultRow {
+  driverId?: number;
+  finishPosition: number | null;
+  forename: string;
+  surname: string;
+  tla: string;
+  team: string;
+  carNumber?: number;
+  lapsCompleted?: number;
+  time?: string | null;
+  gap?: string | null;
+  interval?: string | null;
+  resultStatus?: string | null;
+  displayFinishPosition?: string;
+}
+
+const MIAMI_FEATURE: ResultRow[] = [
+  { finishPosition: 1, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '56:22.029' },
+  { finishPosition: 2, forename: 'Dino', surname: 'Beganovic', tla: 'BEG', team: 'DAMS Lucas Oil', time: '56:23.009', gap: '0.980' },
+  { finishPosition: 3, forename: 'Rafael', surname: 'Câmara', tla: 'CAM', team: 'Invicta Racing', time: '56:24.069', gap: '2.040' },
+  { finishPosition: 4, forename: 'Nikola', surname: 'León', tla: 'LEO', team: 'Campos Racing', time: '56:24.429', gap: '2.400' },
+  { finishPosition: 5, forename: 'Kush', surname: 'Maini', tla: 'MAI', team: 'ART Grand Prix', time: '56:25.884', gap: '3.855' },
+  { finishPosition: 6, forename: 'Ritomo', surname: 'Miyata', tla: 'MIY', team: 'Hitech TGR', time: '56:26.476', gap: '4.447' },
+  { finishPosition: 7, forename: 'Marti', surname: 'Boya', tla: 'BOY', team: 'PREMA Racing', time: '56:29.952', gap: '7.923' },
+  { finishPosition: 8, forename: 'Colton', surname: 'Herta', tla: 'HER', team: 'Hitech TGR', time: '56:32.998', gap: '10.969' },
+  { finishPosition: 9, forename: 'Sebastian', surname: 'Montoya', tla: 'MON', team: 'PREMA Racing', time: '56:33.410', gap: '11.381' },
+  { finishPosition: 10, forename: 'Joshua', surname: 'Dürksen', tla: 'DUR', team: 'Invicta Racing', time: '56:34.364', gap: '12.335' },
+  { finishPosition: 11, forename: 'Laurens', surname: 'van Hoepen', tla: 'VAN', team: 'TRIDENT', time: '56:34.635', gap: '12.606' },
+  { finishPosition: null, forename: 'Cian', surname: 'Shields', tla: 'SHI', team: 'AIX Racing', time: '39:19.278', gap: 'DNF', resultStatus: 'Ret', displayFinishPosition: 'DNF' },
+  { finishPosition: null, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', resultStatus: 'Ret', gap: 'DNF', displayFinishPosition: 'DNF' },
+];
+
+const MIAMI_SPRINT: ResultRow[] = [
+  { finishPosition: 1, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '39:26.273' },
+  { finishPosition: 2, forename: 'Laurens', surname: 'van Hoepen', tla: 'VAN', team: 'TRIDENT', time: '39:26.443', gap: '0.170' },
+  { finishPosition: 3, forename: 'Alexander', surname: 'Dunne', tla: 'DUN', team: 'Rodin Motorsport', time: '39:27.554', gap: '1.281' },
+  { finishPosition: 4, forename: 'Nico', surname: 'Varrone', tla: 'VAR', team: 'Van Amersfoort Racing', time: '39:30.811', gap: '4.538' },
+  { finishPosition: 5, forename: 'Joshua', surname: 'Dürksen', tla: 'DUR', team: 'Invicta Racing', time: '39:31.485', gap: '5.212' },
+  { finishPosition: 6, forename: 'Martinius', surname: 'Stenshorne', tla: 'STE', team: 'Rodin Motorsport', time: '39:31.900', gap: '5.627' },
+  { finishPosition: 7, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '39:32.043', gap: '5.770' },
+  { finishPosition: 8, forename: 'Dino', surname: 'Beganovic', tla: 'BEG', team: 'DAMS Lucas Oil', time: '39:33.027', gap: '6.754' },
+  { finishPosition: 9, forename: 'Rafael', surname: 'Câmara', tla: 'CAM', team: 'Invicta Racing', time: '39:33.500', gap: '7.227' },
+  { finishPosition: 10, forename: 'Kush', surname: 'Maini', tla: 'MAI', team: 'ART Grand Prix', time: '39:34.022', gap: '7.749' },
+];
+
+const MANIFEST_HTML = nextDataHtml(manifestPayload({
+  races: [
+    { raceId: 1092, round: 1, circuit: 'Melbourne', startDate: '2026-03-06', endDate: '2026-03-08' },
+    { raceId: 1106, round: 2, circuit: 'Miami', startDate: '2026-05-01', endDate: '2026-05-03' },
+    { raceId: 1107, round: 3, circuit: 'Montréal', startDate: '2026-05-22', endDate: '2026-05-24' },
+  ],
+}));
+
+const MIAMI_RACE_HTML = nextDataHtml(
+  resultsPayload({ raceId: 1106, round: 2, country: 'USA', circuit: 'Miami International Autodrome', startDate: '2026-05-01', endDate: '2026-05-03', feature: MIAMI_FEATURE, sprint: MIAMI_SPRINT }),
+);
+
+// Upcoming round — empty results, both sessions present but no Results data.
+const MONTREAL_RACE_HTML = nextDataHtml(
+  resultsPayload({ raceId: 1107, round: 3, country: 'Canada', circuit: 'Circuit Gilles-Villeneuve', startDate: '2026-05-22', endDate: '2026-05-24', feature: [], sprint: [] }),
+);
+
+// Round-1 Melbourne with results — keep small for test brevity.
+const MELBOURNE_RACE_HTML = nextDataHtml(
+  resultsPayload({ raceId: 1092, round: 1, country: 'Australia', circuit: 'Albert Park Circuit', startDate: '2026-03-06', endDate: '2026-03-08',
+    feature: [
+      { finishPosition: 1, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '55:00.000' },
+      { finishPosition: 2, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '55:01.000', gap: '1.000' },
+    ],
+    sprint: [
+      { finishPosition: 1, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '38:00.000' },
+      { finishPosition: 2, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '38:01.000', gap: '1.000' },
+    ],
+  }),
+);
+
+function setupFetchMock(responses: Record<string, string | null>) {
+  globalThis.fetch = vi.fn(async (url: string | URL) => {
+    const u = String(url);
+    for (const [pattern, body] of Object.entries(responses)) {
+      if (u.includes(pattern)) {
+        if (body === null) throw new Error('network down');
+        return { ok: true, status: 200, text: async () => body } as Response;
+      }
+    }
+    return { ok: false, status: 404, text: async () => '' } as Response;
+  }) as unknown as typeof fetch;
+}
+
+describe('fetchF2SeasonResults', () => {
+  const originalFetch = globalThis.fetch;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it('returns feature + sprint arrays from the season manifest + race pages', async () => {
+    setupFetchMock({
+      '/Standings/Driver': MANIFEST_HTML,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': MIAMI_RACE_HTML,
+      'raceid=1107': MONTREAL_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    // Montreal has empty results → skipped. Melbourne + Miami contribute.
+    expect(out.feature.map(r => r.round)).toEqual([1, 2]);
+    expect(out.sprint.map(r => r.round)).toEqual([1, 2]);
+    expect(out.feature[1].raceName).toBe('USA Feature Race');
+    expect(out.feature[1].circuit).toBe('Miami International Autodrome');
+    expect(out.feature[1].date.toISOString().startsWith('2026-05-03')).toBe(true);
+  });
+
+  it('parses positions, drivers, teams, times and computes feature-race points from finish position', async () => {
+    setupFetchMock({
+      '/Standings/Driver': MANIFEST_HTML,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': MIAMI_RACE_HTML,
+      'raceid=1107': MONTREAL_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    const miami = out.feature.find(r => r.round === 2)!;
+    expect(miami.results[0]).toEqual({
+      position: 1,
+      driverName: 'Gabriele Minì',
+      driverCode: 'MIN',
+      team: 'MP Motorsport',
+      status: 'Finished',
+      time: '56:22.029',
+      // FR points: 25 / 18 / 15 / 12 / 10 / 8 / 6 / 4 / 2 / 1
+      points: 25,
+    });
+    expect(miami.results[1].points).toBe(18);
+    expect(miami.results[9].points).toBe(1);
+    // 11th-placed driver scores zero.
+    expect(miami.results[10].points).toBe(0);
+  });
+
+  it('sprint-race points use the SR top-8 scale', async () => {
+    setupFetchMock({
+      '/Standings/Driver': MANIFEST_HTML,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': MIAMI_RACE_HTML,
+      'raceid=1107': MONTREAL_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    const miamiSprint = out.sprint.find(r => r.round === 2)!;
+    // SR points: 10 / 8 / 6 / 5 / 4 / 3 / 2 / 1; 9th onward → 0
+    expect(miamiSprint.results[0].points).toBe(10);
+    expect(miamiSprint.results[1].points).toBe(8);
+    expect(miamiSprint.results[7].points).toBe(1);
+    expect(miamiSprint.results[8].points).toBe(0);
+    expect(miamiSprint.results[9].points).toBe(0);
+  });
+
+  it('renders DNF rows with status "DNF" and zero points, placed after finishers', async () => {
+    setupFetchMock({
+      '/Standings/Driver': MANIFEST_HTML,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': MIAMI_RACE_HTML,
+      'raceid=1107': MONTREAL_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    const miami = out.feature.find(r => r.round === 2)!;
+    const dnfs = miami.results.filter(r => r.status === 'DNF');
+    expect(dnfs).toHaveLength(2);
+    expect(dnfs[0].points).toBe(0);
+    expect(dnfs[0].driverName).toBe('Cian Shields');
+    // DNFs are appended after the 11 finishers — positions 12 onward.
+    expect(dnfs[0].position).toBeGreaterThanOrEqual(12);
+  });
+
+  it('skips races where SessionResultsAvailable is false / HideSessionResult is true', async () => {
+    const hidden = nextDataHtml(
+      resultsPayload({ raceId: 1106, round: 2, country: 'USA', feature: MIAMI_FEATURE, sprint: MIAMI_SPRINT, hideFeature: true, hideSprint: true }),
+    );
+    setupFetchMock({
+      '/Standings/Driver': MANIFEST_HTML,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': hidden,
+      'raceid=1107': MONTREAL_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    // Miami suppressed; only Melbourne remains.
+    expect(out.feature.map(r => r.round)).toEqual([1]);
+    expect(out.sprint.map(r => r.round)).toEqual([1]);
+  });
+
+  it('returns empty arrays when manifest fetch fails', async () => {
+    setupFetchMock({});
+    const out = await fetchF2SeasonResults();
+    expect(out).toEqual({ feature: [], sprint: [] });
+  });
+
+  it('returns empty arrays when manifest has no SeasonRaces', async () => {
+    setupFetchMock({
+      '/Standings/Driver': nextDataHtml({ props: { pageProps: { pageData: { Standings: [], SeasonRaces: [] } } } }),
+    });
+    const out = await fetchF2SeasonResults();
+    expect(out).toEqual({ feature: [], sprint: [] });
+  });
+
+  it('skips provisional races in the manifest', async () => {
+    const provisionalManifest = nextDataHtml(manifestPayload({
+      races: [
+        { raceId: 1092, round: 1, circuit: 'Melbourne' },
+        { raceId: 1106, round: 2, circuit: 'Miami', provisional: true },
+      ],
+    }));
+    setupFetchMock({
+      '/Standings/Driver': provisionalManifest,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': MIAMI_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    expect(out.feature.map(r => r.round)).toEqual([1]);
+  });
+
+  it('survives a per-round fetch failure without dropping the whole season', async () => {
+    setupFetchMock({
+      '/Standings/Driver': MANIFEST_HTML,
+      'raceid=1092': MELBOURNE_RACE_HTML,
+      'raceid=1106': null,
+      'raceid=1107': MONTREAL_RACE_HTML,
+    });
+    const out = await fetchF2SeasonResults();
+    // Miami fetch threw → that one round skipped; Melbourne survives.
+    expect(out.feature.map(r => r.round)).toEqual([1]);
+    expect(out.sprint.map(r => r.round)).toEqual([1]);
+  });
+});
