@@ -4,6 +4,31 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.1 — 2026-05-20
+
+Phase 2 first PR. Reconciles the operator-flagged F3 standings/results disagreement (Ugochukwu showing 25 on `/series/f3?tab=standings` but 26 on `/series/f3?tab=results`). Migrates both F3 parsers from HTML scrape + computed-from-position points to reading the FIA's `__NEXT_DATA__.Standings[].RacePoints` array directly.
+
+### Fixed
+
+- **`lib/results/f3.ts`** — points per finisher now come from the FIA's authoritative `Standings[].RacePoints[round_index][session_index]` array, not from a hardcoded points scale. The prior parser had `SPRINT_POINTS = [15, 12, 10, 8, 6, 4, 2, 1]` which was wrong on two counts: (a) the F3 sprint scale is actually `10-9-8-7-6-5-4-3-2-1` (top 10, not top 8); (b) even with the correct hardcoded scale, the computed values diverge from the FIA on red-flag-reduced-distance races. Melbourne 2026 Sprint Race was such a case — half-distance red-flag triggered a truncated `5-4-3-2-1` to top 5 only. Ugochukwu finished P8 in that session: the prior parser awarded 1 point (P8 from the wrong hardcoded scale); the FIA records 0. With the new parser the per-session points read 0 + 25 = 25, matching the standings tab. Implementation mirrors `lib/results/f2.ts` for fetch + concurrency + cache, with the canonical-points lookup added on top.
+- **`lib/standings/f3.ts`** — switched from cheerio HTML scrape to reading `__NEXT_DATA__` directly. Same source as F2. Side benefit: the FIA `__NEXT_DATA__` exposes `TeamName` per driver where the rendered standings HTML did not, so the row now ships a real team string instead of the empty placeholder the previous parser surfaced. Two MX reserves (CAR Carrasquedo, RIV Rivera) carry `TeamName: null` in the upstream payload; surfaced as an empty string so the row renders without a team label rather than dropping the row entirely.
+- **Removed exports** — `parseRoundsFromStandings` and `parseRaceTables` are gone (HTML-scrape helpers that the new `__NEXT_DATA__` path replaces wholesale). Per the no-backwards-compat rule the old shapes are not retained as shims.
+
+### Test
+
+- `lib/standings/f3.test.ts` rewritten — 8 cases against `__NEXT_DATA__` fixtures. Includes the operator-flagged Ugochukwu case (totalPoints = 25 sourced from FIA RacePoints, not the 26 the prior parser computed). Includes a CAR/RIV reserves case proving `TeamName: null` rows are kept with empty `team`.
+- `lib/results/f3.test.ts` rewritten — 11 cases. Key new ones: (a) emits Feature + Sprint per round with canonical FIA points; (b) honors red-flag-reduced 5-4-3-2-1 scoring on the Sprint Race (P1-P5 score 5/4/3/2/1, P6+ score 0); (c) drops rounds whose sessions have not run yet; (d) skips `Provisional: true` rounds (defensive carry-over from F2).
+- 34 test files / 265 tests pass. `npx tsc --noEmit` clean.
+
+### Why this version exists
+
+First impl PR in the Phase 2 sequence locked yesterday (after Phase 1 research + theme toggle absorbed 0.12.0). Patch bump because it's a bug fix that touches two existing parsers; no new user-facing surface.
+
+### Out of scope
+
+- F3 drivers.json curation — folds into the 0.13.0 minor bump (drivers.json bulk-commit across 13 series). The standings + results tabs work correctly without it.
+- F2 parser equivalent migration — F2 also computes from position rather than reading RacePoints, but Melbourne F2 Sprint was not red-flagged so the bug doesn't manifest in 2026. Defer until F2 sees a reduced-distance race; the parser switch will be a separate PR when needed.
+
 ## 0.12.0 — 2026-05-20
 
 Two unrelated tracks bundled into one PR: end-of-day wrap from the 0.11.x continuation session (chore, docs + orphan parsers) plus the first user-facing theme toggle. Minor-bump because the toggle is a new feature.
