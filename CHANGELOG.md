@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.13 — 2026-05-20
+
+IMSA SportsCar Championship live standings on `/series/imsa?tab=standings`. Four classes (GTP / LMP2 / GTD Pro / GTD) × Drivers + Teams + (where applicable) Manufacturers — 11 stacked tables in class-first grouping. Results dispatch deferred: IMSA results parser returns per-class winners-only entries with no per-position points, which would violate the cross-series invariant if surfaced behind a chart.
+
+### Added
+
+- **`lib/standings/imsa.ts` + `.test.ts`** — Wikipedia 2026 IMSA SportsCar Championship parser. Linear DOM walk over `h2 / h3 / h4 / table.wikitable` collects every standings table in document order; H2 "Championship standings" gates entry, H3 disambiguates Drivers / Teams / Manufacturers, H4 carries the class label (matched on trailing parenthetical: `(GTP)`, `(LMP2)`, `(GTD Pro)`, `(GTD)`). Sanity floor `MIN_TOTAL_DRIVER_ROWS = 30` across all four classes — IMSA's full standings page is typically ~80 driver-lines, 30 catches a broken-source state without dropping a sparsely-populated mid-season state. LMP2 manufacturers' championship deliberately omitted (privateer-only — spec Oreca 07/Gibson).
+- **`components/tabs/StandingsTab.tsx`** — IMSA dispatch case. Class-first grouping for readability: each class block renders Drivers → Teams → Manufacturers (last only for GTP / GTD Pro / GTD). 4 classes × 2-3 tables = 11 tables total. Each section guarded by a length-check so empty sub-tables hide cleanly. Maps `ImsaDriverStanding` / `ImsaTeamStanding` / `ImsaManufacturerStanding` to the standard `DriverStanding` / `ConstructorStanding` shapes inline; the existing renderers handle the rest.
+
+### Test
+
+- `lib/standings/imsa.test.ts` (was already in the working tree from the agent's prior worktree work) — 23 tests covering parser happy paths + sanity-floor failure modes + class-drift detection across each of the 11 tables. All pass.
+- 34 test files / 266 tests pass (was 32 / 243).
+- `npx tsc --noEmit` clean.
+
+### Out of scope / follow-up
+
+- IMSA results dispatch. Parser ships per-round per-class winning crew only — no full classification, no per-position points. Same shape as WRC and GTWCE results before per-event scraping lands. ResultsTab continues to render the link-out card to imsa.com/results until either per-event Wikipedia articles exist (24 Hours of Daytona, 12 Hours of Sebring etc. articles do exist; sprint rounds typically don't) or curated `content/series/imsa/results-overrides.json` backfills.
+- Combined IMSA Endurance Cup standings. Wikipedia tracks the four Michelin Endurance Cup rounds (Daytona / Sebring / Watkins Glen / Petit Le Mans) separately; could surface that as a fifth section per class. Deferred until per-event results land.
+
 ## 0.11.12 — 2026-05-20
 
 Hot-fix bundle for the post-#71 production audit. Three bugs surfaced after WRC + FE classification landed: WRC was completely unavailable, FE standings showed "Unknown" for every team, FE trend chart undercounted by ~30-40pts per driver vs the standings tab. (Originally numbered 0.11.10; renumbered to 0.11.12 because PR #72's GTWCE standings took 0.11.11 ahead of merge.)

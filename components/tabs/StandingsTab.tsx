@@ -13,6 +13,11 @@ import { fetchNascarCupStandings } from '@/lib/standings/nascar-cup';
 import { fetchWsbkStandings } from '@/lib/standings/wsbk';
 import { fetchWRCStandings } from '@/lib/standings/wrc';
 import { fetchGtWorldStandings } from '@/lib/standings/gt-world';
+import {
+  fetchImsaStandings,
+  IMSA_CLASSES,
+  IMSA_MANUFACTURER_CLASSES,
+} from '@/lib/standings/imsa';
 import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -430,6 +435,79 @@ export async function StandingsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://www.gt-world-challenge-europe.com/standings"
           label="gt-world-challenge-europe.com"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'imsa') {
+    const [data, overrides] = await Promise.all([
+      fetchImsaStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    // Class-first grouping: GTP → LMP2 → GTD Pro → GTD. Each class shows
+    // Drivers + Teams + (where applicable) Manufacturers. LMP2 has no
+    // manufacturers' championship (privateer-only — all cars are the spec
+    // Oreca 07/Gibson). Maps IMSA's shape to DriverStanding/ConstructorStanding
+    // inline so the existing renderers handle it.
+    return (
+      <div className="space-y-4">
+        {IMSA_CLASSES.flatMap(cls => {
+          const driverRows = data.drivers[cls] ?? [];
+          const teamRows = data.teams[cls] ?? [];
+          const mfrRows = data.manufacturers[cls] ?? [];
+          const driversAsStandard: DriverStanding[] = driverRows.map(d => ({
+            position: d.position,
+            driverName: d.driverName,
+            team: '',
+            points: d.points,
+          }));
+          const teamsAsConstructors: ConstructorStanding[] = teamRows.map(t => ({
+            position: t.position,
+            name: t.team,
+            points: t.points,
+          }));
+          const mfrsAsConstructors: ConstructorStanding[] = mfrRows.map(m => ({
+            position: m.position,
+            name: m.manufacturer,
+            points: m.points,
+          }));
+          const driverOverrides = applyDriverOverrides(driversAsStandard, overrides?.drivers);
+          const teamOverrides = applyConstructorOverrides(teamsAsConstructors, overrides?.constructors);
+          const mfrOverrides = applyConstructorOverrides(mfrsAsConstructors, overrides?.constructors);
+          const hasMfr = IMSA_MANUFACTURER_CLASSES.includes(cls);
+          return [
+            driverOverrides.length > 0 ? (
+              <DriversTable
+                key={`${cls}-d`}
+                drivers={driverOverrides}
+                heading={`${cls} — Drivers`}
+              />
+            ) : null,
+            teamOverrides.length > 0 ? (
+              <ConstructorsTable
+                key={`${cls}-t`}
+                constructors={teamOverrides}
+                heading={`${cls} — Teams`}
+              />
+            ) : null,
+            hasMfr && mfrOverrides.length > 0 ? (
+              <ConstructorsTable
+                key={`${cls}-m`}
+                constructors={mfrOverrides}
+                heading={`${cls} — Manufacturers`}
+              />
+            ) : null,
+          ];
+        })}
+        <SourceLink
+          href="https://en.wikipedia.org/wiki/2026_IMSA_SportsCar_Championship"
+          label="en.wikipedia.org (2026 IMSA)"
         />
       </div>
     );
