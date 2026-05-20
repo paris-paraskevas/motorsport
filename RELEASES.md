@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.12 — 2026-05-20
+
+**Three post-#71 fixes**:
+
+- **WRC standings + results are back.** The page was showing "temporarily unavailable" across the board because Wikipedia's recent HTML structure changed how it wraps section headings, and the parser walked past the actual standings tables without seeing them. Both the standings and the results parsers now detect the new wrapper.
+- **Formula E driver rows no longer show "Unknown" team.** Wikipedia's FE Drivers' Championship table doesn't carry a team column — points-per-round cells take that slot — so the rows just hide the team line entirely until per-driver teams are curated.
+- **Formula E drivers' season-trend chart removed (again).** Restoring the chart in 0.11.6 assumed every completed round had a full classification table on its per-event Wikipedia article. Berlin R8, Monaco R9 and Monaco R10 don't yet — their articles are season-summary stubs — so the chart was undercounting Evans by ~40 points vs the standings. Dropping the chart until either Wikipedia catches up on those rounds OR Paddock backfills them via curated overrides. The race-by-race winner list remains, expandable where full data exists.
+
 ## 0.11.11 — 2026-05-20
 
 **GT World Challenge Europe standings now live.** Open `/series/gt-world?tab=standings` for the Overall championship plus the two sub-championships, Sprint Cup and Endurance Cup, each with Drivers' and Teams' tables. No more click-out to gt-world-challenge-europe.com for the championship picture.

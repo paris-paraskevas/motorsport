@@ -278,7 +278,13 @@ function parseDrivers(html: string): DriverStanding[] | null {
     drivers.push({
       position,
       driverName,
-      team: team || 'Unknown',
+      // Empty string when Wikipedia's Drivers' Championship table omits the
+      // team column (typical FE — points-per-round cells take the team's
+      // place in the row layout). DriversTable in StandingsTab guards on
+      // truthiness so the team line just doesn't render rather than showing
+      // a placeholder like "Unknown". Curate `content/series/formula-e/
+      // drivers.json` to surface real teams here once the file lands.
+      team: team || '',
       points,
     });
   }

@@ -217,7 +217,7 @@ describe('fetchFormulaEStandings', () => {
     expect(result!.drivers[0]).toEqual({
       position: 1,
       driverName: 'Mitch Evans',
-      team: 'Unknown',
+      team: '',
       points: 128,
     });
     expect(result!.drivers[5].driverName).toBe('António Félix da Costa');

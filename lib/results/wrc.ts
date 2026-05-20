@@ -146,9 +146,19 @@ function findCalendarTable(
         '';
       if (!pat.test(id)) return;
 
-      let cursor = heading.next();
+      // Wikipedia (2024+) wraps headings in <div class="mw-heading"> — walk
+      // siblings of the wrapper so `next()` reaches the section content
+      // instead of the .mw-editsection chrome. Same fix that ships in
+      // lib/standings/wrc.ts findTableAfterHeading.
+      const parent = heading.parent();
+      const startEl = parent.hasClass('mw-heading') ? parent : heading;
+      let cursor = startEl.next();
       while (cursor.length > 0) {
         if (cursor.is('h2')) break;
+        if (cursor.hasClass('mw-heading')) {
+          const innerH = cursor.find('h2').first();
+          if (innerH.length > 0) break;
+        }
         if (cursor.is('table.wikitable')) {
           // Confirm it's the calendar by looking for a "Rally" or "Round"
           // header cell — avoid picking up a sub-table inside the
