@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.14 — 2026-05-20
+
+Two post-#73 fixes:
+
+**WRC results no longer says "temporarily unavailable".** The page was showing the placeholder because Wikipedia's 2026 WRC article splits into a Calendar section (no winner data) and a separate Results and standings section (the actual winners table) — and the parser was finding the wrong one. Now the round-by-round winning crew + manufacturer renders properly: Monte Carlo Oliver Solberg, Sweden Elfyn Evans, Kenya Takamoto Katsuta, Croatia Adrien Fourmaux, Canarias Sami Pajari, Portugal Sébastien Ogier through Round 7.
+
+**Formula E doubleheader dates now correct.** The second race of each doubleheader weekend (Jeddah R5, Berlin R8, Monaco R10) was showing "1 January 2026" — a placeholder used when the parser couldn't find a real date. Wikipedia's calendar table lists those rounds in compact 2-cell rows (just round + date) because the venue cells above span both rows, and the parser was reading the wrong column. Now those rounds show their real dates (14 Feb, 3 May, 17 May respectively), and the results panel orders most-recent-first like the other series. Berlin and Monaco still show only the winning driver because the per-race Wikipedia articles haven't been written up with full classifications yet — but the dates and order are now honest.
+
 ## 0.11.13 — 2026-05-20
 
 **IMSA SportsCar Championship standings now live.** Open `/series/imsa?tab=standings` for the full picture across all four classes — GTP (the headline hybrid prototypes), LMP2 (the spec privateer prototypes), GTD Pro (the pro GT3 class), and GTD (pro-am GT3). Each class shows Drivers, Teams, and where applicable Manufacturers (LMP2 doesn't have a manufacturers' title since every car is the same Oreca chassis).

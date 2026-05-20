@@ -319,11 +319,34 @@ function buildRoundToDateMap(
       const roundDataIdx = logicalToDataIdx(colspans, roundIdx);
       const dateDataIdx = logicalToDataIdx(colspans, dateIdx);
       for (const row of allRows.slice(i + 1)) {
+        const rowCellsArr = $(row).find('> th, > td').toArray() as Element[];
         const roundRaw = rowText($, row, roundDataIdx);
         const round = parseRound(roundRaw);
         if (round == null) continue;
-        const dateRaw = rowText($, row, dateDataIdx);
-        const date = parseDate(dateRaw);
+        // Doubleheader children on FE's Calendar table look like
+        // `<tr><th>5</th><td>14 February 2026</td></tr>` because the E-Prix /
+        // Country / Circuit cells above carry rowspan="2" and are physically
+        // absent from this row. Reading at dataIdx=4 returns '' so date parses
+        // to null and the round inherits the season-placeholder Jan 1 — that's
+        // what put R5 Jeddah, R8 Berlin, R10 Monaco all at "1 Jan 2026" on
+        // production. Fallback: scan ALL cells right-to-left for the first
+        // parseable date. The date is canonically the last meaningful cell on
+        // both parent rows (full-width, date at end) and child rows (2-cell,
+        // date at index 1). Try the expected slot first to preserve the
+        // happy path.
+        let dateRaw = rowText($, row, dateDataIdx);
+        let date = parseDate(dateRaw);
+        if (!date) {
+          for (let k = rowCellsArr.length - 1; k >= 0; k--) {
+            const candidate = cellText($, rowCellsArr[k]);
+            const parsed = parseDate(candidate);
+            if (parsed) {
+              date = parsed;
+              dateRaw = candidate;
+              break;
+            }
+          }
+        }
         if (!date) continue;
         if (!map.has(round)) map.set(round, date);
       }
