@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.11 — 2026-05-20
+
+**GT World Challenge Europe standings now live.** Open `/series/gt-world?tab=standings` for the Overall championship plus the two sub-championships, Sprint Cup and Endurance Cup, each with Drivers' and Teams' tables. No more click-out to gt-world-challenge-europe.com for the championship picture.
+
+Per-event results — who finished where in each race — still link out to the official site for now. SRO doesn't publish per-position points the way the FIA does for F1 / F2 / F3, so a season-trend chart wouldn't tell the truth yet.
+
 ## 0.11.9 — 2026-05-20
 
 **WRC standings + results now live.** Open `/series/wrc?tab=standings` for Drivers / Co-Drivers / Manufacturers championship tables, and `/series/wrc?tab=results` for the round-by-round winning crew + manufacturer through Round 7 (Rally Japan). No more click-out to wrc.com for the championship picture.
