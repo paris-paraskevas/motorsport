@@ -155,6 +155,28 @@ function rowText(
   return cellText($, cell);
 }
 
+// Wikipedia's FE standings header uses colspan="2" on doubleheader race
+// columns (JED, BER, MCO, SHA, TKO, LDN in 2025-26). That makes the header
+// row's <th> count smaller than the data row's <td> count — so a "Pts"
+// header at LOGICAL index 13 actually lives at DATA-row index 19 once the
+// six colspan-2 cells are unfolded. Translating logical-header indices to
+// data-row indices is required or we read race results instead of season
+// points and the sanity floor silently rejects every row.
+function getColspan($: cheerio.CheerioAPI, el: Element): number {
+  const raw = $(el).attr('colspan');
+  if (!raw) return 1;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 1 ? n : 1;
+}
+
+function logicalToDataIdx(colspans: number[], logicalIdx: number): number {
+  let dataIdx = 0;
+  for (let i = 0; i < logicalIdx; i++) {
+    dataIdx += colspans[i] ?? 1;
+  }
+  return dataIdx;
+}
+
 /**
  * Find the first <table> within `tables` whose header row matches the given
  * column shape. Returns the matched table + the resolved column map +
@@ -165,15 +187,17 @@ function findTable<T>(
   tables: Element[],
   detect: (headers: string[]) => T | null,
   minDataRows: number,
-): { table: Element; columns: T; dataRows: Element[] } | null {
+): {
+  table: Element;
+  columns: T;
+  dataRows: Element[];
+  colspans: number[];
+} | null {
   for (const table of tables) {
     const allRows = $(table)
       .find('> tbody > tr, > tr')
       .toArray() as Element[];
     if (allRows.length < 2) continue;
-    // Look at the first 3 rows as candidate header rows (Wikipedia's
-    // standings tables sometimes have a top-of-table caption row before the
-    // real header). Take the first row whose columns detect cleanly.
     for (let i = 0; i < Math.min(3, allRows.length); i++) {
       const cells = $(allRows[i])
         .find('> th, > td')
@@ -184,7 +208,8 @@ function findTable<T>(
       if (!columns) continue;
       const dataRows = allRows.slice(i + 1);
       if (dataRows.length < minDataRows) continue;
-      return { table, columns, dataRows };
+      const colspans = cells.map((c) => getColspan($, c));
+      return { table, columns, dataRows, colspans };
     }
   }
   return null;
@@ -207,8 +232,15 @@ function parseDrivers(html: string): DriverStanding[] | null {
   );
   if (!found) return null;
 
-  const { columns, dataRows } = found;
+  const { columns, dataRows, colspans } = found;
   const drivers: DriverStanding[] = [];
+
+  // Header logical indices → data-row indices. See logicalToDataIdx comment.
+  const posDataIdx = logicalToDataIdx(colspans, columns.pos);
+  const driverDataIdx = logicalToDataIdx(colspans, columns.driver);
+  const pointsDataIdx = logicalToDataIdx(colspans, columns.points);
+  const teamDataIdx =
+    columns.team != null ? logicalToDataIdx(colspans, columns.team) : null;
 
   // Track the most recently-seen non-empty team cell so rowspan'd team cells
   // carry through. Wikipedia's FE Drivers' Championship sometimes omits the
@@ -216,9 +248,9 @@ function parseDrivers(html: string): DriverStanding[] | null {
   // the StandingsTab override layer for any curator-side patching.
   let lastTeam = '';
   for (const row of dataRows) {
-    const posRaw = rowText($, row, columns.pos);
-    const driverRaw = rowText($, row, columns.driver);
-    const pointsRaw = rowText($, row, columns.points);
+    const posRaw = rowText($, row, posDataIdx);
+    const driverRaw = rowText($, row, driverDataIdx);
+    const pointsRaw = rowText($, row, pointsDataIdx);
 
     const position = parsePosition(posRaw);
     const points = parsePoints(pointsRaw);
@@ -233,8 +265,8 @@ function parseDrivers(html: string): DriverStanding[] | null {
     if (!driverName) continue;
 
     let team = '';
-    if (columns.team != null) {
-      const teamRaw = rowText($, row, columns.team);
+    if (teamDataIdx != null) {
+      const teamRaw = rowText($, row, teamDataIdx);
       if (teamRaw) {
         team = teamRaw;
         lastTeam = teamRaw;
@@ -269,14 +301,18 @@ function parseTeams(html: string): ConstructorStanding[] | null {
   const found = findTable($, tables, detectTeamColumns, MIN_TEAMS);
   if (!found) return null;
 
-  const { columns, dataRows } = found;
+  const { columns, dataRows, colspans } = found;
   const teams: ConstructorStanding[] = [];
   const seen = new Set<string>();
 
+  const posDataIdx = logicalToDataIdx(colspans, columns.pos);
+  const teamDataIdx = logicalToDataIdx(colspans, columns.team);
+  const pointsDataIdx = logicalToDataIdx(colspans, columns.points);
+
   for (const row of dataRows) {
-    const posRaw = rowText($, row, columns.pos);
-    const teamRaw = rowText($, row, columns.team);
-    const pointsRaw = rowText($, row, columns.points);
+    const posRaw = rowText($, row, posDataIdx);
+    const teamRaw = rowText($, row, teamDataIdx);
+    const pointsRaw = rowText($, row, pointsDataIdx);
 
     const position = parsePosition(posRaw);
     const points = parsePoints(pointsRaw);

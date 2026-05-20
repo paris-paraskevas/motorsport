@@ -190,10 +190,30 @@ function rowText(
   return cellText($, cell);
 }
 
+// Same colspan-aware index helper as lib/standings/formula-e.ts. Defensive —
+// the race-results table doesn't currently use colspan, but if Wikipedia
+// ever adds a "Race 1 / Race 2" colspan header for FE doubleheaders, the
+// parser keeps working without code changes.
+function getColspan($: cheerio.CheerioAPI, el: Element): number {
+  const raw = $(el).attr('colspan');
+  if (!raw) return 1;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 1 ? n : 1;
+}
+
+function logicalToDataIdx(colspans: number[], logicalIdx: number): number {
+  let dataIdx = 0;
+  for (let i = 0; i < logicalIdx; i++) {
+    dataIdx += colspans[i] ?? 1;
+  }
+  return dataIdx;
+}
+
 interface FoundTable {
   table: Element;
   columns: RaceColumnMap;
   dataRows: Element[];
+  colspans: number[];
 }
 
 function findRaceTable(
@@ -213,7 +233,8 @@ function findRaceTable(
       if (!columns) continue;
       const dataRows = allRows.slice(i + 1);
       if (dataRows.length < MIN_ROUNDS) continue;
-      return { table, columns, dataRows };
+      const colspans = cells.map((c) => getColspan($, c));
+      return { table, columns, dataRows, colspans };
     }
   }
   return null;
@@ -230,21 +251,28 @@ function parseRaces(html: string): RaceResult[] {
   const found = findRaceTable($, tables);
   if (!found) return [];
 
-  const { columns, dataRows } = found;
+  const { columns, dataRows, colspans } = found;
   const races: RaceResult[] = [];
+
+  const roundDataIdx = logicalToDataIdx(colspans, columns.round);
+  const ePrixDataIdx = logicalToDataIdx(colspans, columns.ePrix);
+  const winningDriverDataIdx = logicalToDataIdx(colspans, columns.winningDriver);
+  const winningTeamDataIdx = logicalToDataIdx(colspans, columns.winningTeam);
+  const dateDataIdx =
+    columns.date != null ? logicalToDataIdx(colspans, columns.date) : null;
 
   // FE's race-results table can include rows for not-yet-run rounds, where
   // the Winning driver / Winning team cells are empty (or contain a Wikipedia
   // "—" / "TBD" marker). Skip those — fail closed at the row level so the
   // tab shows the rounds that DO have results.
   for (const row of dataRows) {
-    const roundRaw = rowText($, row, columns.round);
+    const roundRaw = rowText($, row, roundDataIdx);
     const round = parseRound(roundRaw);
     if (round == null) continue;
 
-    const ePrix = rowText($, row, columns.ePrix);
-    const driverRaw = rowText($, row, columns.winningDriver);
-    const teamRaw = rowText($, row, columns.winningTeam);
+    const ePrix = rowText($, row, ePrixDataIdx);
+    const driverRaw = rowText($, row, winningDriverDataIdx);
+    const teamRaw = rowText($, row, winningTeamDataIdx);
     if (!ePrix || !driverRaw || !teamRaw) continue;
 
     // Skip clearly-empty cells (Wikipedia uses em-dash "—" or "TBA" for
@@ -280,8 +308,8 @@ function parseRaces(html: string): RaceResult[] {
     // date is never NaN — ResultsTab tolerates this because the user-visible
     // date label is derived from this Date via formatDate(date).
     let date: Date | null = null;
-    if (columns.date != null) {
-      const dateRaw = rowText($, row, columns.date);
+    if (dateDataIdx != null) {
+      const dateRaw = rowText($, row, dateDataIdx);
       date = parseDate(dateRaw);
     }
     if (!date) {

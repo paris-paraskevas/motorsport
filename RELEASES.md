@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.2 — 2026-05-20
+
+**Formula E standings + results actually load now** (real fix). 0.11.1's URL change wasn't enough — Wikipedia's FE Drivers' Championship table uses merged-cell headers for doubleheader weekends (Jeddah, Berlin, Monaco, Shanghai, Tokyo, London each span 2 columns of race results). The parser was reading the wrong cell for the season-points total and silently failing. 0.11.2 teaches the parser about merged-cell headers.
+
 ## 0.11.1 — 2026-05-20
 
 **Formula E standings + results now actually load.** 0.11.0 shipped the Formula E scraper but the production fetch hit a Wikipedia endpoint variant that the parser couldn't handle, so the page silently showed "temporarily unavailable" even though tests passed locally. Switched to the same Wikipedia endpoint the working NASCAR and WRC scrapers use.

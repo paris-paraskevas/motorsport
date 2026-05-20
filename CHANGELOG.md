@@ -2,6 +2,25 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.11.2 — 2026-05-20
+
+Formula E still showing "temporarily unavailable" after 0.11.1's URL switch — actual root cause is now fixed.
+
+### Fixed
+
+- **`lib/standings/formula-e.ts`** — Wikipedia's FE Drivers' Championship table uses `colspan="2"` on six header cells (JED, BER, MCO, SHA, TKO, LDN — the doubleheader weekend headers). The parser was using header-row logical indices to read data-row cells, but data rows have `<td>` cells unfolded (no colspan on data rows), so "Pts" at header logical index 13 is actually at data-row index 19. The parser silently read a race-result cell instead of the season total, hit the sanity floor, returned null → "temporarily unavailable". Fix: capture each header cell's colspan into a `colspans: number[]` array in `findTable`; new `logicalToDataIdx(colspans, logicalIdx)` helper translates the indices when reading data rows.
+- **`lib/results/formula-e.ts`** — same colspan-aware translation applied defensively to the race-results parser. The race-results table doesn't currently use colspan, but if Wikipedia ever adds a "Race 1 / Race 2" colspan header for FE doubleheaders, the parser keeps working without code changes.
+
+### Verified
+
+- `npx tsc --noEmit` clean.
+- `npm test` — 240/240 pass (fixtures are static HTML, didn't exercise the colspan path; field-data verification post-deploy via Playwright is the actual test).
+
+### Audit linkage
+
+- PR #64 (0.11.1) pre-mortem: "if the page still shows 'temporarily unavailable' after this lands, the next hypothesis is that Wikipedia's table structure differs between REST and standard HTML in a way the parser doesn't handle." That hypothesis was correct, but the differing factor wasn't REST vs /wiki/ — it was `colspan` on doubleheader race headers. The /wiki/ switch from PR #64 still helps (browser UA + standard pattern), but this colspan fix is what actually unblocks the parse.
+- Test fixtures didn't cover this scenario because the agent built them against an FE-season snapshot when the table happened to have unit-colspan headers, or the fixture was simplified for test ergonomics. Follow-up worth flagging: refresh fixture from live HTML to lock in the colspan path.
+
 ## 0.11.1 — 2026-05-20
 
 Formula E standings + results showing "temporarily unavailable" in production despite the parser passing 240/240 tests locally — fixed.
