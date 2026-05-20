@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.13 — 2026-05-20
+
+**IMSA SportsCar Championship standings now live.** Open `/series/imsa?tab=standings` for the full picture across all four classes — GTP (the headline hybrid prototypes), LMP2 (the spec privateer prototypes), GTD Pro (the pro GT3 class), and GTD (pro-am GT3). Each class shows Drivers, Teams, and where applicable Manufacturers (LMP2 doesn't have a manufacturers' title since every car is the same Oreca chassis).
+
+Per-event results — who finished where in each race — still link out to imsa.com. The Wikipedia season page only carries the winning crew per round, not full classifications.
+
 ## 0.11.12 — 2026-05-20
 
 **Three post-#71 fixes**:
