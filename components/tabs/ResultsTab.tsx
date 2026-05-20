@@ -267,7 +267,7 @@ export async function ResultsTab({ series }: { series: Series }) {
 
   if (series.meta.slug === 'f2') {
     const [data, overrides] = await Promise.all([
-      fetchF2SeasonResults(),
+      fetchF2SeasonResults(series.meta.season),
       loadResultsOverrides(series.meta.slug),
     ]);
     if (data.feature.length === 0 && data.sprint.length === 0) {

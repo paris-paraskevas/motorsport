@@ -1,6 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fetchF2SeasonResults } from './f2';
 
+// In-memory KV stand-in. Most tests run with KV unconfigured (no env vars) so
+// the cache path is a transparent no-op; the dedicated cache-hit / cache-miss
+// tests below opt into KV by setting env vars + populating the store.
+const kvStore = new Map<string, unknown>();
+vi.mock('@vercel/kv', () => ({
+  kv: {
+    get: vi.fn(async (key: string) => {
+      const raw = kvStore.get(key);
+      if (raw === undefined) return null;
+      return JSON.parse(JSON.stringify(raw));
+    }),
+    set: vi.fn(async (key: string, value: unknown) => {
+      kvStore.set(key, value);
+      return 'OK';
+    }),
+  },
+}));
+
 function nextDataHtml(payload: unknown): string {
   return `<!doctype html><html><head>` +
     `<script id="__NEXT_DATA__" type="application/json">` +
@@ -194,9 +212,14 @@ describe('fetchF2SeasonResults', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    kvStore.clear();
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
   afterEach(() => {
     globalThis.fetch = originalFetch;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
 
   it('returns feature + sprint arrays from the season manifest + race pages', async () => {
@@ -331,5 +354,77 @@ describe('fetchF2SeasonResults', () => {
     // Miami fetch threw → that one round skipped; Melbourne survives.
     expect(out.feature.map(r => r.round)).toEqual([1]);
     expect(out.sprint.map(r => r.round)).toEqual([1]);
+  });
+
+  describe('cache layer', () => {
+    beforeEach(() => {
+      process.env.KV_REST_API_URL = 'https://kv.test.invalid';
+      process.env.KV_REST_API_TOKEN = 'test-token';
+    });
+
+    it('returns cached payload on cache hit without touching upstream', async () => {
+      kvStore.set('paddock:results:f2:season:2026', {
+        feature: [
+          {
+            round: 1,
+            raceName: 'Cached Feature',
+            date: new Date('2026-03-08T00:00:00Z'),
+            circuit: 'Cached Circuit',
+            results: [
+              { position: 1, driverName: 'Cached Driver', team: 'Cached Team', status: 'Finished', points: 25 },
+            ],
+          },
+        ],
+        sprint: [],
+      });
+      const fetchMock = vi.fn();
+      globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+      const out = await fetchF2SeasonResults(2026);
+      expect(out.feature).toHaveLength(1);
+      expect(out.feature[0].raceName).toBe('Cached Feature');
+      // Date must be a Date instance after the JSON round-trip via reviveDates.
+      expect(out.feature[0].date).toBeInstanceOf(Date);
+      expect(out.feature[0].date.toISOString()).toBe('2026-03-08T00:00:00.000Z');
+      // Cache hit short-circuits upstream entirely.
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('on cache miss, fetches fresh and writes the season payload to KV', async () => {
+      setupFetchMock({
+        '/Standings/Driver': MANIFEST_HTML,
+        'raceid=1092': MELBOURNE_RACE_HTML,
+        'raceid=1106': MIAMI_RACE_HTML,
+        'raceid=1107': MONTREAL_RACE_HTML,
+      });
+      const out = await fetchF2SeasonResults(2026);
+      expect(out.feature.length).toBeGreaterThan(0);
+      // Cache write happened — re-fetch would now be a hit.
+      const stored = kvStore.get('paddock:results:f2:season:2026') as
+        | { feature: unknown[]; sprint: unknown[] }
+        | undefined;
+      expect(stored).toBeDefined();
+      expect(stored!.feature.length).toBeGreaterThan(0);
+    });
+
+    it('does not write empty payloads to cache (avoids freezing the "unavailable" UI)', async () => {
+      setupFetchMock({});
+      const out = await fetchF2SeasonResults(2026);
+      expect(out).toEqual({ feature: [], sprint: [] });
+      expect(kvStore.has('paddock:results:f2:season:2026')).toBe(false);
+    });
+
+    it('skips the cache entirely when called without a season (legacy callers)', async () => {
+      setupFetchMock({
+        '/Standings/Driver': MANIFEST_HTML,
+        'raceid=1092': MELBOURNE_RACE_HTML,
+        'raceid=1106': MIAMI_RACE_HTML,
+        'raceid=1107': MONTREAL_RACE_HTML,
+      });
+      const out = await fetchF2SeasonResults();
+      expect(out.feature.length).toBeGreaterThan(0);
+      // No season → no key to write under.
+      expect(kvStore.size).toBe(0);
+    });
   });
 });

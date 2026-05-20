@@ -1,10 +1,21 @@
 import * as cheerio from 'cheerio';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import {
+  readResultsCache,
+  writeResultsCache,
+  seasonCacheKey,
+} from '@/lib/results-cache';
 
 export type { RaceResult, RaceResultEntry };
 
 const STANDINGS_URL = 'https://www.fiaformula3.com/Standings/Driver';
 const RESULTS_URL_BASE = 'https://www.fiaformula3.com/Results';
+
+// Concurrent fan-out cap when fetching per-round result pages. Mirrors the F2
+// parser (lib/results/f2.ts). FIA F3 page weight is ~150 KB; 6 in flight is
+// comfortably under any observed throttle and keeps total wall time ~1× the
+// slowest page rather than ~N× as the prior sequential loop did.
+const MAX_CONCURRENT_RACE_FETCHES = 6;
 
 // Standard browser UA — see lib/standings/f3.ts for the rationale (the FIA F3
 // Next.js site serves a trimmed shell to non-browser UAs).
@@ -214,19 +225,56 @@ export async function fetchF3Round(
   return out;
 }
 
+async function mapWithLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (true) {
+      const i = next++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i]);
+    }
+  }
+  const workers: Promise<void>[] = [];
+  for (let i = 0; i < Math.min(limit, items.length); i++) workers.push(worker());
+  await Promise.all(workers);
+  return out;
+}
+
 export async function fetchF3SeasonResults(season: number): Promise<RaceResult[]> {
+  // KV cache hit ⇒ skip the entire manifest + fan-out. Mirrors F2.
+  const cacheKey = seasonCacheKey('f3', season);
+  const cached = await readResultsCache<RaceResult[]>(cacheKey);
+  if (cached) return cached;
+
   const standingsHtml = await fetchHtml(STANDINGS_URL);
   if (!standingsHtml) return [];
   const rounds = parseRoundsFromStandings(standingsHtml);
   if (rounds.length === 0) return [];
 
-  // Sequential fetch keeps us under any rate-limit the FIA site enforces and
-  // avoids slamming it with ~10 parallel requests on every page render. The
-  // hourly revalidate means this only runs once per hour per process.
+  // Parallel fan-out (capped at MAX_CONCURRENT_RACE_FETCHES). The prior
+  // sequential loop made the results tab pay N× the per-page latency on every
+  // ISR rebuild; combined with the new KV cache, completed-round data now
+  // round-trips through KV instead of re-fetching N pages.
+  const allBatches = await mapWithLimit(
+    rounds,
+    MAX_CONCURRENT_RACE_FETCHES,
+    round => fetchF3Round(round, season),
+  );
+
   const all: RaceResult[] = [];
-  for (const round of rounds) {
-    const races = await fetchF3Round(round, season);
-    for (const r of races) all.push(r);
+  for (const batch of allBatches) {
+    for (const r of batch) all.push(r);
+  }
+
+  if (all.length > 0) {
+    // Only cache non-empty payloads — caching the empty "upstream is down"
+    // state would freeze the error UI for 3h on a transient blip.
+    await writeResultsCache(cacheKey, all);
   }
   return all;
 }
