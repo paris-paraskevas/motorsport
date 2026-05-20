@@ -10,6 +10,7 @@ import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
 import { SeriesBadge } from '@/components/SeriesBadge';
 import { CancelledRoundsBanner } from '@/components/CancelledRounds';
+import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { CalendarTab } from '@/components/tabs/CalendarTab';
 import { AboutTab } from '@/components/tabs/AboutTab';
 import { HistoryTab } from '@/components/tabs/HistoryTab';
@@ -103,6 +104,11 @@ export default async function SeriesPage({
 
   const color = series.meta.color;
 
+  const now = new Date();
+  const nextSession = [...series.sessions]
+    .filter(s => !s.dateOnly && s.start > now)
+    .sort((a, b) => a.start.getTime() - b.start.getTime())[0];
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -146,6 +152,15 @@ export default async function SeriesPage({
           <span className="tnum font-mono">{series.meta.season}</span>{' '}
           <span className="text-text-muted font-medium">season</span>
         </h1>
+        {nextSession && (
+          <div className="mt-4">
+            <NextRaceCountdown
+              target={nextSession.start.toISOString()}
+              label={`Next ${series.meta.name} session`}
+              color={color}
+            />
+          </div>
+        )}
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
 

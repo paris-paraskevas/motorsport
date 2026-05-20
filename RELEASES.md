@@ -1,6 +1,16 @@
-# Releases
-
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
+
+## 0.10.42 — 2026-05-20
+
+**Per-series countdown to the next session.** Open any series page (e.g. `/series/f1`, `/series/motogp`) — there's now a ticking countdown to the next upcoming session in that series.
+
+**Champion names now link to their driver and team pages.** Open the Champions tab on any series and click a champion or constructor name — if we have a curated page for them (currently F1 and IndyCar drivers/teams), it opens. Past champions without curated pages stay as plain text.
+
+**Rally Japan now shows on the WRC calendar correctly.** Round 7 of the 2026 WRC, May 28-31, was previously listed without canonical round-number data; the official entry is now in place. Stage-by-stage start times will fill in as the organisers publish the detailed itinerary.
+
+**A.J. Foyt Enterprises kept as the canonical team name** for the 1996 and 1998 IndyCar championship entries — verified against IndyCar.com, Wikipedia, OpenWheelWorld and two further references.
+
+Internal: search-engine fixes — long weekend-page titles now truncate at ~60 characters so they fit Google's display window without ellipsis; the duplicate top-level heading on the releases page was removed so search engines see a single document title.
 
 ## 0.10.41 — 2026-05-19
 

@@ -2,6 +2,34 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.42 — 2026-05-20
+
+PR A — quick-wins bundle from the 2026-05-20 bug-blitz session. Six items, one PR.
+
+### Added
+
+- **`components/NextRaceCountdown.tsx`** — client-side ticking countdown component. Rerenders once per second to the next timed session in the active series; returns null when the target instant passes (so the page doesn't show "0d 00h 00m 00s" rather than gracefully hiding).
+- **`content/series/wrc/rounds.json`** — Round 7 FORUM8 Rally Japan May 28-31, 2026 added. Bug #38 fix. Stage-level `sessions.json` curation deferred until the organisers publish the detailed itinerary; the ICS fallback continues to drive the date-only "TBC" render until that lands. 5 sources cited: motorsportscalendar.com, rally-japan.jp, wrcfanatix.com, Wikipedia 2026 Rally Japan, toyotagazooracing.com.
+
+### Changed
+
+- **`components/tabs/ChampionsTab.tsx`** — champion driver and constructor names now wrap in `<Link href="/drivers/<slug>">` / `<Link href="/teams/<slug>">` when the slugified name resolves to a curated entry. ChampionsTab top-level pre-loads `loadAllDrivers()` + `loadAllTeams()` once and passes the slug sets to all three sub-sections (DriversSection, ConstructorsSection, SecondarySection). Bug #3 fix. Today this is F1 + IndyCar only — every other series unblocks when its `content/series/<slug>/drivers.json` lands in the drivers.json bulk-commit PR.
+- **`app/series/[slug]/weekend/[round]/page.tsx`** — `generateMetadata` weekend titles now truncate to 60 characters with an ellipsis when the full `<Series> · <Label> · Round <N>` form exceeds the limit. Bing Webmaster Tools flagged 11 weekend pages with titles >70 chars; the truncation is conservative against Google's ~60-char display window after the layout `"%s — Paddock Tracker"` suffix is appended.
+- **`RELEASES.md`** — removed the leading `# Releases` H1 line. The `/changelog` page renders the markdown body and emits its own h1, so the markdown's first-level heading was a duplicate h1 on the page. Bing Site Scan flagged it; this strip is the documented fix.
+- **`app/series/[slug]/page.tsx`** — `NextRaceCountdown` integrated into the header. Computes the next timed (non date-only) session for the series via simple sort + first-future filter; passes ISO start to the client component.
+
+### Bug-list disposition
+
+- **#14 A.J. Foyt Enterprises** — claim verified incorrect. The team's canonical name is "A.J. Foyt Enterprises" (founded 1965; alias "A.J. Foyt Racing" is modern marketing). 1996 IRL champion Scott Sharp + 1998 IRL champion Kenny Bräck both raced under the Enterprises banner. No patch. 5 sources: indycar.com/teams/AJ-Foyt-Enterprises, Wikipedia A.J. Foyt, OpenWheelWorld, FanAmp, Indy Racing League Fandom Wiki.
+- **#34 PWA name** — informational. `public/manifest.json` has `name: "Paddock Tracker"` and `short_name: "Paddock"`. The home-screen icon shows `short_name` by spec. No reinstall needed. Optional: bump `short_name` to "Paddock Tracker" if longer label preferred on home screen (iOS truncates anyway past ~12 chars).
+- **#39 weather audit** — verification-only; runs post-deploy as a browser pass.
+
+### Deferred from PR A
+
+- Bing fix B1 (sitemap orphan-round filter) — needs per-series enumeration of FE doubleheaders + IndyCar Milwaukee R2 + NLS Sunday qualifier rounds.json entries that don't have weekend pages. Follow-up PR.
+- WRC rounds.json full curation (14 rounds, only 5 in file today including new Japan). Follow-up curation pass.
+- WRC Japan sessions.json detailed SS times — pending official itinerary publication (typical 4-7 days pre-event for WRC).
+
 ## 0.10.41 — 2026-05-19
 
 Docs-only. Closes Tue 2026-05-19 with comprehensive senior-dev audit + the Tue → Sun 5-day data-ingestion blitz plan.
