@@ -127,8 +127,21 @@ function parseRallyDate(dateText: string, season: number): Date | null {
 function findCalendarTable(
   $: cheerio.CheerioAPI,
 ): cheerio.Cheerio<Element> | null {
-  // Candidate headings in priority order.
+  // Candidate headings in priority order. Wikipedia 2026+ splits the page
+  // into a "Calendar" section (round + start/finish dates + surface, NO
+  // winner column) and a "Results and standings" → "Season summary" section
+  // whose first wikitable has Round + Event + Winning driver + Co-driver +
+  // Entrant + Time + Report. The 0.11.9 / 0.11.10 parser matched the
+  // Calendar table first, failed buildColumnMap because no winning-driver
+  // column, and returned [] — production rendered "Results temporarily
+  // unavailable". This patch swaps priority so Results_and_standings is
+  // tried first AND adds a winner-header requirement on the candidate
+  // confirmation so the bare-Calendar table (no winner column) is rejected
+  // even if a future restructure routes us into it.
   const headingPatterns = [
+    /^Results_and_standings$/i,
+    /Season_summary/i,
+    /^Results$/i,
     /^Calendar$/i,
     /Season_calendar/i,
     /Calendar/i,
@@ -160,14 +173,16 @@ function findCalendarTable(
           if (innerH.length > 0) break;
         }
         if (cursor.is('table.wikitable')) {
-          // Confirm it's the calendar by looking for a "Rally" or "Round"
-          // header cell — avoid picking up a sub-table inside the
-          // surface-legend section.
-          const headerText = cursor.find('th').slice(0, 5).text().toLowerCase();
+          // Confirm it's a results table — round column + winner column.
+          // Slice(0, 9) covers the typical 8-column results-table header
+          // (Round / Event / Winning driver / Co-driver / Entrant / Time /
+          // Report / Ref) with one column of headroom.
+          const headerText = cursor.find('th').slice(0, 9).text().toLowerCase();
           if (
-            headerText.includes('round') ||
-            headerText.includes('rally') ||
-            headerText.includes('date')
+            headerText.includes('round') &&
+            (headerText.includes('winning') ||
+              headerText.includes('winner') ||
+              headerText.includes('driver'))
           ) {
             found = cursor;
             return;
@@ -175,11 +190,12 @@ function findCalendarTable(
         }
         const inner = cursor.find('table.wikitable').first();
         if (inner.length > 0) {
-          const headerText = inner.find('th').slice(0, 5).text().toLowerCase();
+          const headerText = inner.find('th').slice(0, 9).text().toLowerCase();
           if (
-            headerText.includes('round') ||
-            headerText.includes('rally') ||
-            headerText.includes('date')
+            headerText.includes('round') &&
+            (headerText.includes('winning') ||
+              headerText.includes('winner') ||
+              headerText.includes('driver'))
           ) {
             found = inner;
             return;

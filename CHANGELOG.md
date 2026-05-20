@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.14 — 2026-05-20
+
+Two post-#73 hot-fixes that surfaced via operator browser-verify:
+
+### Fixed
+
+- **`lib/results/wrc.ts findCalendarTable`** (WRC results still "temporarily unavailable"). Wikipedia 2026+ splits the page into a `Calendar` section (round + start/finish dates + surface — **no winner column**) and a `Results and standings` → `Season summary` section whose first wikitable carries `Round | Event | Winning driver | Winning co-driver | Winning entrant | Winning time | Report | Ref`. The 0.11.9 + 0.11.10 parser matched the bare-Calendar table first (it had round / rally / date in the headers), then `buildColumnMap` returned null because no winning-driver column existed, and the dispatch rendered "Results temporarily unavailable" while WRC standings worked fine (different code path). Fix: swap heading-pattern priority so `Results_and_standings` / `Season_summary` / `Results` are tried before `Calendar`, AND require the candidate table to have both a round column AND a winner column. Verified against live `2026_World_Rally_Championship` HTML: 14 rounds parsed, 7 with completed winners (Monte Carlo: Oliver Solberg; Sweden: Elfyn Evans; Kenya: Takamoto Katsuta; Croatia: Adrien Fourmaux; Canarias: Sami Pajari; Portugal: Sébastien Ogier; Japan: TBD).
+- **`lib/results/formula-e.ts buildRoundToDateMap`** (FE doubleheader dates falling back to "1 January 2026"). Wikipedia's FE Calendar table uses `rowspan="2"` on the E-Prix / Country / Circuit cells for doubleheader weekends. The second-race row only carries `<th>round</th><td>date</td>` physically — the rowspanned cells are visually present but absent from the row's `<td>` children. The parser was reading the Date column at its logical-header index (dataIdx=4), which is empty in a 2-cell row, so `parseDate('')` returned null and the round inherited the season placeholder. Now after the expected-slot read fails, the parser falls back to scanning all cells right-to-left for the first parseable date. Verified against live `2025-26_Formula_E_World_Championship`: R5 = 14 February 2026, R8 = 3 May 2026, R10 = 17 May 2026 (were all "1 Jan 2026" placeholder on production after 0.11.6 / 0.11.8 / 0.11.12). Order in the season-results panel now reads R10 (May 17) → R9 (May 16) → R8 (May 3) → R7 (May 2) → R6 (Mar 21) → ... most-recent-first, matching F1.
+
+### Test
+
+- 34 test files / 266 tests pass. `npx tsc --noEmit` clean.
+- WRC fix verified against live Wikipedia via a one-off node script.
+
+### Out of scope
+
+- FE per-event classification curation for Berlin R7/R8 + Monaco R9/R10 (rounds 7-10 still render as flat winners-only rows because Wikipedia per-event articles for those races are season-summary stubs without classification tables). Deferred — same scope as the 0.11.12 follow-up note.
+
 ## 0.11.13 — 2026-05-20
 
 IMSA SportsCar Championship live standings on `/series/imsa?tab=standings`. Four classes (GTP / LMP2 / GTD Pro / GTD) × Drivers + Teams + (where applicable) Manufacturers — 11 stacked tables in class-first grouping. Results dispatch deferred: IMSA results parser returns per-class winners-only entries with no per-position points, which would violate the cross-series invariant if surfaced behind a chart.
