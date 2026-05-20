@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.3 — 2026-05-20
+
+**Formula E results now actually load.** 0.11.2 fixed standings but results still showed "temporarily unavailable" — different table on Wikipedia, different bug. The results table has no Date column at all and the parser was throwing every row away for missing a date. Now it derives dates from the sibling Calendar table and falls back to a season-end placeholder if neither has them. Seven Season 12 races (São Paulo, Mexico City, Miami, Jeddah, Madrid, Berlin, Monaco) should populate. Three doubleheader second-races (Jeddah-2, Berlin-2, Monaco-2) currently get dropped due to a rowspan-inheritance edge case — follow-up to recover them.
+
+A data-quality note: this data comes from the public Wikipedia season page, which has occasional community-edit errors. The Mexico City winning team currently reads "Citroën Racing" (it's actually DS Penske). Curated corrections will follow.
+
 ## 0.11.2 — 2026-05-20
 
 **Formula E standings + results actually load now** (real fix). 0.11.1's URL change wasn't enough — Wikipedia's FE Drivers' Championship table uses merged-cell headers for doubleheader weekends (Jeddah, Berlin, Monaco, Shanghai, Tokyo, London each span 2 columns of race results). The parser was reading the wrong cell for the season-points total and silently failing. 0.11.2 teaches the parser about merged-cell headers.

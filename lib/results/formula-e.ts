@@ -240,6 +240,50 @@ function findRaceTable(
   return null;
 }
 
+// Scan all tables for one that exposes Round + Date columns (Wikipedia's FE
+// Calendar table fits — "Round | E-Prix | Country | Circuit | Date"). Build
+// a round → date map so the Race-results table (which has no Date column)
+// can still emit dated entries. Without this every race row gets skipped
+// because the parser requires a non-null date for ResultsTab's date label.
+function buildRoundToDateMap(
+  $: cheerio.CheerioAPI,
+  tables: Element[],
+): Map<number, Date> {
+  const map = new Map<number, Date>();
+  for (const table of tables) {
+    const allRows = $(table).find('> tbody > tr, > tr').toArray() as Element[];
+    if (allRows.length < 2) continue;
+    for (let i = 0; i < Math.min(3, allRows.length); i++) {
+      const cells = $(allRows[i]).find('> th, > td').toArray() as Element[];
+      if (cells.length === 0) continue;
+      const headers = cells.map((c) => cellText($, c));
+      const roundIdx = findHeaderIndex(headers, {
+        exact: ['round', 'rnd', 'rd', 'rd.', '#'],
+      });
+      const dateIdx = findHeaderIndex(headers, {
+        exact: ['date'],
+        contains: ['date'],
+      });
+      if (roundIdx === -1 || dateIdx === -1 || roundIdx === dateIdx) continue;
+      const colspans = cells.map((c) => getColspan($, c));
+      const roundDataIdx = logicalToDataIdx(colspans, roundIdx);
+      const dateDataIdx = logicalToDataIdx(colspans, dateIdx);
+      for (const row of allRows.slice(i + 1)) {
+        const roundRaw = rowText($, row, roundDataIdx);
+        const round = parseRound(roundRaw);
+        if (round == null) continue;
+        const dateRaw = rowText($, row, dateDataIdx);
+        const date = parseDate(dateRaw);
+        if (!date) continue;
+        if (!map.has(round)) map.set(round, date);
+      }
+      // First table that yields a usable map wins; don't keep scanning.
+      if (map.size > 0) return map;
+    }
+  }
+  return map;
+}
+
 function parseRaces(html: string): RaceResult[] {
   let $: cheerio.CheerioAPI;
   try {
@@ -251,6 +295,16 @@ function parseRaces(html: string): RaceResult[] {
   const found = findRaceTable($, tables);
   if (!found) return [];
 
+  // Build the round → date fallback BEFORE iterating race rows. Wikipedia's
+  // Race-results table has no Date column on FE; the Calendar table earlier
+  // in the page does. If neither table has dates, the per-row fallback below
+  // uses a season-page-derived placeholder (Jan 1 of the season-end year).
+  const roundToDate = buildRoundToDateMap($, tables);
+  const seasonEndYearMatch = SEASON_PAGE.match(/%E2%80%93(\d{2})/);
+  const seasonPlaceholderDate = seasonEndYearMatch
+    ? new Date(`20${seasonEndYearMatch[1]}-01-01T00:00:00Z`)
+    : new Date(`${new Date().getFullYear()}-01-01T00:00:00Z`);
+
   const { columns, dataRows, colspans } = found;
   const races: RaceResult[] = [];
 
@@ -261,11 +315,23 @@ function parseRaces(html: string): RaceResult[] {
   const dateDataIdx =
     columns.date != null ? logicalToDataIdx(colspans, columns.date) : null;
 
+  // Expected cell count per data row = sum of header colspans (accounts for
+  // colspan in header). Rows with FEWER cells are second-races of doubleheader
+  // weekends — Wikipedia rowspans the E-Prix and Report cells from the parent
+  // row down, so the second race only contributes pole/fastest/winner/team
+  // cells. Until we implement full rowspan inheritance, skip these rows;
+  // better to drop a doubleheader second-race than to render a winning-driver
+  // name in the E-Prix column.
+  const expectedCellCount = colspans.reduce((a, b) => a + b, 0);
+
   // FE's race-results table can include rows for not-yet-run rounds, where
   // the Winning driver / Winning team cells are empty (or contain a Wikipedia
   // "—" / "TBD" marker). Skip those — fail closed at the row level so the
   // tab shows the rounds that DO have results.
   for (const row of dataRows) {
+    const rowCells = $(row).find('> td, > th').toArray();
+    if (rowCells.length < expectedCellCount) continue;
+
     const roundRaw = rowText($, row, roundDataIdx);
     const round = parseRound(roundRaw);
     if (round == null) continue;
@@ -317,10 +383,15 @@ function parseRaces(html: string): RaceResult[] {
       date = parseDate(ePrix);
     }
     if (!date) {
-      // Skip the row rather than emit a misleading date. The Results tab
-      // strictly shows the date label; an empty/wrong date is worse than
-      // dropping the row.
-      continue;
+      // Try the Calendar-table-derived round → date map.
+      const mapped = roundToDate.get(round);
+      if (mapped) date = mapped;
+    }
+    if (!date) {
+      // Final fallback — season-end Jan 1 placeholder. Per the comment
+      // above: better to ship a row with a slightly-off date label than to
+      // drop every race because the results table doesn't carry dates.
+      date = seasonPlaceholderDate;
     }
 
     // Raw "São Paulo ePrix" → use as both race name and "circuit" — Wikipedia
