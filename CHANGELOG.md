@@ -2,6 +2,49 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+> **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
+
+## 0.11.5 — 2026-05-20
+
+F1 season-trend chart was understating every driver's points by their sprint-race haul. Documented as bug #1 in the original 47-item audit and as "F1 driver season-trend points — Sprint races still missing" in `docs/handoff-2026-05-20-session-end.md`. Surfaced again post-#67 when the operator compared chart vs standings:
+
+| Driver | Standings | Trend (pre-fix) | Diff |
+|---|---|---|---|
+| ANT | 100 | 93 | -7 |
+| RUS | 80 | 67 | -13 |
+| LEC | 59 | 46 | -13 |
+| NOR | 51 | 38 | -13 |
+| HAM | 51 | 43 | -8 |
+| PIA | 43 | 33 | -10 |
+| VER | 26 | 22 | -4 |
+| BEA | 17 | 16 | -1 |
+| GAS | 16 | 15 | -1 |
+| LAW | 10 | 8 | -2 |
+
+72-point total gap = exactly 2 sprints worth (36 pts × 2 = 72). 2026 schedule has 2 sprints completed so far (China R2, Miami R4); sum of points awarded per sprint = 8+7+6+5+4+3+2+1 = 36.
+
+### Fixed
+
+- **`lib/results/f1.ts`** — added `fetchF1SeasonSprints()` calling Jolpica's `https://api.jolpi.ca/ergast/f1/current/sprint.json?limit=1000`. Sprint payload uses `SprintResults[]` instead of `Results[]` on each Race object; `parseRace()` extended with an optional `resultsField: 'Results' | 'SprintResults'` arg (defaults to `Results` so existing callers are unchanged). Sprint endpoint mirrors race endpoint otherwise — same RawResult shape, same round/raceName/Circuit/date Race wrapping.
+- **`lib/season-trend.ts`** — `buildSeasonTrendData(races, extras = [])` now accepts a second arg. Extras are folded into the cumulative running totals at the same x-axis position as the parent race round (matched by `round` number). Drivers who only score sprint points (no race classification) get registered too. Default arg means existing F2/F3/FE/NASCAR/WSBK callers continue unchanged.
+- **`components/tabs/ResultsTab.tsx`** — F1 dispatch now Promise.all's race + sprint fetches and passes both to `buildSeasonTrendData(merged, sprints)`. `SeasonResultsPanel` continues to render `merged` only (race Grands Prix) — adding sprint cards would clutter the panel; the bug was chart math, not panel content.
+
+### Test
+
+- `lib/results/f1.test.ts` — 4 new tests for `fetchF1SeasonSprints` (parses SprintResults, returns empty on fetch-fail, returns empty on throw, returns empty when SprintResults field is missing).
+- `lib/season-trend.test.ts` — new file, 5 tests covering: cumulative running totals, sprint folding without adding x-axis ticks, sprint-only-finisher driver registration, default-arg empty extras, sort-by-round with out-of-order extras.
+- 33 test files / 249 tests pass (was 32 / 240).
+
+### Verified
+
+- Browser-verified `/series/f1?tab=results` against `/series/f1?tab=standings`: 17/17 non-zero drivers now match exactly (ANT 100/100, RUS 80/80, LEC 59/59, HAM 51/51, NOR 51/51, PIA 43/43, VER 26/26, BEA 17/17, GAS 16/16, LAW 10/10, COL 7/7, LIN 4/4, SAI 4/4, HAD 4/4, BOR 2/2, OCO 1/1, ALB 1/1).
+- `npx tsc --noEmit` clean.
+
+### Out of scope
+
+- Surface sprint races as separate cards in the F1 results panel (mirror F2/F3 Feature/Sprint sections). Operator decision was "chart only" for 0.11.5 to minimize UI blast radius.
+- Sprint point computation correctness checks against the 2026 FIA Sporting Regulations (P1=8 / P2=7 / ... / P8=1) — taken on faith from Jolpica.
+
 ## 0.11.4 — 2026-05-20
 
 Formula E results UX cleanup. Two bugs surfaced in post-#66 production audit (logged in `docs/handoff-2026-05-20-session-end.md` addendum as B1 + B2): the season-trend chart was actively misleading, and the per-race accordion expanded into a fake 1-row classification.

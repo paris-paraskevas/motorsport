@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.11.5 — 2026-05-20
+
+**The F1 season-trend chart now matches the standings.** Sprint-race points were missing from the per-round point accumulation, so every driver who scored sprint points appeared in the chart with a lower total than what the F1 standings showed (e.g. Antonelli 93 in the chart vs 100 in the standings — exactly the 7 sprint points he scored in China). The two completed 2026 sprints (China and Miami) now feed into the same x-axis round as their parent Grand Prix, so the chart tells the truth. The season-results listing below the chart still shows Grands Prix only — adding sprint cards there would double up race weekends, and the headline bug was the chart math, not what's listed below it.
+
 ## 0.11.4 — 2026-05-20
 
 **Formula E results tab now reads honestly.** Two small but actively-misleading bits of UI cleared up:
