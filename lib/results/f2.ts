@@ -1,5 +1,10 @@
 import * as cheerio from 'cheerio';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import {
+  readResultsCache,
+  writeResultsCache,
+  seasonCacheKey,
+} from '@/lib/results-cache';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -266,7 +271,18 @@ export interface F2SeasonResults {
   sprint: RaceResult[];
 }
 
-export async function fetchF2SeasonResults(): Promise<F2SeasonResults> {
+export async function fetchF2SeasonResults(season?: number): Promise<F2SeasonResults> {
+  // Cache layer. Only consulted when a season is supplied — without it the
+  // cache key is ambiguous across years. The ResultsTab dispatch always passes
+  // `series.meta.season`, so production hits this path; legacy callers that
+  // omit it (none today, but the parameter was historically optional) fall
+  // through to the uncached fan-out.
+  if (typeof season === 'number') {
+    const key = seasonCacheKey('f2', season);
+    const cached = await readResultsCache<F2SeasonResults>(key);
+    if (cached) return cached;
+  }
+
   const manifestHtml = await fetchHtml(SEASON_MANIFEST_URL);
   if (!manifestHtml) return { feature: [], sprint: [] };
 
@@ -300,5 +316,11 @@ export async function fetchF2SeasonResults(): Promise<F2SeasonResults> {
   feature.sort((a, b) => a.round - b.round);
   sprint.sort((a, b) => a.round - b.round);
 
-  return { feature, sprint };
+  const out: F2SeasonResults = { feature, sprint };
+  if (typeof season === 'number' && (feature.length > 0 || sprint.length > 0)) {
+    // Only cache non-empty results — caching an empty payload would freeze the
+    // "temporarily unavailable" UI for 3h when upstream had a transient blip.
+    await writeResultsCache(seasonCacheKey('f2', season), out);
+  }
+  return out;
 }

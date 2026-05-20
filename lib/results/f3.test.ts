@@ -5,6 +5,24 @@ import {
   parseRoundsFromStandings,
 } from './f3';
 
+// In-memory KV stand-in. Most tests run with KV unconfigured so the cache
+// path is a transparent no-op; the dedicated cache tests below opt into KV
+// by setting env vars + populating the store.
+const kvStore = new Map<string, unknown>();
+vi.mock('@vercel/kv', () => ({
+  kv: {
+    get: vi.fn(async (key: string) => {
+      const raw = kvStore.get(key);
+      if (raw === undefined) return null;
+      return JSON.parse(JSON.stringify(raw));
+    }),
+    set: vi.fn(async (key: string, value: unknown) => {
+      kvStore.set(key, value);
+      return 'OK';
+    }),
+  },
+}));
+
 // The standings page is the canonical source of "rounds that count this
 // season" — when Bahrain (raceid=1070) was cancelled it simply disappears
 // from the column header list, so the round number is the position of the
@@ -277,9 +295,14 @@ describe('parseRaceTables', () => {
 describe('fetchF3SeasonResults', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    kvStore.clear();
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
   afterEach(() => {
     vi.restoreAllMocks();
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
 
   it('iterates rounds from standings and assembles RaceResult per finished race', async () => {
@@ -356,5 +379,79 @@ describe('fetchF3SeasonResults', () => {
     );
     const races = await fetchF3SeasonResults(2026);
     expect(races).toEqual([]);
+  });
+
+  describe('cache layer', () => {
+    beforeEach(() => {
+      process.env.KV_REST_API_URL = 'https://kv.test.invalid';
+      process.env.KV_REST_API_TOKEN = 'test-token';
+    });
+
+    it('returns cached payload on cache hit without touching upstream', async () => {
+      kvStore.set('paddock:results:f3:season:2026', [
+        {
+          round: 1,
+          raceName: 'Cached Feature',
+          date: new Date('2026-03-08T00:00:00Z'),
+          circuit: 'Cached',
+          results: [
+            { position: 1, driverName: 'Cached Driver', team: 'Cached Team', status: 'Finished', points: 25 },
+          ],
+        },
+      ]);
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+
+      const races = await fetchF3SeasonResults(2026);
+      expect(races).toHaveLength(1);
+      expect(races[0].raceName).toBe('Cached Feature');
+      // Date roundtrip through KV (JSON) — must come back as a Date instance.
+      expect(races[0].date).toBeInstanceOf(Date);
+      expect(races[0].date.toISOString()).toBe('2026-03-08T00:00:00.000Z');
+      // Cache hit short-circuits all upstream fetches.
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('on cache miss, fetches fresh and writes the result to KV', async () => {
+      const standingsHtml = standingsHeaderHtml([
+        { raceid: 1069, venue: 'Melbourne', dates: '06-08 Mar ' },
+      ]);
+      const melbourneHtml = buildResultsPage({
+        featureRows: twelveRows(),
+        sprintRows: twelveRows(),
+      });
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async (url: string) => {
+          if (url.includes('/Standings/Driver')) {
+            return { ok: true, status: 200, text: async () => standingsHtml } as Response;
+          }
+          if (url.includes('raceid=1069')) {
+            return { ok: true, status: 200, text: async () => melbourneHtml } as Response;
+          }
+          return { ok: false, status: 404, text: async () => '' } as Response;
+        }),
+      );
+
+      const races = await fetchF3SeasonResults(2026);
+      expect(races.length).toBeGreaterThan(0);
+      const stored = kvStore.get('paddock:results:f3:season:2026') as unknown[] | undefined;
+      expect(stored).toBeDefined();
+      expect(stored!.length).toBeGreaterThan(0);
+    });
+
+    it('does not write empty payloads to cache', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: false,
+          status: 500,
+          text: async () => '',
+        }) as Response),
+      );
+      const races = await fetchF3SeasonResults(2026);
+      expect(races).toEqual([]);
+      expect(kvStore.has('paddock:results:f3:season:2026')).toBe(false);
+    });
   });
 });

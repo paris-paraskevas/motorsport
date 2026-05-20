@@ -4,6 +4,45 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.11.7 — 2026-05-20
+
+Perf fix for `/series/f2?tab=results` and `/series/f3?tab=results` — both pages were taking 2-3s to load in production while F1 / NASCAR / Formula E loaded instantly. Per the post-#67 handoff addendum (B5), root cause was the N+1 fan-out fetch pattern: each render hit the standings page for the season manifest, then fanned out one HTTP request per round (~10-14 rounds), with no KV-backed cache to short-circuit the repeat work.
+
+### Fixed
+
+- **`lib/results/f3.ts`** — replaced the sequential `for (const round of rounds) { await fetchF3Round(...) }` loop with a `mapWithLimit(rounds, 6, fetchF3Round)` parallel fan-out (concurrency cap matches `lib/results/f2.ts`). Previously, F3 paid `N × per-round latency` (~10× the slowest page) wall-clock; now it pays ~1× the slowest page. F2 was already using this pattern via `mapWithLimit` in `lib/results/f2.ts`.
+- **`lib/results-cache.ts` (NEW)** — shared KV cache helper for the F2 + F3 season fan-out. Mirrors `lib/weather.ts`: 3-hour TTL, `paddock:results:<series>:season:<year>` key shape, graceful degradation when `KV_REST_API_URL` / `KV_REST_API_TOKEN` are missing. Includes a `reviveDates()` walker because `RaceResult.date: Date` JSON-serialises to an ISO string and downstream components (`SeasonResultsPanel`) call `.toLocaleDateString()` on it.
+- **`lib/results/f2.ts`** — added optional `season` parameter and KV cache integration. Cache hit ⇒ skip the manifest + N race-page fetches entirely. Cache miss ⇒ full fan-out then `writeResultsCache` for the next 3 hours. Non-empty payloads only, to avoid freezing the "temporarily unavailable" UI on a transient upstream blip.
+- **`lib/results/f3.ts`** — same cache integration. F3 already accepted a `season` argument, so the cache-key path is unconditional.
+- **`components/tabs/ResultsTab.tsx`** — F2 dispatch now passes `series.meta.season` into `fetchF2SeasonResults(season)` (previously called with no args). F3 already passed it.
+
+### Added
+
+- **`lib/results-cache.test.ts` (NEW)** — 8 tests covering: cache-key shape, miss → null, write writes with `ex: 10800`, full RaceResult[] round-trip with Date hydration, F2-shaped `{ feature, sprint }` payload Date hydration, env-var gate (returns null when KV unconfigured), write is no-op when KV unconfigured, KV `kv.get` throw → silent miss.
+- **`lib/results/f2.test.ts`** — 4 new tests under a `describe('cache layer')`: hit short-circuits upstream + revives Dates, miss writes to KV, empty payload not cached, legacy callers without `season` arg bypass cache entirely.
+- **`lib/results/f3.test.ts`** — 3 new tests: hit short-circuits, miss writes, empty payload not cached.
+
+### Decisions
+
+- **Per-season key, not per-event.** The brief offered a stretch goal of per-event cache keys (1-week TTL for completed events, 3-hour TTL for in-flight). Skipped per the "no new abstractions without a real second consumer" rule — the per-season 3h cache solves the load-time problem, and event-completion detection adds parsing complexity that the perf data does not justify yet. Revisit if 3h misses become user-visible.
+- **Date roundtrip via `reviveDates()` walker.** KV stores JSON; `Date.prototype.toJSON()` emits an ISO string and `JSON.parse` returns a string. The walker re-instantiates `Date` for any `{ round, date, ... }` shape inside the cached payload — works for both F3's flat `RaceResult[]` and F2's nested `{ feature: RaceResult[], sprint: RaceResult[] }`. Pre-mortem confirmed: without this, `.toLocaleDateString()` in `SeasonResultsPanel` would throw on cache hit.
+- **Empty payloads NOT cached.** A `{ feature: [], sprint: [] }` or `[]` result means upstream is down or returning a degraded shell. Caching that would freeze the "temporarily unavailable" UI for the full 3h window across a transient blip. Cache only when there's real data to cache.
+- **Version jump 0.11.5 → 0.11.7.** 0.11.6 reserved for the WRC dispatch wiring landing in a parallel PR; the in-flight FE per-event scrape may also bump in that range. Re-numbering on the WRC side if needed.
+
+### Test
+
+- 200/200 pass (193 baseline + 7 new on this branch; main is on a higher baseline post-#68 — combined test count will land near 256 once both PRs are on `main`). `npx tsc --noEmit` clean.
+
+### Not Verified
+
+- Live page load timing comparison via Playwright (sandbox restriction blocked `npm run dev` in this worktree session). Preview deploy should be inspected by the operator before merge — expectation: first load ≤1s on cache hit, ≤3s on cache miss for both `/series/f2?tab=results` and `/series/f3?tab=results`.
+
+### Follow-up items (carry-forward)
+
+- Per-event cache keys with date-conditional TTL (stretch from 0.11.7 brief) — only if 3h misses are a UX problem.
+- Restore an FE season-trend chart once `lib/results/formula-e.ts` parses full per-race classifications.
+- Refresh `lib/results/formula-e.test.ts` fixture from live Wikipedia HTML.
+
 ## 0.11.5 — 2026-05-20
 
 F1 season-trend chart was understating every driver's points by their sprint-race haul. Documented as bug #1 in the original 47-item audit and as "F1 driver season-trend points — Sprint races still missing" in `docs/handoff-2026-05-20-session-end.md`. Surfaced again post-#67 when the operator compared chart vs standings:
