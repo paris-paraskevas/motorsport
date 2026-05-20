@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import type { Champion, Series } from '@/lib/types';
 import { fetchChampions } from '@/lib/wikipedia-champions';
-import { loadCuratedChampions } from '@/lib/series-content';
+import { loadCuratedChampions, loadCuratedDrivers } from '@/lib/series-content';
+import { slugify } from '@/lib/slug';
 import { PlaceholderTab } from './PlaceholderTab';
 
 function wikipediaUrl(pageTitle: string): string {
@@ -40,7 +42,54 @@ interface SecondaryChampion {
   team?: string;
 }
 
-function DriversSection({ champions }: { champions: Champion[] }) {
+const LINK_CLASS =
+  'hover:text-text underline-offset-4 hover:underline transition-colors duration-(--duration-fast)';
+
+function DriverCell({
+  name,
+  driverSlugs,
+}: {
+  name: string;
+  driverSlugs: Set<string>;
+}) {
+  const slug = slugify(name);
+  if (driverSlugs.has(slug)) {
+    return (
+      <Link href={`/drivers/${slug}`} className={LINK_CLASS}>
+        {name}
+      </Link>
+    );
+  }
+  return <>{name}</>;
+}
+
+function TeamCell({
+  name,
+  teamSlugs,
+}: {
+  name: string;
+  teamSlugs: Set<string>;
+}) {
+  const slug = slugify(name);
+  if (teamSlugs.has(slug)) {
+    return (
+      <Link href={`/teams/${slug}`} className={LINK_CLASS}>
+        {name}
+      </Link>
+    );
+  }
+  return <>{name}</>;
+}
+
+function DriversSection({
+  champions,
+  driverSlugs,
+  teamSlugs,
+}: {
+  champions: Champion[];
+  driverSlugs: Set<string>;
+  teamSlugs: Set<string>;
+}) {
   const groups = groupByDecade(champions);
   return (
     <div className="space-y-3">
@@ -67,10 +116,14 @@ function DriversSection({ champions }: { champions: Champion[] }) {
                     {c.year}
                   </div>
                   <div className="text-text text-sm leading-snug">
-                    {c.driver}
+                    <DriverCell name={c.driver} driverSlugs={driverSlugs} />
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
-                    {c.constructor ?? ''}
+                    {c.constructor ? (
+                      <TeamCell name={c.constructor} teamSlugs={teamSlugs} />
+                    ) : (
+                      ''
+                    )}
                   </div>
                 </div>
                 <div className="sm:hidden">
@@ -78,11 +131,13 @@ function DriversSection({ champions }: { champions: Champion[] }) {
                     <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                       {c.year}
                     </span>
-                    <span className="text-text text-sm">{c.driver}</span>
+                    <span className="text-text text-sm">
+                      <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                    </span>
                   </div>
                   {c.constructor && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      {c.constructor}
+                      <TeamCell name={c.constructor} teamSlugs={teamSlugs} />
                     </div>
                   )}
                 </div>
@@ -97,8 +152,10 @@ function DriversSection({ champions }: { champions: Champion[] }) {
 
 function ConstructorsSection({
   champions,
+  teamSlugs,
 }: {
   champions: ConstructorChampion[];
+  teamSlugs: Set<string>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -126,7 +183,7 @@ function ConstructorsSection({
                     {c.year}
                   </span>
                   <span className="text-text text-sm leading-snug">
-                    {c.team}
+                    <TeamCell name={c.team} teamSlugs={teamSlugs} />
                   </span>
                 </div>
               </div>
@@ -140,8 +197,12 @@ function ConstructorsSection({
 
 function SecondarySection({
   champions,
+  driverSlugs,
+  teamSlugs,
 }: {
   champions: SecondaryChampion[];
+  driverSlugs: Set<string>;
+  teamSlugs: Set<string>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -169,10 +230,14 @@ function SecondarySection({
                     {c.year}
                   </div>
                   <div className="text-text text-sm leading-snug">
-                    {c.driver}
+                    <DriverCell name={c.driver} driverSlugs={driverSlugs} />
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
-                    {c.team ?? ''}
+                    {c.team ? (
+                      <TeamCell name={c.team} teamSlugs={teamSlugs} />
+                    ) : (
+                      ''
+                    )}
                   </div>
                 </div>
                 <div className="sm:hidden">
@@ -180,11 +245,13 @@ function SecondarySection({
                     <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                       {c.year}
                     </span>
-                    <span className="text-text text-sm">{c.driver}</span>
+                    <span className="text-text text-sm">
+                      <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                    </span>
                   </div>
                   {c.team && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      {c.team}
+                      <TeamCell name={c.team} teamSlugs={teamSlugs} />
                     </div>
                   )}
                 </div>
@@ -206,7 +273,22 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 export async function ChampionsTab({ series }: { series: Series }) {
-  const curated = await loadCuratedChampions(series.meta.slug);
+  const [curated, curatedDrivers] = await Promise.all([
+    loadCuratedChampions(series.meta.slug),
+    loadCuratedDrivers(series.meta.slug),
+  ]);
+
+  // Build per-series slug sets from the current series's curated drivers/teams.
+  // Champion names that slug-match resolve to /drivers/<slug> or /teams/<slug>.
+  // Past champions outside the current curated roster render as plain text.
+  const driverSlugs = new Set(
+    curatedDrivers?.teams.flatMap(t => t.drivers.map(d => slugify(d.name))) ??
+      [],
+  );
+  const teamSlugs = new Set(
+    curatedDrivers?.teams.map(t => slugify(t.name)) ?? [],
+  );
+
   let champions: Champion[];
   let sourceLabel: string;
   let pageUrl: string;
@@ -294,7 +376,11 @@ export async function ChampionsTab({ series }: { series: Series }) {
   if (!hasConstructorChampionship && !hasSecondaryChampionship) {
     return (
       <>
-        <DriversSection champions={champions} />
+        <DriversSection
+          champions={champions}
+          driverSlugs={driverSlugs}
+          teamSlugs={teamSlugs}
+        />
         {sourceFooter}
       </>
     );
@@ -304,18 +390,29 @@ export async function ChampionsTab({ series }: { series: Series }) {
     <div className="space-y-8">
       <section>
         <SectionHeading>Drivers&apos; Championship</SectionHeading>
-        <DriversSection champions={champions} />
+        <DriversSection
+          champions={champions}
+          driverSlugs={driverSlugs}
+          teamSlugs={teamSlugs}
+        />
       </section>
       {hasConstructorChampionship && (
         <section>
           <SectionHeading>Constructors&apos; Championship</SectionHeading>
-          <ConstructorsSection champions={constructorChampions} />
+          <ConstructorsSection
+            champions={constructorChampions}
+            teamSlugs={teamSlugs}
+          />
         </section>
       )}
       {hasSecondaryChampionship && (
         <section>
           <SectionHeading>{secondaryLabel}</SectionHeading>
-          <SecondarySection champions={secondaryChampions} />
+          <SecondarySection
+            champions={secondaryChampions}
+            driverSlugs={driverSlugs}
+            teamSlugs={teamSlugs}
+          />
         </section>
       )}
       {sourceFooter}

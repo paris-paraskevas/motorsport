@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.10.43 — 2026-05-20
+
+**Champion names now actually link to driver and team pages.** 0.10.42 announced this feature but the code change was missed — the names still rendered as plain text. 0.10.43 ships the patch. Open any series' Champions tab and click a current-grid name (Norris, Hamilton, Piastri on F1; Palou on IndyCar) — it opens their driver page. Past champions whose pages we don't have yet (Schumacher, Senna, Fangio) stay as plain text, since linking to a 404 would be worse than no link.
+
 ## 0.10.42 — 2026-05-20
 
 **Per-series countdown to the next session.** Open any series page (e.g. `/series/f1`, `/series/motogp`) — there's now a ticking countdown to the next upcoming session in that series.

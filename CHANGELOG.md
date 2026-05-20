@@ -2,6 +2,31 @@
 
 All notable changes to Paddock are recorded here. Newest first. This file is the **engineering log** — detailed enough for a future contributor to retrace decisions. Public-facing release notes live in `RELEASES.md` and render at `/changelog`.
 
+## 0.10.43 — 2026-05-20
+
+Champions-tab clickability follow-up (PR A1). 0.10.42 announced the Champions-tab driver/team clickability but the actual code patch was missed during the bundled commit — release notes shipped a feature that wasn't there. 0.10.43 ships the patch.
+
+### Changed
+
+- **`components/tabs/ChampionsTab.tsx`** — actually wraps champion driver names in `<Link href="/drivers/<slug>">` and constructor names in `<Link href="/teams/<slug>">` when the slugified name resolves to a curated entry in the current series's `drivers.json`. Past champions outside the current curated roster render as plain text (Schumacher → text, Norris → link). Scope is **per-series**, not cross-series — uses `loadCuratedDrivers(series.meta.slug)` rather than a global driver index, so a "Norris" champion entry on the F1 tab can never accidentally route to an IndyCar driver of the same name.
+- Three new helpers — `DriverCell` and `TeamCell` (conditional Link wrappers), plus `LINK_CLASS` (single source of truth for the hover affordance: `hover:text-text underline-offset-4 hover:underline`). All three Champions sub-sections (DriversSection / ConstructorsSection / SecondarySection) thread the slug sets through.
+
+### Verified
+
+- `npx tsc --noEmit` clean.
+- `npm test` — 97/97 pass (no new tests; server-component change covered by browser-verify).
+- Slug-form alignment confirmed between `content/series/f1/champions.json` (`"driver": "Lando Norris"`) and `content/series/f1/drivers.json` (`"name": "Lando Norris"`) — both slugify to `lando-norris`. Räikkönen's diacritic strips correctly to `kimi-raikkonen` (would link only if he were in the current grid; he's not, so plain text).
+- Browser-verify pre-merge: 3 distinct F1 champion entries (current grid driver, recent retired, older legend) — see PR description.
+
+### Pre-merge audit gates that fired
+
+- Pre-commit grep against staged diff confirmed `Link` + `loadCuratedDrivers` + `slugify` all present (the gate that PR A's 0.10.42 attempt should have had).
+- ChampionsTab.tsx was the only file touched besides the release-notes triplet — no surprise dispatch edits in adjacent tabs.
+
+### Honest tradeoff
+
+Only the current-grid drivers and teams resolve to links today. Pre-2026 champions stay as plain text by design — `/drivers/<slug>` returns 404 for non-curated entries, and a link to a 404 page is worse than no link.
+
 ## 0.10.42 — 2026-05-20
 
 PR A — quick-wins bundle from the 2026-05-20 bug-blitz session. Six items, one PR.
