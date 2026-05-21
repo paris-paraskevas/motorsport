@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.8 — 2026-05-21
+
+**FIA WEC live standings are now on `/series/wec`.** Open the **Standings** tab to see the Hypercar Drivers' Championship, the Hypercar Manufacturers' Championship, the LMGT3 Drivers' Championship, and the LMGT3 Teams' Championship — all four tables refreshed against fiawec.com after each round. Multi-driver crew names appear on a single line ("RENÉ RAST ROBIN FRIJNS") with the manufacturer + car number sitting underneath.
+
+A note on what's missing: only standings landed in this release. Per-round results — who finished where at Imola, Spa, Le Mans, and so on — still link out to fiawec.com for now. The WEC site swaps that data client-side rather than rendering it into the page, so it needs a different parsing approach that's coming in a follow-up.
+
 ## 0.12.7 — 2026-05-21
 
 **Refreshed cookie-consent modal.** Sharper layout (sits as a card at the bottom of the page now, not a full-screen overlay), clearer button labels — **Allow all** / **Essential only** / **Customize** — and a tidier per-category panel with a small "Always on" tag on the necessary line so you know which one can't be toggled. The substance is identical to the version that landed earlier today; this is purely a visual and copy pass driven by a research walk through how Vercel, Stripe, Linear, Notion, Apple, GitHub, Mozilla, Guardian, NYT, and Shopify handle the same moment.

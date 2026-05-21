@@ -19,6 +19,12 @@ import {
   IMSA_CLASSES,
   IMSA_MANUFACTURER_CLASSES,
 } from '@/lib/standings/imsa';
+import {
+  fetchWecStandings,
+  WEC_CLASSES,
+  WEC_MANUFACTURER_CLASSES,
+  WEC_TEAM_CLASSES,
+} from '@/lib/standings/wec';
 import { loadStandingsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -509,6 +515,80 @@ export async function StandingsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_IMSA_SportsCar_Championship"
           label="en.wikipedia.org (2026 IMSA)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'wec') {
+    const [data, overrides] = await Promise.all([
+      fetchWecStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    // Class-first grouping: Hypercar → LMGT3. Each class shows the
+    // championships that exist for it — Hypercar awards Drivers +
+    // Manufacturers (no Teams, manufacturer === team at this level); LMGT3
+    // awards Drivers + Teams (no Manufacturers, pro-am class doesn't get a
+    // manufacturers' title). Same shape as IMSA's class-first dispatch.
+    return (
+      <div className="space-y-4">
+        {WEC_CLASSES.flatMap(cls => {
+          const driverRows = data.drivers[cls] ?? [];
+          const teamRows = data.teams[cls] ?? [];
+          const mfrRows = data.manufacturers[cls] ?? [];
+          const driversAsStandard: DriverStanding[] = driverRows.map(d => ({
+            position: d.position,
+            driverName: d.driverName,
+            team: d.team,
+            points: d.points,
+          }));
+          const teamsAsConstructors: ConstructorStanding[] = teamRows.map(t => ({
+            position: t.position,
+            name: t.team,
+            points: t.points,
+          }));
+          const mfrsAsConstructors: ConstructorStanding[] = mfrRows.map(m => ({
+            position: m.position,
+            name: m.manufacturer,
+            points: m.points,
+          }));
+          const driverOverrides = applyDriverOverrides(driversAsStandard, overrides?.drivers);
+          const teamOverrides = applyConstructorOverrides(teamsAsConstructors, overrides?.constructors);
+          const mfrOverrides = applyConstructorOverrides(mfrsAsConstructors, overrides?.constructors);
+          const hasMfr = WEC_MANUFACTURER_CLASSES.includes(cls);
+          const hasTeams = WEC_TEAM_CLASSES.includes(cls);
+          return [
+            driverOverrides.length > 0 ? (
+              <DriversTable
+                key={`${cls}-d`}
+                drivers={driverOverrides}
+                heading={`${cls} — Drivers`}
+              />
+            ) : null,
+            hasTeams && teamOverrides.length > 0 ? (
+              <ConstructorsTable
+                key={`${cls}-t`}
+                constructors={teamOverrides}
+                heading={`${cls} — Teams`}
+              />
+            ) : null,
+            hasMfr && mfrOverrides.length > 0 ? (
+              <ConstructorsTable
+                key={`${cls}-m`}
+                constructors={mfrOverrides}
+                heading={`${cls} — Manufacturers`}
+              />
+            ) : null,
+          ];
+        })}
+        <SourceLink
+          href="https://www.fiawec.com/en/page/manufacturers-classification"
+          label="fiawec.com"
         />
       </div>
     );

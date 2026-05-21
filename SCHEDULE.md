@@ -557,6 +557,22 @@ Operator browser-tested 0.12.6 on prod and flagged two things: (a) the modal cou
 
 Then continue Phase 2 in 0.12.9 IMSA → 0.12.10 NASCAR → 0.12.11 GT-World → 0.12.12 WRC → 0.12.13 DTM → 0.12.14 NLS per the locked sequence at HANDOFF top.
 
+### Thu 2026-05-21 — continued — 0.12.8 WEC standings shipped (results deferred to 0.12.8.1)
+
+Operator merged 0.12.7 and signaled "keep going" → straight into 0.12.8. Probe-first per Phase 2 process rules.
+
+- → done: probed `fiawec.com/en/page/manufacturers-classification` → 798 KB SSR HTML with **4** standings tables (not 6 as Phase 1 brief claimed). WEC asymmetric: Hypercar = Drivers + Manufacturers (no Teams); LMGT3 = Drivers + Teams (no Manufacturers). Schema reflects this with `Partial<Record<WecClass, ...>>`.
+- → done: probed `/en/page/resultats-1` for per-round results → Stimulus `live#action` controller swaps content client-side via `changeRace` / `changeSession` / `changeCategory` actions. Underlying XHR endpoint not exposed in SSR; URL-param filtering (`?sessionId=X`) ignored. Per-event `/en/race/<slug>` pages contain no embedded results table either. Falls into the "if not easily reachable, split to 0.12.8.1" pre-baked scope decision.
+- → done: **0.12.8** — `lib/standings/wec.ts` parses all 4 tables via button-label classification (not panel-ID — IDs are session-scoped and have no semantic meaning); fixture-driven tests against real fetched HTML (`tests/fixtures/wec-standings-2026-05-21.html`, 780 KB); WEC dispatch added to `StandingsTab.tsx` mirroring the IMSA class-first pattern; `meta.json` `officialStandingsUrl` retargeted from dead `/en/standings` to the canonical URL.
+- → done: 38 test files / 310 tests pass (was 296 — 14 new WEC cases), tsc clean, eslint clean.
+- → deferred: WEC per-round results → 0.12.8.1 (optional follow-up; can also skip ahead to 0.12.9 IMSA per locked sequence).
+
+### Fri 2026-05-22 — planned — 0.12.9 IMSA full-class results (or 0.12.8.1 WEC results, operator's call)
+
+If operator wants to close the WEC loop first → 0.12.8.1 (Stimulus XHR reverse-engineering via DevTools network tab on a live visit, or per-event-and-session URL probe pattern).
+
+Otherwise continue Phase 2 at **0.12.9 IMSA full-class results.** Source locked Phase 1: Alkamel Systems JSON API at `imsa.results.alkamelcloud.com` — official timing partner, every session of every round, unauthenticated. Beats the assumed PDF-behind-reCAPTCHA path the prior audit feared. Sibling `05_Results by Class_Race_Official.JSON` pre-buckets data by class.
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
