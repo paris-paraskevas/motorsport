@@ -259,7 +259,7 @@ ESPA outcome from operator's "fix these 12 errors properly" directive: research-
 | 0.12.0 | feat(theme) + chore: dark/light toggle + session wrap | n/a (CSS already dual) | shipped this PR |
 | 0.12.1 | fix(f3) reconciliation | __NEXT_DATA__.RacePoints | ✅ shipped |
 | 0.12.2 | feat(indycar) results | Wikipedia season Driver_standings | ✅ shipped |
-| 0.12.3 | feat(formula-e) R7-R10 full-class + restore trend chart | motorsportweek.com | 2h |
+| 0.12.3 | feat(formula-e) R7-R10 full-class via motorsportweek (chart restoration deferred) | motorsportweek.com | ✅ shipped |
 | 0.12.4 | feat(motogp) standings + results | Pulselive JSON | 2-3h |
 | 0.12.5 | feat(wec) standings + results | fiawec.com SSR | 2-3h |
 | 0.12.6 | feat(imsa) full-class results | Alkamel JSON | 1.5-2h |

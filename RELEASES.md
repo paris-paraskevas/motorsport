@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.3 — 2026-05-21
+
+**Formula E rounds 7-10 now show full per-position classifications.** Berlin R7/R8 (2 + 3 May) and Monaco R9/R10 (16 + 17 May) had been stuck on a flat "winner only" line because the Wikipedia per-event articles for those weekends are season-summary stubs. Each of those four race cards now expands to a full top-20-ish classification — driver, team, gap to the leader. Data source is motorsportweek.com's per-event results posts.
+
+Two small caveats: per-finisher points come from the FIA position scale (25-18-15-12-10-8-6-4-2-1 for the top 10) but exclude the pole-position bonus (+3) and fastest-lap bonus (+1) because motorsportweek doesn't carry those flags. Until the bonuses are backfilled, the driver season-trend chart stays off the Formula E results tab. Both items are queued for a follow-up.
+
 ## 0.12.2 — 2026-05-21
 
 **IndyCar per-race results are now live.** Open `/series/indycar?tab=results` for every 2026 round through Detroit (and onwards as the season progresses) — winner, podium, points-paying finishers, plus DNS/withdrawn/excluded markers where applicable. The Milwaukee doubleheader renders as two separate race cards. Pole and led-laps bonuses are included in the per-finisher points; "most laps led" (+2) is omitted for now because Wikipedia's table doesn't carry that flag.
