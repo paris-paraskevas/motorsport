@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.6 — 2026-05-21
+
+**A new cookie-consent modal.** On your first visit, Paddock now shows a small modal with three equal options — **Accept all**, **Reject all**, or **Customize** (per-category toggles). Whatever you choose is applied right away: analytics and advertising cookies only run if you grant consent for them, otherwise the scripts fall back to cookieless pings. Necessary cookies (authentication, your preferences) are always on because the site can't work without them.
+
+You can change your mind anytime from the **Manage cookies** link in the footer — it re-opens the same modal. Your decision is remembered locally for 12 months, after which Paddock will ask again.
+
+Behind the scenes, this replaces the Google consent banner Paddock had been trying to use (it never actually rendered, because it requires AdSense site approval, which is still in review). The result of that gap was that visitor analytics weren't being recorded for most EU/UK visitors — that's now fixed.
+
 ## 0.12.5 — 2026-05-21
 
 **Footer redesign.** The footer is no longer a single line of dot-separated links — it now reads as a real section with two columns (Site and Legal), a short brand line on top, and a copyright row at the bottom. Manage cookies has a dedicated link in the Site column so you can find it without hunting through the cookie policy page.

@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { AppShell } from '@/components/AppShell';
+import { CookieConsent } from '@/components/CookieConsent';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import './globals.css';
@@ -98,22 +99,13 @@ export default async function RootLayout({
               });
             `}
           </Script>
-          {/* Google Funding Choices CMP — explicit snippet with ers=1 so the
-              consent banner activates even while the AdSense account is
-              under review ("Getting ready"). adsbygoogle.js alone bootstraps
-              window.googlefc but does not fetch the published message until
-              site approval; this snippet forces the eager path. */}
-          <Script
-            id="funding-choices"
-            src={`https://fundingchoicesmessages.google.com/i/${ADSENSE_CLIENT_ID.replace('ca-', '')}?ers=1`}
-            strategy="afterInteractive"
-          />
-          <Script id="funding-choices-signal" strategy="afterInteractive">
-            {`
-              (function(){function signalGooglefcPresent(){if(!window.frames['googlefcPresent']){if(document.body){var iframe=document.createElement('iframe');iframe.style='width:0;height:0;border:none;z-index:-1000;left:-1000px;top:-1000px;display:none';iframe.name='googlefcPresent';document.body.appendChild(iframe);}else{setTimeout(signalGooglefcPresent,0);}}}signalGooglefcPresent();})();
-            `}
-          </Script>
           <AppShell seriesList={seriesList}>{children}</AppShell>
+          {/* Custom consent UI replacing Google Funding Choices (0.12.6). FC
+              was dropped because adsbygoogle.js never summons a banner until
+              the AdSense site is approved, leaving Consent Mode v2 stuck on
+              `denied` and GA4 firing nothing for EU/UK visitors. This modal
+              flips the signals on user choice and persists to localStorage. */}
+          <CookieConsent />
           <Analytics />
           <SpeedInsights />
           <Script
