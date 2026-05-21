@@ -6,15 +6,24 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 0.12.8 WEC
+## ⚡ Next session pickup — 0.12.9 IMSA (or 0.12.8.1 WEC per-round results)
 
-**0.12.6 + 0.12.7 cookie consent shipped 2026-05-21.** 0.12.6 (PR #83, merged) replaced Funding Choices with a custom `CookieConsent` modal — GA4 unblock for EU/UK visitors. 0.12.7 (PR pending merge) reskinned the modal driven by a 370-line research synthesis at `docs/research/cookie-consent-ux-2026-05-21.md`: bottom-card layout (no scrim), button set is now **Allow all / Essential only / Customize** (operator's call — substance matches "Reject all" but reads more accurately; Mozilla and Dutch AP use the same pattern), switch-left toggles with "Always on" pill on Necessary, fade + slide-up 200ms entry honoring `prefers-reduced-motion`. Logic unchanged across both PRs.
+**0.12.6 + 0.12.7 + 0.12.8 shipped 2026-05-21.** Three back-to-back PRs:
+- 0.12.6 (PR #83 merged) — custom `CookieConsent` modal, GA4 unblock for EU/UK visitors.
+- 0.12.7 (PR #84 merged) — modal UX polish, research-driven (bottom card + Allow all / Essential only / Customize + "Always on" pill + entry animation).
+- 0.12.8 (PR pending merge) — **live FIA WEC 2026 standings** on `/series/wec?tab=standings`. Source: `fiawec.com/en/page/manufacturers-classification` SSR. 4 tables shipped — Hypercar Drivers, Hypercar Manufacturers, LMGT3 Drivers, LMGT3 Teams.
 
-**Phase 2 resumes at 0.12.8 WEC.** Source locked Phase 1: `fiawec.com/en/page/manufacturers-classification` SSR — single URL hosts all 6 standings tables (Hypercar + LMGT3 × Drivers + Teams + Manufacturers). Probe-confirmed live 2026-05-21. The earlier stash from `agent-leakage-2026-05-20-defer` is unusable (hallucinated URLs).
+**Phase 1 brief was slightly wrong about WEC structure.** The brief said 6 standings tables (Hypercar + LMGT3 × Drivers + Teams + Manufacturers). Reality is **4** — WEC asymmetric: Hypercar has Drivers + Manufacturers only (no Teams, manufacturer == team), LMGT3 has Drivers + Teams only (no Manufacturers, pro-am class). Schema reflects this with `Partial<Record<WecClass, ...>>` for the asymmetric championships.
 
-Open question for the WEC session: per-round results source. The standings URL named in the brief may not carry per-event classification — probe `fiawec.com/en/season/2026/race/<event>` (or similar) before committing. If full classifications aren't easily reachable, ship standings-only as 0.12.8 and split results into 0.12.8.1 follow-up; same cross-series invariant rule that kept GT-World / IMSA charts off.
+**WEC per-round results deferred to 0.12.8.1.** The `/en/page/resultats-1` page hosts results but swaps client-side via a StimulusJS `live#action` controller (`changeRace` / `changeSession` / `changeCategory`). Underlying XHR endpoint isn't exposed. Two ways forward when it's time:
+1. Reverse-engineer the StimulusJS endpoint (DevTools network tab on a real visit).
+2. Probe per-event `/en/race/<slug>` pages for an embedded results table (today's probe showed they're event landing pages only — no results inline).
 
-WEC and everything downstream is renumbered +3 from the original locked plan (footer absorbed 0.12.5, cookie modal absorbed 0.12.6, cookie UX polish absorbed 0.12.7).
+**Next session can either:**
+- Pick up **0.12.8.1 WEC per-round results** if operator wants to close the WEC loop before moving on.
+- Continue Phase 2 at **0.12.9 IMSA full-class results** (Alkamel JSON API, locked Phase 1 source).
+
+The "WEC and everything downstream is renumbered +3 from the original locked plan" note from earlier still holds — total renumbering is now +3 (footer + consent + consent UX polish).
 
 ### 0.12.6 + 0.12.7 shipped detail — historical record
 
@@ -80,14 +89,15 @@ A complete `CookieConsent.tsx` exists in the session transcript with all the log
 | 0.12.4 | feat(motogp) standings + results | Pulselive JSON | ✅ shipped |
 | 0.12.5 | feat(footer) multi-column + copyright | n/a | ✅ shipped |
 | 0.12.6 | feat(consent) custom modal, drop FC | n/a | ✅ shipped (PR #83) |
-| 0.12.7 | feat(consent) UX polish, research-driven | n/a | ✅ shipped (PR pending) |
-| 0.12.8 | **feat(wec) standings + results** | fiawec.com SSR | **NEXT** |
-| 0.12.9 | feat(imsa) full-class results | Alkamel JSON | (was 0.12.6) |
-| 0.12.10 | feat(nascar-cup) full-class results | racing-reference.info | (was 0.12.7) |
-| 0.12.11 | feat(gt-world) results + points | SRO regs | (was 0.12.8) |
-| 0.12.12 | feat(wrc) per-rally full-class | Wikipedia per-rally | (was 0.12.9) |
-| 0.12.13 | feat(dtm) standings + results | motorsport.com/dtm | (was 0.12.10) |
-| 0.12.14 | feat(nls) standings + results | teilnehmer.vln.de PDF | (was 0.12.11) |
+| 0.12.7 | feat(consent) UX polish, research-driven | n/a | ✅ shipped (PR #84) |
+| 0.12.8 | feat(wec) standings (results deferred to 0.12.8.1) | fiawec.com SSR | ✅ shipped (PR pending) |
+| 0.12.8.1 | feat(wec) per-round results | TBD (Stimulus XHR or per-event scrape) | optional follow-up |
+| 0.12.9 | **feat(imsa) full-class results** | Alkamel JSON | **NEXT** |
+| 0.12.10 | feat(nascar-cup) full-class results | racing-reference.info | |
+| 0.12.11 | feat(gt-world) results + points | SRO regs | |
+| 0.12.12 | feat(wrc) per-rally full-class | Wikipedia per-rally | |
+| 0.12.13 | feat(dtm) standings + results | motorsport.com/dtm | |
+| 0.12.14 | feat(nls) standings + results | teilnehmer.vln.de PDF | |
 | 0.13.0 | feat(drivers) bulk × 13 series | per-series | unchanged |
 
 ---
@@ -286,7 +296,7 @@ Status matrix as of 0.11.14 prod (operator browser-verified). "✅" = live + cor
 | WSBK | ✅ | ✅ | ❌ | All works. No drivers.json. |
 | WRC | ✅ | ❌ (?) | ❌ | Operator reports results still unavailable — but PR #75 fix shipped. **Investigate first thing**: ISR cache stale OR fix incomplete. The fix swaps heading priority to `Results_and_standings` → `Season_summary`. Verified locally with cheerio against live HTML. No drivers.json. |
 | NASCAR | ✅ | ⚠️ | ❌ | Results emit winners-only (no full classification). Same parser limitation as WRC + IMSA. No drivers.json. |
-| FIA WEC | ❌ | ❌ | ❌ | Stash recovery from `agent-leakage-2026-05-20-defer` pending. |
+| FIA WEC | ✅ | ❌ | ❌ | Standings live as of 0.12.8 (PR pending). Results deferred to 0.12.8.1 — Stimulus XHR endpoint needs reverse engineering. Stash from `agent-leakage-2026-05-20-defer` was unusable (hallucinated URLs); fresh impl from fiawec.com SSR supersedes. |
 | ADAC 24h | ❌ | ❌ | ❌ | Single-event series; future scope. |
 
 **Patterns:**

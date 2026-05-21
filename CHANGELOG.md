@@ -4,6 +4,61 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.8 — 2026-05-21
+
+Phase 2 fifth data-impl PR — first non-F1/MotoGP/WSBK live data on `/series/wec`. Live FIA WEC 2026 standings on `?tab=standings` for Hypercar Drivers, Hypercar Manufacturers, LMGT3 Drivers, and LMGT3 Teams. Source: `fiawec.com/en/page/manufacturers-classification` SSR (single URL hosts all four standings tables; confirmed live HTTP 200 on 2026-05-21).
+
+### Phase 1 source brief vs reality
+
+The Phase 1 research brief (`docs/HANDOFF.md` line 318) named six standings tables — Hypercar × (Drivers + Teams + Manufacturers) + LMGT3 × same. Reality on the live page is **four**: WEC's actual 2026 championship structure is asymmetric.
+
+- **Hypercar:** Drivers + Manufacturers. No Teams — at this level each manufacturer fields the team itself (e.g. "BMW M TEAM WRT" is the BMW factory effort), so the manufacturers' table doubles as the teams' table.
+- **LMGT3:** Drivers + Teams. No Manufacturers — the class is pro-am (Bronze/Silver/Gold ratings) and FIA doesn't award an LMGT3 manufacturers' title.
+
+Schema reflects the asymmetry: `manufacturers` and `teams` are `Partial<Record<WecClass, ...>>` rather than `Record<...>`, so the LMGT3-manufacturers and Hypercar-teams keys are absent rather than empty arrays. Mirrors the IMSA pattern (`manufacturers: Partial<Record<ImsaClass, ...>>` because LMP2 is privateer-only and has no manufacturers' title).
+
+### Added
+
+- **`lib/standings/wec.ts`** — new parser. `WecClass = 'Hypercar' | 'LMGT3'` plus three constants (`WEC_CLASSES`, `WEC_MANUFACTURER_CLASSES`, `WEC_TEAM_CLASSES`) so the dispatch in `StandingsTab` can iterate cleanly without hard-coding which championships exist per class. `fetchWecStandings()` hits the SSR URL with a 600-second `next: { revalidate }`. `parseWecStandings(html)` walks every `<button data-bs-toggle="collapse" data-bs-target="#X">` on the page, reads its label, classifies it into one of the four (cls × section) combinations, finds the matching `<table.table-standing>` inside the target panel, and parses rows. Anchoring on button-label-text rather than `#results-NN` IDs keeps the parser robust if WEC ever renumbers the panels (and the IDs are session-scoped, no semantic meaning).
+- **Driver row parsing** — Hypercar / LMGT3 driver rows ship 2- or 3-driver crews as comma-separated `<span class="text-reset text-body">` elements. Joining the inner text with single spaces yields "RENÉ RAST ROBIN FRIJNS" — same convention as IMSA + WRC, renders as one line in `DriversTable`. `team` is built from the manufacturer brand-logo `<img alt>` (column 2) plus the car-number cell (column 3), so it reads "BMW #20" on the row. The car-number prefix matches how fiawec.com's own UI labels each entry.
+- **Total points anchored on the last `<td>`** rather than a fixed column index, so the parser stays correct as WEC adds new per-round columns through the season (8 rounds in 2026, but the page renders past + future rounds in the same row).
+- **Sanity floor:** `MIN_ROWS_PER_TABLE = 4` per table. The 2026 Hypercar grid is 18 cars / ~36 driver entries and LMGT3 is similar; 4 is well below any real-world floor but high enough to refuse a misleadingly-empty table if WEC's CMS swaps the page mid-season.
+- **`tests/fixtures/wec-standings-2026-05-21.html`** (~780 KB) — real SSR HTML captured today. Tests drive `parseWecStandings()` against this real markup rather than synthetic fixtures, per the post-0.11.x process rule ("tests against real fetched fixtures" — the FE colspan + WRC mw-heading bugs in 0.11.x shipped because synthetic fixtures missed structural surprises).
+- **14 cases in `lib/standings/wec.test.ts`** — empty-HTML guard, no-tables guard, all four tables parse, multi-driver name joining, manufacturer + car number on team string, position-ascending sort, leader has non-zero points, sanity-floor enforcement, Hypercar manufacturers contain Toyota + Ferrari (live grid check), class-list constants, fetch-non-2xx, fetch-throws, fetch-success.
+
+### Changed
+
+- **`components/tabs/StandingsTab.tsx`** — new `series.meta.slug === 'wec'` branch. Class-first iteration via `WEC_CLASSES.flatMap`, gates each (Teams / Manufacturers) render on `WEC_TEAM_CLASSES.includes(cls)` / `WEC_MANUFACTURER_CLASSES.includes(cls)` so Hypercar Teams and LMGT3 Manufacturers don't render even if some data slipped in by mistake. Drivers rows map to `DriverStanding` with `team` = manufacturer + car number (so the existing `DriversTable` shows e.g. "BMW #20" under the driver name). Source link cites `fiawec.com`.
+- **`content/series/wec/meta.json`** — `officialStandingsUrl` retargeted from the dead `/en/standings` (302 redirect chain) to the canonical `/en/page/manufacturers-classification`.
+
+### Test
+
+- 38 test files / 310 tests pass (was 296 — 14 new WEC tests). `npx tsc --noEmit` clean. `npx eslint <touched files>` clean.
+
+### Out of scope (deliberate, per Phase 2 pre-bake)
+
+- **Per-round results.** The Phase 1 brief named the standings URL only; per-round results live at `/en/page/resultats-1` but that page is a single SSR snapshot of the most recent session, swapped client-side via a StimulusJS controller (`live#action` with `changeRace` / `changeSession` / `changeCategory` actions). The underlying XHR endpoint isn't exposed and would need reverse engineering. Splitting to **0.12.8.1** follow-up — same cross-series invariant rule that kept GT-World / IMSA charts off until full data is reachable.
+- **Season trend chart on the WEC standings tab.** Chart cannot ship without per-round full classification (per the locked-in cross-series invariant at the top of this file).
+- **Drivers + crew curation for `/drivers/<slug>`.** Folds into the 0.13.0 bulk drivers.json initiative across all 13 series.
+- **History essay at `content/series/wec/history.md`.** Folds into B-content multi-session bundle.
+- **Manufacturers' best-placed-car formula nuance.** WEC awards each manufacturer the points of its highest-finishing car per race (not a sum across all factory entries). The parser doesn't need this — it reads the already-computed Total points column from the page rather than recomputing — but it's worth noting for the eventual per-round results PR.
+
+### Phase 2 status after this PR
+
+| Ver | Scope | Source | Status |
+|---|---|---|---|
+| 0.12.5 | feat(footer) multi-column + copyright | n/a | ✅ shipped |
+| 0.12.6 | feat(consent) custom modal, drop FC | n/a | ✅ shipped |
+| 0.12.7 | feat(consent) UX polish, research-driven | n/a | ✅ shipped |
+| 0.12.8 | **feat(wec) standings** | fiawec.com SSR | this PR |
+| 0.12.9 | feat(imsa) full-class results | Alkamel JSON | next |
+| 0.12.10 | feat(nascar-cup) full-class results | racing-reference.info | |
+| 0.12.11 | feat(gt-world) results + points scale | SRO regs | |
+| 0.12.12 | feat(wrc) per-rally full-class | Wikipedia per-rally | |
+| 0.12.13 | feat(dtm) standings + results | motorsport.com/dtm | |
+| 0.12.14 | feat(nls) standings + results | teilnehmer.vln.de PDF | |
+| 0.13.0 | feat(drivers) bulk × 13 series | per-series | |
+
 ## 0.12.7 — 2026-05-21
 
 Visual + UX polish on the consent modal that shipped a few hours earlier in 0.12.6. Operator browser-tested 0.12.6 and flagged that (a) the modal could look much more refined, and (b) the button set should drop "Reject all" in favour of "Allow all" + "Essential only" + "Customize" — "Essential only" reads more accurately than "Reject all" (Necessary cookies are never rejectable) and matches Mozilla's published "Reject All Additional Cookies" pattern in substance.
