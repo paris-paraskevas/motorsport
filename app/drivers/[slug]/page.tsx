@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft } from 'lucide-react';
 import { findDriverBySlug, loadAllDrivers } from '@/lib/people';
+import { withSocialMeta } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,9 +20,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const driver = await findDriverBySlug(slug);
   if (!driver) return { title: 'Driver not found' };
+  const description = `${driver.name}, ${driver.team} (${driver.seriesName}).`;
   return {
     title: driver.name,
-    description: `${driver.name}, ${driver.team} (${driver.seriesName}).`,
+    description,
+    ...withSocialMeta({ title: driver.name, description }),
   };
 }
 

@@ -5,13 +5,23 @@ import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
+import { withSocialMeta } from '@/lib/seo';
 
 export const revalidate = 300;
 
+const CALENDAR_TITLE = 'Calendar';
+const CALENDAR_DESCRIPTION =
+  'Upcoming F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA and more sessions in one timeline — month-by-month, in your local time.';
+
 export const metadata: Metadata = {
-  title: 'Calendar',
-  description:
-    'Upcoming F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA and more sessions in one timeline — month-by-month, in your local time.',
+  title: CALENDAR_TITLE,
+  description: CALENDAR_DESCRIPTION,
+  ...withSocialMeta({
+    // OpenGraph + Twitter need the full title (root layout's title.template only
+    // applies to the document <title>, not to og:title / twitter:title).
+    title: `${CALENDAR_TITLE} — Paddock Tracker`,
+    description: CALENDAR_DESCRIPTION,
+  }),
 };
 
 export default async function CalendarPage() {

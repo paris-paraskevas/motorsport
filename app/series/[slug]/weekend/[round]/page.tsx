@@ -11,6 +11,7 @@ import { WeekendNews } from '@/components/weekend/WeekendNews';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
+import { withSocialMeta } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,7 +76,7 @@ export async function generateMetadata(
       `${series.meta.name} ${label} live stream`,
     ],
     alternates: { canonical: `/series/${slug}/weekend/${round}` },
-    openGraph: { title: fullTitle, description },
+    ...withSocialMeta({ title: fullTitle, description }),
   };
 }
 

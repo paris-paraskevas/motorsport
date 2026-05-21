@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.9 — 2026-05-21
+
+**Better link previews.** Until today, sharing any Paddock page on Twitter / Discord / WhatsApp / Slack / Reddit / iMessage showed the same generic "Paddock Tracker — personal motorsport companion" card no matter what page you'd linked to. Now the preview matches the page — share `/series/f1` and the card reads "Formula 1 2026 — calendar, schedule, race weekends"; share a specific race weekend and it carries the round name and date range; share `/calendar` and you get the calendar description. Large-image preview cards are restored on every route. Purely a metadata fix — no UI change anywhere.
+
 ## 0.12.8 — 2026-05-21
 
 **FIA WEC live standings are now on `/series/wec`.** Open the **Standings** tab to see the Hypercar Drivers' Championship, the Hypercar Manufacturers' Championship, the LMGT3 Drivers' Championship, and the LMGT3 Teams' Championship — all four tables refreshed against fiawec.com after each round. Multi-driver crew names appear on a single line ("RENÉ RAST ROBIN FRIJNS") with the manufacturer + car number sitting underneath.
