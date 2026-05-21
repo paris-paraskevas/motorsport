@@ -24,7 +24,11 @@ export async function generateMetadata({
   return {
     title: driver.name,
     description,
-    ...withSocialMeta({ title: driver.name, description }),
+    ...withSocialMeta({
+      title: driver.name,
+      description,
+      path: `/drivers/${slug}`,
+    }),
   };
 }
 

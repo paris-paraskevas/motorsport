@@ -21,6 +21,7 @@ export const metadata: Metadata = {
     // applies to the document <title>, not to og:title / twitter:title).
     title: `${CALENDAR_TITLE} — Paddock Tracker`,
     description: CALENDAR_DESCRIPTION,
+    path: '/calendar',
   }),
 };
 
