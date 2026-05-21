@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { fetchFormulaESeasonResults } from './formula-e';
+import {
+  fetchFormulaESeasonResults,
+  parseMotorsportweekClassification,
+} from './formula-e';
 
 // Two-layer test:
 //   1) Season-page parser — discovery layer. We mock the Wikipedia season
@@ -538,5 +541,114 @@ describe('fetchFormulaESeasonResults — per-event subpage scrape', () => {
     mockFetchReject();
     const races = await fetchFormulaESeasonResults();
     expect(races).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// motorsportweek.com fallback parser.
+// ---------------------------------------------------------------------------
+
+function mwRow(opts: {
+  position: number | string;
+  driver: string;
+  team: string;
+  gap?: string;
+}): string {
+  return (
+    `<tr>` +
+    `<td>${opts.position}</td>` +
+    `<td>${opts.driver}</td>` +
+    `<td>${opts.team}</td>` +
+    `<td>${opts.gap ?? ''}</td>` +
+    `</tr>`
+  );
+}
+
+function mwClassificationHtml(rows: string[]): string {
+  return (
+    `<!doctype html><html><body>` +
+    `<figure class="wp-block-table">` +
+    `<table class="has-fixed-layout">` +
+    `<thead><tr><th>Position</th><th>Drivers</th><th>Team</th><th>Gap</th></tr></thead>` +
+    `<tbody>` + rows.join('') + `</tbody>` +
+    `</table>` +
+    `</figure>` +
+    `</body></html>`
+  );
+}
+
+describe('parseMotorsportweekClassification', () => {
+  it('parses the WP wp-block-table into typed RaceResultEntry rows', () => {
+    // Mirrors the R7 Berlin sample from the Phase 1 brief — 20 rows total.
+    const rows = [
+      mwRow({ position: 1, driver: 'Nico Mueller', team: 'Porsche', gap: '' }),
+      mwRow({ position: 2, driver: 'Nick Cassidy', team: 'Citroen', gap: '4.798' }),
+      mwRow({ position: 3, driver: 'Oliver Rowland', team: 'Nissan', gap: '5.252' }),
+      mwRow({ position: 4, driver: 'Edoardo Mortara', team: 'Mahindra', gap: '5.898' }),
+      mwRow({ position: 5, driver: 'Jake Dennis', team: 'Andretti', gap: '8.117' }),
+      mwRow({ position: 6, driver: 'Mitch Evans', team: 'Jaguar', gap: '8.917' }),
+      mwRow({ position: 7, driver: 'Pepe Marti', team: 'Kiro', gap: '10.142' }),
+      mwRow({ position: 8, driver: 'Taylor Barnard', team: 'DS Penske', gap: '10.529' }),
+      mwRow({ position: 9, driver: 'Nyck de Vries', team: 'Mahindra', gap: '11.141' }),
+      mwRow({ position: 10, driver: 'Antonio Felix da Costa', team: 'Jaguar', gap: '13.051' }),
+      mwRow({ position: 11, driver: 'Maximilian Guenther', team: 'DS Penske', gap: '13.836' }),
+      mwRow({ position: 20, driver: 'Dan Ticktum', team: 'Kiro', gap: '1 Lap' }),
+    ];
+    const entries = parseMotorsportweekClassification(mwClassificationHtml(rows));
+    expect(entries.length).toBe(12);
+
+    // P1 = Mueller / Porsche / 25 pts. Note Porsche normalised to "Porsche Team".
+    expect(entries[0]).toMatchObject({
+      position: 1,
+      driverName: 'Nico Mueller',
+      team: 'Porsche Team',
+      status: 'Finished',
+      points: 25,
+    });
+    expect(entries[0].time).toBeUndefined(); // empty Gap → undefined
+
+    // P2 Cassidy on "Citroen" — must normalise to "DS Penske" (Stellantis FE entry).
+    expect(entries[1].team).toBe('DS Penske');
+    expect(entries[1].points).toBe(18);
+
+    // P7 Marti on "Kiro" → "Cupra Kiro" alias.
+    expect(entries[6].team).toBe('Cupra Kiro');
+    expect(entries[6].points).toBe(6);
+
+    // P11 (Guenther) is outside the points-paying band; should score 0.
+    expect(entries[10].points).toBe(0);
+
+    // P20 (Ticktum) lapped runner — preserves the "1 Lap" string in time.
+    expect(entries[11].time).toBe('1 Lap');
+    expect(entries[11].points).toBe(0);
+  });
+
+  it('returns an empty array when no wp-block-table is present', () => {
+    const html = `<!doctype html><html><body><p>No results yet.</p></body></html>`;
+    expect(parseMotorsportweekClassification(html)).toEqual([]);
+  });
+
+  it('returns an empty array when the table has fewer than 5 rows (sanity floor)', () => {
+    const html = mwClassificationHtml([
+      mwRow({ position: 1, driver: 'A', team: 'Porsche' }),
+      mwRow({ position: 2, driver: 'B', team: 'Jaguar' }),
+    ]);
+    expect(parseMotorsportweekClassification(html)).toEqual([]);
+  });
+
+  it('skips rows whose position cell does not parse to a number', () => {
+    const rows = [
+      mwRow({ position: 1, driver: 'A', team: 'Porsche' }),
+      mwRow({ position: 2, driver: 'B', team: 'Jaguar' }),
+      mwRow({ position: 3, driver: 'C', team: 'Nissan' }),
+      mwRow({ position: 4, driver: 'D', team: 'Mahindra' }),
+      mwRow({ position: 5, driver: 'E', team: 'Andretti' }),
+      mwRow({ position: 'DNF', driver: 'X', team: 'Porsche' }),
+      mwRow({ position: '', driver: 'Y', team: 'Jaguar' }),
+    ];
+    const entries = parseMotorsportweekClassification(mwClassificationHtml(rows));
+    // 5 numeric rows survive; DNF and empty position are skipped.
+    expect(entries.length).toBe(5);
+    expect(entries.every(e => e.status === 'Finished')).toBe(true);
   });
 });

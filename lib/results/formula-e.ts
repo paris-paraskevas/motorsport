@@ -38,6 +38,45 @@ const MIN_ROUNDS = 3;
 // parser shipped).
 const WINNER_POINTS = 25;
 
+// FIA Formula E per-position scoring (top 10). Used by the motorsportweek
+// fallback layer below — the motorsportweek per-event tables omit the points
+// column, so we derive points from finishing position. Pole (+3) and Fastest
+// Lap (+1) bonuses are NOT modelled here; that's a known ±1-3pt gap vs the
+// official standings, documented in CHANGELOG. The cross-cutting chart-vs-
+// standings invariant says we don't ship a trend chart against this data —
+// that remains gated on a separate bonuses curation PR.
+const FE_POINTS_BY_POSITION = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] as const;
+
+// motorsportweek.com publishes the per-event Position/Drivers/Team/Gap table
+// as plain WordPress `<figure class="wp-block-table"><table>` HTML, fetchable
+// with a default UA and no auth. Used as the fallback source for any FE round
+// whose Wikipedia per-event article is a season-summary stub (Berlin R7/R8,
+// Monaco R9/R10 at the 2026-05-21 checkpoint). URL template per the Phase 1
+// brief: /YYYY/MM/DD/formula-e-YYYY-{city-slug}-e-prix-race-{N}-results/
+const MW_BASE = 'https://www.motorsportweek.com';
+
+// motorsportweek uses brand-name short-forms in the Team column (e.g.
+// "Citroen", "Kiro", "Lola"). Normalise to the canonical FE entry names used
+// across the rest of Paddock. Identity entries are explicit so the lookup
+// always succeeds; a missing key falls through to the raw string.
+const MW_TEAM_ALIASES: Record<string, string> = {
+  'Porsche': 'Porsche Team',
+  'Jaguar': 'Jaguar Racing',
+  'Nissan': 'Nissan e.Dams',
+  'Mahindra': 'Mahindra Racing',
+  'Andretti': 'Andretti Formula E',
+  'Citroen': 'DS Penske',
+  'Citroën': 'DS Penske',
+  'DS Penske': 'DS Penske',
+  'Envision': 'Envision Racing',
+  'Kiro': 'Cupra Kiro',
+  'Lola': 'LOLA YAMAHA ABT',
+};
+
+function canonicaliseMwTeam(name: string): string {
+  return MW_TEAM_ALIASES[name] ?? name;
+}
+
 // Browser User-Agent — Wikipedia blocks default Node fetch UA on some
 // endpoints. Same string used by lib/standings/formula-e.ts.
 const UA =
@@ -763,6 +802,110 @@ function parseClassification(
 }
 
 // ---------------------------------------------------------------------------
+// motorsportweek.com fallback for Wikipedia stub rounds.
+// ---------------------------------------------------------------------------
+
+// Build the motorsportweek.com URL for a given race day + E-Prix name. The
+// city slug is derived from the E-Prix name (strip " ePrix" suffix, ASCII-
+// fold diacritics, lowercase, hyphenate spaces).
+//
+// raceN selects between the doubleheader's two race posts (1 or 2). Caller
+// passes 1 for singleheaders and the first race of a doubleheader, 2 for the
+// second race. The date passed in is the race day for that specific round
+// (the per-round Calendar-table date already returns the right Saturday vs
+// Sunday for doubleheaders — see buildRoundToDateMap above).
+function buildMwUrl(date: Date, ePrixName: string, raceN: 1 | 2): string | null {
+  if (!date || Number.isNaN(date.getTime())) return null;
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
+
+  const slug = ePrixName
+    // Drop trailing " ePrix" / "e-prix" — case-insensitive.
+    .replace(/\s+e[-\s]?prix\s*$/i, '')
+    // Fold common diacritics. Cyrillic / CJK aren't in scope (no FE round
+    // with those venue names).
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim()
+    // Replace any whitespace run (and stray ASCII punctuation) with a single
+    // hyphen. Defensive: motorsportweek slugs are kebab-case lowercase.
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  if (!slug) return null;
+
+  return `${MW_BASE}/${yyyy}/${mm}/${dd}/formula-e-${yyyy}-${slug}-e-prix-race-${raceN}-results/`;
+}
+
+// Parse a motorsportweek per-event results post. The page is a WordPress
+// article with a single `<figure class="wp-block-table"><table class="has-
+// fixed-layout">` carrying the Position / Drivers / Team / Gap columns. The
+// table includes lapped runners ("1 Lap" in the Gap column) and excludes
+// DNFs — those are documented in prose only. We surface whatever the table
+// holds; DNF rows on rounds with mechanical DNFs will need a results-
+// overrides curation pass to backfill.
+export function parseMotorsportweekClassification(html: string): RaceResultEntry[] {
+  let $: cheerio.CheerioAPI;
+  try {
+    $ = cheerio.load(html);
+  } catch {
+    return [];
+  }
+  const table = $('figure.wp-block-table table').first();
+  if (table.length === 0) return [];
+  const rows = table.find('tbody tr').toArray() as Element[];
+  if (rows.length < 5) return [];
+
+  const entries: RaceResultEntry[] = [];
+  for (const tr of rows) {
+    const cells = $(tr).find('td').toArray() as Element[];
+    if (cells.length < 4) continue;
+
+    const posRaw = $(cells[0]).text().replace(/\s+/g, ' ').trim();
+    const driverRaw = $(cells[1]).text().replace(/\s+/g, ' ').trim();
+    const teamRaw = $(cells[2]).text().replace(/\s+/g, ' ').trim();
+    const gapRaw = $(cells[3]).text().replace(/\s+/g, ' ').trim();
+    if (!driverRaw || !teamRaw) continue;
+
+    const posNum = parseInt(posRaw, 10);
+    if (!Number.isFinite(posNum) || posNum < 1) continue;
+
+    const team = canonicaliseMwTeam(teamRaw);
+    const points =
+      posNum >= 1 && posNum <= FE_POINTS_BY_POSITION.length
+        ? FE_POINTS_BY_POSITION[posNum - 1]
+        : 0;
+
+    entries.push({
+      position: posNum,
+      driverName: driverRaw,
+      team,
+      status: 'Finished',
+      // motorsportweek's "Gap" column is the leader's race time for P1
+      // (empty in some posts), `+0.798` style float for others, and `1 Lap`
+      // for lapped runners. Preserve as-is.
+      time: gapRaw || undefined,
+      points,
+    });
+  }
+  return entries.sort((a, b) => a.position - b.position);
+}
+
+async function fetchMwClassification(
+  date: Date,
+  ePrixName: string,
+  raceN: 1 | 2,
+): Promise<RaceResultEntry[] | null> {
+  const url = buildMwUrl(date, ePrixName, raceN);
+  if (!url) return null;
+  const html = await fetchHtml(url);
+  if (!html) return null;
+  const entries = parseMotorsportweekClassification(html);
+  return entries.length > 0 ? entries : null;
+}
+
+// ---------------------------------------------------------------------------
 // Per-event fetch.
 // ---------------------------------------------------------------------------
 
@@ -895,6 +1038,37 @@ export async function fetchFormulaESeasonResults(): Promise<RaceResult[]> {
   for (const row of seasonRows) {
     if (!resultsByRound.has(row.round)) {
       resultsByRound.set(row.round, [winnersOnlyEntry(row)]);
+    }
+  }
+
+  // motorsportweek.com fallback layer — fires for any round still sitting
+  // at the winners-only fallback (Wikipedia per-event article was a stub or
+  // missing entirely). Runs in parallel for the affected rounds; success
+  // replaces the 1-row winners-only entry with full classification.
+  const winnersOnlyRows: SeasonRow[] = [];
+  for (const row of seasonRows) {
+    const current = resultsByRound.get(row.round);
+    if (current && current.length === 1 && current[0].status === 'Race winner') {
+      winnersOnlyRows.push(row);
+    }
+  }
+  if (winnersOnlyRows.length > 0) {
+    // raceN: 1 for singleheader / first-of-doubleheader; 2 for second-of-
+    // doubleheader. Compute by inspecting the per-URL bucket the row sits in.
+    const raceNFor = (row: SeasonRow): 1 | 2 => {
+      if (!row.eventUrl) return 1;
+      const bucket = byUrl.get(row.eventUrl);
+      if (!bucket || bucket.length < 2) return 1;
+      return row.round === bucket[bucket.length - 1].round ? 2 : 1;
+    };
+    const mwResults = await Promise.all(
+      winnersOnlyRows.map(row => fetchMwClassification(row.date, row.ePrix, raceNFor(row))),
+    );
+    for (let i = 0; i < winnersOnlyRows.length; i++) {
+      const mw = mwResults[i];
+      if (mw && mw.length > 0) {
+        resultsByRound.set(winnersOnlyRows[i].round, mw);
+      }
     }
   }
 
