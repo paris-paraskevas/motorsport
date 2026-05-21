@@ -6,6 +6,81 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ CRITICAL FOR NEXT SESSION (operator-inserted 2026-05-21 evening)
+
+The previous session ran low on tokens after shipping 0.12.5 (footer redesign). **0.12.6 (custom cookie consent modal) is the next thing to ship before resuming the Phase 2 data sequence.** WEC and everything downstream is renumbered +2 from the original locked plan.
+
+### Why this jumped the queue
+
+Operator flagged that the existing Google Funding Choices consent banner never renders — AdSense is still in "Getting ready" review, and Funding Choices's `?ers=1` "early renderable signal" doesn't actually summon a banner before AdSense approval (despite Google's docs claiming otherwise). As a result, Consent Mode v2 defaults to `denied` and GA4 fires nothing for EU/UK visitors. That's a Vercel-vs-GA4 stats blackout for most of Paddock's audience.
+
+### 0.12.6 plan (locked via AskUserQuestion 2026-05-21)
+
+**Replace Funding Choices with a custom modal-style CookieConsent component.** Four categories (Necessary / Analytics / Advertising / Functional) mapped 1:1 to Consent Mode v2 signals. Two-step UI: first layer = Accept all / Reject all / Customize (three symmetric buttons per EDPB symmetry rule). Second layer = per-category toggles. Modal blocks the page (with backdrop) until the user clicks. Re-prompt after 12 months. Re-openable via custom event from the existing footer "Manage cookies" link.
+
+**Drop Funding Choices entirely.** When AdSense eventually approves, FC can be re-introduced as a swap (FC takes over consent UI; our modal becomes a fallback). Until then, two consent systems running concurrently would fight each other over `gtag('consent', 'update', ...)`.
+
+### Files to create / edit
+
+1. **NEW** `components/CookieConsent.tsx` — the modal. Reference implementation is in the session-end chat transcript (the other-AI session that researched this). **Critical: rewrite the reference using Paddock design tokens (`bg-bg / bg-surface / bg-surface-elevated / text-text / text-text-muted / border-border`), NOT the hardcoded `zinc-*` Tailwind classes in the reference.** Paddock now ships a dark/light theme toggle (since 0.12.0); a zinc-hardcoded modal would look broken in light mode.
+2. **EDIT** `app/layout.tsx` — remove the two Funding Choices `<Script>` blocks (lines ~94-108 at session checkpoint: `id="funding-choices"` and `id="funding-choices-signal"`). Mount `<CookieConsent />` somewhere after `<AppShell>` and before `<Analytics />`. The existing `consent-default` script block (sets all signals to `denied`) STAYS — the new modal fires `gtag('consent', 'update', ...)` on user action.
+3. **EDIT** `components/Footer.tsx` — change the "Manage cookies" `<Link href="/cookies">` (added in 0.12.5) to a `<button onClick={() => window.dispatchEvent(new Event('open-cookie-consent'))}>` so users can re-open the modal from the footer at any time. EDPB requirement: users must be able to change consent anytime.
+
+### Consent Mode v2 signal mapping (locked)
+
+```
+Necessary  → security_storage: 'granted' always (essential, no toggle)
+Analytics  → analytics_storage
+Advertising → ad_storage + ad_user_data + ad_personalization (all three flip together)
+Functional → functionality_storage + personalization_storage
+```
+
+### EDPB compliance non-negotiables
+
+- **Reject All on first layer** equally visible to Accept All (not behind Customize)
+- **Symmetric buttons** — same size, color, contrast across Accept / Reject / Customize
+- **No pre-ticked boxes** for non-essential categories (everything except Necessary defaults off)
+- **No cookie wall** — Reject must dismiss the modal and leave the site usable
+- **Persistent re-open** path (the Footer button above)
+- **Re-prompt after 12 months** (handled via `localStorage` timestamp + age check)
+
+### Reference: the working code from the other-AI session
+
+A complete `CookieConsent.tsx` exists in the session transcript with all the logic right (storage shape, consent-update wiring, modal scaffolding, re-open event listener). Two things to fix when porting:
+
+1. **Replace every `zinc-*` Tailwind class with Paddock design tokens.** Mapping:
+   - `bg-zinc-950` → `bg-surface-elevated` (the modal sheet background)
+   - `bg-zinc-900` / `bg-zinc-900/50` → `bg-surface` (toggle rows + button bg)
+   - `bg-zinc-700` → `bg-border` (off-state toggle track)
+   - `bg-zinc-100` (toggle on-state) → `bg-text` (then the thumb flips to `bg-bg`)
+   - `border-white/10` → `border-border`
+   - `text-zinc-100` → `text-text`
+   - `text-zinc-300` / `text-zinc-400` → `text-text-muted`
+   - `bg-black/70` (backdrop) → keep as-is, modal backdrop is theme-neutral
+2. **Verify the GA4 unblock works end-to-end** post-deploy: open paddock-tracker.com in incognito, accept all, check DevTools Application → Cookies for `_ga` / `_ga_*` cookies appearing within 30s. The reference component calls `window.gtag('consent', 'update', ...)` — make sure the `gtag` function is on `window` by the time the modal renders (it's loaded via `<Script src="googletagmanager.com/gtag/js" strategy="afterInteractive">` in layout.tsx, which should be ready when the modal first paints).
+
+### Phase 2 sequence renumbered (footer absorbed 0.12.5, cookie banner absorbs 0.12.6)
+
+| Ver | Scope | Source | Status |
+|---|---|---|---|
+| 0.12.0 | feat(theme) + chore | n/a | ✅ shipped |
+| 0.12.1 | fix(f3) reconciliation | __NEXT_DATA__.RacePoints | ✅ shipped |
+| 0.12.2 | feat(indycar) results | Wikipedia Driver_standings | ✅ shipped |
+| 0.12.3 | feat(formula-e) R7-R10 | motorsportweek.com | ✅ shipped |
+| 0.12.4 | feat(motogp) standings + results | Pulselive JSON | ✅ shipped |
+| 0.12.5 | **feat(footer) multi-column + copyright** | n/a (this PR) | this PR |
+| 0.12.6 | **feat(consent) custom modal, drop FC** | n/a | NEXT |
+| 0.12.7 | feat(wec) standings + results | fiawec.com SSR | (was 0.12.5) |
+| 0.12.8 | feat(imsa) full-class results | Alkamel JSON | (was 0.12.6) |
+| 0.12.9 | feat(nascar-cup) full-class results | racing-reference.info | (was 0.12.7) |
+| 0.12.10 | feat(gt-world) results + points | SRO regs | (was 0.12.8) |
+| 0.12.11 | feat(wrc) per-rally full-class | Wikipedia per-rally | (was 0.12.9) |
+| 0.12.12 | feat(dtm) standings + results | motorsport.com/dtm | (was 0.12.10) |
+| 0.12.13 | feat(nls) standings + results | teilnehmer.vln.de PDF | (was 0.12.11) |
+| 0.13.0 | feat(drivers) bulk × 13 series | per-series | unchanged |
+
+---
+
 ## Quick context
 
 - **Repo:** `paris-paraskevas/motorsport` (private).

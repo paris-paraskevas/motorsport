@@ -517,6 +517,31 @@ Bulk day — F2 + F3 + DTM + GTWC + NLS + NASCAR + WRC + ADAC.
 
 **B-perf, all 4 PRs in one day** if the week's data work stays on track. Preconnect Clerk subdomain + Coffee `aria-label` + footer touch-target spacing + 3rd-party deferral (AdSense + GTM lazyOnload) + Clerk lazy boundary + CSS critical-path. Target mobile Perf ≥75 + LCP <2.5 s + TBT <300 ms. PSI re-baseline append after deploy.
 
+### Thu 2026-05-21 — continued — 0.12.2-0.12.5 Phase 2 sprint (4 PRs shipped)
+
+A productive evening. Four PRs landed in sequence on top of yesterday's 0.12.0 / 0.12.1:
+
+- → done: **0.12.2 PR #79** IndyCar per-race results via Wikipedia 2026 Driver_standings (parsed cell flags for pole / led laps / fastest lap / DNS / Wth / EX / DNQ + MIL doubleheader colspan=2 + position-based IndyCar scoring scale).
+- → done: **0.12.3 PR #80** Formula E R7-R10 full classifications via motorsportweek.com fallback layer (Berlin R7/R8 + Monaco R9/R10 + team alias normalisation: Citroen → DS Penske, Kiro → Cupra Kiro, etc.).
+- → done: **0.12.4 PR #81** MotoGP standings + results via Pulselive JSON API (riders-only standings per FIM aggregation rule; Grand Prix + Sprint per round mirroring WSBK precedent).
+- → done: **0.12.5 PR #?? (this PR)** Footer redesign + copyright. Two-column grid (Site / Legal) replacing the single-row flat link list. Brand strip on top, copyright + version on bottom. Operator-inserted ahead of the next data-impl PR.
+
+Operator also surfaced a critical cookie-consent issue mid-session: Funding Choices never renders because AdSense is still in "Getting ready" review, so Consent Mode v2 stays denied + GA4 fires nothing for EU/UK visitors → Vercel ↔ GA4 stats blackout. Documented full 0.12.6 plan at the TOP of `docs/HANDOFF.md` for next session (custom CookieConsent modal, 4 categories, EDPB-symmetric buttons, re-openable from footer, drop FC entirely until AdSense flips).
+
+Phase 2 sequence renumbered +2 across the board: WEC slides from 0.12.5 to 0.12.7, IMSA → 0.12.8, NASCAR → 0.12.9, GT-World → 0.12.10, WRC → 0.12.11, DTM → 0.12.12, NLS → 0.12.13. drivers.json bulk stays at 0.13.0.
+
+### Fri 2026-05-22 — planned — 0.12.6 custom cookie consent modal
+
+First task next session: read `docs/HANDOFF.md` top section ("⚡ CRITICAL FOR NEXT SESSION") for the full 0.12.6 spec. Implementation summary:
+
+- New `components/CookieConsent.tsx` — modal with two-step UI (Accept all / Reject all / Customize → toggles per category), 4 categories mapped 1:1 to Consent Mode v2 signals.
+- **Critical: use Paddock design tokens (`bg-bg / bg-surface / text-text / border-border`) NOT hardcoded `zinc-*` Tailwind values** so the modal works in both dark and light themes (the toggle shipped 0.12.0).
+- Edit `app/layout.tsx` — remove the two Funding Choices `<Script>` blocks, mount `<CookieConsent />` after `<AppShell>` before `<Analytics />`.
+- Edit `components/Footer.tsx` — change "Manage cookies" `<Link href="/cookies">` to `<button onClick={() => window.dispatchEvent(new Event('open-cookie-consent'))}>`.
+- Browser-verify: incognito, accept all, check `_ga` / `_ga_*` cookies appear within 30s (proves the consent-update unblocks GA4).
+
+Then resume the Phase 2 data sequence with 0.12.7 WEC.
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
