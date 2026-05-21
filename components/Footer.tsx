@@ -1,44 +1,79 @@
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
+import { SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
-      className="hover:text-text transition-colors duration-(--duration-fast)"
+      className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
     >
       {children}
     </Link>
   );
 }
 
-function Sep() {
-  return <span className="text-text-faint/50">·</span>;
+function ColumnHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text mb-3">
+      {children}
+    </h2>
+  );
 }
 
 export function Footer() {
+  const year = 2026;
   return (
-    <footer className="border-t border-border mt-12">
-      <div className="max-w-2xl lg:max-w-5xl mx-auto px-4 md:px-6 lg:px-8 py-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-faint">
-        <span className="tnum font-mono">Paddock Tracker v{APP_VERSION}</span>
-        <Sep />
-        <FooterLink href="/changelog">Release notes</FooterLink>
-        <Sep />
-        <FooterLink href="/about">About</FooterLink>
-        <Sep />
-        <FooterLink href="/settings">Settings</FooterLink>
-        <Sep />
-        <FooterLink href="/privacy">Privacy</FooterLink>
-        <Sep />
-        <FooterLink href="/terms">Terms</FooterLink>
-        <Sep />
-        <FooterLink href="/cookies">Cookies</FooterLink>
-        <Sep />
-        <FooterLink href="/accessibility">Accessibility</FooterLink>
-        <Sep />
-        <FooterLink href="/do-not-sell">Do Not Sell or Share</FooterLink>
-        <Sep />
-        <FooterLink href="/imprint">Imprint</FooterLink>
+    <footer className="border-t border-border mt-12 bg-bg">
+      <div className="max-w-2xl lg:max-w-5xl mx-auto px-4 md:px-6 lg:px-8 py-10">
+        {/* Brand strip — name + short tagline. Sets context above the column
+            grid so the footer reads as a real section, not a row of links. */}
+        <div className="mb-8 max-w-md">
+          <div className="text-text font-semibold text-base">{SITE_TITLE}</div>
+          <p className="mt-1 text-text-muted text-xs leading-relaxed">
+            {SITE_DESCRIPTION}
+          </p>
+        </div>
+
+        {/* Two-column link grid. Categories tailored to Paddock's actual link
+            inventory — Site (navigation + utility) + Legal (compliance pages).
+            Not the NVIDIA 3-column template; that density doesn't fit ~10
+            real links. Columns stack to single-column on narrow viewports. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-xs">
+          <div>
+            <ColumnHeading>Site</ColumnHeading>
+            <ul className="space-y-0">
+              <li><FooterLink href="/about">About</FooterLink></li>
+              <li><FooterLink href="/changelog">Release notes</FooterLink></li>
+              <li><FooterLink href="/settings">Settings</FooterLink></li>
+              {/* 0.12.6 follow-up: replace this link with a button that fires
+                  window.dispatchEvent(new Event('open-cookie-consent')) once
+                  the CookieConsent modal ships. Until then, /cookies opens
+                  the static cookies policy page so users have a documented
+                  path to manage choices. */}
+              <li><FooterLink href="/cookies">Manage cookies</FooterLink></li>
+            </ul>
+          </div>
+          <div>
+            <ColumnHeading>Legal</ColumnHeading>
+            <ul className="space-y-0">
+              <li><FooterLink href="/privacy">Privacy</FooterLink></li>
+              <li><FooterLink href="/terms">Terms</FooterLink></li>
+              <li><FooterLink href="/cookies">Cookies</FooterLink></li>
+              <li><FooterLink href="/accessibility">Accessibility</FooterLink></li>
+              <li><FooterLink href="/do-not-sell">Do Not Sell or Share</FooterLink></li>
+              <li><FooterLink href="/imprint">Imprint</FooterLink></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom row: version + copyright. Two-line on mobile, single-row on
+            sm+. Same text-faint colour as the previous footer so it doesn't
+            compete with the link columns above. */}
+        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-text-faint">
+          <span className="tnum font-mono">{SITE_TITLE} v{APP_VERSION}</span>
+          <span>© {year} {SITE_TITLE}. All rights reserved.</span>
+        </div>
       </div>
     </footer>
   );

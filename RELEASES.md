@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.5 — 2026-05-21
+
+**Footer redesign.** The footer is no longer a single line of dot-separated links — it now reads as a real section with two columns (Site and Legal), a short brand line on top, and a copyright row at the bottom. Manage cookies has a dedicated link in the Site column so you can find it without hunting through the cookie policy page.
+
+The link inventory itself is unchanged. This is purely a layout refresh.
+
 ## 0.12.4 — 2026-05-21
 
 **MotoGP standings + per-event results are now live.** Open `/series/motogp?tab=standings` for the riders' championship table, and `?tab=results` for each completed round — both the Grand Prix and the Saturday Sprint render as their own race card, with positions, gaps, and points sourced from Dorna's official backend (the same data that drives motogp.com).

@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.5 — 2026-05-21
+
+Operator-inserted UI PR ahead of the next data-impl in the Phase 2 sequence. Restructures `components/Footer.tsx` from a single-row flat link list into a two-column grid (Site / Legal) with brand strip on top and copyright row on bottom. The previous flat layout read as one undifferentiated line; the columnar layout signals that the footer has multiple categories of content and matches the convention readers expect from product sites.
+
+### Added
+
+- **`components/Footer.tsx`** rewritten — brand strip carrying `SITE_TITLE` + `SITE_DESCRIPTION`, two-column grid (Site = About / Release notes / Settings / Manage cookies; Legal = Privacy / Terms / Cookies / Accessibility / Do Not Sell or Share / Imprint), copyright + version row at the bottom (`© 2026 Paddock Tracker. All rights reserved.` + `Paddock Tracker v0.12.5`). Columns stack to single-column on `< sm` breakpoint.
+- **"Manage cookies" link** added to the Site column. Today it routes to `/cookies` (the static cookie policy page that's already shipped). The 0.12.6 follow-up replaces this `<Link>` with a `<button>` that fires `window.dispatchEvent(new Event('open-cookie-consent'))` to re-open the custom `CookieConsent` modal — required by EDPB guidance ("users must be able to change their cookie consent choices anytime"). Both shapes coexist cleanly because the route remains valid after the modal ships.
+- Design tokens used throughout (`bg-bg`, `text-text`, `text-text-muted`, `text-text-faint`, `border-border`). No hardcoded `zinc-*` or other Tailwind palette values, so the footer renders correctly in both dark and light themes (the dark/light toggle shipped in 0.12.0).
+
+### Why this version exists
+
+Operator-flagged via screenshots (Paddock's current footer vs NVIDIA's columnar footer). The flat single-row layout looks under-built next to the rest of the site. This PR addresses that without depending on the broader site redesign. Patch bump because no public API surface change; purely a presentational refactor of one component.
+
+### Out of scope
+
+- **NVIDIA-style 3-column density** with 7-10 links per column. Paddock has ~10 total links; cramming them into 3 columns at 3-4 links each looked sparse in mockup. Two columns of 4-6 fits the real link inventory.
+- **Social icons** in the footer (Facebook / X / etc). Paddock doesn't have official social channels yet; would just be dead links.
+- **Sitemap link** in the footer. Sitemap-as-XML lives at `/sitemap.xml`; a human-readable sitemap page doesn't exist and isn't worth building for the link.
+- **Footer logo / wordmark**. The brand strip uses `SITE_TITLE` as a typographic mark only — no SVG logo yet.
+
 ## 0.12.4 — 2026-05-21
 
 Phase 2 fourth PR — biggest one in the sequence so far. MotoGP standings + per-event results land live on `/series/motogp?tab=standings` and `?tab=results`. Source: Pulselive JSON API at `api.motogp.pulselive.com/motogp/v1/`. Two parsers, two `RaceResult` cards per round (Grand Prix + Sprint mirroring the WSBK precedent).
