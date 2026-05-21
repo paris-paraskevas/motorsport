@@ -4,6 +4,39 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.2 — 2026-05-21
+
+Phase 2 second PR. IndyCar per-race results land live on `/series/indycar?tab=results` for all 17 IndyCar championship rounds (expanded to 18 race columns including the MIL doubleheader). Source: Wikipedia 2026 IndyCar Series `Driver_standings` table. Output is intentionally minimal — position + driver + team + status + computed points; lap counts / elapsed time / car number remain SPA-only on indycar.com and are out of scope.
+
+### Added
+
+- **`lib/results/indycar.ts`** — new parser. Reads the `Driver_standings` wikitable (the per-driver-row × per-round-column matrix). Walks the heading via the same `mw-heading` wrapper handling shipped in `lib/standings/wrc.ts findTableAfterHeading` for Wikipedia 2024+ compatibility. Per-cell decoding:
+  - Plain digit → `Finished` at that position
+  - `<sup>L</sup>` → led at least one lap (+1 point bonus)
+  - Trailing `*` after the digit → fastest race lap (folded into bonus computation; rendered as a flag in `status`)
+  - `<b>N</b>` → pole position (+1, *except* at the Indianapolis 500 where pole points come from the Fast-12 qualifying knockout)
+  - `<i><b>N</b></i>` → italicised pole indicates fastest race lap was set by the polesitter
+  - `<b>P</b>` (no digit) → pole-only pre-race marker (skipped — race hasn't run)
+  - `DNS` / `Wth` / `EX` / `DNQ` → status code, zero points
+- **`lib/results/indycar.test.ts`** — 11 cases. Happy path, pole + led-laps bonus, Indy-500 pole-omission, MIL doubleheader colspan-expansion, status-code handling, pole-only skip, sanity-floor enforcement, missing-table fallback, team-join from `drivers.json`, fetch happy path, fetch failure, fetch throws.
+- **`INDYCAR_2026_SCHEDULE`** — internal abbreviation→date map (18 entries including `MIL1` + `MIL2`). Keeps `RaceResult.date` populated without an extra per-race Wikipedia fetch. Will need a 2027 refresh; documented in the file header.
+- **`INDYCAR_POINTS_BY_POSITION`** — official 50-40-35-32-30-28-26-24-22-20-19-18-17-16-15-14-13-12-11-10-9-8-7-6-5 scale for 1-25; positions 26+ flat-tail at 5. Pole bonus = +1 (skipped at Indy 500); led-laps bonus = +1. "Most laps led" (+2) is *not* modelled — Wikipedia's table doesn't surface which finisher led the most laps; deferring until we ingest per-race timing.
+- **`components/tabs/ResultsTab.tsx`** — new `series.meta.slug === 'indycar'` branch. Loads `content/series/indycar/drivers.json` via `loadCuratedDrivers` (already shipped 0.10.40) and passes it to the parser so each row carries a real team string instead of an empty placeholder. Renders the standard `SeasonResultsPanel` with a Wikipedia source link.
+
+### Test
+
+- 35 test files / 277 tests pass. `npx tsc --noEmit` clean.
+
+### Why this version exists
+
+Phase 2 PR #2. Closes the operator-flagged ❌ for IndyCar results from yesterday's per-series error matrix. Patch bump because no schema additions; existing `RaceResult` shape covers everything.
+
+### Out of scope
+
+- IndyCar season-trend chart on the results tab. The chart-vs-standings invariant requires per-driver per-round point totals; our computed-from-position approach matches the FIA's totals to within the "most laps led" gap (±2 per race for the driver who led the most laps). Stretch follow-up: per-race timing fetch from Wikipedia per-race articles to surface that bonus. Until then the chart isn't shipped on IndyCar.
+- Car number / lap count / elapsed time per finisher. indycar.com SPA-only; Wikipedia table doesn't carry them. Phase 2 enrichment item.
+- 2027 schedule refresh. The hardcoded date map is 2026-only.
+
 ## 0.12.1 — 2026-05-20
 
 Phase 2 first PR. Reconciles the operator-flagged F3 standings/results disagreement (Ugochukwu showing 25 on `/series/f3?tab=standings` but 26 on `/series/f3?tab=results`). Migrates both F3 parsers from HTML scrape + computed-from-position points to reading the FIA's `__NEXT_DATA__.Standings[].RacePoints` array directly.

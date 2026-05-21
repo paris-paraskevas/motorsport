@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.2 — 2026-05-21
+
+**IndyCar per-race results are now live.** Open `/series/indycar?tab=results` for every 2026 round through Detroit (and onwards as the season progresses) — winner, podium, points-paying finishers, plus DNS/withdrawn/excluded markers where applicable. The Milwaukee doubleheader renders as two separate race cards. Pole and led-laps bonuses are included in the per-finisher points; "most laps led" (+2) is omitted for now because Wikipedia's table doesn't carry that flag.
+
+What you'll see per finisher: position, driver, team, status, and points. Lap counts, finish times, and car numbers live only on indycar.com (which is JavaScript-rendered, can't be fetched cleanly) and will arrive in a later enrichment pass.
+
 ## 0.12.1 — 2026-05-20
 
 **F3 standings + results now agree on every driver's points total.** Ugochukwu was showing 25 on `/series/f3?tab=standings` but 26 on `/series/f3?tab=results` — Melbourne's Sprint Race was a half-distance red-flag, and Paddock was awarding him 1 point for P8 from a generic scale instead of the 0 the FIA records under the reduced-distance rule.
