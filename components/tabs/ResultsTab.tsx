@@ -9,10 +9,11 @@ import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
+import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
-import { loadResultsOverrides } from '@/lib/series-content';
+import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
 import { SeasonTrendChart } from '@/components/SeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
@@ -313,6 +314,29 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://www.fiaformula3.com/Results"
           label="fiaformula3.com"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'indycar') {
+    const [drivers, overrides] = await Promise.all([
+      loadCuratedDrivers(series.meta.slug),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    const races = await fetchIndyCarSeasonResults({ drivers });
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} />
+        <SourceLink
+          href="https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+          label="en.wikipedia.org (2026 IndyCar Series)"
         />
       </div>
     );
