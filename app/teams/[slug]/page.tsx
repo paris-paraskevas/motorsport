@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft } from 'lucide-react';
 import { findTeamBySlug, loadAllTeams } from '@/lib/people';
+import { withSocialMeta } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,9 +20,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const team = await findTeamBySlug(slug);
   if (!team) return { title: 'Team not found' };
+  const description = `${team.name} — ${team.seriesName} lineup and details.`;
   return {
     title: team.name,
-    description: `${team.name} — ${team.seriesName} lineup and details.`,
+    description,
+    ...withSocialMeta({ title: team.name, description }),
   };
 }
 

@@ -24,6 +24,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await loadPost(slug);
   if (!post) return { title: 'Post not found' };
+  // Blog posts carry article-specific openGraph fields (publishedTime, hero
+  // images) that the shared withSocialMeta() helper doesn't model, so build
+  // the openGraph block directly here and reuse withSocialMeta only for the
+  // matching twitter block.
   return {
     title: post.frontmatter.title,
     description: post.frontmatter.summary,
@@ -33,6 +37,11 @@ export async function generateMetadata({
       type: 'article',
       publishedTime: post.frontmatter.publishedAt,
       images: post.frontmatter.heroImage ? [post.frontmatter.heroImage] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.frontmatter.title,
+      description: post.frontmatter.summary,
     },
   };
 }

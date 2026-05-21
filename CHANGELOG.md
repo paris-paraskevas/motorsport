@@ -4,6 +4,54 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.9 — 2026-05-21
+
+SEO fix surfaced during an external SEO audit. Every page that uses `generateMetadata` (series, weekend, calendar, blog post, drivers, teams) was returning only `title` + `description` without the matching `openGraph` / `twitter` blocks — meaning Next 16's Metadata API fell back to the root layout's defaults for those keys. Result: every shared link to `/series/f1`, `/calendar`, etc. on Twitter / Discord / WhatsApp / Slack / Reddit / iMessage rendered the preview card with `og:title: Paddock Tracker` and the generic homepage description instead of the page-specific copy. Verified on prod before fix: `curl https://paddock-tracker.com/series/f1 | grep og:title` returned "Paddock Tracker" instead of "Formula 1 2026 — calendar, schedule, race weekends".
+
+Two design notes that made the fix non-trivial:
+
+- **Next 16 Metadata API doesn't deep-merge the `twitter` block.** Per-page `twitter: { title, description }` fully replaces the layout's `twitter: { card, title, description }`, dropping the `card: 'summary_large_image'` field. Without re-setting `card` in every per-page block, the platform degrades the preview from large-image to small-text-only — quietly worse, easy to miss. Same applies to `openGraph` but the layout's `openGraph.type` and `openGraph.url` survive the spread because they're inferred per-route.
+- **Blog posts already carried `openGraph` (with article-specific `publishedTime` + hero images)** but were missing `twitter`. TypeScript widens the type to `OpenGraph | OpenGraphArticle | OpenGraphWebsite` when spreading a helper's result into a typed openGraph block, so `publishedTime` (only valid on `OpenGraphArticle`) fails type-check. Solution: the helper covers the simple cases; the blog page keeps its hand-rolled `openGraph` and only borrows the `twitter` shape pattern.
+
+### Added
+
+- **`lib/seo.ts`** — `withSocialMeta({ title, description, type? })` helper returning `{ openGraph, twitter }` ready to spread into a `generateMetadata` return value. Sets `openGraph.title + description (+ type)` and `twitter.card: 'summary_large_image' + title + description`. Inline comments document the no-deep-merge gotcha so the next contributor doesn't drop `card` again.
+
+### Changed
+
+- **`app/series/[slug]/page.tsx`** — `generateMetadata` now spreads `withSocialMeta({ title, description })` so every series page emits per-route `og:title`, `og:description`, `twitter:title`, `twitter:description`. The `describeTab()`-driven title + description (e.g. "Formula 1 2026 — calendar, schedule, race weekends") now actually reaches social previews.
+- **`app/calendar/page.tsx`** — static `metadata` spread the helper with `"${CALENDAR_TITLE} — Paddock Tracker"` so the preview card matches what the `<title>` template appends. (The layout's `title.template` only applies to the document title, not to `og:title` — those need the full string baked in.)
+- **`app/series/[slug]/weekend/[round]/page.tsx`** — was the closest to right (already had `openGraph: { title, description }` from earlier work) but missing `twitter`. Swapped to `withSocialMeta(...)` so `twitter:card: summary_large_image` is preserved on every race weekend share.
+- **`app/blog/[slug]/page.tsx`** — kept the hand-rolled `openGraph` block for article-specific `publishedTime` + hero images; added a matching `twitter` block with `card: summary_large_image`.
+- **`app/drivers/[slug]/page.tsx` + `app/teams/[slug]/page.tsx`** — `generateMetadata` spreads the helper. Driver / team pages are not heavily linked today but will be once 0.13.0 ships and they enter the sitemap; getting the metadata shape right now means no follow-up sweep is needed later.
+
+### Test
+
+- `npx tsc --noEmit` clean. 38 test files / 310 tests pass (no new tests in this PR — the fix is verified via `curl localhost:3000/<route> | grep og:`, repeated for series / calendar / weekend / blog routes against the dev server).
+
+### Verification
+
+| Route | `og:title` BEFORE (prod) | `og:title` AFTER (dev) |
+|---|---|---|
+| `/series/f1` | "Paddock Tracker" | "Formula 1 2026 — calendar, schedule, race weekends" |
+| `/calendar` | "Paddock Tracker" | "Calendar — Paddock Tracker" |
+| `/series/wec/weekend/2` | (already correct) | "FIA WEC · TotalEnergies 6 Hours of Spa-Francorchamps · Round 2" |
+| `/series/f1` `twitter:card` | (unset / default) | "summary_large_image" |
+
+### Context: what motivated the audit
+
+Operator received a long-form SEO + database brief from an external AI tool. The brief flagged this OG/Twitter inheritance issue as the highest-ROI fix in the whole audit. Several other "biggest miss" claims in the same brief turned out to be wrong (SportsEvent JSON-LD is already shipped at `lib/json-ld.ts:74`, all five core schemas are wired across home / blog / calendar / changelog / about / weekend pages per PR #51's 0.10.34 work). This PR ships the one verified bug; everything else from the brief was either already shipped or pushed back on (Greek-language route tree, replacing the curated `content/series/<slug>/*.json` authoring model with DB tables, adding 5-7 more series before closing existing data gaps).
+
+### Phase 2 status after this PR
+
+| Ver | Scope | Status |
+|---|---|---|
+| 0.12.5 → 0.12.8 | footer + consent + consent UX + WEC standings | ✅ shipped |
+| 0.12.9 | **feat(seo) per-route OG + twitter metadata** | this PR |
+| 0.12.10 | feat(imsa) full-class results (was 0.12.9) | next |
+| 0.12.11 → 0.12.15 | NASCAR / GT-World / WRC / DTM / NLS | queued |
+| 0.13.0 | drivers.json × 13 series | unchanged |
+
 ## 0.12.8 — 2026-05-21
 
 Phase 2 fifth data-impl PR — first non-F1/MotoGP/WSBK live data on `/series/wec`. Live FIA WEC 2026 standings on `?tab=standings` for Hypercar Drivers, Hypercar Manufacturers, LMGT3 Drivers, and LMGT3 Teams. Source: `fiawec.com/en/page/manufacturers-classification` SSR (single URL hosts all four standings tables; confirmed live HTTP 200 on 2026-05-21).

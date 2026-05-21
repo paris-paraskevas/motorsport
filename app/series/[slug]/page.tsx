@@ -5,6 +5,7 @@ import { resolveTab, labelForTab, describeTab, TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
+import { withSocialMeta } from '@/lib/seo';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
@@ -53,6 +54,7 @@ export async function generateMetadata({
       title,
       description,
       alternates: { canonical },
+      ...withSocialMeta({ title, description }),
     };
   } catch {
     return { title: 'Series not found' };
