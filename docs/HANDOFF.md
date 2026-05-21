@@ -6,9 +6,19 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ CRITICAL FOR NEXT SESSION (operator-inserted 2026-05-21 evening)
+## ⚡ Next session pickup — 0.12.8 WEC
 
-The previous session ran low on tokens after shipping 0.12.5 (footer redesign). **0.12.6 (custom cookie consent modal) is the next thing to ship before resuming the Phase 2 data sequence.** WEC and everything downstream is renumbered +2 from the original locked plan.
+**0.12.6 + 0.12.7 cookie consent shipped 2026-05-21.** 0.12.6 (PR #83, merged) replaced Funding Choices with a custom `CookieConsent` modal — GA4 unblock for EU/UK visitors. 0.12.7 (PR pending merge) reskinned the modal driven by a 370-line research synthesis at `docs/research/cookie-consent-ux-2026-05-21.md`: bottom-card layout (no scrim), button set is now **Allow all / Essential only / Customize** (operator's call — substance matches "Reject all" but reads more accurately; Mozilla and Dutch AP use the same pattern), switch-left toggles with "Always on" pill on Necessary, fade + slide-up 200ms entry honoring `prefers-reduced-motion`. Logic unchanged across both PRs.
+
+**Phase 2 resumes at 0.12.8 WEC.** Source locked Phase 1: `fiawec.com/en/page/manufacturers-classification` SSR — single URL hosts all 6 standings tables (Hypercar + LMGT3 × Drivers + Teams + Manufacturers). Probe-confirmed live 2026-05-21. The earlier stash from `agent-leakage-2026-05-20-defer` is unusable (hallucinated URLs).
+
+Open question for the WEC session: per-round results source. The standings URL named in the brief may not carry per-event classification — probe `fiawec.com/en/season/2026/race/<event>` (or similar) before committing. If full classifications aren't easily reachable, ship standings-only as 0.12.8 and split results into 0.12.8.1 follow-up; same cross-series invariant rule that kept GT-World / IMSA charts off.
+
+WEC and everything downstream is renumbered +3 from the original locked plan (footer absorbed 0.12.5, cookie modal absorbed 0.12.6, cookie UX polish absorbed 0.12.7).
+
+### 0.12.6 + 0.12.7 shipped detail — historical record
+
+The previous session ran low on tokens after shipping 0.12.5 (footer redesign). 0.12.6 + 0.12.7 were both completed in this session.
 
 ### Why this jumped the queue
 
@@ -68,15 +78,16 @@ A complete `CookieConsent.tsx` exists in the session transcript with all the log
 | 0.12.2 | feat(indycar) results | Wikipedia Driver_standings | ✅ shipped |
 | 0.12.3 | feat(formula-e) R7-R10 | motorsportweek.com | ✅ shipped |
 | 0.12.4 | feat(motogp) standings + results | Pulselive JSON | ✅ shipped |
-| 0.12.5 | **feat(footer) multi-column + copyright** | n/a (this PR) | this PR |
-| 0.12.6 | **feat(consent) custom modal, drop FC** | n/a | NEXT |
-| 0.12.7 | feat(wec) standings + results | fiawec.com SSR | (was 0.12.5) |
-| 0.12.8 | feat(imsa) full-class results | Alkamel JSON | (was 0.12.6) |
-| 0.12.9 | feat(nascar-cup) full-class results | racing-reference.info | (was 0.12.7) |
-| 0.12.10 | feat(gt-world) results + points | SRO regs | (was 0.12.8) |
-| 0.12.11 | feat(wrc) per-rally full-class | Wikipedia per-rally | (was 0.12.9) |
-| 0.12.12 | feat(dtm) standings + results | motorsport.com/dtm | (was 0.12.10) |
-| 0.12.13 | feat(nls) standings + results | teilnehmer.vln.de PDF | (was 0.12.11) |
+| 0.12.5 | feat(footer) multi-column + copyright | n/a | ✅ shipped |
+| 0.12.6 | feat(consent) custom modal, drop FC | n/a | ✅ shipped (PR #83) |
+| 0.12.7 | feat(consent) UX polish, research-driven | n/a | ✅ shipped (PR pending) |
+| 0.12.8 | **feat(wec) standings + results** | fiawec.com SSR | **NEXT** |
+| 0.12.9 | feat(imsa) full-class results | Alkamel JSON | (was 0.12.6) |
+| 0.12.10 | feat(nascar-cup) full-class results | racing-reference.info | (was 0.12.7) |
+| 0.12.11 | feat(gt-world) results + points | SRO regs | (was 0.12.8) |
+| 0.12.12 | feat(wrc) per-rally full-class | Wikipedia per-rally | (was 0.12.9) |
+| 0.12.13 | feat(dtm) standings + results | motorsport.com/dtm | (was 0.12.10) |
+| 0.12.14 | feat(nls) standings + results | teilnehmer.vln.de PDF | (was 0.12.11) |
 | 0.13.0 | feat(drivers) bulk × 13 series | per-series | unchanged |
 
 ---

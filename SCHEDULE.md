@@ -530,17 +530,32 @@ Operator also surfaced a critical cookie-consent issue mid-session: Funding Choi
 
 Phase 2 sequence renumbered +2 across the board: WEC slides from 0.12.5 to 0.12.7, IMSA → 0.12.8, NASCAR → 0.12.9, GT-World → 0.12.10, WRC → 0.12.11, DTM → 0.12.12, NLS → 0.12.13. drivers.json bulk stays at 0.13.0.
 
-### Fri 2026-05-22 — planned — 0.12.6 custom cookie consent modal
+### Thu 2026-05-21 — continued — 0.12.6 cookie consent shipped (PR #83 merged)
 
-First task next session: read `docs/HANDOFF.md` top section ("⚡ CRITICAL FOR NEXT SESSION") for the full 0.12.6 spec. Implementation summary:
+Operator brought the cookie-consent work forward into today rather than waiting for Fri. One focused PR, branched from `main` after the 0.12.5 footer landed.
 
-- New `components/CookieConsent.tsx` — modal with two-step UI (Accept all / Reject all / Customize → toggles per category), 4 categories mapped 1:1 to Consent Mode v2 signals.
-- **Critical: use Paddock design tokens (`bg-bg / bg-surface / text-text / border-border`) NOT hardcoded `zinc-*` Tailwind values** so the modal works in both dark and light themes (the toggle shipped 0.12.0).
-- Edit `app/layout.tsx` — remove the two Funding Choices `<Script>` blocks, mount `<CookieConsent />` after `<AppShell>` before `<Analytics />`.
-- Edit `components/Footer.tsx` — change "Manage cookies" `<Link href="/cookies">` to `<button onClick={() => window.dispatchEvent(new Event('open-cookie-consent'))}>`.
-- Browser-verify: incognito, accept all, check `_ga` / `_ga_*` cookies appear within 30s (proves the consent-update unblocks GA4).
+- → done: **0.12.6 PR #83** — custom `CookieConsent` modal + `ManageCookiesButton` client island; Funding Choices `<Script>` blocks dropped from `app/layout.tsx`; Footer Manage-cookies link → button; `content/legal/cookies.md` rewritten. Merged within minutes of opening; operator started browser-testing on prod.
 
-Then resume the Phase 2 data sequence with 0.12.7 WEC.
+### Thu 2026-05-21 — continued — 0.12.7 cookie consent UX polish (research-driven follow-up)
+
+Operator browser-tested 0.12.6 on prod and flagged two things: (a) the modal could look much more beautiful, (b) the button set should drop "Reject all" in favour of **Allow all + Essential only + Customize**. Explicitly asked for research-first.
+
+- → done: dispatched a research agent to study cookie consent UX on 10 well-known sites (Vercel / Stripe / Linear / Notion / Apple / GitHub / Mozilla / Guardian / NYT / Shopify) + shadcn / Microsoft consent-banner / vanilla-cookieconsent references + EDPB dark-patterns guidance + 2025 Austrian high court button-parity ruling + Dutch AP labelling guidance. Output: 370-line synthesis at `docs/research/cookie-consent-ux-2026-05-21.md`. Key validation: operator's "Essential only" label is technically more accurate than "Reject all" (Necessary cookies are never rejectable) and matches Mozilla's "Reject All Additional Cookies" pattern in substance.
+- → done: presented ESPA plan with two AskUserQuestion confirmations — versioning (0.12.7 vs 0.12.6.1) → 0.12.7 picked; customize-layer footer (3 buttons vs Save + Cancel + back arrow) → Save + Cancel + back arrow picked.
+- → done: **0.12.7** — full rewrite of `components/CookieConsent.tsx` presentation. Bottom-aligned card without scrim, `rounded-2xl` + `shadow-2xl`, two-tier button hierarchy (Allow filled / Essential outline / Customize ghost), switch-left toggles with "Always on" pill, copy refresh, fade + 16px slide-up 200ms entry animation honoring `prefers-reduced-motion`. Logic untouched. Re-open from footer now lands directly in the customize layer.
+- → done: tsc clean, 296/296 tests pass, eslint clean on `components/CookieConsent.tsx`, curl-verified new strings compiled into `layout.js` chunk.
+
+### Fri 2026-05-22 — planned — 0.12.8 WEC
+
+0.12.6 + 0.12.7 cookie consent landed Thu 2026-05-21. Phase 2 resumes at 0.12.8 (renumbered from 0.12.7 after the consent UX polish absorbed a slot).
+
+- **Source (locked Phase 1):** `fiawec.com/en/page/manufacturers-classification` SSR. Single URL hosts all 6 standings tables (Hypercar + LMGT3 × Drivers + Teams + Manufacturers). Confirmed alive HTTP 200 on 2026-05-21. The earlier stash from `agent-leakage-2026-05-20-defer` is unusable (URLs hallucinated).
+- **Files to create:** `lib/standings/wec.ts` + tests, `lib/results/wec.ts` + tests; dispatch wiring in `components/tabs/StandingsTab.tsx` + `components/tabs/ResultsTab.tsx`.
+- **Schema:** mirror `lib/standings/imsa.ts` shape. `WecClass = 'Hypercar' | 'LMGT3'`. Multi-driver crews → space-joined `driverName` string (same convention as IMSA / WRC). Drivers + Teams + Manufacturers in each class.
+- **Open question on per-round results.** Brief named the standings URL only; per-round results may need a second source (per-event subpages or Wikipedia per-round tables). If full classifications aren't easily reachable, ship standings-only as 0.12.8 and split results into 0.12.8.1 follow-up — same cross-series invariant rule that kept GT-World / IMSA charts off.
+- **Won't touch:** WEC `drivers.json` (folds into 0.13.0 bulk), `history.md` (folds into B-content), Manufacturers' best-placed-car-per-manufacturer formula nuance.
+
+Then continue Phase 2 in 0.12.9 IMSA → 0.12.10 NASCAR → 0.12.11 GT-World → 0.12.12 WRC → 0.12.13 DTM → 0.12.14 NLS per the locked sequence at HANDOFF top.
 
 ---
 
