@@ -4,6 +4,54 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.6 — 2026-05-21
+
+Custom cookie-consent modal replacing Google Funding Choices. FC was loaded with the explicit `?ers=1` early-renderable signal in 0.10.19 to force the consent banner before AdSense approval — that didn't work. AdSense site approval is the actual gate: until it flips, `fundingchoicesmessages.google.com` returns the bootstrap shim but never fetches a published message. Consent Mode v2 then stays stuck on `denied` from the default in `layout.tsx`, and GA4 fires nothing for EU/UK visitors. End result: Vercel Analytics shows real EU traffic, GA4 shows ~zero. Stats blackout for most of the audience.
+
+This PR drops Funding Choices entirely and ships a Paddock-owned modal that flips Consent Mode v2 signals on user action. When AdSense eventually approves the site, FC can be re-introduced as a swap; running both concurrently would have two systems fighting over `gtag('consent', 'update', ...)`.
+
+### Added
+
+- **`components/CookieConsent.tsx`** — client modal. Two-layer UI: layer 1 = three symmetric buttons (Accept all / Reject all / Customize); layer 2 = per-category toggles (Necessary [locked on], Analytics, Advertising, Functional) with three buttons at the bottom (Save choices / Reject all / Accept all). All non-essential toggles default off (EDPB no-pre-ticked-boxes rule). The modal opens on first paint when no stored decision exists and re-opens any time a `window.dispatchEvent(new Event('open-cookie-consent'))` fires. Backdrop is `bg-black/70` so the page is visibly blocked until the user makes a choice; no ESC-close, no backdrop-click-to-dismiss (the user has to pick one of the three options). Re-prompts after 12 months via `localStorage` timestamp + age check.
+- **`components/ManageCookiesButton.tsx`** — tiny client island used in the Footer to fire the `open-cookie-consent` event. Kept as its own component so `Footer.tsx` stays server-rendered (only the button needs to be a client component).
+- **Consent Mode v2 signal mapping** in `applyConsent()`: Necessary → `security_storage: 'granted'` (always); Analytics → `analytics_storage`; Advertising → `ad_storage` + `ad_user_data` + `ad_personalization` (flip together); Functional → `functionality_storage` + `personalization_storage`. The defensive `typeof window.gtag === 'function'` guard handles script-blocker extensions that strip gtag entirely.
+- **Persistence** at `localStorage['paddock:consent']` with shape `{ analytics, advertising, functional, timestamp }`. The cookies policy at `/cookies` already declared this key; nothing new to document on that side. No server-side log — at Paddock's traffic level (~30 visitors/day) a remote consent log adds complexity for no real benefit.
+
+### Changed
+
+- **`app/layout.tsx`** — removed the two Funding Choices `<Script>` blocks (`id="funding-choices"` loading the FC bootstrap with `?ers=1`, and `id="funding-choices-signal"` injecting the hidden `googlefcPresent` iframe). Mounted `<CookieConsent />` between `<AppShell>` and `<Analytics />`. Kept the `consent-default` script untouched — the modal flips the signals from `denied` to `granted` on user choice, the default stays as a guard for users on the page before the modal hydrates.
+- **`components/Footer.tsx`** — Site column's "Manage cookies" entry switched from `<FooterLink href="/cookies">` to `<ManageCookiesButton />`. The Legal column's `/cookies` link is unchanged (it points to the static cookie policy page, which remains the documentary reference).
+- **`content/legal/cookies.md`** — rewrote "How to control them" + "Consent record" sections. Now describes the Paddock modal instead of Google's CMP, names the `paddock:consent` localStorage key, and documents the footer re-open path + 12-month re-prompt. Updated date to 2026-05-21.
+
+### Test
+
+- 37 test files / 296 tests pass. `npx tsc --noEmit` clean. No new test files in this PR — the modal is verified by the post-deploy GA4 cookie check described below rather than by unit tests against a JSDOM modal.
+
+### EDPB compliance posture
+
+- Reject All is on layer 1 next to Accept All (not hidden behind Customize).
+- All three layer-1 buttons share identical styling (same padding, font, colour, contrast) — none of "Accept" is visually privileged over "Reject".
+- No pre-ticked boxes for non-essential categories — Analytics / Advertising / Functional all default to off in the customize view.
+- No cookie wall — Reject dismisses the modal and the site is fully usable; Necessary cookies set only what authentication and preferences need.
+- Re-open path is permanent (the Footer button), so consent can be changed at any time.
+- 12-month re-prompt via `localStorage` timestamp + age check.
+
+### Post-deploy verification
+
+- Open https://paddock-tracker.com in an Incognito window.
+- Modal should render on first paint with three buttons.
+- Click **Accept all**.
+- DevTools → Application → Cookies → `paddock-tracker.com` should show `_ga` and `_ga_DDMJ2NMBWC` appearing within 30 seconds (GA4 was previously suppressed by Consent Mode `denied`; the modal flipped `analytics_storage` to `granted`).
+- Hard-reload, confirm the modal does not reappear (`localStorage['paddock:consent']` persists the decision).
+- Click **Manage cookies** in the footer — modal reopens.
+
+### Out of scope
+
+- **AdSense re-integration after approval.** Once AdSense flips to "approved", we can either keep this modal (and let AdSense honour Consent Mode v2 like it already does), or re-add Funding Choices as a swap. The choice is a future-session decision; this PR doesn't touch the AdSense `<Script>` block in `layout.tsx`.
+- **Server-side consent log.** Not required at current traffic; adds API surface, KV writes, and a privacy decision to defend (we'd be storing a record of every consent action). Revisit at ~500 visitors/day or a real audit requirement.
+- **Per-cookie disclosure UI** beyond the four-category split. The `/cookies` legal page already lists every cookie by name + owner + purpose + duration; the modal stays category-level for UX simplicity.
+- **Tab-trap inside the modal.** Modal has only three (or six) focusable elements; Tab cycles to browser chrome and back, which is acceptable for a one-shot dialog. No keyboard trap needed.
+
 ## 0.12.5 — 2026-05-21
 
 Operator-inserted UI PR ahead of the next data-impl in the Phase 2 sequence. Restructures `components/Footer.tsx` from a single-row flat link list into a two-column grid (Site / Legal) with brand strip on top and copyright row on bottom. The previous flat layout read as one undifferentiated line; the columnar layout signals that the footer has multiple categories of content and matches the convention readers expect from product sites.

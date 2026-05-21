@@ -1,6 +1,6 @@
 # Cookie Policy
 
-_Last updated: 2026-05-19_
+_Last updated: 2026-05-21_
 
 This Cookie Policy explains what cookies and similar local-storage technologies Paddock Tracker uses, why they are used, and how you can control them.
 
@@ -49,20 +49,20 @@ Clerk uses its own product analytics (Segment, PostHog) and an ad-conversion ide
 
 ## How to control them
 
-### The consent banner
-For visitors in the EEA, UK, and Switzerland, Paddock Tracker uses **Google's certified Consent Management Platform** (Funding Choices) to display a consent banner on first visit. The banner offers a **Consent** option to accept advertising/analytics cookies, and a **Manage options** option to choose categories individually.
+### The consent modal
+On your first visit, Paddock Tracker shows a consent modal with four categories: **Necessary**, **Analytics**, **Advertising**, and **Functional**. Necessary is always on (the site can't work without it). The other three are off by default — nothing non-essential runs until you opt in.
 
-If you reject (or simply do nothing), only strictly-necessary cookies are set. Analytics and advertising scripts still load on the page but **Google Consent Mode v2** is set to `denied`, so they suppress cookies and fall back to cookieless pings.
+Three options are presented with equal prominence: **Accept all**, **Reject all**, or **Customize** (per-category toggles). Whatever you choose is applied immediately via **Google Consent Mode v2**: the analytics and advertising scripts still load on the page, but they suppress cookies and fall back to cookieless pings unless you have granted consent. Rejecting leaves the site fully usable.
 
 ### Changing your mind later
-You can re-open Google's consent UI any time. Google's CMP exposes a re-open mechanism on the page (typically a small "Consent" or shield icon in the corner) once you have made an initial choice. Your update is applied immediately site-wide.
+The **Manage cookies** link in the footer re-opens the consent modal at any time. Your update is applied immediately site-wide. We also re-prompt automatically after 12 months so your decision stays current.
 
 ### Browser controls
 You can also block or delete cookies from your browser settings. This may break authentication and stop us from remembering your preferences.
 
 ## Consent record
 
-Google's Consent Management Platform stores your consent decision on Google's infrastructure. We do not maintain a separate server-side log; we rely on Google's CMP and on the cookies it sets (such as `FCCDCF`) to remember your choice across visits.
+Your consent decision is stored locally in your browser under the `paddock:consent` key (in `localStorage`) along with the date you made it. We do not maintain a server-side log of consent — clearing your browser storage will simply prompt you again on your next visit.
 
 ## Changes to this policy
 

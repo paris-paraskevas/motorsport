@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
+import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -46,12 +47,11 @@ export function Footer() {
               <li><FooterLink href="/about">About</FooterLink></li>
               <li><FooterLink href="/changelog">Release notes</FooterLink></li>
               <li><FooterLink href="/settings">Settings</FooterLink></li>
-              {/* 0.12.6 follow-up: replace this link with a button that fires
-                  window.dispatchEvent(new Event('open-cookie-consent')) once
-                  the CookieConsent modal ships. Until then, /cookies opens
-                  the static cookies policy page so users have a documented
-                  path to manage choices. */}
-              <li><FooterLink href="/cookies">Manage cookies</FooterLink></li>
+              {/* Re-opens the CookieConsent modal via the open-cookie-consent
+                  custom event. Required by EDPB — users must be able to change
+                  consent at any time. The /cookies static page stays linked
+                  from the Legal column as the documentary policy. */}
+              <li><ManageCookiesButton /></li>
             </ul>
           </div>
           <div>
