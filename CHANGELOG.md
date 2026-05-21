@@ -4,6 +4,47 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.10 — 2026-05-21
+
+Hot-fix on top of 0.12.9 (PR #86). Playwright verification of the just-merged 0.12.9 surfaced a follow-on regression that the curl-based smoke check missed: the per-route `openGraph` block was setting `{ title, description }` but dropping `og:url`, `og:type`, and `og:site_name`. Same no-deep-merge problem I documented for `twitter:card` in 0.12.9, but on the openGraph side — and I missed it because the curl probe only checked the fields that obviously changed. The `og:title` + `og:description` ARE now correct (0.12.9 win stands), but downstream parsers that look for `og:site_name` (brand attribution in Open Graph cards) and `og:type` (event vs article vs website classification) were getting nothing on every non-home / non-blog page.
+
+### Changed
+
+- **`lib/seo.ts`** — `withSocialMeta()` now accepts an optional `path?: string` and emits `openGraph.type` (defaults to `'website'`, overridable to `'article'`), `openGraph.siteName: SITE_TITLE`, and `openGraph.url: ${SITE_URL}${path}` when path is supplied. Updated the file header comment to spell out the gotcha on the openGraph side too, not just twitter. SITE_TITLE + SITE_URL imported from `./site` for a single source of truth.
+- **`app/series/[slug]/page.tsx`** — passes `path: canonical` so `og:url` matches the per-route canonical.
+- **`app/calendar/page.tsx`** — passes `path: '/calendar'`.
+- **`app/series/[slug]/weekend/[round]/page.tsx`** — passes `path: \`/series/${slug}/weekend/${round}\``.
+- **`app/drivers/[slug]/page.tsx` + `app/teams/[slug]/page.tsx`** — pass `path` for `/drivers/<slug>` / `/teams/<slug>` respectively. Will become load-bearing once 0.13.0 ships and these enter the sitemap.
+- **`app/blog/[slug]/page.tsx`** — hand-rolled `openGraph` (doesn't use the helper because of the article-type TypeScript widening from 0.12.9) gains `siteName: 'Paddock Tracker'` + `url: \`${SITE_URL}/blog/${slug}\`` alongside the existing `publishedTime` + hero `images`.
+
+### Verification
+
+Playwright `document.querySelector('meta[property="og:*"]').content` evaluations against the dev server:
+
+| Route | `og:url` | `og:type` | `og:site_name` | `twitter:card` |
+|---|---|---|---|---|
+| `/calendar` (this PR) | `https://paddock-tracker.com/calendar` | `website` | `Paddock Tracker` | `summary_large_image` |
+| `/calendar` (0.12.9 prod, before) | (null) | (null) | (null) | (was correct from 0.12.9) |
+| `/series/wec/weekend/2` (this PR) | `https://paddock-tracker.com/series/wec/weekend/2` | `website` | `Paddock Tracker` | `summary_large_image` |
+| `/series/wec/weekend/2` (0.12.9, before) | (null) | (null) | (null) | (was correct from 0.12.9) |
+
+**Verification gap acknowledged:** `/series/f1` on localhost dev server returns 500 from a Next.js webpack jest-worker crash (`"Jest worker encountered 2 child process exceptions, exceeding retry limit"`) — affects the `[slug]` dynamic route compilation specifically, not the static `/calendar` or the nested `[slug]/weekend/[round]` routes. The code path is the same shape as the working routes (calls `withSocialMeta({ ..., path: canonical })`). tsc + 310 vitest tests + eslint all clean. Vercel preview build on a fresh worker pool will validate the route.
+
+### Why this slipped past the 0.12.9 curl check
+
+The 0.12.9 verification probed `og:title` + `og:description` (the obviously-changed fields) but didn't grep for `og:url` / `og:type` / `og:site_name`. The curl output was satisfying enough that I didn't extend the check. Lesson for any future Metadata API work: when the layout-level block has N fields, the per-page override has to re-set all N — not just the ones whose values you're changing. The new helper does this for openGraph + twitter together; the comment block at the top of `lib/seo.ts` documents it explicitly.
+
+### Phase 2 renumbering (one more slot inserted)
+
+| Ver | Scope | Status |
+|---|---|---|
+| 0.12.5 → 0.12.8 | footer + consent + consent UX + WEC standings | ✅ shipped |
+| 0.12.9 | feat(seo) per-route OG + twitter metadata | ✅ shipped (PR #86) |
+| 0.12.10 | **fix(seo) preserve og:url / type / siteName on per-route override** | this PR |
+| 0.12.11 | feat(imsa) full-class results (was 0.12.10) | next |
+| 0.12.12 → 0.12.16 | NASCAR / GT-World / WRC / DTM / NLS | queued |
+| 0.13.0 | drivers.json × 13 series | unchanged |
+
 ## 0.12.9 — 2026-05-21
 
 SEO fix surfaced during an external SEO audit. Every page that uses `generateMetadata` (series, weekend, calendar, blog post, drivers, teams) was returning only `title` + `description` without the matching `openGraph` / `twitter` blocks — meaning Next 16's Metadata API fell back to the root layout's defaults for those keys. Result: every shared link to `/series/f1`, `/calendar`, etc. on Twitter / Discord / WhatsApp / Slack / Reddit / iMessage rendered the preview card with `og:title: Paddock Tracker` and the generic homepage description instead of the page-specific copy. Verified on prod before fix: `curl https://paddock-tracker.com/series/f1 | grep og:title` returned "Paddock Tracker" instead of "Formula 1 2026 — calendar, schedule, race weekends".

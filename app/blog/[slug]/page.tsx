@@ -26,15 +26,17 @@ export async function generateMetadata({
   if (!post) return { title: 'Post not found' };
   // Blog posts carry article-specific openGraph fields (publishedTime, hero
   // images) that the shared withSocialMeta() helper doesn't model, so build
-  // the openGraph block directly here and reuse withSocialMeta only for the
-  // matching twitter block.
+  // the openGraph block directly here. Re-set siteName + url since the
+  // per-page override fully replaces the layout's openGraph block.
   return {
     title: post.frontmatter.title,
     description: post.frontmatter.summary,
     openGraph: {
+      type: 'article',
       title: post.frontmatter.title,
       description: post.frontmatter.summary,
-      type: 'article',
+      siteName: 'Paddock Tracker',
+      url: `${SITE_URL}/blog/${slug}`,
       publishedTime: post.frontmatter.publishedAt,
       images: post.frontmatter.heroImage ? [post.frontmatter.heroImage] : undefined,
     },

@@ -76,7 +76,11 @@ export async function generateMetadata(
       `${series.meta.name} ${label} live stream`,
     ],
     alternates: { canonical: `/series/${slug}/weekend/${round}` },
-    ...withSocialMeta({ title: fullTitle, description }),
+    ...withSocialMeta({
+      title: fullTitle,
+      description,
+      path: `/series/${slug}/weekend/${round}`,
+    }),
   };
 }
 

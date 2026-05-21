@@ -24,7 +24,11 @@ export async function generateMetadata({
   return {
     title: team.name,
     description,
-    ...withSocialMeta({ title: team.name, description }),
+    ...withSocialMeta({
+      title: team.name,
+      description,
+      path: `/teams/${slug}`,
+    }),
   };
 }
 

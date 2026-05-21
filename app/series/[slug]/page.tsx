@@ -54,7 +54,7 @@ export async function generateMetadata({
       title,
       description,
       alternates: { canonical },
-      ...withSocialMeta({ title, description }),
+      ...withSocialMeta({ title, description, path: canonical }),
     };
   } catch {
     return { title: 'Series not found' };

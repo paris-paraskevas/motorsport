@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.10 — 2026-05-21
+
+**Better link previews — round 2.** Follow-up to 0.12.9. The previous fix corrected the title and description on shared link previews but quietly dropped three other fields — the canonical URL, the page type, and the site name. Those are restored now, so every social platform that parses Open Graph cards (Twitter, Facebook, Discord, Slack, LinkedIn, iMessage, WhatsApp) sees a complete card with all the fields filled in correctly per route. Same scope as 0.12.9: metadata only, no UI change.
+
 ## 0.12.9 — 2026-05-21
 
 **Better link previews.** Until today, sharing any Paddock page on Twitter / Discord / WhatsApp / Slack / Reddit / iMessage showed the same generic "Paddock Tracker — personal motorsport companion" card no matter what page you'd linked to. Now the preview matches the page — share `/series/f1` and the card reads "Formula 1 2026 — calendar, schedule, race weekends"; share a specific race weekend and it carries the round name and date range; share `/calendar` and you get the calendar description. Large-image preview cards are restored on every route. Purely a metadata fix — no UI change anywhere.
