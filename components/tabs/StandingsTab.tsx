@@ -9,6 +9,7 @@ import { fetchF2Standings } from '@/lib/standings/f2';
 import { fetchF3Standings } from '@/lib/standings/f3';
 import { fetchIndyCarStandings } from '@/lib/standings/indycar';
 import { fetchFormulaEStandings } from '@/lib/standings/formula-e';
+import { fetchMotoGPStandings } from '@/lib/standings/motogp';
 import { fetchNascarCupStandings } from '@/lib/standings/nascar-cup';
 import { fetchWsbkStandings } from '@/lib/standings/wsbk';
 import { fetchWRCStandings } from '@/lib/standings/wrc';
@@ -508,6 +509,28 @@ export async function StandingsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_IMSA_SportsCar_Championship"
           label="en.wikipedia.org (2026 IMSA)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'motogp') {
+    const [data, overrides] = await Promise.all([
+      fetchMotoGPStandings(series.meta.season),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} />
+        <SourceLink
+          href="https://www.motogp.com/en/world-standing"
+          label="motogp.com"
         />
       </div>
     );

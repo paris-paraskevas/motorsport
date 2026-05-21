@@ -4,6 +4,33 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.4 — 2026-05-21
+
+Phase 2 fourth PR — biggest one in the sequence so far. MotoGP standings + per-event results land live on `/series/motogp?tab=standings` and `?tab=results`. Source: Pulselive JSON API at `api.motogp.pulselive.com/motogp/v1/`. Two parsers, two `RaceResult` cards per round (Grand Prix + Sprint mirroring the WSBK precedent).
+
+### Added
+
+- **`lib/standings/motogp.ts`** — new parser. Resolves seasonUuid by year via `/results/seasons` (the UUID is per-year and not derivable so the lookup runs every call), then fetches `/results/standings?seasonUuid=<X>&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942`. The MotoGP category UUID is stable across all 2007-2026 seasons (verified live 2026-05-21). Parses the `classification[]` array into typed `DriverStanding[]` with `rider.full_name`, `team.name`, `points`, and `race_wins`. Sanity floor `MIN_RIDERS = 15` (2026 grid is 22).
+- **`lib/results/motogp.ts`** — new parser. Four-stage Pulselive chain: seasons → events → sessions → classification. Filters events to `test !== true` and orders by `date_start` ascending so round numbers track championship order. Per event, picks the `RAC` and `SPR` sessions and fetches each session's classification. Each emits its own `RaceResult` keyed by canonical round number; the `raceName` carries " — Grand Prix" or " — Sprint" suffix so `SeasonResultsPanel` renders both cards in order (Grand Prix before Sprint within the same round, matching the WSBK precedent at `lib/results/wsbk.ts`). Sanity floor `MIN_FINISHERS = 10` per session.
+- **`components/tabs/StandingsTab.tsx`** — new `series.meta.slug === 'motogp'` branch. Drivers-only (no constructors table — Manufacturers' Championship is intentionally out of scope, see "Out of scope" below). Links to motogp.com world standing page.
+- **`components/tabs/ResultsTab.tsx`** — new `series.meta.slug === 'motogp'` branch. Renders `SeasonResultsPanel` with `preserveOrder` so the Grand Prix + Sprint ordering set by the parser is preserved end-to-end. Links to motogp.com results page.
+- **8 cases in `lib/standings/motogp.test.ts`** — happy path, sort-by-position, sanity floor, year-not-in-seasons, season fetch error, standings fetch error, fetch throws, partial-row salvage.
+- **8 cases in `lib/results/motogp.test.ts`** — Grand Prix + Sprint per round with full classification, DNF row from `OUTSTND` status, chronological reordering, test-event filter, finisher-floor enforcement, seasons error, empty events array, fetch throws.
+
+### Test
+
+- 37 test files / 296 tests pass. `npx tsc --noEmit` clean.
+
+### Why this version exists
+
+Phase 2 PR #4. Closes the operator-flagged ❌ for MotoGP standings + results — both tabs now ship live data sourced from Dorna's own backend.
+
+### Out of scope (operator-approved Phase 1 decisions)
+
+- **MotoGP Manufacturers' Championship.** FIM rules award each manufacturer the best-placed-rider's points per race (not a sum of all team riders), and Pulselive does not expose a constructors standings endpoint — both `/standings/constructor` and `/standings/constructors` 404 on probe. Computing it client-side would require per-race classification fan-out across the entire calendar, which is out of scope for v1. `StandingsTab` renders drivers only; `ConstructorsTable` is intentionally absent for this series.
+- **Pole + Fastest Lap bonuses on the standings totals.** Pulselive's `classification` row already carries the final `points` per session (including pole + FL contribution where applicable), and the parser passes that through verbatim — no recomputation, no drift. The trend chart can therefore ship here when bandwidth allows; deferred to a separate follow-up PR.
+- **Test event filtering refinement.** The `test !== true` flag is applied even though `isFinished=true` should already exclude tests; redundant but defensive against Pulselive backfilling Sepang/Portimão tests into the FINISHED bucket.
+
 ## 0.12.3 — 2026-05-21
 
 Phase 2 third PR. Adds a motorsportweek.com fallback layer to the FE results parser so the four currently-stub rounds (Berlin R7/R8 on 2 + 3 May, Monaco R9/R10 on 16 + 17 May) ship full per-position classifications instead of the winners-only row that was the only thing surviving the Wikipedia per-event parse. Wikipedia continues to be the primary source — for R1-R6 the per-event articles carry their own classification tables and the existing path still wins.

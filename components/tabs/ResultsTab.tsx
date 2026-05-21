@@ -10,6 +10,7 @@ import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
 import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
+import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
@@ -436,6 +437,28 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'motogp') {
+    const [races, overrides] = await Promise.all([
+      fetchMotoGPSeasonResults(series.meta.season),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} preserveOrder />
+        <SourceLink
+          href="https://www.motogp.com/en/Results+Statistics"
+          label="motogp.com"
         />
       </div>
     );

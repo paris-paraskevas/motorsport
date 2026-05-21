@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.4 — 2026-05-21
+
+**MotoGP standings + per-event results are now live.** Open `/series/motogp?tab=standings` for the riders' championship table, and `?tab=results` for each completed round — both the Grand Prix and the Saturday Sprint render as their own race card, with positions, gaps, and points sourced from Dorna's official backend (the same data that drives motogp.com).
+
+A small caveat on the standings tab: the Manufacturers' Championship is not shown. The FIM points rule for manufacturers (best-placed rider per race only) requires aggregating per-race results, and Pulselive doesn't publish a ready-made constructors table — deferring until a session can do the aggregation properly without estimating.
+
 ## 0.12.3 — 2026-05-21
 
 **Formula E rounds 7-10 now show full per-position classifications.** Berlin R7/R8 (2 + 3 May) and Monaco R9/R10 (16 + 17 May) had been stuck on a flat "winner only" line because the Wikipedia per-event articles for those weekends are season-summary stubs. Each of those four race cards now expands to a full top-20-ish classification — driver, team, gap to the leader. Data source is motorsportweek.com's per-event results posts.
