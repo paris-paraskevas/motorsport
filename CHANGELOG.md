@@ -4,6 +4,56 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.7 — 2026-05-21
+
+Visual + UX polish on the consent modal that shipped a few hours earlier in 0.12.6. Operator browser-tested 0.12.6 and flagged that (a) the modal could look much more refined, and (b) the button set should drop "Reject all" in favour of "Allow all" + "Essential only" + "Customize" — "Essential only" reads more accurately than "Reject all" (Necessary cookies are never rejectable) and matches Mozilla's published "Reject All Additional Cookies" pattern in substance.
+
+This PR is research-driven. A 370-line synthesis at `docs/research/cookie-consent-ux-2026-05-21.md` reviews ten well-known sites (Vercel / Stripe / Linear / Notion / Apple / GitHub / Mozilla / Guardian / NYT / Shopify) plus the shadcn / Microsoft consent-banner / vanilla-cookieconsent references, EDPB dark-patterns guidance, the 2025 Austrian high court button-parity ruling, and Dutch AP labelling guidance. Every visual + copy decision below traces back to a finding in that doc.
+
+### Changed
+
+- **`components/CookieConsent.tsx`** — full rewrite of presentation. Logic unchanged: same Consent Mode v2 mapping, same `localStorage['paddock:consent']` shape, same 12-month re-prompt, same `open-cookie-consent` event re-open path. What changed:
+  - **Layout** — was centered modal with `bg-black/70` backdrop; now bottom-aligned card with no scrim. Page stays readable while user decides. `fixed inset-x-4 bottom-4 z-[100] sm:inset-x-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2`. Per research §1.5: centered + scrim wins compliance opt-in but hurts engagement on a content site; bottom card without scrim is the right tradeoff for Paddock.
+  - **Sizing** — was `max-w-lg` (512px) for both layers; now `max-w-md` (448px) main / `max-w-lg` customize. The main layer doesn't need the extra width; the customize layer does because of the four toggle rows.
+  - **Corners + shadow** — was `rounded-(--radius-card)` (8px); now `rounded-2xl` (16px) with `shadow-2xl`. Softer/more modern per the shadcn / Vercel / Linear convention surveyed.
+  - **Button set** — was Accept all / Reject all / Customize (three identical filled buttons); now Allow all (filled primary `bg-text text-bg`) / Essential only (outline secondary `border-border bg-transparent`) / Customize (ghost tertiary `text-text-muted` link-style). Two-tier visual hierarchy. Allow + Essential are visually equal-weight (same height, same width with `sm:flex-1`); Customize is a different action class (configure rather than decide) and earns lower weight — matches Mozilla, Shopify, every shadcn variant. Buttons stack vertically on `<sm` viewports.
+  - **Toggle layout** — was text-left / switch-right; now switch-left / text-right + an "Always on" pill next to the Necessary title. Per research §2.4: switch-left reads better in dark mode and is the shadcn / Radix convention. The "Always on" badge is `text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded border border-border bg-bg` — small enough not to compete with the title, clear enough to telegraph the locked state.
+  - **Toggle dimensions** — was `h-6 w-11` track + `h-5 w-5` thumb; now `h-5 w-9` + `h-4 w-4`. Slightly more compact to fit the row inline with the title + description block.
+  - **Customize footer** — was three buttons (Save / Reject all / Accept all); now two (Cancel ghost + Save preferences primary) with an optional back-arrow chevron in the top-left that appears only when the user reached Customize via the main layer (so cancel-from-footer dismisses cleanly, cancel-from-main bounces back). The chevron uses a hand-inlined SVG — no new icon library dependency.
+  - **Re-open behaviour from Footer** — `open-cookie-consent` event now opens directly into the customize layer (was: main layer). Users re-opening from the footer are nearly always there to flip a specific category, not to redo the binary; this saves them a click.
+  - **Cancel-from-customize logic** — when user opens customize with no stored decision (first visit, came via the main layer), Cancel bounces back to the main layer rather than dismissing — preserves the "user must make a choice" posture without forcing them through customize once they get there.
+  - **Entry animation** — fade + 16px slide-up, 200ms ease-out, honors `prefers-reduced-motion`. Implemented via `data-state="open|closed"` + Tailwind `motion-safe:` variants; flip from closed → open scheduled via `requestAnimationFrame` so the initial closed-state renders before the transition runs. Per research §2.6: no bounce / spring / scale-up — EDPB flags those as dark patterns.
+  - **Copy refresh** — heading "Cookies on Paddock" (was "Your cookie choices"); body tightened to Paddock-voice ("Necessary cookies keep the site working — sign-in, preferences, that's it..."). Customize heading "Cookie preferences" (was "Customize your choices"); intro restructured so "Necessary cookies are always on" leads. Category descriptions tightened — Analytics: "Pseudonymous measurement of which series and pages people care about" (was: generic Google Analytics language).
+  - **No icon** — confirmed per research §2.7. Cookie emoji infantile; shield/lock alarming; Stripe / Linear / Notion / Apple all omit. Heading carries the meaning.
+  - **No per-series tint** — toggle on-state uses `bg-text` (inverse contrast), never `var(--tint)`. The modal is global / cross-series, so using the active series accent would re-colour the modal mid-session.
+
+### Test
+
+- 37 test files / 296 tests pass. `npx tsc --noEmit` clean. `npx eslint components/CookieConsent.tsx` clean (with two `react-hooks/set-state-in-effect` suppressions: one for the localStorage-driven first-mount decision per 0.12.6, one for the animation-frame open-state effect).
+
+### Phase 2 renumbering (one more slot inserted)
+
+| Ver | Scope | Status |
+|---|---|---|
+| 0.12.5 | feat(footer) multi-column + copyright | ✅ shipped |
+| 0.12.6 | feat(consent) custom modal, drop FC | ✅ shipped |
+| 0.12.7 | **feat(consent) UX polish, research-driven** | this PR |
+| 0.12.8 | feat(wec) standings + results (was 0.12.7) | next |
+| 0.12.9 | feat(imsa) full-class results (was 0.12.8) | |
+| 0.12.10 | feat(nascar-cup) full-class results (was 0.12.9) | |
+| 0.12.11 | feat(gt-world) results + points scale (was 0.12.10) | |
+| 0.12.12 | feat(wrc) per-rally full-class (was 0.12.11) | |
+| 0.12.13 | feat(dtm) standings + results (was 0.12.12) | |
+| 0.12.14 | feat(nls) standings + results (was 0.12.13) | |
+| 0.13.0 | feat(drivers) bulk × 13 series | unchanged |
+
+### Out of scope (deliberate)
+
+- **Exit animation when the user picks an option.** Modal returns `null` immediately on choice. Adding an exit animation requires keeping the modal mounted for ~200ms after choice with a `visible-but-fading` intermediate state, which complicates the `view === 'closed' → null` short-circuit. The cookie modal is a once-per-12-months moment for any given user; a clean entry is enough.
+- **Cookie-by-cookie disclosure table inside the customize layer.** The `/cookies` legal page already lists every cookie by name + owner + duration; per research §2.4 the 2026 trend is to drop the per-cookie table from the in-modal UI and trust the user to read the legal page if they want details. Modal stays category-level.
+- **Radix UI `Switch` primitive.** Switch is a hand-rolled `<button role="switch">` with Tailwind. Adding Radix Switch would pull in ~3 KB and a peer dep for one toggle component used in one place. Custom button satisfies the a11y contract (role + aria-checked + keyboard focus).
+- **Per-category info popover ("what's this?").** Considered and dropped. The descriptions are short enough that an additional disclosure layer adds friction without adding clarity.
+
 ## 0.12.6 — 2026-05-21
 
 Custom cookie-consent modal replacing Google Funding Choices. FC was loaded with the explicit `?ers=1` early-renderable signal in 0.10.19 to force the consent banner before AdSense approval — that didn't work. AdSense site approval is the actual gate: until it flips, `fundingchoicesmessages.google.com` returns the bootstrap shim but never fetches a published message. Consent Mode v2 then stays stuck on `denied` from the default in `layout.tsx`, and GA4 fires nothing for EU/UK visitors. End result: Vercel Analytics shows real EU traffic, GA4 shows ~zero. Stats blackout for most of the audience.

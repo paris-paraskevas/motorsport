@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.7 — 2026-05-21
+
+**Refreshed cookie-consent modal.** Sharper layout (sits as a card at the bottom of the page now, not a full-screen overlay), clearer button labels — **Allow all** / **Essential only** / **Customize** — and a tidier per-category panel with a small "Always on" tag on the necessary line so you know which one can't be toggled. The substance is identical to the version that landed earlier today; this is purely a visual and copy pass driven by a research walk through how Vercel, Stripe, Linear, Notion, Apple, GitHub, Mozilla, Guardian, NYT, and Shopify handle the same moment.
+
+A small detail: if you re-open the modal from the **Manage cookies** link in the footer, it now opens straight into the per-category panel — that's almost always where you're going if you re-opened it.
+
 ## 0.12.6 — 2026-05-21
 
 **A new cookie-consent modal.** On your first visit, Paddock now shows a small modal with three equal options — **Accept all**, **Reject all**, or **Customize** (per-category toggles). Whatever you choose is applied right away: analytics and advertising cookies only run if you grant consent for them, otherwise the scripts fall back to cookieless pings. Necessary cookies (authentication, your preferences) are always on because the site can't work without them.

@@ -74,12 +74,13 @@ export function CookieConsent() {
     advertising: false,
     functional: false,
   });
+  // Entry animation flag — flipped one frame after view becomes non-closed so
+  // the initial closed-state render lands and the CSS transition then plays.
+  const [animateOpen, setAnimateOpen] = useState(false);
 
   // First-mount decision: open if no stored consent OR stored decision is stale.
   // The setState-in-effect lint rule fires here because the decision depends on
-  // browser-only state (localStorage), which isn't readable during SSR and so
-  // can't be derived at render time. One-shot cascading render on mount is the
-  // intended behavior, not a perf issue.
+  // browser-only state (localStorage), which isn't readable during SSR.
   useEffect(() => {
     const stored = loadStored();
     if (!stored || Date.now() - stored.timestamp > TWELVE_MONTHS_MS) {
@@ -97,42 +98,78 @@ export function CookieConsent() {
     });
   }, []);
 
+  // Schedule the open-state flip one frame after view changes to a visible
+  // layer, so the closed-state render paints first and the CSS transition
+  // runs. Resets to closed when view goes back to 'closed'.
+  useEffect(() => {
+    if (view === 'closed') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAnimateOpen(false);
+      return;
+    }
+    const id = requestAnimationFrame(() => setAnimateOpen(true));
+    return () => cancelAnimationFrame(id);
+  }, [view]);
+
   // Footer "Manage cookies" button (and anything else) can re-open the modal
   // by dispatching window.dispatchEvent(new Event('open-cookie-consent')).
+  // Re-opens directly into the customize layer with current prefs pre-filled
+  // — users who reopen are nearly always there to change something granular,
+  // not to flip the binary, per the UX research notes.
   useEffect(() => {
-    const handler = () => setView('main');
+    const handler = () => setView('customize');
     window.addEventListener(OPEN_EVENT, handler);
     return () => window.removeEventListener(OPEN_EVENT, handler);
   }, []);
 
-  const decide = useCallback((next: ConsentPrefs) => {
-    setPrefs(next);
-    persist(next);
-    applyConsent(next);
-    setView('closed');
-  }, []);
+  const decide = useCallback(
+    (next: ConsentPrefs) => {
+      setPrefs(next);
+      persist(next);
+      applyConsent(next);
+      setView('closed');
+    },
+    [],
+  );
 
-  const acceptAll = () =>
+  const allowAll = () =>
     decide({ analytics: true, advertising: true, functional: true });
-  const rejectAll = () =>
+  const essentialOnly = () =>
     decide({ analytics: false, advertising: false, functional: false });
   const savePrefs = () => decide(prefs);
+  const cancelCustomize = () => {
+    // If the user opened customize from a clean state (no stored decision),
+    // cancelling shouldn't dismiss — bounce them back to the main layer so
+    // they still have to choose. If they opened from the footer (existing
+    // stored decision), cancel is a true dismiss.
+    const stored = loadStored();
+    if (stored) {
+      setView('closed');
+    } else {
+      setView('main');
+    }
+  };
 
   if (view === 'closed') return null;
 
   return (
     <div
       role="dialog"
-      aria-modal="true"
+      aria-modal="false"
       aria-labelledby="cookie-consent-title"
       aria-describedby="cookie-consent-desc"
-      className="fixed inset-0 z-[100] grid place-items-end sm:place-items-center bg-black/70 p-4"
+      data-state={animateOpen ? 'open' : 'closed'}
+      className="fixed inset-x-4 bottom-4 z-[100] sm:inset-x-auto sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 sm:w-full motion-safe:transition-all motion-safe:duration-200 motion-safe:ease-out data-[state=closed]:motion-safe:translate-y-4 data-[state=closed]:motion-safe:opacity-0 data-[state=open]:motion-safe:translate-y-0 data-[state=open]:motion-safe:opacity-100"
     >
-      <div className="w-full sm:max-w-lg bg-surface-elevated border border-border rounded-(--radius-card) shadow-2xl">
+      <div
+        className={`bg-surface-elevated border border-border rounded-2xl shadow-2xl mx-auto ${
+          view === 'main' ? 'sm:max-w-md' : 'sm:max-w-lg'
+        }`}
+      >
         {view === 'main' ? (
           <MainLayer
-            onAcceptAll={acceptAll}
-            onRejectAll={rejectAll}
+            onAllowAll={allowAll}
+            onEssentialOnly={essentialOnly}
             onCustomize={() => setView('customize')}
           />
         ) : (
@@ -140,8 +177,9 @@ export function CookieConsent() {
             prefs={prefs}
             setPrefs={setPrefs}
             onSave={savePrefs}
-            onRejectAll={rejectAll}
-            onAcceptAll={acceptAll}
+            onCancel={cancelCustomize}
+            onBack={() => setView('main')}
+            hasStoredDecision={loadStored() !== null}
           />
         )}
       </div>
@@ -150,33 +188,38 @@ export function CookieConsent() {
 }
 
 function MainLayer({
-  onAcceptAll,
-  onRejectAll,
+  onAllowAll,
+  onEssentialOnly,
   onCustomize,
 }: {
-  onAcceptAll: () => void;
-  onRejectAll: () => void;
+  onAllowAll: () => void;
+  onEssentialOnly: () => void;
   onCustomize: () => void;
 }) {
   return (
     <div className="p-6">
       <h2
         id="cookie-consent-title"
-        className="text-base font-semibold text-text mb-2"
+        className="text-base font-semibold text-text tracking-tight"
       >
-        Your cookie choices
+        Cookies on Paddock
       </h2>
-      <p id="cookie-consent-desc" className="text-sm text-text-muted leading-relaxed">
-        Paddock uses essential cookies to make the site work. With your consent,
-        we also use analytics to understand how the site is used and advertising
-        to keep it free. You can change your choice anytime from the footer.
+      <p
+        id="cookie-consent-desc"
+        className="mt-2 text-sm text-text-muted leading-relaxed"
+      >
+        Necessary cookies keep the site working — sign-in, preferences, that&apos;s
+        it. Optional analytics help us see which series people care about. Pick
+        what&apos;s on. Change anytime in the footer.
       </p>
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <ConsentButton autoFocus onClick={onAcceptAll}>
-          Accept all
-        </ConsentButton>
-        <ConsentButton onClick={onRejectAll}>Reject all</ConsentButton>
-        <ConsentButton onClick={onCustomize}>Customize</ConsentButton>
+      <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+        <PrimaryButton autoFocus onClick={onAllowAll} className="sm:flex-1">
+          Allow all
+        </PrimaryButton>
+        <OutlineButton onClick={onEssentialOnly} className="sm:flex-1">
+          Essential only
+        </OutlineButton>
+        <GhostButton onClick={onCustomize}>Customize</GhostButton>
       </div>
     </div>
   );
@@ -186,62 +229,82 @@ function CustomizeLayer({
   prefs,
   setPrefs,
   onSave,
-  onRejectAll,
-  onAcceptAll,
+  onCancel,
+  onBack,
+  hasStoredDecision,
 }: {
   prefs: ConsentPrefs;
   setPrefs: (p: ConsentPrefs) => void;
   onSave: () => void;
-  onRejectAll: () => void;
-  onAcceptAll: () => void;
+  onCancel: () => void;
+  onBack: () => void;
+  hasStoredDecision: boolean;
 }) {
   return (
     <div className="p-6">
-      <h2 id="cookie-consent-title" className="text-base font-semibold text-text mb-2">
-        Customize your choices
-      </h2>
-      <p id="cookie-consent-desc" className="text-sm text-text-muted leading-relaxed mb-4">
-        Necessary cookies keep the site working and are always on. Toggle the
-        others as you like.
+      <div className="flex items-center gap-2 mb-3">
+        {!hasStoredDecision && (
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Back"
+            className="-ml-1 inline-flex h-7 w-7 items-center justify-center rounded-md text-text-muted hover:text-text hover:bg-surface transition-colors duration-(--duration-fast) focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated"
+          >
+            <ChevronLeft />
+          </button>
+        )}
+        <h2
+          id="cookie-consent-title"
+          className="text-base font-semibold text-text tracking-tight"
+        >
+          Cookie preferences
+        </h2>
+      </div>
+      <p
+        id="cookie-consent-desc"
+        className="text-sm text-text-muted leading-relaxed mb-5"
+      >
+        Necessary cookies are always on — without them you can&apos;t sign in or save
+        preferences. Everything else is your call. Toggle a category off and we
+        won&apos;t load its scripts at all.
       </p>
       <div className="space-y-2 mb-5">
-        <Category
+        <CategoryRow
           title="Necessary"
-          description="Required for the site to work — authentication, security, your saved preferences."
-          locked
+          description="Sign-in, security, saved preferences."
           checked
+          locked
         />
-        <Category
+        <CategoryRow
           title="Analytics"
-          description="Aggregate, pseudonymous measurement of how Paddock is used (Google Analytics)."
+          description="Pseudonymous measurement of which series and pages people care about."
           checked={prefs.analytics}
           onChange={(v) => setPrefs({ ...prefs, analytics: v })}
         />
-        <Category
+        <CategoryRow
           title="Advertising"
-          description="Ad delivery and frequency capping (Google AdSense). Helps keep Paddock free."
+          description="Ad delivery and frequency capping. Helps keep Paddock free."
           checked={prefs.advertising}
           onChange={(v) => setPrefs({ ...prefs, advertising: v })}
         />
-        <Category
+        <CategoryRow
           title="Functional"
-          description="Optional personalization features that improve the experience over time."
+          description="Optional personalization that improves the experience over time."
           checked={prefs.functional}
           onChange={(v) => setPrefs({ ...prefs, functional: v })}
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <ConsentButton autoFocus onClick={onSave}>
-          Save choices
-        </ConsentButton>
-        <ConsentButton onClick={onRejectAll}>Reject all</ConsentButton>
-        <ConsentButton onClick={onAcceptAll}>Accept all</ConsentButton>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+        <GhostButton onClick={onCancel}>Cancel</GhostButton>
+        <PrimaryButton autoFocus onClick={onSave}>
+          Save preferences
+        </PrimaryButton>
       </div>
     </div>
   );
 }
 
-function Category({
+function CategoryRow({
   title,
   description,
   checked,
@@ -255,14 +318,26 @@ function Category({
   onChange?: (next: boolean) => void;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 p-3 bg-surface border border-border rounded-(--radius-card)">
-      <div className="min-w-0">
-        <div className="text-sm font-medium text-text">{title}</div>
+    <div className="flex items-start gap-3 p-3 bg-surface border border-border rounded-xl">
+      <Toggle
+        checked={checked}
+        locked={locked}
+        onChange={onChange}
+        label={title}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium text-text">{title}</div>
+          {locked && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider text-text-muted bg-bg border border-border">
+              Always on
+            </span>
+          )}
+        </div>
         <div className="mt-0.5 text-xs text-text-muted leading-relaxed">
           {description}
         </div>
       </div>
-      <Toggle checked={checked} locked={locked} onChange={onChange} label={title} />
     </div>
   );
 }
@@ -286,37 +361,97 @@ function Toggle({
       aria-label={label}
       disabled={locked}
       onClick={() => onChange?.(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-(--duration-fast) focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated ${
+      className={`relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-(--duration-fast) focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
         checked ? 'bg-text' : 'bg-border'
-      } ${locked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+      } ${locked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
         aria-hidden
-        className={`inline-block h-5 w-5 transform rounded-full bg-bg shadow transition-transform duration-(--duration-fast) ${
-          checked ? 'translate-x-5' : 'translate-x-0.5'
+        className={`inline-block h-4 w-4 transform rounded-full bg-bg shadow transition-transform duration-(--duration-fast) ${
+          checked ? 'translate-x-[18px]' : 'translate-x-0.5'
         }`}
       />
     </button>
   );
 }
 
-function ConsentButton({
+function PrimaryButton({
   autoFocus,
   onClick,
   children,
+  className = '',
 }: {
   autoFocus?: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       autoFocus={autoFocus}
       onClick={onClick}
-      className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium bg-text text-bg border border-text rounded-(--radius-card) hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated transition-opacity duration-(--duration-fast)"
+      className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium bg-text text-bg rounded-lg hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated transition-opacity duration-(--duration-fast) ${className}`}
     >
       {children}
     </button>
+  );
+}
+
+function OutlineButton({
+  onClick,
+  children,
+  className = '',
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-text bg-transparent border border-border rounded-lg hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated transition-colors duration-(--duration-fast) ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GhostButton({
+  onClick,
+  children,
+  className = '',
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-text-muted bg-transparent rounded-lg hover:text-text hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-surface-elevated transition-colors duration-(--duration-fast) ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ChevronLeft() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
   );
 }
