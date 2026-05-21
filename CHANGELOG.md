@@ -4,6 +4,34 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.3 — 2026-05-21
+
+Phase 2 third PR. Adds a motorsportweek.com fallback layer to the FE results parser so the four currently-stub rounds (Berlin R7/R8 on 2 + 3 May, Monaco R9/R10 on 16 + 17 May) ship full per-position classifications instead of the winners-only row that was the only thing surviving the Wikipedia per-event parse. Wikipedia continues to be the primary source — for R1-R6 the per-event articles carry their own classification tables and the existing path still wins.
+
+### Added
+
+- **`MOTORSPORTWEEK_TEAM_ALIASES`** (`lib/results/formula-e.ts`) — short-form → canonical mapping for the 10 FE entries motorsportweek surfaces with brand-only labels: `Porsche` → `Porsche Team`, `Citroen` → `DS Penske` (cross-verified DS Penske is the Stellantis FE entry per `feedback-paddock-search-for-missing-data` 5-source rule), `Kiro` → `Cupra Kiro`, `Lola` → `LOLA YAMAHA ABT`, etc. Identity entries explicit so the lookup always succeeds.
+- **`FE_POINTS_BY_POSITION`** = `[25, 18, 15, 12, 10, 8, 6, 4, 2, 1]` for the top 10 finishers. P11+ get 0. Pole bonus (+3) and Fastest Lap bonus (+1) are *not* modelled here — motorsportweek omits both flags. This is a known ~1-3pt per-driver per-race drift vs the FIA's published standings; the cross-cutting chart-vs-standings invariant therefore keeps the FE trend chart dropped (no change from 0.11.12) until a separate bonuses curation PR ships pole/FL data via `content/series/formula-e/results-overrides.json`.
+- **`buildMwUrl`** — derives `https://www.motorsportweek.com/YYYY/MM/DD/formula-e-YYYY-{city-slug}-e-prix-race-{N}-results/` from the round's race-day Date + E-Prix label. Slug = E-Prix name minus " ePrix" suffix, NFD-stripped diacritics, lowercased, kebab-cased. `raceN` = 1 for singleheader / first-of-doubleheader, 2 for second-of-doubleheader; the bucket lookup picks the right value.
+- **`parseMotorsportweekClassification`** — cheerio extractor for the WP `<figure class="wp-block-table"><table class="has-fixed-layout">` shape. Columns are Position / Drivers / Team / Gap. Non-numeric Position cells (DNF, blanks) are dropped; ≥5 rows required to clear the sanity floor; team strings normalised via `canonicaliseMwTeam`. Gap preserved as-is on `time` so "1 Lap" (lapped runners) and `+0.798` (timing gaps) both surface.
+- **`fetchMwClassification`** — async wrapper. Returns `null` on 404 / parse failure so the main loop can fall through to winners-only.
+- **`fetchFormulaESeasonResults`** main loop — after the Wikipedia-classifications phase populates `resultsByRound`, identify every round still sitting at the winners-only fallback and dispatch motorsportweek in parallel for each. Success replaces the 1-row entry with full classification; failure leaves the winners-only row intact. No behavior change for the rounds where Wikipedia already provided full data.
+
+### Test
+
+- 4 new cases in `lib/results/formula-e.test.ts` covering: WP table parse with team alias normalisation (Porsche → "Porsche Team", Citroen → "DS Penske", Kiro → "Cupra Kiro"), missing wp-block-table returns `[]`, sanity floor rejects tables with fewer than 5 rows, non-numeric Position cells skipped.
+- 35 test files / 281 tests pass. `npx tsc --noEmit` clean.
+
+### Why this version exists
+
+Phase 2 PR #3. Closes the operator-flagged ⚠ for FE results — R7-R10 are no longer winners-only. Patch bump because no new public API surface (the parser change is wholly internal to `lib/results/formula-e.ts`); the dispatch in `components/tabs/ResultsTab.tsx` is unchanged.
+
+### Out of scope
+
+- **Trend chart restoration**. The chart-vs-standings invariant requires totals to match the standings tab to within a stable delta. The ~1-3pt per-round per-driver gap from missing pole/FL bonuses violates that — restoring the chart on top of position-only-points would erode trust the same way the 0.11.6 → 0.11.12 churn did. Follow-up: curate pole + FL per-round to `content/series/formula-e/results-overrides.json` (3 datapoints × 4 rounds = 12 entries) per `feedback-paddock-search-for-missing-data`, then re-restore the chart in a separate PR.
+- **DNF rows for R7-R10**. motorsportweek's per-event tables include only classified finishers (the prose mentions DNFs but doesn't list them). If a future round has multiple DNFs we'd need either a curated overrides backfill or a different upstream.
+- **Cassidy/Vergne team disambiguation**. Both currently surface as "DS Penske" through the alias map. The Phase 1 research flagged that the Stellantis FE operation may actually run two separately-named entries (Citroën Racing for Cassidy, DS Penske for Vergne); resolving that requires the fiaformulae.com entry-list confirmation we deferred. Folds into the 0.13.0 drivers.json bulk-commit.
+
 ## 0.12.2 — 2026-05-21
 
 Phase 2 second PR. IndyCar per-race results land live on `/series/indycar?tab=results` for all 17 IndyCar championship rounds (expanded to 18 race columns including the MIL doubleheader). Source: Wikipedia 2026 IndyCar Series `Driver_standings` table. Output is intentionally minimal — position + driver + team + status + computed points; lap counts / elapsed time / car number remain SPA-only on indycar.com and are out of scope.
