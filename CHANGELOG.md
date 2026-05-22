@@ -4,6 +4,48 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.13 — 2026-05-22
+
+Closes another `❌` in the per-series results inventory: `/series/gt-world?tab=results` now renders the full per-cup classification for every completed 2026 GT World Challenge Europe race. Previously the tab fell through to the `LinkOutCard` (sending visitors to the SRO site); the existing `lib/results/gt-world.ts` parser had been on `main` since 0.11.x but was un-dispatched because per-position points weren't computed and the chart-vs-standings invariant blocked partial work.
+
+**Scope cut from the original HANDOFF plan.** The locked plan said "feat(gt-world) results + SRO points scale" — i.e. encode the full SRO scoring (top-10 + pole bonus + Endurance 75%/25min gates + Spa 24h 3-stage scoring + Spa Super Pole top-5 fractions + Paul Ricard 1000km multiplier + per-cup sub-scoring) and ship the trend chart if totals reconcile against the standings tab. Operator approved a scope cut to classification-only after the implementation probe surfaced how complex the full scale is. SRO points + trend chart deferred to `0.12.13.1 feat(gt-world) trend chart` as a follow-up.
+
+### Added
+
+- **`components/tabs/ResultsTab.tsx`** — new `gt-world` dispatch branch + four IMSA-style helper components: `GtWorldSeasonResultsPanel` flattens races × cups into one `<details>` per (race, cup); `GtWorldRoundClassCard` renders one accordion row (championship-type chip `E`/`S`, event + race + cup label, winner crew + team); `GtWorldResultRow` renders one entry with car-number pill, ` · `-joined drivers, team · vehicle, and gap-or-time on the right (no points column — SRO scale deferred). `GT_WORLD_CUP_ORDER` constant fixes cup ordering at Pro → Gold → Silver → Bronze, matching the StandingsTab grouping.
+- **`tests/fixtures/gtw-{results-listing,event-paulricard,event-brandshatch,race-paulricard-main,race-brandshatch-r1}-2026.html`** — real captures from gt-world-challenge-europe.com on 2026-05-22 (67-88 KB each). The 2026 season listing (10 events), Paul Ricard 1000km event page (7 race options pre-filter / 1 post-filter), Brands Hatch event page (2 race options), Paul Ricard Main Race classification (49 entries across all 4 cups), Brands Hatch Race 1 classification (31 entries across Pro+Gold+Silver — Bronze entries skip Brands Hatch per SRO 2026 schedule).
+- **`lib/results/gt-world.test.ts`** — 6 new "real captured 2026 fixtures" cases on top of the existing 12 synthetic tests. Verify event listing extraction (10 events incl. nürburgring slug with non-ASCII char + crowdstrike-24-hours-of-spa), Paul Ricard final-race-only filtering, Brands Hatch R1/R2 enumeration, cup distribution per round (Paul Ricard endurance = 4 cups, Brands Hatch sprint = 3 cups), winner crew identity (Comtoyou #7 / AF Corse #50).
+
+### Changed
+
+- **`lib/results/gt-world.ts`** — tightened `RACE_NAME_PATTERN` from `/^(Main Race|Race \d+|...)/i` to `/^(Main Race|Race \d+|...)$/i`. The trailing `$` rejects "Main Race after 5.30 hours" / "Main Race after 4.30 hours" intermediate hourly checkpoints that the parser previously promoted to standalone races, polluting the season output with 6 duplicate "race" cards per endurance round. Verified on browser-render: Paul Ricard 1000km now surfaces as a single "Main Race" entry rather than 7 hourly snapshots.
+- **`components/tabs/ResultsTab.tsx`** — NASCAR `NASCAR_SOURCE_URL` corrected (drive-by from PR #92): was still pointing at `racing-reference.info` when the actual data source switched to Wikipedia in 0.12.12.1. Source-link label now reads "Wikipedia (2026 NASCAR Cup Series)" matching the post-fix code path. Trend-chart inline comment updated to refer to Wikipedia per-race rather than RR's `Pts` column.
+
+### Won't ship in this PR (deferred to `0.12.13.1`)
+
+- SRO 2026 sporting-regulations points scale encoded as a module: Sprint Cup top-10 (`25-18-15-12-10-8-6-4-2-1` per Wikipedia 2026 GT World Challenge Europe; pole-sitter +1 bonus); Endurance Cup top-10 with the same base + pole bonus + 75% race distance + 25min driver-time minima to be classified; Spa 24h 3-stage scoring (points at 6h / 12h / finish per SRO); Spa Super Pole top-5 fractional bonuses (1 / 0.5 / 0.375 / 0.25 / 0.125); per-cup sub-scoring within each race.
+- `SeasonTrendChart` for GT-World contingent on the scale module reconciling against the standings parser's totals.
+
+### Verification
+
+- 18 GT-World cases pass (12 pre-existing synthetic + 6 new real-fixture). Full suite: 38 test files / 329 tests.
+- `npx tsc --noEmit` clean. `npx eslint` clean.
+- Playwright on `localhost:3000/series/gt-world?tab=results` — 10 (race, cup) cards rendering (Paul Ricard Main Race × 4 cups, Brands Hatch R1 × 3 cups, Brands Hatch R2 × 3 cups). Pro Cup winners on Paul Ricard = Comtoyou Racing #7 (Drudi/Sørensen/Thiim), Brands Hatch R1 = AF Corse #50 (Leclerc/Neubauer) — matches expected season-opening results.
+- **Vercel preview verify gating the merge** — per the CLAUDE.md rule introduced in 0.12.12.1. No merge until `*.vercel.app` URL renders correctly.
+
+### Phase 2 sequence
+
+| Ver | Scope | Source | Status |
+|---|---|---|---|
+| 0.12.11 | feat(imsa) full-class results | Alkamel JSON | ✅ shipped (PR #90) |
+| 0.12.12 | feat(nascar-cup) full-class results + trend chart | racing-reference (http2) | 🔴 merged but BROKEN (PR #91) |
+| 0.12.12.1 | fix(nascar-cup) pivot to Wikipedia | Wikipedia per-race | ✅ shipped (PR #92) |
+| 0.12.13 | **feat(gt-world) classification dispatch (no chart)** | gt-world-challenge-europe.com | this PR |
+| 0.12.13.1 | feat(gt-world) SRO points + trend chart | SRO regs + standings reconciliation | queued |
+| 0.12.14 | feat(wrc) per-rally full-class | Wikipedia per-rally | queued |
+| 0.12.15 | feat(dtm) standings + results | motorsport.com/dtm | queued |
+| 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | queued |
+
 ## 0.12.12.1 — 2026-05-22
 
 Hot-fix on top of 0.12.12 (PR #91). The racing-reference http2 path that worked on localhost did NOT survive Vercel Functions runtime — Cloudflare's WAF on racing-reference challenges the `iad1` datacenter IP with a "Just a moment..." JS interstitial. Operator-confirmed Vercel runtime logs:

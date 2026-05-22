@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.13 — 2026-05-22
+
+**GT World Challenge Europe race results, every cup.** The GT World Challenge Results tab now shows the complete per-cup classification from every completed 2026 race so far — Paul Ricard 1000km and the Brands Hatch sprint double-header. Each (race, cup) card expands to the top 10 in that cup with car number, full driver crew (3-4 names at endurance, 2 at sprint), team, and car model. Pro Cup, Gold Cup, Silver Cup, Bronze Cup all surfaced where present; the Bronze Cup correctly skips Brands Hatch since they sit out that round of the season per the SRO 2026 calendar.
+
+A heads-up on what's not here yet: there's no season-trend chart on this tab. SRO's points system is more layered than most series (top-10 base + pole bonus + 75% race-distance gate + Spa 24h's 3-stage scoring + Super Pole fractional bonuses + per-cup sub-scoring), and we want to get that right before plotting cumulative totals — otherwise the chart would silently disagree with the Standings tab on a few drivers. The classification is the headline win; the trend chart ships in a follow-up release.
+
 ## 0.12.12.1 — 2026-05-22
 
 **NASCAR Cup race results restored.** The Results tab on `/series/nascar-cup` went briefly blank earlier today after the 0.12.12 release — the upstream data source we'd locked in worked locally but turned out to refuse our hosting platform's network. We've swapped to fetching the same per-race classification from Wikipedia, which is friendlier to server-side requests, and everything is back: full 38-41 car classification per race, trend chart, all 12 completed 2026 rounds. No change to what you see on the page versus what the earlier release intended to show; the round names, driver lineups, and points scale are identical (Wikipedia and the previous source pull from the same NASCAR timing feed).
