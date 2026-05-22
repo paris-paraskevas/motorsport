@@ -4,6 +4,57 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.12.1 — 2026-05-22
+
+Hot-fix on top of 0.12.12 (PR #91). The racing-reference http2 path that worked on localhost did NOT survive Vercel Functions runtime — Cloudflare's WAF on racing-reference challenges the `iad1` datacenter IP with a "Just a moment..." JS interstitial. Operator-confirmed Vercel runtime logs:
+
+```
+[NASCAR-PROD-DEBUG] session connect ok origin=https://www.racing-reference.info
+[NASCAR-PROD-DEBUG] fetchViaHttp2 OK pathname=/season-stats/2026/W/ status=403 bodyLen=5732 sniff="<!DOCTYPE html>...<title>Just a moment...</title>"
+```
+
+`node:http2.connect()` itself is fine in Vercel runtime (the `session connect ok` line confirms hypothesis #1 dead). The TLS-fingerprint workaround only helps when the IP is unflagged — on Vercel's datacenter IP it doesn't.
+
+**Remediation locked:** pivot to Wikipedia per-race articles. Wikipedia returns 200 from any IP because they want bots indexing them, and the 2026-05-22 fallback probe confirmed every completed 2026 NASCAR Cup race article carries the full classification table with the canonical header `Pos | Grid | No | Driver | Team | Manufacturer | Laps | Points`. Verified across 6 races (R1 Daytona 500, R6 Goodyear 400, R8 Food City 500, R10 Jack Link's 500, R11 Würth 400, R12 Go Bowling at The Glen) — all carry full 38-41 car classifications. No need to widen the source net to 10-15 alternatives.
+
+### Removed
+
+- `node:http2`-based racing-reference fetcher and the entire `[NASCAR-PROD-DEBUG]` instrumentation that diagnosed the regression. Racing-reference is also dropped as the production source; the TLS-fingerprint workaround documented for posterity in the prior CHANGELOG entry stays as a future-reference note but the parser no longer uses it.
+- `tests/fixtures/nascar-cup-{season,daytona500,wurth400}-2026.html` — racing-reference fixtures replaced by Wikipedia-source fixtures.
+
+### Added
+
+- **`lib/results/nascar-cup.ts`** — rewritten parser. Stock `fetch()` (no http2, no custom dispatcher); standard `next: { revalidate: 3600 }` caching is back. Discovery: parse `2026_NASCAR_Cup_Series` Wikipedia season page's schedule table for per-race "Report" anchors, keyed by integer round number (preseason Clash + Duels skip naturally because they don't have integer round numbers). Per-race: pick the largest wikitable matching the canonical header. Daytona 500 has 3 such tables (2 Duels + main race); the row-count heuristic correctly picks the 41-car main race over the 24-car Duels.
+- **`tests/fixtures/nascar-cup-wiki-{season,daytona500,wurth}-2026.html`** — real Wikipedia payloads captured during the fallback probe (147-486 KB each).
+- **`lib/results/nascar-cup.test.ts`** — 12 cases against the new Wikipedia fixtures. Season-page link enumeration (skips Clash + Duels), 3-table picker on Daytona, single-table picker on Würth, defensive parsing (no-table / no-Points / missing columns), full-pipeline test with injected `fetchImpl` stub.
+
+### Changed
+
+- **`lib/results/nascar-cup.ts`** completely replaced. Same public function name (`fetchNascarCupSeasonResults`) + return shape (`RaceResult[]`), different internals + source.
+- **`components/tabs/ResultsTab.tsx`** — `NASCAR_SOURCE_URL` retargeted from racing-reference back to `en.wikipedia.org/wiki/2026_NASCAR_Cup_Series`. Trend chart stays — Wikipedia per-race tables carry points, and the standings parser sums from the same article tree so totals reconcile.
+
+### Operating-manual updates (CLAUDE.md)
+
+Three new Working agreement rules added directly responsive to this session's stumbles:
+1. **Always re-Read a file immediately before each Edit call** — repeated stumble on the Edit tool's read-state checksum. Codified after operator pushback.
+2. **Check `robots.txt` + `sitemap.xml` first when probing any new external source** — practice agreed mid-session.
+3. **Verify on Vercel preview, not just localhost, before declaring "shipped"** — the precise check that was planned-but-skipped on PR #91 and shipped this regression.
+
+### Session-end housekeeping bundled
+
+`docs/HANDOFF.md` top block + `SCHEDULE.md` outcomes both updated to reflect today's two PRs (IMSA + NASCAR) and this hot-fix.
+
+### Verification
+
+- 12 new vitest cases pass (38 test files / 324 tests total).
+- `npx tsc --noEmit` clean. `npx eslint` clean.
+- Playwright on `localhost:3000/series/nascar-cup?tab=results` — trend chart + 12 race accordions rendering with Wikipedia data (Daytona 500 winner = Tyler Reddick 23XI Racing, matches RR cross-check exactly).
+- **Vercel preview verify gating the merge** — per new CLAUDE.md rule, no merge until `*.vercel.app` URL renders the full classification.
+
+### Why this slipped past the original PR #91 verification
+
+The PR test plan included a checkbox for "verify Vercel preview deploy works in Vercel Functions runtime" — operator hit merge on the strength of the localhost-passes before that checkbox was ticked. The new CLAUDE.md rule (Working agreement #4 in the rewritten section) makes this verification non-skippable for any new server-side fetch.
+
 ## 0.12.12 — 2026-05-22
 
 Closes another `⚠️` in the per-series results-inventory: `/series/nascar-cup?tab=results` now renders the full per-finisher classification for every completed 2026 NASCAR Cup round, sourced directly from racing-reference.info per-race pages, with the `SeasonTrendChart` restored on top because per-finish points are reconciled at parse time. The previous Wikipedia winners-only parser fell back to a single `{ position: 1, points: 0 }` entry per round; this ships the real 40-car field with per-position points (race + stage rolled into the `Pts` column on RR).
