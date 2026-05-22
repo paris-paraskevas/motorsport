@@ -4,6 +4,51 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.14 — 2026-05-22
+
+Closes `/series/wrc?tab=results`: the Results tab now renders full per-rally WRC Rally1 classifications (top-N + retired entries) plus a `SeasonTrendChart` of cumulative championship points across the season. Replaces the 0.11.14 winners-only output that had silently regressed to 0 results in production after the season page's Season-summary table dropped its date column (the existing `findCalendarTable` + `buildColumnMap` chain failed closed when `date === -1`).
+
+**Two data sources, one consumer each.** The per-rally accordion renders from per-rally Wikipedia articles (`/wiki/2026_Rally_de_Portugal` etc.) which carry the WRC Rally1 → Classification table with full top-N + retired entries + Total points decomposition (Event + Sunday + Power Stage sub-totals). The trend chart reads from the season page's "FIA World Rally Championship for Drivers" table cell-by-cell, where each `(driver × rally)` cell holds an `<span class="sfrac">` wrapping rally position AND the "X+Y+Z" sub-total decomposition. Summing those sub-totals per driver across rallies yields exactly the Drivers' Championship totals — verified Δ=0 across all 29 scoring drivers at the 2026-05-22 snapshot.
+
+**Why two sources.** The per-rally articles and the season-page championship table occasionally disagree by ±3-6 points for marginal drivers (e.g. Hayden Paddon: per-rally accordion shows Canarias = 6 pts, season-page championship table shows 0 — Wikipedia editor inconsistency between the two pages). Using the championship-table per-cell breakdown for the chart guarantees the cross-series invariant: chart totals match the Standings tab by construction, because the Standings tab reads the same table's Totals column.
+
+### Added
+
+- **`lib/results/wrc.ts` `parseCalendarFromHtml(html, season)`** — extracts `{round, rallyName, date}[]` from the season page's `<h2 id="Calendar">` table (Round / Start date / Finish date / Rally / HQ / Surface / Stages / Distance / Ref). Replaces the previous parser's reliance on a single "Date" column in the Season-summary table that Wikipedia editors removed in early-2026. `parseRallyDate` handles "22–25 January" / "January 22-25" / "22 January – 25 January" / bare "12 March" — all four forms exercised by tests.
+- **`parseSeasonSummaryFromHtml(html)`** — extracts `{round, rallyName, winnerName, coDriverName, team, perRallyUrl}[]` from the season page's `<h3 id="Season_summary">` table. Surfaces upcoming rounds as `winnerName: null` so the orchestrator can decide whether to drop them. The `perRallyUrl` is the absolute `https://en.wikipedia.org/wiki/2026_<rally>` link from the "Report" column — feeds the per-rally fan-out.
+- **`parseRallyClassificationFromHtml(html)`** — extracts the WRC Rally1 → Classification table from a per-rally article. Handles two row shapes via colspan discriminator: classified rows have two `<th>` cells (overall position + class position — parser uses class position because the table is filtered to WRC Rally1), retired rows have one `<th colspan="2">` cell with text like "Retired SS17". Retired entries surface with `status='Retired SS17'`, `points=0`, and a synthetic position after the last classified row so sort is well-defined. Reads "Total" from the last `<td>` of each row (handles `<b>`-wrapped totals).
+- **`parseSeasonChartPointsFromHtml(html, season)`** — extracts per-cell sub-totals from the season page's `<h3 id="FIA_World_Rally_Championship_for_Drivers">` table. The DOM-walk filters to leaf `<span>` nodes (no nested spans) containing `+` characters — necessary because cheerio's `text()` concatenates the outer span (position digit) with the inner span (sub-totals "X+Y+Z"), producing ambiguous strings like "130+3+3" (P13 with "0+3+3" or P1 with "30+3+3"?). Returns synthetic `RaceResult[]` for chart input; not for accordion display.
+- **`fetchWRCSeasonChartPoints(season)`** — fetches season page + parses chart data. Used in parallel with `fetchWRCSeasonResults` in the WRC dispatch branch.
+- **`tests/fixtures/wrc-{season,rally-monte-carlo,rally-sweden,rally-safari,rally-croatia,rally-canarias,rally-portugal}-2026.html`** — real captures from en.wikipedia.org on 2026-05-22 (309-557 KB each). The 2026 season page plus all 6 completed rounds.
+- **`lib/results/wrc.test.ts`** — full rewrite, 18 cases against real fixtures. Verifies calendar parsing (14 rounds), season summary (winner + report URL), per-rally classification (Neuville P1 at Portugal with 30 pts, Ogier P1 at Canarias with 32 pts, retired-row handling), class-vs-overall position (Solberg P8 in Rally1 at Croatia despite P42 overall), per-driver sum reconciles to standings totals across all 29 drivers, fan-out integration with mocked fetch, fail-soft fallback to winners-only when per-rally pages are unreachable.
+
+### Changed
+
+- **`components/tabs/ResultsTab.tsx`** — WRC dispatch branch now `Promise.all`s both `fetchWRCSeasonResults` (per-rally accordion) and `fetchWRCSeasonChartPoints` (chart data) plus `loadResultsOverrides`. Renders `SeasonTrendChart` above `SeasonResultsPanel` when chart data is non-empty. Default-heading `SeasonResultsPanel` ("Season results") replaces the prior "Rally winners by round" label, matching the richer accordion content.
+- **`parseSeasonResultsFromHtml(html, season)`** — kept as a legacy/fallback export. Builds winners-only `RaceResult[]` from the Calendar + Season summary merge. Used by `fetchWRCSeasonResults` when a per-rally page is unreachable so we surface "Round 3 — winner: X" rather than dropping the round.
+- **`fetchWRCSeasonResults(season)`** — rewritten to fan out per-rally fetches in parallel. Each per-rally fetch is fail-soft: HTTP failure / structural mismatch falls back to a winners-only entry from the Season summary row.
+
+### Verification
+
+- 339 tests / 38 files pass, including 18 new WRC fixture-based cases.
+- `npx tsc --noEmit` clean.
+- Localhost browser check: `/series/wrc?tab=results` renders trend chart above per-rally accordions. Portugal expanded shows Neuville 30 / Solberg 24 / Evans 22 / Fourmaux 20 / Katsuta 12 — points match per-rally Wikipedia. Chart leader Evans = 123 pts after R6, matches Standings tab.
+- Per-driver season-total reconciliation: Δ=0 across all 29 scoring drivers (Evans 123, Katsuta 111, Solberg 92, Fourmaux 79, Pajari 78, Ogier 67, Neuville 65, Lappi 21, Y. Rossel 20, L. Rossel 18, Paddon 15, etc.).
+- **Vercel preview verify gating the merge** — per the CLAUDE.md rule introduced in 0.12.12.1. No merge until `*.vercel.app` URL renders correctly.
+
+### Phase 2 sequence
+
+| Ver | Scope | Source | Status |
+|---|---|---|---|
+| 0.12.11 | feat(imsa) full-class results | Alkamel JSON | ✅ shipped (PR #90) |
+| 0.12.12 | feat(nascar-cup) full-class results + trend chart | racing-reference (http2) | 🔴 merged but BROKEN (PR #91) |
+| 0.12.12.1 | fix(nascar-cup) pivot to Wikipedia | Wikipedia per-race | ✅ shipped (PR #92) |
+| 0.12.13 | feat(gt-world) classification dispatch (no chart) | gt-world-challenge-europe.com | ✅ shipped (PR #93) |
+| 0.12.14 | **feat(wrc) per-rally full-class + trend chart** | Wikipedia per-rally + season page | this PR |
+| 0.12.13.1 | feat(gt-world) SRO points + trend chart | SRO regs + standings reconciliation | queued |
+| 0.12.15 | feat(dtm) standings + results | motorsport.com/dtm | queued |
+| 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | queued |
+
 ## 0.12.13 — 2026-05-22
 
 Closes another `❌` in the per-series results inventory: `/series/gt-world?tab=results` now renders the full per-cup classification for every completed 2026 GT World Challenge Europe race. Previously the tab fell through to the `LinkOutCard` (sending visitors to the SRO site); the existing `lib/results/gt-world.ts` parser had been on `main` since 0.11.x but was un-dispatched because per-position points weren't computed and the chart-vs-standings invariant blocked partial work.

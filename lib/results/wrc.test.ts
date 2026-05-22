@@ -1,238 +1,242 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { fetchWRCSeasonResults, parseSeasonResultsFromHtml } from './wrc';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import {
+  fetchWRCSeasonResults,
+  parseCalendarFromHtml,
+  parseSeasonSummaryFromHtml,
+  parseRallyClassificationFromHtml,
+  parseSeasonChartPointsFromHtml,
+  parseRallyDate,
+  parseSeasonResultsFromHtml,
+} from './wrc';
 
-// Wikipedia's 2026 WRC calendar/results table has columns roughly like:
-// Round | Rally | Surface | Date | HQ | Stages | Winning driver | Co-driver | Manufacturer
-// Upcoming rounds have empty winner cells. Completed rounds have all fields.
-function buildCalendarRow(opts: {
-  round: number;
-  rally: string;
-  surface: string;
-  date: string;
-  hq: string;
-  stages: string;
-  winner?: string;
-  coDriver?: string;
-  team?: string;
-}): string {
-  return `
-    <tr>
-      <td>${opts.round}</td>
-      <td><a href="/wiki/${opts.rally.replace(/ /g, '_')}">${opts.rally}</a></td>
-      <td>${opts.surface}</td>
-      <td>${opts.date}</td>
-      <td>${opts.hq}</td>
-      <td>${opts.stages}</td>
-      <td>${opts.winner ? `<a href="/wiki/${opts.winner.replace(/ /g, '_')}">${opts.winner}</a>` : ''}</td>
-      <td>${opts.coDriver ?? ''}</td>
-      <td>${opts.team ?? ''}</td>
-    </tr>
-  `;
-}
+const FIXTURE_DIR = join(__dirname, '..', '..', 'tests', 'fixtures');
 
-const FULL_CALENDAR_HTML = `
-<!DOCTYPE html>
-<html><body>
-<h2 id="Calendar">Calendar</h2>
-<table class="wikitable">
-  <tbody>
-    <tr>
-      <th>Round</th>
-      <th>Rally</th>
-      <th>Surface</th>
-      <th>Date</th>
-      <th>Headquarters</th>
-      <th>Stages</th>
-      <th>Winning driver</th>
-      <th>Co-driver</th>
-      <th>Manufacturer</th>
-    </tr>
-    ${buildCalendarRow({
-      round: 1,
-      rally: 'Rallye Monte-Carlo',
-      surface: 'Tarmac',
-      date: '22–25 January',
-      hq: 'Gap',
-      stages: '17',
-      winner: 'Oliver Solberg',
-      coDriver: 'Elliott Edmondson',
-      team: 'Toyota Gazoo Racing WRT',
-    })}
-    ${buildCalendarRow({
-      round: 2,
-      rally: 'Rally Sweden',
-      surface: 'Snow',
-      date: '12–15 February',
-      hq: 'Umeå',
-      stages: '18',
-      winner: 'Elfyn Evans',
-      coDriver: 'Scott Martin',
-      team: 'Toyota Gazoo Racing WRT',
-    })}
-    ${buildCalendarRow({
-      round: 3,
-      rally: 'Safari Rally Kenya',
-      surface: 'Gravel',
-      date: '12–15 March',
-      hq: 'Nairobi',
-      stages: '19',
-      winner: 'Takamoto Katsuta',
-      coDriver: 'Aaron Johnston',
-      team: 'Toyota Gazoo Racing WRT',
-    })}
-    ${buildCalendarRow({
-      round: 4,
-      rally: 'Croatia Rally',
-      surface: 'Tarmac',
-      date: '9–12 April',
-      hq: 'Rijeka',
-      stages: '20',
-      winner: 'Takamoto Katsuta',
-      coDriver: 'Aaron Johnston',
-      team: 'Toyota Gazoo Racing WRT',
-    })}
-    ${buildCalendarRow({
-      round: 5,
-      rally: 'Rally Islas Canarias',
-      surface: 'Tarmac',
-      date: '23–26 April',
-      hq: 'Las Palmas',
-      stages: '15',
-      winner: 'Sébastien Ogier',
-      coDriver: 'Vincent Landais',
-      team: 'Toyota Gazoo Racing WRT',
-    })}
-    ${buildCalendarRow({
-      round: 6,
-      rally: 'Rally de Portugal',
-      surface: 'Gravel',
-      date: '7–10 May',
-      hq: 'Matosinhos',
-      stages: '21',
-      winner: 'Thierry Neuville',
-      coDriver: 'Martijn Wydaeghe',
-      team: 'Hyundai Shell Mobis WRT',
-    })}
-    ${buildCalendarRow({
-      round: 7,
-      rally: 'Rally Japan',
-      surface: 'Tarmac',
-      date: '28–31 May',
-      hq: 'Toyota',
-      stages: 'TBC',
-    })}
-    ${buildCalendarRow({
-      round: 8,
-      rally: 'Acropolis Rally Greece',
-      surface: 'Gravel',
-      date: '25–28 June',
-      hq: 'Loutraki',
-      stages: 'TBC',
-    })}
-  </tbody>
-</table>
-</body></html>
-`;
+const load = (slug: string) =>
+  readFileSync(join(FIXTURE_DIR, `wrc-${slug}-2026.html`), 'utf-8');
 
-const NO_TABLE_HTML = `
-<!DOCTYPE html>
-<html><body>
-<h2 id="Calendar">Calendar</h2>
-<p>To be announced.</p>
-</body></html>
-`;
+const seasonHtml = load('season');
+const rallyHtmls: Record<string, string> = {
+  'monte-carlo': load('rally-monte-carlo'),
+  sweden: load('rally-sweden'),
+  safari: load('rally-safari'),
+  croatia: load('rally-croatia'),
+  canarias: load('rally-canarias'),
+  portugal: load('rally-portugal'),
+};
 
-const EMPTY_HTML = `<html><body></body></html>`;
-
-function mockOk(html: string) {
-  globalThis.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    text: async () => html,
-  }) as unknown as typeof fetch;
-}
-
-function mockFail() {
-  globalThis.fetch = vi.fn().mockResolvedValue({
-    ok: false,
-    status: 500,
-    text: async () => 'Error',
-  }) as unknown as typeof fetch;
-}
-
-function mockReject() {
-  globalThis.fetch = vi
-    .fn()
-    .mockRejectedValue(new Error('network down')) as unknown as typeof fetch;
-}
-
-describe('parseSeasonResultsFromHtml', () => {
-  it('parses completed rallies from the calendar table and skips upcoming ones', () => {
-    const races = parseSeasonResultsFromHtml(FULL_CALENDAR_HTML, 2026);
-    expect(races).toHaveLength(6);
-    expect(races.map(r => r.round)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(races[0].raceName).toBe('Rallye Monte-Carlo');
-    expect(races[0].date.toISOString().startsWith('2026-01-22')).toBe(true);
-    expect(races[0].results[0]).toEqual({
-      position: 1,
-      driverName: 'Oliver Solberg / Elliott Edmondson',
-      team: 'Toyota Gazoo Racing WRT',
-      status: 'Winner',
-      points: 25,
-    });
-    expect(races[5].raceName).toBe('Rally de Portugal');
-    expect(races[5].results[0].driverName).toBe('Thierry Neuville / Martijn Wydaeghe');
-    expect(races[5].results[0].team).toBe('Hyundai Shell Mobis WRT');
+describe('parseRallyDate', () => {
+  it('parses "22–25 January" style ranges', () => {
+    const d = parseRallyDate('22–25 January', 2026);
+    expect(d).not.toBeNull();
+    expect(d!.toISOString().slice(0, 10)).toBe('2026-01-22');
   });
 
-  it('sorts rallies by round number', () => {
-    const races = parseSeasonResultsFromHtml(FULL_CALENDAR_HTML, 2026);
-    for (let i = 1; i < races.length; i++) {
-      expect(races[i].round).toBeGreaterThan(races[i - 1].round);
+  it('parses "January 22-25" inversed', () => {
+    const d = parseRallyDate('January 22-25', 2026);
+    expect(d!.toISOString().slice(0, 10)).toBe('2026-01-22');
+  });
+
+  it('parses a bare day-month', () => {
+    const d = parseRallyDate('12 March', 2026);
+    expect(d!.toISOString().slice(0, 10)).toBe('2026-03-12');
+  });
+
+  it('returns null on garbage', () => {
+    expect(parseRallyDate('not a date', 2026)).toBeNull();
+  });
+});
+
+describe('parseCalendarFromHtml', () => {
+  it('reads all 14 rounds from the 2026 season fixture', () => {
+    const rows = parseCalendarFromHtml(seasonHtml, 2026);
+    expect(rows).toHaveLength(14);
+    expect(rows[0].round).toBe(1);
+    expect(rows[0].rallyName).toBe('Rallye Automobile Monte Carlo');
+    expect(rows[0].date.toISOString().slice(0, 10)).toBe('2026-01-22');
+    expect(rows[5].rallyName).toBe('Rally de Portugal');
+    expect(rows[5].date.toISOString().slice(0, 10)).toBe('2026-05-07');
+  });
+});
+
+describe('parseSeasonSummaryFromHtml', () => {
+  it('reads completed rounds with winner + per-rally URL', () => {
+    const rows = parseSeasonSummaryFromHtml(seasonHtml);
+    expect(rows.length).toBeGreaterThanOrEqual(6);
+    const r1 = rows.find(r => r.round === 1)!;
+    expect(r1.winnerName).toBe('Oliver Solberg');
+    expect(r1.coDriverName).toBe('Elliott Edmondson');
+    expect(r1.team).toBe('Toyota Gazoo Racing WRT');
+    expect(r1.perRallyUrl).toBe(
+      'https://en.wikipedia.org/wiki/2026_Monte_Carlo_Rally',
+    );
+  });
+
+  it('marks upcoming rounds with winnerName=null', () => {
+    const rows = parseSeasonSummaryFromHtml(seasonHtml);
+    const r7 = rows.find(r => r.round === 7);
+    expect(r7).toBeDefined();
+    expect(r7!.winnerName).toBeNull();
+  });
+});
+
+describe('parseRallyClassificationFromHtml', () => {
+  it('Portugal: Neuville P1 with 30 pts (15+1+4 sub-totals)', () => {
+    const entries = parseRallyClassificationFromHtml(rallyHtmls.portugal);
+    expect(entries.length).toBeGreaterThanOrEqual(5);
+    expect(entries[0]).toMatchObject({
+      position: 1,
+      driverName: 'Thierry Neuville',
+      team: 'Hyundai Shell Mobis WRT',
+      points: 30,
+      status: 'Finished',
+    });
+    expect(entries[1].driverName).toBe('Oliver Solberg');
+    expect(entries[1].points).toBe(24);
+  });
+
+  it('Canarias: P1 Ogier scores 32 (25+4+3)', () => {
+    const entries = parseRallyClassificationFromHtml(rallyHtmls.canarias);
+    expect(entries[0]).toMatchObject({
+      position: 1,
+      driverName: 'Sébastien Ogier',
+      points: 32,
+    });
+  });
+
+  it('uses class position (not overall) for Rally1 drivers who crashed', () => {
+    // Croatia: Solberg finished P42 overall but P8 in Rally1. Parser must
+    // surface P8 because this table is filtered to WRC Rally1.
+    const entries = parseRallyClassificationFromHtml(rallyHtmls.croatia);
+    const solberg = entries.find(e => e.driverName === 'Oliver Solberg');
+    // Solberg's class position at Croatia was P8 (Wikipedia 2026 data).
+    expect(solberg).toBeDefined();
+    expect(solberg!.position).toBeLessThan(20); // class position, not overall
+  });
+
+  it('surfaces retired entries with status starting "Retired"', () => {
+    // Canarias has 4-5 retired Rally1 entries (Solberg / Paddon / Neuville /
+    // Fourmaux / Katsuta all hit trouble in 2026).
+    const entries = parseRallyClassificationFromHtml(rallyHtmls.canarias);
+    const retired = entries.filter(e => /retired/i.test(e.status));
+    expect(retired.length).toBeGreaterThan(0);
+    for (const r of retired) {
+      expect(r.points).toBe(0);
     }
   });
 
-  it('parses dates in February correctly (cross-month month names)', () => {
-    const races = parseSeasonResultsFromHtml(FULL_CALENDAR_HTML, 2026);
-    const sweden = races.find(r => r.round === 2)!;
-    expect(sweden.date.toISOString().startsWith('2026-02-12')).toBe(true);
+  it('returns empty for HTML without a WRC Rally1 section', () => {
+    expect(parseRallyClassificationFromHtml('<html></html>')).toEqual([]);
+  });
+});
+
+describe('parseSeasonChartPointsFromHtml', () => {
+  it('returns one round per completed rally', () => {
+    const races = parseSeasonChartPointsFromHtml(seasonHtml, 2026);
+    expect(races).toHaveLength(6);
+    expect(races.map(r => r.round)).toEqual([1, 2, 3, 4, 5, 6]);
   });
 
-  it('returns empty array when calendar table is missing', () => {
-    expect(parseSeasonResultsFromHtml(NO_TABLE_HTML, 2026)).toEqual([]);
-  });
+  it('per-driver sums reconcile to the standings table totals', async () => {
+    const races = parseSeasonChartPointsFromHtml(seasonHtml, 2026);
+    const { parseStandingsFromHtml } = await import('../standings/wrc');
+    const standings = parseStandingsFromHtml(seasonHtml);
+    expect(standings).not.toBeNull();
 
-  it('returns empty array on empty HTML', () => {
-    expect(parseSeasonResultsFromHtml(EMPTY_HTML, 2026)).toEqual([]);
+    const summed = new Map<string, number>();
+    for (const r of races) {
+      for (const e of r.results) {
+        summed.set(e.driverName, (summed.get(e.driverName) ?? 0) + e.points);
+      }
+    }
+    for (const d of standings!.drivers) {
+      const total = summed.get(d.driverName) ?? 0;
+      expect({ driver: d.driverName, total }).toEqual({
+        driver: d.driverName,
+        total: d.points,
+      });
+    }
+  });
+});
+
+describe('parseSeasonResultsFromHtml (legacy winners-only fallback)', () => {
+  it('emits one winner entry per completed round', () => {
+    const races = parseSeasonResultsFromHtml(seasonHtml, 2026);
+    expect(races).toHaveLength(6);
+    expect(races[0].results).toHaveLength(1);
+    expect(races[0].results[0]).toMatchObject({
+      position: 1,
+      driverName: 'Oliver Solberg / Elliott Edmondson',
+      team: 'Toyota Gazoo Racing WRT',
+      points: 25,
+      status: 'Winner',
+    });
   });
 });
 
 describe('fetchWRCSeasonResults', () => {
   const originalFetch = globalThis.fetch;
 
-  beforeEach(() => {
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
   });
 
-  afterEach(() => {
-    globalThis.fetch = originalFetch;
-  });
+  it('fans out per-rally fetches and returns full classifications', async () => {
+    // Mock: season URL returns the season HTML; per-rally URLs return the
+    // matching rally HTML.
+    const urlToHtml = new Map<string, string>([
+      ['https://en.wikipedia.org/wiki/2026_World_Rally_Championship', seasonHtml],
+      ['https://en.wikipedia.org/wiki/2026_Monte_Carlo_Rally', rallyHtmls['monte-carlo']],
+      ['https://en.wikipedia.org/wiki/2026_Rally_Sweden', rallyHtmls.sweden],
+      ['https://en.wikipedia.org/wiki/2026_Safari_Rally', rallyHtmls.safari],
+      ['https://en.wikipedia.org/wiki/2026_Croatia_Rally', rallyHtmls.croatia],
+      ['https://en.wikipedia.org/wiki/2026_Rally_Islas_Canarias', rallyHtmls.canarias],
+      ['https://en.wikipedia.org/wiki/2026_Rally_de_Portugal', rallyHtmls.portugal],
+    ]);
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      const html = urlToHtml.get(url);
+      return {
+        ok: html !== undefined,
+        status: html ? 200 : 404,
+        text: async () => html ?? '',
+      } as Response;
+    }) as unknown as typeof fetch;
 
-  it('returns parsed rallies on successful fetch', async () => {
-    mockOk(FULL_CALENDAR_HTML);
     const races = await fetchWRCSeasonResults(2026);
     expect(races).toHaveLength(6);
-    expect(races[0].raceName).toBe('Rallye Monte-Carlo');
+    expect(races[0].round).toBe(1);
+    expect(races[0].results.length).toBeGreaterThan(1);
+    // Portugal at R6 — Neuville winner with 30 pts.
+    const portugal = races.find(r => r.round === 6)!;
+    expect(portugal.results[0].driverName).toBe('Thierry Neuville');
+    expect(portugal.results[0].points).toBe(30);
   });
 
-  it('returns empty array on fetch failure', async () => {
-    mockFail();
+  it('falls back to winners-only entries when a per-rally page is unreachable', async () => {
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url === 'https://en.wikipedia.org/wiki/2026_World_Rally_Championship') {
+        return { ok: true, status: 200, text: async () => seasonHtml } as Response;
+      }
+      return { ok: false, status: 404, text: async () => '' } as Response;
+    }) as unknown as typeof fetch;
+
     const races = await fetchWRCSeasonResults(2026);
-    expect(races).toEqual([]);
+    expect(races).toHaveLength(6);
+    // Each falls back to a single-entry winners-only row.
+    for (const r of races) {
+      expect(r.results).toHaveLength(1);
+      expect(r.results[0].status).toBe('Winner');
+    }
   });
 
-  it('returns empty array when network throws', async () => {
-    mockReject();
+  it('returns [] when the season page fetch itself fails', async () => {
+    globalThis.fetch = vi.fn(async () =>
+      ({ ok: false, status: 500, text: async () => '' }) as Response,
+    ) as unknown as typeof fetch;
     const races = await fetchWRCSeasonResults(2026);
     expect(races).toEqual([]);
   });

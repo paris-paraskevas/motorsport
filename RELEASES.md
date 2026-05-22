@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.14 — 2026-05-22
+
+**Full WRC rally results — and the season-trend chart is back.** The WRC Results tab now shows the complete WRC Rally1 classification from every completed 2026 round — Rallye Monte-Carlo, Rally Sweden, Safari Rally Kenya, Croatia Rally, Rally Islas Canarias, and Rally de Portugal. Each accordion expands to the full top-10 plus any retired Rally1 entries, with driver, co-driver, team, car number, finishing time, and total points (event + Sunday + Power Stage bonus). The "Drivers' season trend" line chart sits at the top, plotting all 29 scoring drivers across the six rallies — Evans 123 leads, Katsuta 111, Solberg 92 at the latest snapshot.
+
+Until today the Results tab listed just the rally winner per round and skipped points entirely. Class positions surface correctly even when a Rally1 driver crashes and finishes far down the overall order — at Croatia, Solberg shows as P8 in the Rally1 classification (his class position) rather than P42 overall (which counts lower-class WRC2 / Junior cars that finished ahead of him).
+
 ## 0.12.13 — 2026-05-22
 
 **GT World Challenge Europe race results, every cup.** The GT World Challenge Results tab now shows the complete per-cup classification from every completed 2026 race so far — Paul Ricard 1000km and the Brands Hatch sprint double-header. Each (race, cup) card expands to the top 10 in that cup with car number, full driver crew (3-4 names at endurance, 2 at sprint), team, and car model. Pro Cup, Gold Cup, Silver Cup, Bronze Cup all surfaced where present; the Bronze Cup correctly skips Brands Hatch since they sit out that round of the season per the SRO 2026 calendar.

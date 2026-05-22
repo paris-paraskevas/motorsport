@@ -20,7 +20,10 @@ import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
-import { fetchWRCSeasonResults } from '@/lib/results/wrc';
+import {
+  fetchWRCSeasonResults,
+  fetchWRCSeasonChartPoints,
+} from '@/lib/results/wrc';
 import { IMSA_CLASSES, type ImsaClass } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
@@ -742,8 +745,9 @@ export async function ResultsTab({ series }: { series: Series }) {
   }
 
   if (series.meta.slug === 'wrc') {
-    const [races, overrides] = await Promise.all([
+    const [races, chartRaces, overrides] = await Promise.all([
       fetchWRCSeasonResults(series.meta.season),
+      fetchWRCSeasonChartPoints(series.meta.season),
       loadResultsOverrides(series.meta.slug),
     ]);
     if (races.length === 0) {
@@ -752,14 +756,30 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // No SeasonTrendChart: WRC's calendar-table parse emits one winner entry
-    // per rally (driver / co-driver / team), not a full top-10 classification.
-    // Adding a chart with winners-only data would violate the cross-series
-    // chart-vs-standings invariant (see CHANGELOG 0.11.5 header). When per-
-    // rally Wikipedia pages or wrc.com classification data lands, restore.
+    // Chart data source is the season page's "FIA World Rally Championship
+    // for Drivers" table (per-cell sub-totals), NOT the per-rally articles.
+    // The two diverge by ±3-6 points for marginal drivers (Wikipedia
+    // editors occasionally update one without the other), and the
+    // championship table is what the standings tab also reads — so chart
+    // totals reconcile to standings totals by construction. The per-rally
+    // accordion below renders full top-N classifications from the per-rally
+    // articles for richer per-rally UX.
+    const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} heading="Rally winners by round" />
+        {trend ? (
+          <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+            <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+              Drivers&apos; season trend
+            </h2>
+            <SeasonTrendChart
+              data={trend.data}
+              drivers={trend.drivers}
+              totalsByDriver={trend.totalsByDriver}
+            />
+          </section>
+        ) : null}
+        <SeasonResultsPanel races={merged} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
