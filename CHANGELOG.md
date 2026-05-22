@@ -4,6 +4,44 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.11 — 2026-05-22
+
+Closes the last `❌` against IMSA in the per-series results-inventory: `/series/imsa?tab=results` now renders the full per-class classification for every completed 2026 round, sourced directly from Al Kamel Systems' open JSON timing portal. Previously this tab fell through to the `LinkOutCard` fallback (sending visitors to imsa.com); the existing `lib/results/imsa.ts` Wikipedia winners-only parser was dead code on `main` (no importer) and is fully replaced here.
+
+The 2026-05-22 probe of `imsa.results.alkamelcloud.com` confirmed the Phase-1-locked URL pattern: open Apache index, no auth, no reCAPTCHA, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets the classification by class (GTP / LMP2 / GTD Pro / GTD) per session of every round, exactly as the HANDOFF top-of-stack brief promised. Beats the assumed PDF-behind-reCAPTCHA path the prior audit feared.
+
+### Added
+
+- **`content/series/imsa/alkamel-rounds.json`** — curated round → Alkamel JSON URL manifest. One entry per completed 2026 round (R1 Daytona, R2 Sebring, R3 Long Beach, R4 Laguna Seca at session time). Alkamel's folder layout isn't catalog-discoverable — folder names embed timestamps and 24h endurance races nest the final classification under `24_Hour 24/` while sprint races sit directly under the `Race/` folder. Rather than scrape the index at runtime, the full URL per round lives in the content tree per the conversational-authoring model (`CLAUDE.md` → "Authoring model"). New rounds land in the manifest after each race weekend.
+- **`tests/fixtures/imsa-results-{daytona,sebring,longbeach,lagunaseca}-2026.json`** — real Alkamel JSON payloads captured during the probe (4 fixtures, 56–170 KB each). The 2026 IMSA season's first four completed rounds. Real-fixture-driven tests per the Phase 2 process rule — synthetic fixtures missed the FE colspan + WRC mw-heading bugs in 0.11.x, so this parser is tested against real upstream bytes only.
+- **`lib/results/imsa.ts`** — new types `ImsaRaceEntry` (position / carNumber / team / drivers / vehicle / manufacturer / laps / status / gap / elapsedTime) and `ImsaRoundResults` (round / eventName / circuit / date / `perClass: Partial<Record<ImsaClass, ImsaRaceEntry[]>>`). Two exported functions: `fetchImsaRoundResults(url, round)` for a single round, `fetchImsaSeasonResults()` for the whole season (parallel-fetches every manifest entry, drops failures, sorts by round). Reuses the `ImsaClass` enum from `lib/standings/imsa.ts` and mirrors the standings module's `Partial<Record<...>>` shape — there, the asymmetry is LMP2's missing manufacturers' title; here, the asymmetry is sprint rounds that skip LMP2 + GTD Pro.
+- **`lib/results/imsa.test.ts`** — 17 cases. Per-class classification at Daytona (full IMEC field, all 4 classes), Sebring (Not Started DNS entry preserved verbatim with `laps: 0`), Long Beach (sprint, GTP + GTD only, LMP2 + GTD Pro absent), Laguna Seca (3 classes, LMP2 absent — Monterey is not an IMEC round). Driver-name space-joining, leading-zero car-number preservation, `GTDPRO → "GTD Pro"` normalisation, BOM-strip, gap_first runner-up, malformed JSON / 500 / network error → null. Aggregation test confirms `fetchImsaSeasonResults` drops failed-fetch rounds and orders by round number.
+- **`components/tabs/ResultsTab.tsx`** — `imsa` branch and two IMSA-specific helper components: `ImsaSeasonResultsPanel` flattens rounds × classes into one `<details>` per (round, class), sorted most-recent-round-first; `ImsaRoundClassCard` renders one accordion row with summary (round number, event name with class suffix, formatted date, winner driver + team); `ImsaResultRow` renders one classification entry with car number as code-pill, drivers + team + vehicle, and gap-to-leader (replaces F1's points column — Alkamel doesn't expose championship points). Source link points to `imsa.results.alkamelcloud.com`.
+
+### Changed
+
+- **`lib/results/imsa.ts`** — completely replaced. The previous Wikipedia winners-only `ImsaClassWinner` / `ImsaRaceResult` shape and `fetchImsaSeasonResults` are gone (verified zero importers on `main` before deleting; only the test file imported them). Same function name, different return shape.
+- **`lib/results/imsa.test.ts`** — full replacement. Old tests built synthetic Wikipedia wikitable HTML; new tests load real Alkamel JSON from `tests/fixtures/`.
+
+### Cross-series invariant
+
+No `SeasonTrendChart` on the IMSA results page. Alkamel JSON carries timing data only — no championship points — and IMSA's per-class scale shifts between sprint and Michelin Endurance Cup rounds (Daytona / Sebring / Glen / Petit Le Mans). A faithful trend would require reconciling Alkamel positions against the IMSA SSR points scale per class per round-type, which is curation work we haven't done. Per the cross-cutting invariant locked-in 2026-05-20, a chart whose totals disagree with the standings tab erodes trust — the Standings tab remains the authority for championship totals.
+
+### Verification
+
+- 17 new vitest cases pass (38 test files / 320 tests total, was 303 — added the IMSA cases, dropped none).
+- `npx tsc --noEmit` clean. `npx eslint lib/results/imsa.ts lib/results/imsa.test.ts components/tabs/ResultsTab.tsx` clean.
+- Playwright browser-verify on `localhost:3000/series/imsa?tab=results` — page renders 14 (round, class) cards across the 4 completed rounds, R4 GTP card expands by default showing top-10 with car numbers, drivers, team + vehicle, and `+0.758` / `+3.343` style gaps. Sprint-round absence visible: R3 Long Beach has 2 cards (GTP + GTD), not 4. Screenshot at `imsa-results-localhost.png` in the working tree.
+
+### Phase 2 sequence — IMSA `❌ → ✅`
+
+| Ver | Scope | Status |
+|---|---|---|
+| 0.12.10 | fix(seo) preserve og:url / type / siteName | ✅ shipped (PR #87) |
+| 0.12.11 | **feat(imsa) full-class results via Alkamel JSON** | this PR |
+| 0.12.12 | feat(nascar-cup) full-class results | racing-reference.info |
+| 0.12.13 → 0.12.16 | GT-World / WRC / DTM / NLS | queued |
+
 ## 0.12.10 — 2026-05-21
 
 Hot-fix on top of 0.12.9 (PR #86). Playwright verification of the just-merged 0.12.9 surfaced a follow-on regression that the curl-based smoke check missed: the per-route `openGraph` block was setting `{ title, description }` but dropping `og:url`, `og:type`, and `og:site_name`. Same no-deep-merge problem I documented for `twitter:card` in 0.12.9, but on the openGraph side — and I missed it because the curl probe only checked the fields that obviously changed. The `og:title` + `og:description` ARE now correct (0.12.9 win stands), but downstream parsers that look for `og:site_name` (brand attribution in Open Graph cards) and `og:type` (event vs article vs website classification) were getting nothing on every non-home / non-blog page.

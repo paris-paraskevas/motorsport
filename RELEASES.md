@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.11 — 2026-05-22
+
+**Full IMSA race results, every class.** The IMSA Results tab now shows the complete classification from every completed 2026 round — Rolex 24 at Daytona, the 12 Hours of Sebring, the Long Beach sprint, and Laguna Seca's Monterey SportsCar Championship — broken out by class. Open `/series/imsa` and tap **Results** to see one card per class per round: GTP, LMP2, GTD Pro, and GTD where they ran. Each card expands to the top-10 finishers with car number, driver line-up, team, car model, and gap-to-leader. Sprint rounds correctly drop the endurance-only classes (Long Beach shows GTP + GTD only; Laguna Seca shows three classes since LMP2 only races the four Michelin Endurance Cup rounds).
+
+A heads-up on what's not here yet: there's no season-trend chart on the IMSA Results tab. The official IMSA timing exports cover lap times and finishing order but not championship points, and the points scale shifts between sprint and endurance rounds — so any trend chart we'd ship today would disagree with the Standings tab's totals. The Standings tab continues to be the authority for points; this Results tab is the race-by-race classification.
+
 ## 0.12.10 — 2026-05-21
 
 **Better link previews — round 2.** Follow-up to 0.12.9. The previous fix corrected the title and description on shared link previews but quietly dropped three other fields — the canonical URL, the page type, and the site name. Those are restored now, so every social platform that parses Open Graph cards (Twitter, Facebook, Discord, Slack, LinkedIn, iMessage, WhatsApp) sees a complete card with all the fields filled in correctly per route. Same scope as 0.12.9: metadata only, no UI change.
