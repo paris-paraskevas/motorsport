@@ -636,6 +636,18 @@ Tomorrow's pick from two reasonable next items:
 
 Won't touch tomorrow: 0.12.8.1 WEC (still optional), drivers.json bulk (0.13.0), NASCAR trend-chart polish (queued in IDEAS Inbox).
 
+### Fri 2026-05-22 — late-evening continuation — 0.12.14 WRC shipped
+
+After the 4-PR daytime sweep (0.12.11 → 0.12.13), one more PR landed before bed: option B from the Sat stub above, pulled forward.
+
+- → done: **0.12.14 (PR pending)** WRC per-rally full classification + trend chart restored on `/series/wrc?tab=results`. Two data sources merged: (a) per-rally Wikipedia articles (`/wiki/2026_<rally>`) for the accordion's full top-N + retired entries — uses class position (not overall) for Rally1 drivers who crashed and finished behind WRC2 cars; (b) the season page's "FIA World Rally Championship for Drivers" per-cell breakdown for chart data — reconciles to standings totals with Δ=0 across all 29 scoring drivers because both surfaces read the same table. Cross-series invariant met by construction.
+- Open question at session start (HANDOFF entry note) answered: existing `lib/standings/wrc.ts` just reads the Drivers' Championship table totals (no scale of its own). Per-rally articles + season-page championship table occasionally disagree by ±3-6 pts for marginal drivers (Wikipedia editorial inconsistency, e.g. Paddon: per-rally Canarias = 6 pts, season-page Canarias = 0). Using the championship table for the chart side-steps this; per-rally articles still drive the richer accordion display.
+- Surprise discovery: the existing parser was silently broken in prod. After Wikipedia editors restructured the 2026 Season-summary table earlier in May to drop the "Date" column, `findCalendarTable` + `buildColumnMap` failed closed (`date === -1`) and returned []. Tests passed (synthetic HTML had a Date column) but production rendered the "Results temporarily unavailable" empty state. Caught and fixed during the open-question read-through.
+- New CLAUDE.md rule loaded in this session via operator pushback: **sitemap.xml AND robots.txt first when probing any new source** — I'd checked robots.txt but forgot sitemap. (Verified Wikipedia has no traversable sitemap.xml — 404 across `/sitemap.xml`, `/w/sitemap.xml`, REST sitemap endpoint. Confirmed expected for a multi-million-page wiki.)
+- Won't touch this session: 0.12.13.1 GT-World SRO points (still queued for Sat per HANDOFF), drivers.json bulk, NASCAR trend chart polish.
+
+**Today's aggregate: 5 PRs end-to-end** (0.12.11 IMSA, 0.12.12 NASCAR-broken, 0.12.12.1 NASCAR-fixed, 0.12.13 GT-World, 0.12.14 WRC). Per-series inventory net: IMSA `❌ → ✅`, NASCAR `⚠️ → ❌ → ✅`, GT-World `❌ → ✅`, WRC `⚠️ → ✅`. **Four series moved to ✅ on the same calendar day.**
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
