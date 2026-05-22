@@ -1,218 +1,200 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { fetchNascarCupSeasonResults } from './nascar-cup';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { describe, it, expect } from 'vitest';
+import {
+  fetchNascarCupSeasonResults,
+  parseRaceResultsHtml,
+  parseSeasonRaceLinks,
+} from './nascar-cup';
+
+// Real-fixture-driven tests. Every fixture under `tests/fixtures/` was
+// captured directly from racing-reference.info during the 2026-05-22 probe
+// (see CHANGELOG 0.12.12 + `docs/HANDOFF.md`). The previous synthetic
+// Wikipedia HTML tests were tied to the winners-only Wikipedia parser
+// — they don't apply to the racing-reference full-class parser this file
+// supersedes.
+const FIXTURE_DIR = path.join(process.cwd(), 'tests', 'fixtures');
+
+function loadFixture(name: string): string {
+  return readFileSync(path.join(FIXTURE_DIR, name), 'utf8');
+}
 
 const ROUNDS_FIXTURE = [
   { round: 1, startDate: '2026-02-15', name: 'Daytona 500' },
-  { round: 2, startDate: '2026-02-22', name: 'Autotrader 400' },
-  { round: 3, startDate: '2026-03-01', name: 'DuraMAX Texas Grand Prix' },
+  { round: 2, startDate: '2026-02-22', name: 'Autotrader EchoPark Speedway 400' },
+  { round: 3, startDate: '2026-03-01', name: 'DuraMax Texas Grand Prix' },
   { round: 4, startDate: '2026-03-08', name: 'Straight Talk Wireless 500' },
   { round: 5, startDate: '2026-03-15', name: 'Pennzoil 400' },
+  { round: 6, startDate: '2026-03-22', name: 'Goodyear 400' },
+  { round: 7, startDate: '2026-03-29', name: 'Cook Out 400' },
+  { round: 8, startDate: '2026-04-05', name: 'Food City 500' },
+  { round: 9, startDate: '2026-04-12', name: 'AdventHealth 400' },
+  { round: 10, startDate: '2026-04-19', name: 'Jack Links 500' },
+  { round: 11, startDate: '2026-05-03', name: 'Wurth 400' },
+  { round: 12, startDate: '2026-05-10', name: 'Go Bowling at The Glen' },
 ];
 
-// Wikipedia race-results table row: 8 cells per row when present, fewer for
-// rowspan continuation rows of the preseason block (Cook Out Clash + Duels).
-// Header: No. | Race | Pole position | Most laps led | Fastest race lap |
-//         Winning driver | Manufacturer | Report.
-function raceRow(opts: {
-  raceNumber?: string;
-  raceName: string;
-  pole: string;
-  mostLaps: string;
-  fastest: string;
-  winner: string;
-  manufacturer: string;
-}): string {
-  return `
-    <tr>
-      <th>${opts.raceNumber ?? ''}</th>
-      <td><a>${opts.raceName}</a></td>
-      <td><a>${opts.pole}</a></td>
-      <td><a>${opts.mostLaps}</a></td>
-      <td><a>${opts.fastest}</a></td>
-      <td><a>${opts.winner}</a></td>
-      <td><a>${opts.manufacturer}</a></td>
-      <td><a>Report</a></td>
-    </tr>
-  `;
-}
-
-function buildRaceResultsPageHtml(opts: {
-  rows: Array<{
-    raceNumber?: string;
-    raceName: string;
-    pole: string;
-    mostLaps: string;
-    fastest: string;
-    winner: string;
-    manufacturer: string;
-  }>;
-}): string {
-  return `<!DOCTYPE html>
-<html><body>
-<h3 id="Race_results">Race results</h3>
-<table class="wikitable sortable">
-  <tbody>
-  <tr>
-    <th>No.</th>
-    <th>Race</th>
-    <th>Pole position</th>
-    <th>Most laps led</th>
-    <th>Fastest race lap</th>
-    <th>Winning driver</th>
-    <th>Manufacturer</th>
-    <th class="unsortable">Report</th>
-  </tr>
-  ${opts.rows.map(raceRow).join('')}
-  </tbody>
-</table>
-</body></html>`;
-}
-
-const SAMPLE_ROWS = [
-  {
-    raceNumber: '',
-    raceName: 'Cook Out Clash',
-    pole: 'Kyle Larson',
-    mostLaps: 'Kyle Larson',
-    fastest: '—',
-    winner: 'Ryan Preece',
-    manufacturer: 'Ford',
-  },
-  {
-    raceNumber: '1',
-    raceName: 'Daytona 500',
-    pole: 'Kyle Busch',
-    mostLaps: 'Bubba Wallace',
-    fastest: 'Carson Hocevar',
-    winner: 'Tyler Reddick',
-    manufacturer: 'Toyota',
-  },
-  {
-    raceNumber: '2',
-    raceName: 'Autotrader 400',
-    pole: 'Tyler Reddick',
-    mostLaps: 'Tyler Reddick',
-    fastest: 'Cole Custer',
-    winner: 'Tyler Reddick',
-    manufacturer: 'Toyota',
-  },
-  {
-    raceNumber: '3',
-    raceName: 'DuraMAX Texas Grand Prix',
-    pole: 'Tyler Reddick',
-    mostLaps: 'Tyler Reddick',
-    fastest: 'Ross Chastain',
-    winner: 'Tyler Reddick',
-    manufacturer: 'Toyota',
-  },
-  {
-    raceNumber: '4',
-    raceName: 'Straight Talk Wireless 500',
-    pole: 'Joey Logano',
-    mostLaps: 'Christopher Bell',
-    fastest: 'Joey Logano',
-    winner: 'Ryan Blaney',
-    manufacturer: 'Ford',
-  },
-];
-
-const FULL_HTML = buildRaceResultsPageHtml({ rows: SAMPLE_ROWS });
-
-function mockFetchOk(html: string) {
-  globalThis.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    text: async () => html,
-  }) as unknown as typeof fetch;
-}
-
-function mockFetch500() {
-  globalThis.fetch = vi.fn().mockResolvedValue({
-    ok: false,
-    status: 500,
-    text: async () => 'fail',
-  }) as unknown as typeof fetch;
-}
-
-function mockFetchReject() {
-  globalThis.fetch = vi.fn().mockRejectedValue(new Error('network down')) as unknown as typeof fetch;
-}
-
-describe('fetchNascarCupSeasonResults', () => {
-  const originalFetch = globalThis.fetch;
-
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  afterEach(() => {
-    globalThis.fetch = originalFetch;
-  });
-
-  it('parses the Race_results table into one RaceResult per points round', async () => {
-    mockFetchOk(FULL_HTML);
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    // The Clash row has no race number and should be excluded.
-    expect(races).toHaveLength(4);
-    expect(races[0].round).toBe(1);
-    expect(races[0].raceName).toBe('Daytona 500');
-    expect(races[0].results).toHaveLength(1);
-    expect(races[0].results[0]).toEqual({
-      position: 1,
-      driverName: 'Tyler Reddick',
-      team: 'Toyota',
-      status: 'Winner',
-      time: undefined,
-      points: 0,
+describe('parseSeasonRaceLinks — racing-reference season-stats index', () => {
+  it('enumerates every completed 2026 Cup race with its round number', () => {
+    const html = loadFixture('nascar-cup-season-2026.html');
+    const links = parseSeasonRaceLinks(html);
+    expect(links).toHaveLength(12);
+    expect(links[0]).toEqual({
+      round: 1,
+      url: 'https://www.racing-reference.info/race-results/2026_Daytona_500/W',
     });
+    expect(links[11].round).toBe(12);
+    expect(links[11].url).toContain('Go_Bowling_at_The_Glen');
   });
 
-  it('uses the rounds.json lookup for the race date', async () => {
-    mockFetchOk(FULL_HTML);
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    expect(races[0].date.toISOString().startsWith('2026-02-15')).toBe(true);
-    expect(races[3].date.toISOString().startsWith('2026-03-08')).toBe(true);
+  it('deduplicates anchor occurrences (sidebar + main table both link to each race)', () => {
+    const html = loadFixture('nascar-cup-season-2026.html');
+    const links = parseSeasonRaceLinks(html);
+    const urls = links.map(l => l.url);
+    expect(new Set(urls).size).toBe(urls.length);
+  });
+});
+
+describe('parseRaceResultsHtml — Daytona 500 (Tyler Reddick win)', () => {
+  const html = loadFixture('nascar-cup-daytona500-2026.html');
+
+  it('parses the full 41-car field', () => {
+    const entries = parseRaceResultsHtml(html);
+    expect(entries).toHaveLength(41);
   });
 
-  it('skips rows whose round has no entry in the rounds lookup', async () => {
-    const reducedRounds = ROUNDS_FIXTURE.slice(0, 2); // rounds 1 + 2 only
-    mockFetchOk(FULL_HTML);
-    const races = await fetchNascarCupSeasonResults({ rounds: reducedRounds });
-    expect(races).toHaveLength(2);
-    expect(races.map((r) => r.round)).toEqual([1, 2]);
+  it('emits Tyler Reddick as P1 (#45 / 23XI Racing / 58 pts / running)', () => {
+    const entries = parseRaceResultsHtml(html);
+    const winner = entries[0];
+    expect(winner.position).toBe(1);
+    expect(winner.driverName).toBe('Tyler Reddick');
+    expect(winner.driverCode).toBe('45');
+    expect(winner.team).toBe('23XI Racing');
+    expect(winner.points).toBe(58);
+    expect(winner.status).toBe('running');
   });
 
-  it('returns empty array when fewer than 1 race parsed (no data yet)', async () => {
-    const emptyHtml = buildRaceResultsPageHtml({ rows: [] });
-    mockFetchOk(emptyHtml);
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    expect(races).toEqual([]);
+  it('extracts the owner-team from "Sponsor (Owner)" cells', () => {
+    const entries = parseRaceResultsHtml(html);
+    const p3 = entries[2];
+    expect(p3.driverName).toBe('Joey Logano');
+    expect(p3.team).toBe('Roger Penske');
   });
 
-  it('returns empty array when the Race_results section is missing', async () => {
-    const html = '<!DOCTYPE html><html><body><h3 id="Other">Other</h3></body></html>';
-    mockFetchOk(html);
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    expect(races).toEqual([]);
+  it('preserves lowercase status tokens (e.g. "crash" for DNFs)', () => {
+    const entries = parseRaceResultsHtml(html);
+    const last = entries[entries.length - 1];
+    expect(last.position).toBe(41);
+    expect(last.status).toBe('crash');
+    expect(last.points).toBe(1);
+  });
+});
+
+describe('parseRaceResultsHtml — Wurth 400 (Chase Elliott win)', () => {
+  const html = loadFixture('nascar-cup-wurth400-2026.html');
+
+  it('parses a 38-car field', () => {
+    const entries = parseRaceResultsHtml(html);
+    expect(entries).toHaveLength(38);
   });
 
-  it('returns empty array on 500 without throwing', async () => {
-    mockFetch500();
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    expect(races).toEqual([]);
+  it('emits Chase Elliott as P1 (#9 / Rick Hendrick / 69 pts)', () => {
+    const entries = parseRaceResultsHtml(html);
+    const winner = entries[0];
+    expect(winner.driverName).toBe('Chase Elliott');
+    expect(winner.driverCode).toBe('9');
+    expect(winner.team).toBe('Rick Hendrick');
+    expect(winner.points).toBe(69);
   });
 
-  it('returns empty array on network failure without throwing', async () => {
-    mockFetchReject();
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    expect(races).toEqual([]);
+  it('emits Denny Hamlin as P2 (Joe Gibbs owner team)', () => {
+    const entries = parseRaceResultsHtml(html);
+    expect(entries[1].driverName).toBe('Denny Hamlin');
+    expect(entries[1].team).toBe('Joe Gibbs');
   });
 
-  it('sorts results by round number', async () => {
-    const shuffled = [SAMPLE_ROWS[4], SAMPLE_ROWS[1], SAMPLE_ROWS[3], SAMPLE_ROWS[2]];
-    const html = buildRaceResultsPageHtml({ rows: shuffled });
-    mockFetchOk(html);
-    const races = await fetchNascarCupSeasonResults({ rounds: ROUNDS_FIXTURE });
-    expect(races.map((r) => r.round)).toEqual([1, 2, 3, 4]);
+  it('total points awarded equals 763 (race-weekend total, sanity floor)', () => {
+    const entries = parseRaceResultsHtml(html);
+    const total = entries.reduce((sum, e) => sum + e.points, 0);
+    expect(total).toBe(763);
+  });
+});
+
+describe('parseRaceResultsHtml — defensive parsing', () => {
+  it('returns empty array when the race-results-tbl is absent', () => {
+    expect(parseRaceResultsHtml('<html><body></body></html>')).toEqual([]);
+  });
+
+  it('skips rows whose position cell is non-numeric', () => {
+    const entries = parseRaceResultsHtml(
+      '<table class="race-results-tbl"><tr><th>Pos</th><th>St</th><th>#</th><th>Driver</th><th>Sponsor / Owner</th><th>Car</th><th>Laps</th><th>Status</th><th>Led</th><th>Pts</th></tr><tr><td>—</td><td>1</td><td>1</td><td>x</td><td>Sponsor (Team)</td><td>Ford</td><td>0</td><td>dnf</td><td>0</td><td>0</td></tr></table>',
+    );
+    expect(entries).toEqual([]);
+  });
+});
+
+describe('fetchNascarCupSeasonResults — full pipeline', () => {
+  function transportFromMap(
+    map: Record<string, string>,
+  ): (pathname: string) => Promise<{ status: number; body: string }> {
+    return async pathname => {
+      const body = map[pathname];
+      if (body === undefined) {
+        return { status: 404, body: 'not found' };
+      }
+      return { status: 200, body };
+    };
+  }
+
+  it('fetches the season index then per-race pages, returns rounds in order', async () => {
+    const seasonHtml = loadFixture('nascar-cup-season-2026.html');
+    const daytonaHtml = loadFixture('nascar-cup-daytona500-2026.html');
+    const wurthHtml = loadFixture('nascar-cup-wurth400-2026.html');
+    const results = await fetchNascarCupSeasonResults({
+      rounds: ROUNDS_FIXTURE,
+      transport: transportFromMap({
+        '/season-stats/2026/W/': seasonHtml,
+        '/race-results/2026_Daytona_500/W': daytonaHtml,
+        '/race-results/2026_Wurth_400/W': wurthHtml,
+      }),
+    });
+    expect(results.map(r => r.round)).toEqual([1, 11]);
+    expect(results[0].raceName).toBe('Daytona 500');
+    expect(results[0].results).toHaveLength(41);
+    expect(results[1].raceName).toBe('Wurth 400 Presented by LIQUI MOLY');
+    expect(results[1].results).toHaveLength(38);
+  });
+
+  it('returns [] when the season index fetch fails', async () => {
+    const results = await fetchNascarCupSeasonResults({
+      rounds: ROUNDS_FIXTURE,
+      transport: async () => ({ status: 500, body: 'err' }),
+    });
+    expect(results).toEqual([]);
+  });
+
+  it('returns [] when the season index has no race links', async () => {
+    const results = await fetchNascarCupSeasonResults({
+      rounds: ROUNDS_FIXTURE,
+      transport: async () => ({
+        status: 200,
+        body: '<html><body><p>no races yet</p></body></html>',
+      }),
+    });
+    expect(results).toEqual([]);
+  });
+
+  it('skips a race whose round number has no rounds.json entry', async () => {
+    const seasonHtml = loadFixture('nascar-cup-season-2026.html');
+    const daytonaHtml = loadFixture('nascar-cup-daytona500-2026.html');
+    // rounds.json fixture omits R1 — round-1 race should drop, not crash.
+    const results = await fetchNascarCupSeasonResults({
+      rounds: ROUNDS_FIXTURE.filter(r => r.round !== 1),
+      transport: transportFromMap({
+        '/season-stats/2026/W/': seasonHtml,
+        '/race-results/2026_Daytona_500/W': daytonaHtml,
+      }),
+    });
+    expect(results).toEqual([]);
   });
 });

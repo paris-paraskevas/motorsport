@@ -24,7 +24,7 @@ import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
 const FORMULA_E_SOURCE_URL =
   'https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship';
-const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series';
+const NASCAR_SOURCE_URL = 'https://www.racing-reference.info/season-stats/2026/W/';
 
 function applyResultsOverrides(
   races: RaceResult[],
@@ -524,12 +524,30 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
+    // Trend chart restored as of 0.12.12 — racing-reference exposes a `Pts`
+    // column per finisher so cumulative totals reconcile against the
+    // standings tab without the curated-override scaffolding that Formula E
+    // would need. NASCAR uses one points system across all 36 points races
+    // (regular-season scale stays constant; playoffs use the same numeric
+    // scale, only the championship-cutoff math differs), so the cross-
+    // series chart-vs-standings invariant is satisfied at parse time.
+    const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
+        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+            Drivers&apos; season trend
+          </h2>
+          <SeasonTrendChart
+            data={trend.data}
+            drivers={trend.drivers}
+            totalsByDriver={trend.totalsByDriver}
+          />
+        </section>
         <SeasonResultsPanel races={merged} />
         <SourceLink
           href={NASCAR_SOURCE_URL}
-          label="Wikipedia (2026 NASCAR Cup Series)"
+          label="racing-reference.info (NASCAR Cup 2026)"
         />
       </div>
     );

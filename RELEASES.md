@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.12 — 2026-05-22
+
+**Full NASCAR Cup race results — and the season-trend chart is back.** The NASCAR Cup Results tab now shows the complete classification from every completed 2026 race — the Daytona 500, every regular-season points race through the Würth 400 and Go Bowling at The Glen, with each accordion expanding to all 38–41 cars: driver, owner team, car number, status, and championship points. The "Drivers' season trend" line chart sits at the top, so you can scrub through the regular season and see where Tyler Reddick / Chase Elliott / Denny Hamlin pull away from the pack at each round.
+
+Until today, the Results tab showed only the race winner per round and skipped points entirely (the upstream Wikipedia summary table doesn't carry per-position data). The new source is racing-reference.info, which exposes the full per-finisher classification for every Cup race going back decades — same source NASCAR fans use as the canonical statistics reference.
+
 ## 0.12.11 — 2026-05-22
 
 **Full IMSA race results, every class.** The IMSA Results tab now shows the complete classification from every completed 2026 round — Rolex 24 at Daytona, the 12 Hours of Sebring, the Long Beach sprint, and Laguna Seca's Monterey SportsCar Championship — broken out by class. Open `/series/imsa` and tap **Results** to see one card per class per round: GTP, LMP2, GTD Pro, and GTD where they ran. Each card expands to the top-10 finishers with car number, driver line-up, team, car model, and gap-to-leader. Sprint rounds correctly drop the endurance-only classes (Long Beach shows GTP + GTD only; Laguna Seca shows three classes since LMP2 only races the four Michelin Endurance Cup rounds).
