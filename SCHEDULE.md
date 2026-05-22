@@ -617,6 +617,25 @@ Today's aggregate: **2 PRs shipped, 1 working in prod, 1 broken in prod.** Net e
 
 Won't touch tomorrow: 0.12.8.1 WEC (still optional), 0.12.14+ queued items, 0.13.0 drivers.json bulk.
 
+### Fri 2026-05-22 — evening continuation — outcomes locked
+
+After the mid-session housekeeping commit, the session continued and shipped 2 more PRs:
+
+- → done: **0.12.12.1 (PR #92)** NASCAR pivot to Wikipedia per-race articles. Vercel preview logs confirmed Cloudflare WAF challenges Vercel's `iad1` datacenter IP (`status=403 + "Just a moment..."` interstitial) — the `node:http2.connect()` TLS-fingerprint workaround that bypassed CF on residential IPs doesn't help when the IP itself is flagged. Wikipedia is bot-friendly + carries the full per-race classification with points matching the standings parser's totals. Trend chart restored. Three new CLAUDE.md rules baked in (re-Read before Edit, robots.txt-first, Vercel-preview-verify before "shipped"). Operator-verified on prod.
+- → done: **0.12.13 (PR #93)** GT World Challenge Europe per-cup classification dispatch. Operator-approved scope cut from "results + SRO points scale" to "classification only" after the implementation probe surfaced how layered SRO scoring is (top-10 + pole bonus + 75%/25min Endurance gates + Spa 24h 3-stage + Super Pole top-5 fractions + Paul Ricard multiplier + per-cup sub-scoring). Tightened `RACE_NAME_PATTERN` to reject intermediate hourly checkpoints. 10 (race, cup) cards rendering on prod. Operator confirmed merge.
+- → done: 6-source motorsport-data API deep-dive. Verdict: additive only, no pivot. TheSportsDB free tier probed and dropped. Sportmonks F1 park-until-live-timing. API-Sports F1 v1 yellow flag (docs page 403s datacenter IPs).
+
+**Today's aggregate: 4 PRs shipped end-to-end** (0.12.11 IMSA, 0.12.12 NASCAR-broken, 0.12.12.1 NASCAR-fixed, 0.12.13 GT-World). Per-series inventory net: IMSA `❌ → ✅`, NASCAR `⚠️ → ❌ → ✅` (round-trip), GT-World `❌ → ✅`. Three series moved to ✅ on the same day.
+
+### Sat 2026-05-23 — planned — 0.12.13.1 GT-World trend chart (or 0.12.14 WRC)
+
+Tomorrow's pick from two reasonable next items:
+
+- **Option A — 0.12.13.1 GT-World SRO points scale + trend chart.** The deferred work from today's scope cut. Encode the full SRO 2026 scoring (top-10 + pole bonus + Endurance gates + Spa 3-stage + Super Pole top-5 + Paul Ricard multiplier + per-cup sub-scoring); reconcile sum-across-season against standings parser totals; wire `SeasonTrendChart` if they match. ~1.5-2h. Open question at session start: does the standings parser fetch totals OR compute from per-race? Read both modules end-to-end first.
+- **Option B — 0.12.14 WRC per-rally full-class.** Locked next per Phase 2 sequence. Wikipedia per-rally articles (`/wiki/2026_Rally_de_Portugal` etc.); same fallback pattern that worked for Formula E and NASCAR. Verify per-rally tables carry top-10 + points (WRC `25-18-15-...-1` + Power Stage bonus). If yes, parser rewrite + trend chart possible. ~1-1.5h.
+
+Won't touch tomorrow: 0.12.8.1 WEC (still optional), drivers.json bulk (0.13.0), NASCAR trend-chart polish (queued in IDEAS Inbox).
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
