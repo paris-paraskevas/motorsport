@@ -24,6 +24,7 @@ import {
   fetchWRCSeasonResults,
   fetchWRCSeasonChartPoints,
 } from '@/lib/results/wrc';
+import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
 import { IMSA_CLASSES, type ImsaClass } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
@@ -825,6 +826,40 @@ export async function ResultsTab({ series }: { series: Series }) {
       <div className="space-y-4">
         <SeasonResultsPanel races={merged} preserveOrder />
         <SourceLink href="https://www.worldsbk.com/en/results" label="worldsbk.com" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'dtm') {
+    // Chart-only: motorsport.com's season-standings table carries
+    // per-driver per-round points (one column per round) which reconciles
+    // to the Standings tab totals by construction. We don't have a
+    // per-race full classification source for DTM yet — the per-event
+    // `/dtm/results/2026/<slug>/` page exists but needs a separate probe.
+    // Accordion ships in a follow-up (0.12.15.1).
+    const races = await fetchDTMSeasonChartData();
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const trend = buildSeasonTrendData(races);
+    return (
+      <div className="space-y-4">
+        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+            Drivers&apos; season trend
+          </h2>
+          <SeasonTrendChart
+            data={trend.data}
+            drivers={trend.drivers}
+            totalsByDriver={trend.totalsByDriver}
+          />
+        </section>
+        <SourceLink
+          href="https://www.motorsport.com/dtm/standings/2026/"
+          label="motorsport.com (DTM 2026)"
+        />
       </div>
     );
   }
