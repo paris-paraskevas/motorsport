@@ -98,6 +98,9 @@ The bottleneck on this project is throughput — there are always more ideas tha
 - **Never create new files without permission.** State filename, format, and purpose; await before writing. Prefer editing existing files.
 - **Format discipline.** Adapt verbosity to task complexity. Tables only when comparing 3+ items across 3+ attributes (otherwise prose). Code blocks always language-tagged. Heading depth H2/H3 only.
 - **Ask `AskUserQuestion` when scope is unclear.** Better to lose 30s on a confirmation than ship the wrong thing.
+- **Always re-Read a file immediately before each Edit call.** When the Edit tool returns "File has been modified since read, either by the user or by a linter", do NOT retry the Edit with the same precondition — Read the file first, THEN Edit. The tool tracks a per-file read-state checksum; long-lived in-context understanding of a file is not enough. This is a repeated stumble; treat the rule as load-bearing.
+- **Check `robots.txt` + `sitemap.xml` first when probing any new external source.** One fetch each, cheap. Often surfaces structured endpoints or off-limits paths. Skip if 404 or empty. Applies to scrape work in `lib/results/*` and `lib/standings/*`.
+- **Verify on Vercel preview, not just localhost, before declaring "shipped".** Especially for any code path that does outbound network from server-side (any new `lib/results/*` or `lib/standings/*` parser). Localhost runs on residential IP + full Node TLS; Vercel Functions run on datacenter IPs with a restricted runtime — WAF / TLS-fingerprint / runtime-restriction failures only show up on `*.vercel.app`. The 0.12.12 NASCAR prod regression shipped because this check was planned-but-skipped.
 
 ## Release notes are mandatory — two files, two audiences
 

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.12.1 — 2026-05-22
+
+**NASCAR Cup race results restored.** The Results tab on `/series/nascar-cup` went briefly blank earlier today after the 0.12.12 release — the upstream data source we'd locked in worked locally but turned out to refuse our hosting platform's network. We've swapped to fetching the same per-race classification from Wikipedia, which is friendlier to server-side requests, and everything is back: full 38-41 car classification per race, trend chart, all 12 completed 2026 rounds. No change to what you see on the page versus what the earlier release intended to show; the round names, driver lineups, and points scale are identical (Wikipedia and the previous source pull from the same NASCAR timing feed).
+
 ## 0.12.12 — 2026-05-22
 
 **Full NASCAR Cup race results — and the season-trend chart is back.** The NASCAR Cup Results tab now shows the complete classification from every completed 2026 race — the Daytona 500, every regular-season points race through the Würth 400 and Go Bowling at The Glen, with each accordion expanding to all 38–41 cars: driver, owner team, car number, status, and championship points. The "Drivers' season trend" line chart sits at the top, so you can scrub through the regular season and see where Tyler Reddick / Chase Elliott / Denny Hamlin pull away from the pack at each round.

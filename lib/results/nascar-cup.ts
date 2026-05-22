@@ -1,72 +1,61 @@
-import http2 from 'node:http2';
 import * as cheerio from 'cheerio';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 
 export type { RaceResult, RaceResultEntry };
 
-// NASCAR Cup Series — full per-race classification sourced directly from
-// racing-reference.info. The 2026-05-22 probe confirmed the Phase-1-locked
-// finding that the site returns 200 from a real desktop browser, but a
-// follow-up gotcha surfaced when wiring this up: Cloudflare's WAF on
-// racing-reference 403s Node's `fetch()` (undici) and the native `https`
-// module both — the WAF fingerprints the TLS handshake (cipher list / ALPN
-// order), and Node's stock TLS profile is flagged as a bot. curl gets
-// through; so does `node:http2`. We use the http2 client to make every
-// request, which is also nice for fan-out: one TLS handshake multiplexes
-// the season index + N per-race requests over a single connection.
+// NASCAR Cup Series — full per-race classification sourced from Wikipedia's
+// per-race articles. The 2026-05-22 prod regression on PR #91 showed that
+// racing-reference.info — the source we'd locked-in via Phase 1 — sits
+// behind a Cloudflare WAF that 403s every datacenter IP regardless of TLS
+// fingerprint (the `node:http2` localhost workaround returned 200 from a
+// residential IP but the Cloudflare challenge page from Vercel's `iad1`).
+// Wikipedia returns 200 from any IP because they want bots indexing them,
+// and per the 2026-05-22 fallback probe each per-race article carries the
+// full classification with the exact column set we need:
 //
-// Trade-off vs. plain `fetch`: we lose Next's built-in `next: { revalidate }`
-// fetch cache. The series page itself revalidates on the framework cadence,
-// so upstream load is still bounded — but if request volume grows, the
-// next move is wrapping `fetchHtml` with Vercel's Runtime Cache or a
-// `unstable_cache` boundary.
+//   Pos | Grid | No | Driver | Team | Manufacturer | Laps | Points
 //
-// The flow is two-step:
-//   1. Fetch the season-stats index page (`/season-stats/<year>/W/`) to
-//      discover every per-race URL that has data ready (RR only lists races
-//      after they've happened — perfect for incremental population).
-//   2. Fetch each per-race page in parallel over the same http2 client,
-//      parse the `table.race-results-tbl` classification grid (40-ish rows,
-//      10 columns).
+// Pipeline:
+//   1. Fetch the season-stats page (`2026_NASCAR_Cup_Series`) — same source
+//      the standings parser already uses.
+//   2. Walk the schedule/results table's "Report" anchors to discover one
+//      per-race article URL per completed round.
+//   3. Fetch each per-race article in parallel via stock `fetch()` (no http2
+//      gymnastics needed — Wikipedia has no WAF).
+//   4. Parse the largest matching race-results table on each article.
 //
-// Per-race-row columns per the probe:
-//   0: Pos    1: St    2: #    3: Driver    4: Sponsor / Owner
-//   5: Car (manufacturer)    6: Laps    7: Status    8: Led    9: Pts
-//
-// The "Sponsor / Owner" cell embeds the team name in a parenthetical
-// (e.g. `"Chumba Casino   (23XI Racing)"`). Per the Phase 1 operator decision
-// locked via AskUserQuestion 2026-05-20, the team field surfaces the owner
-// team, not the manufacturer — sponsors rotate within a season, owners
-// don't.
+// Trend chart: kept conditional. NASCAR's per-finish points scale stays
+// constant across the regular season; Wikipedia per-race articles carry
+// the same numeric points the standings parser sums to its totals. The
+// chart is rendered in ResultsTab.tsx when this fetcher returns non-empty
+// data — if upstream becomes patchy, the standings tab remains the
+// authority.
 
-const ORIGIN = 'https://www.racing-reference.info';
-const SEASON_PATH = '/season-stats/2026/W/';
+const SEASON_URL =
+  'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series';
 
-const REQUEST_HEADERS: http2.OutgoingHttpHeaders = {
-  ':method': 'GET',
-  'user-agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'accept-language': 'en-US,en;q=0.9',
-  // Identity encoding keeps the response easy to read as a string. The
-  // index + per-race pages are 180-220 KB — gzip would save bandwidth but
-  // adds a zlib step; not worth it for 12-36 requests per season.
-  'accept-encoding': 'identity',
+const FETCH_HEADERS = {
+  // Wikipedia is permissive but we identify Paddock for log courtesy.
+  'User-Agent':
+    'PaddockTracker/1.0 (+https://paddock-tracker.com; contact: pparaskevas.dev@gmail.com)',
+  Accept: 'text/html',
 };
 
 // Sanity floors. A complete classification is ~38-41 cars; under 20 means
-// we landed on a structurally-broken response, mid-edit page, or the WAF
-// served a sentinel. Fail closed.
+// we landed on a structurally-broken response, mid-edit article, or the
+// wrong table on disambiguation. Fail closed.
 const MIN_RACES = 1;
 const MIN_ENTRIES_PER_RACE = 20;
 
 const COL_POS = 0;
+const COL_GRID = 1;
 const COL_CAR_NUMBER = 2;
 const COL_DRIVER = 3;
-const COL_SPONSOR_OWNER = 4;
-const COL_STATUS = 7;
-const COL_POINTS = 9;
-const EXPECTED_COLUMNS = 10;
+const COL_TEAM = 4;
+// COL_MANUFACTURER = 5 — present but not surfaced; team is the headline.
+// COL_LAPS = 6 — present but not surfaced.
+const COL_POINTS = 7;
+const EXPECTED_COLUMNS = 8;
 
 function cleanText(s: string): string {
   return s
@@ -87,39 +76,111 @@ function parseDateFromRoundsLookup(
   return d;
 }
 
-// "Chumba Casino   (23XI Racing)" → "23XI Racing"
-// Falls back to the whole cell if no parenthetical is present (so a future
-// RR layout change that drops the owner doesn't blank the team column).
-function extractOwnerTeam(sponsorOwnerCell: string): string {
-  const match = sponsorOwnerCell.match(/\(([^)]+)\)\s*$/);
-  if (match) return match[1].trim();
-  return sponsorOwnerCell.trim();
-}
-
 interface RaceLink {
   round: number;
   url: string;
+  raceName: string;
 }
 
+// The season page's race-results table has one row per round. Each row
+// includes a "Report" anchor pointing to the per-race Wikipedia article.
+// We walk the wikitable rows, counting them as rounds 1..N in document
+// order (the table is chronologically sorted), and pair each round to its
+// Report-link href. Preseason rows (Clash, Duels) come first and are
+// skipped — we anchor on rows whose first cell parses as an integer round
+// number.
 export function parseSeasonRaceLinks(html: string): RaceLink[] {
   const $ = cheerio.load(html);
-  const seen = new Set<string>();
   const out: RaceLink[] = [];
-  $('.race-number a[href*="/race-results/"]').each((_, a) => {
-    const href = $(a).attr('href');
-    const roundText = $(a).text().trim();
-    const round = Number(roundText);
-    if (!href || seen.has(href) || !Number.isFinite(round)) return;
-    seen.add(href);
-    out.push({ round, url: href });
+  const seen = new Set<string>();
+
+  // Walk every wikitable looking for race-result rows. Prefer the "Schedule
+  // and results" table whose rows have a round-number first cell + a
+  // Report column with a per-race link. Wikipedia's exact schedule-table
+  // markup varies year to year, so we use a structural test rather than
+  // anchoring on a specific section heading.
+  $('table.wikitable').each((_, table) => {
+    $(table)
+      .find('tr')
+      .each((_, tr) => {
+        const cells = $(tr).find('th, td').toArray();
+        if (cells.length < 4) return;
+        const roundText = $(cells[0]).text().replace(/\D/g, '');
+        if (!roundText) return;
+        const round = Number(roundText);
+        if (!Number.isFinite(round) || round < 1 || round > 50) return;
+
+        // Find a /wiki/2026_* anchor anywhere in this row whose visible
+        // text is "Report" (the link Wikipedia uses for the per-race
+        // article). Fall back to any /wiki/2026_* link if no Report is
+        // present (some articles use a race-name link instead).
+        let url: string | null = null;
+        let raceName = '';
+        $(tr)
+          .find('a[href^="/wiki/2026_"]')
+          .each((_, a) => {
+            if (url) return;
+            const href = $(a).attr('href');
+            const text = $(a).text().trim();
+            if (!href) return;
+            if (text === 'Report' || (!url && /^2026_/.test(href.slice(6)))) {
+              url = `https://en.wikipedia.org${href}`;
+              raceName = text === 'Report' ? '' : text;
+            }
+          });
+        if (!url) return;
+        if (seen.has(url)) return;
+        seen.add(url);
+        out.push({ round, url, raceName });
+      });
   });
+
   return out;
+}
+
+interface RaceTableCandidate {
+  table: ReturnType<cheerio.CheerioAPI>;
+  rowCount: number;
+}
+
+// Per-race article structure: one or more wikitables; the race-results
+// table has the canonical header row `Pos | Grid | No | Driver | Team |
+// Manufacturer | Laps | Points`. The Daytona 500 article has THREE
+// matching tables (two Duels + the main race) — we pick the one with the
+// most rows since the 500 has 41 entries vs. the Duels' ~24 each. For
+// most other races there's exactly one matching table.
+function findRaceResultsTable(
+  $: cheerio.CheerioAPI,
+): ReturnType<cheerio.CheerioAPI> | null {
+  let best: RaceTableCandidate | null = null;
+  $('table.wikitable').each((_, t) => {
+    const headerCells = $(t).find('tr').first().find('th, td');
+    const header = headerCells
+      .map((_, c) => $(c).text().trim().toLowerCase())
+      .get()
+      .join('|');
+    if (
+      !header.includes('pos') ||
+      !header.includes('driver') ||
+      !header.includes('manufacturer') ||
+      !header.includes('points') ||
+      !header.includes('laps')
+    ) {
+      return;
+    }
+    const rowCount = $(t).find('tr').length;
+    if (!best || rowCount > best.rowCount) {
+      best = { table: $(t), rowCount };
+    }
+  });
+  return best ? (best as RaceTableCandidate).table : null;
 }
 
 export function parseRaceResultsHtml(html: string): RaceResultEntry[] {
   const $ = cheerio.load(html);
-  const table = $('table.race-results-tbl').first();
-  if (table.length === 0) return [];
+  const table = findRaceResultsTable($);
+  if (!table) return [];
+
   const entries: RaceResultEntry[] = [];
   table.find('tr').each((idx, tr) => {
     if (idx === 0) return; // header
@@ -135,15 +196,18 @@ export function parseRaceResultsHtml(html: string): RaceResultEntry[] {
     const driverName = cells[COL_DRIVER];
     if (!driverName) return;
     const points = Number(cells[COL_POINTS]);
+    void cells[COL_GRID];
     entries.push({
       position,
       driverName,
       driverCode: cells[COL_CAR_NUMBER] || undefined,
-      team: extractOwnerTeam(cells[COL_SPONSOR_OWNER]),
-      // RR uses lowercase status tokens: "running", "crash", "engine",
-      // "transmission", "rear gear", etc. Preserve verbatim — the UI styles
-      // it as the small right-aligned label.
-      status: cells[COL_STATUS] || 'unknown',
+      team: cells[COL_TEAM],
+      // Wikipedia per-race tables don't surface a "Status" column on the
+      // headline classification — finishers are positioned by laps
+      // completed and DNFs by reverse retirement order. We surface a flat
+      // "Classified" for everyone; the UI's status column already falls
+      // back to a sensible label when status is generic.
+      status: 'Classified',
       time: undefined,
       points: Number.isFinite(points) ? points : 0,
     });
@@ -154,25 +218,21 @@ export function parseRaceResultsHtml(html: string): RaceResultEntry[] {
 
 export function buildRaceResultFromPage(
   html: string,
-  round: number,
+  link: RaceLink,
   rounds: Array<{ round: number; startDate: string; name?: string }>,
 ): RaceResult | null {
   const entries = parseRaceResultsHtml(html);
   if (entries.length < MIN_ENTRIES_PER_RACE) return null;
-  const date = parseDateFromRoundsLookup(round, rounds);
+  const date = parseDateFromRoundsLookup(link.round, rounds);
   if (!date) return null;
   const $ = cheerio.load(html);
-  const rawName = cleanText($('h1').first().text()) || `Round ${round}`;
-  // RR's per-race H1 reads "2026 Daytona 500"; strip the leading year to
-  // match the rest of the codebase's naming convention.
+  const rawName = cleanText($('h1').first().text()) || link.raceName || `Round ${link.round}`;
+  // Per-race article H1 reads "2026 Daytona 500"; strip the leading year.
   const trimmedName = rawName.replace(/^\d{4}\s+/, '');
   return {
-    round,
+    round: link.round,
     raceName: trimmedName,
     date,
-    // RR doesn't surface the track name as a separate cleanly-extractable
-    // field — the race name is the closest "where" signal. The Calendar
-    // tab carries the actual circuit-name mapping via `rounds.json`.
     circuit: trimmedName,
     results: entries,
   };
@@ -180,80 +240,43 @@ export function buildRaceResultFromPage(
 
 interface FetchOptions {
   rounds: Array<{ round: number; startDate: string; name?: string }>;
-  // Test-only injection point. When provided, replaces the http2 transport
-  // with a stub that returns canned bodies keyed by pathname. Production
-  // calls never pass this — they hit racing-reference live via http2.
-  transport?: (pathname: string) => Promise<{ status: number; body: string }>;
+  // Test-only injection point. Production calls never pass this.
+  fetchImpl?: (url: string) => Promise<{ status: number; body: string }>;
 }
 
-function fetchViaHttp2(
-  session: http2.ClientHttp2Session,
-  pathname: string,
-): Promise<{ status: number; body: string }> {
-  return new Promise(resolve => {
-    const req = session.request({ ...REQUEST_HEADERS, ':path': pathname });
-    let status = 0;
-    let buf = Buffer.alloc(0);
-    req.on('response', headers => {
-      status = Number(headers[':status']) || 0;
-    });
-    req.on('data', chunk => {
-      buf = Buffer.concat([buf, chunk]);
-    });
-    req.on('end', () => {
-      resolve({ status, body: buf.toString('utf8') });
-    });
-    req.on('error', () => {
-      resolve({ status: 0, body: '' });
-    });
-    req.end();
-  });
-}
-
-function pathnameOf(href: string): string {
+async function defaultFetch(url: string): Promise<{ status: number; body: string }> {
   try {
-    return new URL(href).pathname;
+    const res = await fetch(url, {
+      headers: FETCH_HEADERS,
+      next: { revalidate: 3600 },
+    } as RequestInit);
+    if (!res.ok) return { status: res.status, body: '' };
+    const body = await res.text();
+    return { status: res.status, body };
   } catch {
-    return href;
+    return { status: 0, body: '' };
   }
 }
 
 export async function fetchNascarCupSeasonResults(
   options: FetchOptions,
 ): Promise<RaceResult[]> {
-  // Tests inject a transport stub; production opens a real http2 client.
-  // Either way the rest of the function flow is identical.
-  let transport: (pathname: string) => Promise<{ status: number; body: string }>;
-  let cleanup: (() => void) | undefined;
-  if (options.transport) {
-    transport = options.transport;
-  } else {
-    const session = http2.connect(ORIGIN);
-    // Swallow socket-level errors so a flaky upstream connection returns []
-    // rather than crashing the request handler.
-    session.on('error', () => undefined);
-    transport = pathname => fetchViaHttp2(session, pathname);
-    cleanup = () => session.close();
-  }
+  const fetcher = options.fetchImpl ?? defaultFetch;
 
-  try {
-    const indexResp = await transport(SEASON_PATH);
-    if (indexResp.status !== 200) return [];
+  const seasonResp = await fetcher(SEASON_URL);
+  if (seasonResp.status !== 200) return [];
 
-    const links = parseSeasonRaceLinks(indexResp.body);
-    if (links.length < MIN_RACES) return [];
+  const links = parseSeasonRaceLinks(seasonResp.body);
+  if (links.length < MIN_RACES) return [];
 
-    const settled = await Promise.all(
-      links.map(async link => {
-        const r = await transport(pathnameOf(link.url));
-        if (r.status !== 200) return null;
-        return buildRaceResultFromPage(r.body, link.round, options.rounds);
-      }),
-    );
-    return settled
-      .filter((r): r is RaceResult => r !== null)
-      .sort((a, b) => a.round - b.round);
-  } finally {
-    cleanup?.();
-  }
+  const settled = await Promise.all(
+    links.map(async link => {
+      const r = await fetcher(link.url);
+      if (r.status !== 200) return null;
+      return buildRaceResultFromPage(r.body, link, options.rounds);
+    }),
+  );
+  return settled
+    .filter((r): r is RaceResult => r !== null)
+    .sort((a, b) => a.round - b.round);
 }

@@ -6,9 +6,75 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 0.12.11 IMSA full-class results (or 0.12.8.1 WEC)
+## ⚡ Next session pickup — 🔴 FIX 0.12.12 NASCAR prod regression (BEFORE 0.12.13 GT-World)
 
-**Thu 2026-05-21 shipped 6 PRs end-to-end.** Versions in order:
+**Fri 2026-05-22 shipped 2 PRs.** Versions in order:
+- **0.12.11 (PR #90, merged ✅)** — IMSA full-class results via Al Kamel JSON API at `imsa.results.alkamelcloud.com`. Probe confirmed the Phase-1 brief: open Apache index, no auth, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class. Folder layout isn't catalog-discoverable (24h races nest under `24_Hour 24/`, sprints sit under `Race/`), so per-round URLs live in `content/series/imsa/alkamel-rounds.json`. Schema mirrors `lib/standings/imsa.ts` (`Partial<Record<ImsaClass, ...>>`). Operator-verified on prod.
+- **0.12.12 (PR #91, merged but 🔴 BROKEN on prod)** — NASCAR Cup full-class results via racing-reference.info per-race pages, plus `SeasonTrendChart` restored on top. **Works on localhost** via `node:http2.connect()` workaround (Cloudflare WAF blocks Node `fetch`/undici on the TLS layer; HTTP/2's ALPN gives a different TLS profile that gets through). **Empty state on prod** — `paddock-tracker.com/series/nascar-cup?tab=results` shows "Results are temporarily unavailable" (= empty `RaceResult[]` from the fetcher). The PR test plan flagged the risk; localhost-pass merged on the strength of the planned-but-skipped Vercel-preview verification step.
+
+### 🔴 NASCAR prod regression — diagnosis hypotheses
+
+Before PR #91, NASCAR was `⚠️` on the error inventory (Wikipedia winners-only — single entry per round with `points: 0` sentinel, still rendering). After PR #91 it's `❌` (empty state). **Net regression** — must fix before any other Phase 2 work.
+
+`fetchNascarCupSeasonResults` returns `[]` on every error path (silent catch). One of these is firing in Vercel runtime but not on localhost:
+
+1. **Vercel Functions Node runtime restricts outbound `node:http2`.** Fluid Compute's networking layer may not allow raw HTTP/2 client connections.
+2. **Vercel egress IP is challenged by Cloudflare WAF.** Datacenter IPs (AWS / GCP) are well-known; the WAF may serve 403/503 even with a Chrome-like TLS profile when the IP rep is low. Residential IPs (localhost) get through; prod's doesn't.
+3. **Connection lifecycle race.** `session.close()` in `finally` may kill in-flight responses if it fires before all multiplexed streams drain. Quietly drops to `[]`.
+4. **Cold-start timing.** First request on a cold function may exceed http2 handshake timeout.
+5. **Silent error swallow obscures the real cause.** Need diagnostics first.
+
+### 🔴 Fix plan (locked next-session priority)
+
+**Phase 1 — investigate (~15-30 min, no commit):**
+- Add temporary `console.error` calls in `fetchViaHttp2`, `fetchNascarCupSeasonResults` (index fetch + per-race fetches).
+- Deploy preview, hit `/series/nascar-cup?tab=results`, inspect Vercel function logs via dashboard or `vercel logs`.
+- Tell-tales:
+  - `ECONNREFUSED` / `EHOSTUNREACH` / `ALPN protocol mismatch` → #1 runtime restriction
+  - 403 / 503 / Cloudflare challenge HTML in body → #2 IP rep
+  - `NGHTTP2_INTERNAL_ERROR` / "stream destroyed" → #3 lifecycle
+  - Hang / timeout → #4 cold start
+
+**Phase 2 — fix, branched by root cause:**
+- **#1 runtime restriction:** pivot to Wikipedia per-race articles (`/wiki/2026_<race>`). Bot-friendly, returns 200 from undici. Per-race parser rewrite needed. Trend chart depends on Wikipedia's per-race tables carrying points (probe required).
+- **#2 IP rep:** http2 trick alone insufficient on datacenter IPs. Options:
+  - undici Dispatcher with custom ciphers (fragile);
+  - Cloudflare Worker proxy in front of racing-reference (different IP);
+  - Vercel Sandbox running curl in isolated VM (heavy infra);
+  - **Cron-prefetch to Vercel KV** — scrape periodically via cron, store in KV, ResultsTab reads from KV. No runtime upstream fetch. Matches existing KV pattern; faster page loads as a side benefit. Possibly the cleanest fix.
+- **#3 lifecycle:** await all in-flight responses before `session.close()`. ~10-line fix.
+- **#4 cold start:** explicit timeout + retry, or pre-warm via cron.
+
+**Phase 3 — verify on Vercel preview BEFORE merge.** Don't rely on localhost-passes again. Browser-verify the `*.vercel.app` URL directly.
+
+### What today learned that affects future work
+
+- **Cloudflare WAFs fingerprint Node's TLS handshake, not just headers.** Phase-1 verdicts based on curl probes can be wrong for server-side Node fetch. `node:http2.connect()` returns 200 on localhost where undici's HTTP/1.1 stack returns 403. **But this workaround did NOT survive Vercel Functions runtime** — see prod regression above. The corollary lesson: **verify on Vercel preview, not just localhost**, before declaring "shipped". A localhost-pass + skipped preview check is what shipped the regression.
+- **Check `robots.txt` and `sitemap.xml` first when probing a new source.** Operator-codified mid-session. Cheap (one fetch each), occasionally surfaces structured endpoints, signals which paths are off-limits. Skip if 404 or empty.
+- **First non-F1 trend chart shipped (NASCAR, on localhost).** Cross-series invariant model held — chart only ships when per-finisher points reconcile against standings. Whether NASCAR keeps the chart depends on the fix path (Wikipedia per-race fallback may not carry points → drop the chart again).
+- **Phase 1 source briefs are occasionally inaccurate at the source-feasibility level**, not just the table-count level. Probe-time policy: verify with `node -e "fetch('...')"` (or `http2.connect`) AND ideally a one-off Vercel preview deploy before scoping the parser.
+
+### Phase 2 sequence
+
+| Ver | Scope | Source | Status |
+|---|---|---|---|
+| 0.12.11 | feat(imsa) full-class results | Alkamel JSON | ✅ shipped (PR #90) |
+| 0.12.12 | feat(nascar-cup) full-class results + trend chart | racing-reference (http2) | 🔴 merged but BROKEN on prod (PR #91) |
+| 0.12.12.1 | **fix(nascar-cup) prod regression** | TBD post-investigation | **NEXT** |
+| 0.12.13 | feat(gt-world) results + SRO points scale | Existing parser + SRO regs | gated on prod fix |
+| 0.12.8.1 | feat(wec) per-round results | TBD (Stimulus XHR or per-event scrape) | optional follow-up |
+| 0.12.14 | feat(wrc) per-rally full-class | Wikipedia per-rally | queued |
+| 0.12.15 | feat(dtm) standings + results | motorsport.com/dtm | queued |
+| 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | queued |
+| 0.13.0 | feat(drivers) bulk × 13 series | per-series | unchanged |
+| 0.14.0 | feat(content) histories + rules + blog posts | curated | multi-session 50-70h |
+| 0.15.0 | feat(enrichment) headshots + bios + per-driver charts | Wikipedia + curation | multi-session 80+h |
+
+---
+
+## Archived top-block — Thu 2026-05-21 ship marathon
+
+Versions in order:
 - **0.12.6 (PR #83)** — custom `CookieConsent` modal replacing Funding Choices. GA4 unblock for EU/UK visitors.
 - **0.12.7 (PR #84)** — modal UX polish driven by 370-line research synthesis at `docs/research/cookie-consent-ux-2026-05-21.md`. Allow all / Essential only / Customize button set; bottom-card layout; switch-left toggles with "Always on" pill; fade + slide-up entry animation; `prefers-reduced-motion` honoured.
 - **0.12.8 (PR #85)** — live FIA WEC 2026 standings via `fiawec.com/en/page/manufacturers-classification` SSR. **4 tables** (not the 6 the Phase 1 brief claimed — WEC is asymmetric: Hypercar = Drivers + Manufacturers, LMGT3 = Drivers + Teams). Schema uses `Partial<Record<WecClass, ...>>` for the asymmetric championships.
