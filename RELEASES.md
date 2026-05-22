@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.12.15 — 2026-05-22
+
+**Live DTM standings, all three championships.** The DTM Standings tab now renders the 2026 Drivers', Teams', and Manufacturers' championships live from motorsport.com — refreshed after every round. After Red Bull Ring (R1): Maro Engel leads with 44 points ahead of Lucas Auer (37) and Marco Wittmann (31); Mercedes-AMG Team Landgraf tops the Teams table; Mercedes leads BMW, McLaren, and Aston Martin in the Manufacturers' fight. Eight more rounds to come — Zandvoort this weekend, then Lausitzring, Oschersleben, Nürburgring, Sachsenring, and Hockenheim through October.
+
+The Results tab gets a live drivers' season-trend chart, showing every scoring driver's cumulative championship trajectory. With only Red Bull Ring run so far the chart is a single column, but it'll grow into a useful season-tracker once Zandvoort and beyond land.
+
+A heads-up on what's not here yet: per-race classification accordions (who finished where at Red Bull Ring) — same shape as Formula 1's Results tab. That's the next DTM follow-up; the data source needs one more probe to confirm the per-event page layout.
+
 ## 0.12.14 — 2026-05-22
 
 **Full WRC rally results — and the season-trend chart is back.** The WRC Results tab now shows the complete WRC Rally1 classification from every completed 2026 round — Rallye Monte-Carlo, Rally Sweden, Safari Rally Kenya, Croatia Rally, Rally Islas Canarias, and Rally de Portugal. Each accordion expands to the full top-10 plus any retired Rally1 entries, with driver, co-driver, team, car number, finishing time, and total points (event + Sunday + Power Stage bonus). The "Drivers' season trend" line chart sits at the top, plotting all 29 scoring drivers across the six rallies — Evans 123 leads, Katsuta 111, Solberg 92 at the latest snapshot.

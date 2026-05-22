@@ -12,6 +12,7 @@ import { fetchFormulaEStandings } from '@/lib/standings/formula-e';
 import { fetchMotoGPStandings } from '@/lib/standings/motogp';
 import { fetchNascarCupStandings } from '@/lib/standings/nascar-cup';
 import { fetchWsbkStandings } from '@/lib/standings/wsbk';
+import { fetchDTMStandings } from '@/lib/standings/dtm';
 import { fetchWRCStandings } from '@/lib/standings/wrc';
 import { fetchGtWorldStandings } from '@/lib/standings/gt-world';
 import {
@@ -636,6 +637,39 @@ export async function StandingsTab({ series }: { series: Series }) {
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
         <SourceLink href="https://www.worldsbk.com/en/standings" label="worldsbk.com" />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'dtm') {
+    const [data, overrides] = await Promise.all([
+      fetchDTMStandings(),
+      loadStandingsOverrides(series.meta.slug),
+    ]);
+    if (!data) {
+      return (
+        <EmptyState message="Standings are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const teams = applyConstructorOverrides(data.teams, overrides?.constructors);
+    const constructors = applyConstructorOverrides(
+      data.constructors,
+      overrides?.constructors,
+    );
+    return (
+      <div className="space-y-4">
+        <DriversTable drivers={drivers} heading="Drivers" />
+        {teams.length > 0 ? (
+          <ConstructorsTable constructors={teams} heading="Teams" />
+        ) : null}
+        {constructors.length > 0 ? (
+          <ConstructorsTable constructors={constructors} heading="Manufacturers" />
+        ) : null}
+        <SourceLink
+          href="https://www.motorsport.com/dtm/standings/2026/"
+          label="motorsport.com (DTM 2026)"
+        />
       </div>
     );
   }

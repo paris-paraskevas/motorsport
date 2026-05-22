@@ -4,6 +4,53 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.12.15 — 2026-05-22
+
+Closes `/series/dtm?tab=standings`: the Standings tab now renders the 2026 DTM Drivers' / Teams' / Manufacturers' championship triple from `motorsport.com/dtm/standings/2026/`. Replaces the prior `LinkOutCard` fallthrough that punted users to the official site (dtm.com — which is itself a SPA shell, the same JS-rendered blocker that gates motogp.com / fiaformulae.com). `/series/dtm?tab=results` renders a `SeasonTrendChart` whose totals reconcile to the Standings tab by construction.
+
+**Single source, three tables.** motorsport.com's `/dtm/standings/2026/?type={Driver|Team|Constructor}&class=` URLs all return the same SSR'd `<table class="ms-table ms-table--standings">` skeleton, with only the second-cell class varying (`--driver` / `--team` / `--result_constructor`). Probe confirmed every row in the response body — no hydration round-trip needed. Each standings table also carries per-cell per-round point breakdowns (one column per scheduled round, with country-flag headers and `-` for unraced rounds) which the chart parser reshapes into synthetic `RaceResult[]` for `buildSeasonTrendData`.
+
+**Why dtm.com isn't used.** Probed at session start: the official `dtm.com/en/live/standings` returns a 2 KB SPA shell (`<title>DTM</title>` + a loader) — no tables in the HTML body, hydration would need Playwright or Pulselive-style endpoint discovery. motorsport.com is the only scrape-friendly source that returns 200 from datacenter IPs and SSRs the full standings.
+
+**Probe discipline:** `robots.txt` + `sitemap.xml` checked on dtm.com, www.motorsport.com, and en.wikipedia.org per the rule baked in during 0.12.14. motorsport.com allows `/dtm/*` paths; the standings + per-event result pages are sitemap-indexed.
+
+### Added
+
+- **`lib/standings/dtm.ts`** — three parsers (`parseDriverStandingsFromHtml`, `parseTeamStandingsFromHtml`, `parseConstructorStandingsFromHtml`) sharing one `findStandingsTable` selector + one common per-row reader. Driver rows handle both shapes the source emits: `<a class="ms-link info-wrapper">` for drivers with profile pages on motorsport.com (M. Engel, L. Auer, ...) and `<div class="info">` fallback for drivers without one (F. Wiebelhaus, T. Kalender). Returns `{ drivers, teams, constructors, driverRoundBreakdown }` — the last field is the chart input. Fail-closed below MIN_DRIVER_ROWS=8 / MIN_TEAM_ROWS=4 / MIN_CONSTRUCTOR_ROWS=2; partial success (teams or constructors fail but drivers succeed) ships drivers only.
+- **`lib/results/dtm.ts`** — reshapes `driverRoundBreakdown` into chart-ready `RaceResult[]`. One synthetic RaceResult per round with `results[]` listing every scorer, sorted by points DESC, with synthetic `position = rank-within-round` (the source surfaces only points per cell, not finishing position). Unraced future rounds (zero scorers) are dropped so the chart x-axis spans completed events only. Per-race full classification (top-N with finish status + gap) is deferred to a follow-up that probes per-event URLs like `/dtm/results/2026/<slug>-<id>/`.
+- **`tests/fixtures/dtm-standings-{drivers,teams,constructors}-2026.html`** — real captures from motorsport.com on 2026-05-22 (673-697 KB each). 22 drivers / 12 teams / 4 manufacturers, all after R1 (Red Bull Ring).
+- **`lib/standings/dtm.test.ts`** — 11 cases. Verifies top-3 driver/team/constructor rows verbatim, per-round sum == total points reconciliation (drivers AND teams), driver row without profile link (F. Wiebelhaus), fail-closed below MIN row counts, 3-way fetch fan-out with mocked fetch, partial-success when only drivers fetch succeeds.
+
+### Changed
+
+- **`components/tabs/StandingsTab.tsx`** — new `dtm` dispatch branch (after `wsbk`). Renders `DriversTable` + `ConstructorsTable` (Teams) + `ConstructorsTable` (Manufacturers) with `applyDriverOverrides` / `applyConstructorOverrides` honoring any curated overrides. Source link points to `https://www.motorsport.com/dtm/standings/2026/`.
+- **`components/tabs/ResultsTab.tsx`** — new `dtm` branch that calls `fetchDTMSeasonChartData()` and renders `SeasonTrendChart` only. Comment notes that the per-event accordion is queued for 0.12.15.1 (needs per-event page probe).
+
+### Won't ship in this PR (deferred to `0.12.15.1`)
+
+- Per-race full classification accordion. Need a separate probe of `/dtm/results/2026/<slug>-<id>/` for table structure (Pos / No / Driver / Team / Time / Gap / Points). If SSR'd, ~1h to wire `lib/results/dtm.ts` `fetchDTMSeasonResults()` alongside the chart-only data. If JS-rendered, defer further or pivot to Wikipedia per-event articles.
+
+### Verification
+
+- 350 tests / 39 files pass, including 11 new DTM fixture-based cases.
+- `npx tsc --noEmit` clean.
+- Localhost browser check: `/series/dtm?tab=standings` renders Drivers + Teams + Manufacturers tables (Engel 44 / Auer 37 / Wittmann 31 / ... matches motorsport.com). `/series/dtm?tab=results` renders trend chart legend with all 18 scoring drivers + cumulative totals.
+- Chart is flat (one R1 data point — no trajectory yet). This is honest: only the Red Bull Ring round has run in 2026. Chart will fill in as Zandvoort / Lausitzring etc. land.
+- **Vercel preview verify gating the merge** — per the CLAUDE.md rule introduced in 0.12.12.1.
+
+### Phase 2 sequence
+
+| Ver | Scope | Source | Status |
+|---|---|---|---|
+| 0.12.11 | feat(imsa) full-class results | Alkamel JSON | ✅ shipped (PR #90) |
+| 0.12.12.1 | fix(nascar-cup) pivot to Wikipedia | Wikipedia per-race | ✅ shipped (PR #92) |
+| 0.12.13 | feat(gt-world) classification dispatch (no chart) | gt-world-challenge-europe.com | ✅ shipped (PR #93) |
+| 0.12.14 | feat(wrc) per-rally full-class + trend chart | Wikipedia per-rally + season page | ✅ shipped (PR #95) |
+| 0.12.15 | **feat(dtm) standings + trend chart** | motorsport.com/dtm | this PR |
+| 0.12.13.1 | feat(gt-world) SRO points + trend chart | SRO regs + standings reconciliation | queued |
+| 0.12.15.1 | feat(dtm) per-event results accordion | TBD (per-event probe) | queued |
+| 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | queued |
+
 ## 0.12.14 — 2026-05-22
 
 Closes `/series/wrc?tab=results`: the Results tab now renders full per-rally WRC Rally1 classifications (top-N + retired entries) plus a `SeasonTrendChart` of cumulative championship points across the season. Replaces the 0.11.14 winners-only output that had silently regressed to 0 results in production after the season page's Season-summary table dropped its date column (the existing `findCalendarTable` + `buildColumnMap` chain failed closed when `date === -1`).
