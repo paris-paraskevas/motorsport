@@ -38,6 +38,10 @@ _(Native non-F1 results + standings, S7 — depends on Supabase storage tables l
 - Redesign F1 History tab or replace with curated content/series/f1/history.md.
 - Improve Rules tab with FIA PDF link and a "common topics" surface.
 - Implement lib/results/<slug>.ts and lib/standings/<slug>.ts for MotoGP, WEC, IndyCar, NASCAR.
+- NASCAR trend chart polish — 47-driver legend cluttering, leader-vs-tail spread crushes the bottom cluster, Y-axis only labels 150 and 600. Fix candidates: cap legend to top-N drivers, drop "(i)" / "(R)" suffix from labels, more Y-axis ticks, optional log scale or zoom-to-leaders default. Operator-flagged on /series/nascar-cup?tab=results 2026-05-22.
+- TheSportsDB free tier evaluation done 2026-05-22 — skip, doesn't cover NASCAR/WRC/DTM/F1/MotoGP/IMSA/WEC/IndyCar/FE on free key, only V8/BTCC/British GT/WorldRX/WorldSSP. Paid Patreon (~$10/mo) might unlock more but data is schedule-only on free tier. Do not re-evaluate.
+- Sportmonks F1 API — only commercial source with lap/pit/stint/livescore data for F1. F1-only and ~€19+/mo. Park until Paddock builds a live-timing roadmap; revisit then.
+- API-Sports F1 v1 — alternative to Jolpica if Jolpica becomes unreliable. F1-only, 100 req/day free tier. **Docs page 403s datacenter IPs** (same CF failure mode as racing-reference); MUST be tested from a Vercel preview before any adoption attempt.
 - Add a custom app/error.tsx page.
 - Integrate Sentry for error monitoring.
 - Add /api/cron/health summarising last-run timestamps for every cron job.

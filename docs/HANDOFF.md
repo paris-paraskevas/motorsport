@@ -6,69 +6,60 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 🔴 FIX 0.12.12 NASCAR prod regression (BEFORE 0.12.13 GT-World)
+## ⚡ Next session pickup — 0.12.13.1 GT-World trend chart (or 0.12.14 WRC)
 
-**Fri 2026-05-22 shipped 2 PRs.** Versions in order:
-- **0.12.11 (PR #90, merged ✅)** — IMSA full-class results via Al Kamel JSON API at `imsa.results.alkamelcloud.com`. Probe confirmed the Phase-1 brief: open Apache index, no auth, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class. Folder layout isn't catalog-discoverable (24h races nest under `24_Hour 24/`, sprints sit under `Race/`), so per-round URLs live in `content/series/imsa/alkamel-rounds.json`. Schema mirrors `lib/standings/imsa.ts` (`Partial<Record<ImsaClass, ...>>`). Operator-verified on prod.
-- **0.12.12 (PR #91, merged but 🔴 BROKEN on prod)** — NASCAR Cup full-class results via racing-reference.info per-race pages, plus `SeasonTrendChart` restored on top. **Works on localhost** via `node:http2.connect()` workaround (Cloudflare WAF blocks Node `fetch`/undici on the TLS layer; HTTP/2's ALPN gives a different TLS profile that gets through). **Empty state on prod** — `paddock-tracker.com/series/nascar-cup?tab=results` shows "Results are temporarily unavailable" (= empty `RaceResult[]` from the fetcher). The PR test plan flagged the risk; localhost-pass merged on the strength of the planned-but-skipped Vercel-preview verification step.
-
-### 🔴 NASCAR prod regression — diagnosis hypotheses
-
-Before PR #91, NASCAR was `⚠️` on the error inventory (Wikipedia winners-only — single entry per round with `points: 0` sentinel, still rendering). After PR #91 it's `❌` (empty state). **Net regression** — must fix before any other Phase 2 work.
-
-`fetchNascarCupSeasonResults` returns `[]` on every error path (silent catch). One of these is firing in Vercel runtime but not on localhost:
-
-1. **Vercel Functions Node runtime restricts outbound `node:http2`.** Fluid Compute's networking layer may not allow raw HTTP/2 client connections.
-2. **Vercel egress IP is challenged by Cloudflare WAF.** Datacenter IPs (AWS / GCP) are well-known; the WAF may serve 403/503 even with a Chrome-like TLS profile when the IP rep is low. Residential IPs (localhost) get through; prod's doesn't.
-3. **Connection lifecycle race.** `session.close()` in `finally` may kill in-flight responses if it fires before all multiplexed streams drain. Quietly drops to `[]`.
-4. **Cold-start timing.** First request on a cold function may exceed http2 handshake timeout.
-5. **Silent error swallow obscures the real cause.** Need diagnostics first.
-
-### 🔴 Fix plan (locked next-session priority)
-
-**Phase 1 — investigate (~15-30 min, no commit):**
-- Add temporary `console.error` calls in `fetchViaHttp2`, `fetchNascarCupSeasonResults` (index fetch + per-race fetches).
-- Deploy preview, hit `/series/nascar-cup?tab=results`, inspect Vercel function logs via dashboard or `vercel logs`.
-- Tell-tales:
-  - `ECONNREFUSED` / `EHOSTUNREACH` / `ALPN protocol mismatch` → #1 runtime restriction
-  - 403 / 503 / Cloudflare challenge HTML in body → #2 IP rep
-  - `NGHTTP2_INTERNAL_ERROR` / "stream destroyed" → #3 lifecycle
-  - Hang / timeout → #4 cold start
-
-**Phase 2 — fix, branched by root cause:**
-- **#1 runtime restriction:** pivot to Wikipedia per-race articles (`/wiki/2026_<race>`). Bot-friendly, returns 200 from undici. Per-race parser rewrite needed. Trend chart depends on Wikipedia's per-race tables carrying points (probe required).
-- **#2 IP rep:** http2 trick alone insufficient on datacenter IPs. Options:
-  - undici Dispatcher with custom ciphers (fragile);
-  - Cloudflare Worker proxy in front of racing-reference (different IP);
-  - Vercel Sandbox running curl in isolated VM (heavy infra);
-  - **Cron-prefetch to Vercel KV** — scrape periodically via cron, store in KV, ResultsTab reads from KV. No runtime upstream fetch. Matches existing KV pattern; faster page loads as a side benefit. Possibly the cleanest fix.
-- **#3 lifecycle:** await all in-flight responses before `session.close()`. ~10-line fix.
-- **#4 cold start:** explicit timeout + retry, or pre-warm via cron.
-
-**Phase 3 — verify on Vercel preview BEFORE merge.** Don't rely on localhost-passes again. Browser-verify the `*.vercel.app` URL directly.
+**Fri 2026-05-22 shipped 4 PRs, all merged.** Versions in order:
+- **0.12.11 (PR #90)** — IMSA full-class results via Al Kamel JSON API at `imsa.results.alkamelcloud.com`. Open Apache index, no auth, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class. Per-round URLs curated in `content/series/imsa/alkamel-rounds.json` (folder layout isn't catalog-discoverable — 24h races nest under `24_Hour 24/`, sprints sit under `Race/`). Schema mirrors `lib/standings/imsa.ts` (`Partial<Record<ImsaClass, ...>>`). Operator-verified on prod.
+- **0.12.12 (PR #91)** — NASCAR Cup full-class via racing-reference.info per-race pages + `SeasonTrendChart` restored on top. **Worked on localhost** via `node:http2.connect()` workaround, **broke on prod** — Cloudflare WAF challenged Vercel's `iad1` datacenter IP with a "Just a moment..." JS interstitial. Localhost-pass shipped because the planned Vercel-preview verify step was skipped. Hot-fixed by PR #92.
+- **0.12.12.1 (PR #92)** — NASCAR pivot to Wikipedia per-race articles. Wikipedia returns 200 from any IP (bot-friendly by policy). Verified across 6 races. Trend chart kept — Wikipedia per-race tables carry the same numeric points the standings parser sums. Three new CLAUDE.md Working agreement rules locked in directly responsive to the day's stumbles: re-Read before Edit, robots.txt-first when probing a new source, Vercel-preview-verify before "shipped".
+- **0.12.13 (PR #93)** — GT World Challenge Europe per-cup classification. Class-aware accordion (Pro / Gold / Silver / Bronze) mirroring the IMSA pattern. Scope-cut from the original "results + SRO points scale" plan after the implementation probe surfaced how layered SRO scoring is (top-10 + pole bonus + 75%/25min Endurance gates + Spa 24h 3-stage + Super Pole top-5 fractions + Paul Ricard multiplier + per-cup sub-scoring). Trend chart deferred to 0.12.13.1. Tightened `RACE_NAME_PATTERN` with trailing `$` to reject intermediate hourly checkpoints. Drive-by fix to `NASCAR_SOURCE_URL` label (PR #92 leak — fetcher swapped to Wikipedia but label still pointed at racing-reference).
 
 ### What today learned that affects future work
 
-- **Cloudflare WAFs fingerprint Node's TLS handshake, not just headers.** Phase-1 verdicts based on curl probes can be wrong for server-side Node fetch. `node:http2.connect()` returns 200 on localhost where undici's HTTP/1.1 stack returns 403. **But this workaround did NOT survive Vercel Functions runtime** — see prod regression above. The corollary lesson: **verify on Vercel preview, not just localhost**, before declaring "shipped". A localhost-pass + skipped preview check is what shipped the regression.
-- **Check `robots.txt` and `sitemap.xml` first when probing a new source.** Operator-codified mid-session. Cheap (one fetch each), occasionally surfaces structured endpoints, signals which paths are off-limits. Skip if 404 or empty.
-- **First non-F1 trend chart shipped (NASCAR, on localhost).** Cross-series invariant model held — chart only ships when per-finisher points reconcile against standings. Whether NASCAR keeps the chart depends on the fix path (Wikipedia per-race fallback may not carry points → drop the chart again).
-- **Phase 1 source briefs are occasionally inaccurate at the source-feasibility level**, not just the table-count level. Probe-time policy: verify with `node -e "fetch('...')"` (or `http2.connect`) AND ideally a one-off Vercel preview deploy before scoping the parser.
+- **Cloudflare WAFs fingerprint Node's TLS handshake, not just headers.** Phase-1 verdicts based on curl probes can be wrong for server-side Node fetch. `node:http2.connect()` returns 200 on localhost where undici's HTTP/1.1 stack returns 403 — but this workaround did NOT survive Vercel Functions runtime because the WAF challenges the datacenter IP regardless of TLS profile.
+- **Verify on Vercel preview, not just localhost, before declaring "shipped".** Codified as a CLAUDE.md Working agreement rule in 0.12.12.1. Non-skippable for any new server-side fetch.
+- **Check `robots.txt` and `sitemap.xml` first when probing a new source.** Codified as a CLAUDE.md rule too. Cheap and occasionally reveals structured endpoints or off-limits paths.
+- **Always re-Read a file immediately before each Edit call.** Edit tool's read-state checksum is per-file and tracked; long-lived in-context understanding doesn't satisfy it. Codified after operator pushback on a repeated stumble.
+- **TheSportsDB free tier is not viable for our target series.** Probed 2026-05-22 — search returns 5 motorsport leagues (V8, BTCC, British GT, WorldRX, WorldSSP); none of NASCAR / WRC / DTM / F1 / MotoGP / IMSA / WEC / IndyCar / Formula E. Paid Patreon key (~$10/mo) might unlock more but data is schedule-only on the free tier, no results visible. **Do not re-evaluate.**
+- **Phase 2 commercial-API deep-dive (2026-05-22).** Six sources evaluated. Verdict: additive only, no pivot. MotorsportReg = amateur club only, skip. LSports = sportsbook B2B with zero motorsport coverage, skip. Sportmonks F1 = only candidate with lap/pit/stint/livescore data, F1-only and ~€19+/mo, park until Paddock has a live-timing roadmap. API-Sports F1 v1 = F1-only, 100 req/day free tier, **docs page 403s datacenter IPs** (same failure mode as racing-reference), risky for Vercel. Data School blog = recommends Ergast (already have via Jolpica) + FastF1 (Python, not Vercel-friendly). No single source unifies WEC + NLS + ADAC 24h + Formula E + IMSA + WRC + DTM at the depth Paddock already delivers.
 
 ### Phase 2 sequence
 
 | Ver | Scope | Source | Status |
 |---|---|---|---|
 | 0.12.11 | feat(imsa) full-class results | Alkamel JSON | ✅ shipped (PR #90) |
-| 0.12.12 | feat(nascar-cup) full-class results + trend chart | racing-reference (http2) | 🔴 merged but BROKEN on prod (PR #91) |
-| 0.12.12.1 | **fix(nascar-cup) prod regression** | TBD post-investigation | **NEXT** |
-| 0.12.13 | feat(gt-world) results + SRO points scale | Existing parser + SRO regs | gated on prod fix |
+| 0.12.12 | feat(nascar-cup) full-class + trend chart | racing-reference (http2) | 🔴 broke prod (PR #91) |
+| 0.12.12.1 | fix(nascar-cup) pivot to Wikipedia | Wikipedia per-race | ✅ shipped (PR #92) |
+| 0.12.13 | feat(gt-world) classification dispatch (no chart) | gt-world-challenge-europe.com | ✅ shipped (PR #93) |
+| 0.12.13.1 | **feat(gt-world) SRO points + trend chart** | SRO regs + standings reconciliation | **NEXT (option A)** |
+| 0.12.14 | **feat(wrc) per-rally full-class** | Wikipedia per-rally | **NEXT (option B, locked sequence)** |
 | 0.12.8.1 | feat(wec) per-round results | TBD (Stimulus XHR or per-event scrape) | optional follow-up |
-| 0.12.14 | feat(wrc) per-rally full-class | Wikipedia per-rally | queued |
 | 0.12.15 | feat(dtm) standings + results | motorsport.com/dtm | queued |
 | 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | queued |
 | 0.13.0 | feat(drivers) bulk × 13 series | per-series | unchanged |
 | 0.14.0 | feat(content) histories + rules + blog posts | curated | multi-session 50-70h |
 | 0.15.0 | feat(enrichment) headshots + bios + per-driver charts | Wikipedia + curation | multi-session 80+h |
+
+### 0.12.13.1 GT-World trend chart — entry notes (option A)
+
+**The deferred work from 0.12.13's scope cut.** Build an SRO 2026 points-scale module covering:
+- Sprint Cup: top-10 base scale (`25-18-15-12-10-8-6-4-2-1` per Wikipedia 2026 GT World Challenge Europe); pole-sitter +1 bonus.
+- Endurance Cup: same base + pole bonus + 75% race distance requirement + 25min driver-time minima to be classified.
+- 24 Hours of Spa: points awarded after 6h / 12h / finish (3-stage scoring per SRO sporting regulations).
+- Spa Super Pole: top-5 fractional bonuses (1 / 0.5 / 0.375 / 0.25 / 0.125).
+- Per-cup sub-scoring within each race.
+
+After computing per-position points, reconcile sum-across-season against `lib/standings/gt-world.ts` totals. If they match (within tolerance), wire `SeasonTrendChart` to `GtWorldSeasonResultsPanel`. If they don't, drop the chart per cross-series invariant.
+
+**Open question to confirm at session start:** does the standings parser fetch totals from the SRO standings page (just reads numbers) or compute from per-race data (has its own scale)? Read both modules end-to-end before starting; the answer determines whether reconciliation is trivial or requires a fixture pass.
+
+### 0.12.14 WRC per-rally full-class — entry notes (option B)
+
+`/series/wrc?tab=results` currently emits one winner entry per rally (driver / co-driver / team). Phase-1 brief locked source: Wikipedia per-rally articles (`/wiki/2026_Rally_de_Portugal` etc.) — same fallback pattern that worked for Formula E and NASCAR. Verify Wikipedia per-rally tables carry full top-10 with points per the WRC's `25-18-15-12-10-8-6-4-2-1` scale plus Power Stage bonus. If yes, parser rewrite + trend chart possible.
+
+### NASCAR trend chart polish (queued — separate from Phase 2)
+
+Operator-flagged at session end: the trend chart on `/series/nascar-cup?tab=results` is "fucked" — 47-driver legend cluttering, leader-vs-tail spread crushes the bottom cluster, Y-axis only labels 150 and 600. Fix candidates: cap legend to top-N drivers (10? top-of-standings only?), drop "(i)" / "(R)" suffix from legend labels, add more Y-axis ticks, optional log scale or zoom-to-leaders default view. Tracked in `IDEAS.md` Inbox.
 
 ---
 
