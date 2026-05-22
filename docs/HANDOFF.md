@@ -6,28 +6,30 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 0.12.9 IMSA (or 0.12.8.1 WEC per-round results)
+## ⚡ Next session pickup — 0.12.11 IMSA full-class results (or 0.12.8.1 WEC)
 
-**0.12.6 + 0.12.7 + 0.12.8 shipped 2026-05-21.** Three back-to-back PRs:
-- 0.12.6 (PR #83 merged) — custom `CookieConsent` modal, GA4 unblock for EU/UK visitors.
-- 0.12.7 (PR #84 merged) — modal UX polish, research-driven (bottom card + Allow all / Essential only / Customize + "Always on" pill + entry animation).
-- 0.12.8 (PR pending merge) — **live FIA WEC 2026 standings** on `/series/wec?tab=standings`. Source: `fiawec.com/en/page/manufacturers-classification` SSR. 4 tables shipped — Hypercar Drivers, Hypercar Manufacturers, LMGT3 Drivers, LMGT3 Teams.
+**Thu 2026-05-21 shipped 6 PRs end-to-end.** Versions in order:
+- **0.12.6 (PR #83)** — custom `CookieConsent` modal replacing Funding Choices. GA4 unblock for EU/UK visitors.
+- **0.12.7 (PR #84)** — modal UX polish driven by 370-line research synthesis at `docs/research/cookie-consent-ux-2026-05-21.md`. Allow all / Essential only / Customize button set; bottom-card layout; switch-left toggles with "Always on" pill; fade + slide-up entry animation; `prefers-reduced-motion` honoured.
+- **0.12.8 (PR #85)** — live FIA WEC 2026 standings via `fiawec.com/en/page/manufacturers-classification` SSR. **4 tables** (not the 6 the Phase 1 brief claimed — WEC is asymmetric: Hypercar = Drivers + Manufacturers, LMGT3 = Drivers + Teams). Schema uses `Partial<Record<WecClass, ...>>` for the asymmetric championships.
+- **0.12.9 (PR #86)** — per-route OG + Twitter metadata. `lib/seo.ts` `withSocialMeta()` helper. Fixed verified prod bug where every social share preview defaulted to homepage copy regardless of route.
+- **0.12.10 (PR #87, hot-fix)** — preserve `og:url` + `og:type` + `og:site_name` on per-route override. Playwright caught the regression that the 0.12.9 curl probe missed (Next 16 Metadata API doesn't deep-merge openGraph either, same gotcha I'd only documented for twitter:card).
+- **PR #88 (docs)** — Supabase schema v2 review memo at `docs/research/supabase-schema-draft-v2.md`. Rebuttal to external SEO+DB brief. Recommendation: don't migrate to Supabase now; B-perf is the answer to slowness; when triggers fire (S9 / multi-author / API fan-out), ship a lean 7-table user-data shape additive to the JSON authoring model, not the v1 18-table full-replacement.
 
-**Phase 1 brief was slightly wrong about WEC structure.** The brief said 6 standings tables (Hypercar + LMGT3 × Drivers + Teams + Manufacturers). Reality is **4** — WEC asymmetric: Hypercar has Drivers + Manufacturers only (no Teams, manufacturer == team), LMGT3 has Drivers + Teams only (no Manufacturers, pro-am class). Schema reflects this with `Partial<Record<WecClass, ...>>` for the asymmetric championships.
+**Phase 2 resumes at 0.12.11 IMSA full-class results.** Source locked Phase 1: **Alkamel Systems JSON API at `imsa.results.alkamelcloud.com`** — IMSA's official timing partner, every session of every round, unauthenticated, no reCAPTCHA. Sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets data by class. Beats the assumed PDF-behind-reCAPTCHA path the prior audit feared.
 
-**WEC per-round results deferred to 0.12.8.1.** The `/en/page/resultats-1` page hosts results but swaps client-side via a StimulusJS `live#action` controller (`changeRace` / `changeSession` / `changeCategory`). Underlying XHR endpoint isn't exposed. Two ways forward when it's time:
-1. Reverse-engineer the StimulusJS endpoint (DevTools network tab on a real visit).
-2. Probe per-event `/en/race/<slug>` pages for an embedded results table (today's probe showed they're event landing pages only — no results inline).
+**Optional alternative — 0.12.8.1 WEC per-round results.** Closes today's WEC loop. `/en/page/resultats-1` swaps results client-side via a StimulusJS `live#action` controller (`changeRace` / `changeSession` / `changeCategory`). Two ways forward:
+1. Reverse-engineer the StimulusJS endpoint via DevTools network tab on a live visit (~1-2h).
+2. Probe per-event `/en/race/<slug>` pages — today's probe showed those are event landing pages only, no embedded results table.
 
-**Next session can either:**
-- Pick up **0.12.8.1 WEC per-round results** if operator wants to close the WEC loop before moving on.
-- Continue Phase 2 at **0.12.9 IMSA full-class results** (Alkamel JSON API, locked Phase 1 source).
+### What today learned that affects future work
 
-The "WEC and everything downstream is renumbered +3 from the original locked plan" note from earlier still holds — total renumbering is now +3 (footer + consent + consent UX polish).
+- **Phase 1 source briefs are sometimes inaccurate at the table-count level.** WEC was claimed to have 6 standings tables; reality is 4. Probe-first remains correct policy.
+- **Next 16 Metadata API does NOT deep-merge `openGraph` / `twitter` blocks.** Per-page returns fully replace the layout's matching block. If a per-page override sets only `{ title, description }`, the layout's `og:url` / `og:type` / `og:site_name` and `twitter:card` are lost. Any future page returning its own `openGraph` or `twitter` block MUST use `lib/seo.ts` `withSocialMeta()` or hand-roll all 5+ fields.
+- **External AI briefs need codebase verification before action.** Today's external SEO+DB brief flagged "SportsEvent JSON-LD missing" as the biggest miss — actually shipped 0.10.34. Also dismissed tab content as "JS dead weight" — it's `force-dynamic` SSR. Verify each claim against current code before scoping work.
+- **"App is slow → Supabase" is the wrong causal chain.** Per the v2 memo: slowness is 88% Clerk + 3 Google scripts unused JS + CSS critical-path. B-perf is the answer. Supabase becomes load-bearing only when S9 (comments / predictions / leaderboard) or multi-author write access fires.
 
-### 0.12.6 + 0.12.7 shipped detail — historical record
-
-The previous session ran low on tokens after shipping 0.12.5 (footer redesign). 0.12.6 + 0.12.7 were both completed in this session.
+WEC and everything downstream is now renumbered **+4** from the original locked plan (footer + consent + consent-UX + OG fix all absorbed slots; OG hot-fix absorbed a fifth slot).
 
 ### Why this jumped the queue
 
@@ -90,15 +92,19 @@ A complete `CookieConsent.tsx` exists in the session transcript with all the log
 | 0.12.5 | feat(footer) multi-column + copyright | n/a | ✅ shipped |
 | 0.12.6 | feat(consent) custom modal, drop FC | n/a | ✅ shipped (PR #83) |
 | 0.12.7 | feat(consent) UX polish, research-driven | n/a | ✅ shipped (PR #84) |
-| 0.12.8 | feat(wec) standings (results deferred to 0.12.8.1) | fiawec.com SSR | ✅ shipped (PR pending) |
+| 0.12.8 | feat(wec) standings (results deferred to 0.12.8.1) | fiawec.com SSR | ✅ shipped (PR #85) |
 | 0.12.8.1 | feat(wec) per-round results | TBD (Stimulus XHR or per-event scrape) | optional follow-up |
-| 0.12.9 | **feat(imsa) full-class results** | Alkamel JSON | **NEXT** |
-| 0.12.10 | feat(nascar-cup) full-class results | racing-reference.info | |
-| 0.12.11 | feat(gt-world) results + points | SRO regs | |
-| 0.12.12 | feat(wrc) per-rally full-class | Wikipedia per-rally | |
-| 0.12.13 | feat(dtm) standings + results | motorsport.com/dtm | |
-| 0.12.14 | feat(nls) standings + results | teilnehmer.vln.de PDF | |
+| 0.12.9 | feat(seo) per-route OG + twitter metadata | n/a | ✅ shipped (PR #86) |
+| 0.12.10 | fix(seo) preserve og:url + og:type + og:site_name | n/a | ✅ shipped (PR #87) |
+| 0.12.11 | **feat(imsa) full-class results** | Alkamel JSON | **NEXT** |
+| 0.12.12 | feat(nascar-cup) full-class results | racing-reference.info | |
+| 0.12.13 | feat(gt-world) results + points scale | SRO regs | |
+| 0.12.14 | feat(wrc) per-rally full-class | Wikipedia per-rally | |
+| 0.12.15 | feat(dtm) standings + results | motorsport.com/dtm | |
+| 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | |
 | 0.13.0 | feat(drivers) bulk × 13 series | per-series | unchanged |
+| 0.14.0 | feat(content) histories + rules + blog posts | curated | multi-session 50-70h |
+| 0.15.0 | feat(enrichment) headshots + bios + per-driver charts | Wikipedia + curation | multi-session 80+h |
 
 ---
 
@@ -296,7 +302,7 @@ Status matrix as of 0.11.14 prod (operator browser-verified). "✅" = live + cor
 | WSBK | ✅ | ✅ | ❌ | All works. No drivers.json. |
 | WRC | ✅ | ❌ (?) | ❌ | Operator reports results still unavailable — but PR #75 fix shipped. **Investigate first thing**: ISR cache stale OR fix incomplete. The fix swaps heading priority to `Results_and_standings` → `Season_summary`. Verified locally with cheerio against live HTML. No drivers.json. |
 | NASCAR | ✅ | ⚠️ | ❌ | Results emit winners-only (no full classification). Same parser limitation as WRC + IMSA. No drivers.json. |
-| FIA WEC | ✅ | ❌ | ❌ | Standings live as of 0.12.8 (PR pending). Results deferred to 0.12.8.1 — Stimulus XHR endpoint needs reverse engineering. Stash from `agent-leakage-2026-05-20-defer` was unusable (hallucinated URLs); fresh impl from fiawec.com SSR supersedes. |
+| FIA WEC | ✅ | ❌ | ❌ | Standings live as of 0.12.8 (PR #85 merged). Results deferred to 0.12.8.1 — `/en/page/resultats-1` swaps via StimulusJS `live#action` controller; reverse-engineer XHR via DevTools network tab on live visit. Stash from `agent-leakage-2026-05-20-defer` was unusable (hallucinated URLs); fresh impl from fiawec.com SSR supersedes. |
 | ADAC 24h | ❌ | ❌ | ❌ | Single-event series; future scope. |
 
 **Patterns:**

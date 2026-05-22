@@ -573,6 +573,31 @@ If operator wants to close the WEC loop first → 0.12.8.1 (Stimulus XHR reverse
 
 Otherwise continue Phase 2 at **0.12.9 IMSA full-class results.** Source locked Phase 1: Alkamel Systems JSON API at `imsa.results.alkamelcloud.com` — official timing partner, every session of every round, unauthenticated. Beats the assumed PDF-behind-reCAPTCHA path the prior audit feared. Sibling `05_Results by Class_Race_Official.JSON` pre-buckets data by class.
 
+### Thu 2026-05-21 — continued — 0.12.9 + 0.12.10 OG/Twitter per-route metadata + Supabase v2 memo
+
+External AI brief landed mid-session: long-form SEO + database audit + recommendations. Two threads pulled in sequence.
+
+**SEO thread:**
+
+- → done: ESPA evaluation of the brief — verified against codebase. Several "biggest miss" claims wrong (SportsEvent JSON-LD already shipped 0.10.34, tab content is force-dynamic SSR not JS dead weight). One real bug confirmed: per-route `openGraph` + `twitter` metadata defaulting to layout's homepage copy.
+- → done: **0.12.9 PR #86** — `lib/seo.ts` `withSocialMeta()` helper + per-route metadata propagation across series / calendar / weekend / blog / drivers / teams pages. Verified prod `og:title: "Paddock Tracker"` regression on `/series/f1`. After fix: `"Formula 1 2026 — calendar, schedule, race weekends"`.
+- → done: **0.12.10 PR #87 (hot-fix)** — Playwright verification caught a follow-on regression that the curl-only 0.12.9 probe missed: per-route override was dropping `og:url`, `og:type`, `og:site_name`. Same no-deep-merge gotcha I'd only documented for twitter:card. Helper updated to re-set all 5+ fields. Now baked into `lib/seo.ts` header comment so the next contributor doesn't drop fields a third time.
+- → pushed back on: Greek-language `/el/` route tree (high cost, parked B12), replacing the curated `content/series/<slug>/*.json` authoring model with DB tables (loses git-reviewability per CLAUDE.md), adding 5-7 more series before existing 13 are filled in (per HANDOFF error inventory).
+
+**Supabase thread:**
+
+- → done: **PR #88 (docs)** — `docs/research/supabase-schema-draft-v2.md`, 284-line review memo of the existing 774-line v1 draft. Recommendation: don't migrate to Supabase now; B-perf is the answer to slowness; v1 schema is competent but premature; when triggers fire (S9 / multi-author / API fan-out / data-as-product), ship a lean 7-table user-data shape (followed series + followed drivers + preferences + comments + predictions + ledger + push subs) additive to the JSON authoring model, NOT v1's 18-table full-replacement. Clerk JWT via `auth.jwt() ->> 'sub'` in RLS policies, no Clerk user mirror until admin views need JOINs.
+
+Today's aggregate: **6 PRs shipped** (0.12.6 → 0.12.10 + docs PR #88). All merged. Per-series error inventory: WEC standings flipped ❌ → ✅; everything else unchanged.
+
+### Sat 2026-05-23 — planned — 0.12.11 IMSA full-class results (or 0.12.8.1 WEC results)
+
+Default top-of-stack per HANDOFF Phase 2 sequence: **0.12.11 IMSA full-class results** via Alkamel Systems JSON API at `imsa.results.alkamelcloud.com`. Sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class (GTP / LMP2 / GTD Pro / GTD). Closes IMSA's last ❌ in the per-series error inventory.
+
+Optional alternative: **0.12.8.1 WEC per-round results** — reverse-engineer the StimulusJS `live#action` controller on `fiawec.com/en/page/resultats-1` via DevTools network tab. Closes the WEC loop. ~1-2h, source-probe-gated.
+
+Won't touch this session: B-content multi-day items (parked), B12 Greek route tree (parked per v2 memo), full Supabase migration (parked per v2 memo). 0.13.0 drivers.json bulk stays queued for after the Phase 2 data sweep completes.
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
