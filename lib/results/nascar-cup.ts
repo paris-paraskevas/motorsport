@@ -201,9 +201,19 @@ function fetchViaHttp2(
       buf = Buffer.concat([buf, chunk]);
     });
     req.on('end', () => {
+      // [NASCAR-PROD-DEBUG] temporary diagnostic for the 0.12.12 prod regression.
+      // Logs per-request outcome (status + body length + body sniff for
+      // Cloudflare challenge HTML). Remove with the fix commit.
+      const sniff = buf.subarray(0, 200).toString('utf8').replace(/\s+/g, ' ');
+      console.error(
+        `[NASCAR-PROD-DEBUG] fetchViaHttp2 OK pathname=${pathname} status=${status} bodyLen=${buf.length} sniff="${sniff}"`,
+      );
       resolve({ status, body: buf.toString('utf8') });
     });
-    req.on('error', () => {
+    req.on('error', err => {
+      console.error(
+        `[NASCAR-PROD-DEBUG] fetchViaHttp2 ERROR pathname=${pathname} name=${err.name} code=${(err as NodeJS.ErrnoException).code ?? '?'} message=${err.message}`,
+      );
       resolve({ status: 0, body: '' });
     });
     req.end();
@@ -221,6 +231,16 @@ function pathnameOf(href: string): string {
 export async function fetchNascarCupSeasonResults(
   options: FetchOptions,
 ): Promise<RaceResult[]> {
+  // [NASCAR-PROD-DEBUG] temporary diagnostic for the 0.12.12 prod regression.
+  // Five hypotheses to differentiate: (1) runtime restriction on node:http2,
+  // (2) Vercel egress IP challenged by Cloudflare WAF, (3) session.close()
+  // race kills in-flight responses, (4) cold-start timing, (5) silent error
+  // swallow. The log lines below tag the lifecycle so we can read them off
+  // the Vercel function log stream. Remove with the fix commit.
+  console.error(
+    `[NASCAR-PROD-DEBUG] fetchNascarCupSeasonResults start node=${process.version} runtime=${process.env.VERCEL_ENV ?? 'local'} region=${process.env.VERCEL_REGION ?? 'unknown'} rounds=${options.rounds.length}`,
+  );
+
   // Tests inject a transport stub; production opens a real http2 client.
   // Either way the rest of the function flow is identical.
   let transport: (pathname: string) => Promise<{ status: number; body: string }>;
@@ -228,19 +248,41 @@ export async function fetchNascarCupSeasonResults(
   if (options.transport) {
     transport = options.transport;
   } else {
-    const session = http2.connect(ORIGIN);
-    // Swallow socket-level errors so a flaky upstream connection returns []
-    // rather than crashing the request handler.
-    session.on('error', () => undefined);
+    let session: http2.ClientHttp2Session;
+    try {
+      session = http2.connect(ORIGIN);
+    } catch (err) {
+      console.error(
+        `[NASCAR-PROD-DEBUG] http2.connect THREW name=${(err as Error).name} code=${(err as NodeJS.ErrnoException).code ?? '?'} message=${(err as Error).message}`,
+      );
+      return [];
+    }
+    session.on('error', err => {
+      console.error(
+        `[NASCAR-PROD-DEBUG] session error name=${err.name} code=${(err as NodeJS.ErrnoException).code ?? '?'} message=${err.message}`,
+      );
+    });
+    session.on('connect', () => {
+      console.error(`[NASCAR-PROD-DEBUG] session connect ok origin=${ORIGIN}`);
+    });
+    session.on('close', () => {
+      console.error('[NASCAR-PROD-DEBUG] session close fired');
+    });
     transport = pathname => fetchViaHttp2(session, pathname);
     cleanup = () => session.close();
   }
 
   try {
     const indexResp = await transport(SEASON_PATH);
+    console.error(
+      `[NASCAR-PROD-DEBUG] index fetch result status=${indexResp.status} bodyLen=${indexResp.body.length}`,
+    );
     if (indexResp.status !== 200) return [];
 
     const links = parseSeasonRaceLinks(indexResp.body);
+    console.error(
+      `[NASCAR-PROD-DEBUG] parsed race links count=${links.length} sample=${links.slice(0, 2).map(l => l.url).join(', ')}`,
+    );
     if (links.length < MIN_RACES) return [];
 
     const settled = await Promise.all(
@@ -250,9 +292,16 @@ export async function fetchNascarCupSeasonResults(
         return buildRaceResultFromPage(r.body, link.round, options.rounds);
       }),
     );
-    return settled
-      .filter((r): r is RaceResult => r !== null)
-      .sort((a, b) => a.round - b.round);
+    const built = settled.filter((r): r is RaceResult => r !== null);
+    console.error(
+      `[NASCAR-PROD-DEBUG] races built count=${built.length} (from ${links.length} links)`,
+    );
+    return built.sort((a, b) => a.round - b.round);
+  } catch (err) {
+    console.error(
+      `[NASCAR-PROD-DEBUG] top-level catch name=${(err as Error).name} message=${(err as Error).message}`,
+    );
+    return [];
   } finally {
     cleanup?.();
   }

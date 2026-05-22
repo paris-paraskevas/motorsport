@@ -598,6 +598,25 @@ Optional alternative: **0.12.8.1 WEC per-round results** — reverse-engineer th
 
 Won't touch this session: B-content multi-day items (parked), B12 Greek route tree (parked per v2 memo), full Supabase migration (parked per v2 memo). 0.13.0 drivers.json bulk stays queued for after the Phase 2 data sweep completes.
 
+### Fri 2026-05-22 — executed — 0.12.11 IMSA + 0.12.12 NASCAR (🔴 NASCAR broke on prod)
+
+Note: the "Sat 2026-05-23" stub above was yesterday's forward-plan written when calendar labels drifted off by a day. Today actually was Fri 2026-05-22.
+
+- → done: **0.12.11 (PR #90)** IMSA full-class results via Alkamel JSON. Probe confirmed Phase-1 brief — open Apache index, no auth, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class. Per-round URLs curated in `content/series/imsa/alkamel-rounds.json` (Alkamel folder layout not catalog-discoverable — 24h races nest under `24_Hour 24/`, sprints sit under `Race/`). Schema mirrors `lib/standings/imsa.ts`; sprint rounds correctly drop LMP2 + GTD Pro. 17 real-fixture tests against 4 Alkamel JSON captures. Operator-verified on prod. **IMSA `❌ → ✅`** in error inventory.
+- → done: **0.12.12 (PR #91)** NASCAR full-class results via racing-reference.info per-race pages + `SeasonTrendChart` restored on top (first non-F1 series with the chart). Probe surfaced a gotcha the Phase-1 brief missed: Cloudflare WAF on racing-reference fingerprints TLS, not just headers — Node `fetch()` (undici) returns 403 where curl returns 200. Workaround: `node:http2.connect()` (HTTP/2 ALPN gives a different TLS profile that gets through). 16 real-fixture tests, full pipeline test with injected transport stub. **Browser-verified on localhost. Skipped Vercel preview verify → shipped a regression.**
+- → 🔴 **regression: 0.12.12 prod is broken.** Operator confirmed `paddock-tracker.com/series/nascar-cup?tab=results` shows "Results are temporarily unavailable" — empty state. http2 workaround that succeeded on localhost did NOT survive Vercel Functions runtime. Five hypotheses documented in HANDOFF top block; fix plan locked there.
+- → done: robots.txt + sitemap.xml-first probe practice agreed mid-session as default for new sources. Not yet codified in CLAUDE.md.
+
+Today's aggregate: **2 PRs shipped, 1 working in prod, 1 broken in prod.** Net error inventory change: IMSA `❌ → ✅` (gain), NASCAR `⚠️ → ❌` (loss — was winners-only-but-rendering, now empty state).
+
+### Sat 2026-05-23 — planned — 🔴 fix 0.12.12 NASCAR prod, then 0.12.13 GT-World
+
+**Priority 1:** fix the NASCAR prod regression. Investigation-first via Vercel logs / temporary `console.error` instrumentation. Fix path depends on root cause — see HANDOFF "🔴 Fix plan" for the branched remediation tree. Verify on Vercel preview BEFORE merge this time, not just localhost.
+
+**Priority 2 (after #1 lands):** 0.12.13 GT-World results + SRO points scale module. Existing `lib/results/gt-world.ts` parser audit + SRO scale (`25-18-15-12-10-8-6-4-2-1` + 1.5× Paul Ricard + Spa 3-stage). Trend chart conditional on per-position points reconciling against standings.
+
+Won't touch tomorrow: 0.12.8.1 WEC (still optional), 0.12.14+ queued items, 0.13.0 drivers.json bulk.
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
