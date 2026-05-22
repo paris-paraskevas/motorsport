@@ -9,6 +9,12 @@ import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
+import {
+  fetchAllGtWorldSeasonRaces,
+  type Cup,
+  type GtWorldRaceResult,
+  type GtWorldRaceResultEntry,
+} from '@/lib/results/gt-world';
 import { fetchImsaSeasonResults, type ImsaRaceEntry, type ImsaRoundResults } from '@/lib/results/imsa';
 import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
@@ -24,7 +30,9 @@ import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
 const FORMULA_E_SOURCE_URL =
   'https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship';
-const NASCAR_SOURCE_URL = 'https://www.racing-reference.info/season-stats/2026/W/';
+const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series';
+const GT_WORLD_SOURCE_URL =
+  'https://www.gt-world-challenge-europe.com/results/2026';
 
 function applyResultsOverrides(
   races: RaceResult[],
@@ -321,6 +329,140 @@ function ImsaRoundClassCard({
   );
 }
 
+// GT World Challenge Europe — class-aware results panel mirroring IMSA.
+// Each (race, cup) tuple becomes one accordion row. Cup ordering is fixed
+// at Pro → Gold → Silver → Bronze, matching the standings tab's class
+// grouping (StandingsTab.tsx).
+const GT_WORLD_CUP_ORDER: Cup[] = ['pro', 'gold', 'silver', 'bronze'];
+
+function gtWorldCupLabel(cup: Cup): string {
+  switch (cup) {
+    case 'pro':
+      return 'Pro Cup';
+    case 'gold':
+      return 'Gold Cup';
+    case 'silver':
+      return 'Silver Cup';
+    case 'bronze':
+      return 'Bronze Cup';
+    default:
+      return 'Unclassified';
+  }
+}
+
+function GtWorldResultRow({ entry }: { entry: GtWorldRaceResultEntry }) {
+  // Endurance crews are 3-4 drivers; sprint crews are 2. The driver list
+  // is joined with " · " to keep the row compact at typical card widths.
+  // No points column — SRO points scale + trend chart deferred to a
+  // follow-up (see CHANGELOG 0.12.13 "Won't ship in this PR" section).
+  return (
+    <li className="flex items-baseline gap-3 py-2">
+      <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+        {entry.position}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="text-text text-sm font-medium truncate">
+            {entry.drivers.join(' · ')}
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+            #{entry.carNumber}
+          </span>
+        </div>
+        <div className="text-text-muted text-xs truncate">
+          {entry.team}
+          {entry.car ? ` · ${entry.car}` : ''}
+        </div>
+      </div>
+      <span className="text-text-muted text-[11px] font-mono tabular-nums text-right w-24 truncate">
+        {entry.gap || entry.time || ''}
+      </span>
+    </li>
+  );
+}
+
+function GtWorldRoundClassCard({
+  race,
+  cup,
+  entries,
+  defaultOpen,
+}: {
+  race: GtWorldRaceResult;
+  cup: Cup;
+  entries: GtWorldRaceResultEntry[];
+  defaultOpen: boolean;
+}) {
+  const winner = entries[0];
+  return (
+    <details open={defaultOpen} className="group">
+      <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+          {race.championship === 'endurance' ? 'E' : 'S'}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-text text-sm font-medium truncate">
+            {race.eventName} {race.raceName} — {gtWorldCupLabel(cup)}
+          </div>
+          <div className="text-text-faint text-xs truncate">
+            {winner ? `winner: ${winner.drivers.join(' · ')}` : ''}
+            {winner ? ` (${winner.team})` : ''}
+          </div>
+        </div>
+        <ChevronDown
+          size={16}
+          className="text-text-faint transition-transform group-open:rotate-180 shrink-0"
+        />
+      </summary>
+      <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+        {entries.slice(0, 10).map(entry => (
+          <GtWorldResultRow
+            key={`${entry.position}-${entry.carNumber}`}
+            entry={entry}
+          />
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
+  // Flatten races × cups into one row per (race, cup). Races are kept in
+  // the order they were fetched (the parser already groups by event +
+  // race-id); cups within each race follow GT_WORLD_CUP_ORDER. First card
+  // expands by default — matches the F1 / IMSA / NASCAR panels.
+  const items = races.flatMap((race, raceIdx) =>
+    GT_WORLD_CUP_ORDER.map(cup => ({
+      race,
+      raceIdx,
+      cup,
+      entries: race.entries.filter(e => e.cup === cup),
+    })).filter(item => item.entries.length > 0),
+  );
+
+  return (
+    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+        Season results
+      </h2>
+      <ul className="divide-y divide-border/60">
+        {items.map((item, idx) => (
+          <li
+            key={`${item.race.raceId}-${item.cup}`}
+            className="py-1"
+          >
+            <GtWorldRoundClassCard
+              race={item.race}
+              cup={item.cup}
+              entries={item.entries}
+              defaultOpen={idx === 0}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function SourceLink({ href, label }: { href: string; label: string }) {
   return (
     <div className="text-center">
@@ -524,13 +666,12 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // Trend chart restored as of 0.12.12 — racing-reference exposes a `Pts`
-    // column per finisher so cumulative totals reconcile against the
-    // standings tab without the curated-override scaffolding that Formula E
-    // would need. NASCAR uses one points system across all 36 points races
-    // (regular-season scale stays constant; playoffs use the same numeric
-    // scale, only the championship-cutoff math differs), so the cross-
-    // series chart-vs-standings invariant is satisfied at parse time.
+    // Trend chart restored in 0.12.12.1 — Wikipedia per-race articles
+    // expose a `Points` column per finisher (same numeric scale the
+    // standings parser sums), so cumulative totals reconcile against the
+    // standings tab. NASCAR uses one points system across all 36 points
+    // races (regular-season scale stays constant; playoffs use the same
+    // numeric scale, only the championship-cutoff math differs).
     const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
@@ -547,7 +688,31 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SeasonResultsPanel races={merged} />
         <SourceLink
           href={NASCAR_SOURCE_URL}
-          label="racing-reference.info (NASCAR Cup 2026)"
+          label="Wikipedia (2026 NASCAR Cup Series)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'gt-world') {
+    const races = await fetchAllGtWorldSeasonRaces(series.meta.season);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    // No trend chart in 0.12.13 — SRO points scale (Sprint Cup top-10,
+    // Endurance Cup multipliers, Spa 24h 3-stage scoring, Super Pole
+    // bonus, per-cup sub-scoring) isn't encoded yet. Per the cross-series
+    // chart-vs-standings invariant, ship classification first; the chart
+    // ships in a follow-up when points are reconciled against the
+    // standings tab.
+    return (
+      <div className="space-y-4">
+        <GtWorldSeasonResultsPanel races={races} />
+        <SourceLink
+          href={GT_WORLD_SOURCE_URL}
+          label="gt-world-challenge-europe.com (2026)"
         />
       </div>
     );

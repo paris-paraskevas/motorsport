@@ -428,12 +428,17 @@ describe('parseEventRaceOptions', () => {
     </body></html>
   `;
 
-  it('keeps only race classifications, drops free practice / qualifying / bronze test', () => {
+  it('keeps only FINAL race classifications, drops practice / qualifying / bronze test / hourly checkpoints', () => {
+    // The 0.12.13 dispatch tightened the race-name regex to reject
+    // intermediate hourly checkpoints — Paul Ricard 1000km's "Main Race
+    // after 5.30 hours" / "after 4.30 hours" snapshots are NOT standalone
+    // races, they're SRO timing checkpoints whose final values fold into
+    // "Main Race".
     const options = parseEventRaceOptions(EVENT_HTML);
     const names = options.map(o => o.raceName);
     expect(names).toContain('Main Race');
-    expect(names).toContain('Main Race after 5.30 hours');
-    expect(names).toContain('Main race after 4.30 hours');
+    expect(names).not.toContain('Main Race after 5.30 hours');
+    expect(names).not.toContain('Main race after 4.30 hours');
     expect(names).not.toContain('Qualifying 1');
     expect(names).not.toContain('Free Practice 1');
     expect(names).not.toContain('Bronze Test');
@@ -486,5 +491,101 @@ describe('fetchGtWorldSeasonResults', () => {
   it('returns an empty array when no races are given', async () => {
     const results = await fetchGtWorldSeasonResults(2026, []);
     expect(results).toEqual([]);
+  });
+});
+
+// Real-fixture coverage layered on top of the synthetic-HTML tests above.
+// Captured 2026-05-22 from gt-world-challenge-europe.com. Per the Phase 2
+// real-bytes-only rule, these guard against schema drift that synthetic
+// rows would miss (e.g. the per-event cup distribution, name encoding).
+describe('GT-World — real captured 2026 fixtures', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { readFileSync } = require('node:fs') as typeof import('node:fs');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const path = require('node:path') as typeof import('node:path');
+  const FIXTURE_DIR = path.join(process.cwd(), 'tests', 'fixtures');
+  const loadFixture = (name: string) =>
+    readFileSync(path.join(FIXTURE_DIR, name), 'utf8');
+
+  it('parses the season listing — 10 events for 2026', () => {
+    const events = parseEventListingHtml(
+      loadFixture('gtw-results-listing-2026.html'),
+      2026,
+    );
+    expect(events).toHaveLength(10);
+    const slugs = events.map(e => e.eventSlug);
+    expect(slugs).toContain('circuit-paul-ricard');
+    expect(slugs).toContain('crowdstrike-24-hours-of-spa');
+    expect(slugs).toContain('nürburgring');
+  });
+
+  it('parses Paul Ricard event page — 1 final race (intermediate hourly checkpoints filtered)', () => {
+    // Paul Ricard 1000km exposes 7 race options on the source page (1
+    // final "Main Race" + 6 intermediate "Main Race after N.NN hours"
+    // checkpoints). Per the tightened RACE_NAME_PATTERN, only the final
+    // race promotes — checkpoint snapshots are not standalone race
+    // results.
+    const opts = parseEventRaceOptions(
+      loadFixture('gtw-event-paulricard-2026.html'),
+    );
+    expect(opts).toHaveLength(1);
+    expect(opts[0].raceName).toBe('Main Race');
+    expect(opts[0].raceId).toBe(1749);
+  });
+
+  it('parses Brands Hatch event page — Race 1 + Race 2', () => {
+    const opts = parseEventRaceOptions(
+      loadFixture('gtw-event-brandshatch-2026.html'),
+    );
+    expect(opts).toHaveLength(2);
+    expect(opts.map(o => o.raceName).sort()).toEqual(['Race 1', 'Race 2']);
+  });
+
+  it('parses Paul Ricard 1000km Main Race — 49 entries across 4 cups, endurance championship', () => {
+    const result = parseEventResultsHtml({
+      html: loadFixture('gtw-race-paulricard-main-2026.html'),
+      raceId: 1749,
+      eventSlug: 'circuit-paul-ricard',
+    });
+    expect(result).not.toBeNull();
+    expect(result!.championship).toBe('endurance');
+    expect(result!.eventName).toBe('Circuit Paul Ricard');
+    expect(result!.raceName).toBe('Main Race');
+    expect(result!.entries).toHaveLength(49);
+
+    const p1 = result!.entries[0];
+    expect(p1.position).toBe(1);
+    expect(p1.carNumber).toBe('7');
+    expect(p1.cup).toBe('pro');
+    expect(p1.team).toBe('Comtoyou Racing');
+    expect(p1.drivers).toEqual([
+      'Mattia Drudi',
+      'Marco Sorensen',
+      'Nicki Thiim',
+    ]);
+
+    const cupSet = new Set(result!.entries.map(e => e.cup));
+    expect(cupSet).toEqual(new Set(['pro', 'gold', 'silver', 'bronze']));
+  });
+
+  it('parses Brands Hatch Race 1 — sprint championship, no Bronze entries', () => {
+    const result = parseEventResultsHtml({
+      html: loadFixture('gtw-race-brandshatch-r1-2026.html'),
+      raceId: 1755,
+      eventSlug: 'brands-hatch',
+    });
+    expect(result).not.toBeNull();
+    expect(result!.championship).toBe('sprint');
+    expect(result!.entries).toHaveLength(31);
+
+    const p1 = result!.entries[0];
+    expect(p1.carNumber).toBe('50');
+    expect(p1.team).toBe('AF Corse');
+    expect(p1.drivers).toEqual(['Arthur Leclerc', 'Thomas Neubauer']);
+
+    // Brands Hatch is the round Bronze Cup entries skip per the SRO
+    // 2026 schedule.
+    const cupSet = new Set(result!.entries.map(e => e.cup));
+    expect(cupSet).not.toContain('bronze');
   });
 });

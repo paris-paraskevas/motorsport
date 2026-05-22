@@ -279,9 +279,17 @@ export function parseEventListingHtml(html: string, year: number): GtWorldEventL
 }
 
 // Parses an event landing page (no race id) for the available race ID
-// options. Filters to only race classifications, not lap-time sessions —
-// "Main Race", "Race 1", "Race 2", "6hr", "12hr", "24hr", etc.
-const RACE_NAME_PATTERN = /^(Main Race|Race \d+|\d+\s*hr|\d+\s*h|\d+\s*Hours?)/i;
+// options. Filters to FINAL classifications only — endurance events also
+// expose intermediate hourly checkpoints ("Main Race after 5.30 hours",
+// "Main Race after 4.30 hours", etc.) that the parser must not promote
+// to standalone races. Verified against Paul Ricard 1000km (7 options:
+// 1 final "Main Race" + 6 intermediate "Main Race after N.NN hours")
+// and Brands Hatch (2 options: "Race 1", "Race 2"). Spa 24h has
+// scheduled 3-stage scoring at 6h / 12h / 18h plus the finish — those
+// stage checkpoints surface as separate races and ARE valid finals (the
+// SRO rules award points at each); we accept them here.
+const RACE_NAME_PATTERN =
+  /^(Main Race|Race \d+|\d+\s*hr|\d+\s*h|\d+\s*Hours?)$/i;
 
 export function parseEventRaceOptions(html: string): GtWorldRaceOption[] {
   try {
