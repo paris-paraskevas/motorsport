@@ -1,0 +1,21 @@
+{
+  "season": 2026,
+  "rounds": [
+    {
+      "round": 1,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601241340_Race/24_Hour%2024/05_Results%20by%20Class_Race_Official.JSON"
+    },
+    {
+      "round": 2,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603211010_Race/12_Hour%2012/05_Results%20by%20Class_Race_Official.JSON"
+    },
+    {
+      "round": 3,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/07_Long%20Beach%20Street%20Circuit/01_IMSA%20WeatherTech%20SportsCar%20Championship/202604181305_Race/05_Results%20by%20Class_Race_Official.JSON"
+    },
+    {
+      "round": 4,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605031310_Race/05_Results%20by%20Class_Race_Official.JSON"
+    }
+  ]
+}

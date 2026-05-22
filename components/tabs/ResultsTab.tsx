@@ -9,11 +9,13 @@ import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
+import { fetchImsaSeasonResults, type ImsaRaceEntry, type ImsaRoundResults } from '@/lib/results/imsa';
 import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
+import { IMSA_CLASSES, type ImsaClass } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
 import { SeasonTrendChart } from '@/components/SeasonTrendChart';
@@ -198,6 +200,124 @@ function SeasonResultsPanel({
         ))}
       </ul>
     </section>
+  );
+}
+
+function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
+  // IMSA's Alkamel JSON doesn't carry championship points (it's a timing
+  // export), so this row mirrors the F1-shape ResultRow above but replaces
+  // the trailing points column with the gap-to-leader. Status surfaces only
+  // when timing is absent (DNS / DNF entries).
+  return (
+    <li className="flex items-baseline gap-3 py-2">
+      <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+        {entry.position}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="text-text text-sm font-medium truncate">
+            {entry.drivers || entry.team}
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+            #{entry.carNumber}
+          </span>
+        </div>
+        <div className="text-text-muted text-xs truncate">
+          {entry.team}
+          {entry.vehicle ? ` · ${entry.vehicle}` : ''}
+        </div>
+      </div>
+      <span className="text-text-muted text-[11px] font-mono tabular-nums text-right w-24 truncate">
+        {entry.gap || entry.status}
+      </span>
+    </li>
+  );
+}
+
+function ImsaSeasonResultsPanel({ rounds }: { rounds: ImsaRoundResults[] }) {
+  // Flatten rounds × classes into one row per (round, class). IMSA_CLASSES
+  // order (GTP → LMP2 → GTD Pro → GTD) drives within-round ordering, which
+  // matches the same class-first grouping the standings tab uses
+  // (`StandingsTab.tsx` lines 467+). Most recent round first.
+  const items = [...rounds]
+    .sort((a, b) => b.round - a.round)
+    .flatMap(round =>
+      IMSA_CLASSES.map(cls => ({
+        round,
+        cls,
+        entries: round.perClass[cls] ?? [],
+      })).filter(item => item.entries.length > 0),
+    );
+
+  return (
+    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
+      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+        Season results
+      </h2>
+      <ul className="divide-y divide-border/60">
+        {items.map((item, idx) => (
+          <li key={`${item.round.round}-${item.cls}`} className="py-1">
+            <ImsaRoundClassCard
+              roundNumber={item.round.round}
+              eventName={item.round.eventName}
+              date={item.round.date}
+              cls={item.cls}
+              entries={item.entries}
+              defaultOpen={idx === 0}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ImsaRoundClassCard({
+  roundNumber,
+  eventName,
+  date,
+  cls,
+  entries,
+  defaultOpen,
+}: {
+  roundNumber: number;
+  eventName: string;
+  date: Date;
+  cls: ImsaClass;
+  entries: ImsaRaceEntry[];
+  defaultOpen: boolean;
+}) {
+  const winner = entries[0];
+  return (
+    <details open={defaultOpen} className="group">
+      <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+          {roundNumber}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-text text-sm font-medium truncate">
+            {eventName} — {cls}
+          </div>
+          <div className="text-text-faint text-xs truncate">
+            {formatDate(date)}
+            {winner ? ` · winner: ${winner.drivers || winner.team}` : ''}
+            {winner ? ` (${winner.team})` : ''}
+          </div>
+        </div>
+        <ChevronDown
+          size={16}
+          className="text-text-faint transition-transform group-open:rotate-180 shrink-0"
+        />
+      </summary>
+      <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+        {entries.slice(0, 10).map(entry => (
+          <ImsaResultRow
+            key={`${entry.position}-${entry.carNumber}`}
+            entry={entry}
+          />
+        ))}
+      </ul>
+    </details>
   );
 }
 
@@ -410,6 +530,29 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SourceLink
           href={NASCAR_SOURCE_URL}
           label="Wikipedia (2026 NASCAR Cup Series)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'imsa') {
+    const rounds = await fetchImsaSeasonResults();
+    if (rounds.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    // No trend chart: per the cross-series invariant (see CHANGELOG 0.11.5
+    // header), a chart that disagrees with the standings tab erodes trust.
+    // Alkamel doesn't carry championship points, and IMSA's per-class scale
+    // shifts between sprint / IMEC rounds, so a faithful trend requires
+    // reconciliation work we haven't done. Standings tab is the authority.
+    return (
+      <div className="space-y-4">
+        <ImsaSeasonResultsPanel rounds={rounds} />
+        <SourceLink
+          href="https://imsa.results.alkamelcloud.com/"
+          label="imsa.results.alkamelcloud.com (Al Kamel timing)"
         />
       </div>
     );
