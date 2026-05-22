@@ -44,7 +44,7 @@ Closes `/series/wrc?tab=results`: the Results tab now renders full per-rally WRC
 | 0.12.12 | feat(nascar-cup) full-class results + trend chart | racing-reference (http2) | 🔴 merged but BROKEN (PR #91) |
 | 0.12.12.1 | fix(nascar-cup) pivot to Wikipedia | Wikipedia per-race | ✅ shipped (PR #92) |
 | 0.12.13 | feat(gt-world) classification dispatch (no chart) | gt-world-challenge-europe.com | ✅ shipped (PR #93) |
-| 0.12.14 | **feat(wrc) per-rally full-class + trend chart** | Wikipedia per-rally + season page | this PR |
+| 0.12.14 | **feat(wrc) per-rally full-class + trend chart** | Wikipedia per-rally + season page | ✅ shipped (PR #95) |
 | 0.12.13.1 | feat(gt-world) SRO points + trend chart | SRO regs + standings reconciliation | queued |
 | 0.12.15 | feat(dtm) standings + results | motorsport.com/dtm | queued |
 | 0.12.16 | feat(nls) standings + results | teilnehmer.vln.de PDF | queued |
