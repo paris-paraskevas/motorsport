@@ -122,8 +122,90 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────────────
+ * Paddock 2.0 tokens — the operator's design language (June 2026 redesign,
+ * docs/redesign-2026-06.md). Two pieces:
+ *
+ *   1. `.theme-2` scope — redefines the EXISTING chassis variables with the
+ *      2.0 values so every current utility (bg-bg, text-text, border-border)
+ *      works unchanged inside a 2.0 tree. PR 1 sets it on the marketing
+ *      <html>; PR 2 promotes these values to :root and deletes light mode.
+ *   2. Global accent/series/motion additions on :root — net-new names, safe
+ *      everywhere, exposed as utilities in the @theme block below.
+ * ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* Paddock 2.0 accents (global — used by landing now, workstation in PR 2) */
+  --brand: #ffb400;
+  --brand-deep: #b87a00;
+  --plasma: #ff5a1f;
+  --acid: #c6ff3d;
+  --acid-deep: #8fb42a;
+  --cyan: #00e5ff;
+  --live-deep: #b81020;
+
+  /* Per-series accents (mockup values; slugs match content/series/) */
+  --s-f1: #e10600;
+  --s-motogp: #ff0033;
+  --s-wec: #00a0e9;
+  --s-indycar: #ffd100;
+  --s-nascar: #f5b800;
+  --s-wrc: #d92626;
+  --s-fe: #06b6d4;
+  --s-imsa: #2dd4bf;
+  --s-gtworld: #a855f7;
+  --s-dtm: #10b981;
+  --s-nls: #f97316;
+  --s-wsbk: #0066b3;
+  --s-adac: #fbbf24;
+
+  --duration-slow: 520ms;
+  --ease-in-hard: cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.theme-2 {
+  color-scheme: dark;
+
+  --bg: #07070a;
+  --surface: #14141a;
+  --surface-elevated: #1a1a22;
+  --border: #2a2a35;
+  --border-strong: #3a3a48;
+
+  --text: #f5f5f7;
+  --text-muted: #a1a1aa;
+  --text-faint: #71717a;
+
+  --tint: var(--brand);
+  --tint-contrast: #07070a;
+
+  --live: #ff2030;
+
+  --duration-fast: 180ms;
+  --duration-base: 280ms;
+}
+
+/* 2.0 trees are flat near-black — no ambient radial wash. */
+.theme-2 body {
+  background-image: none;
+}
+
 /* Expose tokens as Tailwind utilities. */
 @theme inline {
+  /* Paddock 2.0 */
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-plasma: var(--plasma);
+  --color-acid: var(--acid);
+  --color-acid-deep: var(--acid-deep);
+  --color-cyan: var(--cyan);
+  --color-live-deep: var(--live-deep);
+
+  /* No var(--font-geist-sans) here: the layouts load Geist via .className
+     (no CSS variable), and one undefined var() in a font list invalidates
+     the whole declaration at computed-value time. */
+  --font-display: var(--font-saira), 'Saira Condensed', sans-serif;
+
   /* Paddock-native */
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -283,6 +365,36 @@ body {
 }
 .wiki-table tr:nth-child(even) td {
   background: color-mix(in srgb, var(--surface) 50%, transparent);
+}
+
+/* ── Paddock 2.0 landing motion ──
+   Marquee for the broadcast ticker; entrance fades for hero/sections.
+   All of it collapses to static under prefers-reduced-motion. */
+@keyframes p2-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.p2-marquee {
+  animation: p2-marquee var(--p2-marquee-duration, 60s) linear infinite;
+}
+@keyframes p2-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.p2-fade-up {
+  animation: p2-fade-up var(--duration-slow) var(--ease-out) both;
+}
+/* Diagonal hatch texture for the acid stats band. */
+.p2-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(0 0 0 / 0.07) 0 2px,
+    transparent 2px 14px
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .p2-marquee { animation: none; }
+  .p2-fade-up { animation: none; opacity: 1; transform: none; }
 }
 
 /* shadcn base reset — border-color + outline applied site-wide. */

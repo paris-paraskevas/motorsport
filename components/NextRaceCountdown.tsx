@@ -57,9 +57,15 @@ export function NextRaceCountdown({
       >
         {label}
       </span>
+      {/* suppressHydrationWarning: the server renders wall-clock seconds that
+          are always a beat behind the client's first render. Without it React
+          throws #418 and runs a full hydration-recovery re-render — which
+          also wiped the pre-hydration data-theme attribute off <html>. The
+          text patches silently; the interval takes over immediately after. */}
       <span
         className="font-mono tabular-nums text-sm text-text tracking-tight"
         style={color ? { color } : undefined}
+        suppressHydrationWarning
       >
         {parts.days}d {pad(parts.hours)}h {pad(parts.minutes)}m {pad(parts.seconds)}s
       </span>

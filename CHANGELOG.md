@@ -4,6 +4,33 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.13.0 — 2026-06-10
+
+Redesign PR 1 of the June 2026 UI/UX overhaul (`docs/redesign-2026-06.md`). New marketing landing at `/`, the workstation dashboard moved to `/app`, design tokens v2 from the operator's mockup, and the production hydration bug fixed at its root. The (app) workstation retheme is PR 2.
+
+### Added
+
+- **Marketing landing at `/`** — `app/(marketing)/page.tsx` + `components/landing/*` (TickerBar, LandingNav, Hero with live next-sessions widget, SeriesStrip, StatsBand, FeatureBlocks, DisciplinesGrid, PerksCta, LandingFooter, StandaloneRedirect, CountUp, clean-title). Every dynamic figure is real data: the ticker and hero widget read upcoming sessions from `loadAllSeries()`, the acid stats band computes series/weekend/session/driver counts at render (ISR 300s), and the disciplines grid reuses `lib/categories` so labels never drift from the sidebar.
+- **Design tokens v2** in `app/globals.css`: `.theme-2` scope re-binds the existing chassis variables (`--bg #07070a`, `--surface #14141a`, `--border #2a2a35`, `--text #f5f5f7`, `--live #ff2030`, 180/280ms motion) so all current utilities work inside 2.0 trees; new global accents (`--brand #ffb400`, `--brand-deep`, `--plasma`, `--acid`, `--acid-deep`, `--cyan`, `--live-deep`), per-series `--s-*` colors, `--duration-slow`, and `--font-display` → Saira Condensed self-hosted via `next/font` (no runtime Google request). Landing keyframes `p2-marquee` / `p2-fade-up` + `p2-hatch` texture, all static under `prefers-reduced-motion`. Gotcha documented inline: a `var()` chain in a font list must not reference undefined variables (`--font-geist-sans` doesn't exist — Geist loads via `.className`), or the whole declaration is invalid at computed-value time and silently inherits.
+- **Two root layouts via route groups** — `app/(marketing)/layout.tsx` is deliberately bare (no ClerkProvider, no AdSense, no GA, no consent modal — nothing on the landing sets cookies or non-essential storage, so no banner is needed there); `app/(app)/layout.tsx` is the previous root layout, with every existing route `git mv`'d into the group (URLs unchanged). Cross-group navigation is a full page load by design. `app/(app)/[...catchall]/page.tsx` calls `notFound()` so unmatched URLs still render the branded 404 (`global-not-found.js` is experimental in Next 16.2.6; deliberately avoided).
+
+### Fixed
+
+- **React #418 hydration mismatch on every page with a countdown** — `components/NextRaceCountdown.tsx` computed initial state from `new Date()`, so SSR seconds never matched the client's first render. The mismatch itself was cosmetic, but React's hydration-recovery re-render **wiped the `data-theme` attribute** the layout's pre-hydration bootstrap sets — which is why dark mode silently reset to light on every reload (audit finding #1, 2026-06-10). Fix: `suppressHydrationWarning` on the digits span (SSR content preserved, text patches silently) + `components/ThemeToggle.tsx` re-asserts `dataset.theme` from storage in its mount effect as a backstop against any future recovery render.
+
+### Changed
+
+- Dashboard moved `/` → `/app` (`app/(app)/app/page.tsx`): canonical `/app`, template title, Organization/WebSite JSON-LD relocated to the landing. Internal home references updated: `AppShell` logo + Home drawer link, error/not-found escape links, service-worker push fallback URL (`app/sw.ts`), test-push URL, Clerk `signInFallbackRedirectUrl`/`signUpFallbackRedirectUrl`.
+- PWA: `public/manifest.json` `start_url` → `/app`; `components/landing/StandaloneRedirect.tsx` bounces `display-mode: standalone` (and iOS `navigator.standalone`) visitors off the landing — covers existing installs whose cached manifest still points at `/`.
+- `lib/sitemap-data.ts` adds `/app` to the static URL set.
+- Landing copy deviations from the source mockup, flagged for operator sign-off: no "No ads" claim (AdSense is planned), no "Sync your calendar" perk (unbuilt), no feeds-status footer line (needs a health endpoint), stats labeled "race weekends" (what we actually count).
+
+### Verification
+
+- `tsc --noEmit` clean, 350/350 vitest, scoped lint adds zero new issues (8 pre-existing errors unchanged, see audit).
+- Browser-verified on localhost at 390/1440: landing (desktop + mobile + full-page), `/app` dashboard intact (consent modal, install banner, hero), `/series/f1` intact with **zero hydration errors** (was: #418 on every load).
+- Pending before merge (PR checklist): Vercel preview pass + operator check on a real installed PWA (start_url propagation).
+
 ## 0.12.15 — 2026-05-22
 
 Closes `/series/dtm?tab=standings`: the Standings tab now renders the 2026 DTM Drivers' / Teams' / Manufacturers' championship triple from `motorsport.com/dtm/standings/2026/`. Replaces the prior `LinkOutCard` fallthrough that punted users to the official site (dtm.com — which is itself a SPA shell, the same JS-rendered blocker that gates motogp.com / fiaformulae.com). `/series/dtm?tab=results` renders a `SeasonTrendChart` whose totals reconcile to the Standings tab by construction.

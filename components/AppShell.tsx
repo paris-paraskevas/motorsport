@@ -53,7 +53,7 @@ export function AppShell({
             <Menu size={22} />
           </button>
           <Link
-            href="/"
+            href="/app"
             className="ml-2 text-text font-semibold text-base tracking-tight"
           >
             Paddock Tracker
@@ -87,7 +87,7 @@ export function AppShell({
       >
         <div className="flex items-center justify-between mb-6">
           <Link
-            href="/"
+            href="/app"
             className="text-text font-semibold text-lg tracking-tight"
           >
             Paddock Tracker
@@ -103,7 +103,7 @@ export function AppShell({
         </div>
 
         <nav className="space-y-0.5">
-          <DrawerLink href="/" active={pathname === '/'} label="Home" />
+          <DrawerLink href="/app" active={pathname === '/app'} label="Home" />
           <DrawerLink href="/calendar" active={pathname === '/calendar'} label="Calendar" />
           <DrawerLink href="/blog" active={pathname.startsWith('/blog')} label="Blog" />
 

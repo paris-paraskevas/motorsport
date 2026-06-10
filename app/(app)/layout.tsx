@@ -9,7 +9,7 @@ import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
-import './globals.css';
+import '../globals.css';
 
 const GA_MEASUREMENT_ID = 'G-DDMJ2NMBWC';
 const ADSENSE_CLIENT_ID = 'ca-pub-3573600995951624';
@@ -64,8 +64,8 @@ export default async function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
+      signInFallbackRedirectUrl="/app"
+      signUpFallbackRedirectUrl="/app"
       appearance={{
         variables: {
           colorBackground: '#0a0a0a',

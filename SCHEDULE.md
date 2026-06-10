@@ -648,6 +648,17 @@ After the 4-PR daytime sweep (0.12.11 → 0.12.13), one more PR landed before be
 
 **Today's aggregate: 5 PRs end-to-end** (0.12.11 IMSA, 0.12.12 NASCAR-broken, 0.12.12.1 NASCAR-fixed, 0.12.13 GT-World, 0.12.14 WRC). Per-series inventory net: IMSA `❌ → ✅`, NASCAR `⚠️ → ❌ → ✅`, GT-World `❌ → ✅`, WRC `⚠️ → ✅`. **Four series moved to ✅ on the same calendar day.**
 
+## Week of 2026-06-08
+
+### Wed 2026-06-10
+
+- → done: full-stack audit (operator-directed) — 6 parallel audit agents + live browser pass on prod across 4 viewports. Headliners: countdown hydration bug wiping dark-mode persistence, silent-parser observability gap, legal pages describing the removed Funding Choices CMP, homepage 95% dead payload, ~190 orphaned weekend URLs. Full report delivered in-session; backlog feeds redesign PR 3+ and future fix sessions.
+- → in progress: **Redesign PR 1** — landing at `/` + workstation at `/app`, design tokens v2 from operator's mockup (`Paddock Tracker (2).html`), dark-only, PWA start_url guard, countdown hydration fix. Plan + decisions + session log: `docs/redesign-2026-06.md`. Branch `feat/redesign-1-landing-2026-06-10`.
+- Won't touch this session: workstation retheme (PR 2), audit fixes beyond the countdown bug, light mode.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
