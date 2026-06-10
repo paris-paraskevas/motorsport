@@ -1,0 +1,75 @@
+{
+  "note": "Landing-page circuit photo feed. All photos from Wikimedia Commons; keep artist + license + sourceUrl accurate — they render as visible credits. Images live in public/landing/circuits/.",
+  "circuits": [
+    {
+      "img": "/landing/circuits/lemans.jpg",
+      "label": "WEC · Le Mans",
+      "caption": "Hypercar at full stretch",
+      "color": "#00a0e9",
+      "seriesSlug": "wec",
+      "artist": "Mickael Le rouzic",
+      "license": "CC BY 2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2024_24_Hours_of_Le_Mans_(54094635854).jpg"
+    },
+    {
+      "img": "/landing/circuits/spa.jpg",
+      "label": "Spa-Francorchamps",
+      "caption": "Up the hill through Raidillon",
+      "color": "#e10600",
+      "seriesSlug": "f1",
+      "artist": "Lukas Raich",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:24H_Series_2023_Spa_Misc.jpg"
+    },
+    {
+      "img": "/landing/circuits/monaco.jpg",
+      "label": "F1 · Monaco",
+      "caption": "The Fairmont hairpin — F1's slowest corner",
+      "color": "#e10600",
+      "seriesSlug": "f1",
+      "artist": "crash71100",
+      "license": "CC0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Circuit_de_Monaco_-_%C3%89pingle_du_Loews_Fairmont_(54777022015).jpg"
+    },
+    {
+      "img": "/landing/circuits/nordschleife.jpg",
+      "label": "NLS · Nordschleife",
+      "caption": "GT3 through the Green Hell",
+      "color": "#f97316",
+      "seriesSlug": "nls",
+      "artist": "Philipp Ganjon",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:912_h3.jpg"
+    },
+    {
+      "img": "/landing/circuits/indianapolis.jpg",
+      "label": "IndyCar · Indianapolis",
+      "caption": "500 miles at 230 mph",
+      "color": "#ffd100",
+      "seriesSlug": "indycar",
+      "artist": "Doctorindy",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016Indy500-Rossi2.jpg"
+    },
+    {
+      "img": "/landing/circuits/talladega.jpg",
+      "label": "NASCAR · Talladega",
+      "caption": "Pack racing, inches apart",
+      "color": "#f5b800",
+      "seriesSlug": "nascar-cup",
+      "artist": "Curtis Palmer",
+      "license": "CC BY 2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kyle_leads_the_pack.jpg"
+    },
+    {
+      "img": "/landing/circuits/rally-finland.jpg",
+      "label": "WRC · Finland",
+      "caption": "Flat out over gravel",
+      "color": "#d92626",
+      "seriesSlug": "wrc",
+      "artist": "Antti Leppänen",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Johan_Kristofersson_Rally_Finland_2019_Leustu.JPG"
+    }
+  ]
+}

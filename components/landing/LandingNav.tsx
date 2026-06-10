@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LandingMenu } from './LandingMenu';
 
 const ANCHORS = [
   { href: '#inside', label: "What's inside" },
@@ -8,7 +9,7 @@ const ANCHORS = [
 
 export function LandingNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-xl">
+    <header className="sticky top-9 z-40 border-b border-border bg-bg/85 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
         <Link
           href="/"
@@ -42,6 +43,7 @@ export function LandingNav() {
           >
             Open app&ensp;→
           </Link>
+          <LandingMenu />
         </div>
       </div>
     </header>

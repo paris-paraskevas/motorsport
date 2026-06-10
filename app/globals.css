@@ -377,6 +377,13 @@ body {
 .p2-marquee {
   animation: p2-marquee var(--p2-marquee-duration, 60s) linear infinite;
 }
+@keyframes p2-marquee-rev {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.p2-marquee-rev {
+  animation: p2-marquee-rev var(--p2-marquee-duration, 60s) linear infinite;
+}
 @keyframes p2-fade-up {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -394,6 +401,7 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .p2-marquee { animation: none; }
+  .p2-marquee-rev { animation: none; }
   .p2-fade-up { animation: none; opacity: 1; transform: none; }
 }
 

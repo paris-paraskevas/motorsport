@@ -9,26 +9,41 @@ const PERKS = [
     title: 'Push when it matters',
     body: 'Pre-session pings on any device with the app installed — and one-tap mute per series.',
   },
+  {
+    title: 'Take it everywhere',
+    body: 'Install Paddock as an app on your phone or desktop. It opens straight into your dashboard, full-screen.',
+  },
 ];
 
-// Closing pitch. Browsing needs no account; the perks are the upsell.
-// (Mockup's "Sync your calendar" card cut — feature doesn't exist yet.)
+// Closing pitch — mockup layout: eyebrow, warm glow, three perk cards.
+// Third card is the PWA (the mockup's "Sync your calendar" card returns
+// when calendar feeds actually ship — tracked in IDEAS).
 export function PerksCta() {
   return (
-    <section className="border-b border-border">
-      <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
-        <h2 className="font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-text sm:text-5xl">
+    <section className="relative overflow-hidden border-b border-border">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 55% 65% at 50% 0%, rgb(255 180 0 / 0.14) 0%, transparent 65%)',
+        }}
+      />
+      <div className="relative mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">
+          Free, no account needed · better with one
+        </p>
+        <h2 className="mt-3 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-text sm:text-5xl">
           Browse free. <span className="text-brand">Sign in for the perks.</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-text-muted">
-          Everything is readable without an account. A free account adds
-          followed series, push notifications and the device-aware PWA
-          dashboard.
+          Paddock is fully free to browse. An account unlocks personalisation —
+          followed series, push notifications, and the device-aware dashboard.
         </p>
 
-        <div className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-3">
           {PERKS.map(p => (
-            <div key={p.title} className="rounded-2xl border border-border bg-surface/60 p-6 text-left">
+            <div key={p.title} className="rounded-2xl border border-border bg-surface/70 p-6 text-left">
               <h3 className="text-sm font-bold text-text">{p.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-text-muted">{p.body}</p>
             </div>

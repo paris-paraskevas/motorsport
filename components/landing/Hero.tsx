@@ -30,7 +30,7 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 50% 60% at 85% 0%, rgb(255 180 0 / 0.07) 0%, transparent 60%)',
+            'radial-gradient(ellipse 50% 60% at 85% 0%, rgb(255 180 0 / 0.15) 0%, transparent 60%)',
         }}
       />
 
@@ -125,7 +125,7 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
             <span className="ml-auto">
               <NextRaceCountdown
                 target={next.start.toISOString()}
-                label={`${next.seriesName} ${next.title}`}
+                label={`${next.seriesName} — ${cleanSessionTitle(next.seriesName, next.title)}`}
                 color={next.seriesColor}
               />
             </span>
