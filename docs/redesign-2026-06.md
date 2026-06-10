@@ -61,7 +61,8 @@ Copy deviations from mockup (honesty pass) are flagged in the PR description for
 
 | PR | Scope | Status |
 |---|---|---|
-| 1 | Tokens v2 + (marketing)/(app) root-layout split + landing at `/` + dashboard → `/app` + PWA start_url/standalone guard + countdown hydration fix + SEO wiring | in progress |
+| 1 | Tokens v2 + (marketing)/(app) root-layout split + landing at `/` + dashboard → `/app` + PWA start_url/standalone guard + countdown hydration fix + SEO wiring | ✅ merged (PR #98, 0.13.0) |
+| 1.1 | Landing parity with mockup: ticker v2 (GMT/weather/news, sticky), marquee-event big countdown, series marquee rows, circuit photo feed (Wikimedia, credited), disciplines cards v2, perks v2, vivid washes, burger menu | in PR (0.13.1) |
 | 2 | Workstation retheme to tokens v2, dark-only: AppShell/header/sidebar/footer/cards/tabs; retire ThemeToggle + dual-theme CSS; fix zinc-hardcoded surfaces (settings/onboarding/PWA modals); Clerk appearance to match | queued |
 | 3 | Surface polish: series pages, weekend page, standings/results tables, mobile chart fix (0-size recharts + legend soup), tab-grid density on mobile | queued |
 | 4+ | Desktop density pass (wide-viewport layouts, news thumbnails), motion/micro-interactions, light mode as deliberate future project | parked |
@@ -87,6 +88,19 @@ PR 1 architecture notes:
 
 ## Session log
 
+### 2026-06-10 — session 2 (same day): PR 1.1 landing parity
+- Operator reviewed live 0.13.0 vs mockup with screenshots; gaps locked: richer moving
+  ticker, big marquee-event countdown, moving series timetable, circuit photo feed,
+  discipline cards v2, perks v2 with glow, vivid amber washes, burger menu.
+- Photos: Wikimedia Commons, 10 candidates downloaded + visually reviewed, 7 selected
+  (incl. Monaco hairpin CC0, Talladega "pack racing" matching the mockup caption).
+  License + artist per file in `content/landing/circuits.json`; credits render on-page.
+- "Sync your calendar" perk card NOT shipped (feature doesn't exist) — third card is
+  the PWA. Add to IDEAS Inbox: per-series calendar feeds (ICS proxy endpoint) → when
+  shipped, swap the perk card back to the mockup copy.
+- All sections built + browser-verified (390/1440, menu focus behaviour, photos via
+  next/image). 0.13.1 PR opened; preview verify pending before merge.
+
 ### 2026-06-10 — session 1
 - Full-stack audit delivered (separate report; feeds PR 3+ backlog).
 - Mockup rendered + mined: tokens, structure, 30 KB runtime CSS harvested.
@@ -102,3 +116,12 @@ PR 1 architecture notes:
 - Next session (PR 2): workstation retheme to tokens v2 dark-only — AppShell chrome,
   cards, tabs, retire ThemeToggle + light mode, Clerk appearance, zinc-hardcoded
   surfaces (settings/onboarding/PWA modals). Then PR 3 surface polish per plan table.
+- Post-merge outsider audit (same day, prod v0.13.0): landing live + fast (TTFB ~50ms,
+  ~1 KB JS); dark-mode persistence CONFIRMED fixed prod-wide (backstop holds even on
+  /app). Two carry-overs: (1) #418 hydration still fires on /app — SECOND source, the
+  morning root-cause was incomplete: HomeContent's relative-time labels ("4h ago" /
+  "in 5h") drift against up-to-5-min-stale ISR HTML; fix = suppressHydrationWarning on
+  those spans or client-only relative labels. Series pages confirmed clean. (2) F1
+  results tab shows 5 races / chart ANT 131 while standings show 7 rounds / ANT 156 —
+  chart-vs-standings invariant violated in prod; investigate Jolpica race-feed lag vs
+  standings endpoint + cache before PR 3.

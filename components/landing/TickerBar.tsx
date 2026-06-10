@@ -1,42 +1,42 @@
-import { formatRelative } from '@/lib/date';
-import { cleanSessionTitle } from './clean-title';
-
-export interface TickerEntry {
-  seriesName: string;
-  seriesColor: string;
-  title: string;
-  start: Date;
-  dateOnly?: boolean;
+// Broadcast chyron pinned to the top of the landing. Server-rendered from
+// real data; the page composes typed segments (stats / next-up / GMT-timed
+// events / weather / news). The track is duplicated for a seamless CSS
+// marquee loop (copy aria-hidden); static scrollable row under
+// prefers-reduced-motion. Sticky so it reads like a live broadcast bar.
+export interface TickerSegment {
+  /** series dot color, omitted for neutral entries */
+  dot?: string;
+  /** leading emphasised token, e.g. "NEXT UP" or "WED 15:00 GMT" */
+  head?: string;
+  body: string;
+  /** trailing de-emphasised token, e.g. venue or relative time */
+  tail?: string;
 }
 
-// Broadcast-style data ticker pinned above the nav. Server-rendered from real
-// upcoming sessions; the track is duplicated for a seamless CSS marquee loop
-// (the copy is aria-hidden). Collapses to a static scrollable row under
-// prefers-reduced-motion.
-export function TickerBar({ entries, now }: { entries: TickerEntry[]; now: Date }) {
-  if (entries.length === 0) return null;
+export function TickerBar({ segments }: { segments: TickerSegment[] }) {
+  if (segments.length === 0) return null;
 
-  const items = entries.slice(0, 12);
+  const items = segments.slice(0, 16);
 
   const track = (hidden: boolean) => (
-    <div
-      aria-hidden={hidden || undefined}
-      className="flex shrink-0 items-center gap-8 pr-8"
-    >
-      {items.map(e => (
+    <div aria-hidden={hidden || undefined} className="flex shrink-0 items-center pr-10">
+      {items.map((s, i) => (
         <span
-          key={`${hidden ? 'b' : 'a'}-${e.seriesName}-${e.title}-${e.start.getTime()}`}
-          className="flex items-center gap-2 whitespace-nowrap"
+          key={`${hidden ? 'b' : 'a'}-${i}`}
+          className="flex items-center gap-2 whitespace-nowrap pr-10"
         >
-          <span
-            className="h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: e.seriesColor }}
-            aria-hidden="true"
-          />
-          <span className="font-semibold text-text">{e.seriesName}</span>
-          <span>{cleanSessionTitle(e.seriesName, e.title)}</span>
-          <span className="text-text-faint">
-            {e.dateOnly ? 'time TBC' : formatRelative(e.start, now)}
+          {s.dot && (
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: s.dot }}
+              aria-hidden="true"
+            />
+          )}
+          {s.head && <span className="font-semibold text-text">{s.head}</span>}
+          <span>{s.body}</span>
+          {s.tail && <span className="text-text-faint">{s.tail}</span>}
+          <span className="pl-10 text-text-faint" aria-hidden="true">
+            ·
           </span>
         </span>
       ))}
@@ -44,11 +44,11 @@ export function TickerBar({ entries, now }: { entries: TickerEntry[]; now: Date 
   );
 
   return (
-    <div className="border-b border-border bg-bg font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">
-      <div className="motion-safe:overflow-hidden motion-reduce:overflow-x-auto">
+    <div className="sticky top-0 z-50 h-9 border-b border-border bg-bg/95 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted backdrop-blur-sm">
+      <div className="h-full motion-safe:overflow-hidden motion-reduce:overflow-x-auto">
         <div
-          className="flex w-max motion-safe:p2-marquee py-2"
-          style={{ '--p2-marquee-duration': `${items.length * 6}s` } as React.CSSProperties}
+          className="flex h-9 w-max items-center motion-safe:p2-marquee"
+          style={{ '--p2-marquee-duration': `${items.length * 7}s` } as React.CSSProperties}
         >
           {track(false)}
           {track(true)}

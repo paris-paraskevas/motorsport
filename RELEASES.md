@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.13.1 — 2026-06-10
+
+**The landing page got its broadcast energy.** A live ticker now runs across the top with what's next on track, session times in GMT, the weather at the next venue, and the latest headlines. Below the hero, a marquee-event countdown ticks down to the biggest race on the calendar — right now, the 24 Hours of Le Mans.
+
+**Real circuits, real photography.** A scrolling feed of famous venues — Spa's Raidillon, Monaco's hairpin, Le Mans at full stretch, the Nordschleife, Indianapolis, Talladega, Rally Finland — with photographer credits on every shot.
+
+**More motion, more color.** The 15-series timetable now scrolls as three moving rows, discipline cards picked up their accent colors and series chips, and the sign-in pitch got its warm glow. A new menu button opens a full-screen map of everywhere you can go.
+
 ## 0.13.0 — 2026-06-10
 
 **A new front door.** paddock-tracker.com now opens with a proper landing page — what Paddock covers, the next sessions on track live from the real calendar, and the season in numbers. The app you know didn't change: it now lives at `/app`, one tap behind the "Open the paddock" button, with every series, weekend, and article URL exactly where it was.

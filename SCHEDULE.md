@@ -653,7 +653,8 @@ After the 4-PR daytime sweep (0.12.11 → 0.12.13), one more PR landed before be
 ### Wed 2026-06-10
 
 - → done: full-stack audit (operator-directed) — 6 parallel audit agents + live browser pass on prod across 4 viewports. Headliners: countdown hydration bug wiping dark-mode persistence, silent-parser observability gap, legal pages describing the removed Funding Choices CMP, homepage 95% dead payload, ~190 orphaned weekend URLs. Full report delivered in-session; backlog feeds redesign PR 3+ and future fix sessions.
-- → in progress: **Redesign PR 1** — landing at `/` + workstation at `/app`, design tokens v2 from operator's mockup (`Paddock Tracker (2).html`), dark-only, PWA start_url guard, countdown hydration fix. Plan + decisions + session log: `docs/redesign-2026-06.md`. Branch `feat/redesign-1-landing-2026-06-10`.
+- → done: **Redesign PR 1 (#98, merged + live as 0.13.0)** — landing at `/` + workstation at `/app`, design tokens v2 from operator's mockup, dark-only landing, PWA start_url guard, countdown hydration fix. Plan + decisions + session log: `docs/redesign-2026-06.md`.
+- → done: post-merge outsider audit of prod (fresh-visitor walkthrough, mobile + desktop). Two carry-overs logged in the redesign doc: /app hydration source #2 (relative-time labels vs stale ISR), F1 chart/standings disagreement (131 vs 156). Dark-mode persistence confirmed fixed in prod.
 - Won't touch this session: workstation retheme (PR 2), audit fixes beyond the countdown bug, light mode.
 
 Active:

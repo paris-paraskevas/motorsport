@@ -4,6 +4,30 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.13.1 — 2026-06-10
+
+Redesign PR 1.1 — landing parity with the operator's mockup, closing the gaps flagged after 0.13.0 went live (ticker richness, big countdown, moving timetable, circuit photography, discipline cards, perks layout, vivid washes, burger menu).
+
+### Added
+
+- **`components/landing/MarqueeEvent.tsx` + `BigCountdown.tsx`** — the mockup's "110th Indianapolis 500" treatment: featured-event band with ~80px Saira digits (d/h/m/s), amber radial wash, "Open the weekend" CTA. Event selection: first upcoming session with `significance.tier === 'marquee'`, falling back to a race-like title regex; the display name resolves from `rounds.json` via `roundFor` (renders "24 Hours of Le Mans" today). Digits reuse the suppressHydrationWarning contract from `NextRaceCountdown`.
+- **Circuit photo feed** — `components/landing/CircuitFeed.tsx` + `content/landing/circuits.json` + `public/landing/circuits/*.jpg` (7 photos ~4 MB total). Wikimedia Commons photography (Spa Raidillon, Monaco Fairmont hairpin CC0, Le Mans 2024 Hypercar, Nordschleife GT3, Indy 500, Talladega pack, Rally Finland), license-verified per file with visible per-photo credits + source links (CC BY / CC BY-SA / CC0). Slow marquee (55s), `next/image` with explicit `sizes`, caption overlays in the mockup's label style.
+- **`components/landing/SeriesMarquee.tsx`** (replaces `SeriesStrip.tsx`) — three auto-scrolling chip rows (34s/40s reversed/30s) in the mockup's "NAME / CATEGORY" format with the "Every official ICS feed in one place" subcopy. Chips are deliberately non-interactive (focusable links inside an infinite marquee thrash keyboard focus); an `sr-only` list mirrors the content and real navigation lives in the disciplines grid + footer. New `p2-marquee-rev` keyframes in `globals.css`.
+- **`components/landing/LandingMenu.tsx`** — full-screen burger overlay (Paddock / Account / Project groups, only routes that exist today). Proper dialog behaviour — focus moves to Close on open, Escape dismisses, focus restores to the trigger, body scroll locks — verified in-browser.
+
+### Changed
+
+- **`TickerBar` v2** — typed segments composed server-side in `app/(marketing)/page.tsx`: coverage stats, NEXT UP with relative time, GMT-timed upcoming sessions with venue (`Intl` UTC formatter), a real Open-Meteo weather entry for the next locatable circuit (KV-cached path), and three live news headlines with series dots. Now sticky (`top-0`, h-9) as a broadcast chyron; `LandingNav` sticks below it at `top-9`.
+- **`DisciplinesGrid` v2** — mockup card design: per-discipline accent top-border gradient, padded count ("05"), description lines from the mockup, short-name series pills, "All 15 series →" button. Landing-only 5-discipline grouping (Formula / Motorcycle / Endurance / Stock & Touring / Rally) — the app sidebar keeps its 6-category taxonomy.
+- **`PerksCta` v2** — mockup layout: "FREE, NO ACCOUNT NEEDED · BETTER WITH ONE" eyebrow, warm amber radial glow, three perk cards. Third card is "Take it everywhere" (PWA install) instead of the mockup's "Sync your calendar" — that feature doesn't exist yet; queued in IDEAS as calendar feeds.
+- Hero amber wash raised to the mockup's intensity (0.07 → 0.15 alpha); `NextRaceCountdown` pill label de-stuttered via `cleanSessionTitle`.
+
+### Verification
+
+- `tsc` clean, 350/350 vitest, landing-scoped lint clean (0 errors / 0 warnings after fixes).
+- Browser-verified on localhost at 390/1440: all sections render with real data (Le Mans marquee countdown live, photos loading via `next/image`, menu focus behaviour). Dev-server log caught a misplaced `public/` copy (cwd drift) — fixed before commit.
+- Pending before merge: Vercel preview pass (photos through the image optimizer on prod runtime, ticker weather path).
+
 ## 0.13.0 — 2026-06-10
 
 Redesign PR 1 of the June 2026 UI/UX overhaul (`docs/redesign-2026-06.md`). New marketing landing at `/`, the workstation dashboard moved to `/app`, design tokens v2 from the operator's mockup, and the production hydration bug fixed at its root. The (app) workstation retheme is PR 2.
