@@ -20,7 +20,7 @@ export async function DriversTab({ series }: { series: Series }) {
             return (
               <div
                 key={`${team.name}-${idx}`}
-                className="rounded-xl bg-surface/40 border border-border/60 p-4"
+                className="border-y border-border py-4"
                 style={team.color ? { borderLeftColor: team.color, borderLeftWidth: '3px' } : undefined}
               >
                 <Link
@@ -46,7 +46,7 @@ export async function DriversTab({ series }: { series: Series }) {
                           {d.name}
                         </Link>
                         {d.code ? (
-                          <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+                          <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
                             {d.code}
                           </span>
                         ) : null}
@@ -74,7 +74,7 @@ export async function DriversTab({ series }: { series: Series }) {
           {lineup.map((entry, idx) => (
             <div
               key={`${entry.team}-${idx}`}
-              className="rounded-xl bg-surface/40 border border-border/60 p-4"
+              className="border-y border-border py-4"
             >
               <div className="text-base text-text font-semibold mb-2">
                 {entry.team}
@@ -106,7 +106,7 @@ export async function DriversTab({ series }: { series: Series }) {
   if (series.drivers && series.drivers.trim().length > 0) {
     return (
       <article
-        className="prose dark:prose-invert prose-sm max-w-none rounded-xl bg-surface/40 border border-border/60 p-5"
+        className="prose dark:prose-invert prose-sm max-w-none border-y border-border py-5"
         dangerouslySetInnerHTML={{ __html: series.drivers }}
       />
     );

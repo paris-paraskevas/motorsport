@@ -28,7 +28,7 @@ import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
 import { IMSA_CLASSES, type ImsaClass } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { buildSeasonTrendData } from '@/lib/season-trend';
-import { SeasonTrendChart } from '@/components/SeasonTrendChart';
+import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
@@ -80,7 +80,7 @@ function formatDate(date: Date): string {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-xl bg-surface/40 border border-border/60 p-6 text-center">
+    <div className="border border-border bg-surface/40 p-6 text-center">
       <div className="text-text-muted text-sm">{message}</div>
     </div>
   );
@@ -98,7 +98,7 @@ function ResultRow({ entry }: { entry: RaceResultEntry }) {
             {entry.driverName}
           </span>
           {entry.driverCode ? (
-            <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
               {entry.driverCode}
             </span>
           ) : null}
@@ -197,8 +197,8 @@ function SeasonResultsPanel({
         return 0;
       });
   return (
-    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         {heading}
       </h2>
       <ul className="divide-y divide-border/60">
@@ -230,7 +230,7 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
           <span className="text-text text-sm font-medium truncate">
             {entry.drivers || entry.team}
           </span>
-          <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
             #{entry.carNumber}
           </span>
         </div>
@@ -262,8 +262,8 @@ function ImsaSeasonResultsPanel({ rounds }: { rounds: ImsaRoundResults[] }) {
     );
 
   return (
-    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
@@ -369,7 +369,7 @@ function GtWorldResultRow({ entry }: { entry: GtWorldRaceResultEntry }) {
           <span className="text-text text-sm font-medium truncate">
             {entry.drivers.join(' · ')}
           </span>
-          <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
             #{entry.carNumber}
           </span>
         </div>
@@ -444,8 +444,8 @@ function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
   );
 
   return (
-    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
@@ -485,7 +485,7 @@ function SourceLink({ href, label }: { href: string; label: string }) {
 function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string }) {
   const label = hostnameOf(officialStandingsUrl);
   return (
-    <div className="rounded-xl bg-surface/40 border border-border/60 p-6 text-center">
+    <div className="border border-border bg-surface/40 p-6 text-center">
       <p className="text-text-muted text-sm mb-4">
         Race-by-race results are on the official site.
       </p>
@@ -493,7 +493,7 @@ function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string })
         href={officialStandingsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-border hover:bg-border-strong text-text text-sm font-medium transition-colors duration-(--duration-fast)"
+        className="inline-flex items-center gap-1.5 px-4 py-2 border border-border-strong hover:bg-surface text-text text-sm font-medium transition-colors duration-(--duration-fast)"
       >
         {label} <span aria-hidden>→</span>
       </a>
@@ -520,8 +520,8 @@ export async function ResultsTab({ series }: { series: Series }) {
     const trend = buildSeasonTrendData(merged, sprints);
     return (
       <div className="space-y-4">
-        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+        <section className="border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
             Drivers&apos; season trend
           </h2>
           <SeasonTrendChart
@@ -679,8 +679,8 @@ export async function ResultsTab({ series }: { series: Series }) {
     const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
-        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+        <section className="border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
             Drivers&apos; season trend
           </h2>
           <SeasonTrendChart
@@ -769,8 +769,8 @@ export async function ResultsTab({ series }: { series: Series }) {
     return (
       <div className="space-y-4">
         {trend ? (
-          <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-            <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+          <section className="border-y border-border py-4">
+            <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
               Drivers&apos; season trend
             </h2>
             <SeasonTrendChart
@@ -846,8 +846,8 @@ export async function ResultsTab({ series }: { series: Series }) {
     const trend = buildSeasonTrendData(races);
     return (
       <div className="space-y-4">
-        <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-          <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+        <section className="border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
             Drivers&apos; season trend
           </h2>
           <SeasonTrendChart

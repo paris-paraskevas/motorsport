@@ -125,7 +125,7 @@ function DriversSection({
         <details
           key={group.decade}
           open={idx === 0}
-          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
+          className="group border-y border-border overflow-hidden"
         >
           <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
             <span className="text-text text-base font-semibold tracking-tight">
@@ -192,7 +192,7 @@ function ConstructorsSection({
         <details
           key={group.decade}
           open={idx === 0}
-          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
+          className="group border-y border-border overflow-hidden"
         >
           <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
             <span className="text-text text-base font-semibold tracking-tight">
@@ -239,7 +239,7 @@ function SecondarySection({
         <details
           key={group.decade}
           open={idx === 0}
-          className="group rounded-xl bg-surface/40 border border-border/60 overflow-hidden"
+          className="group border-y border-border overflow-hidden"
         >
           <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
             <span className="text-text text-base font-semibold tracking-tight">
@@ -358,7 +358,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
 
   if (champions.length === 0) {
     return (
-      <div className="rounded-xl bg-surface/40 border border-border/60 p-8 text-center">
+      <div className="border border-border bg-surface/40 p-8 text-center">
         <div className="text-text text-base font-medium mb-1">
           No champions data
         </div>
