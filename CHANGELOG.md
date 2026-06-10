@@ -4,7 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.16.0 — 2026-06-10
+## 0.17.0 — 2026-06-10
+
+Redesign PR 2c-2 — one nav system. Operator call after the hub shipped: "navigation menu and burger bar can go."
+
+### Removed
+
+- **Drawer/sidebar and burger button retired** (`components/AppShell.tsx` rewritten). The slide-out drawer, its backdrop, the body-scroll lock, the route-change close effect and the permanent lg+ sidebar are gone — the `/series` hub + bottom bar made the 15-link drawer redundant. This also clears the long-standing `react-hooks/set-state-in-effect` lint-baseline error (it lived in the drawer code); the touched-file lint baseline is now zero.
+
+### Changed
+
+- **One fixed header on every viewport**: wordmark; inline mono nav (Home / Calendar / Series / Blog, amber active rule, `aria-current`) on lg+ where the bottom bar disappears; HeaderUtils right. Desktop floating-utils block removed. `<main>` loses `lg:ml-72` — content is centered full-width on desktop.
+- Footer Site column: Blog added (the header nav is lg+-only, so the footer is mobile's path to it); the Settings link relabeled Account to match the bottom bar.
 
 Redesign PR 2c-1 — series hub + bottom-bar v2. Operator feedback on 0.15.0: a nav tab must not open a menu (Series opened the drawer), and Settings reads better as Account.
 

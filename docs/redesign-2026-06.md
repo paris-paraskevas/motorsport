@@ -183,9 +183,16 @@ contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
   0 console errors, overflow 0 @390+412, two-col hub at 1440, aria-current on active tab.
 - Discovered en route: Vercel previews are SSO-protected (401 anonymous) — Claude can't
   browser them; operator does preview passes (memory: project-paddock-preview-protection).
-- Still queued: 2c-2 series pages (sticky tab bar, surfaces, mobile chart fix), 2d
-  settings/onboarding modals, landing nav sticky-on-scroll fix (operator, IDEAS Inbox —
-  suspect body overflow-x:hidden kills sticky).
+- **PR 2c-2 (0.17.0)** — one nav system (operator: "navigation menu and burger bar can
+  go"): drawer/sidebar + burger + backdrop deleted; single fixed header on all viewports
+  (wordmark + lg+ inline mono nav Home/Calendar/Series/Blog with amber active rule +
+  utils); main loses lg:ml-72; footer gains Blog, Settings link relabeled Account. The
+  drawer's set-state-in-effect was the lint-baseline error — baseline now clean. AppShell
+  is ~60 lines lighter.
+- Still queued: 2c-3 series PAGES (sticky tab bar replacing the 9-tile grid, standings/
+  results/weekend surfaces to tokens v2, mobile chart fix) — the big remaining chunk;
+  then calendar retheme, 2d account/onboarding modals, landing nav sticky-on-scroll fix
+  (operator, IDEAS Inbox — suspect body overflow-x:hidden kills sticky).
 
 ### 2026-06-10 — session 2 (same day): PR 1.1 landing parity
 - Operator reviewed live 0.13.0 vs mockup with screenshots; gaps locked: richer moving
