@@ -668,6 +668,9 @@ Session 3 (same day) — **PR 2a dashboard shell** per the locked brief. Plan:
 - Footer: Landing link + landing-language headings. Clerk appearance → brand amber at provider; per-page sign-in/sign-up overrides removed.
 - manifest + themeColor + OG image bg → #07070a. Version 0.14.0.
 - Won't touch this session: home layout restructure (2b), series tab bar (2c), settings/onboarding modals (2d), F1 chart-vs-standings bug, audit backlog.
+- → done: 2a shipped as **PR #102 (0.14.0)**, localhost gates green (light-OS emulation sweep, overflow 0 @412, marquee motion re-verified, tint override intact). Preview verify pending.
+- **Mid-session operator directive** (overrides the won't-touch line): install banner GOES (removed, component deleted — rode the 2a branch) + "take full control of the ui/ux structure... surprise me" → **PR 2b pulled forward into this session**.
+- → done: **PR 2b (0.15.0)** time-first home — chyron (live takeover / ticking countdown), THIS WEEK timing rows, PADDOCK WIRE, two-column desktop, tabs retired, hydration #418 source-2 fixed structurally (serverNow prop), device-local times with real tz label. Zero console errors on /app. NextSessionCard deleted.
 
 Active:
 _(awaiting [+Nm] prefixes)_

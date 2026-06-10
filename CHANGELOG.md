@@ -4,7 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.14.0 — 2026-06-10
+## 0.15.0 — 2026-06-10
+
+Redesign PR 2b — time-first home (the locked brief's biggest piece, pulled forward by operator directive: "take full control of the ui/ux structure"). The dashboard becomes a racing-broadcast workstation: chyron → schedule → wire, no tabs.
+
+### Changed
+
+- **`components/HomeContent.tsx` rewritten end-to-end.** Structure: (1) full-bleed **chyron strip** — live sessions take it over (red pulse, elapsed time); otherwise the next session with series chip, venue, weather, Saira display title and a **ticking HH:MM:SS countdown**; (2) **THIS WEEK** — 7-day window of day-grouped timing rows (mono time column, series-color rule, venue + weather microline, relative chip, TODAY/TOMORROW day tags); (3) **PADDOCK WIRE** — news as editorial rows with hard dividers; series filter chips kept. Desktop lg+: two-column grid (schedule | wire), no tabs; wrapper widened to `xl:max-w-6xl` (audit's wide-viewport-density item). Mobile: stacked, schedule first. "Full calendar →" row carries the `+N ahead` count.
+- **Hydration #418 source 2 fixed structurally** (audit carry-over): every time-derived string renders from a `now` state seeded by a new `serverNow` prop (the server's render instant), so SSR HTML and the first client render are identical no matter how stale the ISR payload is. After mount, a 60s tick (1s inside the countdown, self-contained) swaps to the device clock — no `suppressHydrationWarning` needed anywhere.
+- **Times are now genuinely local**: pre-mount/SSR renders GMT (labelled), post-mount upgrades to the device timezone with a real tz label (e.g. EEST) in the chyron and the THIS WEEK header. Replaces the previous hardcoded Europe/Athens formatting on the home surface.
+- `components/NextSessionCard.tsx` deleted (chyron supersedes it; no other consumers). `SessionCard`/`DayHeader` untouched — still used by series calendar surfaces.
+- News thumbnails (brief item) honestly skipped: `lib/news.ts` exposes no image field in the motorsport.com feed parse; revisit if enclosure parsing lands.
+- Home tab persistence (`paddock:home-tab` localStorage key) retired with the tabs themselves.
 
 Redesign PR 2a — dashboard shell on the Paddock 2.0 language (`docs/redesign-2026-06.md` PR 2 brief). Tokens v2 promoted site-wide; the workstation chrome adopts the landing's identity.
 

@@ -63,7 +63,7 @@ Copy deviations from mockup (honesty pass) are flagged in the PR description for
 |---|---|---|
 | 1 | Tokens v2 + (marketing)/(app) root-layout split + landing at `/` + dashboard → `/app` + PWA start_url/standalone guard + countdown hydration fix + SEO wiring | ✅ merged (PR #98, 0.13.0) |
 | 1.1 | Landing parity with mockup: ticker v2 (GMT/weather/news, sticky), marquee-event big countdown, series marquee rows, circuit photo feed (Wikimedia, credited), disciplines cards v2, perks v2, vivid washes, burger menu | in PR (0.13.1) |
-| 2 | **Dashboard/workstation COMPLETE UI/UX overhaul** (operator directive 2026-06-10, upgraded from "retheme"): tokens v2 dark-only across AppShell/header/sidebar/footer/cards/tabs; retire ThemeToggle + dual-theme CSS; fix zinc-hardcoded surfaces (settings/onboarding/PWA modals); Clerk appearance; PLUS UX restructure — mobile information density (9-tile tab grid eats first viewport), first-visit prompt stacking (install banner + consent), desktop wide-viewport density (single narrow column at 1920), news thumbnails, Saira display type on section headers. Treat as design-led, mockup-first if operator supplies one; otherwise derive from the landing's language. Multi-session. | **NEXT** |
+| 2 | **Dashboard/workstation COMPLETE UI/UX overhaul** (operator directive 2026-06-10, upgraded from "retheme"): tokens v2 dark-only across AppShell/header/sidebar/footer/cards/tabs; retire ThemeToggle + dual-theme CSS; fix zinc-hardcoded surfaces (settings/onboarding/PWA modals); Clerk appearance; PLUS UX restructure — mobile information density (9-tile tab grid eats first viewport), first-visit prompt stacking (install banner + consent), desktop wide-viewport density (single narrow column at 1920), news thumbnails, Saira display type on section headers. Treat as design-led, mockup-first if operator supplies one; otherwise derive from the landing's language. Multi-session. | 2a in PR #102 (0.14.0) · 2b in PR (0.15.0) |
 | 3 | Surface polish: series pages, weekend page, standings/results tables, mobile chart fix (0-size recharts + legend soup), tab-grid density on mobile | queued |
 | 4+ | Desktop density pass (wide-viewport layouts, news thumbnails), motion/micro-interactions, light mode as deliberate future project | parked |
 
@@ -141,6 +141,37 @@ contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
 - CHANGELOG.md + RELEASES.md + package.json bump on every merge.
 
 ## Session log
+
+### 2026-06-10 — session 3 (same day): PR 2a shell + PR 2b time-first home
+- Recovery first: the PR-2-brief docs commit (`54a2d93`) had been pushed to the #101 branch
+  AFTER that PR merged — never reached main. Cherry-picked onto the 2a branch.
+- **PR 2a (#102, 0.14.0)**: tokens v2 promoted to :root, light mode + ambient wash +
+  ThemeToggle + theme-bootstrap script deleted; dark-only via `class="dark"` on both root
+  htmls (all existing `dark:` utilities incl. prose keep firing for light-OS users — verified
+  by light-colorScheme emulation across /app /calendar /series/f1 /privacy); PADDOCK•TRACKER
+  wordmark in app header + drawer (Saira loaded in (app) layout); mobile bottom bar
+  (Home/Calendar/Series→drawer/Settings, safe-area, amber top-rule active marker); footer
+  Landing link + landing-language headings; Clerk appearance → brand at provider, per-page
+  zinc overrides removed; manifest/themeColor/OG bg → #07070a.
+- **Mid-session operator directive** (screenshot + "take full control of the ui/ux
+  structure... surprise me"): (1) install banner must GO — removed entirely (component
+  deleted, audit's prompt-stacking item resolved by removal); (2) major UX change pulled
+  PR 2b forward into the same session.
+- **PR 2b (0.15.0)**: HomeContent rewritten — chyron strip (live takeover / next-session
+  countdown ticking 1s), THIS WEEK 7-day timing rows (mono time column, series rules,
+  TODAY/TOMORROW tags), PADDOCK WIRE news rows, desktop two-column (no tabs), xl:max-w-6xl.
+  **Hydration #418 source 2 fixed structurally**: all time strings render from `now` state
+  seeded by a `serverNow` prop → SSR == first client render at any ISR staleness; device
+  clock + real timezone (GMT → e.g. EEST) swap in post-mount. NextSessionCard deleted.
+  News thumbnails skipped honestly — feed parse exposes no image field.
+- Verified (localhost): tsc + 350 tests green; zero console errors on /app (the #418 is
+  gone); overflow probe 0 at 412px on both PRs (scroll-container-aware predicate); countdown
+  tick verified programmatically (12:56→12:55); marquee motion re-verified after .theme-2
+  removal; series --tint override intact. /settings 500s in dev on main too (Clerk keyless
+  quirk) — check on preview.
+- Open at session-3 close: Vercel preview verify both PRs + operator installed-PWA check
+  → merge order #102 then 2b. Then 2c (series tab bar + surfaces + mobile chart), 2d
+  (settings/onboarding modals — the remaining zinc surfaces).
 
 ### 2026-06-10 — session 2 (same day): PR 1.1 landing parity
 - Operator reviewed live 0.13.0 vs mockup with screenshots; gaps locked: richer moving
