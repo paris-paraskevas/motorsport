@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 import { HomeContent } from '@/components/HomeContent';
-import { JsonLd } from '@/components/JsonLd';
-import { organizationLd, websiteLd } from '@/lib/json-ld';
 import { fetchAggregatedNews } from '@/lib/news';
 import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
@@ -11,12 +9,10 @@ import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: {
-    absolute: 'Paddock Tracker — Live F1, MotoGP, WEC, IndyCar & NASCAR schedule',
-  },
+  title: 'Your paddock — live schedule & news',
   description:
     'Live motorsport schedule and news across F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more — in your local time.',
-  alternates: { canonical: '/' },
+  alternates: { canonical: '/app' },
 };
 
 async function weatherForSessions(
@@ -85,8 +81,6 @@ export default async function Home() {
 
   return (
     <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
-      <JsonLd data={organizationLd()} />
-      <JsonLd data={websiteLd()} />
       <HomeContent
         items={upcoming}
         news={news}

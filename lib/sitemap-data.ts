@@ -21,6 +21,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   const staticUrls: MetadataRoute.Sitemap = [
     { url: SITE_URL },
+    { url: `${SITE_URL}/app` },
     { url: `${SITE_URL}/calendar` },
     { url: `${SITE_URL}/blog` },
     { url: `${SITE_URL}/about` },

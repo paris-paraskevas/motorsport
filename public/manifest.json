@@ -2,7 +2,7 @@
   "name": "Paddock Tracker",
   "short_name": "Paddock",
   "description": "Personal motorsport companion — calendars, standings, drivers and more",
-  "start_url": "/",
+  "start_url": "/app",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",

@@ -57,7 +57,7 @@ export default function Error({
               Try again
             </button>
             <Link
-              href="/"
+              href="/app"
               className="inline-flex items-center gap-2 text-sm font-medium text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-4 py-2 transition-colors duration-(--duration-fast)"
             >
               <Home size={14} />

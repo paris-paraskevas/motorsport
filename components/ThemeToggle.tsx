@@ -27,6 +27,13 @@ export function ThemeToggle() {
     const saved = readSavedTheme();
     setTheme(saved ?? systemTheme());
     setMounted(true);
+    // Re-assert the attribute the layout's pre-hydration bootstrap set: a
+    // hydration-recovery render (e.g. the countdown #418) used to wipe
+    // data-theme off <html>, silently resetting dark-mode users to light.
+    // Effects run after recovery, so this survives it.
+    if (saved) {
+      document.documentElement.dataset.theme = saved;
+    }
   }, []);
 
   function toggle() {

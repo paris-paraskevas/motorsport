@@ -1,5 +1,15 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.13.0 — 2026-06-10
+
+**A new front door.** paddock-tracker.com now opens with a proper landing page — what Paddock covers, the next sessions on track live from the real calendar, and the season in numbers. The app you know didn't change: it now lives at `/app`, one tap behind the "Open the paddock" button, with every series, weekend, and article URL exactly where it was.
+
+**Installed the app on your phone or desktop?** Nothing gets in your way — the installed app opens straight into your dashboard and skips the landing entirely.
+
+**Dark mode now sticks.** A long-standing bug silently reset dark-mode users to light on every reload. Found and fixed at the root.
+
+This is the first step of a larger redesign — the new racing-poster look debuts on the landing page, and the rest of the app follows in upcoming releases.
+
 ## 0.12.15 — 2026-05-22
 
 **Live DTM standings, all three championships.** The DTM Standings tab now renders the 2026 Drivers', Teams', and Manufacturers' championships live from motorsport.com — refreshed after every round. After Red Bull Ring (R1): Maro Engel leads with 44 points ahead of Lucas Auer (37) and Marco Wittmann (31); Mercedes-AMG Team Landgraf tops the Teams table; Mercedes leads BMW, McLaren, and Aston Martin in the Manufacturers' fight. Eight more rounds to come — Zandvoort this weekend, then Lausitzring, Oschersleben, Nürburgring, Sachsenring, and Hockenheim through October.
