@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.13.2 — 2026-06-10
+
+Hot-fix for 0.13.1: every landing marquee shipped dead, and the circuit photos were buried in it.
+
+### Fixed
+
+- **No marquee ever animated** — ticker, series timetable, photo strip. Root cause: `motion-safe:p2-marquee` — Tailwind variants only compose with real utilities, not hand-written CSS classes, so the class generated **no CSS at all**. The static `w-max` tracks (6,400–12,800px wide) inside `overflow-hidden` containers are also exactly why chips/cards appeared cut off on phones. Fix: apply `p2-marquee` / `p2-marquee-rev` directly — the `prefers-reduced-motion` media query in `globals.css` was always the correct off-switch. Footgun documented at the keyframes block. Process note: 0.13.1's "browser-verified" used static screenshots; motion is now verified programmatically (computed `animationName` + transform delta over time) — added to the redesign doc's verification gates.
+
+### Changed
+
+- **Circuit photography moved into the hero as a crossfading slideshow** (`components/landing/CircuitSlideshow.tsx`, replaces the buried `CircuitFeed` marquee section): background photo / foreground caption in the mockup's hero-card style, 5s auto-advance (first slide static under reduced motion), tab-dots, per-slide Wikimedia credit chip preserving CC attribution, first slide `priority`-loaded. Hero right column = slideshow + compact 3-row next-on-track widget.
+- `BigCountdown` digits switched to `clamp()` sizing (2.6rem–6rem viewport-fluid) so the marquee-event band can't overflow narrow phones.
+
 ## 0.13.1 — 2026-06-10
 
 Redesign PR 1.1 — landing parity with the operator's mockup, closing the gaps flagged after 0.13.0 went live (ticker richness, big countdown, moving timetable, circuit photography, discipline cards, perks layout, vivid washes, burger menu).

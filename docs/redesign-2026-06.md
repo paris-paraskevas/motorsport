@@ -82,6 +82,10 @@ PR 1 architecture notes:
 
 - `npm test` + scoped lint + `tsc --noEmit` green.
 - Browser pass at 390 / 820 / 1440 on localhost AND Vercel preview (CLAUDE.md rule).
+- **Motion verified programmatically, not by screenshot** — computed `animationName`
+  ≠ none + transform delta sampled over ~700ms for every animated element. (0.13.1
+  shipped all marquees dead because `motion-safe:` variants don't compose with
+  hand-written CSS classes and static screenshots can't show it.)
 - PWA check on a real installed app (operator) before merge of PR 1.
 - `prefers-reduced-motion`: ticker/counters/marquee get static variants.
 - CHANGELOG.md + RELEASES.md + package.json bump on every merge.

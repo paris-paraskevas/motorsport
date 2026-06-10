@@ -19,7 +19,6 @@ import { MarqueeEvent, type MarqueeEventData } from '@/components/landing/Marque
 import { SeriesMarquee } from '@/components/landing/SeriesMarquee';
 import { StatsBand } from '@/components/landing/StatsBand';
 import { FeatureBlocks } from '@/components/landing/FeatureBlocks';
-import { CircuitFeed } from '@/components/landing/CircuitFeed';
 import { DisciplinesGrid } from '@/components/landing/DisciplinesGrid';
 import { PerksCta } from '@/components/landing/PerksCta';
 import { LandingFooter } from '@/components/landing/LandingFooter';
@@ -180,7 +179,6 @@ export default async function Landing() {
         <SeriesMarquee seriesList={seriesList} />
         <StatsBand stats={stats} />
         <FeatureBlocks />
-        <CircuitFeed />
         <DisciplinesGrid seriesList={seriesList} />
         <PerksCta />
       </main>

@@ -47,7 +47,7 @@ export function TickerBar({ segments }: { segments: TickerSegment[] }) {
     <div className="sticky top-0 z-50 h-9 border-b border-border bg-bg/95 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted backdrop-blur-sm">
       <div className="h-full motion-safe:overflow-hidden motion-reduce:overflow-x-auto">
         <div
-          className="flex h-9 w-max items-center motion-safe:p2-marquee"
+          className="flex h-9 w-max items-center p2-marquee"
           style={{ '--p2-marquee-duration': `${items.length * 7}s` } as React.CSSProperties}
         >
           {track(false)}
