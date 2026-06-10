@@ -674,6 +674,8 @@ Session 3 (same day) — **PR 2a dashboard shell** per the locked brief. Plan:
 - → done: operator merged #102 + #103 same day ("spectacular"; theme mandate extended to the whole app → 2c/2d). Nav corrections received: Series tab must not open the drawer; Settings → Account.
 - → done: **PR 2c-1 (0.16.0)** — `/series` hub page (category-grouped, next session per series, sitemap) + BottomBar v2 (all tabs real destinations, Account label) + drawer Series link. Verified 0 errors / 0 overflow / 350 tests.
 - Captured for next PR (operator): landing nav must persist on scroll — suspect body overflow-x:hidden kills sticky; in IDEAS Inbox.
+- → done: #104 merged by operator; directive "navigation menu and burger bar can go" → **PR 2c-2 (0.17.0)** — drawer/sidebar/burger deleted, one fixed header on all viewports (lg+ inline nav), footer +Blog/Account label. Lint baseline now fully clean (drawer owned the set-state-in-effect error).
+- Next up (operator "lets do this"): **2c-3 series pages** — sticky tab bar replaces the 9-tile grid, standings/results/weekend surfaces to the 2.0 language, mobile chart fix. Then calendar, then 2d account modals.
 
 Active:
 _(awaiting [+Nm] prefixes)_

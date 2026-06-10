@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.17.0 — 2026-06-10
+
+**One navigation, everywhere.** The slide-out menu and its burger button are gone. On phones, the bottom bar is your navigation; on desktop, the header now carries Home, Calendar, Series and Blog directly. Less furniture, more room for the racing.
+
 ## 0.16.0 — 2026-06-10
 
 **A real home for the series.** The Series tab now opens a proper page — all 15 championships grouped by discipline, each showing its next session and date. No more menu popping over your screen.

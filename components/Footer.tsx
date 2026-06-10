@@ -50,8 +50,9 @@ export function Footer() {
                   (marketing) root layout. */}
               <li><FooterLink href="/">Landing</FooterLink></li>
               <li><FooterLink href="/about">About</FooterLink></li>
+              <li><FooterLink href="/blog">Blog</FooterLink></li>
               <li><FooterLink href="/changelog">Release notes</FooterLink></li>
-              <li><FooterLink href="/settings">Settings</FooterLink></li>
+              <li><FooterLink href="/settings">Account</FooterLink></li>
               {/* Re-opens the CookieConsent modal via the open-cookie-consent
                   custom event. Required by EDPB — users must be able to change
                   consent at any time. The /cookies static page stays linked
