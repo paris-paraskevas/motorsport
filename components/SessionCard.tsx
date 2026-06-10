@@ -27,7 +27,11 @@ export function SessionCard({
   return (
     <Link
       href={href}
-      className={`group relative flex items-stretch gap-3 pl-3 pr-3 py-3 rounded-lg bg-surface/40 border border-border/60 mb-1.5 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong ${
+      // min-w-0 is load-bearing: as a GRID item this card otherwise demands
+      // its min-content width (a long nowrap session title), inflating the
+      // whole day-group's track past the viewport — every card in the group
+      // then renders cut off on phones (Le Mans week regression, 0.13.3).
+      className={`group relative flex min-w-0 items-stretch gap-3 overflow-hidden pl-3 pr-3 py-3 rounded-lg bg-surface/40 border border-border/60 mb-1.5 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong ${
         isPast ? 'opacity-45' : ''
       }`}
     >

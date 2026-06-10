@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.13.3 — 2026-06-10
+
+**Fixed: cut-off cards on phones.** During Le Mans week, the dashboard's Upcoming list could push its cards past the right edge of the screen on mobile — one extra-long session name dragged the whole day's cards with it. Long titles now truncate properly and every card fits the screen.
+
 ## 0.13.2 — 2026-06-10
 
 **Now it actually moves.** The landing page's ticker, scrolling timetable and entrance animations shipped frozen in this morning's release — fixed. Phones no longer see cut-off series cards.
