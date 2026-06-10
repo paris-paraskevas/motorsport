@@ -656,6 +656,8 @@ After the 4-PR daytime sweep (0.12.11 → 0.12.13), one more PR landed before be
 - → done: **Redesign PR 1 (#98, merged + live as 0.13.0)** — landing at `/` + workstation at `/app`, design tokens v2 from operator's mockup, dark-only landing, PWA start_url guard, countdown hydration fix. Plan + decisions + session log: `docs/redesign-2026-06.md`.
 - → done: post-merge outsider audit of prod (fresh-visitor walkthrough, mobile + desktop). Two carry-overs logged in the redesign doc: /app hydration source #2 (relative-time labels vs stale ISR), F1 chart/standings disagreement (131 vs 156). Dark-mode persistence confirmed fixed in prod.
 - Won't touch this session: workstation retheme (PR 2), audit fixes beyond the countdown bug, light mode.
+- → done (continued): **0.13.1** landing parity (PR #99 — ticker v2, marquee countdown, series marquee, circuit photos, disciplines/perks v2, burger menu); **0.13.2** motion hot-fix (PR #100 — marquees shipped dead: `motion-safe:` on custom classes generates no CSS; photos → hero slideshow); **0.13.3** dashboard overflow fix (PR #101 — day-grid track inflated by nowrap Le Mans titles; programmatic 412px overflow sweep across all pages now clean).
+- → done: **PR 2 design brief locked with operator** — time-first home (phone AND desktop first-class), sticky series tab bar, bottom bar + drawer, landing theme + PADDOCK•TRACKER wordmark carry-over, dark-only, footer Landing link, anti-AI design principles. Full brief + 2a-2d sequencing in `docs/redesign-2026-06.md`. Next session: build **PR 2a (shell)**.
 
 Active:
 _(awaiting [+Nm] prefixes)_

@@ -78,6 +78,56 @@ PR 1 architecture notes:
 - Version: 0.13.0 (minor — new surface). The old "0.13.0 = drivers.json bulk" roadmap label was
   aspirational, not reserved; sequence continues from whatever ships next.
 
+## PR 2 design brief — dashboard overhaul (locked 2026-06-10 with operator)
+
+**Operator directive:** UX must make sense; UI must be the furthest thing from
+AI-looking (fonts/colors/CSS); the LANDING THEME carries over; the logo stays;
+the dashboard must link back to the landing (footer).
+
+**Anti-AI design principles (what "not AI-looking" means here):**
+- Identity from the landing: Saira Condensed display headers, Geist body,
+  Geist Mono micro-labels/numerals, amber `--brand` on `#07070a`, series-color
+  coding everywhere data appears.
+- Editorial/timing-screen density, not SaaS card soup: hard 1px rules, flush
+  left edges, mono tabular numerals, uppercase micro-labels — racing TV
+  graphics, not dashboard-template aesthetics.
+- Banned: purple/blue gradient washes, glassmorphism, rounded-3xl-everything,
+  emoji as UI, centered-everything layouts, gray-on-gray soft cards.
+- Real data is the decoration (countdowns, weather, series colors, live dots).
+
+**Locked UX decisions (AskUserQuestion 2026-06-10):**
+1. **Home = time-first**: pinned live/next chyron strip → THIS WEEK session
+   cards → NEWS. Desktop: two columns (schedule | news), no tabs. Mobile:
+   stacked, news after schedule. Operator note: must be designed for BOTH
+   phone and desktop from the start — no desktop-as-afterthought.
+2. **Series pages = sticky tab bar**: compact header (series dot + name +
+   season + countdown) with a horizontally scrollable sticky tab strip;
+   9-tile grid retired; content above the fold.
+3. **Mobile nav = bottom bar + drawer**: fixed bottom bar Home / Calendar /
+   Series / Settings (PWA thumb-reach); drawer keeps the full 15-series list;
+   desktop sidebar stays (rethemed).
+4. **Logo**: the landing's `PADDOCK•TRACKER` Saira wordmark (amber dot)
+   replaces the plain text logo in app header + drawer.
+5. **Dashboard → landing access**: "Landing" link in the app Footer (Site
+   column). Dark-only everywhere; ThemeToggle + light CSS retired.
+
+**Sequencing (one PR each, smallest blast radius first):**
+- **2a — shell**: tokens v2 promoted to :root (delete light-mode blocks +
+  ambient radial wash), wordmark, bottom bar, drawer/sidebar retheme, footer
+  (+ Landing link), retire ThemeToggle, Clerk appearance to brand.
+- **2b — home**: time-first layout (live/next strip, THIS WEEK cards, news
+  column), desktop two-column, news thumbnails if feed offers images,
+  first-visit prompt de-stacking (install banner must not fight consent).
+- **2c — series + weekend**: sticky tab bar, content surfaces (standings/
+  results tables, accordions) to the new language, mobile chart fix (hide or
+  rebuild SeasonTrendChart below sm:, top-N legend), washed-amber significance
+  notes re-toned (dark-only makes this trivial).
+- **2d — settings/onboarding/PWA modals**: zinc → tokens, focus traps via the
+  parked ui/dialog, NotifPrefs/EnableNotifications dedupe if cheap.
+
+**Folded-in audit items:** prompt stacking, desktop density, thin light-mode
+contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
+
 ## Verification gates (every redesign PR)
 
 - `npm test` + scoped lint + `tsc --noEmit` green.
