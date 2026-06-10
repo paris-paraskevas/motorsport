@@ -49,12 +49,11 @@ export function NextRaceCountdown({
 
   return (
     <div
-      className="inline-flex items-center gap-3 rounded-full border border-border/60 bg-surface/40 px-3 py-1.5"
+      className="inline-flex flex-col items-start gap-0.5 border-l-2 pl-3"
+      style={color ? { borderColor: color } : undefined}
       aria-label={`Time until ${label}`}
     >
-      <span
-        className="text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint"
-      >
+      <span className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint">
         {label}
       </span>
       {/* suppressHydrationWarning: the server renders wall-clock seconds that
@@ -63,11 +62,12 @@ export function NextRaceCountdown({
           also wiped the pre-hydration data-theme attribute off <html>. The
           text patches silently; the interval takes over immediately after. */}
       <span
-        className="font-mono tabular-nums text-sm text-text tracking-tight"
-        style={color ? { color } : undefined}
+        className="font-mono tabular-nums text-lg md:text-xl font-bold text-text tracking-tight leading-none"
         suppressHydrationWarning
       >
-        {parts.days}d {pad(parts.hours)}h {pad(parts.minutes)}m {pad(parts.seconds)}s
+        {parts.days > 0
+          ? `${parts.days}d ${pad(parts.hours)}:${pad(parts.minutes)}:${pad(parts.seconds)}`
+          : `${pad(parts.hours)}:${pad(parts.minutes)}:${pad(parts.seconds)}`}
       </span>
     </div>
   );

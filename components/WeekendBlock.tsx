@@ -53,7 +53,7 @@ export function WeekendBlock({
             </span>
           )}
           {weekend.previousStartDate && weekend.previousEndDate && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
               rescheduled
             </span>
           )}
@@ -66,7 +66,7 @@ export function WeekendBlock({
             </span>
           )}
           {!weekend.label && weekend.significance && weekend.significance.tier !== 'note' && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
               {weekend.significance.tier}
             </span>
           )}
@@ -82,7 +82,7 @@ export function WeekendBlock({
       )}
       {!subtitle && hasNamedTitle && <div className="mb-2" />}
       {weekend.previousStartDate && weekend.previousEndDate && (
-        <div className="text-[11px] text-amber-300/80 mb-2 tnum font-mono">
+        <div className="text-[11px] text-brand/80 mb-2 tnum font-mono">
           Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}
           {weekend.rescheduleNote && (
             <span className="text-text-faint font-sans"> · {weekend.rescheduleNote}</span>

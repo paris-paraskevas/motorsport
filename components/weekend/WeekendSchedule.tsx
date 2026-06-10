@@ -48,13 +48,13 @@ export function WeekendSchedule({
                           </span>
                         )}
                         {s.significance && s.significance.tier !== 'note' && (
-                          <span className="text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+                          <span className="text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
                             {s.significance.tier}
                           </span>
                         )}
                       </div>
                       {s.significance?.note && (
-                        <div className="text-xs text-amber-200/70 mt-0.5">{s.significance.note}</div>
+                        <div className="text-xs text-brand/70 mt-0.5">{s.significance.note}</div>
                       )}
                     </div>
                     {s.dateOnly ? (

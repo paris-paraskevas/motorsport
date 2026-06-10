@@ -9,7 +9,6 @@ import { withSocialMeta } from '@/lib/seo';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
-import { SeriesBadge } from '@/components/SeriesBadge';
 import { CancelledRoundsBanner } from '@/components/CancelledRounds';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { CalendarTab } from '@/components/tabs/CalendarTab';
@@ -113,7 +112,7 @@ export default async function SeriesPage({
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className="relative max-w-2xl lg:max-w-5xl xl:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
       style={
         {
           '--tint': color,
@@ -127,48 +126,47 @@ export default async function SeriesPage({
           { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
         ])}
       />
-      {/* Series-color wash — subtle, only at top, only on this page */}
+      {/* Hard series-color rule at the very top — the 2.0 accent treatment
+          (flat surfaces; color lives in rules and type, not washes). */}
       <div
-        className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${color}1f 0%, transparent 70%)`,
-        }}
-      />
-      {/* Hairline color accent at the very top */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px -z-10"
-        style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+        className="absolute top-0 left-0 right-0 h-0.5 -z-10"
+        style={{ backgroundColor: color }}
       />
 
-      <header className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <span
-            className="w-2.5 h-2.5 rounded-full bg-tint"
-            style={{ boxShadow: `0 0 14px ${color}` }}
-          />
-          <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-tint">
-            {series.meta.name}
-          </span>
-        </div>
-        <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
-          <span className="tnum font-mono">{series.meta.season}</span>{' '}
-          <span className="text-text-muted font-medium">season</span>
-        </h1>
-        {nextSession && (
-          <div className="mt-4">
-            <NextRaceCountdown
-              target={nextSession.start.toISOString()}
-              label={`Next ${series.meta.name} session`}
-              color={color}
-            />
+      {/* Compact header: rule + display name + season, countdown right.
+          Everything above the tab rail fits one phone viewport with room
+          for content (the 9-tile grid this replaces did not). */}
+      <header className="mb-5">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="flex items-stretch gap-3 min-w-0">
+            <span aria-hidden="true" className="w-1 shrink-0 bg-tint" />
+            <div className="min-w-0">
+              <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text truncate">
+                {series.meta.name}
+                <span className="text-tint">.</span>
+                <span className="sr-only"> {series.meta.season} season</span>
+              </h1>
+              <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted tnum">
+                {series.meta.season} season
+              </div>
+            </div>
           </div>
-        )}
+          {nextSession && (
+            <div className="ml-auto">
+              <NextRaceCountdown
+                target={nextSession.start.toISOString()}
+                label="Next session"
+                color={color}
+              />
+            </div>
+          )}
+        </div>
         <StaleBanner configured={series.configured} stale={series.stale} />
       </header>
 
       <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />
 
-      <SeriesTabs color={color} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
+      <SeriesTabs activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
       <div>{renderTab(activeTab, series)}</div>
     </div>

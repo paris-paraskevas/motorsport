@@ -30,7 +30,6 @@ _(Native non-F1 results + standings, S7 — depends on Supabase storage tables l
 
 ## Inbox (unfiltered, append-only)
 
-- Landing nav must persist on scroll (operator 2026-06-10, "next pr"): LandingNav is sticky top-9 already — suspect html/body overflow-x:hidden kills sticky (same gotcha that made AppShell's header fixed); fix in the next redesign PR.
 - Research live in-race data feeds (sector times, leaderboard, gaps, tyre choices) for F1, MotoGP, WEC, FE, IndyCar.
 - Reverse-engineer fiaformulae.com / motogp.com / nascar.com XHR endpoints to see if unsigned JSON can replace Playwright.
 - Decide Sandbox/Playwright vs third-party aggregator vs curation-first for JS-rendered official sites.

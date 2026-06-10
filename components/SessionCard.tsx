@@ -54,7 +54,7 @@ export function SessionCard({
           )}
           {session.significance && (
             <span
-              className="text-[10px] uppercase tracking-[0.12em] px-2 py-0.5 rounded-full font-semibold bg-amber-500/10 text-amber-300"
+              className="font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 border border-brand/40 text-brand font-semibold"
             >
               {session.significance.tier}
             </span>
@@ -79,7 +79,7 @@ export function SessionCard({
           )}
         </div>
         {session.significance?.note && (
-          <div className="text-xs text-amber-200/70 mt-1">{session.significance.note}</div>
+          <div className="text-xs text-brand/70 mt-1">{session.significance.note}</div>
         )}
         {weather && w && !isPast && (
           <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] text-text-muted">
