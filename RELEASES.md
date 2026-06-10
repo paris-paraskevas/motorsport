@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.16.0 — 2026-06-10
+
+**A real home for the series.** The Series tab now opens a proper page — all 15 championships grouped by discipline, each showing its next session and date. No more menu popping over your screen.
+
+**Settings is now Account.** Same place in the bottom bar, clearer name.
+
 ## 0.15.0 — 2026-06-10
 
 **Your home page now works like a broadcast.** A live strip across the top shows what's on track right now — or the next session with a ticking countdown, venue and weather. Below it, THIS WEEK lists every session for the next seven days as a clean timetable, with the news wire alongside it on bigger screens. The News/Upcoming tabs are gone — everything is on one screen.

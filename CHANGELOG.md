@@ -4,7 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.15.0 — 2026-06-10
+## 0.16.0 — 2026-06-10
+
+Redesign PR 2c-1 — series hub + bottom-bar v2. Operator feedback on 0.15.0: a nav tab must not open a menu (Series opened the drawer), and Settings reads better as Account.
+
+### Added
+
+- **`/series` hub page** (`app/(app)/series/page.tsx`, server component, ISR 300) — the app's first series index. Category-grouped timing rows (Open-Wheel / Endurance / GT / Motorcycles / Rally / Stock Cars): series-color rule, name, `Next · <session>` mono microline, day-level date right. Day-level labels render fully server-side — zero hydration surface. Series with nothing scheduled show an honest "No upcoming sessions —". Two-column on lg+. Added to the sitemap (`lib/sitemap-data.ts`).
+- `components/SectionHead.tsx` — the Saira section header extracted from HomeContent now that the hub is a real second consumer.
+
+### Changed
+
+- **BottomBar v2** (`components/BottomBar.tsx`): every tab is a real destination. Series → `/series` (active across `/series/*`); Settings tab relabeled **Account** (`CircleUser` icon, still `/settings` — URL unchanged per the redesign's routing decision). Drawer-trigger props removed; the burger button remains the drawer's home.
+- Drawer/sidebar nav gains a Series link (exact-match active; per-series links own their own states).
 
 Redesign PR 2b — time-first home (the locked brief's biggest piece, pulled forward by operator directive: "take full control of the ui/ux structure"). The dashboard becomes a racing-broadcast workstation: chyron → schedule → wire, no tabs.
 

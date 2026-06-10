@@ -105,6 +105,8 @@ export function AppShell({
         <nav className="space-y-0.5">
           <DrawerLink href="/app" active={pathname === '/app'} label="Home" />
           <DrawerLink href="/calendar" active={pathname === '/calendar'} label="Calendar" />
+          {/* Exact match only — per-series links below own /series/[slug]. */}
+          <DrawerLink href="/series" active={pathname === '/series'} label="Series" />
           <DrawerLink href="/blog" active={pathname.startsWith('/blog')} label="Blog" />
 
           {groupSeriesByCategory(seriesList).map(group => (
@@ -135,7 +137,7 @@ export function AppShell({
         <Footer />
       </main>
 
-      <BottomBar onSeriesClick={() => setOpen(true)} seriesOpen={open} />
+      <BottomBar />
 
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />

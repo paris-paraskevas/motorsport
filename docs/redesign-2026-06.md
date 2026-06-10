@@ -172,6 +172,20 @@ contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
 - Open at session-3 close: Vercel preview verify both PRs + operator installed-PWA check
   → merge order #102 then 2b. Then 2c (series tab bar + surfaces + mobile chart), 2d
   (settings/onboarding modals — the remaining zinc surfaces).
+- **Both merged by operator** (same day). Verdict on 2b: "spectacular... the theme you
+  have chosen is amazing. this needs to be kept throughout the whole app" → 2c/2d carry
+  the mandate. Two nav corrections: Series tab must NOT open the drawer; Settings → Account.
+- **PR 2c-1 (0.16.0)**: `/series` hub page (first-ever series index — category-grouped
+  timing rows, next session per series, day-level dates = zero hydration surface, ISR 300,
+  sitemap entry) + BottomBar v2 (all four tabs are real destinations; Series → /series
+  active across /series/*; Account label + CircleUser icon, URL stays /settings) + drawer
+  Series link + SectionHead extracted (real second consumer). Verified: tsc/350 tests/lint,
+  0 console errors, overflow 0 @390+412, two-col hub at 1440, aria-current on active tab.
+- Discovered en route: Vercel previews are SSO-protected (401 anonymous) — Claude can't
+  browser them; operator does preview passes (memory: project-paddock-preview-protection).
+- Still queued: 2c-2 series pages (sticky tab bar, surfaces, mobile chart fix), 2d
+  settings/onboarding modals, landing nav sticky-on-scroll fix (operator, IDEAS Inbox —
+  suspect body overflow-x:hidden kills sticky).
 
 ### 2026-06-10 — session 2 (same day): PR 1.1 landing parity
 - Operator reviewed live 0.13.0 vs mockup with screenshots; gaps locked: richer moving

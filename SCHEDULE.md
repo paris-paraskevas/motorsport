@@ -671,6 +671,9 @@ Session 3 (same day) — **PR 2a dashboard shell** per the locked brief. Plan:
 - → done: 2a shipped as **PR #102 (0.14.0)**, localhost gates green (light-OS emulation sweep, overflow 0 @412, marquee motion re-verified, tint override intact). Preview verify pending.
 - **Mid-session operator directive** (overrides the won't-touch line): install banner GOES (removed, component deleted — rode the 2a branch) + "take full control of the ui/ux structure... surprise me" → **PR 2b pulled forward into this session**.
 - → done: **PR 2b (0.15.0)** time-first home — chyron (live takeover / ticking countdown), THIS WEEK timing rows, PADDOCK WIRE, two-column desktop, tabs retired, hydration #418 source-2 fixed structurally (serverNow prop), device-local times with real tz label. Zero console errors on /app. NextSessionCard deleted.
+- → done: operator merged #102 + #103 same day ("spectacular"; theme mandate extended to the whole app → 2c/2d). Nav corrections received: Series tab must not open the drawer; Settings → Account.
+- → done: **PR 2c-1 (0.16.0)** — `/series` hub page (category-grouped, next session per series, sitemap) + BottomBar v2 (all tabs real destinations, Account label) + drawer Series link. Verified 0 errors / 0 overflow / 350 tests.
+- Captured for next PR (operator): landing nav must persist on scroll — suspect body overflow-x:hidden kills sticky; in IDEAS Inbox.
 
 Active:
 _(awaiting [+Nm] prefixes)_
