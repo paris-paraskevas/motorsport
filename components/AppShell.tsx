@@ -10,7 +10,6 @@ import { Footer } from './Footer';
 import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
-import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { PushSoundPlayer } from './PushSoundPlayer';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
@@ -132,7 +131,6 @@ export function AppShell({
           pt-14 on mobile clears the fixed header; bottom padding clears the
           fixed bottom bar (h-14 + device safe area). */}
       <main className="lg:ml-72 min-h-screen flex flex-col pt-14 lg:pt-0 pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
-        <PWAInstallPrompt />
         <div className="flex-1">{children}</div>
         <Footer />
       </main>

@@ -21,6 +21,10 @@ Redesign PR 2a — dashboard shell on the Paddock 2.0 language (`docs/redesign-2
 - PWA `manifest.json` `background_color`/`theme_color`, the (app) viewport `themeColor`, and the OG-image background updated `#0a0a0a` → `#07070a`.
 - Process: cherry-picked the stranded `54a2d93` docs commit (PR 2 design brief) onto this branch — it was pushed to the #101 branch after that PR merged and never reached `main`.
 
+### Removed
+
+- **PWA install banner** (`components/PWAInstallPrompt.tsx` deleted, render removed from `AppShell`) — operator-directed feature removal. It auto-stacked above the dashboard on first visit (fighting the consent modal for the first viewport, an audit finding). The PWA stays installable from the browser menu; a deliberate install entry point can return in the settings surface (PR 2d) if wanted.
+
 ## 0.13.3 — 2026-06-10
 
 ### Fixed
