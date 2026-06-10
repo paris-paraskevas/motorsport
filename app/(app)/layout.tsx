@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { Saira_Condensed } from 'next/font/google';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -13,6 +14,16 @@ import '../globals.css';
 
 const GA_MEASUREMENT_ID = 'G-DDMJ2NMBWC';
 const ADSENSE_CLIENT_ID = 'ca-pub-3573600995951624';
+
+// Display face for the Paddock 2.0 language — self-hosted at build time by
+// next/font (no runtime Google request; GDPR-clean). Same face the landing
+// loads; used by the wordmark and font-display utilities.
+const saira = Saira_Condensed({
+  subsets: ['latin'],
+  weight: ['600', '700', '800', '900'],
+  variable: '--font-saira',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -48,7 +59,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0a',
+  themeColor: '#07070a',
   width: 'device-width',
   initialScale: 1,
 };
@@ -68,24 +79,20 @@ export default async function RootLayout({
       signUpFallbackRedirectUrl="/app"
       appearance={{
         variables: {
-          colorBackground: '#0a0a0a',
-          colorText: '#fafafa',
-          colorPrimary: '#fafafa',
-          colorTextOnPrimaryBackground: '#0a0a0a',
-          colorInputBackground: '#18181b',
-          colorInputText: '#fafafa',
+          colorBackground: '#14141a',
+          colorText: '#f5f5f7',
+          colorPrimary: '#ffb400',
+          colorTextOnPrimaryBackground: '#07070a',
+          colorInputBackground: '#1a1a22',
+          colorInputText: '#f5f5f7',
         },
       }}
     >
-      <html lang="en" className={`${GeistSans.className} ${GeistMono.variable}`}>
+      <html
+        lang="en"
+        className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
+      >
         <body className="min-h-screen bg-bg text-text">
-          {/* Theme bootstrap — sync apply saved preference before paint to prevent FOUC.
-              Runs as the first body child so [data-theme] is set before AppShell renders. */}
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `(function(){try{var t=localStorage.getItem('paddock-theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t;}}catch(e){}})();`,
-            }}
-          />
           <Script id="consent-default" strategy="beforeInteractive">
             {`
               window.dataLayer = window.dataLayer || [];

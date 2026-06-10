@@ -9,7 +9,7 @@ export default async function OpengraphImage() {
     (
       <div
         style={{
-          background: '#0a0a0a',
+          background: '#07070a',
           width: '100%',
           height: '100%',
           display: 'flex',

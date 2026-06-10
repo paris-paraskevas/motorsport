@@ -1,5 +1,15 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.14.0 — 2026-06-10
+
+**The app now wears the landing page's colors.** The dashboard, menus and footer moved to the new dark racing-broadcast look — near-black surfaces, amber accents, and the PADDOCK•TRACKER wordmark in the header.
+
+**One theme, no toggle.** Paddock is dark-only everywhere now; the light/dark switch is gone. A proper light theme may return later as its own project.
+
+**Easier one-handed use on phones.** A new bottom bar puts Home, Calendar, Series and Settings within thumb's reach — especially handy in the installed app. The footer also gained a link back to the landing page.
+
+**The install pop-up is gone.** The "Install Paddock Tracker as an app" banner no longer takes over the top of your dashboard. You can still install Paddock any time from your browser's menu.
+
 ## 0.13.3 — 2026-06-10
 
 **Fixed: cut-off cards on phones.** During Le Mans week, the dashboard's Upcoming list could push its cards past the right edge of the screen on mobile — one extra-long session name dragged the whole day's cards with it. Long titles now truncate properly and every card fits the screen.

@@ -67,7 +67,7 @@ export default function MarketingLayout({
   return (
     <html
       lang="en"
-      className={`theme-2 ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
+      className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
     >
       <body className="min-h-screen bg-bg text-text">
         {children}

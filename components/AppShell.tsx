@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
+import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
 import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
-import { PWAInstallPrompt } from './PWAInstallPrompt';
 import { PushSoundPlayer } from './PushSoundPlayer';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
@@ -54,9 +54,9 @@ export function AppShell({
           </button>
           <Link
             href="/app"
-            className="ml-2 text-text font-semibold text-base tracking-tight"
+            className="ml-2 font-display text-base font-extrabold uppercase tracking-wide text-text"
           >
-            Paddock Tracker
+            Paddock<span className="text-brand">•</span>Tracker
           </Link>
           <HeaderUtils className="ml-auto" seriesList={seriesList} />
         </div>
@@ -80,7 +80,7 @@ export function AppShell({
 
       {/* Drawer / Sidebar — slides on mobile, permanent on lg+ */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-surface-elevated border-r border-border p-4 overflow-y-auto
+        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-surface-elevated border-r border-border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] overflow-y-auto
                     transition-transform duration-200 ease-out
                     lg:translate-x-0
                     ${open ? 'translate-x-0' : '-translate-x-full'}`}
@@ -88,9 +88,9 @@ export function AppShell({
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/app"
-            className="text-text font-semibold text-lg tracking-tight"
+            className="font-display text-lg font-extrabold uppercase tracking-wide text-text"
           >
-            Paddock Tracker
+            Paddock<span className="text-brand">•</span>Tracker
           </Link>
           <button
             type="button"
@@ -128,12 +128,14 @@ export function AppShell({
       </aside>
 
       {/* Main content — shifted right on lg+ for the permanent sidebar.
-          pt-14 on mobile to clear the fixed header. */}
-      <main className="lg:ml-72 min-h-screen flex flex-col pt-14 lg:pt-0">
-        <PWAInstallPrompt />
+          pt-14 on mobile clears the fixed header; bottom padding clears the
+          fixed bottom bar (h-14 + device safe area). */}
+      <main className="lg:ml-72 min-h-screen flex flex-col pt-14 lg:pt-0 pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
         <div className="flex-1">{children}</div>
         <Footer />
       </main>
+
+      <BottomBar onSeriesClick={() => setOpen(true)} seriesOpen={open} />
 
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
@@ -176,7 +178,7 @@ function DrawerLink({
 
 function DrawerLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="pt-5 pb-1 px-3 text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+    <div className="pt-5 pb-1 px-3 font-mono text-[10px] uppercase tracking-[0.2em] text-text-faint font-semibold">
       {children}
     </div>
   );
