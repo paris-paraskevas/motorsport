@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { formatRelative } from '@/lib/date';
 import { cleanSessionTitle } from './clean-title';
+import { CircuitSlideshow } from './CircuitSlideshow';
 
 export interface HeroSession {
   seriesSlug: string;
@@ -20,7 +21,7 @@ export interface HeroSession {
 // mockup's stock photo), and the NEXT UP countdown strip underneath.
 export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) {
   const next = sessions[0];
-  const widget = sessions.slice(0, 5);
+  const widget = sessions.slice(0, 3);
 
   return (
     <section className="relative overflow-hidden">
@@ -71,8 +72,11 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
           </div>
         </div>
 
-        {/* Live next-sessions widget — real data, the product selling itself. */}
-        <div className="p2-fade-up rounded-2xl border border-border bg-surface p-5">
+        {/* Right column: circuit photography slideshow (the mockup's hero
+            photo card) + the live next-sessions widget below it. */}
+        <div className="p2-fade-up space-y-4">
+          <CircuitSlideshow />
+          <div className="rounded-2xl border border-border bg-surface p-5">
           <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">
             Next on track
           </p>
@@ -104,6 +108,7 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
               </li>
             ))}
           </ol>
+          </div>
         </div>
       </div>
 

@@ -52,7 +52,7 @@ export function SeriesMarquee({ seriesList }: { seriesList: SeriesMeta[] }) {
         {rows.map((row, i) => (
           <div key={i} className="motion-safe:overflow-hidden motion-reduce:overflow-x-auto">
             <div
-              className={`flex w-max gap-4 ${i === 1 ? 'motion-safe:p2-marquee-rev' : 'motion-safe:p2-marquee'}`}
+              className={`flex w-max gap-4 ${i === 1 ? 'p2-marquee-rev' : 'p2-marquee'}`}
               style={{ '--p2-marquee-duration': speeds[i] } as React.CSSProperties}
             >
               <div className="flex shrink-0 gap-4 pr-4">{row.map(s => chip(s, `a-${s.slug}`))}</div>

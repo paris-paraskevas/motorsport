@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.13.2 — 2026-06-10
+
+**Now it actually moves.** The landing page's ticker, scrolling timetable and entrance animations shipped frozen in this morning's release — fixed. Phones no longer see cut-off series cards.
+
+**Circuit photography, front and centre.** The famous-circuits gallery moved from the bottom of the page into the hero as a slideshow — Spa, Monaco, Le Mans, the Nordschleife, Indianapolis, Talladega and Rally Finland crossfade with their captions, photographer credit on every frame.
+
 ## 0.13.1 — 2026-06-10
 
 **The landing page got its broadcast energy.** A live ticker now runs across the top with what's next on track, session times in GMT, the weather at the next venue, and the latest headlines. Below the hero, a marquee-event countdown ticks down to the biggest race on the calendar — right now, the 24 Hours of Le Mans.

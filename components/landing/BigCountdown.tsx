@@ -52,11 +52,11 @@ export function BigCountdown({ target, label }: { target: string; label: string 
         <span key={unit} className="flex items-baseline gap-1">
           <span
             suppressHydrationWarning
-            className="font-display text-6xl font-extrabold tabular-nums tracking-tight text-text sm:text-7xl lg:text-8xl"
+            className="font-display text-[clamp(2.6rem,11vw,6rem)] font-extrabold tabular-nums tracking-tight text-text"
           >
             {value}
           </span>
-          <span className="font-display text-2xl font-bold uppercase text-text-faint sm:text-3xl">
+          <span className="font-display text-[clamp(1.2rem,4vw,2.2rem)] font-bold uppercase text-text-faint">
             {unit}
           </span>
         </span>

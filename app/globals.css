@@ -369,7 +369,11 @@ body {
 
 /* ── Paddock 2.0 landing motion ──
    Marquee for the broadcast ticker; entrance fades for hero/sections.
-   All of it collapses to static under prefers-reduced-motion. */
+   All of it collapses to static under prefers-reduced-motion.
+   NOTE: apply these classes DIRECTLY — `motion-safe:` variants only work on
+   Tailwind utilities, not hand-written classes (a `motion-safe:p2-marquee`
+   class generates no CSS at all; this shipped broken once, 0.13.1). The
+   reduced-motion media query below is the off-switch. */
 @keyframes p2-marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
