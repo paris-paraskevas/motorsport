@@ -1,5 +1,15 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.19.0 — 2026-06-10
+
+**Full F1 results, finally.** A data-feed bug was silently cutting the season short — Monaco was missing from the results and the points chart, and Canada showed only half the field. Fixed: every race now lists all 22 finishers and the chart runs to the latest round, with totals that match the standings.
+
+**The chart speaks F1 now.** Trend lines wear constructor colors — Ferrari red, McLaren papaya, Mercedes teal, white for Cadillac — with teammates sharing a color, second car dashed, just like the broadcast graphics.
+
+**Sharing looks right.** Posting paddock-tracker.com on Instagram or anywhere else now shows our crossed-flags mark, not a generic chequered square. (Apps cache previews — re-share once to refresh.)
+
+**Leaner series pages.** Standings and results tables joined the dark timing-screen look, pages start rendering before slow data arrives, and the Rules tab — which never had real content — is gone, its links folded into About. The logo now takes you to the landing page.
+
 ## 0.18.0 — 2026-06-10
 
 **Series pages joined the new look.** The big tile grid is gone — each series now opens with its name in racing type, a live countdown to its next session, and a slim tab bar that sticks to the top as you scroll. Content starts immediately instead of below a wall of buttons.
