@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.14.0 — 2026-06-10
+
+Redesign PR 2a — dashboard shell on the Paddock 2.0 language (`docs/redesign-2026-06.md` PR 2 brief). Tokens v2 promoted site-wide; the workstation chrome adopts the landing's identity.
+
+### Changed
+
+- **Tokens v2 promoted to `:root`** (`app/globals.css`): the `.theme-2` scope's chassis values (`--bg #07070a`, `--surface #14141a`, brand-amber `--tint`, `--live #ff2030`, 2.0 motion durations) are now the only theme. Light-mode chassis, `.dark`/`[data-theme]` override blocks, the `prefers-color-scheme` media block, and the 3-layer ambient radial wash deleted. `.theme-2` removed from the marketing `<html>`.
+- **Dark-only via `class="dark"`** on both root `<html>` elements. The Tailwind `dark` custom-variant now matches only `.dark` — every existing `dark:` utility (incl. `prose dark:prose-invert` on legal/blog pages and the shadcn primitives) fires unconditionally instead of tracking the OS setting. `color-scheme: dark` on `:root` keeps native form controls/scrollbars consistent.
+- **ThemeToggle retired** (`components/ThemeToggle.tsx` deleted, usage removed from `HeaderUtils`); the pre-hydration theme-bootstrap script and `paddock-theme` localStorage read removed from the (app) layout. Light mode returns only as a deliberate future project (decision log, redesign doc).
+- **PADDOCK•TRACKER wordmark** (Saira Condensed, amber dot) replaces the plain-text logo in the app header and drawer; `Saira_Condensed` now loaded by the (app) root layout via `next/font` (self-hosted, same config as marketing).
+- **Mobile bottom bar** — new `components/BottomBar.tsx`: fixed Home / Calendar / Series / Settings nav (h-14 + safe-area inset, timing-screen amber top-rule active marker, mono micro-labels). Series opens the drawer, which keeps the full 15-series list. `<main>` gets matching bottom padding; drawer gets safe-area bottom padding.
+- **Footer**: "Landing" link added to the Site column (full page load into the marketing layout by design); column headings + brand strip aligned to the landing language (mono uppercase tracking, display wordmark).
+- **Clerk appearance → brand** at the ClerkProvider (`colorPrimary #ffb400`, surface/input colors from tokens v2); per-page zinc-hardcoded `variables` blocks on sign-in/sign-up removed so the provider cascades, card element rethemed to `bg-surface border-border`.
+- **Buy-me-a-coffee button** rethemed from `amber-300`/zinc literals to `bg-brand`/`text-black`.
+- PWA `manifest.json` `background_color`/`theme_color`, the (app) viewport `themeColor`, and the OG-image background updated `#0a0a0a` → `#07070a`.
+- Process: cherry-picked the stranded `54a2d93` docs commit (PR 2 design brief) onto this branch — it was pushed to the #101 branch after that PR merged and never reached `main`.
+
 ## 0.13.3 — 2026-06-10
 
 ### Fixed

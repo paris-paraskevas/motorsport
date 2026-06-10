@@ -16,7 +16,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 function ColumnHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text mb-3">
+    <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint mb-3">
       {children}
     </h2>
   );
@@ -30,7 +30,9 @@ export function Footer() {
         {/* Brand strip — name + short tagline. Sets context above the column
             grid so the footer reads as a real section, not a row of links. */}
         <div className="mb-8 max-w-md">
-          <div className="text-text font-semibold text-base">{SITE_TITLE}</div>
+          <div className="font-display text-base font-extrabold uppercase tracking-wide text-text">
+            Paddock<span className="text-brand">•</span>Tracker
+          </div>
           <p className="mt-1 text-text-muted text-xs leading-relaxed">
             {SITE_DESCRIPTION}
           </p>
@@ -44,6 +46,9 @@ export function Footer() {
           <div>
             <ColumnHeading>Site</ColumnHeading>
             <ul className="space-y-0">
+              {/* Full page load by design — the landing lives in the
+                  (marketing) root layout. */}
+              <li><FooterLink href="/">Landing</FooterLink></li>
               <li><FooterLink href="/about">About</FooterLink></li>
               <li><FooterLink href="/changelog">Release notes</FooterLink></li>
               <li><FooterLink href="/settings">Settings</FooterLink></li>
