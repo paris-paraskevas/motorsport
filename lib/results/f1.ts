@@ -3,13 +3,66 @@ import type { RaceResult, RaceResultEntry } from '@/lib/types';
 export type { RaceResult, RaceResultEntry };
 
 const LAST_RACE_URL = 'https://api.jolpi.ca/ergast/f1/current/last/results.json';
-const SEASON_RESULTS_URL = 'https://api.jolpi.ca/ergast/f1/current/results.json?limit=1000';
+// NO limit param games: Jolpica clamps `limit` to 100 regardless of what you
+// ask for (probed 2026-06-10: ?limit=1000 returns `"limit": "100"`). A season
+// of 22-car grids blows past that by round 5, silently dropping every later
+// race and truncating the page-boundary race mid-field — which shipped as
+// "chart stops at Canada with 12 cars" while standings (a different, smaller
+// endpoint) showed all rounds. Fetch in real pages and merge.
+const SEASON_RESULTS_URL = 'https://api.jolpi.ca/ergast/f1/current/results.json';
 // Jolpica's sprint endpoint uses a different path AND field name: `.../sprint.json`
 // returns Race objects with `SprintResults[]` instead of `Results[]`. Sprint points
 // are awarded P1-P8 = 8-7-6-5-4-3-2-1. Without folding these into the season
 // trend, the chart understates every sprint-eligible driver by their sprint
 // haul (e.g. 2026 China + Miami sprints = 72 pts spread across the top 8).
-const SEASON_SPRINTS_URL = 'https://api.jolpi.ca/ergast/f1/current/sprint.json?limit=1000';
+const SEASON_SPRINTS_URL = 'https://api.jolpi.ca/ergast/f1/current/sprint.json';
+
+const PAGE_SIZE = 100;
+// 24 rounds × 22 cars = 528 race entries; sprints far fewer. 12 pages is a
+// generous runaway stop, not a coverage limit.
+const MAX_PAGES = 12;
+
+interface PagedPayload extends RacePayload {
+  MRData?: RacePayload['MRData'] & { total?: string };
+}
+
+async function fetchAllPages(baseUrl: string): Promise<RawRace[]> {
+  const all: RawRace[] = [];
+  let offset = 0;
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const res = await fetch(`${baseUrl}?limit=${PAGE_SIZE}&offset=${offset}`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) break;
+    const json = (await res.json()) as PagedPayload;
+    const races = json?.MRData?.RaceTable?.Races;
+    if (!Array.isArray(races) || races.length === 0) break;
+    all.push(...races);
+    const total = Number(json?.MRData?.total);
+    offset += PAGE_SIZE;
+    if (!Number.isFinite(total) || offset >= total) break;
+  }
+  return all;
+}
+
+// A page boundary can split one race across two responses (Canada arrived as
+// 12 entries on page 1 + 10 on page 2). Re-assemble by round.
+function mergeRacesByRound(
+  races: RawRace[],
+  field: 'Results' | 'SprintResults',
+): RawRace[] {
+  const byRound = new Map<string, RawRace>();
+  for (const r of races) {
+    const key = String(r?.round ?? '');
+    const existing = byRound.get(key);
+    if (!existing) {
+      byRound.set(key, { ...r, [field]: [...(r[field] ?? [])] });
+    } else {
+      (existing[field] as RawResult[]).push(...(r[field] ?? []));
+    }
+  }
+  return [...byRound.values()];
+}
 
 interface RawDriver {
   givenName?: string;
@@ -113,17 +166,13 @@ export async function fetchF1LastRace(): Promise<RaceResult | null> {
 
 export async function fetchF1SeasonResults(): Promise<RaceResult[]> {
   try {
-    const res = await fetch(SEASON_RESULTS_URL, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    const json = (await res.json()) as RacePayload;
-    const races = json?.MRData?.RaceTable?.Races;
-    if (!Array.isArray(races)) return [];
+    const races = mergeRacesByRound(await fetchAllPages(SEASON_RESULTS_URL), 'Results');
     const results: RaceResult[] = [];
     for (const r of races) {
       const parsed = parseRace(r);
       if (parsed) results.push(parsed);
     }
-    return results;
+    return results.sort((a, b) => a.round - b.round);
   } catch {
     return [];
   }
@@ -135,17 +184,13 @@ export async function fetchF1SeasonResults(): Promise<RaceResult[]> {
 // totals without adding extra x-axis ticks to the trend chart.
 export async function fetchF1SeasonSprints(): Promise<RaceResult[]> {
   try {
-    const res = await fetch(SEASON_SPRINTS_URL, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    const json = (await res.json()) as RacePayload;
-    const races = json?.MRData?.RaceTable?.Races;
-    if (!Array.isArray(races)) return [];
+    const races = mergeRacesByRound(await fetchAllPages(SEASON_SPRINTS_URL), 'SprintResults');
     const results: RaceResult[] = [];
     for (const r of races) {
       const parsed = parseRace(r, 'SprintResults');
       if (parsed) results.push(parsed);
     }
-    return results;
+    return results.sort((a, b) => a.round - b.round);
   } catch {
     return [];
   }

@@ -36,8 +36,10 @@ export function AppShell({
       {/* Fixed (not sticky — overflow-x: hidden on body kills sticky) */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated/85 backdrop-blur-xl border-b border-border pt-[env(safe-area-inset-top)]">
         <div className="max-w-2xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 md:px-4 h-14 flex items-center gap-6">
+          {/* Wordmark → landing (operator call). Installed-PWA users bounce
+              straight back via the standalone guard on /. */}
           <Link
-            href="/app"
+            href="/"
             className="font-display text-base font-extrabold uppercase tracking-wide text-text"
           >
             Paddock<span className="text-brand">•</span>Tracker

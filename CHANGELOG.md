@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.19.0 — 2026-06-10
+
+Redesign PR 2c-4 + operator batch: tab surfaces on the timing-screen language, Rules retired, streamed tabs, and the Jolpica pagination bug that was silently truncating F1 results.
+
+### Fixed
+
+- **F1 results truncation — one bug, four symptoms** (`lib/results/f1.ts`): Jolpica clamps `limit` to 100 no matter what you request (probed: `?limit=1000` → `"limit": "100"`). A season of 22-car grids passes 100 entries during round 5, so the season feed silently dropped every later race and cut the page-boundary race mid-field. That shipped as: chart x-axis stuck at Canada with Monaco missing; Canada showing only 12 cars (read as "only points scorers"); chart totals disagreeing with standings (ANT 131 vs 156 — the cross-series invariant violation flagged 2026-06-10). Fix: real pagination (`limit=100&offset=N` until `total`) + per-round merge for races split across page boundaries. Full 22-car classifications now render for every race. Sprint feed gets the same treatment.
+- **Instagram/social share card** (`app/opengraph-image.tsx`): the generic red/white chequer grid replaced by the real crossed-flags app icon + PADDOCK•TRACKER wordmark on `#07070a`. Scrapers cache link previews — re-share after deploy to refresh.
+
+### Changed
+
+- **Tab surfaces flattened to the 2.0 language** (all `components/tabs/*`): rounded-card washes → hard `border-y` rules, Saira sub-heads, mono code chips; standings tables get mono columns with P1 in brand amber. Champions decade accordions flattened.
+- **Rules tab retired** (decision: Rules vs About — Rules lost): no series ever shipped a curated `rules.md`, so the tab rendered a placeholder + two external links everywhere. About inherits the "Further reading" links; `?tab=rules` falls back to calendar. `components/tabs/RulesTab.tsx` deleted.
+- **F1 trend chart lines in constructor colors** (2026 grid, keyed by Jolpica names) — teammates share the color, second car dashed (broadcast convention). Cadillac → white (black-to-white monochrome livery), Audi → Audi Red `#F50537` (titanium silver would collide with Haas grey on the dark chart); neither team publishes official hexes (web-checked per operator instruction). Non-F1 series keep the rank palette.
+- **Wordmark → landing**: the header PADDOCK•TRACKER now links to `/` (installed-PWA users bounce back via the standalone guard).
+- Perf for results/standings tabs: recharts loads `ssr: false` behind `components/LazySeasonTrendChart.tsx` (off the critical path) and the tab body streams behind `Suspense` — header + rail paint before slow upstream fetches resolve.
+
 ## 0.18.0 — 2026-06-10
 
 Redesign PR 2c-3 — series pages: sticky tab rail, compact header, chart fix. Plus the CSS keystone that un-breaks `position: sticky` site-wide.

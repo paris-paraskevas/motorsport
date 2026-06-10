@@ -81,7 +81,7 @@ function officialSiteLabel(url: string): string {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-xl bg-surface/40 border border-border/60 p-6 text-center">
+    <div className="border border-border bg-surface/40 p-6 text-center">
       <div className="text-text-muted text-sm">{message}</div>
     </div>
   );
@@ -95,8 +95,8 @@ function DriversTable({
   heading?: string;
 }) {
   return (
-    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         {heading}
       </h2>
       <ul className="divide-y divide-border/60">
@@ -105,7 +105,11 @@ function DriversTable({
             key={`${d.position}-${d.driverName}`}
             className="flex items-baseline gap-3 py-2"
           >
-            <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+            <span
+              className={`w-6 text-sm font-mono tabular-nums text-right ${
+                d.position === 1 ? 'text-brand font-bold' : 'text-text-faint'
+              }`}
+            >
               {d.position}
             </span>
             <div className="flex-1 min-w-0">
@@ -114,7 +118,7 @@ function DriversTable({
                   {d.driverName}
                 </span>
                 {d.driverCode ? (
-                  <span className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint bg-border/60 px-1.5 py-0.5 rounded font-mono">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
                     {d.driverCode}
                   </span>
                 ) : null}
@@ -123,7 +127,7 @@ function DriversTable({
                 <div className="text-text-muted text-xs truncate">{d.team}</div>
               ) : null}
             </div>
-            <span className="text-text text-sm font-mono tabular-nums text-right w-14">
+            <span className="text-text text-sm font-mono font-semibold tabular-nums text-right w-14">
               {d.points}
             </span>
             <span className="text-text-faint text-[11px] font-mono tabular-nums text-right w-8">
@@ -144,20 +148,24 @@ function ConstructorsTable({
   heading?: string;
 }) {
   return (
-    <section className="rounded-xl bg-surface/40 border border-border/60 p-4">
-      <h2 className="text-text-muted text-sm uppercase tracking-[0.14em] font-semibold mb-3">
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         {heading}
       </h2>
       <ul className="divide-y divide-border/60">
         {constructors.map(c => (
           <li key={`${c.position}-${c.name}`} className="flex items-baseline gap-3 py-2">
-            <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
+            <span
+              className={`w-6 text-sm font-mono tabular-nums text-right ${
+                c.position === 1 ? 'text-brand font-bold' : 'text-text-faint'
+              }`}
+            >
               {c.position}
             </span>
             <div className="flex-1 min-w-0">
               <span className="text-text text-sm font-medium truncate">{c.name}</span>
             </div>
-            <span className="text-text text-sm font-mono tabular-nums text-right w-14">
+            <span className="text-text text-sm font-mono font-semibold tabular-nums text-right w-14">
               {c.points}
             </span>
             <span className="text-text-faint text-[11px] font-mono tabular-nums text-right w-8">
@@ -196,7 +204,7 @@ function LinkOutCard({
     ? officialSiteLabel(officialSite)
     : officialSiteLabel(officialStandingsUrl);
   return (
-    <div className="rounded-xl bg-surface/40 border border-border/60 p-6 text-center">
+    <div className="border border-border bg-surface/40 p-6 text-center">
       <p className="text-text-muted text-sm mb-4">
         Live standings are available on the official site.
       </p>
@@ -204,7 +212,7 @@ function LinkOutCard({
         href={officialStandingsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-border hover:bg-border-strong text-text text-sm font-medium transition-colors duration-(--duration-fast)"
+        className="inline-flex items-center gap-1.5 px-4 py-2 border border-border-strong hover:bg-surface text-text text-sm font-medium transition-colors duration-(--duration-fast)"
       >
         {label} standings <span aria-hidden>→</span>
       </a>

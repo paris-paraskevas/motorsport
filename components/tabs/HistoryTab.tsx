@@ -42,7 +42,7 @@ export async function HistoryTab({ series }: { series: Series }) {
   const lastUpdated = formatLastUpdated(frontmatter['last-updated']);
 
   return (
-    <article className="rounded-2xl bg-surface/40 border border-border/60 p-5 md:p-6">
+    <article className="border-y border-border py-5 md:py-6">
       <header className="mb-4">
         <h2 className="text-text text-xl font-bold tracking-tight">History</h2>
       </header>

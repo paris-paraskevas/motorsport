@@ -14,14 +14,19 @@ export async function AboutTab({ series }: { series: Series }) {
   const summary = page ? await fetchWikipediaSummary(page) : null;
 
   if (!overview && !summary) {
-    return <PlaceholderTab tabLabel="About" />;
+    return (
+      <div className="space-y-4">
+        <PlaceholderTab tabLabel="About" />
+        <ExternalSourcesCard series={series} />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       {overview && (
         <article
-          className="rounded-xl bg-surface/40 border border-border/60 p-5 md:p-6
+          className="border-y border-border py-5 md:py-6
                      prose dark:prose-invert prose-sm max-w-none
                      prose-headings:tracking-tight prose-headings:text-text
                      prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-3 prose-h2:font-semibold
@@ -31,7 +36,7 @@ export async function AboutTab({ series }: { series: Series }) {
         />
       )}
       {summary && (
-        <div className="rounded-xl bg-surface/40 border border-border/60 p-5">
+        <div className="border-y border-border py-5">
           <h2 className="text-text text-lg font-semibold mb-3">
             About {series.meta.name}
           </h2>
@@ -54,6 +59,41 @@ export async function AboutTab({ series }: { series: Series }) {
           </div>
         </div>
       )}
+      <ExternalSourcesCard series={series} />
+    </div>
+  );
+}
+
+// Official links (formerly the Rules tab's "Further reading" card — that tab
+// was retired in 0.19.0; no series ever shipped a curated rules.md).
+function ExternalSourcesCard({ series }: { series: Series }) {
+  const items: Array<{ label: string; url: string }> = [];
+  if (series.meta.officialSite) {
+    items.push({ label: 'Official site', url: series.meta.officialSite });
+  }
+  if (series.meta.officialStandingsUrl) {
+    items.push({ label: 'Standings', url: series.meta.officialStandingsUrl });
+  }
+  if (items.length === 0) return null;
+
+  return (
+    <div className="border-y border-border py-5">
+      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-3">
+        Further reading
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {items.map(item => (
+          <a
+            key={item.url}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors duration-(--duration-fast)"
+          >
+            {item.label} ↗
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

@@ -30,6 +30,51 @@ function pickColor(idx: number): string {
   return COLORS[idx % COLORS.length];
 }
 
+// 2026 constructor colors, keyed by Jolpica `Constructor.name`. Broadcast-style
+// hexes; the two newcomers have no official hex (operator-directed web check
+// 2026-06-10): Cadillac runs a black-to-white monochrome livery → white reads
+// on our near-black; Audi runs titanium/black/red → Audi Red #F50537, because
+// titanium silver would be indistinguishable from Haas grey on this chart.
+const F1_TEAM_COLORS: Record<string, string> = {
+  'Red Bull': '#3671c6',
+  Ferrari: '#e8002d',
+  McLaren: '#ff8000',
+  Mercedes: '#27f4d2',
+  'Aston Martin': '#229971',
+  'Alpine F1 Team': '#00a1e8',
+  Williams: '#1868db',
+  'RB F1 Team': '#6692ff',
+  'Haas F1 Team': '#b6babd',
+  Audi: '#f50537',
+  'Cadillac F1 Team': '#ffffff',
+};
+
+interface LineStyle {
+  stroke: string;
+  dash?: string;
+}
+
+// Team color when we know the team; teammates share it with the second car
+// dashed (broadcast convention). Unknown teams (non-F1 series) keep the
+// rank-indexed palette.
+function buildLineStyles(
+  ranked: Array<{ name: string; team?: string }>,
+): Map<string, LineStyle> {
+  const styles = new Map<string, LineStyle>();
+  const seenPerTeam = new Map<string, number>();
+  ranked.forEach((d, idx) => {
+    const teamColor = d.team ? F1_TEAM_COLORS[d.team] : undefined;
+    if (teamColor) {
+      const seen = seenPerTeam.get(d.team!) ?? 0;
+      seenPerTeam.set(d.team!, seen + 1);
+      styles.set(d.name, { stroke: teamColor, dash: seen > 0 ? '6 4' : undefined });
+    } else {
+      styles.set(d.name, { stroke: pickColor(idx) });
+    }
+  });
+  return styles;
+}
+
 // Strip Wikipedia-style eligibility suffixes ("(i)", "(R)") from legend
 // labels — they read as noise at chip size (NASCAR's 47-driver field).
 function legendLabel(codeOrName: string): string {
@@ -51,6 +96,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
     () => new Set(ranked.slice(0, 6).map(d => d.name)),
   );
   const [legendExpanded, setLegendExpanded] = useState(false);
+  const lineStyles = useMemo(() => buildLineStyles(ranked), [ranked]);
 
   const toggle = (name: string) => {
     const next = new Set(visible);
@@ -109,27 +155,30 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
               }}
             />
             <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} iconType="line" />
-            {ranked.map((d, idx) => (
-              <Line
-                key={d.name}
-                type="monotone"
-                dataKey={d.name}
-                stroke={pickColor(idx)}
-                strokeWidth={visible.has(d.name) ? 2 : 0}
-                dot={false}
-                activeDot={{ r: 4 }}
-                hide={!visible.has(d.name)}
-                connectNulls
-              />
-            ))}
+            {ranked.map(d => {
+              const style = lineStyles.get(d.name)!;
+              return (
+                <Line
+                  key={d.name}
+                  type="monotone"
+                  dataKey={d.name}
+                  stroke={style.stroke}
+                  strokeDasharray={style.dash}
+                  strokeWidth={visible.has(d.name) ? 2 : 0}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                  hide={!visible.has(d.name)}
+                  connectNulls
+                />
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {shown.map(d => {
-          const idx = ranked.indexOf(d);
           const on = visible.has(d.name);
-          const colour = pickColor(idx);
+          const colour = lineStyles.get(d.name)!.stroke;
           return (
             <button
               key={d.name}

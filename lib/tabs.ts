@@ -4,7 +4,6 @@ export const TABS = [
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
   { key: 'drivers',   label: 'Drivers' },
-  { key: 'rules',     label: 'Rules' },
   { key: 'about',     label: 'About' },
   { key: 'history',   label: 'History' },
   { key: 'champions', label: 'Champions' },
@@ -71,11 +70,6 @@ export function describeTab(
       return {
         title: `${seriesName} ${season} drivers and teams`,
         description: `Full ${season} ${seriesName} driver lineup and team pairings, with car numbers and any mid-season seat changes.`,
-      };
-    case 'rules':
-      return {
-        title: `${seriesName} rules — sporting and technical regulations`,
-        description: `${seriesName} sporting and technical regulations — point system, race format, qualifying procedure, and key rule changes.`,
       };
     case 'about':
       return {

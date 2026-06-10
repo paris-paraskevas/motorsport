@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '@/lib/series';
@@ -18,7 +19,6 @@ import { ChampionsTab } from '@/components/tabs/ChampionsTab';
 import { StandingsTab } from '@/components/tabs/StandingsTab';
 import { ResultsTab } from '@/components/tabs/ResultsTab';
 import { DriversTab } from '@/components/tabs/DriversTab';
-import { RulesTab } from '@/components/tabs/RulesTab';
 import { NewsTab } from '@/components/tabs/NewsTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -72,8 +72,6 @@ function renderTab(activeTab: TabKey, series: Series) {
       return <ResultsTab series={series} />;
     case 'drivers':
       return <DriversTab series={series} />;
-    case 'rules':
-      return <RulesTab series={series} />;
     case 'about':
       return <AboutTab series={series} />;
     case 'history':
@@ -168,7 +166,26 @@ export default async function SeriesPage({
 
       <SeriesTabs activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
-      <div>{renderTab(activeTab, series)}</div>
+      {/* Stream the tab body: header + rail paint immediately while the
+          upstream fetches (standings/results scrapes) resolve. keyed so
+          switching tabs re-suspends instead of showing the old tab. */}
+      <Suspense key={activeTab} fallback={<TabLoading />}>
+        {renderTab(activeTab, series)}
+      </Suspense>
+    </div>
+  );
+}
+
+function TabLoading() {
+  return (
+    <div aria-busy="true" className="space-y-3">
+      {[0, 1, 2].map(i => (
+        <div
+          key={i}
+          className="border-y border-border bg-surface/40 animate-pulse"
+          style={{ height: i === 0 ? 96 : 64 }}
+        />
+      ))}
     </div>
   );
 }
