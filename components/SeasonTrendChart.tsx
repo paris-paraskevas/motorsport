@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -29,6 +30,14 @@ function pickColor(idx: number): string {
   return COLORS[idx % COLORS.length];
 }
 
+// Strip Wikipedia-style eligibility suffixes ("(i)", "(R)") from legend
+// labels — they read as noise at chip size (NASCAR's 47-driver field).
+function legendLabel(codeOrName: string): string {
+  return codeOrName.replace(/\s*\((i|R)\)\s*$/i, '');
+}
+
+const LEGEND_COLLAPSED_COUNT = 12;
+
 export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendData) {
   const ranked = useMemo(
     () =>
@@ -41,6 +50,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
   const [visible, setVisible] = useState<Set<string>>(
     () => new Set(ranked.slice(0, 6).map(d => d.name)),
   );
+  const [legendExpanded, setLegendExpanded] = useState(false);
 
   const toggle = (name: string) => {
     const next = new Set(visible);
@@ -57,9 +67,17 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
     );
   }
 
+  // Legend soup fix (audit + NASCAR's 47-driver field): collapsed by default
+  // to the championship's sharp end, one tap away from everyone.
+  const shown = legendExpanded ? ranked : ranked.slice(0, LEGEND_COLLAPSED_COUNT);
+  const hiddenCount = ranked.length - shown.length;
+
   return (
     <div className="space-y-3">
-      <div className="h-72 md:h-80">
+      {/* The chart itself is desktop-only (locked 2c decision): at phone
+          widths recharts renders an unreadable 0-ish-size plot; the ranked
+          legend chips below carry the points data for mobile. */}
+      <div className="hidden sm:block h-72 md:h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 6, right: 12, bottom: 6, left: 0 }}>
             <CartesianGrid stroke="var(--border)" vertical={false} />
@@ -108,7 +126,8 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
         </ResponsiveContainer>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {ranked.map((d, idx) => {
+        {shown.map(d => {
+          const idx = ranked.indexOf(d);
           const on = visible.has(d.name);
           const colour = pickColor(idx);
           return (
@@ -116,7 +135,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
               key={d.name}
               type="button"
               onClick={() => toggle(d.name)}
-              className={`inline-flex items-center gap-1.5 text-[11px] font-medium rounded-full px-2.5 py-1 border transition-colors duration-(--duration-fast) ${
+              className={`inline-flex items-center gap-1.5 font-mono text-[11px] font-medium px-2.5 py-1 border transition-colors duration-(--duration-fast) ${
                 on
                   ? 'border-border-strong text-text bg-surface'
                   : 'border-border text-text-faint hover:text-text-muted hover:border-border-strong'
@@ -126,11 +145,30 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
                 className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: on ? colour : 'var(--border-strong)' }}
               />
-              {d.code ?? d.name}
-              <span className="tabular-nums font-mono opacity-70">{totalsByDriver[d.name] ?? 0}</span>
+              {legendLabel(d.code ?? d.name)}
+              <span className="tabular-nums opacity-70">{totalsByDriver[d.name] ?? 0}</span>
             </button>
           );
         })}
+        {hiddenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setLegendExpanded(true)}
+            className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 border border-border text-text-muted hover:text-text hover:border-border-strong transition-colors duration-(--duration-fast)"
+          >
+            +{hiddenCount} more
+            <ChevronDown size={12} />
+          </button>
+        )}
+        {legendExpanded && ranked.length > LEGEND_COLLAPSED_COUNT && (
+          <button
+            type="button"
+            onClick={() => setLegendExpanded(false)}
+            className="inline-flex items-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 border border-border text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
+          >
+            Collapse
+          </button>
+        )}
       </div>
     </div>
   );

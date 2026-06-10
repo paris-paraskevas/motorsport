@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.18.0 — 2026-06-10
+
+**Series pages joined the new look.** The big tile grid is gone — each series now opens with its name in racing type, a live countdown to its next session, and a slim tab bar that sticks to the top as you scroll. Content starts immediately instead of below a wall of buttons.
+
+**The landing page's ticker and menu now stay with you when you scroll.** A long-standing layout bug kept them from sticking — fixed everywhere, for good.
+
+**Season charts behave on phones.** The points-trend chart is now a desktop feature; on mobile you get the ranked driver chips instead of a squashed graph. Big fields (looking at you, NASCAR) collapse to the top twelve with a "+more" button.
+
 ## 0.17.0 — 2026-06-10
 
 **One navigation, everywhere.** The slide-out menu and its burger button are gone. On phones, the bottom bar is your navigation; on desktop, the header now carries Home, Calendar, Series and Blog directly. Less furniture, more room for the racing.

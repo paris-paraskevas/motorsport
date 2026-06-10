@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.18.0 — 2026-06-10
+
+Redesign PR 2c-3 — series pages: sticky tab rail, compact header, chart fix. Plus the CSS keystone that un-breaks `position: sticky` site-wide.
+
+### Fixed
+
+- **`overflow-x: hidden` → `overflow-x: clip` on html/body** (`app/globals.css`). `hidden` makes the element a scroll container, which silently kills every `position: sticky` descendant — this is why the landing ticker + nav never stuck (operator-reported) and why the app header had to be `fixed`. `clip` prevents horizontal scroll without creating a scroll container. Verified programmatically: landing nav holds `top: 36px` (below the 36px ticker) at 1200px scroll; ticker holds 0; overflow probes still 0 across pages.
+- **Season trend chart on mobile** (audit item): the recharts plot is now desktop-only (`hidden sm:block`) — at phone widths it rendered unreadably; the ranked legend chips carry the points data on mobile. **Legend soup capped**: chips collapse to the top 12 with a `+N more` expander (NASCAR's 47-driver field was rendering 47 chips); Wikipedia eligibility suffixes ("(i)", "(R)") stripped from chip labels.
+
+### Changed
+
+- **9-tile tab grid retired** (`components/SeriesTabs.tsx` rewritten): a horizontally scrollable **sticky tab rail** (sticks at `top-14` under the app header) with mono uppercase labels and the series-color active underline. Active tab auto-scrolls into view on deep links (`?tab=champions`). The grid ate ~290px of the first phone viewport before any content; header + rail now total ~250px and the rail follows you down the page.
+- **Series header compacted** (`app/(app)/series/[slug]/page.tsx`): series-color rule + Saira display name (series-color full stop) + mono season line, `NextRaceCountdown` right. Countdown restyled from pill to the mono color-rule block (HH:MM:SS format). Radial series-color wash deleted — color now lives in the top rule, type and tab underline (2.0 language: flat surfaces, color as accent). Wrapper widened to `xl:max-w-6xl`.
+- **Significance chips/notes re-toned** across SessionCard, WeekendBlock, WeekendHero, WeekendSchedule: washed-amber pills (`bg-amber-500/10 text-amber-300`) → hard-rule mono chips (`border-brand/40 text-brand`); amber note text → `text-brand/70-80`. Status/warning ambers (stale banner, cancelled rounds, form errors) stay semantic.
+
 ## 0.17.0 — 2026-06-10
 
 Redesign PR 2c-2 — one nav system. Operator call after the hub shipped: "navigation menu and burger bar can go."

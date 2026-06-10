@@ -208,7 +208,11 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "cv11";
-  overflow-x: hidden;
+  /* clip, NOT hidden: overflow-x hidden turns the element into a scroll
+     container and silently kills every position:sticky descendant (landing
+     ticker/nav, series tab strip). clip prevents horizontal scroll without
+     creating a scroll container. */
+  overflow-x: clip;
 }
 
 /* 2.0 surfaces are flat near-black — no ambient radial wash. */

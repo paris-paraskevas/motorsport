@@ -676,6 +676,7 @@ Session 3 (same day) — **PR 2a dashboard shell** per the locked brief. Plan:
 - Captured for next PR (operator): landing nav must persist on scroll — suspect body overflow-x:hidden kills sticky; in IDEAS Inbox.
 - → done: #104 merged by operator; directive "navigation menu and burger bar can go" → **PR 2c-2 (0.17.0)** — drawer/sidebar/burger deleted, one fixed header on all viewports (lg+ inline nav), footer +Blog/Account label. Lint baseline now fully clean (drawer owned the set-state-in-effect error).
 - Next up (operator "lets do this"): **2c-3 series pages** — sticky tab bar replaces the 9-tile grid, standings/results/weekend surfaces to the 2.0 language, mobile chart fix. Then calendar, then 2d account modals.
+- → done: #105 merged; **PR 2c-3 (0.18.0)** — sticky tab rail + compact Saira series header + chart mobile fix/legend cap + significance re-tone + the `overflow-x: clip` keystone that un-broke position:sticky site-wide (landing ticker/nav sticky bug fixed for free, Inbox item closed). Sticky verified programmatically at scroll; 0 errors / 0 overflow / 350 tests.
 
 Active:
 _(awaiting [+Nm] prefixes)_

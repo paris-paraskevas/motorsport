@@ -80,7 +80,7 @@ export function WeekendHero({
           {weekend.previousStartDate && weekend.previousEndDate && (
             <>
               <span className="text-border-strong">·</span>
-              <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+              <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
                 rescheduled
               </span>
             </>
@@ -88,7 +88,7 @@ export function WeekendHero({
           {weekend.significance && weekend.significance.tier !== 'note' && (
             <>
               <span className="text-border-strong">·</span>
-              <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-semibold">
+              <span className="text-[10px] uppercase tracking-[0.14em] px-2 py-0.5 border border-brand/40 text-brand font-semibold font-mono">
                 {weekend.significance.tier}
               </span>
             </>
@@ -124,7 +124,7 @@ export function WeekendHero({
         )}
 
         {weekend.previousStartDate && weekend.previousEndDate && (
-          <p className="mt-3 text-sm text-amber-200/80 tnum font-mono">
+          <p className="mt-3 text-sm text-brand/80 tnum font-mono">
             Rescheduled from {formatShortRange(weekend.previousStartDate, weekend.previousEndDate)}
             {weekend.rescheduleNote && (
               <span className="text-text-muted font-sans"> · {weekend.rescheduleNote}</span>
@@ -133,7 +133,7 @@ export function WeekendHero({
         )}
 
         {weekend.significance?.note && (
-          <p className="mt-4 text-sm text-amber-200/80 leading-relaxed">
+          <p className="mt-4 text-sm text-brand/80 leading-relaxed">
             {weekend.significance.note}
           </p>
         )}
