@@ -198,10 +198,27 @@ contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
   killed every position:sticky descendant; clip doesn't. This fixed the operator's
   landing ticker/nav sticky bug for free (verified at 1200px scroll: ticker top 0, nav
   top 36). Sticky probes are now part of the verification battery.
-- Still queued: 2c-4 content surfaces (standings/results tables + accordions to the
-  timing-screen language, calendar tab retheme), 2d account page (/settings becomes
-  Account: Clerk profile + prefs + followed series; onboarding/notification modals off
-  zinc), F1 chart-vs-standings data bug (pre-PR-3 gate).
+- **PR 2c-4 + operator fix batch (#107, 0.19.0)** — tab surfaces flattened to the
+  timing-screen language; **Rules retired** (About absorbed the official links;
+  ?tab=rules → calendar); recharts ssr:false + Suspense-streamed tab bodies;
+  **F1 chart-vs-standings ROOT CAUSE CLOSED**: Jolpica clamps limit to 100 →
+  season feed lost every race past the 100-entry boundary (missing Monaco,
+  12-car Canada, "points-only" tables, ANT 131 vs 156 — one bug, four symptoms);
+  fixed via pagination + per-round merge in lib/results/f1.ts. Chart lines in
+  2026 constructor colors (teammates dashed; Audi #F50537 / Cadillac white —
+  no official hexes published, web-verified). OG share card rebuilt around the
+  crossed-flags icon (Instagram showed the old red/white chequer). Header
+  wordmark now links to the landing.
+- **Blocked/carried**: 6-agent fleet (15-series data validation + 12 history
+  essays in the F1 voice) died on the org spend limit; f2+f3 history.md written
+  (untracked in worktree, hold for a content PR — review before commit).
+  Relaunch the fleet next session.
+- Operator batch queue (feasibility order): per-page desktop+mobile layout pass →
+  notifications (30'/10' pre-session + results-rendered; extend the notify cron,
+  needs per-offset dedupe keys) → session-level subpages with practice/quali
+  classification (research OpenF1 api.openf1.org for FP/Q data; Jolpica has Q
+  only) → driver/team enrichment pages (photos/bios/stats — multi-session, pairs
+  with 0.15.0-enrichment). 2d account page still queued.
 
 ### 2026-06-10 — session 2 (same day): PR 1.1 landing parity
 - Operator reviewed live 0.13.0 vs mockup with screenshots; gaps locked: richer moving
