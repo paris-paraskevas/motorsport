@@ -1,19 +1,14 @@
 'use client';
-import { CalendarDays, Flag, House, Settings } from 'lucide-react';
+import { CalendarDays, CircleUser, Flag, House } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 // Mobile bottom navigation (PR 2a, docs/redesign-2026-06.md): thumb-reach
-// nav for phones and the installed PWA. Home / Calendar / Series / Settings —
-// Series opens the drawer, which keeps the full 15-series list. Hidden on
-// lg+ where the permanent sidebar covers navigation.
-export function BottomBar({
-  onSeriesClick,
-  seriesOpen,
-}: {
-  onSeriesClick: () => void;
-  seriesOpen: boolean;
-}) {
+// nav for phones and the installed PWA. Every tab is a real destination —
+// Series goes to the /series hub (operator feedback on 0.15.0: a nav tab
+// must not open a menu); the drawer stays reachable from the header burger.
+// Hidden on lg+ where the permanent sidebar covers navigation.
+export function BottomBar() {
   const pathname = usePathname();
 
   return (
@@ -22,55 +17,40 @@ export function BottomBar({
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated/90 backdrop-blur-xl border-t border-border pb-[env(safe-area-inset-bottom)]"
     >
       <div className="grid grid-cols-4 h-14 max-w-2xl mx-auto">
-        <BarLink
-          href="/app"
-          active={pathname === '/app'}
-          label="Home"
-          icon={<House size={20} strokeWidth={strokeFor(pathname === '/app')} />}
-        />
+        <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} />
         <BarLink
           href="/calendar"
           active={pathname === '/calendar'}
           label="Calendar"
-          icon={<CalendarDays size={20} strokeWidth={strokeFor(pathname === '/calendar')} />}
+          Icon={CalendarDays}
         />
-        <button
-          type="button"
-          onClick={onSeriesClick}
-          aria-expanded={seriesOpen}
-          className={`relative flex flex-col items-center justify-center gap-1 transition-colors duration-(--duration-fast) ${
-            seriesOpen ? 'text-brand' : 'text-text-faint hover:text-text'
-          }`}
-        >
-          {seriesOpen && <ActiveRule />}
-          <Flag size={20} strokeWidth={strokeFor(seriesOpen)} />
-          <BarLabel>Series</BarLabel>
-        </button>
+        <BarLink
+          href="/series"
+          active={pathname === '/series' || pathname.startsWith('/series/')}
+          label="Series"
+          Icon={Flag}
+        />
         <BarLink
           href="/settings"
           active={pathname === '/settings'}
-          label="Settings"
-          icon={<Settings size={20} strokeWidth={strokeFor(pathname === '/settings')} />}
+          label="Account"
+          Icon={CircleUser}
         />
       </div>
     </nav>
   );
 }
 
-function strokeFor(isActive: boolean): number {
-  return isActive ? 2.2 : 1.8;
-}
-
 function BarLink({
   href,
   active,
   label,
-  icon,
+  Icon,
 }: {
   href: string;
   active: boolean;
   label: string;
-  icon: React.ReactNode;
+  Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
 }) {
   return (
     <Link
@@ -80,23 +60,15 @@ function BarLink({
         active ? 'text-brand' : 'text-text-faint hover:text-text'
       }`}
     >
-      {active && <ActiveRule />}
-      {icon}
-      <BarLabel>{label}</BarLabel>
+      {/* Timing-screen active marker — a hard amber rule across the cell top,
+          not a pill or glow. */}
+      {active && (
+        <span aria-hidden="true" className="absolute top-0 inset-x-3 h-0.5 bg-brand" />
+      )}
+      <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em]">
+        {label}
+      </span>
     </Link>
-  );
-}
-
-/* Timing-screen active marker — a hard amber rule across the cell top,
-   not a pill or glow. */
-function ActiveRule() {
-  return <span aria-hidden="true" className="absolute top-0 inset-x-3 h-0.5 bg-brand" />;
-}
-
-function BarLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em]">
-      {children}
-    </span>
   );
 }

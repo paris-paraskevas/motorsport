@@ -8,6 +8,7 @@ import { weatherLabel } from '@/lib/weather';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
 import { formatRelative } from '@/lib/date';
+import { SectionHead } from './SectionHead';
 
 interface HomeItem {
   session: Session;
@@ -117,22 +118,6 @@ function Countdown({ to, initialNow }: { to: Date; initialNow: Date }) {
     <span className="font-mono tnum tracking-tight">
       {d > 0 ? `${d}d ${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(h)}:${pad(m)}:${pad(s)}`}
     </span>
-  );
-}
-
-function SectionHead({ title, sub }: { title: string; sub?: string }) {
-  return (
-    <div className="mb-3 flex items-baseline justify-between gap-3 border-b border-border pb-2">
-      <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-text">
-        {title}
-        <span className="text-brand">.</span>
-      </h2>
-      {sub && (
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-          {sub}
-        </span>
-      )}
-    </div>
   );
 }
 
