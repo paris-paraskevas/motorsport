@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.13.3 — 2026-06-10
+
+### Fixed
+
+- **Dashboard cards cut off at the right edge on phones** (operator-reported on Pixel, PWA + Chrome). Root cause in `components/HomeContent.tsx:379`: the per-day Upcoming grid had no explicit column sizing, so its single implicit track sized to `auto` = the widest card's min-content. One long nowrap session title ("WEC - Le Mans Hyperpole 1 (LMP2 & LMGT3)") inflated the whole day-group's track to ~415px and EVERY card in that group rendered past the viewport — clipped, not scrollable, because of the global `overflow-x: hidden`. Le Mans week's long titles exposed it. Fix: `grid-cols-1` (Tailwind compiles to `minmax(0, 1fr)`, the canonical shrinkable track) + `min-w-0 overflow-hidden` on the `SessionCard` link itself, with an inline comment marking it load-bearing.
+- Verified by programmatic sweep at 412px (Pixel width) across `/app` (both tabs), `/`, `/calendar`, `/series/f1` (calendar + standings), `/series/nascar-cup?tab=results`, `/series/wec/weekend/3`, `/privacy`: zero elements extend past the viewport (intentional marquee tracks excluded). The sweep predicate (`getBoundingClientRect().right > innerWidth`) is the reusable check for this bug class.
+
 ## 0.13.2 — 2026-06-10
 
 Hot-fix for 0.13.1: every landing marquee shipped dead, and the circuit photos were buried in it.

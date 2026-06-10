@@ -63,7 +63,7 @@ Copy deviations from mockup (honesty pass) are flagged in the PR description for
 |---|---|---|
 | 1 | Tokens v2 + (marketing)/(app) root-layout split + landing at `/` + dashboard → `/app` + PWA start_url/standalone guard + countdown hydration fix + SEO wiring | ✅ merged (PR #98, 0.13.0) |
 | 1.1 | Landing parity with mockup: ticker v2 (GMT/weather/news, sticky), marquee-event big countdown, series marquee rows, circuit photo feed (Wikimedia, credited), disciplines cards v2, perks v2, vivid washes, burger menu | in PR (0.13.1) |
-| 2 | Workstation retheme to tokens v2, dark-only: AppShell/header/sidebar/footer/cards/tabs; retire ThemeToggle + dual-theme CSS; fix zinc-hardcoded surfaces (settings/onboarding/PWA modals); Clerk appearance to match | queued |
+| 2 | **Dashboard/workstation COMPLETE UI/UX overhaul** (operator directive 2026-06-10, upgraded from "retheme"): tokens v2 dark-only across AppShell/header/sidebar/footer/cards/tabs; retire ThemeToggle + dual-theme CSS; fix zinc-hardcoded surfaces (settings/onboarding/PWA modals); Clerk appearance; PLUS UX restructure — mobile information density (9-tile tab grid eats first viewport), first-visit prompt stacking (install banner + consent), desktop wide-viewport density (single narrow column at 1920), news thumbnails, Saira display type on section headers. Treat as design-led, mockup-first if operator supplies one; otherwise derive from the landing's language. Multi-session. | **NEXT** |
 | 3 | Surface polish: series pages, weekend page, standings/results tables, mobile chart fix (0-size recharts + legend soup), tab-grid density on mobile | queued |
 | 4+ | Desktop density pass (wide-viewport layouts, news thumbnails), motion/micro-interactions, light mode as deliberate future project | parked |
 
