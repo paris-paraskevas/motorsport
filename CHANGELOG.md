@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.29.1 — 2026-06-11
+
+Operator-reported landing nav fixes.
+
+### Fixed
+
+- **Anchor links no longer bury section headings under the sticky nav**: the ticker (36px) + nav (56px) overlap the jump target, so "WHAT'S INSIDE" / "SERIES" / "DISCIPLINES" landed with their headings clipped behind the bar. The three anchored sections gain `scroll-mt-28` (112px) — headings now land fully below the sticky stack (probe: section top 112px vs nav bottom 93px).
+
+### Changed
+
+- **Burger menu becomes a side drawer** (`components/landing/LandingMenu.tsx`, operator-directed): slides in from the right covering exactly half the screen (85% on phones — half of 390px can't hold the type), with the landing grayed out behind a black/60 scrim. Scrim click, ✕ and Escape all close; focus returns to the trigger; entry animates via `@starting-style` so reduced-motion users and older engines get an instant appearance. Stays portaled to `<body>` (the 0.24.3 containing-block lesson).
+
 ## 0.29.0 — 2026-06-11
 
 W1c — per-session pages, plus the multi-series frozen standings + chart placement that missed the 0.28.0 merge window (PR #125 was merged moments before the final push; recovered via cherry-pick).

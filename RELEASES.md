@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.29.1 — 2026-06-11
+
+**Landing-page navigation behaves now.** Jumping to a section from the top bar no longer hides the section's title behind the bar — every jump lands cleanly below it. And the menu is a proper side drawer: it slides in from the right over half the screen while the page behind dims, and closes from the dimmed area, the ✕ or Escape.
+
 ## 0.29.0 — 2026-06-11
 
 **Every session gets its own page.** On Formula 1 weekends, tap any session in the schedule — practice, qualifying, sprint or race — and it opens its own page with the full classification: every lap time in qualifying's three segments, gaps and points in the race, best laps in practice. Other series' session pages are on the way.
