@@ -1,10 +1,12 @@
-import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import type {
   Series,
   RaceResult,
   RaceResultEntry,
   ResultsOverridesFile,
 } from '@/lib/types';
+import { groupByWeekend } from '@/lib/group';
 import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
@@ -115,8 +117,63 @@ function ResultRow({ entry }: { entry: RaceResultEntry }) {
   );
 }
 
-function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolean }) {
+// Results-row v2 primitives (operator 2026-06-11: per-race layout redesign +
+// clickable races). Three pieces shared by the generic / IMSA / GT World rows:
+// a tint mono round chip, the race title — which links through to the round's
+// weekend page when one exists — and a mono meta line with the winner in
+// brand amber. The chevron remains the accordion control; activating a link
+// inside <summary> follows the link without toggling the details element.
+
+function RoundChip({ label }: { label: string }) {
+  return (
+    <span className="w-9 shrink-0 pt-1 text-right font-mono text-[11px] font-semibold tabular-nums text-tint">
+      {label}
+    </span>
+  );
+}
+
+function RaceTitle({ name, href }: { name: string; href?: string }) {
+  if (!href) {
+    return (
+      <span className="font-display text-[15px] font-bold uppercase tracking-wide leading-snug text-text">
+        {name}
+      </span>
+    );
+  }
+  return (
+    <Link href={href} className="group/wknd inline-block max-w-full">
+      <span className="font-display text-[15px] font-bold uppercase tracking-wide leading-snug text-text underline-offset-4 group-hover/wknd:text-tint group-hover/wknd:underline transition-colors duration-(--duration-fast)">
+        {name}
+      </span>
+      <ArrowUpRight
+        size={13}
+        aria-hidden
+        className="ml-1 inline-block align-[-1px] text-text-faint group-hover/wknd:text-tint transition-colors duration-(--duration-fast)"
+      />
+      <span className="sr-only"> — open race weekend</span>
+    </Link>
+  );
+}
+
+function RowMeta({ date, winner }: { date?: Date; winner?: string }) {
+  if (!date && !winner) return null;
+  return (
+    <div className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      {date ? formatDate(date) : null}
+      {date && winner ? ' · ' : null}
+      {winner ? (
+        <>
+          <span className="font-semibold text-brand">WIN</span>{' '}
+          <span className="text-text-muted normal-case">{winner}</span>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function RoundRow({ race, weekendHref }: { race: RaceResult; weekendHref?: string }) {
   const winner = race.results.find(r => r.position === 1) ?? race.results[0];
+  const winnerLabel = winner ? `${winner.driverName} — ${winner.team}` : undefined;
   // Winners-only mode: some parsers (FE pre-classification-scrape, WRC's
   // calendar-row parse) emit a single RaceResultEntry per race carrying just
   // the winner. Expanding into the per-entry accordion then shows a misleading
@@ -128,42 +185,30 @@ function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolea
 
   if (isWinnersOnly) {
     return (
-      <div className="flex items-baseline gap-3 py-2">
-        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
-          {race.round}
-        </span>
+      <div className="flex items-start gap-3 py-2.5">
+        <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
-          <div className="text-text text-sm font-medium truncate">{race.raceName}</div>
-          <div className="text-text-faint text-xs truncate">
-            {formatDate(race.date)}
-            {winner ? ` · winner: ${winner.driverName}` : ''}
-            {winner ? ` (${winner.team})` : ''}
-          </div>
+          <RaceTitle name={race.raceName} href={weekendHref} />
+          <RowMeta date={race.date} winner={winnerLabel} />
         </div>
       </div>
     );
   }
 
   return (
-    <details open={defaultOpen} className="group">
-      <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
-          {race.round}
-        </span>
+    <details className="group">
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
-          <div className="text-text text-sm font-medium truncate">{race.raceName}</div>
-          <div className="text-text-faint text-xs truncate">
-            {formatDate(race.date)}
-            {winner ? ` · winner: ${winner.driverName}` : ''}
-            {winner ? ` (${winner.team})` : ''}
-          </div>
+          <RaceTitle name={race.raceName} href={weekendHref} />
+          <RowMeta date={race.date} winner={winnerLabel} />
         </div>
         <ChevronDown
           size={16}
-          className="text-text-faint transition-transform group-open:rotate-180 shrink-0"
+          className="mt-1 text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
         {race.results.map(entry => (
           <ResultRow key={`${entry.position}-${entry.driverName}`} entry={entry} />
         ))}
@@ -176,12 +221,18 @@ function SeasonResultsPanel({
   races,
   heading = 'Season results',
   preserveOrder = false,
+  seriesSlug,
+  weekendRounds,
 }: {
   races: RaceResult[];
   heading?: string;
   // When true, caller has already ordered the array — don't resort (WSBK
   // emits R1 / SP / R2 per round and wants R2 last per weekend).
   preserveOrder?: boolean;
+  // When both are provided, rows whose round maps to a live weekend page
+  // link through to /series/<slug>/weekend/<round>.
+  seriesSlug?: string;
+  weekendRounds?: Set<number>;
 }) {
   // Most recent round first. Within a round (F2/F3 ship Feature + Sprint
   // sharing one round number) the Feature race surfaces first because it
@@ -202,12 +253,19 @@ function SeasonResultsPanel({
         {heading}
       </h2>
       <ul className="divide-y divide-border/60">
-        {sorted.map((r, idx) => (
+        {sorted.map(r => (
           // raceName participates in the key because some series (WSBK, F2,
           // F3) emit multiple RaceResults per round (Race 1 / Superpole / Race
           // 2 — or Feature / Sprint) sharing the same round number.
           <li key={`${r.round}-${r.raceName}`} className="py-1">
-            <RoundRow race={r} defaultOpen={idx === 0} />
+            <RoundRow
+              race={r}
+              weekendHref={
+                seriesSlug && weekendRounds?.has(r.round)
+                  ? `/series/${seriesSlug}/weekend/${r.round}`
+                  : undefined
+              }
+            />
           </li>
         ))}
       </ul>
@@ -246,7 +304,15 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
   );
 }
 
-function ImsaSeasonResultsPanel({ rounds }: { rounds: ImsaRoundResults[] }) {
+function ImsaSeasonResultsPanel({
+  rounds,
+  seriesSlug,
+  weekendRounds,
+}: {
+  rounds: ImsaRoundResults[];
+  seriesSlug?: string;
+  weekendRounds?: Set<number>;
+}) {
   // Flatten rounds × classes into one row per (round, class). IMSA_CLASSES
   // order (GTP → LMP2 → GTD Pro → GTD) drives within-round ordering, which
   // matches the same class-first grouping the standings tab uses
@@ -267,7 +333,7 @@ function ImsaSeasonResultsPanel({ rounds }: { rounds: ImsaRoundResults[] }) {
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
-        {items.map((item, idx) => (
+        {items.map(item => (
           <li key={`${item.round.round}-${item.cls}`} className="py-1">
             <ImsaRoundClassCard
               roundNumber={item.round.round}
@@ -275,7 +341,11 @@ function ImsaSeasonResultsPanel({ rounds }: { rounds: ImsaRoundResults[] }) {
               date={item.round.date}
               cls={item.cls}
               entries={item.entries}
-              defaultOpen={idx === 0}
+              weekendHref={
+                seriesSlug && weekendRounds?.has(item.round.round)
+                  ? `/series/${seriesSlug}/weekend/${item.round.round}`
+                  : undefined
+              }
             />
           </li>
         ))}
@@ -290,38 +360,35 @@ function ImsaRoundClassCard({
   date,
   cls,
   entries,
-  defaultOpen,
+  weekendHref,
 }: {
   roundNumber: number;
   eventName: string;
   date: Date;
   cls: ImsaClass;
   entries: ImsaRaceEntry[];
-  defaultOpen: boolean;
+  weekendHref?: string;
 }) {
   const winner = entries[0];
+  const winnerLabel = winner
+    ? winner.drivers
+      ? `${winner.drivers} — ${winner.team}`
+      : winner.team
+    : undefined;
   return (
-    <details open={defaultOpen} className="group">
-      <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
-          {roundNumber}
-        </span>
+    <details className="group">
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <RoundChip label={`R${roundNumber}`} />
         <div className="flex-1 min-w-0">
-          <div className="text-text text-sm font-medium truncate">
-            {eventName} — {cls}
-          </div>
-          <div className="text-text-faint text-xs truncate">
-            {formatDate(date)}
-            {winner ? ` · winner: ${winner.drivers || winner.team}` : ''}
-            {winner ? ` (${winner.team})` : ''}
-          </div>
+          <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} />
+          <RowMeta date={date} winner={winnerLabel} />
         </div>
         <ChevronDown
           size={16}
-          className="text-text-faint transition-transform group-open:rotate-180 shrink-0"
+          className="mt-1 text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
         {entries.map(entry => (
           <ImsaResultRow
             key={`${entry.position}-${entry.carNumber}`}
@@ -389,35 +456,32 @@ function GtWorldRoundClassCard({
   race,
   cup,
   entries,
-  defaultOpen,
 }: {
   race: GtWorldRaceResult;
   cup: Cup;
   entries: GtWorldRaceResultEntry[];
-  defaultOpen: boolean;
 }) {
   const winner = entries[0];
+  const winnerLabel = winner
+    ? `${winner.drivers.join(' · ')} — ${winner.team}`
+    : undefined;
+  // No weekend link here: GtWorldRaceResult carries raceId + eventName but no
+  // canonical round number, so a safe round → weekend mapping doesn't exist
+  // yet. Linkable once the parser emits rounds aligned with rounds.json.
   return (
-    <details open={defaultOpen} className="group">
-      <summary className="flex items-baseline gap-3 py-2 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
-          {race.championship === 'endurance' ? 'E' : 'S'}
-        </span>
+    <details className="group">
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <RoundChip label={race.championship === 'endurance' ? 'E' : 'S'} />
         <div className="flex-1 min-w-0">
-          <div className="text-text text-sm font-medium truncate">
-            {race.eventName} {race.raceName} — {gtWorldCupLabel(cup)}
-          </div>
-          <div className="text-text-faint text-xs truncate">
-            {winner ? `winner: ${winner.drivers.join(' · ')}` : ''}
-            {winner ? ` (${winner.team})` : ''}
-          </div>
+          <RaceTitle name={`${race.eventName} ${race.raceName} — ${gtWorldCupLabel(cup)}`} />
+          <RowMeta winner={winnerLabel} />
         </div>
         <ChevronDown
           size={16}
-          className="text-text-faint transition-transform group-open:rotate-180 shrink-0"
+          className="mt-1 text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
         {entries.map(entry => (
           <GtWorldResultRow
             key={`${entry.position}-${entry.carNumber}`}
@@ -432,12 +496,10 @@ function GtWorldRoundClassCard({
 function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
   // Flatten races × cups into one row per (race, cup). Races are kept in
   // the order they were fetched (the parser already groups by event +
-  // race-id); cups within each race follow GT_WORLD_CUP_ORDER. First card
-  // expands by default — matches the F1 / IMSA / NASCAR panels.
-  const items = races.flatMap((race, raceIdx) =>
+  // race-id); cups within each race follow GT_WORLD_CUP_ORDER.
+  const items = races.flatMap(race =>
     GT_WORLD_CUP_ORDER.map(cup => ({
       race,
-      raceIdx,
       cup,
       entries: race.entries.filter(e => e.cup === cup),
     })).filter(item => item.entries.length > 0),
@@ -449,7 +511,7 @@ function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
         Season results
       </h2>
       <ul className="divide-y divide-border/60">
-        {items.map((item, idx) => (
+        {items.map(item => (
           <li
             key={`${item.race.raceId}-${item.cup}`}
             className="py-1"
@@ -458,7 +520,6 @@ function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
               race={item.race}
               cup={item.cup}
               entries={item.entries}
-              defaultOpen={idx === 0}
             />
           </li>
         ))}
@@ -502,6 +563,14 @@ function LinkOutCard({ officialStandingsUrl }: { officialStandingsUrl: string })
 }
 
 export async function ResultsTab({ series }: { series: Series }) {
+  // Round numbers that resolve to a live weekend page (same grouping
+  // weekendFor() uses) — race rows only link where the URL exists, so a
+  // results round absent from the weekend grouping never 404s.
+  const slug = series.meta.slug;
+  const weekendRounds = new Set(
+    groupByWeekend(series.sessions, new Date(), series.rounds).map(w => w.round),
+  );
+
   if (series.meta.slug === 'f1') {
     const [races, sprints, overrides] = await Promise.all([
       fetchF1SeasonResults(),
@@ -530,7 +599,7 @@ export async function ResultsTab({ series }: { series: Series }) {
             totalsByDriver={trend.totalsByDriver}
           />
         </section>
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
       </div>
     );
@@ -551,10 +620,10 @@ export async function ResultsTab({ series }: { series: Series }) {
     return (
       <div className="space-y-4">
         {feature.length > 0 ? (
-          <SeasonResultsPanel races={feature} heading="Feature races" />
+          <SeasonResultsPanel races={feature} heading="Feature races" seriesSlug={slug} weekendRounds={weekendRounds} />
         ) : null}
         {sprint.length > 0 ? (
-          <SeasonResultsPanel races={sprint} heading="Sprint races" />
+          <SeasonResultsPanel races={sprint} heading="Sprint races" seriesSlug={slug} weekendRounds={weekendRounds} />
         ) : null}
         <SourceLink
           href="https://www.fiaformula2.com/Results"
@@ -577,7 +646,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href="https://www.fiaformula3.com/Results"
           label="fiaformula3.com"
@@ -600,7 +669,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_IndyCar_Series"
           label="en.wikipedia.org (2026 IndyCar Series)"
@@ -639,7 +708,7 @@ export async function ResultsTab({ series }: { series: Series }) {
         : 'Race results — partial classification';
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} heading={heading} />
+        <SeasonResultsPanel races={merged} heading={heading} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href={FORMULA_E_SOURCE_URL}
           label="en.wikipedia.org (2025–26 Formula E)"
@@ -689,7 +758,7 @@ export async function ResultsTab({ series }: { series: Series }) {
             totalsByDriver={trend.totalsByDriver}
           />
         </section>
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href={NASCAR_SOURCE_URL}
           label="Wikipedia (2026 NASCAR Cup Series)"
@@ -736,7 +805,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     // reconciliation work we haven't done. Standings tab is the authority.
     return (
       <div className="space-y-4">
-        <ImsaSeasonResultsPanel rounds={rounds} />
+        <ImsaSeasonResultsPanel rounds={rounds} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href="https://imsa.results.alkamelcloud.com/"
           label="imsa.results.alkamelcloud.com (Al Kamel timing)"
@@ -780,7 +849,7 @@ export async function ResultsTab({ series }: { series: Series }) {
             />
           </section>
         ) : null}
-        <SeasonResultsPanel races={merged} />
+        <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
@@ -802,7 +871,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} preserveOrder />
+        <SeasonResultsPanel races={merged} preserveOrder seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href="https://www.motogp.com/en/Results+Statistics"
           label="motogp.com"
@@ -824,7 +893,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     const merged = applyResultsOverrides(races, overrides);
     return (
       <div className="space-y-4">
-        <SeasonResultsPanel races={merged} preserveOrder />
+        <SeasonResultsPanel races={merged} preserveOrder seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink href="https://www.worldsbk.com/en/results" label="worldsbk.com" />
       </div>
     );

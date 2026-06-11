@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.25.0 — 2026-06-11
+
+Results layout v2 (operator session-4 note): race rows redesigned to the timing-screen language and made clickable through to their weekend pages.
+
+### Changed
+
+- **Race rows rebuilt** (`components/tabs/ResultsTab.tsx`): new shared primitives — series-tint mono round chip (`R8`), race title in Saira display caps, mono meta line with the date and the winner under a brand-amber `WIN` label. Applied to the generic panel (F1/F2/F3/IndyCar/FE/NASCAR/WRC/MotoGP/WSBK), the IMSA per-class cards, and the GT World per-cup cards. Accordion indent tightened on phones so full-classification rows stop truncating every name.
+- **Race rows link to their weekend page**: the title is now a link to `/series/<slug>/weekend/<round>` (arrow glyph affordance, tint hover); the chevron remains the accordion control — a link inside `<summary>` activates without toggling (verified programmatically both ways). Links are gated by the same `groupByWeekend` round set `weekendFor()` resolves, so a results round with no weekend page renders unlinked instead of 404ing — e.g. FE doubleheader second races (8 of 10 FE races link; Berlin/Monaco race 2 rounds have no own weekend URL). GT World rows stay unlinked: `GtWorldRaceResult` carries no canonical round number yet.
+- **No accordion opens by default anymore**: rows are gateways now, and a 22-car field auto-expanded on load pushed everything else off-screen. The winner line carries the headline result while collapsed.
+
+### Internal
+
+- OpenF1 research for weekend per-session results (the pairing half of the operator note) landed in `docs/redesign-2026-06.md` — `api.openf1.org` probes confirm full 2026 per-session classifications (practice/quali/sprint/race) ready for a follow-up PR.
+
 ## 0.24.3 — 2026-06-11
 
 Operator-reported landing bug, hot-fixed same hour.

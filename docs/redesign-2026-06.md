@@ -142,6 +142,57 @@ contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
 
 ## Session log
 
+### 2026-06-11 — session 5: operator quick wins + burger hot-fix + results v2
+
+(Session 4, earlier the same day in a separate chat, shipped PRs #108–#118 / 0.19.1 → 0.24.1 —
+PWA nav fixes, histories ×14, mobile chart, notifications 0.22.0, calendar 2c-5, desktop 2c-6,
+Account 2d, validation sweeps 1–3 — but never wrote a session-log entry here; its closeout is
+the five operator notes in IDEAS (#119) and the per-PR CHANGELOG sections.)
+
+- **PR #120 (0.24.2) — operator quick wins**: series tab switch lands at the top of the new
+  tab (SeriesTabs owns the scroll — Next 16's default Link scroll *maintains* position while
+  the page fills the viewport, confirmed in `node_modules/next/dist/docs`, so dropping
+  `scroll={false}` alone could never fix it; first render exempt to keep back/forward
+  restoration); the three `.slice(0, 10)` render caps removed — full classifications render
+  (F1 22/22, IMSA Daytona GTD 21, GTWC Monza Bronze 16); drivers-tab color-bar `pl-3`.
+- **PR #121 (0.24.3) — landing burger hot-fix** (operator interrupt, reproduced on prod):
+  the nav header's `backdrop-blur-xl` makes it a *containing block for fixed descendants*
+  (filter-effects spec, same trap as `transform`), so the menu's `fixed inset-0` overlay
+  collapsed into the 56px header strip — open but invisible. Probe-confirmed (dialog rect ≡
+  header rect). Fix = portal to `document.body`. Latent second bug en route: the scroll lock
+  targeted `<body>` but the page scroller is `<html>` — lock moved to `documentElement`,
+  which also removed the reserved scrollbar gutter sliver. **Rule of thumb baked in: no
+  `position: fixed` element may render inside a blurred/filtered/transformed ancestor —
+  portal modals to body.**
+- **PR #122 (0.25.0) — results layout v2** (operator note (a) of the layout pair): race rows
+  rebuilt on shared primitives — tint mono round chip, Saira title, amber `WIN` meta — and
+  the title links through to `/series/<slug>/weekend/<round>`, gated by the `groupByWeekend`
+  round set so unmapped rounds (FE doubleheader race 2s; all GTWC rows — no round numbers in
+  `GtWorldRaceResult`) render unlinked rather than 404. Chevron keeps the accordion; a link
+  inside `<summary>` activates without toggling (verified both ways programmatically). No
+  default-open accordion — full fields made that unaffordable.
+
+**OpenF1 research (for the weekend per-session results follow-up — operator note (b)):**
+
+- `api.openf1.org` — free community F1 API, no auth. 2026 fully live: `/v1/sessions?year=2026`
+  → 126 sessions (24 GP weekends: P1×24, P2/P3×18, SQ+Sprint×6, Q×24, R×24 + 3 test days),
+  with `circuit_short_name`, `date_start/end`, `meeting_key`, `session_key`.
+- `/v1/session_result?session_key=K` → full per-session classification (22/22 verified on
+  Monaco FP1/Q/R): `position`, `driver_number`, `number_of_laps`, `dnf/dns/dsq`, `duration`
+  (practice/race: seconds; **quali: `[Q1,Q2,Q3]` arrays**, same for `gap_to_leader`), race
+  rows carry `points`.
+- `/v1/drivers?session_key=K` → join `driver_number` → `full_name` / `name_acronym` /
+  `team_name` (22/22).
+- Weekend mapping: match the weekend's date span to session `date_start` (or meeting_key) —
+  no round numbers in OpenF1.
+- Risks for the impl PR: community API (rate limits unspecified — cache aggressively via ISR),
+  and **must verify from a Vercel preview/prod** before "shipped" (datacenter-IP rule; Jolpica
+  precedent says fine, but verify). Jolpica remains the quali fallback (Q times only).
+- Shape of the feature: `lib/results/openf1.ts` fetcher + `WeekendSessionResults` section on
+  the weekend page, race first, then sprint/quali/practices, collapsed accordions in the v2
+  row language. Non-F1 series can reuse the section with their round-keyed race results
+  (adapter per series, results-ready-notification pattern).
+
 ### 2026-06-10 — session 3 (same day): PR 2a shell + PR 2b time-first home
 - Recovery first: the PR-2-brief docs commit (`54a2d93`) had been pushed to the #101 branch
   AFTER that PR merged — never reached main. Cherry-picked onto the 2a branch.
