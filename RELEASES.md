@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.19.2 — 2026-06-11
+
+**The landing page is reachable from the app again.** Tapping "Landing" in the footer of the installed app now actually takes you there — opening the app still drops you straight into your dashboard, as it should.
+
 ## 0.19.1 — 2026-06-11
 
 **No more landing-page flash in the app.** Tapping the PADDOCK•TRACKER logo inside the installed app briefly showed the marketing page before returning home — it now goes straight to your dashboard. In the browser, the logo still takes you to the landing page.
