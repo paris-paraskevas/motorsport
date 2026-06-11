@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.24.0 — 2026-06-11
+
+Redesign PR 2d — the Account page. Completes the PR-2 dashboard-overhaul brief (2a shell → 2b home → 2c series/calendar/desktop → 2d account).
+
+### Changed
+
+- **/settings is now the Account page** the bottom bar promises (URL unchanged): Saira `ACCOUNT.` header, new `components/AccountIdentity.tsx` identity strip — signed in: Clerk avatar (UserButton carries manage/sign-out) + name + email; guest: "browsing as a guest" + sign-in CTA. Page title → Account.
+- **The page went public** (`proxy.ts`: `/settings(.*)` removed from the protected matcher). Guests get device-local followed-series prefs (which home/calendar already honor) instead of a redirect to a Clerk-hosted wall; every user-scoped WRITE stays behind the protected `/api/user/*` + `/api/push/*` routes, so nothing identity-bound is reachable anonymously. The push section gates itself: guests see "sign in above to enable" instead of a button that would 401.
+- **Last zinc surfaces retired** — SettingsClient, EnableNotifications, NotifPrefsSection, OnboardingWizard (64 zinc classes → 0): flat `border-y` sections, mono buttons, brand primary CTAs, `accent-brand` checkboxes; the onboarding sheet moves to token backgrounds.
+- **Notification copy tells the truth post-0.22.0**: settings + prefs rows now describe the ~30/~10-minute pings and the race-results notification.
+
 ## 0.23.1 — 2026-06-11
 
 Validation sweep 2 findings (motogp/wec/imsa/gt-world/dtm — report: `docs/research/validation-2026-06-11/endurance-gt-motogp.md`; MotoGP fully clean) + the landing width follow-up.

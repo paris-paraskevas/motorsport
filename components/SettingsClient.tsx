@@ -10,7 +10,7 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
   const { followed, hydrated, setFollowed } = useFollowedSeries();
 
   if (!hydrated) {
-    return <div className="text-zinc-500 text-sm">Loading preferences…</div>;
+    return <div className="text-text-faint text-sm">Loading preferences…</div>;
   }
 
   // Default when nothing stored yet: treat as "follow everything" for UI selection.
@@ -35,18 +35,18 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   return (
     <div>
-      <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-5 md:p-6 mb-6">
+      <div className="border-y border-border py-5 md:py-6 mb-6">
         <div className="flex items-baseline justify-between mb-1">
           <div>
-            <h2 className="text-zinc-50 text-base font-semibold">Followed championships</h2>
-            <p className="text-zinc-500 text-xs mt-1">
+            <h2 className="text-text text-base font-semibold">Followed championships</h2>
+            <p className="text-text-faint text-xs mt-1">
               Home and Calendar only show sessions for series you follow.
               {isSignedIn
                 ? ' Saved to your account — synced across devices.'
                 : ' Stored on this device.'}
             </p>
           </div>
-          <div className="text-xs text-zinc-400 font-medium tabular-nums whitespace-nowrap">
+          <div className="text-xs text-text-muted font-medium tabular-nums whitespace-nowrap">
             {followedCount} / {totalCount}
           </div>
         </div>
@@ -54,21 +54,21 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
           <button
             type="button"
             onClick={followAll}
-            className="text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+            className="text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
           >
             Follow all
           </button>
           <button
             type="button"
             onClick={unfollowAll}
-            className="text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+            className="text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
           >
             Unfollow all
           </button>
           <button
             type="button"
             onClick={resetToDefault}
-            className="text-xs font-medium text-zinc-500 hover:text-zinc-300 rounded-full px-3 py-1.5 transition-colors"
+            className="text-xs font-medium font-mono text-text-faint hover:text-text-muted px-3 py-1.5 transition-colors"
           >
             Reset to default
           </button>
@@ -80,29 +80,29 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
       <div className="space-y-6">
         {grouped.map(group => (
           <section key={group.category.id}>
-            <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500 font-semibold mb-2 px-1">
+            <div className="text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-2 px-1">
               {group.category.label}
             </div>
-            <div className="rounded-2xl bg-zinc-900/30 border border-zinc-800/60 overflow-hidden">
+            <div className="border-y border-border">
               {group.series.map((s, i) => (
                 <label
                   key={s.slug}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-900/60 transition-colors ${
-                    i > 0 ? 'border-t border-zinc-800/50' : ''
+                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface transition-colors ${
+                    i > 0 ? 'border-t border-border' : ''
                   }`}
                 >
                   <span
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: s.color }}
                   />
-                  <span className="flex-1 text-zinc-100 text-sm font-medium">
+                  <span className="flex-1 text-text text-sm font-medium">
                     {s.name}
                   </span>
                   <input
                     type="checkbox"
                     checked={isFollowing(s.slug)}
                     onChange={() => toggle(s.slug)}
-                    className="w-5 h-5 rounded accent-zinc-300 cursor-pointer"
+                    className="w-5 h-5 rounded accent-brand cursor-pointer"
                   />
                 </label>
               ))}
