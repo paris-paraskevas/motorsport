@@ -40,7 +40,7 @@ export function LandingFooter({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   return (
     <footer className="bg-bg">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
+      <div className="mx-auto grid max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
         <div>
           <p className="font-display text-lg font-extrabold uppercase tracking-wide text-text">
             Paddock<span className="text-brand">•</span>Tracker
@@ -103,7 +103,7 @@ export function LandingFooter({ seriesList }: { seriesList: SeriesMeta[] }) {
       </div>
 
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-5 font-mono text-[11px] text-text-faint sm:px-6">
+        <div className="mx-auto flex max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl flex-wrap items-center justify-between gap-2 px-4 py-5 font-mono text-[11px] text-text-faint sm:px-6">
           <span>© 2026 Paddock Tracker · paddock-tracker.com</span>
           <span>Every session. Every series. One paddock.</span>
         </div>

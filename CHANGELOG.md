@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.23.1 — 2026-06-11
+
+Validation sweep 2 findings (motogp/wec/imsa/gt-world/dtm — report: `docs/research/validation-2026-06-11/endurance-gt-motogp.md`; MotoGP fully clean) + the landing width follow-up.
+
+### Fixed
+
+- **WEC champions: 2024 manufacturers' title corrected Porsche → Toyota** (`content/series/wec/champions.json`) — Porsche won the drivers' crown only; the curated file had copied the drivers' marque into the manufacturers' slot.
+- **GT World champions: 2024 Sprint champions Auer/Engel re-attributed to Winward Racing** (was Team WRT — the rival they beat by 2.5 points; WRT won the teams' title). 2021 row checked against the same failure signature: Vanthoor/Weerts genuinely drove for WRT — correct as-is. Cross-cutting curation rule noted: split-title years are where champions files go wrong.
+- **IMSA results: Detroit (R5) restored — two stacked causes.** (1) `alkamel-rounds.json` still ended at round 4; added the probed-live Detroit URL. (2) Deeper: Al Kamel filed Detroit's `session_date` as `30/05/2026` where every earlier round used dashes, and `parseEventDate`'s dash-only regex silently dropped the whole round — the manifest fix alone would have rendered nothing. Regex now accepts both separators; regression test added. (Recurs at Watkins Glen, 28 Jun: the manifest needs its R6 entry after the race.)
+- **DTM manufacturers' standings table removed**: upstream motorsport.com's Constructor endpoint itself returns 4 of 8 brands with wrong totals (verified by fetching it directly — our parse was faithful to junk). Drivers + Teams tables stay; reinstate only with a better source.
+- **Landing page width** (operator follow-up to 0.23.0): the landing's own `max-w-6xl` containers (nav, hero, every section, footer) gain the same `xl:max-w-7xl 2xl:max-w-screen-2xl` tiers as the app.
+
 ## 0.22.0 — 2026-06-11
 
 Operator spec: opted-in users get a heads-up 30 AND 10 minutes before sessions, plus a ping when a race's results have rendered on our pages.

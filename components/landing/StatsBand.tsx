@@ -20,7 +20,7 @@ export function StatsBand({ stats }: { stats: LandingStats }) {
   return (
     <section aria-label="Coverage in numbers" className="bg-acid text-black">
       <div className="p2-hatch">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-y-10 px-4 py-14 sm:px-6 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl grid-cols-2 gap-y-10 px-4 py-14 sm:px-6 lg:grid-cols-4">
           {items.map(item => (
             <div key={item.label} className="border-l-2 border-black/80 pl-4">
               <div className="font-display text-5xl font-extrabold tracking-tight sm:text-6xl">

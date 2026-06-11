@@ -661,19 +661,17 @@ export async function StandingsTab({ series }: { series: Series }) {
     }
     const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
     const teams = applyConstructorOverrides(data.teams, overrides?.constructors);
-    const constructors = applyConstructorOverrides(
-      data.constructors,
-      overrides?.constructors,
-    );
     return (
       <div className="space-y-4">
         <DriversTable drivers={drivers} heading="Drivers" />
         {teams.length > 0 ? (
           <ConstructorsTable constructors={teams} heading="Teams" />
         ) : null}
-        {constructors.length > 0 ? (
-          <ConstructorsTable constructors={constructors} heading="Manufacturers" />
-        ) : null}
+        {/* Manufacturers table dropped (validation 2026-06-11): upstream
+            motorsport.com's Constructor endpoint itself returns 4 of 8
+            brands with wrong totals — verified by fetching it directly; our
+            parse was faithful to junk. Reinstate only with a better source
+            (chart-vs-standings discipline applies to standings too). */}
         <SourceLink
           href="https://www.motorsport.com/dtm/standings/2026/"
           label="motorsport.com (DTM 2026)"

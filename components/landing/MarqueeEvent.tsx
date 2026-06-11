@@ -31,7 +31,7 @@ export function MarqueeEvent({ event }: { event: MarqueeEventData }) {
             'radial-gradient(ellipse 60% 80% at 80% 50%, rgb(255 180 0 / 0.16) 0%, transparent 65%)',
         }}
       />
-      <div className="relative mx-auto flex max-w-6xl flex-wrap items-center gap-x-12 gap-y-8 px-4 py-12 sm:px-6 lg:py-16">
+      <div className="relative mx-auto flex max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl flex-wrap items-center gap-x-12 gap-y-8 px-4 py-12 sm:px-6 lg:py-16">
         <div className="min-w-0 flex-1 basis-72">
           <p className="flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
             <span

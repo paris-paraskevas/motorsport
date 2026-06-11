@@ -120,7 +120,10 @@ function parseEventDate(raw: string): Date | null {
   // (often a 12-hour rollover with no AM/PM marker, see probe-2026-05-22).
   // We only consume the date component and anchor at UTC midnight; consumers
   // that need venue-local time should pull from `content/series/imsa/sessions.json`.
-  const match = /^(\d{2})-(\d{2})-(\d{4})/.exec(raw);
+  // Separator varies per event: Detroit 2026 filed "30/05/2026" where every
+  // earlier round used dashes — a dash-only regex silently dropped the whole
+  // round (validation 2026-06-11). Accept both.
+  const match = /^(\d{2})[-/](\d{2})[-/](\d{4})/.exec(raw);
   if (!match) return null;
   const day = Number(match[1]);
   const month = Number(match[2]);

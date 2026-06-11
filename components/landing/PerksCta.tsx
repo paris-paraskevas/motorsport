@@ -29,7 +29,7 @@ export function PerksCta() {
             'radial-gradient(ellipse 55% 65% at 50% 0%, rgb(255 180 0 / 0.14) 0%, transparent 65%)',
         }}
       />
-      <div className="relative mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
+      <div className="relative mx-auto max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl px-4 py-16 text-center sm:px-6">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">
           Free, no account needed · better with one
         </p>
