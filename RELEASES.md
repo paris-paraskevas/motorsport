@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.20.1 — 2026-06-11
+
+**The points chart works on phones now.** The season trend graph — previously a desktop-only view — renders properly on mobile, sized for the screen, in the same constructor colours.
+
 ## 0.20.0 — 2026-06-11
 
 **Every series has its story now.** The History tab — previously only written for Formula 1 — is now authored for all 15 championships: MotoGP's 1949 origins, IndyCar's great split and reunification, Group B and Group C, the DTM's collapses and revivals, NASCAR's 1979 Daytona brawl, the Nordschleife's half-century of club racing, and more. Each essay is fully sourced, with the references listed at the end.

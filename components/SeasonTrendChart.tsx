@@ -120,24 +120,27 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
 
   return (
     <div className="space-y-3">
-      {/* The chart itself is desktop-only (locked 2c decision): at phone
-          widths recharts renders an unreadable 0-ish-size plot; the ranked
-          legend chips below carry the points data for mobile. */}
-      <div className="hidden sm:block h-72 md:h-80">
+      {/* Renders on every viewport (operator reversal of the 0.18.0
+          desktop-only call): phone-fit height + tight axes. Keeping the
+          container always-displayed also sidesteps the old 0-size
+          ResponsiveContainer measurement bug — it only mis-measured inside
+          display:none parents. */}
+      <div className="h-64 sm:h-72 md:h-80">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 6, right: 12, bottom: 6, left: 0 }}>
             <CartesianGrid stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="round"
               stroke="var(--text-faint)"
-              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
+              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
               tickLine={false}
+              minTickGap={14}
             />
             <YAxis
               stroke="var(--text-faint)"
-              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
+              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
               tickLine={false}
-              width={32}
+              width={28}
             />
             <Tooltip
               contentStyle={{

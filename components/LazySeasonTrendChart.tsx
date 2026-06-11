@@ -11,7 +11,7 @@ const Chart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="hidden sm:block h-72 md:h-80 border border-border bg-surface/40 animate-pulse" />
+      <div className="h-64 sm:h-72 md:h-80 border border-border bg-surface/40 animate-pulse" />
     ),
   },
 );

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.20.1 — 2026-06-11
+
+### Fixed
+
+- **Season trend chart now renders on mobile** (operator reversal of the 0.18.0 desktop-only call): the `hidden sm:block` wrapper is gone — phone-fit `h-64` plot with tightened axes (10px ticks, `minTickGap`, narrower Y column); the lazy-load skeleton matches. Keeping the container always-displayed also sidesteps the historical 0-size `ResponsiveContainer` measurement bug (it only mis-measured inside `display:none` parents). Verified at 390px: 343×256 SVG, six team-colored lines, zero overflow.
+
 ## 0.20.0 — 2026-06-11
 
 ### Added
