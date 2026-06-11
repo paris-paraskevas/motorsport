@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.24.0 — 2026-06-11
+
+**Account, properly.** The Account tab now opens a real account page — your profile and sign-out up top when signed in, followed series and notification preferences below. Not signed in? The page works anyway: pick your series and they're remembered on this device, with a one-tap sign-in when you want them everywhere.
+
+**Everything matches the look now.** The account page, notification settings and the first-visit setup wizard were the last screens on the old design — they've joined the dark timing-screen style, and the notification descriptions now reflect the new 30-and-10-minute reminders.
+
 ## 0.23.1 — 2026-06-11
 
 **Three record-book corrections.** Toyota — not Porsche — is credited with the 2024 WEC manufacturers' title; the 2024 GT World Challenge champions Auer and Engel are now correctly listed with Winward Racing; and IMSA's results gained the missing Detroit round, with the bug that hid it fixed for good.

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import { Bell, BellOff, BellRing } from 'lucide-react';
 import {
   getPushAvailability,
@@ -20,6 +21,7 @@ type Status =
   | 'working';
 
 export function EnableNotifications() {
+  const { isLoaded, isSignedIn } = useAuth();
   const [status, setStatus] = useState<Status>('checking');
   const [message, setMessage] = useState<string | null>(null);
 
@@ -60,7 +62,7 @@ export function EnableNotifications() {
     try {
       await subscribeToPush();
       setStatus('subscribed');
-      setMessage('Notifications enabled — you\'ll get a ping ~30 min before sessions.');
+      setMessage('Notifications enabled — pings at ~30 and ~10 min before sessions, plus race results.');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed';
       if (msg === 'denied') {
@@ -101,31 +103,40 @@ export function EnableNotifications() {
   };
 
   return (
-    <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-5 md:p-6 mb-6">
+    <div className="border-y border-border py-5 md:py-6 mb-6">
       <div className="flex items-start gap-3 mb-4">
         <div className="shrink-0 mt-0.5">
           {status === 'subscribed' ? (
             <BellRing size={20} className="text-emerald-400" />
           ) : status === 'denied' ? (
-            <BellOff size={20} className="text-zinc-500" />
+            <BellOff size={20} className="text-text-faint" />
           ) : (
-            <Bell size={20} className="text-zinc-400" />
+            <Bell size={20} className="text-text-muted" />
           )}
         </div>
         <div className="flex-1">
-          <h2 className="text-zinc-50 text-base font-semibold">Session notifications</h2>
-          <p className="text-zinc-500 text-xs mt-1 leading-relaxed">
-            A push to this device about 30 minutes before any session in a followed series.
+          <h2 className="text-text text-base font-semibold">Session notifications</h2>
+          <p className="text-text-faint text-xs mt-1 leading-relaxed">
+            Pushes to this device ~30 and ~10 minutes before sessions in your
+            followed series, plus a ping when a race&apos;s results land on Paddock.
           </p>
         </div>
       </div>
 
+      {/* The subscribe/test APIs are auth-protected; the page no longer is.
+          Guests get the why instead of a button that 401s. */}
+      {isLoaded && !isSignedIn ? (
+        <div className="text-text-faint text-sm">
+          Sign in above to enable push notifications on this device.
+        </div>
+      ) : (
+        <>
       {status === 'checking' && (
-        <div className="text-zinc-500 text-sm">Checking…</div>
+        <div className="text-text-faint text-sm">Checking…</div>
       )}
 
       {status === 'unsupported' && (
-        <div className="text-zinc-500 text-sm">
+        <div className="text-text-faint text-sm">
           Push notifications aren&apos;t supported on this browser.
         </div>
       )}
@@ -151,7 +162,7 @@ export function EnableNotifications() {
           type="button"
           onClick={enable}
           disabled={status === 'working'}
-          className="inline-flex items-center gap-2 text-sm font-medium text-zinc-100 bg-zinc-100/10 hover:bg-zinc-100/20 disabled:opacity-50 border border-zinc-700 rounded-full px-4 py-2 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
         >
           <Bell size={14} />
           {status === 'working' ? 'Enabling…' : 'Enable notifications'}
@@ -163,14 +174,14 @@ export function EnableNotifications() {
           <button
             type="button"
             onClick={sendTest}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
           >
             Send test
           </button>
           <button
             type="button"
             onClick={disable}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-300 rounded-full px-3 py-1.5 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium font-mono text-text-faint hover:text-text-muted px-3 py-1.5 transition-colors"
           >
             Turn off
           </button>
@@ -178,7 +189,9 @@ export function EnableNotifications() {
       )}
 
       {message && status !== 'server-not-ready' && (
-        <div className="mt-3 text-xs text-zinc-400">{message}</div>
+        <div className="mt-3 text-xs text-text-muted">{message}</div>
+      )}
+        </>
       )}
     </div>
   );

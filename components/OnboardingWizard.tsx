@@ -169,7 +169,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-zinc-950/95 backdrop-blur-md overflow-y-auto pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-0 z-[70] bg-bg/95 backdrop-blur-md overflow-y-auto pb-[env(safe-area-inset-bottom)]"
       role="dialog"
       aria-modal="true"
       aria-label="Onboarding"
@@ -179,13 +179,13 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
           {step === 'series' && (
             <>
               <div className="mb-6">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-semibold mb-2">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
                   Welcome
                 </div>
-                <h1 className="text-zinc-50 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+                <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
                   Pick your championships
                 </h1>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
+                <p className="mt-3 text-sm text-text-muted leading-relaxed">
                   Home and Calendar will only show sessions from the series you follow.
                   You can change this anytime in Settings.
                 </p>
@@ -195,18 +195,18 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                 <button
                   type="button"
                   onClick={selectAll}
-                  className="text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+                  className="text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
                 >
                   Select all
                 </button>
                 <button
                   type="button"
                   onClick={selectNone}
-                  className="text-xs font-medium text-zinc-300 hover:text-zinc-100 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 rounded-full px-3 py-1.5 transition-colors"
+                  className="text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
                 >
                   Clear
                 </button>
-                <span className="text-xs text-zinc-500 tabular-nums ml-auto">
+                <span className="text-xs text-text-faint tabular-nums ml-auto">
                   {selected.size} / {seriesList.length}
                 </span>
               </div>
@@ -214,29 +214,29 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
               <div className="space-y-5 mb-8">
                 {grouped.map(group => (
                   <section key={group.category.id}>
-                    <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500 font-semibold mb-2 px-1">
+                    <div className="text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-2 px-1">
                       {group.category.label}
                     </div>
-                    <div className="rounded-2xl bg-zinc-900/30 border border-zinc-800/60 overflow-hidden">
+                    <div className="border-y border-border">
                       {group.series.map((s, i) => (
                         <label
                           key={s.slug}
-                          className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-900/60 transition-colors ${
-                            i > 0 ? 'border-t border-zinc-800/50' : ''
+                          className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface transition-colors ${
+                            i > 0 ? 'border-t border-border' : ''
                           }`}
                         >
                           <span
                             className="w-2.5 h-2.5 rounded-full shrink-0"
                             style={{ backgroundColor: s.color }}
                           />
-                          <span className="flex-1 text-zinc-100 text-sm font-medium">
+                          <span className="flex-1 text-text text-sm font-medium">
                             {s.name}
                           </span>
                           <input
                             type="checkbox"
                             checked={selected.has(s.slug)}
                             onChange={() => toggle(s.slug)}
-                            className="w-5 h-5 rounded accent-zinc-300 cursor-pointer"
+                            className="w-5 h-5 rounded accent-brand cursor-pointer"
                           />
                         </label>
                       ))}
@@ -250,29 +250,29 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
           {step === 'notifications' && (
             <>
               <div className="mb-6">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-semibold mb-2">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
                   Step 2 of 2
                 </div>
-                <h1 className="text-zinc-50 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+                <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
                   Get a heads-up before sessions
                 </h1>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
+                <p className="mt-3 text-sm text-text-muted leading-relaxed">
                   Optional push notification to this device about 30 minutes before any
                   session in a followed series. You can turn it off anytime from Settings.
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-zinc-900/40 border border-zinc-800/60 p-5 md:p-6 mb-6">
+              <div className="border-y border-border py-5 md:py-6 mb-6">
                 <div className="flex items-start gap-3 mb-4">
-                  <Bell size={20} className="text-zinc-300 shrink-0 mt-0.5" />
+                  <Bell size={20} className="text-text-muted shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h2 className="text-zinc-50 text-base font-semibold">
+                    <h2 className="text-text text-base font-semibold">
                       Session reminders
                     </h2>
                     {(notifState === 'idle' ||
                       notifState === 'working' ||
                       notifState === 'error') && (
-                      <p className="text-zinc-500 text-xs mt-1 leading-relaxed">
+                      <p className="text-text-faint text-xs mt-1 leading-relaxed">
                         Browser asks for permission once you tap Enable.
                       </p>
                     )}
@@ -280,7 +280,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                 </div>
 
                 {notifState === 'checking' && (
-                  <div className="text-zinc-500 text-sm">Checking…</div>
+                  <div className="text-text-faint text-sm">Checking…</div>
                 )}
 
                 {notifState === 'subscribed' && (
@@ -294,8 +294,8 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                   notifState === 'server-not-ready') && (
                   <div className="space-y-2">
                     <div className="text-amber-400 text-sm">{notifMsg}</div>
-                    <div className="text-zinc-500 text-xs leading-relaxed">
-                      Tap <span className="text-zinc-300 font-medium">Done</span> below to finish — you can enable notifications later from your account preferences.
+                    <div className="text-text-faint text-xs leading-relaxed">
+                      Tap <span className="text-text-muted font-medium">Done</span> below to finish — you can enable notifications later from your account preferences.
                     </div>
                   </div>
                 )}
@@ -305,7 +305,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                     type="button"
                     onClick={enableNotif}
                     disabled={notifState === 'working'}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-zinc-100 bg-zinc-100/10 hover:bg-zinc-100/20 disabled:opacity-50 border border-zinc-700 rounded-full px-4 py-2 transition-colors"
+                    className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
                   >
                     <Bell size={14} />
                     {notifState === 'working' ? 'Enabling…' : 'Enable notifications'}
@@ -316,7 +316,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                   notifState !== 'unavailable' &&
                   notifState !== 'denied' &&
                   notifState !== 'server-not-ready' && (
-                    <div className="mt-3 text-xs text-zinc-400">{notifMsg}</div>
+                    <div className="mt-3 text-xs text-text-muted">{notifMsg}</div>
                   )}
               </div>
             </>
@@ -324,7 +324,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
         </div>
 
         {/* Sticky footer with primary action */}
-        <div className="sticky bottom-0 inset-x-0 bg-zinc-950/95 backdrop-blur-md border-t border-zinc-900 pb-[env(safe-area-inset-bottom)]">
+        <div className="sticky bottom-0 inset-x-0 bg-bg/95 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">
           <div className="max-w-2xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-3">
             {step === 'series' ? (
               <>
@@ -334,14 +334,14 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                     await setFollowed(seriesList.map(s => s.slug));
                     setStep('notifications');
                   }}
-                  className="text-sm font-medium text-zinc-500 hover:text-zinc-200 transition-colors"
+                  className="text-sm font-medium text-text-faint hover:text-text-muted transition-colors"
                 >
                   Skip
                 </button>
                 <button
                   type="button"
                   onClick={saveSeriesAndNext}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-zinc-950 bg-zinc-100 hover:bg-white rounded-full px-5 py-2.5 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep px-5 py-2.5 transition-colors"
                 >
                   Continue {allSelected ? '(follow all)' : `(${selected.size})`}
                   <ChevronRight size={16} />
@@ -352,14 +352,14 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                 <button
                   type="button"
                   onClick={finish}
-                  className="text-sm font-medium text-zinc-500 hover:text-zinc-200 transition-colors"
+                  className="text-sm font-medium text-text-faint hover:text-text-muted transition-colors"
                 >
                   Skip
                 </button>
                 <button
                   type="button"
                   onClick={finish}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-zinc-950 bg-zinc-100 hover:bg-white rounded-full px-5 py-2.5 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep px-5 py-2.5 transition-colors"
                 >
                   Done
                   <ChevronRight size={16} />
