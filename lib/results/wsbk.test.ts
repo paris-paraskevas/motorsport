@@ -111,17 +111,20 @@ function buildSessionFixture(positions: Array<{ pos: number; rider: string; team
   return { data, included };
 }
 
+// `timeMs` is each rider's CUMULATIVE race time, matching the live Pulselive
+// payload (validation 2026-06-11: the old gap-shaped fixture masked a prod
+// bug where P2 rendered "+54:07.653"). Gaps below are derived vs P1.
 const standardPositions = [
   { pos: 1, rider: 'r1', team: 't1', timeMs: 3334579 },
-  { pos: 2, rider: 'r2', team: 't1', timeMs: 5832 },
-  { pos: 3, rider: 'r3', team: 't2', timeMs: 9120 },
-  { pos: 4, rider: 'r4', team: 't2', timeMs: 12041 },
-  { pos: 5, rider: 'r5', team: 't3', timeMs: 14820 },
-  { pos: 6, rider: 'r6', team: 't3', timeMs: 16210 },
-  { pos: 7, rider: 'r7', team: 't4', timeMs: 17500 },
-  { pos: 8, rider: 'r8', team: 't4', timeMs: 18900 },
-  { pos: 9, rider: 'r9', team: 't5', timeMs: 20300 },
-  { pos: 10, rider: 'r10', team: 't5', timeMs: 21810 },
+  { pos: 2, rider: 'r2', team: 't1', timeMs: 3334579 + 5832 },
+  { pos: 3, rider: 'r3', team: 't2', timeMs: 3334579 + 9120 },
+  { pos: 4, rider: 'r4', team: 't2', timeMs: 3334579 + 12041 },
+  { pos: 5, rider: 'r5', team: 't3', timeMs: 3334579 + 14820 },
+  { pos: 6, rider: 'r6', team: 't3', timeMs: 3334579 + 16210 },
+  { pos: 7, rider: 'r7', team: 't4', timeMs: 3334579 + 17500 },
+  { pos: 8, rider: 'r8', team: 't4', timeMs: 3334579 + 18900 },
+  { pos: 9, rider: 'r9', team: 't5', timeMs: 3334579 + 20300 },
+  { pos: 10, rider: 'r10', team: 't5', timeMs: 3334579 + 21810 },
 ];
 
 function urlMatches(url: string, pattern: string): boolean {
