@@ -2,7 +2,9 @@ What's new in Paddock Tracker. Newest first. For per-commit engineering detail, 
 
 ## 0.28.0 — 2026-06-11
 
-**Standings frozen in time on every F1 weekend page.** Each Grand Prix page now shows the full championship — every driver and every team — exactly as it stood at that race, not today's table. Open the Monaco page and you see the title fight as Monaco found it; open round 3 and you're back in March.
+**Standings frozen in time on every race-weekend page.** Each round's page now shows the full championship — every driver, and the teams where team points are simply the sum of their drivers' — exactly as it stood at that race, not today's table. Open the Monaco page and you see the title fight as Monaco found it; open round 3 and you're back in March. Works across F1, F2, F3, Formula E, IndyCar, MotoGP, Superbikes, NASCAR, WRC and DTM.
+
+**The points chart now leads the Standings tab.** Progression first, tables right below.
 
 ## 0.27.0 — 2026-06-11
 
