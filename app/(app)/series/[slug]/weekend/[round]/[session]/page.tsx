@@ -17,6 +17,8 @@ import {
   type OpenF1Session,
   type SessionClassification,
 } from '@/lib/results/openf1';
+import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
+import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -47,6 +49,72 @@ function matchOpenF1Session(
     }
   }
   return best;
+}
+
+// Race-session classifications for non-F1 series (the per-round results the
+// series' own results tab renders). Real classifications only: WRC comes
+// from the per-rally articles (NOT the chart sub-totals), DTM has no
+// per-race source yet, IMSA/GTWC class shapes are a follow-up.
+// WRC is absent deliberately: rallies have stage itineraries, not a "race"
+// session — its per-rally classification lives on the results tab.
+const RACE_SESSION_SERIES = new Set([
+  'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup',
+]);
+
+function isRaceLikeTitle(title: string): boolean {
+  const cleaned = title.replace(/^.*?[-–—:]\s*/, '');
+  if (/sprint\s*(qualifying|shootout)/i.test(cleaned)) return false;
+  return /race|sprint|feature/i.test(cleaned);
+}
+
+// Multi-race rounds (Feature/Sprint, R1/Superpole/R2) — pick the candidate
+// whose name shares the most tokens with the session title; tie → first.
+function pickRaceForSession(candidates: RaceResult[], sessionTitle: string): RaceResult | null {
+  if (candidates.length === 0) return null;
+  if (candidates.length === 1) return candidates[0];
+  const tokens = ['sprint', 'feature', 'superpole', 'race 1', 'race 2'];
+  const t = sessionTitle.toLowerCase();
+  let best = candidates[0];
+  let bestScore = -1;
+  for (const c of candidates) {
+    const n = c.raceName.toLowerCase();
+    let score = 0;
+    for (const tok of tokens) {
+      if (t.includes(tok) && n.includes(tok)) score += 2;
+      if (t.includes(tok) !== n.includes(tok)) score -= 1;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = c;
+    }
+  }
+  return best;
+}
+
+async function fetchRoundClassification(
+  series: Series,
+  round: number,
+  sessionTitle: string,
+): Promise<SessionClassification | null> {
+  const slug = series.meta.slug;
+  if (!RACE_SESSION_SERIES.has(slug) || !isRaceLikeTitle(sessionTitle)) return null;
+  const source = await loadSnapshotSource(series);
+  if (!source) return null;
+  const pool: RaceResult[] = [...source.races, ...(source.extras ?? [])];
+  const race = pickRaceForSession(pool.filter(r => r.round === round), sessionTitle);
+  if (!race || race.results.length <= 1) return null;
+  return {
+    isQualifying: false,
+    isRace: true,
+    entries: race.results.map(e => ({
+      position: e.position,
+      driverName: e.driverName,
+      driverCode: e.driverCode,
+      team: e.team,
+      time: e.time ?? e.status,
+      points: e.points,
+    })),
+  };
 }
 
 async function resolve(params: Promise<{ slug: string; round: string; session: string }>) {
@@ -261,6 +329,8 @@ export default async function SessionPage({
       ? null
       : matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
     if (match) classification = await fetchSessionClassification(match);
+  } else if (isPast) {
+    classification = await fetchRoundClassification(series, round, session.title);
   }
 
   const nav = weekendSessionNav(weekend, slug, round, session.uid);
@@ -334,7 +404,9 @@ export default async function SessionPage({
           <p className="text-text-muted text-sm">
             {slug === 'f1'
               ? 'Classification not available for this session yet.'
-              : 'Per-session classification is coming to this series — race results live on the series page.'}
+              : isRaceLikeTitle(session.title)
+                ? 'Classification not available for this race yet — season results live on the series page.'
+                : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
           </p>
           <Link
             href={`/series/${slug}?tab=results`}

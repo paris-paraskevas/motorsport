@@ -162,9 +162,15 @@ export default async function WeekendPage({
       <WeekendSchedule
         weekend={weekend}
         color={color}
-        // Per-session pages (W1c): F1 first — OpenF1 covers every session
-        // type. Other series link once their race-session adapters land.
-        sessionLinkBase={slug === 'f1' ? `/series/${slug}/weekend/${round}` : undefined}
+        // Per-session pages: F1 has every session via OpenF1; the listed
+        // series carry race-session classifications from their results
+        // feeds (0.35.0). DTM/IMSA/GTWC/WEC/NLS/ADAC stay unlinked until a
+        // per-race source exists for them.
+        sessionLinkBase={
+          ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup'].includes(slug)
+            ? `/series/${slug}/weekend/${round}`
+            : undefined
+        }
       />
 
       <WeekendStandingsSnapshot series={series} round={round} isPast={isPast} />

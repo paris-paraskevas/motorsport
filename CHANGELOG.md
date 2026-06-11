@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.35.0 — 2026-06-11
+
+Race-session classifications beyond F1 — the session-pages story closes for every series with per-race data.
+
+### Added
+
+- **Race-like session pages carry the round's classification** on F2, F3, Formula E, IndyCar, MotoGP, WSBK and NASCAR — the same override-patched results their results tabs render, mapped into the session-page table (position, rider/driver, team, time/status, points). Multi-race rounds resolve by title-token matching: MotoGP's SPRINT page shows the sprint result (12 for the win), RACE the grand prix; WSBK's three races each land on their page.
+- **Weekend schedule rows link through** on those seven series plus F1. WRC is deliberately absent — rallies run stage itineraries, not a "race" session; its per-rally classification stays on the results tab. DTM (no per-race source) and the class-structured endurance series (IMSA/GTWC/WEC) remain unlinked until their shapes get adapters.
+- Honest empty states split by session kind: race pages say results are pending; practice/qualifying on these series say the data isn't published upstream.
+
 ## 0.34.0 — 2026-06-11
 
 Onboarding tour — built to the research doc (docs/research/onboarding-tour-2026-06.md): hand-rolled spotlight, 4 stops, auto-shows once, no account needed.
