@@ -76,7 +76,7 @@ export function LandingMenu() {
           aria-label="Site menu"
           className="fixed inset-0 z-[60] overflow-y-auto bg-bg"
         >
-          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+          <div className="mx-auto max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl px-4 py-4 sm:px-6">
             <div className="flex h-10 items-center justify-between">
               <span className="font-display text-lg font-extrabold uppercase tracking-wide text-text">
                 Paddock<span className="text-brand">•</span>Tracker

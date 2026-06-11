@@ -16,6 +16,10 @@
     {
       "round": 4,
       "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605031310_Race/05_Results%20by%20Class_Race_Official.JSON"
+    },
+    {
+      "round": 5,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605301610_Race/05_Results%20by%20Class_Race_Official.JSON"
     }
   ]
 }

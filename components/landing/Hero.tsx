@@ -35,7 +35,7 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
         }}
       />
 
-      <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pb-12 pt-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:pt-20">
+      <div className="relative mx-auto grid max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl gap-10 px-4 pb-12 pt-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:pt-20">
         <div className="p2-fade-up">
           <p className="mb-5 flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
             <span className="live-pulse h-2 w-2 rounded-full bg-live" aria-hidden="true" />
@@ -115,7 +115,7 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
       {/* NEXT UP countdown strip. */}
       {next && !next.dateOnly && (
         <div className="relative border-y border-border bg-surface/60">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-4 sm:px-6">
+          <div className="mx-auto flex max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-4 sm:px-6">
             <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">
               Next up · in your time
             </span>

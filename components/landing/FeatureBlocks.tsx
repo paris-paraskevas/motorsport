@@ -34,7 +34,7 @@ const FEATURES = [
 export function FeatureBlocks() {
   return (
     <section id="inside" className="border-b border-border">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl px-4 py-16 sm:px-6">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">
           What&apos;s inside
         </p>

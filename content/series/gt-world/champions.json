@@ -1,6 +1,6 @@
 [
   { "year": 2025, "driver": "Kelvin van der Linde, Charles Weerts", "constructor": "Team WRT", "secondaryDriver": "Alessio Picariello, Sven Müller, Patric Niederhauser", "secondaryTeam": "Rutronik Racing", "secondaryLabel": "Endurance Cup" },
-  { "year": 2024, "driver": "Lucas Auer, Maro Engel", "constructor": "Team WRT", "secondaryDriver": "Alessandro Pier Guidi, Alessio Rovera", "secondaryTeam": "AF Corse - Francorchamps Motors", "secondaryLabel": "Endurance Cup" },
+  { "year": 2024, "driver": "Lucas Auer, Maro Engel", "constructor": "Winward Racing", "secondaryDriver": "Alessandro Pier Guidi, Alessio Rovera", "secondaryTeam": "AF Corse - Francorchamps Motors", "secondaryLabel": "Endurance Cup" },
   { "year": 2023, "driver": "Timur Boguslavskiy, Raffaele Marciello", "constructor": "AKKodis ASP Team", "secondaryDriver": "Jules Gounon, Timur Boguslavskiy, Raffaele Marciello", "secondaryTeam": "AKKodis ASP Team", "secondaryLabel": "Endurance Cup" },
   { "year": 2022, "driver": "Raffaele Marciello", "constructor": "AKKodis ASP Team", "secondaryDriver": "Jules Gounon, Daniel Juncadella, Raffaele Marciello", "secondaryTeam": "AKKodis ASP Team", "secondaryLabel": "Endurance Cup" },
   { "year": 2021, "driver": "Dries Vanthoor, Charles Weerts", "constructor": "Team WRT", "secondaryDriver": "Alessandro Pier Guidi, Nicklas Nielsen, Côme Ledogar", "secondaryTeam": "Team WRT", "secondaryLabel": "Endurance Cup" },

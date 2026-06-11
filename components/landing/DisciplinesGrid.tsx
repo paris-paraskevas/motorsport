@@ -64,7 +64,7 @@ export function DisciplinesGrid({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   return (
     <section id="disciplines" className="border-b border-border">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl px-4 py-16 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <h2 className="font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-text sm:text-5xl">
             <span className="text-text-faint">Five</span> disciplines.

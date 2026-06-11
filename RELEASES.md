@@ -1,11 +1,18 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.23.1 — 2026-06-11
+
+**Three record-book corrections.** Toyota — not Porsche — is credited with the 2024 WEC manufacturers' title; the 2024 GT World Challenge champions Auer and Engel are now correctly listed with Winward Racing; and IMSA's results gained the missing Detroit round, with the bug that hid it fixed for good.
+
+**A junk table removed.** DTM's manufacturers' standings came from a broken upstream feed showing half the brands with wrong totals — it's gone until a trustworthy source exists. Drivers and teams tables are unaffected.
+
+**The landing page got the wide-screen treatment too.** Same as the app a release earlier.
+
 ## 0.23.0 — 2026-06-11
 
 **Desktop breathes now.** Pages finally use your screen — on a full-HD monitor the content area grew by a third. The home page also calms down: today's sessions show in full, while the rest of the week folds into one-line day summaries you can expand, and the news wire shows the ten freshest stories.
 
 **Series news matches the house style.** The News tab on every series page now reads like the home wire — clean rows, timestamps, story excerpts.
-
 ## 0.22.0 — 2026-06-11
 
 **Better race-day pings.** If you've enabled notifications, you now get two heads-ups — about 30 minutes and again 10 minutes before each session in your followed series. And when a race finishes, you'll get one more the moment its full results are up on Paddock, taking you straight to the classification. Your existing mute and follow settings apply to all of it.

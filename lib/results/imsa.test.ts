@@ -121,6 +121,17 @@ describe('fetchImsaRoundResults — Daytona (full IMEC field)', () => {
     expect(result!.date.toISOString().startsWith('2026-01-24')).toBe(true);
   });
 
+  it('accepts slash-separated dates — Detroit 2026 filed "30/05/2026" and the dash-only regex dropped the round', async () => {
+    const slashFixture = loadFixture('imsa-results-daytona-2026.json').replace(
+      /"session_date":\s*"24-01-2026/,
+      '"session_date": "30/05/2026',
+    );
+    mockFetchText(slashFixture);
+    const result = await fetchImsaRoundResults('https://example.test/race.json', 5);
+    expect(result).not.toBeNull();
+    expect(result!.date.toISOString().startsWith('2026-05-30')).toBe(true);
+  });
+
   it('strips the UTF-8 BOM before parsing', async () => {
     const fixture = loadFixture('imsa-results-daytona-2026.json');
     expect(fixture.charCodeAt(0)).toBe(0xfeff);

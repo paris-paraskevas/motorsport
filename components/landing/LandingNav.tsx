@@ -10,7 +10,7 @@ const ANCHORS = [
 export function LandingNav() {
   return (
     <header className="sticky top-9 z-40 border-b border-border bg-bg/85 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl items-center gap-6 px-4 sm:px-6">
         <Link
           href="/"
           className="font-display text-lg font-extrabold uppercase tracking-wide text-text"
