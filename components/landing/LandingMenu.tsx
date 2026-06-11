@@ -74,53 +74,66 @@ export function LandingMenu() {
 
       {/* Portaled to <body>: the trigger lives inside the landing nav, whose
           backdrop-blur makes the header a containing block for fixed
-          descendants (CSS filter-effects spec) — rendered in place, the
-          full-screen overlay collapses to the 56px header strip. */}
+          descendants (CSS filter-effects spec) — rendered in place, a fixed
+          overlay collapses into the 56px header strip. Side drawer per
+          operator 2026-06-11: half the screen, slides from the right, the
+          landing grays out behind a scrim. Phones get 85% width — half of
+          390px can't hold the type. Entry animates via @starting-style
+          (Tailwind `starting:`), so reduced-motion and older engines simply
+          appear in place. */}
       {open && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site menu"
-          className="fixed inset-0 z-[60] overflow-y-auto bg-bg"
-        >
-          <div className="mx-auto max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl px-4 py-4 sm:px-6">
-            <div className="flex h-10 items-center justify-between">
-              <span className="font-display text-lg font-extrabold uppercase tracking-wide text-text">
-                Paddock<span className="text-brand">•</span>Tracker
-              </span>
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className="rounded-lg border border-border p-2 text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-              >
-                <X size={18} />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-[60]">
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 w-full bg-black/60 motion-safe:transition-opacity motion-safe:duration-300 motion-safe:starting:opacity-0"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            className="absolute inset-y-0 right-0 w-[85%] max-w-sm sm:w-1/2 sm:max-w-none overflow-y-auto border-l border-border bg-bg motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-(--ease) motion-safe:starting:translate-x-full"
+          >
+            <div className="px-5 py-4 sm:px-8">
+              <div className="flex h-10 items-center justify-between">
+                <span className="font-display text-lg font-extrabold uppercase tracking-wide text-text">
+                  Paddock<span className="text-brand">•</span>Tracker
+                </span>
+                <button
+                  ref={closeRef}
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close menu"
+                  className="rounded-lg border border-border p-2 text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                >
+                  <X size={18} />
+                </button>
+              </div>
 
-            <nav className="mt-8 space-y-10 pb-16" aria-label="Site">
-              {GROUPS.map(group => (
-                <div key={group.heading}>
-                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">
-                    {group.heading}
-                  </p>
-                  <ul className="mt-3">
-                    {group.links.map(l => (
-                      <li key={l.href}>
-                        <Link
-                          href={l.href}
-                          onClick={() => setOpen(false)}
-                          className="block py-3 text-2xl font-semibold tracking-tight text-text transition-colors duration-(--duration-fast) hover:text-brand"
-                        >
-                          {l.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </nav>
+              <nav className="mt-8 space-y-8 pb-16" aria-label="Site">
+                {GROUPS.map(group => (
+                  <div key={group.heading}>
+                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">
+                      {group.heading}
+                    </p>
+                    <ul className="mt-2 divide-y divide-border/40">
+                      {group.links.map(l => (
+                        <li key={l.href}>
+                          <Link
+                            href={l.href}
+                            onClick={() => setOpen(false)}
+                            className="block py-2.5 text-xl font-semibold tracking-tight text-text transition-colors duration-(--duration-fast) hover:text-brand"
+                          >
+                            {l.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </nav>
+            </div>
           </div>
         </div>,
         document.body,

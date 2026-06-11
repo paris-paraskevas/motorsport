@@ -35,7 +35,7 @@ export function SeriesMarquee({ seriesList }: { seriesList: SeriesMeta[] }) {
   );
 
   return (
-    <section id="series" className="overflow-hidden border-b border-border py-16">
+    <section id="series" className="scroll-mt-28 overflow-hidden border-b border-border py-16">
       <div className="mx-auto max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl px-4 sm:px-6">
         <h2 className="font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-text sm:text-5xl">
           <span className="text-text-faint">{seriesList.length}</span> series.
