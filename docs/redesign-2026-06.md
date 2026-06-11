@@ -187,6 +187,22 @@ the five operator notes in IDEAS (#119) and the per-PR CHANGELOG sections.)
   page radial wash deleted. W1b (point-in-time standings) and W1c (per-session pages on the
   OpenF1 notes below) are the next slices of the wave.
 
+- **PR #125 (0.28.0) — W1b point-in-time standings**: buildStandingsAtRound (lib/season-trend,
+  5 tests) + weekend pages show the championship frozen at that round (verified ANT 156 @R6 vs
+  72 @R3). Merge raced my final push — the multi-series + chart-top commit was recovered into:
+- **PR #126 (0.29.0) — W1c per-session pages**: /series/[slug]/weekend/[round]/[session];
+  F1 classifications via OpenF1 (lib/results/openf1.ts — date-window join, name-slug match +
+  nearest-start fallback, Q1/Q2/Q3 arrays). Weekend schedule links through on F1; other
+  series resolve with an honest note pending race-session adapters. Recovered commit rode
+  along: frozen standings ×10 series (teams tables only where per-team sums ARE the
+  championship), trend chart moved to the top of Standings (operator). **OpenF1 verified
+  working from Vercel datacenter IPs on prod post-merge.**
+- **PR #127 (0.29.1) — landing nav fixes** (operator interrupt): anchored sections gain
+  scroll-mt-28 (sticky ticker+nav buried headings); burger rebuilt as a half-screen
+  right-side drawer over a scrim (85% on phones), @starting-style entry, still portaled.
+- **W1 wave complete.** Next: security audit (own session) → W3 → W4 → W8 per the locked
+  v1.0 scope (operator 2026-06-11: all four gate launch).
+
 **OpenF1 research (for the weekend per-session results follow-up — operator note (b)):**
 
 - `api.openf1.org` — free community F1 API, no auth. 2026 fully live: `/v1/sessions?year=2026`
