@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.19.1 — 2026-06-11
+
+### Fixed
+
+- **PWA wordmark round-trip** (operator-reported): in the installed app, tapping PADDOCK•TRACKER linked to `/`, flashed the landing, then the standalone guard bounced back to `/app`. The wordmark href is now standalone-aware (`components/AppShell.tsx`, same detection as `StandaloneRedirect`: display-mode media query + iOS `navigator.standalone`): `/app` in the installed app, `/` in the browser. Verified both ways via a matchMedia stub.
+
+### Internal
+
+- Salvaged all 12 dead agent transcripts (org spend limit killed both fleet waves) into `docs/research/agent-salvage-2026-06-10/` — search/fetch trails + interim analysis per agent, so the relaunch resumes instead of re-researching. Lesson captured: parallel validators collided on the shared Playwright browser; future fleet prompts must mandate WebFetch-only.
+
 ## 0.19.0 — 2026-06-10
 
 Redesign PR 2c-4 + operator batch: tab surfaces on the timing-screen language, Rules retired, streamed tabs, and the Jolpica pagination bug that was silently truncating F1 results.
