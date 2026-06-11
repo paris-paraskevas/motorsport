@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.23.0 — 2026-06-11
+
+**Desktop breathes now.** Pages finally use your screen — on a full-HD monitor the content area grew by a third. The home page also calms down: today's sessions show in full, while the rest of the week folds into one-line day summaries you can expand, and the news wire shows the ten freshest stories.
+
+**Series news matches the house style.** The News tab on every series page now reads like the home wire — clean rows, timestamps, story excerpts.
+
 ## 0.22.0 — 2026-06-11
 
 **Better race-day pings.** If you've enabled notifications, you now get two heads-ups — about 30 minutes and again 10 minutes before each session in your followed series. And when a race finishes, you'll get one more the moment its full results are up on Paddock, taking you straight to the classification. Your existing mute and follow settings apply to all of it.
