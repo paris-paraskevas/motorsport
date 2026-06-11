@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.29.0 — 2026-06-11
+
+W1c — per-session pages, plus the multi-series frozen standings + chart placement that missed the 0.28.0 merge window (PR #125 was merged moments before the final push; recovered via cherry-pick).
+
+### Added
+
+- **Per-session pages** at `/series/[slug]/weekend/[round]/[session]` (NEW `app/(app)/.../[session]/page.tsx`): mono breadcrumb (series · weekend · round), Saira session title with series-color stop, session time in local tz. **F1 sessions carry the full classification via OpenF1** (NEW `lib/results/openf1.ts` — sessions joined to our weekend by date window ±36h, name-slug match with nearest-start fallback, `/session_result` + `/drivers` join, data-cache revalidate 300s): practices show best lap + gap + laps, **qualifying shows Q1/Q2/Q3 columns** (best lap only on phones), races show gaps + points, DNF/DNS/DSQ surfaced. Weekend schedule rows link through on F1 (`sessionSlug` + `sessionBySlug` in `lib/weekend.ts`); other series' rows stay plain until their race-session adapters land — their session URLs resolve with an honest "coming to this series" note. Unknown session slugs 404.
+- **Weekend page "Standings at this round" extended to every per-round-points series** (recovered commit): F1 (+sprints), F2 (+sprints), F3, Formula E, IndyCar, MotoGP, WSBK, NASCAR, WRC (chart-points source), DTM. Teams tables only where a per-team sum IS the official championship (F1/F2/F3/FE/MotoGP/WSBK/DTM); NASCAR/WRC/IndyCar stay drivers-only (owner points / best-two / engine-make math differ). A winners-only race in the counted window falls back to the live link-out. Verified: MotoGP R7 27 riders + 13 teams; WRC drivers-only.
+
+### Changed
+
+- **Standings tab: the trend chart moved to the top** (operator) — chart first, tables below, on F1/NASCAR/WRC/DTM (recovered commit).
+
+### Ops
+
+- OpenF1 from Vercel's datacenter IPs is unverified until this deploys — check a session page on prod after merge (Jolpica precedent suggests fine; the page degrades to "classification not available" if blocked).
+
 ## 0.28.0 — 2026-06-11
 
 W1b — point-in-time standings on weekend pages (operator: "the actual points per all drivers and all teams at the time of the gp, it shouldn't refresh to show current standings").
@@ -11,7 +28,7 @@ W1b — point-in-time standings on weekend pages (operator: "the actual points p
 ### Added
 
 - **`buildStandingsAtRound` (`lib/season-trend.ts`)**: standings frozen after round N — cumulative race points filtered to rounds ≤ N, sprint extras folded in like the trend chart, constructors summed per team string, wins counted from main-race P1s. Honest `throughRound` reports what was actually counted when later results are missing or rounds were cancelled. Ties break points → wins → name (championship countback beyond wins isn't modeled — snapshot-grade, not title-decider-grade). 5 new tests.
-- **Weekend page "Standings at this GP"** (`components/weekend/WeekendStandingsSnapshot.tsx`): F1 weekends now show the FULL driver (22) and team (11) tables as they stood at that round — past weekends count their own round, upcoming ones show the going-in table, a round-1 weekend shows nothing yet. Verified frozen: Antonelli 156 as of round 6, 72 as of round 3 on the respective pages. The live top-10 snapshot is gone for F1; other series keep their current fallback until the per-round-points adapters follow (IMSA/GTWC can never have this honestly — no points in their results).
+- **Weekend page "Standings at this GP"** (`components/weekend/WeekendStandingsSnapshot.tsx`): F1 weekends show the FULL driver (22) and team (11) tables as they stood at that round — past weekends count their own round, upcoming ones show the going-in table. Verified frozen: Antonelli 156 as of round 6, 72 as of round 3.
 
 ### Internal
 

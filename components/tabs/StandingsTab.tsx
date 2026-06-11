@@ -274,9 +274,9 @@ export async function StandingsTab({ series }: { series: Series }) {
         : null;
     return (
       <div className="space-y-4">
+        <TrendSection trend={trend} />
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
-        <TrendSection trend={trend} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
       </div>
     );
@@ -413,9 +413,9 @@ export async function StandingsTab({ series }: { series: Series }) {
         : null;
     return (
       <div className="space-y-4">
+        <TrendSection trend={trend} />
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
-        <TrendSection trend={trend} />
         <SourceLink href={NASCAR_SOURCE_URL} label="Wikipedia (2026 NASCAR Cup Series)" />
       </div>
     );
@@ -453,10 +453,10 @@ export async function StandingsTab({ series }: { series: Series }) {
     const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
     return (
       <div className="space-y-4">
+        <TrendSection trend={trend} />
         <DriversTable drivers={drivers} heading="Drivers" />
         <DriversTable drivers={coDriversAsDrivers} heading="Co-Drivers" />
         <ConstructorsTable constructors={manufacturers} heading="Manufacturers" />
-        <TrendSection trend={trend} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
@@ -725,11 +725,11 @@ export async function StandingsTab({ series }: { series: Series }) {
     const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
     return (
       <div className="space-y-4">
+        <TrendSection trend={trend} />
         <DriversTable drivers={drivers} heading="Drivers" />
         {teams.length > 0 ? (
           <ConstructorsTable constructors={teams} heading="Teams" />
         ) : null}
-        <TrendSection trend={trend} />
         {/* Manufacturers table dropped (validation 2026-06-11): upstream
             motorsport.com's Constructor endpoint itself returns 4 of 8
             brands with wrong totals — verified by fetching it directly; our

@@ -159,7 +159,13 @@ export default async function WeekendPage({
 
       <WeekendWeatherStrip weekend={weekend} />
 
-      <WeekendSchedule weekend={weekend} color={color} />
+      <WeekendSchedule
+        weekend={weekend}
+        color={color}
+        // Per-session pages (W1c): F1 first — OpenF1 covers every session
+        // type. Other series link once their race-session adapters land.
+        sessionLinkBase={slug === 'f1' ? `/series/${slug}/weekend/${round}` : undefined}
+      />
 
       <WeekendStandingsSnapshot series={series} round={round} isPast={isPast} />
 
