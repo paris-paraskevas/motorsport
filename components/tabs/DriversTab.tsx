@@ -20,7 +20,7 @@ export async function DriversTab({ series }: { series: Series }) {
             return (
               <div
                 key={`${team.name}-${idx}`}
-                className="border-y border-border py-4"
+                className={`border-y border-border py-4${team.color ? ' pl-3' : ''}`}
                 style={team.color ? { borderLeftColor: team.color, borderLeftWidth: '3px' } : undefined}
               >
                 <Link

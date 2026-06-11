@@ -19,9 +19,20 @@ export function SeriesTabs({
   const pathname = usePathname();
   const tabs = tabsFor(singleEvent);
   const activeRef = useRef<HTMLAnchorElement | null>(null);
+  const prevTabRef = useRef<TabKey | null>(null);
 
-  // Keep the active tab in view when landing deep (e.g. ?tab=champions).
+  // On tab switch, land at the top of the new tab instead of inheriting the
+  // old tab's scroll depth. Next's default Link scroll can't deliver this —
+  // it maintains position whenever the page still fills the viewport — so the
+  // Links keep scroll={false} and the scroll is owned here. First render is
+  // exempt: fresh loads already start at top, and back/forward should keep
+  // the browser's restored position.
   useEffect(() => {
+    if (prevTabRef.current !== null && prevTabRef.current !== activeTab) {
+      window.scrollTo(0, 0);
+    }
+    prevTabRef.current = activeTab;
+    // Keep the active tab in view when landing deep (e.g. ?tab=champions).
     activeRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
   }, [activeTab]);
 

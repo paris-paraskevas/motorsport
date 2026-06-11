@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.24.2 — 2026-06-11
+
+Operator quick wins from the session-4 closeout notes (IDEAS Inbox 2026-06-11): tab-switch scroll, full classifications, drivers-tab spacing.
+
+### Fixed
+
+- **Series tab switch lands at the top of the new tab** (`components/SeriesTabs.tsx`): switching e.g. Results → Standings used to keep the old tab's scroll depth mid-page. The rail's Links keep `scroll={false}` and the component now scrolls the window to top itself when the active tab changes. Next 16's default Link scroll wouldn't have fixed this — it *maintains* position whenever the page still fills the viewport, only scrolling to top when the page is out of view. First render is exempt so fresh loads and back/forward keep the browser's own position.
+- **Results accordions show the full classification** (`components/tabs/ResultsTab.tsx`): the three render caps (`.slice(0, 10)` in the generic, IMSA, and GT World row lists) are gone — every fetched entry now renders (22-car F1 grids, ~40-car NASCAR fields, full IMSA/GTWC endurance fields). The caps were render-side only; the parsers already fetched complete classifications, proven by the 0.19.0 Jolpica pagination fix.
+- **Drivers tab spacing** (`components/tabs/DriversTab.tsx`): team cards with a series-color edge gain left padding so the team name and driver list no longer sit flush against the 3px color bar.
+
 ## 0.24.1 — 2026-06-11
 
 Validation sweep 3 (wrc/wsbk/nascar-cup/nls/adac — report: `docs/research/validation-2026-06-11/rally-bikes-stock.md`). The 15-series program is complete; standings and results verified clean everywhere they exist. All findings fixed:

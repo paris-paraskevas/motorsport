@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.24.2 — 2026-06-11
+
+**Switching tabs takes you to the top.** Jumping from Results to Standings — or any series tab to any other — no longer leaves you stranded mid-page. Every tab now opens at its top.
+
+**Full race classifications.** Race results no longer stop at the top ten — expand any race and the whole field is there, from the winner to the last classified finisher.
+
+**A touch of breathing room.** On the Drivers tab, team names no longer crowd the team-colour marker.
+
 ## 0.24.1 — 2026-06-11
 
 **Champions, corrected and completed.** WRC's champions list — which wrongly showed Thierry Neuville as a Toyota driver — is rebuilt with the right teams for every champion since 1979. NASCAR's champions tab, previously empty, now lists every Cup champion since 2000. And the Nürburgring 24h page finally celebrates this year's winners — the #80 Winward Mercedes-AMG crew.
