@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.20.0 — 2026-06-11
+
+### Added
+
+- **History essays for all 14 remaining series** (`content/series/<slug>/history.md` — f2, f3, motogp, indycar, formula-e, wec, imsa, dtm, gt-world, nls, wrc, nascar-cup, wsbk, adac-ravenol-24h), written to the F1 history's voice contract: Origin / themed Turning points / Today's shape, dense footnoted prose with real "accessed" source URLs, British spelling, frontmatter with author + last-updated. Every History tab now renders curated content instead of the placeholder. Authored by three sequential agents seeded with salvaged research trails (docs/research/agent-salvage-2026-06-10/); every 2024–2026 claim is search/fetch-verified, and facts that couldn't be verified were excluded and logged (e.g. NLS's contradictory season ordinal — written around using the official "50th season in 2026" framing).
+
 ## 0.19.2 — 2026-06-11
 
 ### Fixed
