@@ -14,6 +14,10 @@ function relativeAgo(date: Date): string {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
+// Same wire-row language as the home's PADDOCK WIRE (operator: series tabs
+// must mirror the home UI) — meta line, headline, hard rules. The series
+// identity is the page's, so no per-row series chip; the excerpt stays
+// because this tab is the series' dedicated reading surface.
 export async function NewsTab({ series }: { series: Series }) {
   const slug = series.meta.slug;
   const hasFeed = NEWS_SLUG_MAP[slug] !== null && NEWS_SLUG_MAP[slug] !== undefined;
@@ -22,7 +26,7 @@ export async function NewsTab({ series }: { series: Series }) {
   if (items.length === 0) {
     const officialSite = series.meta.officialSite;
     return (
-      <div className="rounded-2xl bg-surface/40 border border-border/60 p-6 md:p-8 text-center">
+      <div className="border border-border bg-surface/40 p-6 md:p-8 text-center">
         <div className="text-text text-base font-medium mb-1">News</div>
         <div className="text-text-faint text-sm mb-5 max-w-xs mx-auto">
           {hasFeed
@@ -34,7 +38,7 @@ export async function NewsTab({ series }: { series: Series }) {
             href={officialSite}
             target="_blank"
             rel="nofollow noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+            className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors duration-(--duration-fast)"
           >
             Visit official site
             <ExternalLink size={12} />
@@ -45,45 +49,50 @@ export async function NewsTab({ series }: { series: Series }) {
   }
 
   return (
-    <div className="space-y-3">
-      {items.map(item => {
-        const excerpt = item.description
-          ? item.description.length > 120
-            ? item.description.slice(0, 117).trimEnd() + '…'
-            : item.description
-          : null;
-        return (
-          <a
-            key={item.link}
-            href={item.link}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-            className="group block rounded-2xl bg-surface/40 border border-border/60 p-4 md:p-5 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong"
-          >
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <h3 className="text-text text-base md:text-lg font-semibold leading-tight tracking-tight">
+    <div>
+      <div className="border-y border-border divide-y divide-border">
+        {items.map(item => {
+          const excerpt = item.description
+            ? item.description.length > 140
+              ? item.description.slice(0, 137).trimEnd() + '…'
+              : item.description
+            : null;
+          return (
+            <a
+              key={item.link}
+              href={item.link}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="group block py-3.5 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+            >
+              <div className="flex items-center gap-2 mb-1 min-w-0">
+                <time
+                  dateTime={item.pubDate.toISOString()}
+                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
+                >
+                  {relativeAgo(item.pubDate)}
+                </time>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint shrink-0">
+                  · motorsport.com
+                </span>
+                <ExternalLink
+                  size={12}
+                  className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
+                />
+              </div>
+              <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
                 {item.title}
               </h3>
-              <ExternalLink
-                size={14}
-                className="text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast) shrink-0 mt-1"
-              />
-            </div>
-            {excerpt && (
-              <p className="text-sm text-text-muted leading-relaxed line-clamp-3">
-                {excerpt}
-              </p>
-            )}
-            <div className="mt-3 text-[11px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-              <time dateTime={item.pubDate.toISOString()}>
-                {relativeAgo(item.pubDate)}
-              </time>{' '}
-              · Motorsport.com
-            </div>
-          </a>
-        );
-      })}
-      <div className="pt-2 text-xs text-text-faint text-center">
+              {excerpt && (
+                <p className="mt-1 text-sm text-text-muted leading-relaxed line-clamp-2">
+                  {excerpt}
+                </p>
+              )}
+            </a>
+          );
+        })}
+      </div>
+      <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
         Source:{' '}
         <a
           href="https://www.motorsport.com/"

@@ -16,6 +16,15 @@ Validation sweep 2 findings (motogp/wec/imsa/gt-world/dtm — report: `docs/rese
 - **DTM manufacturers' standings table removed**: upstream motorsport.com's Constructor endpoint itself returns 4 of 8 brands with wrong totals (verified by fetching it directly — our parse was faithful to junk). Drivers + Teams tables stay; reinstate only with a better source.
 - **Landing page width** (operator follow-up to 0.23.0): the landing's own `max-w-6xl` containers (nav, hero, every section, footer) gain the same `xl:max-w-7xl 2xl:max-w-screen-2xl` tiers as the app.
 
+## 0.23.0 — 2026-06-11
+
+Redesign PR 2c-6 — desktop pass per operator: width cap lifted, series tabs mirror the home language, home density split.
+
+### Changed
+
+- **Desktop width unlocked**: the container scale gains real tiers — `lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl` (content at a 1900px screen: 1152px → 1536px) — applied consistently across home, /calendar, /series hub, series pages, weekend pages, header and footer.
+- **Series News tab → wire rows** (`components/tabs/NewsTab.tsx`): the rounded-card list (the last surface on the old language, operator screenshot) becomes the home's PADDOCK WIRE row pattern — mono meta line, headline, hard rules; excerpt kept (line-clamped) since this is the dedicated reading surface.
+- **Home density** (operator: "chaotic amount of info"): only the first day group renders open — later days collapse to summary rows (Saira day + session count + series-color dots) that expand in place. News column capped at 10 stories. The chyron and two-column desktop split are unchanged.
 ## 0.22.0 — 2026-06-11
 
 Operator spec: opted-in users get a heads-up 30 AND 10 minutes before sessions, plus a ping when a race's results have rendered on our pages.

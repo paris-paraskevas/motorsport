@@ -28,7 +28,7 @@ interface NewsItemSerialized {
 }
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-const NEWS_LIMIT = 14;
+const NEWS_LIMIT = 10;
 
 /* ── Hydration-safe time engine ─────────────────────────────────────────
    Every time-derived string on this page renders from `now`, which starts
@@ -355,16 +355,29 @@ export function HomeContent({
               )}
             </div>
           ) : (
-            byDay.map(day => {
+            byDay.map((day, dayIdx) => {
               const d0 = day.sessions[0].start;
               const dayTag = sameUTCDay(d0, now)
                 ? 'Today'
                 : sameUTCDay(d0, new Date(now.getTime() + 86_400_000))
                   ? 'Tomorrow'
                   : null;
+              // Density (operator: home is "chaotic"): only the first day
+              // group renders open — later days collapse to a summary row
+              // (day + count + series dots) that expands on tap. The info
+              // is one interaction away instead of one unbroken wall.
+              const defaultOpen = dayIdx === 0;
+              const daySeries = Array.from(
+                new Map(
+                  day.sessions
+                    .map(s => itemByUid.get(s.uid))
+                    .filter((i): i is NonNullable<typeof i> => Boolean(i))
+                    .map(i => [i.seriesSlug, i.color]),
+                ).values(),
+              );
               return (
-                <div key={day.label} className="mb-5">
-                  <div className="flex items-baseline gap-2 mb-1">
+                <details key={day.label} open={defaultOpen} className="group mb-3">
+                  <summary className="flex cursor-pointer list-none items-baseline gap-2 py-1 [&::-webkit-details-marker]:hidden">
                     {dayTag && (
                       <span className="font-display text-sm font-extrabold uppercase tracking-wide text-brand">
                         {dayTag}
@@ -373,10 +386,23 @@ export function HomeContent({
                     <span className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
                       {day.label}
                     </span>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint tnum">
                       {day.sessions.length}
                     </span>
-                  </div>
+                    <span className="ml-auto flex items-center gap-1 self-center">
+                      {daySeries.slice(0, 6).map((color, i) => (
+                        <span
+                          key={i}
+                          aria-hidden="true"
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                      <span className="ml-1 font-mono text-[10px] text-text-faint transition-transform duration-(--duration-fast) group-open:rotate-90">
+                        ›
+                      </span>
+                    </span>
+                  </summary>
                   <div className="border-y border-border divide-y divide-border">
                     {day.sessions.map(s => {
                       const item = itemByUid.get(s.uid);
@@ -436,7 +462,7 @@ export function HomeContent({
                       );
                     })}
                   </div>
-                </div>
+                </details>
               );
             })
           )}
