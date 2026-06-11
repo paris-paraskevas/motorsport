@@ -29,12 +29,14 @@ export function BottomBar() {
           active={pathname === '/series' || pathname.startsWith('/series/')}
           label="Series"
           Icon={Flag}
+          dataTour="series"
         />
         <BarLink
           href="/settings"
           active={pathname === '/settings'}
           label="Account"
           Icon={CircleUser}
+          dataTour="account"
         />
       </div>
     </nav>
@@ -46,15 +48,18 @@ function BarLink({
   active,
   label,
   Icon,
+  dataTour,
 }: {
   href: string;
   active: boolean;
   label: string;
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  dataTour?: string;
 }) {
   return (
     <Link
       href={href}
+      data-tour={dataTour}
       aria-current={active ? 'page' : undefined}
       className={`relative flex flex-col items-center justify-center gap-1 transition-colors duration-(--duration-fast) ${
         active ? 'text-brand' : 'text-text-faint hover:text-text'
