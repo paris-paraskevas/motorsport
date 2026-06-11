@@ -30,6 +30,7 @@ _(Native non-F1 results + standings, S7 — depends on Supabase storage tables l
 
 ## Inbox (unfiltered, append-only)
 
+- UI/CSS inspiration pass (operator 2026-06-11, "for a little later"): review 5 reference component libraries as design-direction input — styleui.dev, cult-ui.com/docs, skiper-ui.com/components, aliimam.in/docs/components, ui.watermelon.sh. Approach: mine each for type/motion/density patterns that transfer onto the Paddock 2.0 language (not a reskin); shortlist concrete component upgrades (tables, tabs, countdown, chips) with the anti-AI principles as the filter.
 - Research live in-race data feeds (sector times, leaderboard, gaps, tyre choices) for F1, MotoGP, WEC, FE, IndyCar.
 - Reverse-engineer fiaformulae.com / motogp.com / nascar.com XHR endpoints to see if unsigned JSON can replace Playwright.
 - Decide Sandbox/Playwright vs third-party aggregator vs curation-first for JS-rendered official sites.

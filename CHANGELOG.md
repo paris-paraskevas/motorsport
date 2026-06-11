@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.20.2 — 2026-06-11
+
+Validation sweep findings (audit report: `docs/research/validation-2026-06-11/f1-openwheel.md`). F1/F2/F3 verified clean against official sources — incl. the 0.19.0 pagination fix live in prod.
+
+### Fixed
+
+- **Indy 500 classification garbled (trust-killer)**: Wikipedia decorates Indy 500 cells with superscript Fast-12 qualifying points (`1<sup>12</sup>` = won from pole, 12 shootout points); `parseCell` in `lib/results/indycar.ts` flattened that to "112", so the top-12 qualifiers parsed as P112/P26/etc — Rosenqvist's win (closest finish in history) vanished and P5 rendered as the winner, with corrupted points feeding the trend chart. Fix: strip every numeric `<sup>` before extracting the position (flag markers `<sup>L</sup>` / `</sup>*` still read from raw HTML). Regression test added with the real decoration pattern.
+- **Formula E champions tab was dead in prod** ("couldn't parse a champions table"): no curated file existed and the Wikipedia fallback parses zero rows. Curated `content/series/formula-e/champions.json` — all 11 drivers' + teams' champions, S1 2014-15 (Piquet Jr.) through S11 2024-25 (Rowland / Porsche), year = season-end year.
+
 ## 0.20.1 — 2026-06-11
 
 ### Fixed

@@ -154,6 +154,33 @@ describe('parseSeasonResultsFromHtml', () => {
     expect(races[0].results[0].points).toBe(52);
   });
 
+  it('strips superscript qualifying numerals — 1<sup>12</sup> is P1, not P112 (2026 Indy 500 regression)', () => {
+    const headerHtml = header([
+      { abbr: 'INDY', href: '/wiki/2026_Indianapolis_500' },
+    ]);
+    // Wikipedia's Indy 500 column decorates the Fast-12 qualifiers with
+    // superscript shootout points: winner "1<sup>12</sup>", P2 "2<sup>6</sup>".
+    // Flattened text reads "112"/"26" and the real podium vanishes.
+    const rowsHtml = [
+      row({ pos: 1, driver: 'Driver 1', cells: [{ inner: '1<sup>12</sup><sup>L</sup>' }], points: 53 }),
+      row({ pos: 2, driver: 'Driver 2', cells: [{ inner: '2<sup>6</sup>' }], points: 40 }),
+      ...twelveFinishers([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]).slice(2),
+    ];
+    const html = buildTable({ headerHtml, rowsHtml });
+
+    const races = parseSeasonResultsFromHtml(html, DRIVERS_FIXTURE);
+    expect(races).toHaveLength(1);
+    expect(races[0].results[0]).toMatchObject({
+      position: 1,
+      driverName: 'Driver 1',
+    });
+    expect(races[0].results[1].position).toBe(2);
+    // P1 Indy 500: 50 base + 1 led laps (no pole bonus at Indy) = 51
+    expect(races[0].results[0].points).toBe(51);
+    // P2: 40 base, the <sup>6</sup> must not corrupt it to P26 (=4+...)
+    expect(races[0].results[1].points).toBe(40);
+  });
+
   it('omits the pole bonus for the Indianapolis 500 (qualifying points are separate)', () => {
     const headerHtml = header([
       { abbr: 'INDY', href: '/wiki/2026_Indianapolis_500' },
