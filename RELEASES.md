@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.28.0 — 2026-06-11
+
+**Standings frozen in time on every F1 weekend page.** Each Grand Prix page now shows the full championship — every driver and every team — exactly as it stood at that race, not today's table. Open the Monaco page and you see the title fight as Monaco found it; open round 3 and you're back in March.
+
 ## 0.27.0 — 2026-06-11
 
 **Race-weekend pages match the rest of the site now.** The weekend view — schedule, weather, standings and news for each round — has been rebuilt in the same dark timing-screen style as everything else, with the event name in the house headline type. The back arrow at the top is gone too; the series name still takes you back.

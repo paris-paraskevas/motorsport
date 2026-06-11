@@ -702,6 +702,7 @@ Outcomes:
 - → carried: weekend per-session results implementation (OpenF1 fetcher + WeekendSessionResults section, F1 first) — entry notes in `docs/redesign-2026-06.md` session-5 log. Security audit stays the next dedicated session.
 - → done (continued — operator 15-item batch, organized into waves W1–W8 below): **W2 series-tab polish (PR #123, 0.26.0)** — trend chart Results → Standings on F1/NASCAR/WRC/DTM (DTM results becomes link-out), always-on chart dots + highlighted hover point, classifications 2-col from sm:, WIN line wraps on phone, champions team names in team colors (dark hues contrast-lifted via color-mix; historic-constructor color map = follow-up curation task).
 - Merge order for the stack: **#120 → #121 → #122 → #123** (+ #119 docs whenever).
+- → done (continued): **W1b point-in-time standings (PR #125, 0.28.0)** — buildStandingsAtRound in lib/season-trend (5 tests), weekend pages show full frozen driver+team tables for F1 (verified: ANT 156 @R6 vs 72 @R3). Four operator decisions recorded: v1.0 = W1+audit+W3+W4; rules inside About; W7 design-doc first; Android post-v1.0.
 - → done (continued, post-merge of the full stack): **W1a weekend retheme (PR #124, 0.27.0)** — hero rebuilt flush + Saira with series-color full stop, back arrow removed (series name in the meta row still links), all four sections (schedule/weather/standings/news) converted from rounded cards to flat timing-screen sections, page radial wash deleted. IDEAS.md re-triaged onto the W1–W8 waves (notes annotated with shipped PRs; stale May entries retired).
 
 Active:
