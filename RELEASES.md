@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.33.0 — 2026-06-11
+
+**Driver and team pages grew up.** Every driver page now shows the championship position, points and wins, plus the last five race results — and team pages show where the team stands with each driver's form on the lineup. All in the site's timing-screen style.
+
 ## 0.32.0 — 2026-06-11
 
 **Full 2026 grids for every series.** The Drivers tab on all 15 series now shows the curated, current lineup — every team, car and crew, from F2's silly-season seats to WEC's full Hypercar and LMGT3 entry and NASCAR's chartered field — with driver and team pages to click into. Endurance entries are listed car by car with their full crews.

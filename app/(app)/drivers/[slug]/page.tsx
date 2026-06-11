@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronLeft } from 'lucide-react';
 import { findDriverBySlug, loadAllDrivers } from '@/lib/people';
+import { loadSeries } from '@/lib/series';
+import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
+import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
 import { withSocialMeta } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
@@ -20,16 +22,71 @@ export async function generateMetadata({
   const { slug } = await params;
   const driver = await findDriverBySlug(slug);
   if (!driver) return { title: 'Driver not found' };
-  const description = `${driver.name}, ${driver.team} (${driver.seriesName}).`;
+  const description = `${driver.name}, ${driver.team} (${driver.seriesName}) — season form, results, team.`;
   return {
     title: driver.name,
     description,
-    ...withSocialMeta({
-      title: driver.name,
-      description,
-      path: `/drivers/${slug}`,
-    }),
+    ...withSocialMeta({ title: driver.name, description, path: `/drivers/${slug}` }),
   };
+}
+
+function StatBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+        {label}
+      </div>
+      <div className="mt-1 font-mono text-2xl md:text-3xl font-bold tabular-nums text-text">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function SeasonForm({ form }: { form: DriverSeasonForm }) {
+  return (
+    <>
+      <section className="mb-8 border-y border-border py-4">
+        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+          Season so far
+        </h2>
+        <div className="flex gap-10 flex-wrap">
+          <StatBlock label="Position" value={`P${form.position}`} />
+          <StatBlock label="Points" value={String(form.points)} />
+          <StatBlock label="Wins" value={String(form.wins)} />
+        </div>
+        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          of {form.fieldSize} classified this season · from race results
+        </div>
+      </section>
+
+      {form.last5.length > 0 && (
+        <section className="mb-8 border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+            Last {form.last5.length} races
+          </h2>
+          <ul className="divide-y divide-border/60">
+            {form.last5.map(r => (
+              <li key={`${r.round}-${r.raceName}`} className="flex items-baseline gap-3 py-2">
+                <span className="w-9 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-tint">
+                  R{r.round}
+                </span>
+                <span className="flex-1 min-w-0 text-text text-sm font-medium truncate">
+                  {r.raceName}
+                </span>
+                <span className="font-mono text-sm tabular-nums text-text">
+                  P{r.position}
+                </span>
+                <span className="w-10 text-right font-mono text-sm tabular-nums text-text-muted">
+                  {r.points}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </>
+  );
 }
 
 export default async function DriverPage({
@@ -41,6 +98,18 @@ export default async function DriverPage({
   const driver = await findDriverBySlug(slug);
   if (!driver) notFound();
 
+  // Season form from the series' results feeds — the same cumulation the
+  // weekend snapshots use. Null (no feed / no points / name unmatched)
+  // degrades to the identity-only page.
+  let form: DriverSeasonForm | null = null;
+  try {
+    const series = await loadSeries(driver.seriesSlug);
+    const source = await loadSnapshotSource(series);
+    if (source) form = driverSeasonForm(source.races, source.extras, driver.name);
+  } catch {
+    form = null;
+  }
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -50,42 +119,32 @@ export default async function DriverPage({
       } as React.CSSProperties}
     >
       <div
-        className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${driver.seriesColor}1f 0%, transparent 70%)`,
-        }}
-      />
-      <div
         className="absolute top-0 left-0 right-0 h-px -z-10"
         style={{
           background: `linear-gradient(90deg, transparent, ${driver.seriesColor}, transparent)`,
         }}
       />
 
-      <Link
-        href={`/series/${driver.seriesSlug}?tab=drivers`}
-        className="inline-flex items-center gap-1 text-xs font-medium text-text-faint hover:text-text-muted transition-colors duration-(--duration-fast) mb-6"
-      >
-        <ChevronLeft size={14} />
-        Back to {driver.seriesName} drivers
-      </Link>
-
-      <header className="mb-8">
-        <div className="flex items-center gap-2.5 mb-3">
-          <span
-            className="w-2 h-2 rounded-full bg-tint"
-            style={{ boxShadow: `0 0 12px ${driver.seriesColor}` }}
-          />
+      <header className="mb-8 border-y border-border py-5 md:py-6">
+        <div className="flex items-center gap-2.5 mb-3 flex-wrap font-mono text-[11px] uppercase tracking-[0.18em] font-semibold">
           <Link
             href={`/series/${driver.seriesSlug}`}
-            className="text-[11px] uppercase tracking-[0.18em] font-semibold hover:underline underline-offset-4 text-tint"
+            className="text-tint hover:underline underline-offset-4"
           >
             {driver.seriesName}
           </Link>
+          <span className="text-border-strong">·</span>
+          <Link
+            href={`/teams/${driver.teamSlug}`}
+            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+          >
+            {driver.team}
+          </Link>
         </div>
 
-        <h1 className="text-text text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+        <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
           {driver.name}
+          <span style={{ color: driver.seriesColor }}>.</span>
         </h1>
 
         <div className="mt-4 flex items-baseline gap-3 flex-wrap">
@@ -95,33 +154,32 @@ export default async function DriverPage({
             </span>
           )}
           {driver.code && (
-            <span className="text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted bg-surface border border-border rounded-md px-2 py-1 font-mono">
+            <span className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted border border-border px-2 py-1">
               {driver.code}
             </span>
           )}
         </div>
       </header>
 
-      <section className="rounded-2xl bg-surface/40 border border-border/60 p-5 md:p-6">
-        <div className="text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-2">
+      {form && <SeasonForm form={form} />}
+
+      <section className="border-y border-border py-4">
+        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
           Team
-        </div>
+        </h2>
         <Link
           href={`/teams/${driver.teamSlug}`}
           className="group inline-flex items-center gap-3"
           style={
             driver.teamColor
-              ? {
-                  borderLeft: `3px solid ${driver.teamColor}`,
-                  paddingLeft: '0.75rem',
-                }
+              ? { borderLeft: `3px solid ${driver.teamColor}`, paddingLeft: '0.75rem' }
               : undefined
           }
         >
           <span className="text-text text-xl font-semibold group-hover:text-tint transition-colors duration-(--duration-fast)">
             {driver.team}
           </span>
-          <span className="text-xs text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
             View team →
           </span>
         </Link>
