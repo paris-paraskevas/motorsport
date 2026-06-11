@@ -46,23 +46,23 @@ export default async function CalendarPage() {
   for (const [k, v] of roundLookup) roundByKey[k] = v;
 
   return (
-    <div className="max-w-2xl lg:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className="max-w-2xl lg:max-w-5xl xl:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
           { name: 'Calendar', url: `${SITE_URL}/calendar` },
         ])}
       />
-      <header className="mb-8">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
-          Schedule
+      <header className="mb-5 flex items-stretch gap-3">
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <div>
+          <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
+            Calendar<span className="text-brand">.</span>
+          </h1>
+          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
+            Every session · followed series · your local time
+          </p>
         </div>
-        <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
-          Calendar
-        </h1>
-        <p className="mt-3 text-sm text-text-muted">
-          Upcoming sessions across the championships you follow.
-        </p>
       </header>
 
       <FilteredSessions items={upcoming} roundByKey={roundByKey} />

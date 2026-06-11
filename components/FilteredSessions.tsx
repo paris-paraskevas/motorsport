@@ -42,7 +42,7 @@ export function FilteredSessions({
   if (months.length === 0 || selectedMonth === null) {
     const isFiltered = followed !== null && followed.length < items.length;
     return (
-      <div className="rounded-2xl bg-surface/60 border border-border p-8 text-center">
+      <div className="border border-border bg-surface/40 p-8 text-center">
         <div className="text-text text-base font-medium mb-1">
           Nothing scheduled
         </div>
@@ -84,16 +84,19 @@ export function FilteredSessions({
         onChange={setSelectedMonth}
       />
       {byDay.length === 0 ? (
-        <div className="rounded-2xl bg-surface/60 border border-border p-8 text-center">
+        <div className="border border-border bg-surface/40 p-8 text-center">
           <div className="text-text-faint text-sm">
             Nothing in this month.
           </div>
         </div>
       ) : (
         byDay.map(day => (
-          <div key={day.label} className="mb-3">
+          <div key={day.label} className="mb-4">
             <DayHeader label={day.label} count={day.sessions.length} />
-            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+            {/* Flat timing rows: each card carries its own bottom rule, the
+                container closes the top. gap-x only — vertical rhythm comes
+                from the rules, not gaps. */}
+            <div className="border-t border-border grid md:grid-cols-2 xl:grid-cols-3 gap-x-8">
               {day.sessions.map(s => (
                 <SessionCard
                   key={`${s.seriesSlug}-${s.uid}`}

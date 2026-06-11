@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.21.0 — 2026-06-11
+
+Redesign PR 2c-5 — calendar surfaces join the timing-screen language (the last big old-language surface).
+
+### Changed
+
+- **/calendar page**: Saira `CALENDAR.` header with brand rule + mono subline; wrapper widened to `xl:max-w-6xl`.
+- **MonthNavigator** rewritten: centered rounded pills → flush-left `border-y` strip (square chevron cells, Saira month label, mono dropdown with brand left-rule active state). Shared by /calendar and every series calendar tab.
+- **SessionCard** chrome: rounded card → flat row (`border-b` rule, hover wash, series-color left rule); day groups render as closed timing tables (`border-t` container, gap-x only). `DayHeader` → Saira + mono count. Empty states flattened.
+- **WeekendBlock** (series calendar tab): rounded card → `border-y` block with an absolute series-color left rule; NEXT chip → brand block; series label chip → outlined mono; SessionList top rule. Stray `text-zinc-600` empty-state leftover fixed.
+- `MonthScopedWeekends` section heading → Saira.
+
 ## 0.20.2 — 2026-06-11
 
 Validation sweep findings (audit report: `docs/research/validation-2026-06-11/f1-openwheel.md`). F1/F2/F3 verified clean against official sources — incl. the 0.19.0 pagination fix live in prod.

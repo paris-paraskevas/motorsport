@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.21.0 — 2026-06-11
+
+**The calendar joined the new look.** Both the main calendar and every series' calendar tab now read like a timing screen — flat session rows with series-colour markers, a cleaner month switcher, and race-weekend blocks with their NEXT and event tags in the house style.
+
 ## 0.20.2 — 2026-06-11
 
 **The Indy 500 result is right again.** A quirk in our data source made the 500's top qualifiers disappear from the race classification — the winner included. Every position now reads correctly, points and all.

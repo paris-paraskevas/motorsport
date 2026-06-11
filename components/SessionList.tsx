@@ -9,10 +9,10 @@ export function SessionList({
   emptyLabel?: string;
 }) {
   if (items.length === 0) {
-    return <div className="text-zinc-600 text-sm">{emptyLabel}</div>;
+    return <div className="text-text-faint text-sm">{emptyLabel}</div>;
   }
   return (
-    <div>
+    <div className="border-t border-border">
       {items.map(({ session, color }) => (
         <SessionCard key={`${session.seriesSlug}-${session.uid}`} session={session} color={color} />
       ))}
