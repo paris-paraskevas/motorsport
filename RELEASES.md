@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.25.0 — 2026-06-11
+
+**Race results, redesigned.** Every series' results tab now lists races in the site's timing-screen style — round number in the series colour, the race name in headline type, and the winner highlighted on every row.
+
+**Races click through to their weekend.** Tap any race name to jump to that round's weekend page — schedule, weather, standings snapshot and news for that event. The arrow next to the name shows the way; the chevron still expands the full classification in place.
+
 ## 0.24.3 — 2026-06-11
 
 **The landing-page menu works again.** Tapping the menu button on the landing page used to do nothing visible — the menu opened invisibly behind the scenes. It now opens properly as a full-screen menu, and the page behind it no longer scrolls while it's open.
