@@ -124,6 +124,7 @@ function parseSessionResults(
   const teams = { ...(included['team'] || {}), ...(included['teams'] || {}) };
 
   const entries: RaceResultEntry[] = [];
+  const timesByPosition = new Map<number, number | null>();
   for (const row of rows) {
     if (!row || row.type !== 'results') continue;
     const position = asNumber(row.attributes?.position);
@@ -148,26 +149,36 @@ function parseSessionResults(
       driverName: `${givenName} ${familyName}`.trim(),
       team: teamName,
       status,
-      // `time` field carries cumulative race time in milliseconds for the
-      // winner and gap-to-leader (also ms) for everyone else. The payload
-      // does not differentiate the two, so we render position-1's time as
-      // the total ("h:mm:ss.xxx") and everyone else's as a "+gap".
-      time:
-        typeof timeMs === 'number' && timeMs > 0
-          ? position === 1
-            ? formatRaceTime(timeMs)
-            : `+${formatGap(timeMs)}`
-          : undefined,
+      // Filled in below once the winner's time is known.
+      time: undefined,
       points: pointsForPosition(position, sessionKind, status),
     });
+    timesByPosition.set(position, typeof timeMs === 'number' && timeMs > 0 ? timeMs : null);
   }
 
   // Floor counts total ROWS (including DNFs/retired). Anything under 8 means
   // the feed is broken, not that the race was short.
   if (entries.length < MIN_FINISHERS) return null;
 
+  entries.sort((a, b) => a.position - b.position);
+
+  // `time` is the CUMULATIVE race time in ms for EVERY rider — not a gap.
+  // (Validation 2026-06-11: rendering it as "+gap" showed P2 as "+54:07.653"
+  // at every round.) Winner shows the total; everyone else shows the derived
+  // difference to the winner. Negative/zero deltas (data noise) render blank.
+  const winnerMs = timesByPosition.get(1) ?? null;
+  for (const entry of entries) {
+    const ms = timesByPosition.get(entry.position) ?? null;
+    if (ms == null) continue;
+    if (entry.position === 1) {
+      entry.time = formatRaceTime(ms);
+    } else if (winnerMs != null && ms > winnerMs) {
+      entry.time = `+${formatGap(ms - winnerMs)}`;
+    }
+  }
+
   return {
-    results: entries.sort((a, b) => a.position - b.position),
+    results: entries,
     sessionShortName: sessionKind,
   };
 }

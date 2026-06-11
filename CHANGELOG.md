@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.24.1 — 2026-06-11
+
+Validation sweep 3 (wrc/wsbk/nascar-cup/nls/adac — report: `docs/research/validation-2026-06-11/rally-bikes-stock.md`). The 15-series program is complete; standings and results verified clean everywhere they exist. All findings fixed:
+
+### Fixed
+
+- **WRC champions curated, 1979–2025** (`content/series/wrc/champions.json`): the generic Wikipedia parser was rendering the MANUFACTURERS' champion as the drivers' champion's team — "2024 Neuville — Toyota" (he won with Hyundai), "2020 Ogier — Hyundai" (he won with Toyota). Inverse twin of the split-title curation bug. Full drivers'-championship era curated with both titles per year.
+- **NASCAR Cup champions curated, 2000–2025** (`content/series/nascar-cup/champions.json`): the tab was dead ("couldn't parse a champions table"). Larson 2025 → Labonte 2000.
+- **ADAC 24h Past Winners: 2026 row added** — Engel/Martin/Schiller/Stolz, #80 Winward Team RAVENOL Mercedes-AMG (race ran 16–17 May; the list was 25 days stale on the series' flagship surface).
+- **WSBK race gaps fixed** (`lib/results/wsbk.ts`): Pulselive's `time` field is the CUMULATIVE race time for every rider, not a gap — P2/P3 showed "+54:07.653" at every round. Gaps now derive as `rider.time − winner.time`; the test fixture was rebuilt to match the real payload shape (the old gap-shaped fixture is what let the bug ship).
+- **Systemic close-out**: with WRC + NASCAR curated, the fragile generic Wikipedia champions parser (3-of-4 consumers broken at audit time) now serves only NLS — where it verifies correct. Curated `champions.json` is the rule, parser the fallback.
+
 ## 0.24.0 — 2026-06-11
 
 Redesign PR 2d — the Account page. Completes the PR-2 dashboard-overhaul brief (2a shell → 2b home → 2c series/calendar/desktop → 2d account).

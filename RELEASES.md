@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.24.1 — 2026-06-11
+
+**Champions, corrected and completed.** WRC's champions list — which wrongly showed Thierry Neuville as a Toyota driver — is rebuilt with the right teams for every champion since 1979. NASCAR's champions tab, previously empty, now lists every Cup champion since 2000. And the Nürburgring 24h page finally celebrates this year's winners — the #80 Winward Mercedes-AMG crew.
+
+**Superbike gaps make sense now.** Race results showed nonsense time gaps for everyone behind the winner — now they show the real interval.
+
+**That completes the full data audit.** All 15 series have now been checked against official sources — standings and results verified accurate everywhere.
+
 ## 0.24.0 — 2026-06-11
 
 **Account, properly.** The Account tab now opens a real account page — your profile and sign-out up top when signed in, followed series and notification preferences below. Not signed in? The page works anyway: pick your series and they're remembered on this device, with a one-tap sign-in when you want them everywhere.
