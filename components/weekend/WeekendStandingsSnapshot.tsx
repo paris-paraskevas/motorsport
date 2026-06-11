@@ -1,40 +1,8 @@
-import type {
-  Series,
-  DriverStanding,
-  ConstructorStanding,
-  StandingsOverridesFile,
-} from '@/lib/types';
-import { fetchF1Standings } from '@/lib/standings/f1';
-import { loadStandingsOverrides } from '@/lib/series-content';
-
-const DRIVER_ROWS = 10;
-const CONSTRUCTOR_ROWS = 5;
-
-function applyDriverOverrides(
-  drivers: DriverStanding[],
-  overrides: StandingsOverridesFile['drivers'],
-): DriverStanding[] {
-  if (!overrides || overrides.length === 0) return drivers;
-  return drivers
-    .map(d => {
-      const o = overrides.find(x => x.driverName === d.driverName);
-      return o ? { ...d, position: o.position ?? d.position, points: o.points ?? d.points, wins: o.wins ?? d.wins } : d;
-    })
-    .sort((a, b) => a.position - b.position);
-}
-
-function applyConstructorOverrides(
-  constructors: ConstructorStanding[],
-  overrides: StandingsOverridesFile['constructors'],
-): ConstructorStanding[] {
-  if (!overrides || overrides.length === 0) return constructors;
-  return constructors
-    .map(c => {
-      const o = overrides.find(x => x.name === c.name);
-      return o ? { ...c, position: o.position ?? c.position, points: o.points ?? c.points, wins: o.wins ?? c.wins } : c;
-    })
-    .sort((a, b) => a.position - b.position);
-}
+import type { Series } from '@/lib/types';
+import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
+import { loadResultsOverrides } from '@/lib/series-content';
+import { applyResultsOverrides } from '@/components/tabs/ResultsTab';
+import { buildStandingsAtRound } from '@/lib/season-trend';
 
 function officialSiteLabel(url: string): string {
   try {
@@ -44,6 +12,12 @@ function officialSiteLabel(url: string): string {
   }
 }
 
+// Point-in-time standings (W1b, operator 2026-06-11): the weekend page shows
+// the championship AS IT STOOD at this GP — full driver and team tables
+// frozen at that round, never refreshing to current. Computable only where
+// results carry per-round points; F1 first (race + sprint feeds in hand),
+// other per-round-points series follow via the same buildStandingsAtRound.
+// Series without points in results keep the live link-out below.
 export async function WeekendStandingsSnapshot({
   series,
   round,
@@ -56,32 +30,46 @@ export async function WeekendStandingsSnapshot({
   const label = isPast ? `As of round ${round}` : `Going into round ${round}`;
 
   if (series.meta.slug === 'f1') {
-    const [data, overrides] = await Promise.all([
-      fetchF1Standings(),
-      loadStandingsOverrides(series.meta.slug),
+    const [races, sprints, overrides] = await Promise.all([
+      fetchF1SeasonResults(),
+      fetchF1SeasonSprints(),
+      loadResultsOverrides(series.meta.slug),
     ]);
-    if (!data) return null;
-    const drivers = applyDriverOverrides(data.drivers, overrides?.drivers).slice(0, DRIVER_ROWS);
-    const constructors = applyConstructorOverrides(data.constructors, overrides?.constructors).slice(0, CONSTRUCTOR_ROWS);
+    // A past weekend counts its own round; an upcoming one shows the table
+    // drivers walk in with. Round 1 upcoming → nothing to show yet.
+    const throughRound = isPast ? round : round - 1;
+    if (throughRound < 1) return null;
+
+    const merged = applyResultsOverrides(races, overrides);
+    const snap = buildStandingsAtRound(merged, throughRound, sprints);
+    if (snap.drivers.length === 0) return null;
+
+    // The honest label reflects what was actually counted: if this round's
+    // results haven't been published yet (or a round was cancelled), the
+    // snapshot says so instead of pretending.
+    const counted =
+      snap.throughRound === throughRound
+        ? label
+        : `${label} · counted through round ${snap.throughRound}`;
 
     return (
       <section className="mb-8 border-y border-border py-4">
         <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
           <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
-            Standings
+            Standings at this GP
           </h2>
           <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-            {label}
+            {counted}
           </span>
         </div>
 
-        <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
+        <div className="grid gap-x-8 gap-y-4 md:grid-cols-2 items-start">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
-              Drivers · top {DRIVER_ROWS}
+              Drivers
             </div>
             <ul className="divide-y divide-border/60">
-              {drivers.map(d => (
+              {snap.drivers.map(d => (
                 <li key={`${d.position}-${d.driverName}`} className="flex items-baseline gap-3 py-1.5">
                   <span className="w-5 text-text-faint text-xs font-mono tabular-nums text-right">
                     {d.position}
@@ -100,10 +88,10 @@ export async function WeekendStandingsSnapshot({
 
           <div>
             <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
-              Constructors · top {CONSTRUCTOR_ROWS}
+              Teams
             </div>
             <ul className="divide-y divide-border/60">
-              {constructors.map(c => (
+              {snap.constructors.map(c => (
                 <li key={`${c.position}-${c.name}`} className="flex items-baseline gap-3 py-1.5">
                   <span className="w-5 text-text-faint text-xs font-mono tabular-nums text-right">
                     {c.position}

@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.28.0 — 2026-06-11
+
+W1b — point-in-time standings on weekend pages (operator: "the actual points per all drivers and all teams at the time of the gp, it shouldn't refresh to show current standings").
+
+### Added
+
+- **`buildStandingsAtRound` (`lib/season-trend.ts`)**: standings frozen after round N — cumulative race points filtered to rounds ≤ N, sprint extras folded in like the trend chart, constructors summed per team string, wins counted from main-race P1s. Honest `throughRound` reports what was actually counted when later results are missing or rounds were cancelled. Ties break points → wins → name (championship countback beyond wins isn't modeled — snapshot-grade, not title-decider-grade). 5 new tests.
+- **Weekend page "Standings at this GP"** (`components/weekend/WeekendStandingsSnapshot.tsx`): F1 weekends now show the FULL driver (22) and team (11) tables as they stood at that round — past weekends count their own round, upcoming ones show the going-in table, a round-1 weekend shows nothing yet. Verified frozen: Antonelli 156 as of round 6, 72 as of round 3 on the respective pages. The live top-10 snapshot is gone for F1; other series keep their current fallback until the per-round-points adapters follow (IMSA/GTWC can never have this honestly — no points in their results).
+
+### Internal
+
+- Operator decisions recorded in IDEAS.md (2026-06-11): **v1.0 scope locked — W1 + security audit + W3 content + W4 profiles all gate launch**; rules content lives inside About (label stays); W7 blog/UGC starts with a design doc; Android TWA after v1.0.
+
 ## 0.27.0 — 2026-06-11
 
 W1a — weekend pages join the timing-screen language (first slice of the W1 weekend-overhaul wave; W1b point-in-time standings and W1c per-session pages follow).

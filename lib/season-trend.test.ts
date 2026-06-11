@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildSeasonTrendData } from './season-trend';
+import { buildSeasonTrendData, buildStandingsAtRound } from './season-trend';
 import type { RaceResult } from './types';
 
 function race(
@@ -101,5 +101,60 @@ describe('buildSeasonTrendData', () => {
     expect(trend.data[1].round).toBe(2);
     expect(trend.data[2].round).toBe(3);
     expect(trend.data[1]['A']).toBe(18 + 15 + 8);
+  });
+});
+
+describe('buildStandingsAtRound', () => {
+  const races: RaceResult[] = [
+    race(1, 'Round One', [
+      { driverName: 'Driver A', team: 'Team A', points: 25 },
+      { driverName: 'Driver B', team: 'Team B', points: 18 },
+    ]),
+    race(2, 'Round Two', [
+      { driverName: 'Driver B', team: 'Team B', points: 25 },
+      { driverName: 'Driver A', team: 'Team A', points: 18 },
+    ]),
+    race(3, 'Round Three', [
+      { driverName: 'Driver A', team: 'Team A', points: 25 },
+      { driverName: 'Driver B', team: 'Team B', points: 18 },
+    ]),
+  ];
+
+  it('freezes the table at the requested round', () => {
+    const snap = buildStandingsAtRound(races, 2);
+    expect(snap.throughRound).toBe(2);
+    expect(snap.drivers[0]).toMatchObject({ position: 1, driverName: 'Driver A', points: 43, wins: 1 });
+    expect(snap.drivers[1]).toMatchObject({ position: 2, driverName: 'Driver B', points: 43, wins: 1 });
+    expect(snap.constructors[0]).toMatchObject({ name: 'Team A', points: 43 });
+  });
+
+  it('ranks by points then wins', () => {
+    const snap = buildStandingsAtRound(races, 3);
+    // A: 68pts 2 wins; B: 61pts 1 win
+    expect(snap.drivers[0]).toMatchObject({ driverName: 'Driver A', points: 68, wins: 2, position: 1 });
+    expect(snap.drivers[1]).toMatchObject({ driverName: 'Driver B', points: 61, position: 2 });
+  });
+
+  it('folds sprint extras into points but not wins', () => {
+    const sprint = [
+      race(2, 'Round Two Sprint', [
+        { driverName: 'Driver B', team: 'Team B', points: 8 },
+      ]),
+    ];
+    const snap = buildStandingsAtRound(races, 2, sprint);
+    expect(snap.drivers[0]).toMatchObject({ driverName: 'Driver B', points: 51, wins: 1 });
+    expect(snap.constructors.find(c => c.name === 'Team B')?.points).toBe(51);
+  });
+
+  it('reports the round actually counted when later results are missing', () => {
+    const snap = buildStandingsAtRound(races, 7);
+    expect(snap.throughRound).toBe(3);
+  });
+
+  it('returns empty tables before any counted round', () => {
+    const snap = buildStandingsAtRound(races, 0);
+    expect(snap.drivers).toHaveLength(0);
+    expect(snap.constructors).toHaveLength(0);
+    expect(snap.throughRound).toBe(0);
   });
 });
