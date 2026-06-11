@@ -31,14 +31,14 @@ export function SessionCard({
       // its min-content width (a long nowrap session title), inflating the
       // whole day-group's track past the viewport — every card in the group
       // then renders cut off on phones (Le Mans week regression, 0.13.3).
-      className={`group relative flex min-w-0 items-stretch gap-3 overflow-hidden pl-3 pr-3 py-3 rounded-lg bg-surface/40 border border-border/60 mb-1.5 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong ${
+      className={`group relative flex min-w-0 items-stretch gap-3 overflow-hidden px-2 -mx-2 py-2.5 border-b border-border transition-colors duration-(--duration-fast) hover:bg-surface ${
         isPast ? 'opacity-45' : ''
       }`}
     >
-      {/* Left accent bar — series color */}
+      {/* Left accent rule — series color */}
       <span
-        className="self-stretch w-[3px] rounded-full shrink-0"
-        style={{ backgroundColor: color, opacity: isPast ? 0.5 : 0.85 }}
+        className="self-stretch w-[3px] shrink-0"
+        style={{ backgroundColor: color, opacity: isPast ? 0.5 : 1 }}
       />
 
       <div className="flex-1 min-w-0">

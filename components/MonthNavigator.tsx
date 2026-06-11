@@ -16,24 +16,24 @@ export function MonthNavigator({ months, selected, onChange }: Props) {
   const hasNext = idx >= 0 && idx < months.length - 1;
 
   return (
-    <div className="flex items-center justify-center gap-1 mb-6">
+    <div className="flex items-stretch mb-6 border-y border-border">
       <button
         type="button"
         onClick={() => hasPrev && onChange(months[idx - 1])}
         disabled={!hasPrev}
         aria-label="Previous month"
-        className="p-2 rounded-lg text-text-muted hover:bg-surface hover:text-text disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-(--duration-fast)"
+        className="px-3 py-2.5 text-text-muted hover:bg-surface hover:text-text disabled:opacity-30 disabled:cursor-not-allowed border-r border-border transition-colors duration-(--duration-fast)"
       >
         <ChevronLeft size={16} />
       </button>
 
-      <div className="relative">
+      <div className="relative flex-1 sm:flex-none">
         <button
           type="button"
           onClick={() => setOpen(v => !v)}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text hover:bg-surface rounded-lg transition-colors duration-(--duration-fast) min-w-[120px] justify-center"
+          className="flex h-full w-full sm:w-44 items-center justify-between gap-1.5 px-4 font-display text-base font-extrabold uppercase tracking-wide text-text hover:bg-surface transition-colors duration-(--duration-fast)"
         >
           <span>{monthLabel(selected)}</span>
           <ChevronDown size={14} className="text-text-faint" />
@@ -47,7 +47,7 @@ export function MonthNavigator({ months, selected, onChange }: Props) {
             />
             <div
               role="listbox"
-              className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-40 bg-surface-elevated border border-border rounded-lg shadow-2xl shadow-black/40 max-h-64 overflow-y-auto min-w-[140px]"
+              className="absolute left-0 top-full z-40 max-h-64 min-w-full overflow-y-auto border border-border bg-surface-elevated shadow-2xl shadow-black/40"
             >
               {months.map(k => (
                 <button
@@ -59,10 +59,10 @@ export function MonthNavigator({ months, selected, onChange }: Props) {
                     onChange(k);
                     setOpen(false);
                   }}
-                  className={`block w-full text-left px-3 py-2 text-sm whitespace-nowrap hover:bg-surface transition-colors duration-(--duration-fast) ${
+                  className={`block w-full whitespace-nowrap border-l-2 px-4 py-2 text-left font-mono text-xs uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) hover:bg-surface ${
                     k === selected
-                      ? 'text-tint font-semibold'
-                      : 'text-text'
+                      ? 'border-brand font-semibold text-text'
+                      : 'border-transparent text-text-muted'
                   }`}
                 >
                   {monthLabel(k)}
@@ -78,7 +78,7 @@ export function MonthNavigator({ months, selected, onChange }: Props) {
         onClick={() => hasNext && onChange(months[idx + 1])}
         disabled={!hasNext}
         aria-label="Next month"
-        className="p-2 rounded-lg text-text-muted hover:bg-surface hover:text-text disabled:opacity-30 disabled:cursor-not-allowed transition-colors duration-(--duration-fast)"
+        className="px-3 py-2.5 text-text-muted hover:bg-surface hover:text-text disabled:opacity-30 disabled:cursor-not-allowed border-x border-border transition-colors duration-(--duration-fast)"
       >
         <ChevronRight size={16} />
       </button>

@@ -35,10 +35,16 @@ export function WeekendBlock({
   return (
     <Link
       href={`/series/${seriesSlug}/weekend/${round}`}
-      className={`block rounded-xl bg-surface/40 border border-border/60 p-4 transition-colors duration-(--duration-fast) hover:bg-surface hover:border-border-strong ${
+      className={`relative block border-y border-border p-4 pl-5 transition-colors duration-(--duration-fast) hover:bg-surface ${
         weekend.isPast ? 'opacity-50 hover:opacity-80' : ''
       }`}
     >
+      {/* Series-color rule — the weekend's left edge. */}
+      <span
+        aria-hidden="true"
+        className="absolute left-0 top-0 bottom-0 w-[3px]"
+        style={{ backgroundColor: color, opacity: weekend.isPast ? 0.5 : 1 }}
+      />
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
         <time
           dateTime={weekendStartISO}
@@ -48,7 +54,7 @@ export function WeekendBlock({
         </time>
         <span className="ml-auto flex items-center gap-1.5">
           {showNextTag && (
-            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-text text-bg font-semibold">
+            <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 bg-brand text-black font-bold">
               next
             </span>
           )}
@@ -59,8 +65,8 @@ export function WeekendBlock({
           )}
           {weekend.label && (
             <span
-              className="inline-flex items-center text-[10px] uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full"
-              style={{ backgroundColor: `${color}26`, color }}
+              className="inline-flex items-center font-mono text-[10px] uppercase tracking-[0.12em] font-semibold px-2 py-0.5 border"
+              style={{ borderColor: `${color}66`, color }}
             >
               {weekend.label}
             </span>

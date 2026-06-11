@@ -53,7 +53,7 @@ export function MonthScopedWeekends({
 
   return (
     <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-text-faint font-semibold mb-3">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         Calendar
       </h2>
       <MonthNavigator
