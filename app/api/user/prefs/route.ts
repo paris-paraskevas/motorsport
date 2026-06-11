@@ -34,6 +34,14 @@ export async function PUT(request: Request) {
   if (!Array.isArray(body.followed) || !body.followed.every(s => typeof s === 'string')) {
     return NextResponse.json({ error: 'followed must be string[]' }, { status: 400 });
   }
+  // Slug-shaped, bounded payload — there are 15 series; 100 entries of 64
+  // chars is generous headroom against KV bloat (security audit 2026-06-11).
+  if (
+    body.followed.length > 100 ||
+    !(body.followed as string[]).every(s => /^[a-z0-9-]{1,64}$/.test(s))
+  ) {
+    return NextResponse.json({ error: 'invalid followed list' }, { status: 400 });
+  }
   try {
     await setUserFollowed(userId, body.followed as string[]);
     return NextResponse.json({ ok: true });

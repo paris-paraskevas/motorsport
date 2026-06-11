@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.29.2 — 2026-06-11
+
+Security audit session (operator-ordered; a v1.0 launch gate). Full report: `docs/research/security-audit-2026-06-11.md` — 13 routes, auth matrix, headers, XSS inventory swept; four findings fixed same-session, the known gaps (CSP, Sentry) documented with recommendations.
+
+### Fixed
+
+- **Contact form rate-limited** (the long-standing carry-over): `/api/contact` — the site's only unauthenticated write — now enforces 5/15min per IP + 60/h globally via a fixed-window KV limiter (NEW `lib/rate-limit.ts`, 6 tests; fails open without KV — availability over strictness, documented). Email field additionally rejects whitespace/control characters (reply_to/subject hygiene).
+- **Push endpoint validation** (`/api/push/subscribe`): stored endpoints must be `https:` URLs ≤1024 chars with type-checked keys ≤512 chars — the notify cron web-pushes to every stored endpoint, so the store can no longer be seeded with junk targets.
+- **User-prefs payload caps**: `followed` ≤100 slug-shaped entries; mute-series slugs shape-validated (`^[a-z0-9-]{1,64}$`).
+
+### Internal
+
+- Verified sound, no action: middleware auth matrix (user/push writes Clerk-protected), crons fail closed, push ownership checks, every `dangerouslySetInnerHTML` site renders repo-authored content (no injection path), `/api/push/status` leaks nothing, header set from 0.10.26 intact. CSP remains the known gap — Report-Only rollout recommended pre-launch.
+
 ## 0.29.1 — 2026-06-11
 
 Operator-reported landing nav fixes.

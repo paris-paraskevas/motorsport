@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   }
 
   const slug = body.seriesSlug?.trim();
-  if (!slug) {
+  if (!slug || !/^[a-z0-9-]{1,64}$/.test(slug)) {
     return NextResponse.json({ error: 'seriesSlug required' }, { status: 400 });
   }
 
