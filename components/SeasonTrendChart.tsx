@@ -168,8 +168,11 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
                   stroke={style.stroke}
                   strokeDasharray={style.dash}
                   strokeWidth={visible.has(d.name) ? 2 : 0}
-                  dot={false}
-                  activeDot={{ r: 4 }}
+                  // Always-visible point markers at every round (operator
+                  // 2026-06-11); hover grows the active one and rings it in
+                  // the page background so it pops against crossing lines.
+                  dot={{ r: 2.5, strokeWidth: 0, fill: style.stroke }}
+                  activeDot={{ r: 5, stroke: 'var(--bg)', strokeWidth: 2, fill: style.stroke }}
                   hide={!visible.has(d.name)}
                   connectNulls
                 />

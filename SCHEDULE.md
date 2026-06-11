@@ -700,7 +700,8 @@ Outcomes:
 - → done (unplanned, operator interrupt): **PR #121 (0.24.3)** landing burger hot-fix — `backdrop-blur` header is a containing block for fixed descendants, so the menu overlay collapsed into the 56px header strip; portaled to body. Plus latent scroll-lock fix (body → documentElement). Reproduced + probe-confirmed on prod first.
 - → done: **PR #122 (0.25.0)** results layout v2 — timing-screen race rows (tint chip / Saira title / amber WIN) + titles link to weekend pages gated by the groupByWeekend round set; chevron keeps the accordion; no default-open. OpenF1 research for the per-session weekend follow-up documented in the redesign doc (2026 coverage confirmed live incl. practices + Q1/Q2/Q3 arrays).
 - → carried: weekend per-session results implementation (OpenF1 fetcher + WeekendSessionResults section, F1 first) — entry notes in `docs/redesign-2026-06.md` session-5 log. Security audit stays the next dedicated session.
-- Merge order for the stack: **#120 → #121 → #122** (+ #119 docs whenever).
+- → done (continued — operator 15-item batch, organized into waves W1–W8 below): **W2 series-tab polish (PR #123, 0.26.0)** — trend chart Results → Standings on F1/NASCAR/WRC/DTM (DTM results becomes link-out), always-on chart dots + highlighted hover point, classifications 2-col from sm:, WIN line wraps on phone, champions team names in team colors (dark hues contrast-lifted via color-mix; historic-constructor color map = follow-up curation task).
+- Merge order for the stack: **#120 → #121 → #122 → #123** (+ #119 docs whenever).
 
 Active:
 _(awaiting [+Nm] prefixes)_
@@ -709,10 +710,25 @@ _(awaiting [+Nm] prefixes)_
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
-- **Supabase migration full execution** — schema build, scrapers, ingestion crons. Scoping doc ships pre-Fotis (Tue); execution post-Fotis.
-- **SEO baseline (S5)** — sitemap, robots, JSON-LD, per-page metadata, OG image generators. Multi-day; deferred to post-Fotis.
-- **Detail-page enrichment (S6)** — `/drivers/[slug]`, `/teams/[slug]`, F1 History, Rules tab. Post-Fotis.
-- **Native non-F1 results + standings (S7)** — MotoGP / WEC / IndyCar / NASCAR. Post-Fotis.
+**Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
+
+- **W1 — Weekend page overhaul**: retheme to timing-screen language (radial wash still there), remove the back-to-series arrow, point-in-time standings (points as they stood at that GP — computable only where full per-round points exist: F1/F2/F3/NASCAR/WRC/DTM/IndyCar/FE/MotoGP/WSBK; F1 first, IMSA/GTWC excluded honestly), per-session pages with results at `/series/[slug]/weekend/[round]/[session]` (OpenF1 for F1 practices/quali; other series race-session only). 2–3 PRs.
+- **W2 — Series-tab polish**: ✅ shipped (PR #123, 0.26.0). Follow-up: curated historic-constructor color map so pre-current-grid champions color too.
+- **W3 — About/rules content ×15**: rules-essentials curated INTO About (Rules tab stays retired per 0.19.0 decision unless operator vetoes); history-essay agent pattern.
+- **W4 — Driver + team profile pages**: enrichment, multi-session; verify drivers.json coverage first (gap was 13 series in May — recheck before scoping).
+- **W5 — Per-page layout spec, desktop + phone**: one design session, documented in the redesign doc; feeds W1/W4.
+- **W6 — Android app**: TWA wrapper (PWABuilder/Bubblewrap → Play Store, $25 one-time), NOT a native rebuild; needs Digital Asset Links + store assets; post-v1.0 surface stability.
+- **W7 — Blog threads + UGC + admin approval**: Clerk roles via publicMetadata (admin check in API routes — no Organizations needed); submissions/drafts/approval queue = **the Supabase trigger (S9 fires)**. Design doc before code. Don't block launch on it.
+- **W8 — v1.0 launch program**: scope-lock decision (operator owes: what's in v1.0), "out of early access" banner, marketing channel plan (IG/FB/Reddit/X/YouTube), launch checklist. Security audit is a launch gate.
+
+Sequencing: security audit (already queued) → W1 → W5 → W3/W4 in parallel → W8 scope lock → W6 post-launch. W7 runs as design-doc work alongside.
+
+Pre-existing stubs:
+
+- **Supabase migration full execution** — schema build, scrapers, ingestion crons. Now coupled to W7 (the trigger has fired in principle).
+- **SEO baseline (S5)** — sitemap, robots, JSON-LD, per-page metadata, OG image generators. Largely shipped via Track B; remaining bits fold into W8 launch checks.
+- **Detail-page enrichment (S6)** — `/drivers/[slug]`, `/teams/[slug]` → absorbed into W4.
+- **Native non-F1 results + standings (S7)** — MotoGP / WEC / IndyCar / NASCAR → largely shipped 0.11.x–0.12.x; WEC results remain (see W1's per-session pages + 0.12.8.1).
 
 ---
 

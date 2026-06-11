@@ -58,22 +58,52 @@ function nameForSlugMatch(name: string): string {
 
 // Champions tables and current drivers.json can disagree on team-name form
 // (e.g. champions: "Red Bull"; drivers.json: "Red Bull Racing"). Build a slug
-// → canonical-href map so a champion name slug-matches via the suffix-stripped
-// alias but the Link still routes to the real team page slug.
+// → canonical-ref map so a champion name slug-matches via the suffix-stripped
+// alias but the Link still routes to the real team page slug. The ref also
+// carries the drivers.json team color: champion team names render in their
+// team color where the team is on the current grid; historic teams with no
+// color mapping stay plain (curated historic color map is a future task).
 const TEAM_SUFFIX_STRIP = /\s+(Racing|F1 Team|GP|Team)$/i;
+
+interface TeamRef {
+  slug: string;
+  color?: string;
+}
+
+// drivers.json colors were curated for 3px team bars, where dark hues work;
+// as TEXT on the near-black background some fail contrast (Red Bull navy
+// ≈ 2:1). Lift only the dark ones toward white — bright hexes untouched.
+function readableTeamColor(hex: string): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  const lin = (c: number) => {
+    const s = c / 255;
+    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const lum =
+    0.2126 * lin((n >> 16) & 255) +
+    0.7152 * lin((n >> 8) & 255) +
+    0.0722 * lin(n & 255);
+  return lum < 0.12 ? `color-mix(in srgb, ${hex} 60%, white)` : hex;
+}
 
 function TeamLinkResolver({
   name,
   teamSlugMap,
 }: {
   name: string;
-  teamSlugMap: Map<string, string>;
+  teamSlugMap: Map<string, TeamRef>;
 }) {
   const slug = slugify(nameForSlugMatch(name));
-  const canonical = teamSlugMap.get(slug);
-  if (canonical) {
+  const ref = teamSlugMap.get(slug);
+  if (ref) {
     return (
-      <Link href={`/teams/${canonical}`} className={LINK_CLASS}>
+      <Link
+        href={`/teams/${ref.slug}`}
+        className={LINK_CLASS}
+        style={ref.color ? { color: ref.color } : undefined}
+      >
         {name}
       </Link>
     );
@@ -104,7 +134,7 @@ function TeamCell({
   teamSlugMap,
 }: {
   name: string;
-  teamSlugMap: Map<string, string>;
+  teamSlugMap: Map<string, TeamRef>;
 }) {
   return <TeamLinkResolver name={name} teamSlugMap={teamSlugMap} />;
 }
@@ -116,7 +146,7 @@ function DriversSection({
 }: {
   champions: Champion[];
   driverSlugs: Set<string>;
-  teamSlugMap: Map<string, string>;
+  teamSlugMap: Map<string, TeamRef>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -183,7 +213,7 @@ function ConstructorsSection({
   teamSlugMap,
 }: {
   champions: ConstructorChampion[];
-  teamSlugMap: Map<string, string>;
+  teamSlugMap: Map<string, TeamRef>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -230,7 +260,7 @@ function SecondarySection({
 }: {
   champions: SecondaryChampion[];
   driverSlugs: Set<string>;
-  teamSlugMap: Map<string, string>;
+  teamSlugMap: Map<string, TeamRef>;
 }) {
   const groups = groupByDecade(champions);
   return (
@@ -317,13 +347,17 @@ export async function ChampionsTab({ series }: { series: Series }) {
   // so the champion text "Red Bull" matches and links to /teams/red-bull-racing
   // (the real page). Suffix-stripped aliases handle the common "X Racing" /
   // "X F1 Team" / "X GP" / "X Team" forms.
-  const teamSlugMap = new Map<string, string>();
+  const teamSlugMap = new Map<string, TeamRef>();
   for (const t of curatedDrivers?.teams ?? []) {
     const canonical = slugify(t.name);
-    teamSlugMap.set(canonical, canonical);
+    const ref: TeamRef = {
+      slug: canonical,
+      color: t.color ? readableTeamColor(t.color) : undefined,
+    };
+    teamSlugMap.set(canonical, ref);
     const stripped = slugify(t.name.replace(TEAM_SUFFIX_STRIP, ''));
     if (stripped !== canonical && !teamSlugMap.has(stripped)) {
-      teamSlugMap.set(stripped, canonical);
+      teamSlugMap.set(stripped, ref);
     }
   }
 

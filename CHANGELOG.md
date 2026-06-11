@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.26.0 — 2026-06-11
+
+W2 series-tab polish from the operator's 15-item batch (full roadmap in `SCHEDULE.md` backlog stubs): chart relocation + markers, two-column classifications, winner-line wrap, champions team colors.
+
+### Changed
+
+- **Drivers' season trend moved Results → Standings** (F1 / NASCAR / WRC / DTM): cumulative points are standings-shaped data, and the chart now sits with the tables it must reconcile against (chart-vs-standings invariant co-location). `StandingsTab` builds the trend from the same override-patched results the accordions render (`applyResultsOverrides` exported from `ResultsTab`); an empty results feed skips the chart without touching the tables. **DTM's Results tab becomes a link-out** — its only per-round data was the chart matrix, which now lives on Standings (per-race classification still needs the motorsport.com per-event probe, 0.12.15.1).
+- **Chart point markers** (`components/SeasonTrendChart.tsx`): every round shows a dot in the line's color; hovering grows the active point and rings it in the page background.
+- **Race classifications flow into two columns from `sm:`** — a 22-car F1 grid renders P1–P11 left, P12–P22 right (CSS multi-column, rows `break-inside-avoid`); phones keep one column.
+- **Champions team names render in team colors** (`components/tabs/ChampionsTab.tsx`): the slug map built from drivers.json now carries each team's color; dark hues are lifted with `color-mix` when their luminance would fail on the near-black background (Red Bull navy → readable steel blue). Historic teams outside the current grid stay plain — a curated historic-constructor color map is the follow-up.
+
+### Fixed
+
+- **Winner line no longer truncates on phones** — "WIN Andrea Kimi Antonelli — Mercedes" wraps instead of clipping; `sm:` and up keep single-line truncation.
+
 ## 0.25.0 — 2026-06-11
 
 Results layout v2 (operator session-4 note): race rows redesigned to the timing-screen language and made clickable through to their weekend pages.

@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.26.0 — 2026-06-11
+
+**The points chart lives in Standings now.** The drivers' season-progression chart moved from the Results tab to Standings — points over time next to points right now. It also gained a marker at every round, and hovering highlights the exact point you're on.
+
+**Full classifications, easier to scan.** On bigger screens a race's classification splits into two columns — first half of the field on the left, second half on the right — instead of one long list.
+
+**Two small touches.** The winner's name under each race now shows in full on phones, and on the Champions tab each title-winning team's name appears in that team's colour.
+
 ## 0.25.0 — 2026-06-11
 
 **Race results, redesigned.** Every series' results tab now lists races in the site's timing-screen style — round number in the series colour, the race name in headline type, and the winner highlighted on every row.
