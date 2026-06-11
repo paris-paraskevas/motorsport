@@ -694,6 +694,14 @@ Session 5 plan:
 - Results layout v2 (0.25.0): per-race rows redesigned per series + clickable → weekend pages; OpenF1 (api.openf1.org) research for practice/quali per-session data; design-led under the 2.0 mandate.
 - Won't touch this session: security audit (queued as its own session), driver/team enrichment pages, UI-inspiration pass, light mode, WEC results pipeline.
 
+Outcomes:
+
+- → done: **PR #120 (0.24.2)** quick wins — tab scroll-to-top + full classifications (F1 22/22, IMSA Daytona GTD 21, GTWC 16) + drivers-tab spacing. Browser-verified 390/412/1440, 355 tests.
+- → done (unplanned, operator interrupt): **PR #121 (0.24.3)** landing burger hot-fix — `backdrop-blur` header is a containing block for fixed descendants, so the menu overlay collapsed into the 56px header strip; portaled to body. Plus latent scroll-lock fix (body → documentElement). Reproduced + probe-confirmed on prod first.
+- → done: **PR #122 (0.25.0)** results layout v2 — timing-screen race rows (tint chip / Saira title / amber WIN) + titles link to weekend pages gated by the groupByWeekend round set; chevron keeps the accordion; no default-open. OpenF1 research for the per-session weekend follow-up documented in the redesign doc (2026 coverage confirmed live incl. practices + Q1/Q2/Q3 arrays).
+- → carried: weekend per-session results implementation (OpenF1 fetcher + WeekendSessionResults section, F1 first) — entry notes in `docs/redesign-2026-06.md` session-5 log. Security audit stays the next dedicated session.
+- Merge order for the stack: **#120 → #121 → #122** (+ #119 docs whenever).
+
 Active:
 _(awaiting [+Nm] prefixes)_
 
