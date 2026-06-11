@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.29.2 — 2026-06-11
+
+**A security hardening pass.** We audited every door into Paddock — sign-in-protected areas, the contact form, push notifications, scheduled jobs. The contact form now has sensible rate limits, push subscriptions are validated more strictly, and the audit confirmed the rest holds up. Internal: full findings documented for the next hardening round.
+
 ## 0.29.1 — 2026-06-11
 
 **Landing-page navigation behaves now.** Jumping to a section from the top bar no longer hides the section's title behind the bar — every jump lands cleanly below it. And the menu is a proper side drawer: it slides in from the right over half the screen while the page behind dims, and closes from the dimmed area, the ✕ or Escape.

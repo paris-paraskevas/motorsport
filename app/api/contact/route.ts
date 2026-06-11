@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { auth } from '@clerk/nextjs/server';
+import { allowRequest, clientIp } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,6 +63,18 @@ async function sendViaResend(
 }
 
 export async function POST(req: Request) {
+  // The only unauthenticated write on the site — rate-limited per IP and
+  // globally so it can't become a Resend spam gun or a KV flood
+  // (security audit 2026-06-11; the long-standing carry-over).
+  const ip = clientIp(req);
+  const [ipAllowed, globalAllowed] = await Promise.all([
+    allowRequest(`contact:ip:${ip}`, 5, 15 * 60),
+    allowRequest('contact:global', 60, 60 * 60),
+  ]);
+  if (!ipAllowed || !globalAllowed) {
+    return NextResponse.json({ error: 'too many requests' }, { status: 429 });
+  }
+
   let body: { email?: unknown; message?: unknown; category?: unknown };
   try {
     body = await req.json();
@@ -76,7 +89,10 @@ export async function POST(req: Request) {
     ? (rawCategory as Category)
     : 'general';
 
-  if (!email || !email.includes('@') || email.length > 200) {
+  // No whitespace/control characters: the address lands in Resend's
+  // reply_to and the mail subject — keep header-injection shapes out even
+  // though the JSON transport already defuses most of them.
+  if (!email || !email.includes('@') || email.length > 200 || /\s/.test(email)) {
     return NextResponse.json({ error: 'invalid email' }, { status: 400 });
   }
   if (message.length < MIN_MESSAGE_LEN) {
