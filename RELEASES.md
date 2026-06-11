@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.19.1 — 2026-06-11
+
+**No more landing-page flash in the app.** Tapping the PADDOCK•TRACKER logo inside the installed app briefly showed the marketing page before returning home — it now goes straight to your dashboard. In the browser, the logo still takes you to the landing page.
+
 ## 0.19.0 — 2026-06-10
 
 **Full F1 results, finally.** A data-feed bug was silently cutting the season short — Monaco was missing from the results and the points chart, and Canada showed only half the field. Fixed: every race now lists all 22 finishers and the chart runs to the latest round, with totals that match the standings.

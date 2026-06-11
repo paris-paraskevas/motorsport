@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { SeriesMeta } from '@/lib/types';
 import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
@@ -31,15 +32,36 @@ export function AppShell({
 }) {
   const pathname = usePathname();
 
+  // Installed-PWA detection (same condition as StandaloneRedirect). In the
+  // PWA the wordmark must NOT link to the landing: the standalone guard on /
+  // immediately bounces back to /app, so the click was a flash-of-landing
+  // round trip (operator-reported). Browser users keep the landing link.
+  const [standalone, setStandalone] = useState(false);
+  useEffect(() => {
+    const detect = () =>
+      setStandalone(
+        window.matchMedia('(display-mode: standalone)').matches ||
+          (navigator as Navigator & { standalone?: boolean }).standalone === true,
+      );
+    const t = setTimeout(detect, 0);
+    const mq = window.matchMedia('(display-mode: standalone)');
+    mq.addEventListener('change', detect);
+    return () => {
+      clearTimeout(t);
+      mq.removeEventListener('change', detect);
+    };
+  }, []);
+
   return (
     <TooltipProvider delay={300}>
       {/* Fixed (not sticky — overflow-x: hidden on body kills sticky) */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated/85 backdrop-blur-xl border-b border-border pt-[env(safe-area-inset-top)]">
         <div className="max-w-2xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 md:px-4 h-14 flex items-center gap-6">
-          {/* Wordmark → landing (operator call). Installed-PWA users bounce
-              straight back via the standalone guard on /. */}
+          {/* Wordmark → landing in the browser; → home in the installed PWA
+              (a "/" link there just flashes the landing before the standalone
+              guard bounces back). */}
           <Link
-            href="/"
+            href={standalone ? '/app' : '/'}
             className="font-display text-base font-extrabold uppercase tracking-wide text-text"
           >
             Paddock<span className="text-brand">•</span>Tracker
