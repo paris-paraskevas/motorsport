@@ -31,7 +31,7 @@ function hasWinnersOnly(races: RaceResult[]): boolean {
   );
 }
 
-interface SnapshotSource {
+export interface SnapshotSource {
   races: RaceResult[];
   extras?: RaceResult[];
   // Whether a per-team sum IS that series' teams' championship. True for
@@ -46,7 +46,7 @@ interface SnapshotSource {
 // renders. Series absent here (WEC / IMSA / GTWC / NLS / ADAC) carry no
 // points in their results and can never have an honest frozen table; they
 // keep the live link-out.
-async function loadSnapshotSource(series: Series): Promise<SnapshotSource | null> {
+export async function loadSnapshotSource(series: Series): Promise<SnapshotSource | null> {
   const slug = series.meta.slug;
   switch (slug) {
     case 'f1': {

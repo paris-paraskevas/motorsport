@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.33.0 — 2026-06-11
+
+W4 step 3 — driver and team profile pages: season form + retheme. Completes the W4 launch gate.
+
+### Added
+
+- **Driver pages** (`app/(app)/drivers/[slug]/page.tsx`): SEASON SO FAR stat band (position / points / wins) + LAST 5 RACES rows, derived via NEW `lib/profile-stats.ts` from the same results feeds the weekend snapshots cumulate — one data path, reconciliation-verified per series. Name drift between drivers.json and feeds ("Kimi Antonelli" vs Jolpica's "Andrea Kimi Antonelli") handled by slug-containment matching. Series without points in results degrade to the identity page.
+- **Team pages**: season form (position/points where a per-team sum IS the championship — the snapshot source's showTeams flag) + per-driver standings inline on the lineup rows (P3 · 88 pts).
+
+### Changed
+
+- Both pages rethemed to the timing-screen language: radial washes gone, mono breadcrumbs, Saira names with series-color stops, flat border-y sections; the back-chevron pattern retired like the weekend page's.
+
 ## 0.32.0 — 2026-06-11
 
 W4 step 1+2 — the drivers.json gap (13 series, open since May) is closed: every series now ships a curated 2026 lineup, activating /drivers/* and /teams/* site-wide.
