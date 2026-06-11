@@ -13,12 +13,14 @@ export function WeekendSchedule({
   const byDay = groupByDay(weekend.sessions);
 
   return (
-    <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-text-faint mb-3 font-semibold">Schedule</h2>
-      <div className="rounded-2xl bg-surface/40 border border-border/60 overflow-hidden">
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        Schedule
+      </h2>
+      <div>
         {byDay.map((day, dayIdx) => (
           <div key={day.label} className={dayIdx > 0 ? 'border-t border-border/60' : undefined}>
-            <div className="px-4 pt-3 pb-2 text-[11px] uppercase tracking-[0.14em] text-text-faint font-semibold">
+            <div className="pt-3 pb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint font-semibold">
               {day.label}
             </div>
             <ul>
@@ -28,12 +30,12 @@ export function WeekendSchedule({
                 return (
                   <li
                     key={s.uid}
-                    className={`flex items-center gap-3 px-4 py-2.5 border-t border-border/40 ${
+                    className={`flex items-center gap-3 py-2.5 border-t border-border/40 ${
                       isPast ? 'opacity-50' : ''
                     }`}
                   >
                     <span
-                      className="w-[3px] self-stretch rounded-full shrink-0"
+                      className="w-[3px] self-stretch shrink-0"
                       style={{ backgroundColor: color, opacity: isPast ? 0.4 : 0.8 }}
                     />
                     <div className="flex-1 min-w-0">

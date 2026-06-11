@@ -180,6 +180,13 @@ the five operator notes in IDEAS (#119) and the per-PR CHANGELOG sections.)
   (`color-mix` lifts dark hues like Red Bull navy to readable steel blue on the near-black
   bg). Historic-constructor color map = follow-up curation; historic teams plain until then.
 
+- **PR #124 (0.27.0) — W1a weekend retheme** (operator merged the full #119–#123 stack
+  mid-session): weekend hero → flush border-y section, mono meta row, Saira title with
+  series-color full stop; back-to-series arrow removed (series name in the meta row still
+  links); Schedule/Weather/Standings/News converted from rounded cards to flat sections;
+  page radial wash deleted. W1b (point-in-time standings) and W1c (per-session pages on the
+  OpenF1 notes below) are the next slices of the wave.
+
 **OpenF1 research (for the weekend per-session results follow-up — operator note (b)):**
 
 - `api.openf1.org` — free community F1 API, no auth. 2026 fully live: `/v1/sessions?year=2026`

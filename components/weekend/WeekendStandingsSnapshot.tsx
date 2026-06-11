@@ -65,17 +65,19 @@ export async function WeekendStandingsSnapshot({
     const constructors = applyConstructorOverrides(data.constructors, overrides?.constructors).slice(0, CONSTRUCTOR_ROWS);
 
     return (
-      <section className="mb-8">
+      <section className="mb-8 border-y border-border py-4">
         <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-          <h2 className="text-xs uppercase tracking-wider text-text-faint font-semibold">Standings</h2>
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
+            Standings
+          </h2>
           <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
             {label}
           </span>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-surface/40 border border-border/60 p-4">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
+        <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
+          <div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
               Drivers · top {DRIVER_ROWS}
             </div>
             <ul className="divide-y divide-border/60">
@@ -96,8 +98,8 @@ export async function WeekendStandingsSnapshot({
             </ul>
           </div>
 
-          <div className="rounded-2xl bg-surface/40 border border-border/60 p-4">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
+          <div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted font-semibold mb-2">
               Constructors · top {CONSTRUCTOR_ROWS}
             </div>
             <ul className="divide-y divide-border/60">
@@ -124,16 +126,18 @@ export async function WeekendStandingsSnapshot({
   if (!series.meta.officialStandingsUrl) return null;
   const host = officialSiteLabel(series.meta.officialStandingsUrl);
   return (
-    <section className="mb-8">
+    <section className="mb-8 border-y border-border py-4">
       <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-        <h2 className="text-xs uppercase tracking-wider text-text-faint font-semibold">Standings</h2>
+        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
+          Standings
+        </h2>
         <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">{label}</span>
       </div>
       <a
         href={series.meta.officialStandingsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="block rounded-2xl bg-surface/40 border border-border/60 p-5 text-center text-text-muted text-sm hover:bg-surface hover:border-border-strong transition-colors duration-(--duration-fast)"
+        className="block border border-border bg-surface/40 p-5 text-center text-text-muted text-sm hover:bg-surface hover:border-border-strong transition-colors duration-(--duration-fast)"
       >
         Live standings on {host} <span aria-hidden>→</span>
       </a>
