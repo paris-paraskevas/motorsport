@@ -35,15 +35,17 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
   if (tiles.length === 0) return null;
 
   return (
-    <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-text-faint mb-3 font-semibold">Weather</h2>
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        Weather
+      </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
         {tiles.map(({ iso, daily }) => {
           const w = weatherLabel(daily.weatherCode);
           return (
             <div
               key={iso}
-              className="rounded-2xl bg-surface/40 border border-border/60 p-3"
+              className="border border-border p-3"
             >
               <div className="text-[11px] uppercase tracking-[0.12em] font-semibold text-text-faint font-mono">
                 {dayLabel(iso)}

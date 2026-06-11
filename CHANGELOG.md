@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.27.0 — 2026-06-11
+
+W1a — weekend pages join the timing-screen language (first slice of the W1 weekend-overhaul wave; W1b point-in-time standings and W1c per-session pages follow).
+
+### Changed
+
+- **Weekend hero rebuilt** (`components/weekend/WeekendHero.tsx`): the rounded card with its radial wash becomes a flush `border-y` section — mono meta row (series · ROUND N in tint · live/past/rescheduled/significance chips), event title in Saira display caps with a series-color full stop, mirroring the series-page header. **The back-to-series arrow is gone** (operator): the series name in the meta row still links to the series page, it just stops pretending to be navigation chrome.
+- **All four weekend sections converted from rounded cards to flat sections** — Schedule (flush timing rows, square series-color bars, mono day labels), Weather (square tiles), Standings snapshot (two flush columns; link-out variant matches the tabs' card), News (wire rows like the home/news-tab pattern). Saira section headings throughout.
+- **Page-level radial wash removed** (2c-3 precedent); the 1px series-color hairline at the top stays — it's a hard rule, on-language.
+
+### Internal
+
+- IDEAS.md re-triaged post-#119: the five operator notes annotated with shipped PRs, Now/Next rebuilt around the W1–W8 wave roadmap (details in SCHEDULE.md backlog stubs), stale May entries retired (ADAC champions done, B-content superseded, Supabase items coupled to W7).
+
 ## 0.26.0 — 2026-06-11
 
 W2 series-tab polish from the operator's 15-item batch (full roadmap in `SCHEDULE.md` backlog stubs): chart relocation + markers, two-column classifications, winner-line wrap, champions team colors.

@@ -43,16 +43,18 @@ export async function WeekendNews({
   if (inWindow.length === 0) return null;
 
   return (
-    <section className="mb-8">
-      <h2 className="text-xs uppercase tracking-wider text-text-faint mb-3 font-semibold">News this weekend</h2>
-      <div className="space-y-2">
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-2">
+        News this weekend
+      </h2>
+      <div className="divide-y divide-border/60">
         {inWindow.map(item => (
           <a
             key={item.link}
             href={item.link}
             target="_blank"
             rel="nofollow noopener noreferrer"
-            className="group block rounded-2xl bg-surface/40 border border-border/60 p-4 transition-all duration-(--duration-fast) hover:bg-surface hover:border-border-strong"
+            className="group block py-3 transition-colors duration-(--duration-fast) hover:bg-surface/40"
           >
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span

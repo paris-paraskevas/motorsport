@@ -142,12 +142,8 @@ export default async function WeekendPage({
           endDate: end,
         })}
       />
-      <div
-        className="absolute inset-x-0 top-0 h-72 -z-10 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 80% 100% at 50% 0%, ${color}1f 0%, transparent 70%)`,
-        }}
-      />
+      {/* Radial wash retired with the rest of the app's (2c-3 precedent);
+          the series-color hairline below is a hard rule — on-language. */}
       <div
         className="absolute top-0 left-0 right-0 h-px -z-10"
         style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}

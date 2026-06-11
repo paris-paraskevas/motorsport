@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.27.0 — 2026-06-11
+
+**Race-weekend pages match the rest of the site now.** The weekend view — schedule, weather, standings and news for each round — has been rebuilt in the same dark timing-screen style as everything else, with the event name in the house headline type. The back arrow at the top is gone too; the series name still takes you back.
+
 ## 0.26.0 — 2026-06-11
 
 **The points chart lives in Standings now.** The drivers' season-progression chart moved from the Results tab to Standings — points over time next to points right now. It also gained a marker at every round, and hovering highlights the exact point you're on.

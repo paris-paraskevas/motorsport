@@ -14,28 +14,36 @@ Time-based scheduling lives in `SCHEDULE.md`.
 
 ## Now (≤ 3, in flight)
 
-1. **B-perf execution (Wed 2026-05-20).** Multi-PR mobile-perf push. Baselines captured in `docs/perf-baselines.md`; 4-PR sequenced plan in `SCHEDULE.md` Wed entry. Biggest levers: Clerk lazy (~225 KiB unused JS), 3rd-party deferral of AdSense+GTM+FundingChoices (~319 KiB), preconnect `clerk.paddock-tracker.com` (90 ms LCP), CSS critical-path. Target mobile Perf ≥75 / LCP ≤2.5 s. B9 server-render stays as a separate session.
-2. **Fotis Supabase sit-down.** Walk `docs/research/supabase-schema-draft.md` together, close the 10 open questions in §17. If shape holds → start the 12-step migration order in §18. Verify state at session start — per HANDOFF "may be in progress / done by next session".
-3. **Weather + news coverage audit (15 series).** For each series, click into the next upcoming weekend and confirm Open-Meteo weather (venue-local date per `feedback-paddock-weather-venue-local`) + news feed populate. Output: per-series gap list + curation pass.
+_Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequencing + details in `SCHEDULE.md` backlog stubs). Retired from the old list: Fotis Supabase sit-down + provisioning → coupled to W7 in the Inbox (the blog/UGC ask IS the S9 trigger); ADAC champions → done (0.24.1 curated 2026 winners); B-content → superseded (histories ×15 shipped 0.20.0, Rules retired 0.19.0; blog posts fold into W7/W8)._
+
+1. **W1 — weekend page overhaul (in flight).** W1a retheme + back-arrow removal shipped (0.27.0). W1b: point-in-time standings — points as they stood at that GP, full driver + team tables; computable only for per-round-points series (F1/F2/F3/NASCAR/WRC/DTM/IndyCar/FE/MotoGP/WSBK), F1 first, IMSA/GTWC honestly excluded. W1c: per-session pages `/series/[slug]/weekend/[round]/[session]` with results — OpenF1 for F1 practice/quali (research done, redesign-doc session-5 log); other series race-session only.
+2. **Security audit — next dedicated session.** Endpoints, headers, rate limits, auth surfaces; `/security-review` skill + API-route sweep (contact-form rate-limit is the known carry-over). Also a W8 launch gate.
+3. **B-perf execution.** Carried since 2026-05-20 — top non-feature debt. Baselines in `docs/perf-baselines.md`; levers: Clerk lazy, 3rd-party deferral, CSS critical path. Re-baseline first — the redesign changed every page since capture.
 
 ## Next (≤ 5, queued — start within ~1–2 weeks)
 
-1. **Supabase provisioning + run migrations 001 → 008.** Post-Fotis sit-down. Provision via Vercel Marketplace, then execute the 12-step plan from §18 of the schema draft.
-2. **Track B continuation — multi-day bundles.** **B-content** (fill 14 history tabs + 15 rules tabs + 3–5 blog posts, 80–130 h, multi-session, follow F1 history template), **B11** (path-based tab routes `/series/[slug]/[tab]`, 1–2 days), **B12** (Greek `/el/` route tree via `next-intl`, 3–5 days). All deferred from the 2026-05-19 push; see `docs/seo-geo-playbook.md` Part 4 for scope. Supersedes the old "SEO baseline (S5)" entry which is now executed in pieces under Track B.
-3. **ADAC Champions tab → curated past winners.** With the singleEvent slim tab set live (0.10.1), the Champions tab is now a fan's main destination on `/series/adac-ravenol-24h`. Today's Wikipedia scrape may not produce a clean list — verify and curate `content/series/adac-ravenol-24h/champions.json` if needed.
-4. **Endurance-series weekend grouping audit.** WEC / IMSA / NLS / ADAC 24h races + multi-day tests can split weirdly via `groupByWeekend`'s 4-day gap heuristic. Verify case-by-case now that rounds.json curation has landed across all 15 series.
-5. **Curation patches deferred from 0.10.1.** IMSA Practice 1 on R6–R11 (per-race timetable lookups — publishes race-week), FE Sanya R11 session times (waiting on official Formula E timetable). Bundled PR when timetables drop.
-
-_(Native non-F1 results + standings, S7 — depends on Supabase storage tables landing first. Stays queued behind item 1.)_
+1. **W5 — per-page layout spec, desktop + phone.** One design session documented in the redesign doc; feeds W1/W4. Operator: "plan out how the layout of each page will be like on desktop and then do the same for on phone."
+2. **W3 — About/rules content ×15.** Rules-essentials curated INTO About (Rules tab stays retired per the 0.19.0 decision unless operator vetoes); history-essay agent pattern, sequential agents.
+3. **W4 — driver + team profile pages.** Photos/bios/stats, multi-session. Verify drivers.json coverage first (gap was 13 series in May — recheck before scoping). Absorbs the old S6 enrichment entry.
+4. **W8 — v1.0 launch program.** Operator owes the scope-lock decision (what's in v1.0). Then: "out of early access" banner, marketing channel plan (Instagram/Facebook/Reddit/X/YouTube), launch checklist. Security audit is a gate.
+5. **Weather + news coverage audit (15 series).** Carried. Open-Meteo (venue-local date) + news feed per next-weekend of every series; output = gap list + curation pass.
 
 ## Inbox (unfiltered, append-only)
 
-- Security audit (operator 2026-06-11): full pass over endpoints, headers, rate limits, auth surfaces — make sure Paddock is safe from attack. Candidates: /security-review skill over the branch diff + a session sweeping API routes (contact form rate-limit is a known audit carry-over). Treat as its own session.
-- Series tab switch keeps scroll depth (operator 2026-06-11): switching e.g. results → standings leaves you mid-page; should land at the top of the new tab. Root-cause hint: `SeriesTabs` Link passes `scroll={false}` — was right for the old below-fold grid, wrong with the sticky rail. Cheap fix; account for the sticky header offset.
-- Drivers tab spacing (operator 2026-06-11): the series-color element and the team-name heading sit too close together — DriversTab needs breathing room.
-- Results layout v2 + weekend integration (operator 2026-06-11): different per-race layout on every series' results tab; make each race row clickable → that weekend's page, which should show per-session results with the race prioritized. Pairs with the session-subpages queue item (OpenF1 research for practice/quali data).
-- Results must show ALL drivers' positions (operator 2026-06-11): results accordions still render top-10 per race; show the full classification (the data is already fetched — F1 pagination fix proved 22/22 arrives).
+- Security audit (operator 2026-06-11) → PROMOTED to Now slot 2.
+- Series tab switch keeps scroll depth (operator 2026-06-11) → SHIPPED PR #120 (0.24.2); Next 16's default Link scroll couldn't fix it, SeriesTabs owns the scroll.
+- Drivers tab spacing (operator 2026-06-11) → SHIPPED PR #120 (0.24.2).
+- Results layout v2 + weekend integration (operator 2026-06-11) → rows + clickable races SHIPPED PR #122 (0.25.0); per-session weekend results = W1c in Now slot 1.
+- Results must show ALL drivers' positions (operator 2026-06-11) → SHIPPED PR #120 (0.24.2); 2-col field layout followed in PR #123 (0.26.0).
 - UI/CSS inspiration pass (operator 2026-06-11, "for a little later"): review 5 reference component libraries as design-direction input — styleui.dev, cult-ui.com/docs, skiper-ui.com/components, aliimam.in/docs/components, ui.watermelon.sh. Approach: mine each for type/motion/density patterns that transfer onto the Paddock 2.0 language (not a reskin); shortlist concrete component upgrades (tables, tabs, countdown, chips) with the anti-AI principles as the filter.
+- W6 — Android app via TWA wrapper (operator 2026-06-11): PWABuilder/Bubblewrap → Play Store ($25 one-time), Digital Asset Links + store assets; NOT a native rebuild; post-v1.0 surface stability. iOS/App Store = separate, harder, parked.
+- W7 — blog threads + UGC entries with admin approval (operator 2026-06-11): Clerk roles via publicMetadata (admin check in API routes — no Organizations product needed); submissions/drafts/approval queue/threads = relational user-writes → **the Supabase trigger (S9 fires)**. Design doc before code; absorbs the old "Fotis sit-down + provisioning + migrations" entries; don't block v1.0 launch on it.
+- Historic-constructor color map (follow-up to 0.26.0 champions colors): curated per-series color file for pre-current-grid champion teams (Brabham, Lotus, Tyrrell…) so historic rows color too; 5-source rule; agent curation task.
+- GTWC results round numbers: parser emits raceId/eventName but no canonical round — blocks weekend links on GT World results rows (noted in 0.25.0). Align with rounds.json.
+- FE doubleheader second races have no weekend URLs (R8/R10-style rounds share the weekend page of the first race) — modeling gap surfaced by 0.25.0 link gating; 8/10 FE races link today.
+- Endurance-series weekend grouping audit (demoted from Next by the wave triage): WEC / IMSA / NLS / ADAC 24h races + multi-day tests vs `groupByWeekend`'s 4-day gap heuristic.
+- Curation patches when timetables drop (demoted from Next): IMSA Practice 1 on R6–R11, FE Sanya R11 session times.
+- Track B leftovers (demoted from Next): B11 path-based tab routes `/series/[slug]/[tab]` (1–2 days), B12 Greek `/el/` route tree via next-intl (3–5 days).
 - Research live in-race data feeds (sector times, leaderboard, gaps, tyre choices) for F1, MotoGP, WEC, FE, IndyCar.
 - Reverse-engineer fiaformulae.com / motogp.com / nascar.com XHR endpoints to see if unsigned JSON can replace Playwright.
 - Decide Sandbox/Playwright vs third-party aggregator vs curation-first for JS-rendered official sites.
