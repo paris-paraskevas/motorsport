@@ -30,6 +30,9 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 
 ## Inbox (unfiltered, append-only)
 
+- Onboarding tour overlay (operator 2026-06-11): spotlight tutorial, ≤5 stops, auto-show once, "don't show again" in localStorage (no account needed), replay from Account. RESEARCHED — rules/verdict/build plan in docs/research/onboarding-tour-2026-06.md (verdict: hand-roll ~200 lines; Shepherd/Intro.js are AGPL-blocked). One-PR build, ready to schedule.
+- Driver headshots (operator 2026-06-11): driver pages have no images. Licensing-led problem, not code: Wikimedia-sourced portraits with per-image attribution (the landing circuit-photos pattern — license+artist per file, credits rendered) — F1's 22 first, then marquee series; 600-driver full coverage is a long-tail curation program. Pairs with the deferred 0.15.0 enrichment ambition.
+
 - Security audit (operator 2026-06-11) → PROMOTED to Now slot 2.
 - Series tab switch keeps scroll depth (operator 2026-06-11) → SHIPPED PR #120 (0.24.2); Next 16's default Link scroll couldn't fix it, SeriesTabs owns the scroll.
 - Drivers tab spacing (operator 2026-06-11) → SHIPPED PR #120 (0.24.2).
