@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 
@@ -44,13 +45,15 @@ export function LandingMenu() {
     if (!open) return;
     const trigger = triggerRef.current;
     closeRef.current?.focus();
-    document.body.style.overflow = 'hidden';
+    // Lock the page's real scroller — that's <html>; a body-level lock
+    // leaves the document scrolling behind the open menu.
+    document.documentElement.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
       window.removeEventListener('keydown', onKey);
       trigger?.focus();
     };
@@ -69,7 +72,11 @@ export function LandingMenu() {
         <Menu size={18} />
       </button>
 
-      {open && (
+      {/* Portaled to <body>: the trigger lives inside the landing nav, whose
+          backdrop-blur makes the header a containing block for fixed
+          descendants (CSS filter-effects spec) — rendered in place, the
+          full-screen overlay collapses to the 56px header strip. */}
+      {open && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -115,7 +122,8 @@ export function LandingMenu() {
               ))}
             </nav>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

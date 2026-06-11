@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.24.3 — 2026-06-11
+
+**The landing-page menu works again.** Tapping the menu button on the landing page used to do nothing visible — the menu opened invisibly behind the scenes. It now opens properly as a full-screen menu, and the page behind it no longer scrolls while it's open.
+
 ## 0.24.2 — 2026-06-11
 
 **Switching tabs takes you to the top.** Jumping from Results to Standings — or any series tab to any other — no longer leaves you stranded mid-page. Every tab now opens at its top.
