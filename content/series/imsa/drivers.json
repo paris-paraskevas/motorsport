@@ -1,0 +1,366 @@
+{
+  "teams": [
+    {
+      "name": "Cadillac Whelen #31 (GTP)",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Jack Aitken", "number": 31 },
+        { "name": "Earl Bamber", "number": 31 }
+      ]
+    },
+    {
+      "name": "JDC-Miller MotorSports #5 (GTP)",
+      "color": "#1B4F9C",
+      "drivers": [
+        { "name": "Tijmen van der Helm", "number": 5 },
+        { "name": "Laurin Heinrich", "number": 5 }
+      ]
+    },
+    {
+      "name": "Porsche Penske Motorsport #7 (GTP)",
+      "color": "#D5001C",
+      "drivers": [
+        { "name": "Julien Andlauer", "number": 7 },
+        { "name": "Felipe Nasr", "number": 7 }
+      ]
+    },
+    {
+      "name": "Acura Meyer Shank Racing #93 (GTP)",
+      "color": "#E82C2A",
+      "drivers": [
+        { "name": "Nick Yelloly", "number": 93 },
+        { "name": "Renger van der Zande", "number": 93 }
+      ]
+    },
+    {
+      "name": "Porsche Penske Motorsport #6 (GTP)",
+      "color": "#D5001C",
+      "drivers": [
+        { "name": "Kévin Estre", "number": 6 },
+        { "name": "Laurens Vanthoor", "number": 6 }
+      ]
+    },
+    {
+      "name": "Cadillac Wayne Taylor Racing #10 (GTP)",
+      "color": "#2151A1",
+      "drivers": [
+        { "name": "Filipe Albuquerque", "number": 10 },
+        { "name": "Ricky Taylor", "number": 10 }
+      ]
+    },
+    {
+      "name": "Acura Meyer Shank Racing #60 (GTP)",
+      "color": "#E82C2A",
+      "drivers": [
+        { "name": "Tom Blomqvist", "number": 60 },
+        { "name": "Colin Braun", "number": 60 }
+      ]
+    },
+    {
+      "name": "BMW M Team WRT #24 (GTP)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Sheldon van der Linde", "number": 24 },
+        { "name": "Dries Vanthoor", "number": 24 }
+      ]
+    },
+    {
+      "name": "Cadillac Wayne Taylor Racing #40 (GTP)",
+      "color": "#2151A1",
+      "drivers": [
+        { "name": "Louis Delétraz", "number": 40 },
+        { "name": "Jordan Taylor", "number": 40 }
+      ]
+    },
+    {
+      "name": "BMW M Team WRT #25 (GTP)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Philipp Eng", "number": 25 },
+        { "name": "Marco Wittmann", "number": 25 }
+      ]
+    },
+    {
+      "name": "Aston Martin THOR Team #23 (GTP)",
+      "color": "#00665E",
+      "drivers": [
+        { "name": "Roman De Angelis", "number": 23 },
+        { "name": "Ross Gunn", "number": 23 }
+      ]
+    },
+    {
+      "name": "United Autosports USA #22 (LMP2)",
+      "color": "#F26522",
+      "drivers": [
+        { "name": "Paul di Resta", "number": 22 },
+        { "name": "Dan Goldburg", "number": 22 },
+        { "name": "Rasmus Lindh", "number": 22 }
+      ]
+    },
+    {
+      "name": "United Autosports USA #2 (LMP2)",
+      "color": "#F26522",
+      "drivers": [
+        { "name": "Phil Fayer", "number": 2 },
+        { "name": "Mikkel Jensen", "number": 2 },
+        { "name": "Hunter McElrea", "number": 2 }
+      ]
+    },
+    {
+      "name": "CrowdStrike Racing by APR #04 (LMP2)",
+      "color": "#E01933",
+      "drivers": [
+        { "name": "George Kurtz", "number": 4 },
+        { "name": "Alex Quinn", "number": 4 },
+        { "name": "Toby Sowery", "number": 4 }
+      ]
+    },
+    {
+      "name": "AO Racing #99 (LMP2)",
+      "color": "#FF6A13",
+      "drivers": [
+        { "name": "Dane Cameron", "number": 99 },
+        { "name": "Jonny Edgar", "number": 99 },
+        { "name": "P. J. Hyett", "number": 99 }
+      ]
+    },
+    {
+      "name": "Bryan Herta Autosport with PR1/Mathiasen #52 (LMP2)",
+      "color": "#0072BC",
+      "drivers": [
+        { "name": "Misha Goikhberg", "number": 52 },
+        { "name": "Parker Thompson", "number": 52 },
+        { "name": "Harry Tincknell", "number": 52 }
+      ]
+    },
+    {
+      "name": "Tower Motorsports #8 (LMP2)",
+      "color": "#DA291C",
+      "drivers": [
+        { "name": "Sebastián Álvarez", "number": 8 },
+        { "name": "John Farano", "number": 8 }
+      ]
+    },
+    {
+      "name": "TDS Racing #11 (LMP2)",
+      "color": "#1A3E8F",
+      "drivers": [
+        { "name": "David Heinemeier Hansson", "number": 11 },
+        { "name": "Tobias Lütke", "number": 11 },
+        { "name": "Charles Milesi", "number": 11 }
+      ]
+    },
+    {
+      "name": "Era Motorsport #18 (LMP2)",
+      "color": "#2E5FA3",
+      "drivers": [
+        { "name": "Jacob Abel", "number": 18 },
+        { "name": "Ferdinand Habsburg", "number": 18 },
+        { "name": "Naveen Rao", "number": 18 }
+      ]
+    },
+    {
+      "name": "Intersport Racing #37 (LMP2)",
+      "color": "#1E7A3C",
+      "drivers": [
+        { "name": "Jon Field", "number": 37 },
+        { "name": "Oliver Jarvis", "number": 37 },
+        { "name": "Seth Lucas", "number": 37 }
+      ]
+    },
+    {
+      "name": "Inter Europol Competition #43 (LMP2)",
+      "color": "#FFD500",
+      "drivers": [
+        { "name": "Jeremy Clarke", "number": 43 },
+        { "name": "Tom Dillmann", "number": 43 },
+        { "name": "Bijoy Garg", "number": 43 }
+      ]
+    },
+    {
+      "name": "Pratt Miller Motorsports #73 (LMP2)",
+      "color": "#6E6E6E",
+      "drivers": [
+        { "name": "Chris Cumming", "number": 73 },
+        { "name": "Manuel Espírito Santo", "number": 73 },
+        { "name": "Pietro Fittipaldi", "number": 73 }
+      ]
+    },
+    {
+      "name": "Corvette Racing by Pratt Miller #4 (GTD Pro)",
+      "color": "#FFD200",
+      "drivers": [
+        { "name": "Nicky Catsburg", "number": 4 },
+        { "name": "Tommy Milner", "number": 4 }
+      ]
+    },
+    {
+      "name": "Paul Miller Racing #1 (GTD Pro)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Connor De Phillippi", "number": 1 },
+        { "name": "Neil Verhagen", "number": 1 }
+      ]
+    },
+    {
+      "name": "Ford Racing #65 (GTD Pro)",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Christopher Mies", "number": 65 },
+        { "name": "Frédéric Vervisch", "number": 65 }
+      ]
+    },
+    {
+      "name": "Corvette Racing by Pratt Miller #3 (GTD Pro)",
+      "color": "#FFD200",
+      "drivers": [
+        { "name": "Antonio García", "number": 3 },
+        { "name": "Alexander Sims", "number": 3 }
+      ]
+    },
+    {
+      "name": "Ford Racing #64 (GTD Pro)",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Ben Barker", "number": 64 },
+        { "name": "Dennis Olsen", "number": 64 }
+      ]
+    },
+    {
+      "name": "Pfaff Motorsports #9 (GTD Pro)",
+      "color": "#C5A253",
+      "drivers": [
+        { "name": "Andrea Caldarelli", "number": 9 },
+        { "name": "Sandy Mitchell", "number": 9 }
+      ]
+    },
+    {
+      "name": "Vasser Sullivan Racing #14 (GTD Pro)",
+      "color": "#CE1126",
+      "drivers": [
+        { "name": "Ben Barnicoat", "number": 14 },
+        { "name": "Jack Hawksworth", "number": 14 }
+      ]
+    },
+    {
+      "name": "AO Racing #77 (GTD Pro)",
+      "color": "#3BA035",
+      "drivers": [
+        { "name": "Harry King", "number": 77 },
+        { "name": "Nick Tandy", "number": 77 }
+      ]
+    },
+    {
+      "name": "Winward Racing #48 (GTD Pro)",
+      "color": "#D71920",
+      "drivers": [
+        { "name": "Jason Hart", "number": 48 },
+        { "name": "Scott Noble", "number": 48 }
+      ]
+    },
+    {
+      "name": "RLL Team McLaren #59 (GTD Pro)",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Max Esterson", "number": 59 },
+        { "name": "Nikita Johnson", "number": 59 }
+      ]
+    },
+    {
+      "name": "Heart of Racing Team #27 (GTD)",
+      "color": "#00665E",
+      "drivers": [
+        { "name": "Eduardo Barrichello", "number": 27 },
+        { "name": "Tom Gamble", "number": 27 }
+      ]
+    },
+    {
+      "name": "Vasser Sullivan Racing #12 (GTD)",
+      "color": "#CE1126",
+      "drivers": [
+        { "name": "Benjamin Pedersen", "number": 12 },
+        { "name": "Aaron Telitz", "number": 12 }
+      ]
+    },
+    {
+      "name": "13 Motorsports #13 (GTD)",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Matt Bell", "number": 13 },
+        { "name": "Orey Fidani", "number": 13 }
+      ]
+    },
+    {
+      "name": "Myers Riley Motorsports #16 (GTD)",
+      "color": "#1351D8",
+      "drivers": [
+        { "name": "Felipe Fraga", "number": 16 },
+        { "name": "Sheena Monk", "number": 16 }
+      ]
+    },
+    {
+      "name": "Conquest Racing #34 (GTD)",
+      "color": "#E8112D",
+      "drivers": [
+        { "name": "Albert Costa", "number": 34 },
+        { "name": "Manny Franco", "number": 34 }
+      ]
+    },
+    {
+      "name": "DXDT Racing #36 (GTD)",
+      "color": "#00B2A9",
+      "drivers": [
+        { "name": "Mason Filippi", "number": 36 },
+        { "name": "Charlie Eastwood", "number": 36 }
+      ]
+    },
+    {
+      "name": "Wayne Taylor Racing #45 (GTD)",
+      "color": "#2151A1",
+      "drivers": [
+        { "name": "Danny Formal", "number": 45 },
+        { "name": "Trent Hindman", "number": 45 }
+      ]
+    },
+    {
+      "name": "Winward Racing #57 (GTD)",
+      "color": "#D71920",
+      "drivers": [
+        { "name": "Philip Ellis", "number": 57 },
+        { "name": "Russell Ward", "number": 57 }
+      ]
+    },
+    {
+      "name": "Gradient Racing #66 (GTD)",
+      "color": "#6D28D9",
+      "drivers": [
+        { "name": "Jake Walker", "number": 66 },
+        { "name": "Corey Lewis", "number": 66 }
+      ]
+    },
+    {
+      "name": "Inception Racing #70 (GTD)",
+      "color": "#1B3F8B",
+      "drivers": [
+        { "name": "Brendan Iribe", "number": 70 },
+        { "name": "Frederik Schandorff", "number": 70 }
+      ]
+    },
+    {
+      "name": "Lone Star Racing #80 (GTD)",
+      "color": "#BF0D3E",
+      "drivers": [
+        { "name": "Scott Andrews", "number": 80 },
+        { "name": "Lin Hodenius", "number": 80 }
+      ]
+    },
+    {
+      "name": "DragonSpeed #81 (GTD)",
+      "color": "#1E22AA",
+      "drivers": [
+        { "name": "Giacomo Altoè", "number": 81 },
+        { "name": "Henrik Hedman", "number": 81 }
+      ]
+    }
+  ]
+}

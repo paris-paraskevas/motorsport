@@ -1,0 +1,84 @@
+{
+  "teams": [
+    {
+      "name": "Jaguar TCS Racing",
+      "color": "#2C5E4F",
+      "drivers": [
+        { "name": "Mitch Evans", "code": "EVA", "number": 9 },
+        { "name": "António Félix da Costa", "code": "DAC", "number": 13 }
+      ]
+    },
+    {
+      "name": "Porsche Formula E Team",
+      "color": "#D5001C",
+      "drivers": [
+        { "name": "Nico Müller", "code": "MUE", "number": 51 },
+        { "name": "Pascal Wehrlein", "code": "WEH", "number": 94 }
+      ]
+    },
+    {
+      "name": "Mahindra Racing",
+      "color": "#9B1B30",
+      "drivers": [
+        { "name": "Nyck de Vries", "code": "DEV", "number": 21 },
+        { "name": "Edoardo Mortara", "code": "MOR", "number": 48 }
+      ]
+    },
+    {
+      "name": "Nissan Formula E Team",
+      "color": "#C3002F",
+      "drivers": [
+        { "name": "Oliver Rowland", "code": "ROW", "number": 1 },
+        { "name": "Norman Nato", "code": "NAT", "number": 23 }
+      ]
+    },
+    {
+      "name": "Envision Racing",
+      "color": "#00A859",
+      "drivers": [
+        { "name": "Joel Eriksson", "code": "ERI", "number": 14 },
+        { "name": "Sébastien Buemi", "code": "BUE", "number": 16 }
+      ]
+    },
+    {
+      "name": "Andretti Formula E",
+      "color": "#3D3F4C",
+      "drivers": [
+        { "name": "Jake Dennis", "code": "DEN", "number": 27 },
+        { "name": "Felipe Drugovich", "code": "DRU", "number": 28 }
+      ]
+    },
+    {
+      "name": "Citroën Racing",
+      "color": "#DA291C",
+      "drivers": [
+        { "name": "Jean-Éric Vergne", "code": "JEV", "number": 25 },
+        { "name": "Nick Cassidy", "code": "CAS", "number": 37 }
+      ]
+    },
+    {
+      "name": "Cupra Kiro",
+      "color": "#AB6B45",
+      "drivers": [
+        { "name": "Pepe Martí", "code": "MAR", "number": 3 },
+        { "name": "Dan Ticktum", "code": "TIC", "number": 33 }
+      ]
+    },
+    {
+      "name": "DS Penske",
+      "color": "#C7A461",
+      "drivers": [
+        { "name": "Maximilian Günther", "code": "GUN", "number": 7 },
+        { "name": "Taylor Barnard", "code": "BAR", "number": 77 }
+      ]
+    },
+    {
+      "name": "Lola Yamaha ABT",
+      "color": "#14B1C4",
+      "drivers": [
+        { "name": "Lucas di Grassi", "code": "DIG", "number": 11 },
+        { "name": "Zane Maloney", "code": "MAL", "number": 22 }
+      ]
+    }
+  ]
+}

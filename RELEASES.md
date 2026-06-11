@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.32.0 — 2026-06-11
+
+**Full 2026 grids for every series.** The Drivers tab on all 15 series now shows the curated, current lineup — every team, car and crew, from F2's silly-season seats to WEC's full Hypercar and LMGT3 entry and NASCAR's chartered field — with driver and team pages to click into. Endurance entries are listed car by car with their full crews.
+
 ## 0.31.0 — 2026-06-11
 
 **Every series now explains its own rulebook.** The About tab on all 15 series gained a "Rules essentials" section — how the weekend runs, exactly how points are scored this season, the sporting rules that actually decide results, and what titles are at stake. Written for fans, current for 2026.

@@ -1,0 +1,92 @@
+{
+  "teams": [
+    {
+      "name": "Campos Racing",
+      "color": "#F0641E",
+      "drivers": [
+        { "name": "Noel León", "code": "LEO", "number": 5 },
+        { "name": "Nikola Tsolov", "code": "TSO", "number": 6 }
+      ]
+    },
+    {
+      "name": "Rodin Motorsport",
+      "color": "#3D3D3D",
+      "drivers": [
+        { "name": "Martinius Stenshorne", "code": "STE", "number": 14 },
+        { "name": "Alexander Dunne", "code": "DUN", "number": 15 }
+      ]
+    },
+    {
+      "name": "MP Motorsport",
+      "color": "#E8350E",
+      "drivers": [
+        { "name": "Gabriele Minì", "code": "MIN", "number": 9 },
+        { "name": "Oliver Goethe", "code": "GOE", "number": 10 }
+      ]
+    },
+    {
+      "name": "Invicta Racing",
+      "color": "#283593",
+      "drivers": [
+        { "name": "Rafael Câmara", "code": "CAM", "number": 1 },
+        { "name": "Joshua Dürksen", "code": "DUR", "number": 2 }
+      ]
+    },
+    {
+      "name": "DAMS Lucas Oil",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Dino Beganovic", "code": "BEG", "number": 7 },
+        { "name": "Roman Bilinski", "code": "BIL", "number": 8 }
+      ]
+    },
+    {
+      "name": "Hitech",
+      "color": "#708090",
+      "drivers": [
+        { "name": "Ritomo Miyata", "code": "MIY", "number": 3 },
+        { "name": "Colton Herta", "code": "HER", "number": 4 }
+      ]
+    },
+    {
+      "name": "ART Grand Prix",
+      "color": "#A7A9AC",
+      "drivers": [
+        { "name": "Kush Maini", "code": "MAI", "number": 16 },
+        { "name": "Tasanapol Inthraphuvasak", "code": "INT", "number": 17 }
+      ]
+    },
+    {
+      "name": "Trident",
+      "color": "#009FE3",
+      "drivers": [
+        { "name": "Laurens van Hoepen", "code": "VHO", "number": 24 },
+        { "name": "John Bennett", "code": "BEN", "number": 25 }
+      ]
+    },
+    {
+      "name": "Prema Racing",
+      "color": "#DD052B",
+      "drivers": [
+        { "name": "Sebastián Montoya", "code": "MON", "number": 11 },
+        { "name": "Mari Boya", "code": "BOY", "number": 12 }
+      ]
+    },
+    {
+      "name": "AIX Racing",
+      "color": "#E5237D",
+      "drivers": [
+        { "name": "Emerson Fittipaldi Jr.", "code": "FIT", "number": 20 },
+        { "name": "Cian Shields", "code": "SHI", "number": 21 }
+      ]
+    },
+    {
+      "name": "Van Amersfoort Racing",
+      "color": "#C8451B",
+      "drivers": [
+        { "name": "Nico Varrone", "code": "VAR", "number": 22 },
+        { "name": "Rafael Villagómez", "code": "VIL", "number": 23 }
+      ]
+    }
+  ]
+}

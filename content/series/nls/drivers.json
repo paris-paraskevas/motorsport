@@ -1,0 +1,156 @@
+{
+  "teams": [
+    {
+      "name": "Falken Motorsports #44 (SP9 Pro)",
+      "color": "#009BA4",
+      "drivers": [
+        { "name": "Klaus Bachler", "number": 44 },
+        { "name": "Morris Schuring", "number": 44 },
+        { "name": "Tim Heinemann", "number": 44 },
+        { "name": "Sven Müller", "number": 44 }
+      ]
+    },
+    {
+      "name": "ROWE Racing #99 (SP9 Pro)",
+      "color": "#009FE3",
+      "drivers": [
+        { "name": "Dan Harper", "number": 99 },
+        { "name": "Max Hesse", "number": 99 },
+        { "name": "Jordan Pepper", "number": 99 },
+        { "name": "Kelvin van der Linde", "number": 99 }
+      ]
+    },
+    {
+      "name": "Manthey Racing EMA #911 (SP9 Pro)",
+      "color": "#C8D400",
+      "drivers": [
+        { "name": "Kévin Estre", "number": 911 },
+        { "name": "Ayhancan Güven", "number": 911 },
+        { "name": "Matt Campbell", "number": 911 },
+        { "name": "Christoph Breuer", "number": 911 }
+      ]
+    },
+    {
+      "name": "Schubert Motorsport #77 (SP9 Pro)",
+      "color": "#009A3E",
+      "drivers": [
+        { "name": "Philipp Eng", "number": 77 },
+        { "name": "Robin Frijns", "number": 77 },
+        { "name": "Marco Wittmann", "number": 77 },
+        { "name": "Charles Weerts", "number": 77 }
+      ]
+    },
+    {
+      "name": "Walkenhorst Motorsport #34 (SP9 Pro)",
+      "color": "#2F7D33",
+      "drivers": [
+        { "name": "Christian Krognes", "number": 34 },
+        { "name": "Mattia Drudi", "number": 34 },
+        { "name": "Nicki Thiim", "number": 34 }
+      ]
+    },
+    {
+      "name": "Mercedes-AMG Team Verstappen Racing #3 (SP9 Pro)",
+      "color": "#002B5C",
+      "drivers": [
+        { "name": "Max Verstappen", "number": 3 },
+        { "name": "Lucas Auer", "number": 3 },
+        { "name": "Jules Gounon", "number": 3 },
+        { "name": "Daniel Juncadella", "number": 3 }
+      ]
+    },
+    {
+      "name": "Dunlop Motorsport #17 (SP9 Pro)",
+      "color": "#FFD500",
+      "drivers": [
+        { "name": "Nico Menzel", "number": 17 },
+        { "name": "Julien Andlauer", "number": 17 },
+        { "name": "Dorian Boccolacci", "number": 17 },
+        { "name": "Alessio Picariello", "number": 17 }
+      ]
+    },
+    {
+      "name": "HRT Ford Racing #67 (SP9 Pro)",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Christopher Mies", "number": 67 },
+        { "name": "Dennis Olsen", "number": 67 },
+        { "name": "Frédéric Vervisch", "number": 67 },
+        { "name": "Frank Stippler", "number": 67 }
+      ]
+    },
+    {
+      "name": "Lionspeed GP #24 (SP9 Pro)",
+      "color": "#F18A00",
+      "drivers": [
+        { "name": "Laurin Heinrich", "number": 24 },
+        { "name": "Laurens Vanthoor", "number": 24 },
+        { "name": "Ricardo Feller", "number": 24 }
+      ]
+    },
+    {
+      "name": "KCMG #47 (SP9 Pro)",
+      "color": "#00467F",
+      "drivers": [
+        { "name": "Jesse Krohn", "number": 47 },
+        { "name": "David Pittard", "number": 47 },
+        { "name": "Nirei Fukuzumi", "number": 47 },
+        { "name": "Naoya Gamou", "number": 47 }
+      ]
+    },
+    {
+      "name": "Dörr Motorsport #69 (SP9 Pro)",
+      "color": "#F07D00",
+      "drivers": [
+        { "name": "Ben Dörr", "number": 69 },
+        { "name": "Timo Glock", "number": 69 },
+        { "name": "Timo Scheider", "number": 69 },
+        { "name": "Volker Strycek", "number": 69 }
+      ]
+    },
+    {
+      "name": "Schnitzelalm Racing #11 (SP9 Pro-Am)",
+      "color": "#D2232A",
+      "drivers": [
+        { "name": "Jay Mo Härtling", "number": 11 },
+        { "name": "Kenneth Heyer", "number": 11 },
+        { "name": "Jannes Fittje", "number": 11 }
+      ]
+    },
+    {
+      "name": "Toyo Tires with Ring Racing #32 (SP9 Pro-Am)",
+      "color": "#E60012",
+      "drivers": [
+        { "name": "Andreas Gülden", "number": 32 },
+        { "name": "Yuichi Nakayama", "number": 32 },
+        { "name": "Tim Sandtler", "number": 32 }
+      ]
+    },
+    {
+      "name": "High Class Racing #86 (SP9 Pro-Am)",
+      "color": "#1B365D",
+      "drivers": [
+        { "name": "Anders Fjordbach", "number": 86 },
+        { "name": "Kerong Li", "number": 86 },
+        { "name": "Leo Ye Hongli", "number": 86 }
+      ]
+    },
+    {
+      "name": "Mühlner Motorsport #123 (SP9 Pro-Am)",
+      "color": "#0063AF",
+      "drivers": [
+        { "name": "Ben Bünnagel", "number": 123 },
+        { "name": "Martin Rump", "number": 123 }
+      ]
+    },
+    {
+      "name": "PROsport Racing #37 (SP9 Am)",
+      "color": "#58A618",
+      "drivers": [
+        { "name": "Guido Dumarey", "number": 37 },
+        { "name": "Maxime Dumarey", "number": 37 },
+        { "name": "Marek Böckmann", "number": 37 }
+      ]
+    }
+  ]
+}

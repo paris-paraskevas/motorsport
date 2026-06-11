@@ -1,0 +1,91 @@
+{
+  "teams": [
+    {
+      "name": "Winward Racing",
+      "color": "#D2232A",
+      "drivers": [
+        { "name": "Maro Engel", "number": 80 },
+        { "name": "Jules Gounon", "number": 48 }
+      ]
+    },
+    {
+      "name": "Mercedes-AMG Team Landgraf",
+      "color": "#00A19B",
+      "drivers": [
+        { "name": "Lucas Auer", "number": 22 },
+        { "name": "Tom Kalender", "number": 84 }
+      ]
+    },
+    {
+      "name": "Schubert Motorsport",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Marco Wittmann", "number": 11 },
+        { "name": "Kelvin van der Linde", "number": 3 }
+      ]
+    },
+    {
+      "name": "Manthey Racing",
+      "color": "#BFD730",
+      "drivers": [
+        { "name": "Thomas Preining", "number": 91 },
+        { "name": "Ricardo Feller", "number": 90 }
+      ]
+    },
+    {
+      "name": "Emil Frey Racing",
+      "color": "#1D4F91",
+      "drivers": [
+        { "name": "Matteo Cairoli", "number": 14 },
+        { "name": "Thierry Vermeulen", "number": 69 }
+      ]
+    },
+    {
+      "name": "Dörr Motorsport",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Ben Dörr", "number": 25 },
+        { "name": "Timo Glock", "number": 16 }
+      ]
+    },
+    {
+      "name": "Comtoyou Racing",
+      "color": "#00594F",
+      "drivers": [
+        { "name": "Nicki Thiim", "number": 7 },
+        { "name": "Nicolas Baert", "number": 8 }
+      ]
+    },
+    {
+      "name": "Red Bull Team Abt",
+      "color": "#223971",
+      "drivers": [
+        { "name": "Luca Engstler", "number": 130 },
+        { "name": "Marco Mapelli", "number": 10 }
+      ]
+    },
+    {
+      "name": "HRT Ford Performance",
+      "color": "#1351D8",
+      "drivers": [
+        { "name": "Arjun Maini", "number": 36 },
+        { "name": "Finn Wiebelhaus", "number": 64 }
+      ]
+    },
+    {
+      "name": "TGI Team Lamborghini by GRT",
+      "color": "#3DAE2B",
+      "drivers": [
+        { "name": "Mirko Bortolotti", "number": 63 },
+        { "name": "Maximilian Paul", "number": 19 }
+      ]
+    },
+    {
+      "name": "Land-Motorsport",
+      "color": "#97D700",
+      "drivers": [
+        { "name": "Bastian Buus", "number": 29 }
+      ]
+    }
+  ]
+}

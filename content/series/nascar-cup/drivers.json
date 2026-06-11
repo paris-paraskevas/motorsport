@@ -1,0 +1,130 @@
+{
+  "teams": [
+    {
+      "name": "23XI Racing",
+      "color": "#1A1A1A",
+      "drivers": [
+        { "name": "Bubba Wallace", "number": 23 },
+        { "name": "Riley Herbst", "number": 35 },
+        { "name": "Tyler Reddick", "number": 45 }
+      ]
+    },
+    {
+      "name": "Joe Gibbs Racing",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Denny Hamlin", "number": 11 },
+        { "name": "Chase Briscoe", "number": 19 },
+        { "name": "Christopher Bell", "number": 20 },
+        { "name": "Ty Gibbs", "number": 54 }
+      ]
+    },
+    {
+      "name": "Team Penske",
+      "color": "#FFD100",
+      "drivers": [
+        { "name": "Austin Cindric", "number": 2 },
+        { "name": "Ryan Blaney", "number": 12 },
+        { "name": "Joey Logano", "number": 22 }
+      ]
+    },
+    {
+      "name": "Hendrick Motorsports",
+      "color": "#013CA6",
+      "drivers": [
+        { "name": "Kyle Larson", "number": 5 },
+        { "name": "Chase Elliott", "number": 9 },
+        { "name": "William Byron", "number": 24 },
+        { "name": "Alex Bowman", "number": 48 }
+      ]
+    },
+    {
+      "name": "Spire Motorsports",
+      "color": "#E03A3E",
+      "drivers": [
+        { "name": "Daniel Suárez", "number": 7 },
+        { "name": "Michael McDowell", "number": 71 },
+        { "name": "Carson Hocevar", "number": 77 }
+      ]
+    },
+    {
+      "name": "RFK Racing",
+      "color": "#002D62",
+      "drivers": [
+        { "name": "Brad Keselowski", "number": 6 },
+        { "name": "Chris Buescher", "number": 17 },
+        { "name": "Ryan Preece", "number": 60 }
+      ]
+    },
+    {
+      "name": "Trackhouse Racing",
+      "color": "#ED1C24",
+      "drivers": [
+        { "name": "Ross Chastain", "number": 1 },
+        { "name": "Connor Zilisch", "number": 88 },
+        { "name": "Shane van Gisbergen", "number": 97 }
+      ]
+    },
+    {
+      "name": "Legacy Motor Club",
+      "color": "#B79257",
+      "drivers": [
+        { "name": "John Hunter Nemechek", "number": 42 },
+        { "name": "Erik Jones", "number": 43 }
+      ]
+    },
+    {
+      "name": "Kaulig Racing",
+      "color": "#00B140",
+      "drivers": [
+        { "name": "Ty Dillon", "number": 10 },
+        { "name": "AJ Allmendinger", "number": 16 }
+      ]
+    },
+    {
+      "name": "Front Row Motorsports",
+      "color": "#0046AD",
+      "drivers": [
+        { "name": "Noah Gragson", "number": 4 },
+        { "name": "Todd Gilliland", "number": 34 },
+        { "name": "Zane Smith", "number": 38 }
+      ]
+    },
+    {
+      "name": "Hyak Motorsports",
+      "color": "#00788C",
+      "drivers": [
+        { "name": "Ricky Stenhouse Jr.", "number": 47 }
+      ]
+    },
+    {
+      "name": "Richard Childress Racing",
+      "color": "#B59A57",
+      "drivers": [
+        { "name": "Austin Dillon", "number": 3 },
+        { "name": "Austin Hill", "number": 33 }
+      ]
+    },
+    {
+      "name": "Wood Brothers Racing",
+      "color": "#CE1126",
+      "drivers": [
+        { "name": "Josh Berry", "number": 21 }
+      ]
+    },
+    {
+      "name": "Haas Factory Team",
+      "color": "#9EA2A2",
+      "drivers": [
+        { "name": "Cole Custer", "number": 41 }
+      ]
+    },
+    {
+      "name": "Rick Ware Racing",
+      "color": "#27348B",
+      "drivers": [
+        { "name": "Cody Ware", "number": 51 }
+      ]
+    }
+  ]
+}
