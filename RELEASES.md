@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.20.2 — 2026-06-11
+
+**The Indy 500 result is right again.** A quirk in our data source made the 500's top qualifiers disappear from the race classification — the winner included. Every position now reads correctly, points and all.
+
+**Formula E's champions are in.** The Champions tab showed an error for Formula E — it now lists every drivers' and teams' champion from the 2014-15 opener to Oliver Rowland's 2024-25 title.
+
+**Verified against the record.** A full audit of F1, F2 and F3 standings, results and champions against official sources came back clean.
+
 ## 0.20.1 — 2026-06-11
 
 **The points chart works on phones now.** The season trend graph — previously a desktop-only view — renders properly on mobile, sized for the screen, in the same constructor colours.

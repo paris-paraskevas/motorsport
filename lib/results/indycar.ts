@@ -228,7 +228,19 @@ function scheduleDate(iso: string | undefined): Date {
 //   • <td>DNS</td>, <td>Wth</td>, <td>EX</td>, <td>DNQ</td>
 //   • <td></td>                                → empty (race not yet run or driver absent)
 function parseCell(html: string, text: string): ParsedCell {
-  const cleanText = text.replace(/\s+/g, ' ').trim();
+  // Wikipedia decorates Indy 500 cells with superscript qualifying-points
+  // numerals — `1<sup>12</sup>` is "won from pole, 12 shootout points" — and
+  // plain textContent flattens that into "112". That shipped as the 2026
+  // Indy 500 rendering with its top-12 qualifiers missing and P5 displayed
+  // as the winner (validation 2026-06-11). Strip EVERY <sup> span before
+  // extracting the number; the flag markers (<sup>L</sup>, </sup>*) are
+  // still read from the raw html below.
+  const cleanText = html
+    .replace(/<sup\b[^>]*>[\s\S]*?<\/sup>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  void text;
   const empty: ParsedCell = {
     position: null,
     status: 'Did not appear',

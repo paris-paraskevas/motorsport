@@ -1,0 +1,13 @@
+[
+  { "year": 2025, "driver": "Oliver Rowland", "constructor": "Nissan Formula E Team", "constructorChampion": "TAG Heuer Porsche Formula E Team" },
+  { "year": 2024, "driver": "Pascal Wehrlein", "constructor": "TAG Heuer Porsche Formula E Team", "constructorChampion": "Jaguar TCS Racing" },
+  { "year": 2023, "driver": "Jake Dennis", "constructor": "Avalanche Andretti Formula E", "constructorChampion": "Envision Racing" },
+  { "year": 2022, "driver": "Stoffel Vandoorne", "constructor": "Mercedes-EQ", "constructorChampion": "Mercedes-EQ" },
+  { "year": 2021, "driver": "Nyck de Vries", "constructor": "Mercedes-EQ", "constructorChampion": "Mercedes-EQ" },
+  { "year": 2020, "driver": "António Félix da Costa", "constructor": "DS Techeetah", "constructorChampion": "DS Techeetah" },
+  { "year": 2019, "driver": "Jean-Éric Vergne", "constructor": "DS Techeetah", "constructorChampion": "DS Techeetah" },
+  { "year": 2018, "driver": "Jean-Éric Vergne", "constructor": "Techeetah", "constructorChampion": "Audi Sport ABT Schaeffler" },
+  { "year": 2017, "driver": "Lucas di Grassi", "constructor": "ABT Schaeffler Audi Sport", "constructorChampion": "Renault e.dams" },
+  { "year": 2016, "driver": "Sébastien Buemi", "constructor": "Renault e.dams", "constructorChampion": "Renault e.dams" },
+  { "year": 2015, "driver": "Nelson Piquet Jr.", "constructor": "NEXTEV TCR", "constructorChampion": "e.dams-Renault" }
+]
