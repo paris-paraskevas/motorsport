@@ -1,0 +1,319 @@
+{
+  "teams": [
+    {
+      "name": "BMW M Team WRT #20 (Hypercar)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Robin Frijns", "number": 20 },
+        { "name": "René Rast", "number": 20 },
+        { "name": "Sheldon van der Linde", "number": 20 }
+      ]
+    },
+    {
+      "name": "Toyota Gazoo Racing #8 (Hypercar)",
+      "color": "#EB0A1E",
+      "drivers": [
+        { "name": "Sébastien Buemi", "number": 8 },
+        { "name": "Brendon Hartley", "number": 8 },
+        { "name": "Ryo Hirakawa", "number": 8 }
+      ]
+    },
+    {
+      "name": "Toyota Gazoo Racing #7 (Hypercar)",
+      "color": "#EB0A1E",
+      "drivers": [
+        { "name": "Mike Conway", "number": 7 },
+        { "name": "Kamui Kobayashi", "number": 7 },
+        { "name": "Nyck de Vries", "number": 7 }
+      ]
+    },
+    {
+      "name": "BMW M Team WRT #15 (Hypercar)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Kevin Magnussen", "number": 15 },
+        { "name": "Raffaele Marciello", "number": 15 },
+        { "name": "Dries Vanthoor", "number": 15 }
+      ]
+    },
+    {
+      "name": "Ferrari AF Corse #50 (Hypercar)",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "Antonio Fuoco", "number": 50 },
+        { "name": "Miguel Molina", "number": 50 },
+        { "name": "Nicklas Nielsen", "number": 50 }
+      ]
+    },
+    {
+      "name": "Ferrari AF Corse #51 (Hypercar)",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "Alessandro Pier Guidi", "number": 51 },
+        { "name": "James Calado", "number": 51 },
+        { "name": "Antonio Giovinazzi", "number": 51 }
+      ]
+    },
+    {
+      "name": "Aston Martin THOR Team #007 (Hypercar)",
+      "color": "#00665E",
+      "drivers": [
+        { "name": "Tom Gamble", "number": 7 },
+        { "name": "Harry Tincknell", "number": 7 },
+        { "name": "Ross Gunn", "number": 7 }
+      ]
+    },
+    {
+      "name": "Alpine Endurance Team #35 (Hypercar)",
+      "color": "#0072CE",
+      "drivers": [
+        { "name": "António Félix da Costa", "number": 35 },
+        { "name": "Ferdinand Habsburg", "number": 35 },
+        { "name": "Charles Milesi", "number": 35 }
+      ]
+    },
+    {
+      "name": "AF Corse #83 (Hypercar)",
+      "color": "#FFD800",
+      "drivers": [
+        { "name": "Phil Hanson", "number": 83 },
+        { "name": "Robert Kubica", "number": 83 },
+        { "name": "Yifei Ye", "number": 83 }
+      ]
+    },
+    {
+      "name": "Peugeot TotalEnergies #93 (Hypercar)",
+      "color": "#BFD730",
+      "drivers": [
+        { "name": "Nick Cassidy", "number": 93 },
+        { "name": "Paul di Resta", "number": 93 },
+        { "name": "Stoffel Vandoorne", "number": 93 }
+      ]
+    },
+    {
+      "name": "Genesis Magma Racing #17 (Hypercar)",
+      "color": "#E2552C",
+      "drivers": [
+        { "name": "André Lotterer", "number": 17 },
+        { "name": "Pipo Derani", "number": 17 },
+        { "name": "Mathys Jaubert", "number": 17 }
+      ]
+    },
+    {
+      "name": "Cadillac Hertz Team JOTA #38 (Hypercar)",
+      "color": "#B79759",
+      "drivers": [
+        { "name": "Earl Bamber", "number": 38 },
+        { "name": "Sébastien Bourdais", "number": 38 },
+        { "name": "Jack Aitken", "number": 38 }
+      ]
+    },
+    {
+      "name": "Cadillac Hertz Team JOTA #12 (Hypercar)",
+      "color": "#B79759",
+      "drivers": [
+        { "name": "Norman Nato", "number": 12 },
+        { "name": "Will Stevens", "number": 12 },
+        { "name": "Louis Delétraz", "number": 12 }
+      ]
+    },
+    {
+      "name": "Peugeot TotalEnergies #94 (Hypercar)",
+      "color": "#BFD730",
+      "drivers": [
+        { "name": "Loïc Duval", "number": 94 },
+        { "name": "Malthe Jakobsen", "number": 94 },
+        { "name": "Théo Pourchaire", "number": 94 }
+      ]
+    },
+    {
+      "name": "Alpine Endurance Team #36 (Hypercar)",
+      "color": "#0072CE",
+      "drivers": [
+        { "name": "Jules Gounon", "number": 36 },
+        { "name": "Frédéric Makowiecki", "number": 36 },
+        { "name": "Victor Martins", "number": 36 }
+      ]
+    },
+    {
+      "name": "Genesis Magma Racing #19 (Hypercar)",
+      "color": "#E2552C",
+      "drivers": [
+        { "name": "Paul-Loup Chatin", "number": 19 },
+        { "name": "Mathieu Jaminet", "number": 19 },
+        { "name": "Daniel Juncadella", "number": 19 }
+      ]
+    },
+    {
+      "name": "Aston Martin THOR Team #009 (Hypercar)",
+      "color": "#00665E",
+      "drivers": [
+        { "name": "Alex Riberas", "number": 9 },
+        { "name": "Marco Sørensen", "number": 9 },
+        { "name": "Roman De Angelis", "number": 9 }
+      ]
+    },
+    {
+      "name": "The Bend Manthey #92 (LMGT3)",
+      "color": "#C9D300",
+      "drivers": [
+        { "name": "Richard Lietz", "number": 92 },
+        { "name": "Riccardo Pera", "number": 92 },
+        { "name": "Yasser Shahin", "number": 92 }
+      ]
+    },
+    {
+      "name": "Garage 59 #10 (LMGT3)",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Antares Au", "number": 10 },
+        { "name": "Tom Fleming", "number": 10 },
+        { "name": "Marvin Kirchhöfer", "number": 10 }
+      ]
+    },
+    {
+      "name": "Team WRT #69 (LMGT3)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Dan Harper", "number": 69 },
+        { "name": "Anthony McIntosh", "number": 69 },
+        { "name": "Parker Thompson", "number": 69 }
+      ]
+    },
+    {
+      "name": "TF Sport #33 (LMGT3)",
+      "color": "#FFD200",
+      "drivers": [
+        { "name": "Nicky Catsburg", "number": 33 },
+        { "name": "Jonny Edgar", "number": 33 },
+        { "name": "Ben Keating", "number": 33 }
+      ]
+    },
+    {
+      "name": "Vista AF Corse #21 (LMGT3)",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "François Hériau", "number": 21 },
+        { "name": "Simon Mann", "number": 21 },
+        { "name": "Alessio Rovera", "number": 21 }
+      ]
+    },
+    {
+      "name": "Heart of Racing Team #27 (LMGT3)",
+      "color": "#00665E",
+      "drivers": [
+        { "name": "Mattia Drudi", "number": 27 },
+        { "name": "Ian James", "number": 27 },
+        { "name": "Zacharie Robichon", "number": 27 }
+      ]
+    },
+    {
+      "name": "Manthey DK Engineering #91 (LMGT3)",
+      "color": "#D5001C",
+      "drivers": [
+        { "name": "Timur Boguslavskiy", "number": 91 },
+        { "name": "James Cottingham", "number": 91 },
+        { "name": "Ayhancan Güven", "number": 91 }
+      ]
+    },
+    {
+      "name": "Garage 59 #58 (LMGT3)",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Finn Gehrsitz", "number": 58 },
+        { "name": "Benjamin Goethe", "number": 58 },
+        { "name": "Alexander West", "number": 58 }
+      ]
+    },
+    {
+      "name": "Team WRT #32 (LMGT3)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Augusto Farfus", "number": 32 },
+        { "name": "Sean Gelael", "number": 32 },
+        { "name": "Darren Leung", "number": 32 }
+      ]
+    },
+    {
+      "name": "Akkodis ASP Team #87 (LMGT3)",
+      "color": "#CE1126",
+      "drivers": [
+        { "name": "José María López", "number": 87 },
+        { "name": "Clemens Schmid", "number": 87 },
+        { "name": "Răzvan Umbrărescu", "number": 87 }
+      ]
+    },
+    {
+      "name": "Proton Competition #88 (LMGT3)",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Stefano Gattuso", "number": 88 },
+        { "name": "Giammarco Levorato", "number": 88 },
+        { "name": "Logan Sargeant", "number": 88 }
+      ]
+    },
+    {
+      "name": "Heart of Racing Team #23 (LMGT3)",
+      "color": "#00665E",
+      "drivers": [
+        { "name": "Jonny Adam", "number": 23 },
+        { "name": "Gray Newell", "number": 23 },
+        { "name": "Eduardo Barrichello", "number": 23 }
+      ]
+    },
+    {
+      "name": "Racing Team Turkey by TF #34 (LMGT3)",
+      "color": "#E30A17",
+      "drivers": [
+        { "name": "Peter Dempsey", "number": 34 },
+        { "name": "Charlie Eastwood", "number": 34 },
+        { "name": "Salih Yoluç", "number": 34 }
+      ]
+    },
+    {
+      "name": "Proton Competition #77 (LMGT3)",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Eric Powell", "number": 77 },
+        { "name": "Sebastian Priaulx", "number": 77 },
+        { "name": "Ben Tuck", "number": 77 }
+      ]
+    },
+    {
+      "name": "Iron Lynx #61 (LMGT3)",
+      "color": "#B08D57",
+      "drivers": [
+        { "name": "Rui Andrade", "number": 61 },
+        { "name": "Martin Berry", "number": 61 },
+        { "name": "Maxime Martin", "number": 61 }
+      ]
+    },
+    {
+      "name": "Akkodis ASP Team #78 (LMGT3)",
+      "color": "#CE1126",
+      "drivers": [
+        { "name": "Hadrien David", "number": 78 },
+        { "name": "Tom Van Rompuy", "number": 78 },
+        { "name": "Esteban Masson", "number": 78 }
+      ]
+    },
+    {
+      "name": "Vista AF Corse #54 (LMGT3)",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "Francesco Castellacci", "number": 54 },
+        { "name": "Thomas Flohr", "number": 54 },
+        { "name": "Davide Rigon", "number": 54 }
+      ]
+    },
+    {
+      "name": "Iron Lynx #79 (LMGT3)",
+      "color": "#B08D57",
+      "drivers": [
+        { "name": "Matteo Cressoni", "number": 79 },
+        { "name": "Lin Hodenius", "number": 79 },
+        { "name": "Johannes Zelger", "number": 79 }
+      ]
+    }
+  ]
+}

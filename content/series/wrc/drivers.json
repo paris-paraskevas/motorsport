@@ -1,0 +1,31 @@
+{
+  "teams": [
+    {
+      "name": "Toyota Gazoo Racing WRT",
+      "color": "#EB0A1E",
+      "drivers": [
+        { "name": "Elfyn Evans", "number": 33 },
+        { "name": "Takamoto Katsuta", "number": 18 },
+        { "name": "Oliver Solberg", "number": 99 },
+        { "name": "Sami Pajari", "number": 5 },
+        { "name": "Sébastien Ogier", "number": 1 }
+      ]
+    },
+    {
+      "name": "Hyundai Shell Mobis World Rally Team",
+      "color": "#002C5F",
+      "drivers": [
+        { "name": "Adrien Fourmaux", "number": 16 },
+        { "name": "Thierry Neuville", "number": 11 }
+      ]
+    },
+    {
+      "name": "M-Sport Ford World Rally Team",
+      "color": "#2566AF",
+      "drivers": [
+        { "name": "Josh McErlean", "number": 55 },
+        { "name": "Jon Armstrong", "number": 95 }
+      ]
+    }
+  ]
+}

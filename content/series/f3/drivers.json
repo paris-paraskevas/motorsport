@@ -1,0 +1,94 @@
+{
+  "teams": [
+    {
+      "name": "Campos Racing",
+      "color": "#F0641E",
+      "drivers": [
+        { "name": "Théophile Naël", "code": "NAE", "number": 1 },
+        { "name": "Ugo Ugochukwu", "code": "UGO", "number": 2 },
+        { "name": "Ernesto Rivera", "code": "RIV", "number": 3 }
+      ]
+    },
+    {
+      "name": "Van Amersfoort Racing",
+      "color": "#C8451B",
+      "drivers": [
+        { "name": "Hiyu Yamakoshi", "code": "YAM", "number": 14 },
+        { "name": "Enzo Deligny", "code": "DEL", "number": 15 },
+        { "name": "Bruno del Pino", "code": "DPI", "number": 16 }
+      ]
+    },
+    {
+      "name": "Rodin Motorsport",
+      "color": "#3D3D3D",
+      "drivers": [
+        { "name": "Pedro Clerot", "code": "CLE", "number": 17 },
+        { "name": "Brando Badoer", "code": "BAD", "number": 18 },
+        { "name": "Christian Ho", "number": 19 }
+      ]
+    },
+    {
+      "name": "Trident",
+      "color": "#009FE3",
+      "drivers": [
+        { "name": "Noah Strømsted", "code": "STR", "number": 4 },
+        { "name": "Freddie Slater", "code": "SLA", "number": 5 },
+        { "name": "Matteo De Palo", "code": "DEP", "number": 6 }
+      ]
+    },
+    {
+      "name": "ART Grand Prix",
+      "color": "#A7A9AC",
+      "drivers": [
+        { "name": "Taito Kato", "code": "KAT", "number": 10 },
+        { "name": "Maciej Gładysz", "code": "GLA", "number": 11 },
+        { "name": "Kanato Le", "number": 12 }
+      ]
+    },
+    {
+      "name": "MP Motorsport",
+      "color": "#E8350E",
+      "drivers": [
+        { "name": "Mattia Colnaghi", "code": "COL", "number": 7 },
+        { "name": "Tuukka Taponen", "code": "TAP", "number": 8 },
+        { "name": "Alessandro Giusti", "code": "GIU", "number": 9 }
+      ]
+    },
+    {
+      "name": "DAMS Lucas Oil",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Nicola Lacorte", "code": "LAC", "number": 29 },
+        { "name": "Nandhavud Bhirombhakdi", "code": "BHI", "number": 30 },
+        { "name": "Gerrard Xie", "code": "XIE", "number": 31 }
+      ]
+    },
+    {
+      "name": "Hitech",
+      "color": "#708090",
+      "drivers": [
+        { "name": "Woohyun Shin", "code": "SHI", "number": 23 },
+        { "name": "Fionn McLaughlin", "code": "MCL", "number": 24 },
+        { "name": "Jin Nakamura", "code": "NAK", "number": 25 }
+      ]
+    },
+    {
+      "name": "AIX Racing",
+      "color": "#E5237D",
+      "drivers": [
+        { "name": "Ricardo Escotto", "code": "ESC", "number": 26 },
+        { "name": "Yevan David", "code": "DAV", "number": 27 },
+        { "name": "Fernando Barrichello", "code": "BAR", "number": 28 }
+      ]
+    },
+    {
+      "name": "Prema Racing",
+      "color": "#DD052B",
+      "drivers": [
+        { "name": "Louis Sharp", "code": "SHA", "number": 20 },
+        { "name": "James Wharton", "code": "WHA", "number": 21 },
+        { "name": "José Garfias", "code": "GAR", "number": 22 }
+      ]
+    }
+  ]
+}

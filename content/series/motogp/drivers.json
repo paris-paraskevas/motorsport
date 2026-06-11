@@ -1,0 +1,92 @@
+{
+  "teams": [
+    {
+      "name": "Aprilia Racing",
+      "color": "#9C1B26",
+      "drivers": [
+        { "name": "Marco Bezzecchi", "number": 72 },
+        { "name": "Jorge Martín", "number": 89 }
+      ]
+    },
+    {
+      "name": "Ducati Lenovo Team",
+      "color": "#CC0000",
+      "drivers": [
+        { "name": "Francesco Bagnaia", "number": 63 },
+        { "name": "Marc Márquez", "number": 93 }
+      ]
+    },
+    {
+      "name": "SuperFile Trackhouse MotoGP Team",
+      "color": "#24449C",
+      "drivers": [
+        { "name": "Raúl Fernández", "number": 25 },
+        { "name": "Ai Ogura", "number": 79 }
+      ]
+    },
+    {
+      "name": "Red Bull KTM Factory Racing",
+      "color": "#FF6600",
+      "drivers": [
+        { "name": "Brad Binder", "number": 33 },
+        { "name": "Pedro Acosta", "number": 37 }
+      ]
+    },
+    {
+      "name": "Pertamina Enduro VR46 Racing Team",
+      "color": "#FFE800",
+      "drivers": [
+        { "name": "Franco Morbidelli", "number": 21 },
+        { "name": "Fabio Di Giannantonio", "number": 49 }
+      ]
+    },
+    {
+      "name": "BK8 Gresini Racing MotoGP",
+      "color": "#5BC2E7",
+      "drivers": [
+        { "name": "Fermín Aldeguer", "number": 54 },
+        { "name": "Álex Márquez", "number": 73 }
+      ]
+    },
+    {
+      "name": "Honda HRC Castrol",
+      "color": "#E60012",
+      "drivers": [
+        { "name": "Luca Marini", "number": 10 },
+        { "name": "Joan Mir", "number": 36 }
+      ]
+    },
+    {
+      "name": "LCR Honda",
+      "color": "#00873E",
+      "drivers": [
+        { "name": "Johann Zarco", "number": 5 },
+        { "name": "Diogo Moreira", "number": 11 }
+      ]
+    },
+    {
+      "name": "Prima Pramac Yamaha MotoGP",
+      "color": "#7D3CB5",
+      "drivers": [
+        { "name": "Toprak Razgatlıoğlu", "number": 7 },
+        { "name": "Jack Miller", "number": 43 }
+      ]
+    },
+    {
+      "name": "Monster Energy Yamaha MotoGP",
+      "color": "#2140C9",
+      "drivers": [
+        { "name": "Fabio Quartararo", "number": 20 },
+        { "name": "Álex Rins", "number": 42 }
+      ]
+    },
+    {
+      "name": "Red Bull KTM Tech3",
+      "color": "#223971",
+      "drivers": [
+        { "name": "Maverick Viñales", "number": 12 },
+        { "name": "Enea Bastianini", "number": 23 }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.32.0 — 2026-06-11
+
+W4 step 1+2 — the drivers.json gap (13 series, open since May) is closed: every series now ships a curated 2026 lineup, activating /drivers/* and /teams/* site-wide.
+
+### Added
+
+- **`content/series/<slug>/drivers.json` ×13** (f2, f3, formula-e, motogp, wec, imsa, gt-world, nls, adac-ravenol-24h, nascar-cup, wsbk, wrc, dtm) — 231 teams/cars, 600 drivers, all validated against the CuratedDriversFile type. Three sequential agent waves verified 2026 entry lists against official sites with per-file incremental writes; seats as they stand 2026-06-11 (Herta at Hitech F2, da Costa to Jaguar FE, Razgatlıoğlu to Pramac Yamaha MotoGP, Aitken into the #38 Cadillac, Austin Hill in RCR's renumbered No. 33 — externally verified — Feller into the Manthey Porsche, Armstrong at M-Sport). Endurance series map one CAR per team entry ("Ferrari AF Corse #50 (Hypercar)") with the crew as drivers; NLS/ADAC scoped to the flagship pro field rather than 300-car entry lists.
+- Team colors curated throughout — the champions-tab color feature (0.26.0) now resolves for these series too.
+
 ## 0.31.0 — 2026-06-11
 
 W3 — rules essentials ×15, curated into the About tab (operator decision 2026-06-11: rules live inside About, tab label unchanged; the Rules tab stays retired per 0.19.0).

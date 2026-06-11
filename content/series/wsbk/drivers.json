@@ -1,0 +1,110 @@
+{
+  "teams": [
+    {
+      "name": "Aruba.it Racing – Ducati",
+      "color": "#CC0000",
+      "drivers": [
+        { "name": "Nicolò Bulega", "number": 11 },
+        { "name": "Iker Lecuona", "number": 7 }
+      ]
+    },
+    {
+      "name": "ELF Marc VDS Racing Team",
+      "color": "#00A19A",
+      "drivers": [
+        { "name": "Sam Lowes", "number": 14 }
+      ]
+    },
+    {
+      "name": "Bimota by Kawasaki Racing Team",
+      "color": "#E2001A",
+      "drivers": [
+        { "name": "Alex Lowes", "number": 22 },
+        { "name": "Axel Bassani", "number": 47 }
+      ]
+    },
+    {
+      "name": "Barni Spark Racing Team",
+      "color": "#A6192E",
+      "drivers": [
+        { "name": "Yari Montella", "number": 5 },
+        { "name": "Álvaro Bautista", "number": 19 }
+      ]
+    },
+    {
+      "name": "Team Pata GoEleven",
+      "color": "#FFD200",
+      "drivers": [
+        { "name": "Lorenzo Baldassarri", "number": 34 }
+      ]
+    },
+    {
+      "name": "ROKiT BMW Motorrad WorldSBK Team",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Miguel Oliveira", "number": 88 },
+        { "name": "Danilo Petrucci", "number": 9 }
+      ]
+    },
+    {
+      "name": "Kawasaki WorldSBK Team",
+      "color": "#6CC24A",
+      "drivers": [
+        { "name": "Garrett Gerloff", "number": 31 }
+      ]
+    },
+    {
+      "name": "Pata Maxus Yamaha",
+      "color": "#003DA5",
+      "drivers": [
+        { "name": "Andrea Locatelli", "number": 55 },
+        { "name": "Xavi Vierge", "number": 97 }
+      ]
+    },
+    {
+      "name": "GYTR GRT Yamaha WorldSBK Team",
+      "color": "#D71920",
+      "drivers": [
+        { "name": "Stefano Manzi", "number": 62 },
+        { "name": "Remy Gardner", "number": 87 }
+      ]
+    },
+    {
+      "name": "Honda HRC",
+      "color": "#E60012",
+      "drivers": [
+        { "name": "Somkiat Chantra", "number": 35 },
+        { "name": "Jake Dixon", "number": 96 }
+      ]
+    },
+    {
+      "name": "Yamaha Motoxracing WorldSBK Team",
+      "color": "#2E9BD6",
+      "drivers": [
+        { "name": "Bahattin Sofuoğlu", "number": 54 },
+        { "name": "Mattia Rato", "number": 13 }
+      ]
+    },
+    {
+      "name": "Motocorsa Racing",
+      "color": "#F4511E",
+      "drivers": [
+        { "name": "Alberto Surra", "number": 67 }
+      ]
+    },
+    {
+      "name": "MGM Racing Performance",
+      "color": "#3C3C3B",
+      "drivers": [
+        { "name": "Tarran Mackenzie", "number": 95 }
+      ]
+    },
+    {
+      "name": "Superbike Advocates Racing",
+      "color": "#13294B",
+      "drivers": [
+        { "name": "Tommy Bridewell", "number": 46 }
+      ]
+    }
+  ]
+}

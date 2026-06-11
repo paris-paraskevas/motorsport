@@ -1,0 +1,313 @@
+{
+  "teams": [
+    {
+      "name": "Mann-Filter Team Winward #48 (Pro)",
+      "color": "#C4D600",
+      "drivers": [
+        { "name": "Lucas Auer", "number": 48 },
+        { "name": "Maro Engel", "number": 48 },
+        { "name": "Luca Stolz", "number": 48 }
+      ]
+    },
+    {
+      "name": "Comtoyou Racing #7 (Pro)",
+      "color": "#00594F",
+      "drivers": [
+        { "name": "Mattia Drudi", "number": 7 },
+        { "name": "Marco Sørensen", "number": 7 },
+        { "name": "Nicki Thiim", "number": 7 }
+      ]
+    },
+    {
+      "name": "Team WRT #32 (Pro)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Jordan Pepper", "number": 32 },
+        { "name": "Kelvin van der Linde", "number": 32 },
+        { "name": "Charles Weerts", "number": 32 }
+      ]
+    },
+    {
+      "name": "Garage 59 #59 (Pro)",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Marvin Kirchhöfer", "number": 59 },
+        { "name": "Joseph Loake", "number": 59 },
+        { "name": "Dean MacDonald", "number": 59 }
+      ]
+    },
+    {
+      "name": "Boutsen VDS #2 (Pro)",
+      "color": "#1F6FB2",
+      "drivers": [
+        { "name": "Dorian Boccolacci", "number": 2 },
+        { "name": "Alessio Picariello", "number": 2 },
+        { "name": "Morris Schuring", "number": 2 }
+      ]
+    },
+    {
+      "name": "AF Corse #50 (Pro)",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "Arthur Leclerc", "number": 50 },
+        { "name": "Thomas Neubauer", "number": 50 },
+        { "name": "Sean Gelael", "number": 50 },
+        { "name": "Lilou Wadoux", "number": 50 }
+      ]
+    },
+    {
+      "name": "Mercedes-AMG Team Verstappen Racing #3 (Pro)",
+      "color": "#002B5C",
+      "drivers": [
+        { "name": "Jules Gounon", "number": 3 },
+        { "name": "Daniel Juncadella", "number": 3 },
+        { "name": "Chris Lulham", "number": 3 }
+      ]
+    },
+    {
+      "name": "Team WRT #46 (Pro)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Dan Harper", "number": 46 },
+        { "name": "Max Hesse", "number": 46 },
+        { "name": "Valentino Rossi", "number": 46 }
+      ]
+    },
+    {
+      "name": "ROWE Racing #98 (Pro)",
+      "color": "#009FE3",
+      "drivers": [
+        { "name": "Jake Dennis", "number": 98 },
+        { "name": "Augusto Farfus", "number": 98 },
+        { "name": "Raffaele Marciello", "number": 98 }
+      ]
+    },
+    {
+      "name": "Mercedes-AMG Team GetSpeed #17 (Pro)",
+      "color": "#00A19B",
+      "drivers": [
+        { "name": "Maximilian Götz", "number": 17 },
+        { "name": "Maxime Martin", "number": 17 },
+        { "name": "Fabian Schiller", "number": 17 }
+      ]
+    },
+    {
+      "name": "Walkenhorst Motorsport #34 (Pro)",
+      "color": "#2F7D33",
+      "drivers": [
+        { "name": "Henrique Chaves", "number": 34 },
+        { "name": "Jamie Day", "number": 34 },
+        { "name": "Christian Krognes", "number": 34 }
+      ]
+    },
+    {
+      "name": "AF Corse #51 (Pro)",
+      "color": "#DC0000",
+      "drivers": [
+        { "name": "Tommaso Mosca", "number": 51 },
+        { "name": "Nicklas Nielsen", "number": 51 },
+        { "name": "Alessio Rovera", "number": 51 }
+      ]
+    },
+    {
+      "name": "TGI Team by GRT #63 (Pro)",
+      "color": "#76B900",
+      "drivers": [
+        { "name": "Mirko Bortolotti", "number": 63 },
+        { "name": "Maximilian Paul", "number": 63 },
+        { "name": "Franck Perera", "number": 63 }
+      ]
+    },
+    {
+      "name": "Rutronik Racing #96 (Pro)",
+      "color": "#E2001A",
+      "drivers": [
+        { "name": "Luca Engstler", "number": 96 },
+        { "name": "Marco Mapelli", "number": 96 },
+        { "name": "Patric Niederhauser", "number": 96 }
+      ]
+    },
+    {
+      "name": "HRT Ford Performance #64 (Pro)",
+      "color": "#0033A0",
+      "drivers": [
+        { "name": "Thomas Drouet", "number": 64 },
+        { "name": "Arjun Maini", "number": 64 },
+        { "name": "Fabio Scherer", "number": 64 }
+      ]
+    },
+    {
+      "name": "Lionspeed GP #80 (Pro)",
+      "color": "#F18A00",
+      "drivers": [
+        { "name": "Bastian Buus", "number": 80 },
+        { "name": "Ricardo Feller", "number": 80 },
+        { "name": "Thomas Preining", "number": 80 }
+      ]
+    },
+    {
+      "name": "Eastalent Racing #84 (Pro)",
+      "color": "#BB0A30",
+      "drivers": [
+        { "name": "Christopher Haase", "number": 84 },
+        { "name": "Simon Reicher", "number": 84 },
+        { "name": "Markus Winkelhock", "number": 84 }
+      ]
+    },
+    {
+      "name": "Emil Frey Racing #14 (Pro)",
+      "color": "#93C90E",
+      "drivers": [
+        { "name": "Matteo Cairoli", "number": 14 },
+        { "name": "Konsta Lappalainen", "number": 14 }
+      ]
+    },
+    {
+      "name": "Emil Frey Racing #69 (Pro)",
+      "color": "#93C90E",
+      "drivers": [
+        { "name": "Ben Green", "number": 69 },
+        { "name": "Thierry Vermeulen", "number": 69 }
+      ]
+    },
+    {
+      "name": "Team WRT #31 (Pro)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Amaury Cordeel", "number": 31 },
+        { "name": "Jordan Pepper", "number": 31 }
+      ]
+    },
+    {
+      "name": "Garage 59 #58 (Gold)",
+      "color": "#FF8000",
+      "drivers": [
+        { "name": "Tom Fleming", "number": 58 },
+        { "name": "Benjamin Goethe", "number": 58 },
+        { "name": "Louis Prette", "number": 58 }
+      ]
+    },
+    {
+      "name": "CSA Racing #111 (Gold)",
+      "color": "#009EE0",
+      "drivers": [
+        { "name": "Simon Gachet", "number": 111 },
+        { "name": "James Kell", "number": 111 },
+        { "name": "Arthur Rougier", "number": 111 }
+      ]
+    },
+    {
+      "name": "Optimum Motorsport #4 (Gold)",
+      "color": "#F36F21",
+      "drivers": [
+        { "name": "Harry George", "number": 4 },
+        { "name": "Adam Smalley", "number": 4 },
+        { "name": "Freddie Tomlinson", "number": 4 }
+      ]
+    },
+    {
+      "name": "Steller Motorsport #24 (Gold)",
+      "color": "#007FA3",
+      "drivers": [
+        { "name": "Antoine Doquin", "number": 24 },
+        { "name": "Dennis Lind", "number": 24 },
+        { "name": "Lorenzo Fluxá", "number": 24 }
+      ]
+    },
+    {
+      "name": "ROWE Racing #998 (Gold)",
+      "color": "#009FE3",
+      "drivers": [
+        { "name": "Ugo de Wilde", "number": 998 },
+        { "name": "Jens Klingmann", "number": 998 },
+        { "name": "Tim Tramnitz", "number": 998 }
+      ]
+    },
+    {
+      "name": "Selected Car Racing #71 (Gold)",
+      "color": "#C8102E",
+      "drivers": [
+        { "name": "Simon Birch", "number": 71 },
+        { "name": "Malte Ebdrup", "number": 71 },
+        { "name": "Frederik Schandorff", "number": 71 }
+      ]
+    },
+    {
+      "name": "Tresor Attempto Racing #99 (Gold)",
+      "color": "#C9A24B",
+      "drivers": [
+        { "name": "Alex Aka", "number": 99 },
+        { "name": "Dylan Pereira", "number": 99 }
+      ]
+    },
+    {
+      "name": "VSR #163 (Gold)",
+      "color": "#F47B20",
+      "drivers": [
+        { "name": "Mattia Michelotto", "number": 163 },
+        { "name": "Loris Spinelli", "number": 163 }
+      ]
+    },
+    {
+      "name": "CSA Racing #555 (Gold)",
+      "color": "#009EE0",
+      "drivers": [
+        { "name": "Romain Andriolo", "number": 555 },
+        { "name": "Simon Gachet", "number": 555 }
+      ]
+    },
+    {
+      "name": "Tresor Attempto Racing #66 (Silver)",
+      "color": "#C9A24B",
+      "drivers": [
+        { "name": "Ariel Levi", "number": 66 },
+        { "name": "Rocco Mazzola", "number": 66 },
+        { "name": "Sebastian Øgaard", "number": 66 }
+      ]
+    },
+    {
+      "name": "Pure Rxcing #9 (Silver)",
+      "color": "#5F259F",
+      "drivers": [
+        { "name": "Max Hofer", "number": 9 },
+        { "name": "Alex Malykhin", "number": 9 },
+        { "name": "Alexey Nesov", "number": 9 }
+      ]
+    },
+    {
+      "name": "Team WRT #30 (Silver)",
+      "color": "#1C69D4",
+      "drivers": [
+        { "name": "Amaury Cordeel", "number": 30 },
+        { "name": "Matisse Lismont", "number": 30 },
+        { "name": "Ignacio Montenegro", "number": 30 }
+      ]
+    },
+    {
+      "name": "Paradine Competition #991 (Bronze)",
+      "color": "#5B6770",
+      "drivers": [
+        { "name": "James Kellett", "number": 991 },
+        { "name": "Darren Leung", "number": 991 },
+        { "name": "Augusto Farfus", "number": 991 }
+      ]
+    },
+    {
+      "name": "Kessel Racing #74 (Bronze)",
+      "color": "#A6192E",
+      "drivers": [
+        { "name": "Dustin Blattner", "number": 74 },
+        { "name": "Dennis Marschall", "number": 74 }
+      ]
+    },
+    {
+      "name": "Winward Racing #87 (Bronze)",
+      "color": "#D71920",
+      "drivers": [
+        { "name": "Marvin Dienst", "number": 87 },
+        { "name": "Gabriele Piana", "number": 87 },
+        { "name": "Rinat Salikhov", "number": 87 }
+      ]
+    }
+  ]
+}
