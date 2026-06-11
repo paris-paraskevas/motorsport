@@ -650,6 +650,18 @@ After the 4-PR daytime sweep (0.12.11 → 0.12.13), one more PR landed before be
 
 ## Week of 2026-06-08
 
+### Thu 2026-06-11 — session 4
+
+- → done: PR-2 brief COMPLETE (2a→2d). Shipped + merged: 0.19.1/0.19.2 PWA nav fixes, 0.20.0 histories ×14, 0.20.1 mobile chart, 0.20.2 + 0.23.1 validation fixes (Indy 500 sups, FE/WEC/GTWC champions, IMSA Detroit + slash-date bug, DTM junk table), 0.21.0 calendar retheme, 0.22.0 notifications (30'/10' + results-ready), 0.23.0 desktop width/density/news-parity. In review: 0.24.0 Account page (#117).
+- Validation sweeps 1+2 done with all findings fixed; sweep 3 running at session end. Reports in docs/research/validation-2026-06-11/.
+- Carry-overs: validator-3 findings; Le Mans weekend = notifications e2e shakedown; signed-in AccountIdentity check on preview; Watkins Glen IMSA manifest row after 28 Jun.
+- Won't touch until prompted: session subpages (OpenF1 research first), driver/team pages, UI-inspiration pass.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
+
+
 ### Wed 2026-06-10
 
 - → done: full-stack audit (operator-directed) — 6 parallel audit agents + live browser pass on prod across 4 viewports. Headliners: countdown hydration bug wiping dark-mode persistence, silent-parser observability gap, legal pages describing the removed Funding Choices CMP, homepage 95% dead payload, ~190 orphaned weekend URLs. Full report delivered in-session; backlog feeds redesign PR 3+ and future fix sessions.

@@ -220,6 +220,35 @@ contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
   only) → driver/team enrichment pages (photos/bios/stats — multi-session, pairs
   with 0.15.0-enrichment). 2d account page still queued.
 
+### 2026-06-11 — session 4: PR-2 BRIEF COMPLETE + content + validation + notifications
+Shipped (all merged unless noted): **0.19.1/0.19.2** PWA wordmark + landing-reachable
+fixes (referrer-gated StandaloneRedirect). **0.20.0 (#110)** history essays ×14 in the
+F1 voice (3 sequential agents, salvage-seeded, incremental writes; exclusion logs in
+the PR). **0.20.1 (#111)** chart renders on mobile (reversal of the 0.18.0 hide).
+**0.20.2 (#112)** validation-1 fixes: Indy 500 superscript corruption (Wikipedia
+Fast-12 sups flattened into positions) + FE champions curated ×11 seasons.
+**0.21.0 (#113)** calendar surfaces to the timing-screen language (month strip,
+flat session rows, weekend blocks). **0.22.0 (#114)** notifications: 30'/10'
+windows + KV ledger (mark-before-send) + results-ready (5 series, lib/results-ready.ts
+map; e2e shakedown = Le Mans weekend). **0.23.0 (#115)** desktop pass: width
+2xl:max-w-screen-2xl everywhere, NewsTab → wire rows, home day-groups collapse.
+**0.23.1 (#116)** validation-2 fixes: WEC 2024 manufacturers Porsche→Toyota,
+GTWC 2024 Winward, IMSA Detroit (manifest + the slash-date parser bug), DTM
+manufacturers table removed (upstream junk), landing width. **0.24.0 (#117, in
+review)** Account page: identity strip, /settings public (writes stay API-protected),
+last 64 zinc classes retired. **The 2a→2d dashboard-overhaul brief is done.**
+- Validation program: sweeps 1+2 complete (reports in docs/research/validation-2026-06-11/),
+  all findings fixed same-day; sweep 3 (wrc/wsbk/nascar/nls/adac) running at session end.
+  Curation rule discovered: champions-file errors cluster on split-title years.
+- Process: org spend cap killed two agent fleets; salvage pipeline (subagents/*.jsonl →
+  docs/research/agent-salvage-2026-06-10/) + sequential single agents with incremental
+  writes became the playbook. paddock-tracker.com not WebFetch-allowlisted — validators
+  use motorsport-pi.vercel.app.
+- Still open: validator-3 findings PR; Watkins Glen IMSA manifest row (after 28 Jun);
+  session subpages (OpenF1 research first); driver/team enrichment pages; UI-inspiration
+  pass (5 reference libraries in IDEAS Inbox); 0.22.0 notifications e2e check on a live
+  window; operator look at signed-in AccountIdentity on preview.
+
 ### 2026-06-10 — session 2 (same day): PR 1.1 landing parity
 - Operator reviewed live 0.13.0 vs mockup with screenshots; gaps locked: richer moving
   ticker, big marquee-event countdown, moving series timetable, circuit photo feed,
