@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
+import type { Weekend } from '@/lib/types';
 import { formatLocal } from '@/lib/date';
 import {
   sessionBySlug,
@@ -83,6 +84,106 @@ export async function generateMetadata(
   };
 }
 
+// Compact label for the session rail — fans think in FP1 / QUALI / RACE.
+function shortSessionLabel(title: string): string {
+  const cleaned = title.replace(/^.*?[-–—:]\s*/, '').trim() || title;
+  const m = cleaned.match(/^(?:free\s+)?practice\s*(\d)/i);
+  if (m) return `FP${m[1]}`;
+  if (/^fp\s*(\d)/i.test(cleaned)) return cleaned.toUpperCase().replace(/\s+/g, '');
+  if (/sprint\s+(qualifying|shootout)/i.test(cleaned)) return 'SQ';
+  if (/^sprint/i.test(cleaned)) return 'SPRINT';
+  if (/qualifying|superpole/i.test(cleaned)) return 'QUALI';
+  if (/warm[\s-]?up/i.test(cleaned)) return 'WARM-UP';
+  if (/^race\s*(\d)/i.test(cleaned)) return cleaned.toUpperCase().replace(/\s+/g, ' ');
+  if (/^race/i.test(cleaned)) return 'RACE';
+  return cleaned.toUpperCase().slice(0, 14);
+}
+
+// The weekend's sessions in running order, each with its page href. Slug
+// collisions within a weekend (two identically-titled sessions) resolve to
+// the first occurrence — acceptable; titles are unique in practice.
+function weekendSessionNav(
+  weekend: Weekend,
+  slug: string,
+  round: number,
+  currentUid: string,
+) {
+  const ordered = [...weekend.sessions].sort(
+    (a, b) => a.start.getTime() - b.start.getTime(),
+  );
+  const items = ordered.map(s => ({
+    uid: s.uid,
+    label: shortSessionLabel(s.title),
+    title: s.title,
+    href: `/series/${slug}/weekend/${round}/${sessionSlug(s.title)}`,
+    isCurrent: s.uid === currentUid,
+  }));
+  const idx = items.findIndex(i => i.isCurrent);
+  return {
+    items,
+    prev: idx > 0 ? items[idx - 1] : null,
+    next: idx >= 0 && idx < items.length - 1 ? items[idx + 1] : null,
+  };
+}
+
+function SessionRail({ items }: { items: ReturnType<typeof weekendSessionNav>['items'] }) {
+  return (
+    <nav aria-label="Weekend sessions" className="mb-6 border-y border-border">
+      <div className="flex overflow-x-auto scrollbar-none gap-5">
+        {items.map(item => (
+          <Link
+            key={item.uid}
+            href={item.href}
+            aria-current={item.isCurrent ? 'page' : undefined}
+            title={item.title}
+            className={`shrink-0 inline-flex items-center h-10 border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
+              item.isCurrent
+                ? 'border-tint text-text'
+                : 'border-transparent text-text-muted hover:text-text'
+            }`}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+function SessionPager({
+  prev,
+  next,
+}: {
+  prev: { href: string; label: string } | null;
+  next: { href: string; label: string } | null;
+}) {
+  if (!prev && !next) return null;
+  return (
+    <div className="mt-8 flex items-center justify-between font-mono text-[11px] font-semibold uppercase tracking-[0.16em]">
+      {prev ? (
+        <Link
+          href={prev.href}
+          className="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          <span aria-hidden>&larr;</span> {prev.label}
+        </Link>
+      ) : (
+        <span />
+      )}
+      {next ? (
+        <Link
+          href={next.href}
+          className="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          {next.label} <span aria-hidden>&rarr;</span>
+        </Link>
+      ) : (
+        <span />
+      )}
+    </div>
+  );
+}
+
 function ClassificationTable({ data }: { data: SessionClassification }) {
   return (
     <section className="border-y border-border py-4">
@@ -162,6 +263,8 @@ export default async function SessionPage({
     if (match) classification = await fetchSessionClassification(match);
   }
 
+  const nav = weekendSessionNav(weekend, slug, round, session.uid);
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -222,6 +325,8 @@ export default async function SessionPage({
         </div>
       </section>
 
+      <SessionRail items={nav.items} />
+
       {classification ? (
         <ClassificationTable data={classification} />
       ) : isPast ? (
@@ -245,6 +350,8 @@ export default async function SessionPage({
           </p>
         </section>
       )}
+
+      <SessionPager prev={nav.prev} next={nav.next} />
     </div>
   );
 }

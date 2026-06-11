@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.30.0 — 2026-06-11
+
+**Flick through a race weekend session by session.** Every session page now carries a strip of the whole weekend — FP1 through to the race — with one tap to jump anywhere, plus previous/next links at the bottom to follow the weekend in order.
+
 ## 0.29.2 — 2026-06-11
 
 **A security hardening pass.** We audited every door into Paddock — sign-in-protected areas, the contact form, push notifications, scheduled jobs. The contact form now has sensible rate limits, push subscriptions are validated more strictly, and the audit confirmed the rest holds up. Internal: full findings documented for the next hardening round.
