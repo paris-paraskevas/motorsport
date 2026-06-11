@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.30.0 — 2026-06-11
+
+Operator: session pages must navigate like a weekend runs — FP1 → FP2 → FP3 → quali → race.
+
+### Added
+
+- **Session rail + pager on every session page** (`app/(app)/.../[session]/page.tsx`): a horizontal rail of the weekend's sessions in running order — mono short labels (FP1/FP2/FP3/SQ/SPRINT/QUALI/RACE, derived from titles), tint underline on the current session, the SeriesTabs visual pattern — plus prev/next links at the page foot for the linear flow. Generic across series; first/last sessions drop the dangling pager side.
+
 ## 0.29.2 — 2026-06-11
 
 Security audit session (operator-ordered; a v1.0 launch gate). Full report: `docs/research/security-audit-2026-06-11.md` — 13 routes, auth matrix, headers, XSS inventory swept; four findings fixed same-session, the known gaps (CSP, Sentry) documented with recommendations.
