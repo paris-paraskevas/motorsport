@@ -171,6 +171,14 @@ the five operator notes in IDEAS (#119) and the per-PR CHANGELOG sections.)
   `GtWorldRaceResult`) render unlinked rather than 404. Chevron keeps the accordion; a link
   inside `<summary>` activates without toggling (verified both ways programmatically). No
   default-open accordion — full fields made that unaffordable.
+- **PR #123 (0.26.0) — W2 series-tab polish** (first wave of the operator's 15-item batch;
+  W1–W8 roadmap captured in SCHEDULE.md backlog stubs, port to IDEAS.md after #119 merges):
+  trend chart moved Results → Standings on F1/NASCAR/WRC/DTM (standings-shaped data,
+  invariant co-location; DTM results → link-out), always-on chart dots + highlighted hover
+  point, classifications 2-col from `sm:` (P1–11 / P12–22), WIN meta line wraps on phone,
+  champions team names in team colors — drivers.json colors behind a luminance guard
+  (`color-mix` lifts dark hues like Red Bull navy to readable steel blue on the near-black
+  bg). Historic-constructor color map = follow-up curation; historic teams plain until then.
 
 **OpenF1 research (for the weekend per-session results follow-up — operator note (b)):**
 

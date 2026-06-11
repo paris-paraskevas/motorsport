@@ -26,7 +26,14 @@ import {
   WEC_MANUFACTURER_CLASSES,
   WEC_TEAM_CLASSES,
 } from '@/lib/standings/wec';
-import { loadStandingsOverrides } from '@/lib/series-content';
+import { loadStandingsOverrides, loadResultsOverrides } from '@/lib/series-content';
+import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
+import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
+import { fetchWRCSeasonChartPoints } from '@/lib/results/wrc';
+import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
+import { applyResultsOverrides } from '@/components/tabs/ResultsTab';
+import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
+import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
@@ -220,11 +227,35 @@ function LinkOutCard({
   );
 }
 
+// Drivers' season trend — moved here from the Results tab (0.26.0, operator):
+// cumulative points are standings-shaped data, and co-locating the chart with
+// the tables it must reconcile against keeps the chart-vs-standings invariant
+// (CHANGELOG header) visible. Renders below the tables; null trend = no chart
+// (standings still render when the results feed is empty or unavailable).
+function TrendSection({ trend }: { trend: SeasonTrendData | null }) {
+  if (!trend) return null;
+  return (
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        Drivers&apos; season trend
+      </h2>
+      <SeasonTrendChart
+        data={trend.data}
+        drivers={trend.drivers}
+        totalsByDriver={trend.totalsByDriver}
+      />
+    </section>
+  );
+}
+
 export async function StandingsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
-    const [data, overrides] = await Promise.all([
+    const [data, overrides, races, sprints, resultsOverrides] = await Promise.all([
       fetchF1Standings(),
       loadStandingsOverrides(series.meta.slug),
+      fetchF1SeasonResults(),
+      fetchF1SeasonSprints(),
+      loadResultsOverrides(series.meta.slug),
     ]);
     if (!data) {
       return (
@@ -236,10 +267,16 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.constructors,
       overrides?.constructors,
     );
+    // Sprint points fold into the same x-axis round as the parent race.
+    const trend =
+      races.length > 0
+        ? buildSeasonTrendData(applyResultsOverrides(races, resultsOverrides), sprints)
+        : null;
     return (
       <div className="space-y-4">
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
+        <TrendSection trend={trend} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
       </div>
     );
@@ -346,9 +383,19 @@ export async function StandingsTab({ series }: { series: Series }) {
   }
 
   if (series.meta.slug === 'nascar-cup') {
-    const [data, overrides] = await Promise.all([
+    const rounds =
+      series.rounds?.rounds.map(r => ({
+        round: r.round,
+        startDate: r.startDate,
+        name: r.name,
+      })) ?? [];
+    const [data, overrides, races, resultsOverrides] = await Promise.all([
       fetchNascarCupStandings(),
       loadStandingsOverrides(series.meta.slug),
+      rounds.length > 0
+        ? fetchNascarCupSeasonResults({ rounds })
+        : Promise.resolve([]),
+      loadResultsOverrides(series.meta.slug),
     ]);
     if (!data) {
       return (
@@ -360,19 +407,25 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.constructors,
       overrides?.constructors,
     );
+    const trend =
+      races.length > 0
+        ? buildSeasonTrendData(applyResultsOverrides(races, resultsOverrides))
+        : null;
     return (
       <div className="space-y-4">
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
+        <TrendSection trend={trend} />
         <SourceLink href={NASCAR_SOURCE_URL} label="Wikipedia (2026 NASCAR Cup Series)" />
       </div>
     );
   }
 
   if (series.meta.slug === 'wrc') {
-    const [data, overrides] = await Promise.all([
+    const [data, overrides, chartRaces] = await Promise.all([
       fetchWRCStandings(),
       loadStandingsOverrides(series.meta.slug),
+      fetchWRCSeasonChartPoints(series.meta.season),
     ]);
     if (!data) {
       return (
@@ -394,11 +447,16 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.manufacturers,
       overrides?.constructors,
     );
+    // Chart source is the season page's championship table (per-cell
+    // sub-totals) — the same table the standings parser reads, so chart
+    // totals reconcile to the tables above by construction.
+    const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
     return (
       <div className="space-y-4">
         <DriversTable drivers={drivers} heading="Drivers" />
         <DriversTable drivers={coDriversAsDrivers} heading="Co-Drivers" />
         <ConstructorsTable constructors={manufacturers} heading="Manufacturers" />
+        <TrendSection trend={trend} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
@@ -650,9 +708,10 @@ export async function StandingsTab({ series }: { series: Series }) {
   }
 
   if (series.meta.slug === 'dtm') {
-    const [data, overrides] = await Promise.all([
+    const [data, overrides, chartRaces] = await Promise.all([
       fetchDTMStandings(),
       loadStandingsOverrides(series.meta.slug),
+      fetchDTMSeasonChartData(),
     ]);
     if (!data) {
       return (
@@ -661,12 +720,16 @@ export async function StandingsTab({ series }: { series: Series }) {
     }
     const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
     const teams = applyConstructorOverrides(data.teams, overrides?.constructors);
+    // motorsport.com's points matrix reconciles to the drivers table totals
+    // by construction (same upstream).
+    const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
     return (
       <div className="space-y-4">
         <DriversTable drivers={drivers} heading="Drivers" />
         {teams.length > 0 ? (
           <ConstructorsTable constructors={teams} heading="Teams" />
         ) : null}
+        <TrendSection trend={trend} />
         {/* Manufacturers table dropped (validation 2026-06-11): upstream
             motorsport.com's Constructor endpoint itself returns 4 of 8
             brands with wrong totals — verified by fetching it directly; our

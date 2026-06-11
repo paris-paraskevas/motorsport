@@ -7,7 +7,7 @@ import type {
   ResultsOverridesFile,
 } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
-import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
+import { fetchF1SeasonResults } from '@/lib/results/f1';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
@@ -22,15 +22,9 @@ import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
-import {
-  fetchWRCSeasonResults,
-  fetchWRCSeasonChartPoints,
-} from '@/lib/results/wrc';
-import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
+import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { IMSA_CLASSES, type ImsaClass } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
-import { buildSeasonTrendData } from '@/lib/season-trend';
-import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
@@ -40,7 +34,9 @@ const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series'
 const GT_WORLD_SOURCE_URL =
   'https://www.gt-world-challenge-europe.com/results/2026';
 
-function applyResultsOverrides(
+// Exported for StandingsTab, which builds the season-trend chart from the
+// same override-patched results the accordion renders (0.26.0 chart move).
+export function applyResultsOverrides(
   races: RaceResult[],
   overrides: ResultsOverridesFile | null,
 ): RaceResult[] {
@@ -90,7 +86,7 @@ function EmptyState({ message }: { message: string }) {
 
 function ResultRow({ entry }: { entry: RaceResultEntry }) {
   return (
-    <li className="flex items-baseline gap-3 py-2">
+    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
       <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
@@ -158,7 +154,7 @@ function RaceTitle({ name, href }: { name: string; href?: string }) {
 function RowMeta({ date, winner }: { date?: Date; winner?: string }) {
   if (!date && !winner) return null;
   return (
-    <div className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+    <div className="mt-0.5 sm:truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
       {date ? formatDate(date) : null}
       {date && winner ? ' · ' : null}
       {winner ? (
@@ -208,7 +204,7 @@ function RoundRow({ race, weekendHref }: { race: RaceResult; weekendHref?: strin
           className="mt-1 text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3 sm:columns-2 sm:gap-x-10">
         {race.results.map(entry => (
           <ResultRow key={`${entry.position}-${entry.driverName}`} entry={entry} />
         ))}
@@ -279,7 +275,7 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
   // the trailing points column with the gap-to-leader. Status surfaces only
   // when timing is absent (DNS / DNF entries).
   return (
-    <li className="flex items-baseline gap-3 py-2">
+    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
       <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
@@ -388,7 +384,7 @@ function ImsaRoundClassCard({
           className="mt-1 text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3 sm:columns-2 sm:gap-x-10">
         {entries.map(entry => (
           <ImsaResultRow
             key={`${entry.position}-${entry.carNumber}`}
@@ -427,7 +423,7 @@ function GtWorldResultRow({ entry }: { entry: GtWorldRaceResultEntry }) {
   // No points column — SRO points scale + trend chart deferred to a
   // follow-up (see CHANGELOG 0.12.13 "Won't ship in this PR" section).
   return (
-    <li className="flex items-baseline gap-3 py-2">
+    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
       <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
@@ -481,7 +477,7 @@ function GtWorldRoundClassCard({
           className="mt-1 text-text-faint transition-transform group-open:rotate-180 shrink-0"
         />
       </summary>
-      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
+      <ul className="ml-2 sm:ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3 sm:columns-2 sm:gap-x-10">
         {entries.map(entry => (
           <GtWorldResultRow
             key={`${entry.position}-${entry.carNumber}`}
@@ -572,9 +568,8 @@ export async function ResultsTab({ series }: { series: Series }) {
   );
 
   if (series.meta.slug === 'f1') {
-    const [races, sprints, overrides] = await Promise.all([
+    const [races, overrides] = await Promise.all([
       fetchF1SeasonResults(),
-      fetchF1SeasonSprints(),
       loadResultsOverrides(series.meta.slug),
     ]);
     if (races.length === 0) {
@@ -583,22 +578,12 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // Sprint points fold into the same x-axis round as the parent race.
-    // SeasonResultsPanel below keeps showing GPs only — adding sprint cards
-    // would clutter the panel; the chart math is what users need fixed.
-    const trend = buildSeasonTrendData(merged, sprints);
+    // The drivers' season-trend chart lives on the Standings tab as of
+    // 0.26.0 — cumulative points are standings-shaped data, and co-locating
+    // the chart with the tables it must reconcile against keeps the
+    // chart-vs-standings invariant visible.
     return (
       <div className="space-y-4">
-        <section className="border-y border-border py-4">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-            Drivers&apos; season trend
-          </h2>
-          <SeasonTrendChart
-            data={trend.data}
-            drivers={trend.drivers}
-            totalsByDriver={trend.totalsByDriver}
-          />
-        </section>
         <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
       </div>
@@ -739,25 +724,8 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // Trend chart restored in 0.12.12.1 — Wikipedia per-race articles
-    // expose a `Points` column per finisher (same numeric scale the
-    // standings parser sums), so cumulative totals reconcile against the
-    // standings tab. NASCAR uses one points system across all 36 points
-    // races (regular-season scale stays constant; playoffs use the same
-    // numeric scale, only the championship-cutoff math differs).
-    const trend = buildSeasonTrendData(merged);
     return (
       <div className="space-y-4">
-        <section className="border-y border-border py-4">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-            Drivers&apos; season trend
-          </h2>
-          <SeasonTrendChart
-            data={trend.data}
-            drivers={trend.drivers}
-            totalsByDriver={trend.totalsByDriver}
-          />
-        </section>
         <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href={NASCAR_SOURCE_URL}
@@ -815,9 +783,8 @@ export async function ResultsTab({ series }: { series: Series }) {
   }
 
   if (series.meta.slug === 'wrc') {
-    const [races, chartRaces, overrides] = await Promise.all([
+    const [races, overrides] = await Promise.all([
       fetchWRCSeasonResults(series.meta.season),
-      fetchWRCSeasonChartPoints(series.meta.season),
       loadResultsOverrides(series.meta.slug),
     ]);
     if (races.length === 0) {
@@ -826,29 +793,8 @@ export async function ResultsTab({ series }: { series: Series }) {
       );
     }
     const merged = applyResultsOverrides(races, overrides);
-    // Chart data source is the season page's "FIA World Rally Championship
-    // for Drivers" table (per-cell sub-totals), NOT the per-rally articles.
-    // The two diverge by ±3-6 points for marginal drivers (Wikipedia
-    // editors occasionally update one without the other), and the
-    // championship table is what the standings tab also reads — so chart
-    // totals reconcile to standings totals by construction. The per-rally
-    // accordion below renders full top-N classifications from the per-rally
-    // articles for richer per-rally UX.
-    const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
     return (
       <div className="space-y-4">
-        {trend ? (
-          <section className="border-y border-border py-4">
-            <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-              Drivers&apos; season trend
-            </h2>
-            <SeasonTrendChart
-              data={trend.data}
-              drivers={trend.drivers}
-              totalsByDriver={trend.totalsByDriver}
-            />
-          </section>
-        ) : null}
         <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
@@ -899,39 +845,10 @@ export async function ResultsTab({ series }: { series: Series }) {
     );
   }
 
-  if (series.meta.slug === 'dtm') {
-    // Chart-only: motorsport.com's season-standings table carries
-    // per-driver per-round points (one column per round) which reconciles
-    // to the Standings tab totals by construction. We don't have a
-    // per-race full classification source for DTM yet — the per-event
-    // `/dtm/results/2026/<slug>/` page exists but needs a separate probe.
-    // Accordion ships in a follow-up (0.12.15.1).
-    const races = await fetchDTMSeasonChartData();
-    if (races.length === 0) {
-      return (
-        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
-      );
-    }
-    const trend = buildSeasonTrendData(races);
-    return (
-      <div className="space-y-4">
-        <section className="border-y border-border py-4">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-            Drivers&apos; season trend
-          </h2>
-          <SeasonTrendChart
-            data={trend.data}
-            drivers={trend.drivers}
-            totalsByDriver={trend.totalsByDriver}
-          />
-        </section>
-        <SourceLink
-          href="https://www.motorsport.com/dtm/standings/2026/"
-          label="motorsport.com (DTM 2026)"
-        />
-      </div>
-    );
-  }
+  // DTM intentionally falls through to the link-out card: its only per-round
+  // data is the points matrix powering the season-trend chart, which lives on
+  // the Standings tab as of 0.26.0. A per-race classification accordion needs
+  // the motorsport.com per-event pages probed first (0.12.15.1 entry note).
 
   if (!series.meta.officialStandingsUrl) {
     return <PlaceholderTab tabLabel="Results" />;
