@@ -684,6 +684,19 @@ Session 3 (same day) — **PR 2a dashboard shell** per the locked brief. Plan:
 Active:
 _(awaiting [+Nm] prefixes)_
 
+### Thu 2026-06-11
+
+Session 4 (earlier today, separate chat) shipped PRs #108–#118, 0.19.1 → 0.24.1: PWA wordmark/landing nav fixes, histories ×14 (0.20.0), mobile chart render (0.20.1), validation sweeps 1–3 (all 15-series data findings fixed same-day), calendar surfaces 2c-5 (0.21.0), notifications 30'/10'/results-ready (0.22.0), desktop density 2c-6 (0.23.0), Account page 2d (0.24.0). Closeout: five operator notes → IDEAS Inbox (PR #119, merge pending).
+
+Session 5 plan:
+
+- Quick-wins PR (0.24.2): series tab switch lands at the top of the new tab (SeriesTabs owns scroll explicitly — Next 16's default Link scroll *maintains* position whenever the page fills the viewport, so dropping `scroll={false}` alone wouldn't fix it); results accordions drop the three top-10 render caps → full classification; drivers-tab breathing room between the series-color bar and team name.
+- Results layout v2 (0.25.0): per-race rows redesigned per series + clickable → weekend pages; OpenF1 (api.openf1.org) research for practice/quali per-session data; design-led under the 2.0 mandate.
+- Won't touch this session: security audit (queued as its own session), driver/team enrichment pages, UI-inspiration pass, light mode, WEC results pipeline.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

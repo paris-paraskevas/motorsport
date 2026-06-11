@@ -164,7 +164,7 @@ function RoundRow({ race, defaultOpen }: { race: RaceResult; defaultOpen: boolea
         />
       </summary>
       <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
-        {race.results.slice(0, 10).map(entry => (
+        {race.results.map(entry => (
           <ResultRow key={`${entry.position}-${entry.driverName}`} entry={entry} />
         ))}
       </ul>
@@ -322,7 +322,7 @@ function ImsaRoundClassCard({
         />
       </summary>
       <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
-        {entries.slice(0, 10).map(entry => (
+        {entries.map(entry => (
           <ImsaResultRow
             key={`${entry.position}-${entry.carNumber}`}
             entry={entry}
@@ -418,7 +418,7 @@ function GtWorldRoundClassCard({
         />
       </summary>
       <ul className="ml-9 mt-2 mb-2 divide-y divide-border/60 border-l border-border/60 pl-3">
-        {entries.slice(0, 10).map(entry => (
+        {entries.map(entry => (
           <GtWorldResultRow
             key={`${entry.position}-${entry.carNumber}`}
             entry={entry}
