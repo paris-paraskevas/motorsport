@@ -1,10 +1,16 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
-## 0.28.0 — 2026-06-11
+## 0.29.0 — 2026-06-11
 
-**Standings frozen in time on every race-weekend page.** Each round's page now shows the full championship — every driver, and the teams where team points are simply the sum of their drivers' — exactly as it stood at that race, not today's table. Open the Monaco page and you see the title fight as Monaco found it; open round 3 and you're back in March. Works across F1, F2, F3, Formula E, IndyCar, MotoGP, Superbikes, NASCAR, WRC and DTM.
+**Every session gets its own page.** On Formula 1 weekends, tap any session in the schedule — practice, qualifying, sprint or race — and it opens its own page with the full classification: every lap time in qualifying's three segments, gaps and points in the race, best laps in practice. Other series' session pages are on the way.
+
+**Frozen standings arrive on every series' weekend pages.** The as-it-stood championship table — introduced for F1 — now covers Formula 2, Formula 3, Formula E, IndyCar, MotoGP, Superbikes, NASCAR, WRC and DTM. Team tables appear where team points are really the sum of the drivers'; elsewhere the page honestly shows drivers only.
 
 **The points chart now leads the Standings tab.** Progression first, tables right below.
+
+## 0.28.0 — 2026-06-11
+
+**Standings frozen in time on every F1 weekend page.** Each Grand Prix page now shows the full championship — every driver and every team — exactly as it stood at that race, not today's table.
 
 ## 0.27.0 — 2026-06-11
 

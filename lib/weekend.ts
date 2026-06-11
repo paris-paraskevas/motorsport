@@ -34,6 +34,26 @@ export function weekendFor(series: Series, round: number, now: Date = new Date()
   return weekends.find(w => w.round === round) ?? null;
 }
 
+/**
+ * URL slug for a session within its weekend — "F1 - Practice 1" →
+ * "practice-1", "MotoGP: Sprint" → "sprint". The series prefix is stripped
+ * so slugs read clean and match OpenF1's session names where they exist
+ * (per-session pages, W1c).
+ */
+export function sessionSlug(title: string): string {
+  return title
+    .replace(SERIES_PREFIX_RE, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/** First session in the weekend whose slug matches; null when absent. */
+export function sessionBySlug(weekend: Weekend, slug: string): Session | null {
+  return weekend.sessions.find(s => sessionSlug(s.title) === slug) ?? null;
+}
+
 export function roundForSession(weekends: Weekend[], uid: string): number | undefined {
   for (const w of weekends) {
     if (w.sessions.some(s => s.uid === uid)) return w.round;

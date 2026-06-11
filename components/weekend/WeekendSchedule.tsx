@@ -1,13 +1,20 @@
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import type { Weekend, Session } from '@/lib/types';
 import { groupByDay } from '@/lib/group';
 import { formatLocal } from '@/lib/date';
+import { sessionSlug } from '@/lib/weekend';
 
 export function WeekendSchedule({
   weekend,
   color,
+  sessionLinkBase,
 }: {
   weekend: Weekend;
   color: string;
+  // When set, each session row links to its page under
+  // `${sessionLinkBase}/<session-slug>` (W1c — F1 first).
+  sessionLinkBase?: string;
 }) {
   const now = new Date();
   const byDay = groupByDay(weekend.sessions);
@@ -40,9 +47,21 @@ export function WeekendSchedule({
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap min-w-0">
-                        <span className="text-text text-sm font-medium truncate">
-                          {s.title}
-                        </span>
+                        {sessionLinkBase ? (
+                          <Link
+                            href={`${sessionLinkBase}/${sessionSlug(s.title)}`}
+                            className="group/sess inline-flex items-center gap-1 min-w-0"
+                          >
+                            <span className="text-text text-sm font-medium truncate group-hover/sess:text-tint underline-offset-4 group-hover/sess:underline transition-colors duration-(--duration-fast)">
+                              {s.title}
+                            </span>
+                            <ArrowUpRight size={12} aria-hidden className="shrink-0 text-text-faint group-hover/sess:text-tint transition-colors duration-(--duration-fast)" />
+                          </Link>
+                        ) : (
+                          <span className="text-text text-sm font-medium truncate">
+                            {s.title}
+                          </span>
+                        )}
                         {isLive && (
                           <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-300 font-semibold">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
