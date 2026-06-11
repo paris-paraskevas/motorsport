@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.22.0 — 2026-06-11
+
+Operator spec: opted-in users get a heads-up 30 AND 10 minutes before sessions, plus a ping when a race's results have rendered on our pages.
+
+### Added
+
+- **Two pre-session notifications** (`app/api/cron/notify/route.ts` rewritten): the single [10,35]-minute window becomes two — (20,35] → "~30 min" and (0,15] → "~10 min". The GH Actions cron fires every 15 min, so each 15-wide window catches exactly one tick; a new KV dedupe ledger (`lib/notify-ledger.ts`, key per session+kind, 48h TTL) absorbs late/double ticks and redeploys. Ledger marks BEFORE fan-out: a crash mid-send costs one missed notification instead of a re-spammed subscriber list.
+- **"Results are in" notification** (`lib/results-ready.ts`): after a race-looking session ends (title gate excludes practice/quali/warm-up/hyperpole), the cron checks — for up to 8h — whether the series' own results feed (the exact source the results tab renders) now contains a race dated that day, and notifies once with a deep link to `?tab=results`. v1 covers f1, f3, formula-e, indycar, motogp (the zero-config fetchers); the map is one adapter per additional series, non-covered series documented in-file. All existing per-user gates (sessions toggle, followed series, mutes, sound) apply unchanged.
+
+### Internal
+
+- Smoke-verified fail-closed cron auth locally (503 without `CRON_SECRET`); full end-to-end needs prod KV + a real session window — verify on the next race weekend (Le Mans, June 13-14).
+
 ## 0.21.0 — 2026-06-11
 
 Redesign PR 2c-5 — calendar surfaces join the timing-screen language (the last big old-language surface).

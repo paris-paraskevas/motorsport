@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.22.0 — 2026-06-11
+
+**Better race-day pings.** If you've enabled notifications, you now get two heads-ups — about 30 minutes and again 10 minutes before each session in your followed series. And when a race finishes, you'll get one more the moment its full results are up on Paddock, taking you straight to the classification. Your existing mute and follow settings apply to all of it.
+
 ## 0.21.0 — 2026-06-11
 
 **The calendar joined the new look.** Both the main calendar and every series' calendar tab now read like a timing screen — flat session rows with series-colour markers, a cleaner month switcher, and race-weekend blocks with their NEXT and event tags in the house style.
