@@ -77,6 +77,7 @@ export function AppShell({
                 <Link
                   key={item.href}
                   href={item.href}
+                  data-tour={item.href === '/series' ? 'series' : undefined}
                   aria-current={active ? 'page' : undefined}
                   className={`inline-flex items-center border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
                     active
@@ -90,7 +91,7 @@ export function AppShell({
             })}
           </nav>
 
-          <HeaderUtils className="ml-auto" seriesList={seriesList} />
+          <div className="ml-auto" data-tour="account"><HeaderUtils seriesList={seriesList} /></div>
         </div>
       </header>
 

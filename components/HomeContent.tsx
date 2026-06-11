@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, ExternalLink, MapPin } from 'lucide-react';
 import type { Session } from '@/lib/types';
@@ -208,6 +209,7 @@ export function HomeContent({
              session with a ticking countdown. ── */}
       <section
         aria-label={liveItems.length > 0 ? 'Live now' : 'Up next'}
+        data-tour="chyron"
         className="mb-8 border-y border-border bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
       >
         {liveItems.length > 0 ? (
@@ -332,7 +334,7 @@ export function HomeContent({
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
       <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 xl:gap-16 lg:items-start">
-        <section aria-label="This week's sessions">
+        <section aria-label="This week's sessions" data-tour="week">
           <SectionHead
             title="This week"
             sub={`${weekItems.length} sessions · ${tz}`}
@@ -569,6 +571,30 @@ export function HomeContent({
           </div>
         </section>
       </div>
+      <Tour
+        stops={[
+          {
+            selector: '[data-tour="chyron"]',
+            title: 'Live, or next up',
+            body: 'This strip is the broadcast chyron: when a session is on track it takes over with a live marker; otherwise it counts down to the next one, in your time zone.',
+          },
+          {
+            selector: '[data-tour="week"]',
+            title: 'Your week at a glance',
+            body: 'Every session across all 15 series, in your local time. Tap any session to open its page — practice, qualifying and race each have their own.',
+          },
+          {
+            selector: '[data-tour="series"]',
+            title: 'Fifteen series, one place',
+            body: 'Standings, race-by-race results, rules and history for every championship we track — from F1 to the Nürburgring.',
+          },
+          {
+            selector: '[data-tour="account"]',
+            title: 'Make it yours',
+            body: 'Pick the series you follow and they shape your home and calendar — saved on this device, no account needed. Sign in to keep them everywhere and enable race-day notifications.',
+          },
+        ]}
+      />
     </>
   );
 }

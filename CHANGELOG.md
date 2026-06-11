@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.34.0 — 2026-06-11
+
+Onboarding tour — built to the research doc (docs/research/onboarding-tour-2026-06.md): hand-rolled spotlight, 4 stops, auto-shows once, no account needed.
+
+### Added
+
+- **`components/Tour.tsx`** (~230 lines, zero deps): box-shadow spotlight cutout tracking the target through scroll/resize, labelled `role="dialog"` popover with its own focus trap, ESC ends, arrow keys page, viewport-clamped placement, `@starting-style` fade (reduced-motion = instant), portaled to body. Stops resolve the first VISIBLE `[data-tour]` match so one stop targets the bottom-bar link on phones and the header link on desktop.
+- **4 stops on /app**: chyron · THIS WEEK · Series · Account (data-tour attributes on HomeContent/BottomBar/AppShell). Landing gets no tour.
+- **`lib/tour.ts` + 7 tests**: versioned `paddock:tour:main:v1` state `{dismissedAt, completedStep, neverShow}`; auto-show once per device on any dismissal; the "don't show again" checkbox sets `neverShow`, which survives tour VERSION BUMPS (a redesign may re-show once — never for opted-out users); legacy-Safari private-mode setItem throw handled; read failure ⇒ show.
+- **Replay** user-triggered from the Account page → `/app?tour=1` (overrides stored state).
+
 ## 0.33.0 — 2026-06-11
 
 W4 step 3 — driver and team profile pages: season form + retheme. Completes the W4 launch gate.

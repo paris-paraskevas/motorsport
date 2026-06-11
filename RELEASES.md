@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.34.0 — 2026-06-11
+
+**A quick tour for first-time visitors.** New to Paddock? A four-step spotlight now walks you through the essentials — the live ticker, your weekly schedule, the series pages and your follow settings. Skip it anytime, tick "don't show again" and it never returns (no account needed), or replay it whenever you like from the Account page.
+
 ## 0.33.0 — 2026-06-11
 
 **Driver and team pages grew up.** Every driver page now shows the championship position, points and wins, plus the last five race results — and team pages show where the team stands with each driver's form on the lineup. All in the site's timing-screen style.

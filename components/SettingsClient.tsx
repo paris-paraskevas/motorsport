@@ -1,4 +1,6 @@
 'use client';
+
+import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
@@ -35,6 +37,14 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   return (
     <div>
+      <div className="mb-6 text-right">
+        <Link
+          href="/app?tour=1"
+          className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          Replay the tour →
+        </Link>
+      </div>
       <div className="border-y border-border py-5 md:py-6 mb-6">
         <div className="flex items-baseline justify-between mb-1">
           <div>
