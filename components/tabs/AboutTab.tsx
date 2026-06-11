@@ -1,5 +1,7 @@
+import path from 'node:path';
 import { Series } from '@/lib/types';
 import { fetchWikipediaSummary } from '@/lib/wikipedia';
+import { loadMarkdownWithFrontmatter } from '@/lib/content';
 import { PlaceholderTab } from './PlaceholderTab';
 
 function firstSentences(text: string, count: number): string {
@@ -11,6 +13,17 @@ function firstSentences(text: string, count: number): string {
 export async function AboutTab({ series }: { series: Series }) {
   const page = series.meta.wikipediaPage;
   const overview = series.overview?.trim() ?? '';
+  // Rules essentials live INSIDE About (operator decision 2026-06-11 — the
+  // Rules tab stays retired per 0.19.0). Curated per series under
+  // content/series/<slug>/rules.md; absent file = no section.
+  const rulesPath = path.join(
+    process.cwd(),
+    'content',
+    'series',
+    series.meta.slug,
+    'rules.md',
+  );
+  const rules = await loadMarkdownWithFrontmatter(rulesPath).catch(() => null);
   const summary = page ? await fetchWikipediaSummary(page) : null;
 
   if (!overview && !summary) {
@@ -34,6 +47,21 @@ export async function AboutTab({ series }: { series: Series }) {
                      prose-strong:text-text"
           dangerouslySetInnerHTML={{ __html: overview }}
         />
+      )}
+      {rules?.html && (
+        <section className="border-y border-border py-5 md:py-6">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+            Rules essentials
+          </h2>
+          <article
+            className="prose dark:prose-invert prose-sm max-w-none
+                       prose-headings:tracking-tight prose-headings:text-text
+                       prose-h2:text-base prose-h2:mt-5 prose-h2:mb-2 prose-h2:font-semibold
+                       prose-p:leading-relaxed prose-li:leading-relaxed
+                       prose-strong:text-text"
+            dangerouslySetInnerHTML={{ __html: rules.html }}
+          />
+        </section>
       )}
       {summary && (
         <div className="border-y border-border py-5">
