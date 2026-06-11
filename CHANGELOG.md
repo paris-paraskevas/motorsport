@@ -4,7 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.24.2 — 2026-06-11
+## 0.24.3 — 2026-06-11
+
+Operator-reported landing bug, hot-fixed same hour.
+
+### Fixed
+
+- **Landing burger menu was invisible when opened** (`components/landing/LandingMenu.tsx`): the full-screen overlay (`fixed inset-0`) rendered inside the landing nav `<header>`, whose `backdrop-blur-xl` makes it a *containing block for fixed-position descendants* (CSS filter-effects spec — same trap as `transform`). `inset-0` therefore resolved against the 56px header strip, not the viewport: the menu "opened" (trigger swapped to ✕, content swap visible in the bar) but its panel collapsed into the header and the page showed through. Confirmed live on prod with a rect probe (dialog box ≡ header box, `backdrop-filter: blur(24px)`). Fix: the overlay now portals to `document.body`, escaping the header's containing block.
+- **Latent second bug exposed by the first**: the open-menu scroll lock set `overflow: hidden` on `<body>`, but the page's real scroller is `<html>` — the document kept scrolling behind the (invisible) menu. The lock now targets `document.documentElement`; gone with it is the reserved scrollbar gutter that left a ~15px page sliver beside the overlay.
 
 Operator quick wins from the session-4 closeout notes (IDEAS Inbox 2026-06-11): tab-switch scroll, full classifications, drivers-tab spacing.
 
