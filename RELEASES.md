@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.31.0 — 2026-06-11
+
+**Every series now explains its own rulebook.** The About tab on all 15 series gained a "Rules essentials" section — how the weekend runs, exactly how points are scored this season, the sporting rules that actually decide results, and what titles are at stake. Written for fans, current for 2026.
+
 ## 0.30.0 — 2026-06-11
 
 **Flick through a race weekend session by session.** Every session page now carries a strip of the whole weekend — FP1 through to the race — with one tap to jump anywhere, plus previous/next links at the bottom to follow the weekend in order.

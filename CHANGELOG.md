@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.31.0 — 2026-06-11
+
+W3 — rules essentials ×15, curated into the About tab (operator decision 2026-06-11: rules live inside About, tab label unchanged; the Rules tab stays retired per 0.19.0).
+
+### Added
+
+- **`content/series/<slug>/rules.md` for all 15 series** — fan-facing "Rules essentials" (~350 words each): weekend format, the actual current points scales, the sporting rules that decide results, and the championship structure. Researched against 2026 official sources by three sequential agent waves (formula / endurance / bikes-stock-rally) with per-file incremental writes; every points scale verified per series (e.g. F1 post-fastest-lap-point, NASCAR's 2026 Chase format, WEC's Le Mans double points, SRO's classification gates). WRC's event scale hand-corrected to the validated 25-17-15-12-10-8-6-4-2-0 system (0.12.14 reconciliation beats the agent's claim).
+- **AboutTab renders the section** when the file exists: Saira "Rules essentials" heading between the series overview and the Wikipedia summary, prose styling matched to the overview block.
+
 ## 0.30.0 — 2026-06-11
 
 Operator: session pages must navigate like a weekend runs — FP1 → FP2 → FP3 → quali → race.
