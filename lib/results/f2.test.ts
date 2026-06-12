@@ -26,18 +26,34 @@ function nextDataHtml(payload: unknown): string {
     `</script></head><body></body></html>`;
 }
 
-function manifestPayload(opts: { races: Array<{ raceId: number; round?: number; circuit?: string; startDate?: string; endDate?: string; provisional?: boolean; sessions?: Array<'SR' | 'FR' | 'Qual' | 'Prac'> }> }) {
+function manifestPayload(opts: {
+  races: Array<{ raceId: number; round?: number; circuit?: string; startDate?: string; endDate?: string; provisional?: boolean; sessions?: Array<'SR' | 'FR' | 'Qual' | 'Prac'> }>;
+  // DriverID → per-round [SR, FR] canonical points (the page's RacePoints
+  // shape). Tests that assert points provide this; others keep the empty
+  // synthetic rows.
+  racePoints?: Record<number, Array<[number | null, number | null]>>;
+}) {
+  const standings = opts.racePoints
+    ? Object.entries(opts.racePoints).map(([driverId, points], i) => ({
+        Position: i + 1,
+        DriverID: Number(driverId),
+        FullName: `Driver ${driverId}`,
+        TeamName: 'Team A',
+        TotalPoints: 0,
+        RacePoints: points,
+      }))
+    : Array.from({ length: 16 }, (_, i) => ({
+        Position: i + 1,
+        FullName: `Driver ${i + 1}`,
+        TeamName: 'Team A',
+        TotalPoints: 0,
+        RacePoints: Array.from({ length: opts.races.length }, () => [null, null]),
+      }));
   return {
     props: {
       pageProps: {
         pageData: {
-          Standings: Array.from({ length: 16 }, (_, i) => ({
-            Position: i + 1,
-            FullName: `Driver ${i + 1}`,
-            TeamName: 'Team A',
-            TotalPoints: 0,
-            RacePoints: Array.from({ length: opts.races.length }, () => [null, null]),
-          })),
+          Standings: standings,
           SeasonRaces: opts.races.map((r, idx) => ({
             RaceId: r.raceId,
             CircuitShortName: r.circuit ?? `Circuit ${idx + 1}`,
@@ -135,33 +151,55 @@ interface ResultRow {
 }
 
 const MIAMI_FEATURE: ResultRow[] = [
-  { finishPosition: 1, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '56:22.029' },
-  { finishPosition: 2, forename: 'Dino', surname: 'Beganovic', tla: 'BEG', team: 'DAMS Lucas Oil', time: '56:23.009', gap: '0.980' },
-  { finishPosition: 3, forename: 'Rafael', surname: 'Câmara', tla: 'CAM', team: 'Invicta Racing', time: '56:24.069', gap: '2.040' },
-  { finishPosition: 4, forename: 'Nikola', surname: 'León', tla: 'LEO', team: 'Campos Racing', time: '56:24.429', gap: '2.400' },
-  { finishPosition: 5, forename: 'Kush', surname: 'Maini', tla: 'MAI', team: 'ART Grand Prix', time: '56:25.884', gap: '3.855' },
-  { finishPosition: 6, forename: 'Ritomo', surname: 'Miyata', tla: 'MIY', team: 'Hitech TGR', time: '56:26.476', gap: '4.447' },
-  { finishPosition: 7, forename: 'Marti', surname: 'Boya', tla: 'BOY', team: 'PREMA Racing', time: '56:29.952', gap: '7.923' },
-  { finishPosition: 8, forename: 'Colton', surname: 'Herta', tla: 'HER', team: 'Hitech TGR', time: '56:32.998', gap: '10.969' },
-  { finishPosition: 9, forename: 'Sebastian', surname: 'Montoya', tla: 'MON', team: 'PREMA Racing', time: '56:33.410', gap: '11.381' },
-  { finishPosition: 10, forename: 'Joshua', surname: 'Dürksen', tla: 'DUR', team: 'Invicta Racing', time: '56:34.364', gap: '12.335' },
-  { finishPosition: 11, forename: 'Laurens', surname: 'van Hoepen', tla: 'VAN', team: 'TRIDENT', time: '56:34.635', gap: '12.606' },
-  { finishPosition: null, forename: 'Cian', surname: 'Shields', tla: 'SHI', team: 'AIX Racing', time: '39:19.278', gap: 'DNF', resultStatus: 'Ret', displayFinishPosition: 'DNF' },
-  { finishPosition: null, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', resultStatus: 'Ret', gap: 'DNF', displayFinishPosition: 'DNF' },
+  { driverId: 101, finishPosition: 1, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '56:22.029' },
+  { driverId: 102, finishPosition: 2, forename: 'Dino', surname: 'Beganovic', tla: 'BEG', team: 'DAMS Lucas Oil', time: '56:23.009', gap: '0.980' },
+  { driverId: 103, finishPosition: 3, forename: 'Rafael', surname: 'Câmara', tla: 'CAM', team: 'Invicta Racing', time: '56:24.069', gap: '2.040' },
+  { driverId: 104, finishPosition: 4, forename: 'Nikola', surname: 'León', tla: 'LEO', team: 'Campos Racing', time: '56:24.429', gap: '2.400' },
+  { driverId: 105, finishPosition: 5, forename: 'Kush', surname: 'Maini', tla: 'MAI', team: 'ART Grand Prix', time: '56:25.884', gap: '3.855' },
+  { driverId: 106, finishPosition: 6, forename: 'Ritomo', surname: 'Miyata', tla: 'MIY', team: 'Hitech TGR', time: '56:26.476', gap: '4.447' },
+  { driverId: 107, finishPosition: 7, forename: 'Marti', surname: 'Boya', tla: 'BOY', team: 'PREMA Racing', time: '56:29.952', gap: '7.923' },
+  { driverId: 108, finishPosition: 8, forename: 'Colton', surname: 'Herta', tla: 'HER', team: 'Hitech TGR', time: '56:32.998', gap: '10.969' },
+  { driverId: 109, finishPosition: 9, forename: 'Sebastian', surname: 'Montoya', tla: 'MON', team: 'PREMA Racing', time: '56:33.410', gap: '11.381' },
+  { driverId: 110, finishPosition: 10, forename: 'Joshua', surname: 'Dürksen', tla: 'DUR', team: 'Invicta Racing', time: '56:34.364', gap: '12.335' },
+  { driverId: 111, finishPosition: 11, forename: 'Laurens', surname: 'van Hoepen', tla: 'VAN', team: 'TRIDENT', time: '56:34.635', gap: '12.606' },
+  { driverId: 112, finishPosition: null, forename: 'Cian', surname: 'Shields', tla: 'SHI', team: 'AIX Racing', time: '39:19.278', gap: 'DNF', resultStatus: 'Ret', displayFinishPosition: 'DNF' },
+  { driverId: 113, finishPosition: null, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', resultStatus: 'Ret', gap: 'DNF', displayFinishPosition: 'DNF' },
 ];
 
 const MIAMI_SPRINT: ResultRow[] = [
-  { finishPosition: 1, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '39:26.273' },
-  { finishPosition: 2, forename: 'Laurens', surname: 'van Hoepen', tla: 'VAN', team: 'TRIDENT', time: '39:26.443', gap: '0.170' },
-  { finishPosition: 3, forename: 'Alexander', surname: 'Dunne', tla: 'DUN', team: 'Rodin Motorsport', time: '39:27.554', gap: '1.281' },
-  { finishPosition: 4, forename: 'Nico', surname: 'Varrone', tla: 'VAR', team: 'Van Amersfoort Racing', time: '39:30.811', gap: '4.538' },
-  { finishPosition: 5, forename: 'Joshua', surname: 'Dürksen', tla: 'DUR', team: 'Invicta Racing', time: '39:31.485', gap: '5.212' },
-  { finishPosition: 6, forename: 'Martinius', surname: 'Stenshorne', tla: 'STE', team: 'Rodin Motorsport', time: '39:31.900', gap: '5.627' },
-  { finishPosition: 7, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '39:32.043', gap: '5.770' },
-  { finishPosition: 8, forename: 'Dino', surname: 'Beganovic', tla: 'BEG', team: 'DAMS Lucas Oil', time: '39:33.027', gap: '6.754' },
-  { finishPosition: 9, forename: 'Rafael', surname: 'Câmara', tla: 'CAM', team: 'Invicta Racing', time: '39:33.500', gap: '7.227' },
-  { finishPosition: 10, forename: 'Kush', surname: 'Maini', tla: 'MAI', team: 'ART Grand Prix', time: '39:34.022', gap: '7.749' },
+  { driverId: 113, finishPosition: 1, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '39:26.273' },
+  { driverId: 111, finishPosition: 2, forename: 'Laurens', surname: 'van Hoepen', tla: 'VAN', team: 'TRIDENT', time: '39:26.443', gap: '0.170' },
+  { driverId: 114, finishPosition: 3, forename: 'Alexander', surname: 'Dunne', tla: 'DUN', team: 'Rodin Motorsport', time: '39:27.554', gap: '1.281' },
+  { driverId: 115, finishPosition: 4, forename: 'Nico', surname: 'Varrone', tla: 'VAR', team: 'Van Amersfoort Racing', time: '39:30.811', gap: '4.538' },
+  { driverId: 110, finishPosition: 5, forename: 'Joshua', surname: 'Dürksen', tla: 'DUR', team: 'Invicta Racing', time: '39:31.485', gap: '5.212' },
+  { driverId: 116, finishPosition: 6, forename: 'Martinius', surname: 'Stenshorne', tla: 'STE', team: 'Rodin Motorsport', time: '39:31.900', gap: '5.627' },
+  { driverId: 101, finishPosition: 7, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '39:32.043', gap: '5.770' },
+  { driverId: 102, finishPosition: 8, forename: 'Dino', surname: 'Beganovic', tla: 'BEG', team: 'DAMS Lucas Oil', time: '39:33.027', gap: '6.754' },
+  { driverId: 103, finishPosition: 9, forename: 'Rafael', surname: 'Câmara', tla: 'CAM', team: 'Invicta Racing', time: '39:33.500', gap: '7.227' },
+  { driverId: 105, finishPosition: 10, forename: 'Kush', surname: 'Maini', tla: 'MAI', team: 'ART Grand Prix', time: '39:34.022', gap: '7.749' },
 ];
+
+// Canonical RacePoints per driver, [SR, FR] per round (rounds 1-3). Round-2
+// FR pins the reason for the RacePoints migration: Minì won WITH pole + FL,
+// so his canonical FR value is 28 — the old position-table code emitted 25.
+const RACE_POINTS: Record<number, Array<[number | null, number | null]>> = {
+  101: [[8, 25], [2, 28], [null, null]], // Minì
+  102: [[null, null], [1, 18], [null, null]], // Beganovic
+  103: [[null, null], [0, 15], [null, null]], // Câmara
+  104: [[null, null], [null, 12], [null, null]], // León
+  105: [[null, null], [0, 10], [null, null]], // Maini
+  106: [[null, null], [null, 8], [null, null]], // Miyata
+  107: [[null, null], [null, 6], [null, null]], // Boya
+  108: [[null, null], [null, 4], [null, null]], // Herta
+  109: [[null, null], [null, 2], [null, null]], // Montoya
+  110: [[null, null], [4, 1], [null, null]], // Dürksen
+  111: [[null, null], [8, 0], [null, null]], // van Hoepen
+  112: [[null, null], [null, 0], [null, null]], // Shields
+  113: [[10, 18], [10, 0], [null, null]], // Tsolov
+  114: [[null, null], [6, null], [null, null]], // Dunne
+  115: [[null, null], [5, null], [null, null]], // Varrone
+  116: [[null, null], [3, null], [null, null]], // Stenshorne
+};
 
 const MANIFEST_HTML = nextDataHtml(manifestPayload({
   races: [
@@ -169,6 +207,7 @@ const MANIFEST_HTML = nextDataHtml(manifestPayload({
     { raceId: 1106, round: 2, circuit: 'Miami', startDate: '2026-05-01', endDate: '2026-05-03' },
     { raceId: 1107, round: 3, circuit: 'Montréal', startDate: '2026-05-22', endDate: '2026-05-24' },
   ],
+  racePoints: RACE_POINTS,
 }));
 
 const MIAMI_RACE_HTML = nextDataHtml(
@@ -184,12 +223,12 @@ const MONTREAL_RACE_HTML = nextDataHtml(
 const MELBOURNE_RACE_HTML = nextDataHtml(
   resultsPayload({ raceId: 1092, round: 1, country: 'Australia', circuit: 'Albert Park Circuit', startDate: '2026-03-06', endDate: '2026-03-08',
     feature: [
-      { finishPosition: 1, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '55:00.000' },
-      { finishPosition: 2, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '55:01.000', gap: '1.000' },
+      { driverId: 101, finishPosition: 1, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '55:00.000' },
+      { driverId: 113, finishPosition: 2, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '55:01.000', gap: '1.000' },
     ],
     sprint: [
-      { finishPosition: 1, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '38:00.000' },
-      { finishPosition: 2, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '38:01.000', gap: '1.000' },
+      { driverId: 113, finishPosition: 1, forename: 'Nikola', surname: 'Tsolov', tla: 'TSO', team: 'Campos Racing', time: '38:00.000' },
+      { driverId: 101, finishPosition: 2, forename: 'Gabriele', surname: 'Minì', tla: 'MIN', team: 'MP Motorsport', time: '38:01.000', gap: '1.000' },
     ],
   }),
 );
@@ -238,7 +277,7 @@ describe('fetchF2SeasonResults', () => {
     expect(out.feature[1].date.toISOString().startsWith('2026-05-03')).toBe(true);
   });
 
-  it('parses positions, drivers, teams, times and computes feature-race points from finish position', async () => {
+  it('parses positions, drivers, teams, times and reads canonical FR points incl. bonuses', async () => {
     setupFetchMock({
       '/Standings/Driver': MANIFEST_HTML,
       'raceid=1092': MELBOURNE_RACE_HTML,
@@ -254,8 +293,9 @@ describe('fetchF2SeasonResults', () => {
       team: 'MP Motorsport',
       status: 'Finished',
       time: '56:22.029',
-      // FR points: 25 / 18 / 15 / 12 / 10 / 8 / 6 / 4 / 2 / 1
-      points: 25,
+      // Canonical RacePoints: win (25) + pole (+2) + fastest lap (+1) = 28.
+      // The retired position-table code emitted 25 here — the audit-1a-2 bug.
+      points: 28,
     });
     expect(miami.results[1].points).toBe(18);
     expect(miami.results[9].points).toBe(1);
@@ -263,7 +303,7 @@ describe('fetchF2SeasonResults', () => {
     expect(miami.results[10].points).toBe(0);
   });
 
-  it('sprint-race points use the SR top-8 scale', async () => {
+  it('sprint-race points come from the SR slot of RacePoints', async () => {
     setupFetchMock({
       '/Standings/Driver': MANIFEST_HTML,
       'raceid=1092': MELBOURNE_RACE_HTML,
@@ -272,10 +312,10 @@ describe('fetchF2SeasonResults', () => {
     });
     const out = await fetchF2SeasonResults();
     const miamiSprint = out.sprint.find(r => r.round === 2)!;
-    // SR points: 10 / 8 / 6 / 5 / 4 / 3 / 2 / 1; 9th onward → 0
     expect(miamiSprint.results[0].points).toBe(10);
     expect(miamiSprint.results[1].points).toBe(8);
     expect(miamiSprint.results[7].points).toBe(1);
+    // 9th/10th: canonical zero (and a missing RacePoints cell also maps to 0).
     expect(miamiSprint.results[8].points).toBe(0);
     expect(miamiSprint.results[9].points).toBe(0);
   });

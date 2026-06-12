@@ -224,11 +224,13 @@ export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult
     }),
   );
 
-  // Sort by round ascending, then by Grand Prix before Sprint within a round.
-  // The Promise.all above resolves in unspecified order; this final pass is
-  // what guarantees stable rendering.
+  // Most recent round first — matching WSBK (the cited precedent) and the
+  // results panel's default ordering; the old ascending sort opened the tab
+  // on March's season opener (audit 1a-9). Grand Prix before Sprint within
+  // a round. The Promise.all above resolves in unspecified order; this
+  // final pass is what guarantees stable rendering.
   races.sort((a, b) => {
-    if (a.round !== b.round) return a.round - b.round;
+    if (a.round !== b.round) return b.round - a.round;
     const aSprint = /Sprint/i.test(a.raceName) ? 1 : 0;
     const bSprint = /Sprint/i.test(b.raceName) ? 1 : 0;
     return aSprint - bSprint;

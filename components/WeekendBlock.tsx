@@ -31,13 +31,19 @@ export function WeekendBlock({
   const { title, subtitle } = weekendLabel(weekend, round);
   const hasNamedTitle = title !== `Round ${round}`;
   const weekendStartISO = weekend.sessions[0]?.start.toISOString().slice(0, 10);
+  // Round 0 = no curated round covers this weekend (pre-season tests,
+  // exhibitions). No weekend page exists for it, so render unlinked.
+  const isChampionshipRound = round >= 1;
+  const Wrapper: React.ElementType = isChampionshipRound ? Link : 'div';
 
   return (
-    <Link
-      href={`/series/${seriesSlug}/weekend/${round}`}
-      className={`relative block border-y border-border p-4 pl-5 transition-colors duration-(--duration-fast) hover:bg-surface ${
-        weekend.isPast ? 'opacity-50 hover:opacity-80' : ''
-      }`}
+    <Wrapper
+      {...(isChampionshipRound
+        ? { href: `/series/${seriesSlug}/weekend/${round}` }
+        : {})}
+      className={`relative block border-y border-border p-4 pl-5 transition-colors duration-(--duration-fast) ${
+        isChampionshipRound ? 'hover:bg-surface' : ''
+      } ${weekend.isPast ? 'opacity-50 hover:opacity-80' : ''}`}
     >
       {/* Series-color rule — the weekend's left edge. */}
       <span
@@ -118,8 +124,14 @@ export function WeekendBlock({
         ))}
       </ul>
       <div className="mt-3 text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold">
-        Round {round} <span aria-hidden>→</span>
+        {isChampionshipRound ? (
+          <>
+            Round {round} <span aria-hidden>→</span>
+          </>
+        ) : (
+          'Testing · non-championship'
+        )}
       </div>
-    </Link>
+    </Wrapper>
   );
 }

@@ -208,8 +208,13 @@ for (const s of series) {
 
   fs.mkdirSync(dir, { recursive: true });
 
-  // meta.json: always rewrite from registry (source of truth)
-  fs.writeFileSync(metaPath, JSON.stringify(s, null, 2) + '\n');
+  // meta.json: write only when missing. The checked-in meta.json files are
+  // the source of truth — they carry curated fixes (F1 championsPage, WEC
+  // standings URL) the registry above has drifted from; rewriting here would
+  // silently revert curated production content (audit 4-1).
+  if (!fs.existsSync(metaPath)) {
+    fs.writeFileSync(metaPath, JSON.stringify(s, null, 2) + '\n');
+  }
 
   // Placeholders: only write when missing
   const writeIfMissing = (filename, body) => {

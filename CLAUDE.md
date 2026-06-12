@@ -125,7 +125,7 @@ Detailed rationale in the handoff. Quick-reference:
 3. KV env vars are unprefixed (`KV_REST_API_URL`, `KV_REST_API_TOKEN`). Do not accept a "STORAGE" custom prefix from the Vercel Marketplace flow.
 4. Clerk publishable key must keep `NEXT_PUBLIC_` prefix exactly. Vercel Marketplace integration auto-creates env-var placeholders but leaves them empty on Production promote — you must paste real values manually.
 5. Notification badge must be monochrome (`public/icons/badge-96.png`). Regenerate via `scripts/gen-badge.py` if changed.
-6. Crons accept missing `CRON_SECRET` as "allow" and require `Authorization: Bearer $CRON_SECRET` when set. Pattern in `app/api/cron/notify/route.ts`.
+6. Crons **fail closed**: missing `CRON_SECRET` → 503, wrong secret → 401, correct `Authorization: Bearer $CRON_SECRET` → run. Reversed from fail-open in 0.9.17 (security review); pattern in `lib/cron-auth.ts`. (This line previously described the pre-0.9.17 fail-open behavior — trusting it would have reintroduced the vulnerability; audit 2026-06.)
 
 ## Where things live
 

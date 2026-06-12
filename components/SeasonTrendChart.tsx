@@ -9,7 +9,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import type { SeasonTrendData } from '@/lib/season-trend';
 
@@ -157,7 +156,9 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
                 return point ? `R${round} · ${point.raceName}` : `R${round}`;
               }}
             />
-            <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} iconType="line" />
+            {/* No recharts <Legend> — the interactive chip legend below is
+                the only one. The built-in legend listed every line (47 names
+                on NASCAR) above the chips it duplicated (audit 2-5). */}
             {ranked.map(d => {
               const style = lineStyles.get(d.name)!;
               return (

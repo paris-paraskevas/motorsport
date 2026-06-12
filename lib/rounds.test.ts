@@ -51,11 +51,77 @@ describe('assignRoundsToWeekends', () => {
     expect(out[1].round).toBe(2);
   });
 
-  it('falls back to index+1 for weekends that no rounds.json entry covers', () => {
+  it('keeps uncovered weekends OUT of the curated number space (round 0)', () => {
     const weekends = [w('2026-04-10T11:00:00Z'), w('2026-05-22T11:00:00Z')];
     const out = assignRoundsToWeekends(weekends, F1_2026);
-    // April 10 is the cancelled Bahrain weekend — no rounds.json entry.
-    expect(out[0].round).toBe(1);
+    // April 10 has no rounds.json entry (cancelled Bahrain / a test). The old
+    // index+1 fallback gave it round 1, colliding with Australia's curated
+    // round 1 and shadowing the real round at /weekend/1 (audit 1b-1 — MotoGP
+    // pre-season tests served as rounds 1-3 in production).
+    expect(out[0].round).toBe(0);
     expect(out[1].round).toBe(5);
+  });
+
+  it('splits a merged doubleheader weekend into one weekend per covering round', () => {
+    // FE Jeddah 2026 shape: R4 Thu-Fri, R5 Sat — one day apart, so the 4-day
+    // grouping merges all sessions into a single weekend (audit 1b-2: six FE
+    // rounds incl. the finale 404'd).
+    const FE_DOUBLE: SeriesRoundsFile = {
+      season: 2026,
+      rounds: [
+        { round: 4, startDate: '2026-02-12', endDate: '2026-02-13', name: 'Jeddah E-Prix – Race 1' },
+        { round: 5, startDate: '2026-02-14', endDate: '2026-02-14', name: 'Jeddah E-Prix – Race 2' },
+      ],
+    };
+    const merged: Weekend = {
+      key: '2026-02-12',
+      dateRangeLabel: '',
+      sessions: [
+        s('2026-02-12T14:00:00Z'), // FP (R4 range)
+        s('2026-02-13T16:00:00Z'), // Race 1 (R4 range)
+        s('2026-02-14T16:00:00Z'), // Race 2 (R5 range)
+      ],
+      isPast: false,
+      round: 0,
+    };
+    const out = assignRoundsToWeekends([merged], FE_DOUBLE, new Date('2026-06-01T00:00:00Z'));
+    expect(out).toHaveLength(2);
+    expect(out[0].round).toBe(4);
+    expect(out[0].sessions).toHaveLength(2);
+    expect(out[0].roundName).toBe('Jeddah E-Prix – Race 1');
+    expect(out[1].round).toBe(5);
+    expect(out[1].sessions).toHaveLength(1);
+    expect(out[1].key).toBe('2026-02-14');
+    // Both halves are in the past relative to the supplied now.
+    expect(out[0].isPast).toBe(true);
+    expect(out[1].isPast).toBe(true);
+  });
+
+  it('attaches shared support days outside every range to the nearest round', () => {
+    const FE_DOUBLE: SeriesRoundsFile = {
+      season: 2026,
+      rounds: [
+        { round: 7, startDate: '2026-05-01', endDate: '2026-05-02', name: 'Berlin – Race 1' },
+        { round: 8, startDate: '2026-05-03', endDate: '2026-05-03', name: 'Berlin – Race 2' },
+      ],
+    };
+    const merged: Weekend = {
+      key: '2026-04-30',
+      dateRangeLabel: '',
+      sessions: [
+        s('2026-04-30T10:00:00Z'), // shakedown before R7's range → nearest = R7
+        s('2026-05-02T15:00:00Z'),
+        s('2026-05-03T15:00:00Z'),
+      ],
+      isPast: false,
+      round: 0,
+    };
+    const out = assignRoundsToWeekends([merged], FE_DOUBLE, new Date('2026-06-01T00:00:00Z'));
+    expect(out).toHaveLength(2);
+    expect(out[0].sessions.map(x => x.uid)).toEqual([
+      '2026-04-30T10:00:00Z',
+      '2026-05-02T15:00:00Z',
+    ]);
+    expect(out[1].sessions.map(x => x.uid)).toEqual(['2026-05-03T15:00:00Z']);
   });
 });

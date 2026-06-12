@@ -20,6 +20,15 @@ describe('buildSitemapEntries', () => {
     expect(f1Weekends).toHaveLength(22);
   });
 
+  it('Formula E emits all 17 weekend URLs (doubleheader race 2s split into their own weekends)', async () => {
+    // Before the 1b-2 fix the sitemap listed 17 FE rounds from rounds.json
+    // while the pages only resolved 11 — six advertised URLs 404'd. Both
+    // sides now derive from groupByWeekend, so this asserts page reality.
+    const urls = await buildSitemapEntries();
+    const feWeekends = urls.filter((u) => u.url.includes('/series/formula-e/weekend/'));
+    expect(feWeekends).toHaveLength(17);
+  });
+
   it('omits /drivers/* and /teams/* URLs (they 404 today)', async () => {
     const urls = await buildSitemapEntries();
     expect(urls.some((u) => u.url.includes('/drivers/'))).toBe(false);

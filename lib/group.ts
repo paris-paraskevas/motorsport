@@ -1,31 +1,10 @@
-import { Session, SeriesRoundsFile, SignificanceFlag, Weekend } from './types';
-import { assignRoundsToWeekends } from './rounds';
+import { Session, SeriesRoundsFile, Weekend } from './types';
+import { assignRoundsToWeekends, buildWeekend, DAY_MS } from './rounds';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKEND_GAP_DAYS = 4;
 
 function dateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
-}
-
-function dateRangeLabel(start: Date, end: Date): string {
-  const fmt = (d: Date) =>
-    d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
-  if (dateKey(start) === dateKey(end)) return fmt(start);
-  const startStr = start.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'UTC' });
-  const endStr = fmt(end);
-  return `${startStr}–${endStr}`;
-}
-
-function pickBestSignificance(sessions: Session[]): SignificanceFlag | undefined {
-  const order: Record<string, number> = { marquee: 4, finale: 3, weighted: 2, note: 1 };
-  let best: SignificanceFlag | undefined;
-  for (const s of sessions) {
-    const f = s.significance;
-    if (!f) continue;
-    if (!best || (order[f.tier] ?? 0) > (order[best.tier] ?? 0)) best = f;
-  }
-  return best;
 }
 
 const PAST_WINDOW_MS = 365 * DAY_MS;
@@ -63,21 +42,8 @@ export function groupByWeekend(
   }
   weekends.push(current);
 
-  const base: Weekend[] = weekends.map(group => {
-    const significance = pickBestSignificance(group);
-    const startDate = group[0].start;
-    const endDate = group[group.length - 1].start;
-    return {
-      key: dateKey(startDate),
-      label: significance?.weekend,
-      dateRangeLabel: dateRangeLabel(startDate, endDate),
-      sessions: group,
-      significance,
-      isPast: endDate.getTime() < now.getTime() - DAY_MS,
-      round: 0, // overwritten by assignRoundsToWeekends
-    };
-  });
-  return assignRoundsToWeekends(base, rounds);
+  const base: Weekend[] = weekends.map(group => buildWeekend(group, now));
+  return assignRoundsToWeekends(base, rounds, now);
 }
 
 export function groupByDay(sessions: Session[]): Array<{ label: string; sessions: Session[] }> {
