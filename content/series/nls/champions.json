@@ -1,0 +1,18 @@
+[
+  { "year": 2025, "driver": "Nick Wüstenhagen / Ranko Mijatovic", "constructor": "FK Performance Motorsport" },
+  { "year": 2024, "driver": "Sven Markert / Ranko Mijatovic / Toby Goodman", "constructor": "Adrenalin Motorsport" },
+  { "year": 2023, "driver": "Daniel Zils / Oskar Sandberg / Philipp Leisen", "constructor": "Adrenalin Motorsport" },
+  { "year": 2022, "driver": "Daniel Zils / Oskar Sandberg / Sindre Setsaas", "constructor": "Adrenalin Motorsport" },
+  { "year": 2021, "driver": "Philipp Leisen / Danny Brink", "constructor": "Adrenalin Motorsport" },
+  { "year": 2020, "driver": "Philipp Leisen / Christopher Rink / Danny Brink", "constructor": "Adrenalin Motorsport" },
+  { "year": 2019, "driver": "Yannick Fübrich / David Griessner", "constructor": "Adrenalin Motorsport" },
+  { "year": 2018, "driver": "Philipp Leisen / Christopher Rink / Danny Brink", "constructor": "Adrenalin Motorsport" },
+  { "year": 2017, "driver": "Michael Schrey", "constructor": "Bonk Motorsport" },
+  { "year": 2016, "driver": "Alexander Mies / Michael Schrey", "constructor": "Bonk Motorsport" },
+  { "year": 2015, "driver": "Dirk Groneck / Tim Groneck", "constructor": "Groneck Motorsport" },
+  { "year": 2014, "driver": "Rolf Derscheid / Michael Flehmer", "constructor": "Team Derscheid Motorsport" },
+  { "year": 2013, "driver": "Dirk Groneck / Tim Groneck", "constructor": "Groneck Motorsport" },
+  { "year": 2012, "driver": "Ulrich Andree / Dominik Brinkmann / Christian Krognes", "constructor": "LMS Engineering" },
+  { "year": 2011, "driver": "Carsten Knechtges / Manuel Metzger / Tim Scheerbarth", "constructor": "Black Falcon" },
+  { "year": 2010, "driver": "Mario Merten / Wolf Silvester", "constructor": "Bonk Motorsport" }
+]

@@ -19,13 +19,13 @@ export const NEWS_SLUG_MAP: Record<string, string | null> = {
   indycar: 'indycar',
   wec: 'wec',
   imsa: 'imsa',
-  'gt-world': null,
+  'gt-world': 'gt', // motorsport.com's GT category — probed 200/50 items (audit #9)
   dtm: 'dtm',
   motogp: 'motogp',
   wsbk: 'wsbk',
   wrc: 'wrc',
   'nascar-cup': 'nascar-cup',
-  nls: null,
+  nls: null, // no dedicated upstream category; 'endurance' would mislabel generic stories under the NLS chip (audit #9)
 };
 
 const parser = new XMLParser({

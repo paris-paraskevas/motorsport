@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.35.2 — 2026-06-12
+
+Content-gap audit minutes-fixes (#6, #7, #9).
+
+### Fixed
+
+- **ADAC's curated lineup is reachable on its own page**: `drivers` joins the single-event tab set — the 16-car flagship field was only surfacing through /drivers/* before.
+- **Champions curation rule closed out**: IndyCar (1996–2025, 30 entries — IRL/IndyCar lineage only, the 1996 co-champions on one row) and NLS (2010–2025, shared-crew titles) gain curated `champions.json`; the generic Wikipedia parser now serves no series.
+- **GT World news wired** to motorsport.com's GT category (probed: 200, 50 items). NLS stays unmapped deliberately — no dedicated upstream category exists and the broad endurance feed would mislabel generic stories under the NLS chip; documented in-file.
+
 ## 0.35.1 — 2026-06-12
 
 Content-gap audit item #1 (the launch-gating one): the blog is no longer empty.

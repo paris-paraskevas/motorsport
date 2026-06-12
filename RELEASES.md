@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.35.2 — 2026-06-12
+
+**Three finishing touches.** The Nürburgring 24h page now shows its star-car lineup; IndyCar and NLS join every other series with hand-checked champions lists (thirty years of IndyCar titles, the modern NLS era's winning crews); and GT World Challenge picked up a live news feed.
+
 ## 0.35.1 — 2026-06-12
 
 **The blog is live.** Three reads to start: our Le Mans 2026 preview ahead of Saturday's start, the story of how Paddock keeps its data honest across 15 series, and a half-season review of the 2026 championships so far.

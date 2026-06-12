@@ -13,7 +13,9 @@ export type TabKey = typeof TABS[number]['key'];
 
 /** Tabs that make sense for a single-event series (one annual race,
  *  not a championship). Standings / Results / Drivers / News don't apply. */
-export const SINGLE_EVENT_TAB_KEYS = ['calendar', 'about', 'history', 'champions'] as const;
+// 'drivers' joined 2026-06-12 (content-gap audit #6): ADAC's curated
+// flagship lineup was unreachable on its own series page without it.
+export const SINGLE_EVENT_TAB_KEYS = ['calendar', 'drivers', 'about', 'history', 'champions'] as const;
 
 export function tabsFor(singleEvent: boolean | undefined): typeof TABS[number][] {
   if (!singleEvent) return [...TABS];
