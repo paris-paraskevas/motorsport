@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.35.1 — 2026-06-12
+
+**The blog is live.** Three reads to start: our Le Mans 2026 preview ahead of Saturday's start, the story of how Paddock keeps its data honest across 15 series, and a half-season review of the 2026 championships so far.
+
 ## 0.35.0 — 2026-06-11
 
 **Race results on session pages, series by series.** Tap a race in the weekend schedule on Formula 2, Formula 3, Formula E, IndyCar, MotoGP, Superbikes or NASCAR and its session page now shows the full classification — sprint races and Superpole races included, each on their own page.
