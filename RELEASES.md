@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.1 — 2026-06-13
+
+**A round of accuracy fixes from our full code review.** MotoGP's race-weekend pages now show the actual Grands Prix — pre-season tests had taken over the first three round pages, and they're now labelled as tests on the calendar instead. All six "missing" Formula E race pages (including the season finale) exist now — doubleheader weekends get one page per race. Formula 2 results carry the exact championship points including pole and fastest-lap bonuses. Where we can't yet guarantee exact points sums (Formula E, IndyCar), weekend pages link to the official standings rather than showing a table that could be slightly off. Plus: the standings chart lost a duplicate legend, MotoGP results open on the latest race, and the weekly digest no longer invents start times for sessions that haven't published one.
+
 ## 0.36.0 — 2026-06-12
 
 **WEC race results, just in time for Le Mans.** The World Endurance Championship's Results tab now shows the full finishing order of every 2026 round — Hypercar and LMGT3 classified separately, with each car's crew, laps, gaps and race time. Race pages on WEC weekends carry the same classification, and result notifications now cover WEC too: when the 24 Hours of Le Mans finishes this weekend, the result lands here.

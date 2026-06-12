@@ -1,10 +1,7 @@
 import type { MetadataRoute } from 'next';
-import path from 'path';
-import { loadAllSeriesMeta } from './series';
-import { loadRounds } from './rounds-loader';
+import { loadAllSeriesMeta, loadSeries } from './series';
+import { groupByWeekend } from './group';
 import { SITE_URL } from './site';
-
-const SERIES_ROOT = path.join(process.cwd(), 'content', 'series');
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
 // entirely; `lastmod` is the only acted-upon hint, and only when its accuracy
@@ -40,15 +37,26 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     url: `${SITE_URL}/series/${m.slug}`,
   }));
 
+  // Weekend URLs come from the SAME resolution the pages use (groupByWeekend
+  // + round assignment), not from rounds.json directly. The raw-rounds.json
+  // version advertised URLs that never resolved: doubleheader second rounds
+  // before the split fix, rounds whose sessions fall outside the grouping
+  // window, and rounds with no sessions at all (audit 3-6 — six FE URLs
+  // 404'd from the live sitemap). Round 0 = non-championship weekends
+  // (tests), which have no page.
+  const now = new Date();
   const weekendChunks = await Promise.all(
     sortedMeta.map(async (m): Promise<MetadataRoute.Sitemap> => {
-      const rounds = await loadRounds(path.join(SERIES_ROOT, m.slug));
-      if (!rounds) return [];
-      return rounds.rounds
-        .filter((r) => !r.cancelled)
-        .map((r) => ({
-          url: `${SITE_URL}/series/${m.slug}/weekend/${r.round}`,
-        }));
+      try {
+        const series = await loadSeries(m.slug);
+        return groupByWeekend(series.sessions, now, series.rounds)
+          .filter((w) => w.round >= 1)
+          .map((w) => ({
+            url: `${SITE_URL}/series/${m.slug}/weekend/${w.round}`,
+          }));
+      } catch {
+        return [];
+      }
     }),
   );
 

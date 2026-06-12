@@ -605,7 +605,7 @@ function parseRallyHeaderColumns(
   // The header row is the table's first <tr>. Skip Pos + Driver and pull
   // each rally column header. Map header position (1-indexed within the
   // rally columns) to round number using the Calendar.
-  let result: RallyHeaderInfo[] = [];
+  const result: RallyHeaderInfo[] = [];
   const headerRow = table.find('tr').first();
   const headers = headerRow.children('th, td').toArray();
   // Header cells layout: [Pos, Driver, MON, SWE, ..., SAU, Points]

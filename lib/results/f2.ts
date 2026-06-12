@@ -15,17 +15,12 @@ const SEASON_MANIFEST_URL = 'https://www.fiaformula2.com/Standings/Driver';
 const RESULTS_URL = (raceId: number): string =>
   `https://www.fiaformula2.com/Results?raceid=${raceId}`;
 
-// F2 official points tables.
-// Sprint Race: top 8 score; pole position is a separate session not on the
-// SR results table, so we don't try to credit it.
-// Feature Race: top 10 score; fastest lap inside the top 10 earns +1 but the
-// results table does not flag fastest lap. We deliberately omit FL/pole
-// bonuses to keep this fail-closed and deterministic — small mismatches
-// versus standings totals are absorbed via results-overrides.json when an
-// operator chooses to curate them. Source:
-// https://en.wikipedia.org/wiki/FIA_Formula_2_Championship
-const SPRINT_POINTS = [10, 8, 6, 5, 4, 3, 2, 1];
-const FEATURE_POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+// Points come from the manifest page's Standings[].RacePoints — the FIA's
+// canonical per-round values, which already fold in the pole (+2) and
+// fastest-lap (+1) bonuses and any red-flag-reduced scale. The previous
+// hardcoded position→points tables undercounted every feature race with a
+// bonus and reproduced the F3 Melbourne red-flag bug class (audit 1a-2);
+// F3 was migrated to this exact pattern in 0.12.1.
 
 // Concurrent fan-out cap when fetching per-round result pages. Each race page
 // is ~200 KB; even with 14 rounds the parallel volume is modest, but the
@@ -49,11 +44,17 @@ interface NextDataSeasonRace {
   Sessions?: NextDataSession[];
 }
 
+interface NextDataStandingRow {
+  DriverID?: number;
+  RacePoints?: Array<Array<number | null>>;
+}
+
 interface NextDataStandingsRoot {
   props?: {
     pageProps?: {
       pageData?: {
         SeasonRaces?: NextDataSeasonRace[];
+        Standings?: NextDataStandingRow[];
       };
     };
   };
@@ -131,10 +132,26 @@ async function fetchHtml(url: string): Promise<string | null> {
   }
 }
 
-function pointsFor(table: number[], finishPosition: number | null | undefined): number {
-  if (typeof finishPosition !== 'number' || !Number.isFinite(finishPosition)) return 0;
-  if (finishPosition < 1 || finishPosition > table.length) return 0;
-  return table[finishPosition - 1] ?? 0;
+// Driver-id → per-round RacePoints lookup. Each driver's RacePoints[i] =
+// [SR_points, FR_points] for the (i+1)-th championship round. Same shape and
+// helper as lib/results/f3.ts.
+function buildDriverPointsLookup(
+  standings: NextDataStandingRow[] | undefined,
+): Map<number, Array<[number | null, number | null]>> {
+  const map = new Map<number, Array<[number | null, number | null]>>();
+  if (!Array.isArray(standings)) return map;
+  for (const row of standings) {
+    if (typeof row.DriverID !== 'number') continue;
+    if (!Array.isArray(row.RacePoints)) continue;
+    const normalized: Array<[number | null, number | null]> = row.RacePoints.map(pair => {
+      if (!Array.isArray(pair)) return [null, null];
+      const sr = typeof pair[0] === 'number' ? pair[0] : null;
+      const fr = typeof pair[1] === 'number' ? pair[1] : null;
+      return [sr, fr];
+    });
+    map.set(row.DriverID, normalized);
+  }
+  return map;
 }
 
 // Build a RaceResultEntry from a SessionResults row. Status semantics:
@@ -146,7 +163,9 @@ function pointsFor(table: number[], finishPosition: number | null | undefined): 
 function buildEntry(
   row: NextDataResultRow,
   fallbackPosition: number,
-  pointsTable: number[],
+  // Canonical FIA points for this driver in this session, or null when the
+  // driver isn't represented in standings RacePoints (rare data gap).
+  canonicalPoints: number | null,
 ): RaceResultEntry | null {
   const driverName =
     row.DriverForename && row.DriverSurname
@@ -180,14 +199,16 @@ function buildEntry(
     team,
     status,
     time: typeof time === 'string' ? time : undefined,
-    points: numericPos != null ? pointsFor(pointsTable, numericPos) : 0,
+    // Canonical FIA points from standings.RacePoints — already accounts for
+    // pole bonus, fastest-lap bonus, and red-flag-reduced scoring.
+    points: canonicalPoints ?? 0,
   };
 }
 
 function buildRaceResult(
   data: NextDataResultsRoot | null,
   sessionShortName: 'SR' | 'FR',
-  pointsTable: number[],
+  driverPoints: Map<number, Array<[number | null, number | null]>>,
 ): RaceResult | null {
   const pd = data?.props?.pageProps?.pageData;
   if (!pd) return null;
@@ -209,6 +230,15 @@ function buildRaceResult(
   const raceTypeLabel = sessionShortName === 'FR' ? 'Feature Race' : 'Sprint Race';
   const raceName = `${countryName} ${raceTypeLabel}`;
 
+  // RoundNumber is 1-indexed on the page; RacePoints arrays are 0-indexed.
+  const roundIdx = round - 1;
+  const sessionIdx = sessionShortName === 'SR' ? 0 : 1;
+  function pointsFor(driverId: number | undefined): number | null {
+    if (typeof driverId !== 'number') return null;
+    const pts = driverPoints.get(driverId)?.[roundIdx]?.[sessionIdx];
+    return typeof pts === 'number' ? pts : null;
+  }
+
   const results: RaceResultEntry[] = [];
   // First pass: classify finishers (numeric FinishPosition); sort by ascending.
   const finishers = session.Results.filter(
@@ -220,11 +250,11 @@ function buildRaceResult(
 
   let fallback = finishers.length + 1;
   for (const r of finishers) {
-    const entry = buildEntry(r, fallback, pointsTable);
+    const entry = buildEntry(r, fallback, pointsFor(r.DriverId));
     if (entry) results.push(entry);
   }
   for (const r of nonFinishers) {
-    const entry = buildEntry(r, fallback++, pointsTable);
+    const entry = buildEntry(r, fallback++, pointsFor(r.DriverId));
     if (entry) results.push(entry);
   }
 
@@ -287,10 +317,13 @@ export async function fetchF2SeasonResults(season?: number): Promise<F2SeasonRes
   if (!manifestHtml) return { feature: [], sprint: [] };
 
   const manifestData = extractNextData(manifestHtml) as NextDataStandingsRoot | null;
-  const seasonRaces = manifestData?.props?.pageProps?.pageData?.SeasonRaces;
+  const pageData = manifestData?.props?.pageProps?.pageData;
+  const seasonRaces = pageData?.SeasonRaces;
   if (!Array.isArray(seasonRaces) || seasonRaces.length === 0) {
     return { feature: [], sprint: [] };
   }
+
+  const driverPoints = buildDriverPointsLookup(pageData?.Standings);
 
   const raceIds = pickResultRaceIds(seasonRaces);
   if (raceIds.length === 0) return { feature: [], sprint: [] };
@@ -307,9 +340,9 @@ export async function fetchF2SeasonResults(season?: number): Promise<F2SeasonRes
   const feature: RaceResult[] = [];
   const sprint: RaceResult[] = [];
   for (const page of racePages) {
-    const fr = buildRaceResult(page, 'FR', FEATURE_POINTS);
+    const fr = buildRaceResult(page, 'FR', driverPoints);
     if (fr) feature.push(fr);
-    const sr = buildRaceResult(page, 'SR', SPRINT_POINTS);
+    const sr = buildRaceResult(page, 'SR', driverPoints);
     if (sr) sprint.push(sr);
   }
 

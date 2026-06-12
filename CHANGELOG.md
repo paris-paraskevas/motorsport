@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.1 — 2026-06-13
+
+Audit HIGH fixes (PR-1 of the June code audit — `docs/research/code-audit-2026-06.md`). Every fix below was prod-verified broken before the change and browser-verified fixed after.
+
+### Fixed
+
+- **MotoGP weekend URLs served pre-season tests as Rounds 1–3** (audit 1b-1): `assignRoundsToWeekends` no longer index-numbers weekends that no rounds.json entry covers — they get round 0 (excluded from URLs/links/sitemap; calendar renders them unlinked as "Testing · non-championship" via `WeekendBlock`). `/series/motogp/weekend/1` is the Thai GP at Buriram again; Sepang/Buriram tests show as tests.
+- **Six Formula E rounds 404'd incl. the season finale** (audit 1b-2 + 2-6): weekends whose date range covers ≥2 rounds.json entries now split into one Weekend per round (`splitAcrossRounds` — sessions bucketed by round date-range, support days to the nearest round; `buildWeekend` shell builder moved from group.ts to rounds.ts and shared). FE 5/8/17 et al resolve with only their own sessions; frozen weekend standings freeze at the right race by construction. Sanya R11's curated range widened to 2026-06-19..20 to cover its Friday session.
+- **Sitemap weekend URLs now derive from `groupByWeekend`** — the same resolution the pages use — instead of raw rounds.json (audit 3-6). The six dead FE URLs drop out; a new test pins FE at 17 entries.
+- **F2 points migrated to canonical `Standings[].RacePoints`** (audit 1a-2), deleting the hardcoded position tables — pole +2 / FL +1 / red-flag scales now exact (Monaco FR winner renders 26, impossible under the old table). Same pattern as the 0.12.1 F3 fix; fixtures extended with RacePoints incl. a bonus case.
+- **Frozen "Standings at this round" gated on a new `SnapshotSource.pointsExact` flag** (audit 1a-1): Formula E (motorsportweek-fallback bonuses missing) and IndyCar (+2 most-laps-led, Indy 500 quali points missing) fall back to the live link-out instead of summing inexact points; their profile season-form (positions) is unaffected. The false "points are exact" comment replaced with the gate's actual contract. F2 qualifies via the RacePoints migration.
+- **`scaffold-series.mjs` no longer rewrites existing meta.json** (audit 4-1) — the registry had drifted from curated fixes (F1 championsPage, WEC standings URL); a documented "safe" rerun would have reverted them in prod. meta.json is now write-if-missing.
+- **race-week cron skips date-only sessions** (audit 3-4) — it was counting synthetic midnights and could push a fabricated "02:00" digest time.
+- **Duplicate chart legend removed** (audit 2-5): the built-in recharts `<Legend>` listed every line (47 names on NASCAR) directly above the interactive chip legend that replaced it.
+- **MotoGP results render newest round first** (audit 1a-9), matching WSBK and the panel default — the tab opened on March's season opener.
+
+### Changed
+
+- ESLint `globalIgnores` gains `.claude/**` + generated `public/sw*.js` (audit 4-3): lint output drops from 106 errors (~96% phantom duplicates from agent worktrees) to the 3 real pre-existing hook errors; `prefer-const` in lib/results/wrc.ts fixed. CLAUDE.md landmine #6 corrected — it described the pre-0.9.17 fail-open cron auth; crons fail closed (`lib/cron-auth.ts`).
+
 ## 0.36.0 — 2026-06-12
 
 Content-gap audit #3 closed: WEC per-round race results (the long-deferred 0.12.8.1), landing two days before Le Mans.

@@ -229,10 +229,12 @@ describe('fetchMotoGPSeasonResults', () => {
       },
     });
     const races = await fetchMotoGPSeasonResults(2026);
-    expect(races[0].round).toBe(1);
-    expect(races[0].raceName).toContain('Thailand');
-    expect(races[1].round).toBe(2);
-    expect(races[1].raceName).toContain('Argentina');
+    // Round numbers follow date_start order; rendering order is newest
+    // round first (matches WSBK + the results panel default, audit 1a-9).
+    expect(races[0].round).toBe(2);
+    expect(races[0].raceName).toContain('Argentina');
+    expect(races[1].round).toBe(1);
+    expect(races[1].raceName).toContain('Thailand');
   });
 
   it('filters out test events even when isFinished=true returns them', async () => {

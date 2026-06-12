@@ -40,6 +40,15 @@ export interface SnapshotSource {
   // owner / manufacturers' table uses different math (NASCAR owner points,
   // WRC manufacturers' best-two, IndyCar engine manufacturers).
   showTeams: boolean;
+  // Whether per-race points in this feed are the championship-canonical
+  // values. False where the parser derives points from finishing position
+  // and documented bonuses are missing (audit 1a-1): Formula E's
+  // motorsportweek-fallback rounds omit pole +3 / FL +1; IndyCar omits the
+  // +2 most-laps-led every race and Indy 500 qualifying points. A summed
+  // "Standings at this round" table from those feeds can flip adjacent
+  // ranks vs the Standings tab, so the frozen table is gated on this flag —
+  // profile season-form (positions) keeps using the races regardless.
+  pointsExact: boolean;
 }
 
 // One adapter per per-round-points series — the same feeds the results tab
@@ -55,7 +64,7 @@ export async function loadSnapshotSource(series: Series): Promise<SnapshotSource
         fetchF1SeasonSprints(),
         loadResultsOverrides(slug),
       ]);
-      return { races: applyResultsOverrides(races, overrides), extras: sprints, showTeams: true };
+      return { races: applyResultsOverrides(races, overrides), extras: sprints, showTeams: true, pointsExact: true };
     }
     case 'f2': {
       const [data, overrides] = await Promise.all([
@@ -66,6 +75,8 @@ export async function loadSnapshotSource(series: Series): Promise<SnapshotSource
         races: applyResultsOverrides(data.feature, overrides),
         extras: applyResultsOverrides(data.sprint, overrides),
         showTeams: true,
+        // Canonical since the RacePoints migration (audit 1a-2).
+        pointsExact: true,
       };
     }
     case 'f3': {
@@ -73,14 +84,16 @@ export async function loadSnapshotSource(series: Series): Promise<SnapshotSource
         fetchF3SeasonResults(series.meta.season),
         loadResultsOverrides(slug),
       ]);
-      return { races: applyResultsOverrides(races, overrides), showTeams: true };
+      return { races: applyResultsOverrides(races, overrides), showTeams: true, pointsExact: true };
     }
     case 'formula-e': {
       const [races, overrides] = await Promise.all([
         fetchFormulaESeasonResults(),
         loadResultsOverrides(slug),
       ]);
-      return { races: applyResultsOverrides(races, overrides), showTeams: true };
+      // Derived points on motorsportweek-fallback rounds (pole/FL missing) —
+      // frozen tables stay off until reconciled (audit 1a-1).
+      return { races: applyResultsOverrides(races, overrides), showTeams: true, pointsExact: false };
     }
     case 'indycar': {
       const [drivers, overrides] = await Promise.all([
@@ -88,21 +101,23 @@ export async function loadSnapshotSource(series: Series): Promise<SnapshotSource
         loadResultsOverrides(slug),
       ]);
       const races = await fetchIndyCarSeasonResults({ drivers });
-      return { races: applyResultsOverrides(races, overrides), showTeams: false };
+      // Position-derived points missing +2 most-laps-led every race and the
+      // Indy 500 qualifying points — frozen tables stay off (audit 1a-1).
+      return { races: applyResultsOverrides(races, overrides), showTeams: false, pointsExact: false };
     }
     case 'motogp': {
       const [races, overrides] = await Promise.all([
         fetchMotoGPSeasonResults(series.meta.season),
         loadResultsOverrides(slug),
       ]);
-      return { races: applyResultsOverrides(races, overrides), showTeams: true };
+      return { races: applyResultsOverrides(races, overrides), showTeams: true, pointsExact: true };
     }
     case 'wsbk': {
       const [races, overrides] = await Promise.all([
         fetchWsbkSeasonResults(series.meta.season),
         loadResultsOverrides(slug),
       ]);
-      return { races: applyResultsOverrides(races, overrides), showTeams: true };
+      return { races: applyResultsOverrides(races, overrides), showTeams: true, pointsExact: true };
     }
     case 'nascar-cup': {
       const rounds =
@@ -116,14 +131,14 @@ export async function loadSnapshotSource(series: Series): Promise<SnapshotSource
         fetchNascarCupSeasonResults({ rounds }),
         loadResultsOverrides(slug),
       ]);
-      return { races: applyResultsOverrides(races, overrides), showTeams: false };
+      return { races: applyResultsOverrides(races, overrides), showTeams: false, pointsExact: true };
     }
     case 'wrc':
       // The chart-points table (per-driver per-round sub-totals) reconciles
       // to the standings tab by construction — the per-rally articles don't.
-      return { races: await fetchWRCSeasonChartPoints(series.meta.season), showTeams: false };
+      return { races: await fetchWRCSeasonChartPoints(series.meta.season), showTeams: false, pointsExact: true };
     case 'dtm':
-      return { races: await fetchDTMSeasonChartData(), showTeams: true };
+      return { races: await fetchDTMSeasonChartData(), showTeams: true, pointsExact: true };
     default:
       return null;
   }
@@ -134,7 +149,9 @@ export async function loadSnapshotSource(series: Series): Promise<SnapshotSource
 // sum model is the real championship, team) tables frozen at that round,
 // never refreshing to current. Multi-race rounds (F3/MotoGP/WSBK sprints in
 // the main array) inflate the internal wins tie-breaker only — wins aren't
-// displayed and points are exact.
+// displayed. The table renders only from feeds whose per-race points are
+// championship-canonical (`pointsExact`); everything else gets the live
+// link-out rather than a sum that can disagree with the Standings tab.
 export async function WeekendStandingsSnapshot({
   series,
   round,
@@ -148,7 +165,7 @@ export async function WeekendStandingsSnapshot({
 
   const source = await loadSnapshotSource(series);
 
-  if (source && source.races.length > 0) {
+  if (source && source.races.length > 0 && source.pointsExact) {
     // A past weekend counts its own round; an upcoming one shows the table
     // drivers walk in with. Round 1 upcoming → nothing to show yet.
     const throughRound = isPast ? round : round - 1;

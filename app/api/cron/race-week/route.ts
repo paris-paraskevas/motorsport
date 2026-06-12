@@ -100,10 +100,15 @@ export async function GET(req: Request) {
       return state;
     };
 
-    // Pre-compute "this week" sessions per series
+    // Pre-compute "this week" sessions per series. Date-only sessions carry
+    // a synthetic midnight start — counting them would push a fabricated
+    // clock time in the digest (audit 3-4). Same rule as the notify cron:
+    // no real start time, no notification.
     const upcomingBySlug = new Map<string, Session[]>();
     for (const series of allSeries) {
-      const inWindow = series.sessions.filter(s => s.start >= now && s.start <= weekEnd);
+      const inWindow = series.sessions.filter(
+        s => !s.dateOnly && s.start >= now && s.start <= weekEnd,
+      );
       if (inWindow.length > 0) {
         upcomingBySlug.set(series.meta.slug, inWindow);
       }
