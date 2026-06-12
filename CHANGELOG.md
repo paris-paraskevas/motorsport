@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.35.1 — 2026-06-12
+
+Content-gap audit item #1 (the launch-gating one): the blog is no longer empty.
+
+### Added
+
+- **Three seed posts** under `content/posts/`: a Le Mans 2026 preview (written against this week's verified entry/Hyperpole state — the defending #83 Ferrari starts 17th), "How Paddock keeps 15 series honest" (the editorial-standards story: TBC over invented times, charts dropped rather than disagreeing with standings, hand-curated champions, frozen weekend standings), and a 2026 half-season review across the major championships (Indy 500's record-close finish verified). Agent-drafted against live sources, house voice, full frontmatter contract.
+
 ## 0.35.0 — 2026-06-11
 
 Race-session classifications beyond F1 — the session-pages story closes for every series with per-race data.
