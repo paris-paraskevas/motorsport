@@ -21,10 +21,10 @@ describe('looksLikeRaceSession', () => {
 });
 
 describe('seriesSupportsResultsReady', () => {
-  it('covers the v1 set and nothing else silently', () => {
+  it('covers the supported set and nothing else silently', () => {
     expect(seriesSupportsResultsReady('f1')).toBe(true);
     expect(seriesSupportsResultsReady('motogp')).toBe(true);
-    expect(seriesSupportsResultsReady('wec')).toBe(false);
+    expect(seriesSupportsResultsReady('wec')).toBe(true); // 0.36.0
     expect(seriesSupportsResultsReady('nascar-cup')).toBe(false);
   });
 });

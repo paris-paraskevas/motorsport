@@ -4,6 +4,7 @@ import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
 import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
+import { fetchWecSeasonResults } from '@/lib/results/wec';
 
 // "Results are in" notification support (notify cron). A series is covered
 // when its season-results fetcher is zero-config and returns RaceResult[]
@@ -15,13 +16,38 @@ import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 // add): f2 (custom F2SeasonResults shape), nascar-cup (fetcher requires the
 // rounds.json file), imsa (per-class shape), gt-world (needs round args),
 // wrc (rally dates span days), dtm (chart data carries synthetic dates),
-// wec (no results pipeline yet), wsbk.
+// wsbk.
+//
+// WEC's adapter expands each fetched round's event-date range into one stub
+// entry per day: the fiawec header dates the whole event ("7 - 9 may" at
+// Spa, where the race ran on the 9th; Le Mans races the 13th-14th) and the
+// cron matches on the race session's START day, which can be any day in
+// the range. Only `date` is consumed here — a round being present at all
+// means its race classification is rendered on our pages.
 const RESULTS_DATE_SOURCES: Record<string, () => Promise<RaceResult[]>> = {
   f1: () => fetchF1SeasonResults(),
   f3: () => fetchF3SeasonResults(new Date().getUTCFullYear()),
   'formula-e': () => fetchFormulaESeasonResults(),
   indycar: () => fetchIndyCarSeasonResults({ drivers: null }),
   motogp: () => fetchMotoGPSeasonResults(new Date().getUTCFullYear()),
+  wec: async () => {
+    const rounds = await fetchWecSeasonResults();
+    return rounds.flatMap(r => {
+      const days: RaceResult[] = [];
+      const cursor = new Date(r.dateStart);
+      while (cursor <= r.dateEnd && days.length < 7) {
+        days.push({
+          round: r.round,
+          raceName: r.eventName,
+          date: new Date(cursor),
+          circuit: '',
+          results: [],
+        });
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+      }
+      return days;
+    });
+  },
 };
 
 export function seriesSupportsResultsReady(slug: string): boolean {

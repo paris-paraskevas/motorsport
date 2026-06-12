@@ -17,6 +17,7 @@ import {
   type OpenF1Session,
   type SessionClassification,
 } from '@/lib/results/openf1';
+import { fetchWecSeasonResults, WEC_RESULT_CLASSES } from '@/lib/results/wec';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
@@ -252,11 +253,18 @@ function SessionPager({
   );
 }
 
-function ClassificationTable({ data }: { data: SessionClassification }) {
+function ClassificationTable({
+  data,
+  heading = 'Classification',
+}: {
+  data: SessionClassification;
+  // Multi-class series render one table per class ("Hypercar", "LMGT3").
+  heading?: string;
+}) {
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-        Classification
+        {heading}
       </h2>
       <ul className="divide-y divide-border/60">
         {data.entries.map(e => (
@@ -319,9 +327,11 @@ export default async function SessionPage({
   const { title: weekendTitle } = weekendLabel(weekend, round);
   const sessionName = session.title.replace(/^.*?[-–—:]\s*/, '').trim() || session.title;
 
-  // Classification: F1 only in v1 — OpenF1 covers every session type.
-  // Other series gain race-session adapters next (results-by-round).
+  // Classification: F1 has every session via OpenF1; WEC race sessions come
+  // class-bucketed from the fiawec live component; the RACE_SESSION_SERIES
+  // set reuses each series' season-results feed.
   let classification: SessionClassification | null = null;
+  let wecClassifications: { cls: string; data: SessionClassification }[] = [];
   if (slug === 'f1' && isPast) {
     const { start, end } = weekendStartEnd(weekend);
     const candidates = await fetchOpenF1WeekendSessions(start, end);
@@ -329,6 +339,32 @@ export default async function SessionPage({
       ? null
       : matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
     if (match) classification = await fetchSessionClassification(match);
+  } else if (slug === 'wec' && isPast && isRaceLikeTitle(session.title)) {
+    const rounds = await fetchWecSeasonResults();
+    const roundResults = rounds.find(r => r.round === round) ?? null;
+    if (roundResults) {
+      wecClassifications = WEC_RESULT_CLASSES.flatMap(cls => {
+        const entries = roundResults.perClass[cls] ?? [];
+        if (entries.length === 0) return [];
+        return [{
+          cls: cls as string,
+          data: {
+            isQualifying: false,
+            // Not isRace — that flag adds the points column, and the fiawec
+            // timing table carries no championship points.
+            isRace: false,
+            entries: entries.map(e => ({
+              position: e.position,
+              driverName: e.drivers || e.team,
+              driverCode: `#${e.carNumber}`,
+              team: e.drivers ? e.team : e.manufacturer,
+              time: e.elapsedTime,
+              gap: e.gap,
+            })),
+          },
+        }];
+      });
+    }
   } else if (isPast) {
     classification = await fetchRoundClassification(series, round, session.title);
   }
@@ -399,6 +435,12 @@ export default async function SessionPage({
 
       {classification ? (
         <ClassificationTable data={classification} />
+      ) : wecClassifications.length > 0 ? (
+        <div className="space-y-4">
+          {wecClassifications.map(({ cls, data }) => (
+            <ClassificationTable key={cls} data={data} heading={cls} />
+          ))}
+        </div>
       ) : isPast ? (
         <section className="border-y border-border py-5 text-center">
           <p className="text-text-muted text-sm">

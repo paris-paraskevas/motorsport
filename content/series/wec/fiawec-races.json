@@ -1,0 +1,15 @@
+{
+  "season": 2026,
+  "note": "fiawec.com live-component IDs. Race IDs harvested from the changeRace <select> on /en/page/resultats-1, category IDs from the bootstrap page's changeCategory <select> (2026-06-12) — categories are global entities, not per-race, and component responses ship the category select empty, so they must be curated here. Re-harvest if fiawec rebuilds its CMS — lib/results/wec.ts fails closed per round when an ID stops resolving.",
+  "categories": { "Hypercar": 4167, "LMP2": 3, "LMGT3": 4183 },
+  "races": [
+    { "round": 1, "raceId": 4948, "label": "ITALY" },
+    { "round": 2, "raceId": 4949, "label": "BELGIUM" },
+    { "round": 3, "raceId": 4951, "label": "FRANCE" },
+    { "round": 4, "raceId": 4952, "label": "BRAZIL" },
+    { "round": 5, "raceId": 4953, "label": "UNITED STATES" },
+    { "round": 6, "raceId": 4954, "label": "JAPAN" },
+    { "round": 7, "raceId": 4947, "label": "QATAR" },
+    { "round": 8, "raceId": 4955, "label": "BAHRAIN" }
+  ]
+}

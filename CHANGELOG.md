@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.0 — 2026-06-12
+
+Content-gap audit #3 closed: WEC per-round race results (the long-deferred 0.12.8.1), landing two days before Le Mans.
+
+### Added
+
+- **WEC race results end-to-end** via fiawec.com's results live component — there is no open JSON feed (WEC's Al Kamel portal is PDF-only; the alkamelcloud host that serves IMSA's JSON tree is a private backoffice for WEC), but the Symfony UX Live Component on `/en/page/resultats-1` replays server-side: `lib/results/wec.ts` POSTs `/en/_components/Editorial%3ACMS%3ACompleteResultsComponent` with the signed props blob read fresh from the bootstrap page each fetch (`data={"props":…,"updated":{raceId|sessionId|categoryId}}` + same-origin headers; no cookies, no CSRF — ux-live-component ≥2.12 uses Origin/Sec-Fetch-Site checks). Chain per round: select race → find the RACE session in the response → parse the per-class classification, swapping `categoryId` per class.
+- **`content/series/wec/fiawec-races.json`** — curated race ids per round (changeRace select, country labels) + global category ids (Hypercar 4167 / LMP2 3 / LMGT3 4183). Category ids must be curated: component responses ship the changeCategory select empty; only the bootstrap page populates it.
+- **Crews joined from the standings parser** by class + car number (`buildCrewIndex`; standings team strings bake the number — "BMW #20"). Both 2026 rounds join 100%; Le Mans one-offs and the LMP2 field will render team-only, honestly. No championship points in the timing table → no trend chart, per the cross-series invariant.
+- **ResultsTab `wec` branch** reusing the IMSA class-card components (`ImsaRoundClassCard.cls` widened to a display string; `WecRaceEntry` is structurally compatible with `ImsaRaceEntry`). Class winners surface the race total time in the gap cell.
+- **WEC race-session weekend pages**: `[session]/page.tsx` renders one `ClassificationTable` per class (new `heading` prop); weekend schedule rows now link through for `wec`.
+- **Results-ready notifications cover WEC**: `lib/results-ready.ts` adapter expands each fetched round's event-date range into per-day stubs so the cron's same-UTC-day match hits whichever day the race session starts (Spa's header reads "7 - 9 may"; the race ran the 9th). Le Mans fires post-race this weekend.
+- **KV season cache** (`seasonCacheKey` widened to `'wec'`, 3h TTL, non-empty payloads only) — the per-round POST chain runs once per TTL, not per render. Rounds whose `rounds.json` start date is in the future are skipped entirely.
+- **Fixtures + 17 tests**: real captures (bootstrap page, Spa race Hypercar + LMGT3, Imola race) drive the parser suite; the Imola fixture pins lap-deficit gap strings ("24 Laps") and the `<td>`-based header row the numeric guard skips.
+
 ## 0.35.2 — 2026-06-12
 
 Content-gap audit minutes-fixes (#6, #7, #9).

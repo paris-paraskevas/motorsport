@@ -120,6 +120,9 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - WeekendMedia content seed — `content/series/<slug>/media.json` with YouTube highlight IDs + circuit imagery for the next 4 race weekends.
 - User-authored blogs + threads with review-then-publish moderation flow; likely needs Supabase auth + role-based privileges; research existing UGC blog platforms (Substack, Ghost, Discourse threads) for prior art before designing.
 - Per-series calendar feeds — webcal/ICS endpoint (e.g. /api/calendar/<slug>.ics) proxying curated session data so fans subscribe in Apple/Google Calendar; unlocks the mockup's "Sync your calendar" perk card on the landing (cut from 0.13.1 for honesty).
+- Results re-check lifecycle (operator 2026-06-12): re-verify session results at +1w / +1m / season-end because penalties get overturned late — Gasly's Monaco podium reinstated ~a week after the race and Jolpica was still pre-correction on Jun 12; shape = KV results snapshot + scheduled diff cron + curation alert, pairs with results-overrides.json.
+- OpenF1 anonymous lockout during live F1 sessions (found 2026-06-12): API 401s ALL endpoints incl. historical whenever a session is live, so F1 per-session classifications break exactly on race weekends; fix = persist-once to KV (+ optional €9.90/mo sponsor key as belt-and-suspenders).
+- Information-density pass (operator 2026-06-12, "serious discussion"): multiple users report pages show too much — needs a per-page information-budget review (what question does each page answer in 5 seconds; rest behind disclosure); pairs with W5 per-page layout spec.
 
 ## Parked (might do, with a revisit trigger)
 
