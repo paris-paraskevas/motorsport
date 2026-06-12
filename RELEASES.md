@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.0 — 2026-06-12
+
+**WEC race results, just in time for Le Mans.** The World Endurance Championship's Results tab now shows the full finishing order of every 2026 round — Hypercar and LMGT3 classified separately, with each car's crew, laps, gaps and race time. Race pages on WEC weekends carry the same classification, and result notifications now cover WEC too: when the 24 Hours of Le Mans finishes this weekend, the result lands here.
+
 ## 0.35.2 — 2026-06-12
 
 **Three finishing touches.** The Nürburgring 24h page now shows its star-car lineup; IndyCar and NLS join every other series with hand-checked champions lists (thirty years of IndyCar titles, the modern NLS era's winning crews); and GT World Challenge picked up a live news feed.

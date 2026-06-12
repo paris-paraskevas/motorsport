@@ -711,6 +711,20 @@ Outcomes:
 Active:
 _(awaiting [+Nm] prefixes)_
 
+### Fri 2026-06-12
+
+_(Sessions 6+ on Jun 11–12 shipped PRs #128–#139, 0.30.0 → 0.35.2 — security audit fixes, W3 rules essentials ×15, W4 lineups ×15 + season form, onboarding tour, blog seeded ×3, content-gap audit, audit minutes-fixes — logged in CHANGELOG per PR; continuation prompt is the session record.)_
+
+Plan (pre-launch program, content-gap queue):
+
+1. **WEC results probe (0.12.8.1, content-gap #3).** robots.txt + sitemap.xml first, then `/en/page/resultats-1` + its Stimulus `live#action` controller JS to locate the XHR endpoint. Verdict re-derived from sources, not prompt summaries. Time-boxed ~1h. If clean → ESPA plan, then `lib/results/wec.ts` + ResultsTab dispatch + WEC race-session pages + results-ready map + **prod verify post-merge** (datacenter rule). Le Mans Jun 13–14 is the payoff. If hostile → document and move on.
+2. **Codebase audit** (operator-ordered): 4 sequential module waves lib/ → components/ → app/+api → config/infra, 100% line coverage by fresh agents, findings ledger + cross-pass → `docs/research/code-audit-2026-06.md`; fix highs same-session.
+
+Won't touch this session: NLS standings parser (0.12.16), post-Le Mans draft-article trial, W8 launch checklist (CSP-RO, npm audit, perf re-baseline, IndexNow), driver photos.
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

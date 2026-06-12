@@ -18,12 +18,17 @@ import {
   type GtWorldRaceResultEntry,
 } from '@/lib/results/gt-world';
 import { fetchImsaSeasonResults, type ImsaRaceEntry, type ImsaRoundResults } from '@/lib/results/imsa';
+import {
+  fetchWecSeasonResults,
+  WEC_RESULT_CLASSES,
+  type WecRoundResults,
+} from '@/lib/results/wec';
 import { fetchIndyCarSeasonResults } from '@/lib/results/indycar';
 import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
-import { IMSA_CLASSES, type ImsaClass } from '@/lib/standings/imsa';
+import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -361,7 +366,9 @@ function ImsaRoundClassCard({
   roundNumber: number;
   eventName: string;
   date: Date;
-  cls: ImsaClass;
+  // Display-only class label. ImsaClass for IMSA rounds; WEC reuses this
+  // card with its own class names (Hypercar / LMP2 / LMGT3).
+  cls: string;
   entries: ImsaRaceEntry[];
   weekendHref?: string;
 }) {
@@ -393,6 +400,61 @@ function ImsaRoundClassCard({
         ))}
       </ul>
     </details>
+  );
+}
+
+// FIA WEC — same flatten-rounds-×-classes shape as IMSA. WecRaceEntry is
+// structurally compatible with ImsaRaceEntry (drivers may be empty when a
+// crew isn't in the season standings — Le Mans one-offs, the LMP2 field),
+// so the IMSA row + card components render WEC rounds unchanged. dateEnd is
+// the display date: race day for the 6/8-hour rounds, the Sunday for Le Mans.
+function WecSeasonResultsPanel({
+  rounds,
+  seriesSlug,
+  weekendRounds,
+}: {
+  rounds: WecRoundResults[];
+  seriesSlug?: string;
+  weekendRounds?: Set<number>;
+}) {
+  const items = [...rounds]
+    .sort((a, b) => b.round - a.round)
+    .flatMap(round =>
+      WEC_RESULT_CLASSES.map(cls => ({
+        round,
+        cls,
+        // The class winner has no gap, so the shared row's gap||status cell
+        // would render empty — surface the race total time there instead.
+        entries: (round.perClass[cls] ?? []).map(e =>
+          e.position === 1 && !e.gap ? { ...e, gap: e.elapsedTime } : e,
+        ),
+      })).filter(item => item.entries.length > 0),
+    );
+
+  return (
+    <section className="border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        Season results
+      </h2>
+      <ul className="divide-y divide-border/60">
+        {items.map(item => (
+          <li key={`${item.round.round}-${item.cls}`} className="py-1">
+            <ImsaRoundClassCard
+              roundNumber={item.round.round}
+              eventName={item.round.eventName}
+              date={item.round.dateEnd}
+              cls={item.cls}
+              entries={item.entries}
+              weekendHref={
+                seriesSlug && weekendRounds?.has(item.round.round)
+                  ? `/series/${seriesSlug}/weekend/${item.round.round}`
+                  : undefined
+              }
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -777,6 +839,27 @@ export async function ResultsTab({ series }: { series: Series }) {
         <SourceLink
           href="https://imsa.results.alkamelcloud.com/"
           label="imsa.results.alkamelcloud.com (Al Kamel timing)"
+        />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'wec') {
+    const rounds = await fetchWecSeasonResults();
+    if (rounds.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    // No trend chart: the fiawec timing table carries no championship points
+    // (same limitation as IMSA's Alkamel export), so a chart can't reconcile
+    // against the standings tab. Standings remain the points authority.
+    return (
+      <div className="space-y-4">
+        <WecSeasonResultsPanel rounds={rounds} seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SourceLink
+          href="https://www.fiawec.com/en/page/resultats-1"
+          label="fiawec.com (official results)"
         />
       </div>
     );
