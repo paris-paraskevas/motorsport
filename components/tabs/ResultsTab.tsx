@@ -514,24 +514,31 @@ function GtWorldRoundClassCard({
   race,
   cup,
   entries,
+  weekendHref,
 }: {
   race: GtWorldRaceResult;
   cup: Cup;
   entries: GtWorldRaceResultEntry[];
+  weekendHref?: string;
 }) {
   const winner = entries[0];
   const winnerLabel = winner
     ? `${winner.drivers.join(' · ')} — ${winner.team}`
     : undefined;
-  // No weekend link here: GtWorldRaceResult carries raceId + eventName but no
-  // canonical round number, so a safe round → weekend mapping doesn't exist
-  // yet. Linkable once the parser emits rounds aligned with rounds.json.
+  // Round numbers (and therefore weekend links) come from the curated
+  // event-rounds.json map; unmapped events keep the championship-letter chip
+  // and render unlinked.
   return (
     <details className="group">
       <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <RoundChip label={race.championship === 'endurance' ? 'E' : 'S'} />
+        <RoundChip
+          label={race.round ? `R${race.round}` : race.championship === 'endurance' ? 'E' : 'S'}
+        />
         <div className="flex-1 min-w-0">
-          <RaceTitle name={`${race.eventName} ${race.raceName} — ${gtWorldCupLabel(cup)}`} />
+          <RaceTitle
+            name={`${race.eventName} ${race.raceName} — ${gtWorldCupLabel(cup)}`}
+            href={weekendHref}
+          />
           <RowMeta winner={winnerLabel} />
         </div>
         <ChevronDown
@@ -551,7 +558,15 @@ function GtWorldRoundClassCard({
   );
 }
 
-function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
+function GtWorldSeasonResultsPanel({
+  races,
+  seriesSlug,
+  weekendRounds,
+}: {
+  races: GtWorldRaceResult[];
+  seriesSlug?: string;
+  weekendRounds?: Set<number>;
+}) {
   // Flatten races × cups into one row per (race, cup). Races are kept in
   // the order they were fetched (the parser already groups by event +
   // race-id); cups within each race follow GT_WORLD_CUP_ORDER.
@@ -578,6 +593,11 @@ function GtWorldSeasonResultsPanel({ races }: { races: GtWorldRaceResult[] }) {
               race={item.race}
               cup={item.cup}
               entries={item.entries}
+              weekendHref={
+                seriesSlug && item.race.round && weekendRounds?.has(item.race.round)
+                  ? `/series/${seriesSlug}/weekend/${item.race.round}`
+                  : undefined
+              }
             />
           </li>
         ))}
@@ -812,7 +832,7 @@ export async function ResultsTab({ series }: { series: Series }) {
     // standings tab.
     return (
       <div className="space-y-4">
-        <GtWorldSeasonResultsPanel races={races} />
+        <GtWorldSeasonResultsPanel races={races} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
           href={GT_WORLD_SOURCE_URL}
           label="gt-world-challenge-europe.com (2026)"

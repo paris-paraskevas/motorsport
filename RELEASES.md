@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.2 — 2026-06-13
+
+**Race results on every class-racing weekend page.** IMSA and GT World Challenge race pages now show the full finishing order — every class and cup classified separately with crews, cars and gaps, exactly as on the Results tab. GT World results also link through to their race weekends now, and sprint weekends show Race 1 and Race 2 each on their own page.
+
 ## 0.36.1 — 2026-06-13
 
 **A round of accuracy fixes from our full code review.** MotoGP's race-weekend pages now show the actual Grands Prix — pre-season tests had taken over the first three round pages, and they're now labelled as tests on the calendar instead. All six "missing" Formula E race pages (including the season finale) exist now — doubleheader weekends get one page per race. Formula 2 results carry the exact championship points including pole and fastest-lap bonuses. Where we can't yet guarantee exact points sums (Formula E, IndyCar), weekend pages link to the official standings rather than showing a table that could be slightly off. Plus: the standings chart lost a duplicate legend, MotoGP results open on the latest race, and the weekly digest no longer invents start times for sessions that haven't published one.
