@@ -6,7 +6,24 @@ import {
   fetchGtWorldSeasonResults,
   parseEventListingHtml,
   parseEventRaceOptions,
+  roundForGtWorldEvent,
 } from './gt-world';
+
+describe('roundForGtWorldEvent', () => {
+  it('maps SRO venue-style event names to canonical rounds via the curated substring map', () => {
+    // Live parser names observed 2026-06-13.
+    expect(roundForGtWorldEvent('Circuit Paul Ricard')).toBe(1);
+    expect(roundForGtWorldEvent('Brands Hatch')).toBe(2);
+    expect(roundForGtWorldEvent('Monza')).toBe(3);
+    // Accent-bearing venues match on unambiguous fragments.
+    expect(roundForGtWorldEvent('Nürburgring')).toBe(7);
+    expect(roundForGtWorldEvent('Circuito de Barcelona-Catalunya')).toBe(9);
+  });
+
+  it('returns undefined for unmapped events (rows render unlinked)', () => {
+    expect(roundForGtWorldEvent('Some Exhibition Event')).toBeUndefined();
+  });
+});
 
 function entryRow(opts: {
   pos: number;

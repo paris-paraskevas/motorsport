@@ -22,6 +22,7 @@ import * as cheerio from 'cheerio';
 // caller receives the rest of the season — empty arrays are valid.
 
 import type { Championship } from '@/lib/standings/gt-world';
+import eventRounds from '@/content/series/gt-world/event-rounds.json';
 
 const BASE_URL = 'https://www.gt-world-challenge-europe.com/results';
 
@@ -59,7 +60,19 @@ export interface GtWorldRaceResult {
   eventName: string;
   eventSlug: string;
   championship: Championship;
+  // Canonical round via content/series/gt-world/event-rounds.json — the SRO
+  // pages carry no round numbers, so the join is curated (case-insensitive
+  // substring match on eventName). Absent when no entry matches; consumers
+  // render those rows unlinked, the pre-map behavior.
+  round?: number;
   entries: GtWorldRaceResultEntry[];
+}
+
+export function roundForGtWorldEvent(eventName: string): number | undefined {
+  const lower = eventName.toLowerCase();
+  return (eventRounds.events ?? []).find(e =>
+    lower.includes(e.match.toLowerCase()),
+  )?.round;
 }
 
 interface ParseEventArgs {
@@ -152,6 +165,7 @@ export function parseEventResultsHtml(args: ParseEventArgs): GtWorldRaceResult |
       eventName,
       eventSlug: args.eventSlug,
       championship,
+      round: roundForGtWorldEvent(eventName),
       entries: entries.sort((a, b) => a.position - b.position),
     };
   } catch {

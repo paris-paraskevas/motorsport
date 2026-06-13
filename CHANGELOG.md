@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.2 — 2026-06-13
+
+Categories parity (operator: "results in the Results tab but not in the per-session tab for the same weekend — simply stupid"). The class-based series now show their race classifications on weekend session pages, same data the Results tab renders.
+
+### Added
+
+- **IMSA race-session classifications**: `[session]/page.tsx` gains a class-results dispatch (`fetchClassClassifications`, consolidating the 0.36.0 WEC branch) — IMSA race pages render one table per class (GTP / LMP2 / GTD Pro / GTD) from the Alkamel feed; `imsa` joins the weekend schedule's session-link list.
+- **GT World race-session classifications + weekend links**: the SRO parser emits no round numbers (gap noted since 0.25.0), so a curated substring map at `content/series/gt-world/event-rounds.json` joins parser event names ("Circuit Paul Ricard", "Brands Hatch") to canonical rounds — `GtWorldRaceResult.round` + `roundForGtWorldEvent()` (tested). Unlocks BOTH surfaces at once: Results-tab rows now carry R-chips and link to their weekend pages, and race-session pages render per-cup tables (Pro / Gold / Silver / Bronze). Sprint weekends resolve "Sprint Race 1/2" session titles to the right race by digit (`pickGtWorldRace`); endurance rounds take the single Main Race.
+- **`gtwce` added to `SERIES_PREFIX_RE`** so GT World session slugs read `/sprint-race-1`, not `/gtwce-sprint-race-1` — no existing URLs affected (GT World sessions were never linked before this release).
+
 ## 0.36.1 — 2026-06-13
 
 Audit HIGH fixes (PR-1 of the June code audit — `docs/research/code-audit-2026-06.md`). Every fix below was prod-verified broken before the change and browser-verified fixed after.

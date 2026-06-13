@@ -18,6 +18,12 @@ import {
   type SessionClassification,
 } from '@/lib/results/openf1';
 import { fetchWecSeasonResults, WEC_RESULT_CLASSES } from '@/lib/results/wec';
+import { fetchImsaSeasonResults } from '@/lib/results/imsa';
+import { IMSA_CLASSES } from '@/lib/standings/imsa';
+import {
+  fetchAllGtWorldSeasonRaces,
+  type GtWorldRaceResult,
+} from '@/lib/results/gt-world';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
@@ -90,6 +96,119 @@ function pickRaceForSession(candidates: RaceResult[], sessionTitle: string): Rac
     }
   }
   return best;
+}
+
+// Class-based series whose race sessions render one classification table per
+// class/cup, fed by the same season feeds the Results tab uses (categories
+// parity, operator 2026-06-13: a class with results on the Results tab must
+// show them on the weekend's race-session page too).
+const CLASS_RESULT_SERIES = new Set(['wec', 'imsa', 'gt-world']);
+
+// Sprint rounds carry two races; match "Sprint Race 1/2" session titles to
+// the SRO raceName ("Race 1"/"Race 2") by digit. Endurance rounds have one.
+function pickGtWorldRace(
+  races: GtWorldRaceResult[],
+  sessionTitle: string,
+): GtWorldRaceResult | null {
+  if (races.length === 0) return null;
+  if (races.length === 1) return races[0];
+  const digit = /race\s*(\d)/i.exec(sessionTitle)?.[1];
+  if (digit) {
+    const hit = races.find(r => r.raceName.includes(digit));
+    if (hit) return hit;
+  }
+  return races.find(r => /main/i.test(r.raceName)) ?? races[0];
+}
+
+// No points columns anywhere here: these are timing exports (the same
+// limitation the Results tab documents per series), so isRace stays false
+// and the time column shows total time / gap.
+async function fetchClassClassifications(
+  series: Series,
+  round: number,
+  sessionTitle: string,
+): Promise<{ cls: string; data: SessionClassification }[]> {
+  const slug = series.meta.slug;
+
+  if (slug === 'wec') {
+    const rounds = await fetchWecSeasonResults();
+    const roundResults = rounds.find(r => r.round === round);
+    if (!roundResults) return [];
+    return WEC_RESULT_CLASSES.flatMap(cls => {
+      const entries = roundResults.perClass[cls] ?? [];
+      if (entries.length === 0) return [];
+      return [{
+        cls: cls as string,
+        data: {
+          isQualifying: false,
+          isRace: false,
+          entries: entries.map(e => ({
+            position: e.position,
+            driverName: e.drivers || e.team,
+            driverCode: `#${e.carNumber}`,
+            team: e.drivers ? e.team : e.manufacturer,
+            time: e.elapsedTime,
+            gap: e.gap,
+          })),
+        },
+      }];
+    });
+  }
+
+  if (slug === 'imsa') {
+    const rounds = await fetchImsaSeasonResults();
+    const roundResults = rounds.find(r => r.round === round);
+    if (!roundResults) return [];
+    return IMSA_CLASSES.flatMap(cls => {
+      const entries = roundResults.perClass[cls] ?? [];
+      if (entries.length === 0) return [];
+      return [{
+        cls: cls as string,
+        data: {
+          isQualifying: false,
+          isRace: false,
+          entries: entries.map(e => ({
+            position: e.position,
+            driverName: e.drivers || e.team,
+            driverCode: `#${e.carNumber}`,
+            team: e.vehicle ? `${e.team} · ${e.vehicle}` : e.team,
+            time: e.elapsedTime,
+            gap: e.gap,
+          })),
+        },
+      }];
+    });
+  }
+
+  if (slug === 'gt-world') {
+    const races = (await fetchAllGtWorldSeasonRaces(series.meta.season)).filter(
+      r => r.round === round,
+    );
+    const race = pickGtWorldRace(races, sessionTitle);
+    if (!race) return [];
+    const cupOrder = ['pro', 'gold', 'silver', 'bronze', 'unknown'] as const;
+    return cupOrder.flatMap(cup => {
+      const entries = race.entries.filter(e => e.cup === cup);
+      if (entries.length === 0) return [];
+      return [{
+        cls: entries[0].cupLabel || cup,
+        data: {
+          isQualifying: false,
+          isRace: false,
+          entries: entries.map(e => ({
+            position: e.position,
+            driverName: e.drivers.join(' · '),
+            driverCode: `#${e.carNumber}`,
+            team: e.car ? `${e.team} · ${e.car}` : e.team,
+            time: e.time,
+            gap: e.gap,
+          })),
+        },
+      }];
+    });
+  }
+
+  return [];
 }
 
 async function fetchRoundClassification(
@@ -327,11 +446,11 @@ export default async function SessionPage({
   const { title: weekendTitle } = weekendLabel(weekend, round);
   const sessionName = session.title.replace(/^.*?[-–—:]\s*/, '').trim() || session.title;
 
-  // Classification: F1 has every session via OpenF1; WEC race sessions come
-  // class-bucketed from the fiawec live component; the RACE_SESSION_SERIES
-  // set reuses each series' season-results feed.
+  // Classification: F1 has every session via OpenF1; the class-based series
+  // (WEC / IMSA / GT World) render per-class tables from their season feeds;
+  // the RACE_SESSION_SERIES set reuses flat season-results feeds.
   let classification: SessionClassification | null = null;
-  let wecClassifications: { cls: string; data: SessionClassification }[] = [];
+  let classClassifications: { cls: string; data: SessionClassification }[] = [];
   if (slug === 'f1' && isPast) {
     const { start, end } = weekendStartEnd(weekend);
     const candidates = await fetchOpenF1WeekendSessions(start, end);
@@ -339,32 +458,8 @@ export default async function SessionPage({
       ? null
       : matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
     if (match) classification = await fetchSessionClassification(match);
-  } else if (slug === 'wec' && isPast && isRaceLikeTitle(session.title)) {
-    const rounds = await fetchWecSeasonResults();
-    const roundResults = rounds.find(r => r.round === round) ?? null;
-    if (roundResults) {
-      wecClassifications = WEC_RESULT_CLASSES.flatMap(cls => {
-        const entries = roundResults.perClass[cls] ?? [];
-        if (entries.length === 0) return [];
-        return [{
-          cls: cls as string,
-          data: {
-            isQualifying: false,
-            // Not isRace — that flag adds the points column, and the fiawec
-            // timing table carries no championship points.
-            isRace: false,
-            entries: entries.map(e => ({
-              position: e.position,
-              driverName: e.drivers || e.team,
-              driverCode: `#${e.carNumber}`,
-              team: e.drivers ? e.team : e.manufacturer,
-              time: e.elapsedTime,
-              gap: e.gap,
-            })),
-          },
-        }];
-      });
-    }
+  } else if (CLASS_RESULT_SERIES.has(slug) && isPast && isRaceLikeTitle(session.title)) {
+    classClassifications = await fetchClassClassifications(series, round, session.title);
   } else if (isPast) {
     classification = await fetchRoundClassification(series, round, session.title);
   }
@@ -435,9 +530,9 @@ export default async function SessionPage({
 
       {classification ? (
         <ClassificationTable data={classification} />
-      ) : wecClassifications.length > 0 ? (
+      ) : classClassifications.length > 0 ? (
         <div className="space-y-4">
-          {wecClassifications.map(({ cls, data }) => (
+          {classClassifications.map(({ cls, data }) => (
             <ClassificationTable key={cls} data={data} heading={cls} />
           ))}
         </div>

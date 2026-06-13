@@ -1,0 +1,16 @@
+{
+  "season": 2026,
+  "note": "Maps the SRO results parser's event names (venue-style: 'Circuit Paul Ricard', 'Brands Hatch') to canonical rounds.json round numbers — the parser emits no round numbers (gap noted since 0.25.0). 'match' is a case-insensitive substring test against eventName, tolerant of SRO naming variance; accented venues use unambiguous fragments. No match → no round → rows render unlinked (the pre-map behavior).",
+  "events": [
+    { "round": 1, "match": "Paul Ricard" },
+    { "round": 2, "match": "Brands Hatch" },
+    { "round": 3, "match": "Monza" },
+    { "round": 4, "match": "Spa" },
+    { "round": 5, "match": "Misano" },
+    { "round": 6, "match": "Magny" },
+    { "round": 7, "match": "rburgring" },
+    { "round": 8, "match": "Zandvoort" },
+    { "round": 9, "match": "Barcelona" },
+    { "round": 10, "match": "Portim" }
+  ]
+}

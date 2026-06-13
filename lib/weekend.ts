@@ -3,7 +3,7 @@ import { groupByWeekend } from './group';
 
 const SESSION_SUFFIX_RE =
   /[\s\-–—|:]+\s*(practice\s*\d*|fp\s*\d|free practice\s*\d*|qualifying|qualif\.?|sprint(?:\s+(?:race|qualifying|qualif\.?))?|race(?:\s*\d)?|warm[\s-]?up|test|tt)\s*\d*\s*$/i;
-const SERIES_PREFIX_RE = /^(?:f[12345]|motogp|moto2|moto3|fe|formula\s*e|wec|wsbk|imsa|dtm|wrc)\s*[:|\-–—]?\s*/i;
+const SERIES_PREFIX_RE = /^(?:f[12345]|motogp|moto2|moto3|fe|formula\s*e|wec|wsbk|imsa|gtwce|dtm|wrc)\s*[:|\-–—]?\s*/i;
 
 export function weekendLabel(weekend: Weekend, round: number): {
   title: string;
