@@ -8,7 +8,7 @@ import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
-import { formatRelative } from '@/lib/date';
+import { formatRelative, HOME_WEEK_MS } from '@/lib/date';
 import { SectionHead } from './SectionHead';
 
 interface HomeItem {
@@ -28,7 +28,7 @@ interface NewsItemSerialized {
   seriesColor: string;
 }
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const WEEK_MS = HOME_WEEK_MS;
 const NEWS_LIMIT = 10;
 
 /* ── Hydration-safe time engine ─────────────────────────────────────────
@@ -128,12 +128,18 @@ export function HomeContent({
   weatherByUid,
   roundByKey,
   serverNow,
+  upcomingCountBySeries,
 }: {
+  // Live + this-week sessions + the first beyond-week session per series
+  // (so `next` resolves under any follow filter) — NOT the whole season.
   items: HomeItem[];
   news: NewsItemSerialized[];
   weatherByUid?: Record<string, DailyWeather>;
   roundByKey?: Record<string, number>;
   serverNow: string;
+  // Per-series count of ALL remaining upcoming sessions (same predicate as
+  // upcomingItems below); powers beyondCount without shipping the tail.
+  upcomingCountBySeries?: Record<string, number>;
 }) {
   const { now, clock } = useNow(serverNow);
   const tz = tzShort(now, clock);
@@ -168,7 +174,21 @@ export function HomeContent({
   const weekItems = upcomingItems.filter(
     i => i.session.start.getTime() - now.getTime() <= WEEK_MS,
   );
-  const beyondCount = upcomingItems.length - weekItems.length;
+  // "+N ahead": total remaining sessions for the followed set minus the week
+  // actually rendered above it. The per-series counts come from the page
+  // (full-season knowledge) so the payload doesn't have to (audit 2-2);
+  // subtracting weekItems — not all payload upcoming — keeps the per-series
+  // "next beyond the week" payload items counted in the tail, matching the
+  // full-payload formula exactly (verified equal at the same instant).
+  const totalUpcoming = upcomingCountBySeries
+    ? Object.entries(upcomingCountBySeries)
+        .filter(
+          ([slug]) =>
+            !(hydrated && followed !== null) || followed.includes(slug),
+        )
+        .reduce((sum, [, n]) => sum + n, 0)
+    : upcomingItems.length;
+  const beyondCount = Math.max(0, totalUpcoming - weekItems.length);
 
   const itemByUid = new Map(weekItems.map(i => [i.session.uid, i]));
   const byDay = groupByDay(weekItems.map(i => i.session));

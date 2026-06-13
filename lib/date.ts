@@ -23,13 +23,25 @@ export function isWithinNextNDays(date: Date, n: number, now: Date = new Date())
   return diffDays >= 0 && diffDays <= n;
 }
 
+// Shared by HomeContent (client) and the /app page (server): the page slices
+// its payload to the same window the component renders. Lives here because a
+// constant exported from a 'use client' module reaches server importers as a
+// client-reference proxy, not a number — horizon math silently became NaN.
+export const HOME_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
 export function formatLocal(date: Date, tz: string = 'Europe/Athens'): string {
+  // These times are server-rendered in ONE fixed zone, so the zone must be
+  // said: an unlabeled "14:00" reads as the visitor's own local time and is
+  // wrong for everyone outside it (audit 2-1). The device-local upgrade
+  // (HomeContent's serverNow pattern) replaces this surface-by-surface with
+  // home v3; until then the label is the honest minimum.
   return new Intl.DateTimeFormat('en-GB', {
     timeZone: tz,
     weekday: 'short',
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZoneName: 'short',
   }).format(date);
 }
 
