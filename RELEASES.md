@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.3 — 2026-06-13
+
+**Clearer times, faster home.** Session times on calendars and weekend schedules now show their time zone ("15:00 EEST") so there's no guessing whose clock they're on — full automatic local-time conversion everywhere arrives with the upcoming home page redesign. And the home page got dramatically lighter: it loads about a third of the data it used to, with everything you see unchanged.
+
 ## 0.36.2 — 2026-06-13
 
 **Race results on every class-racing weekend page.** IMSA and GT World Challenge race pages now show the full finishing order — every class and cup classified separately with crews, cars and gaps, exactly as on the Results tab. GT World results also link through to their race weekends now, and sprint weekends show Race 1 and Race 2 each on their own page.

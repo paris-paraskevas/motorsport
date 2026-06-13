@@ -51,7 +51,10 @@ export function describeTab(
     case 'calendar':
       return {
         title: `${seriesName} ${season} — calendar, schedule, race weekends`,
-        description: `Full ${season} ${seriesName} calendar with session times in your local timezone, weekend grouping, weather, and round numbers.`,
+        // "in your local timezone" was false here — calendar times render in
+        // a labeled fixed zone until the device-local upgrade lands with
+        // home v3 (audit 1b-9 / 2-1).
+        description: `Full ${season} ${seriesName} calendar with time-zoned session times, weekend grouping, weather, and round numbers.`,
       };
     case 'news':
       return {

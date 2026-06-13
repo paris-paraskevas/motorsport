@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 import { HomeContent } from '@/components/HomeContent';
+import { HOME_WEEK_MS } from '@/lib/date';
 import { fetchAggregatedNews } from '@/lib/news';
 import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
@@ -57,6 +58,35 @@ export default async function Home() {
 
   const upcoming = flat.filter(x => x.session.end >= now);
 
+  // Payload diet (audit 2-2/3-2): the client renders live + this week + one
+  // "next" candidate per series — shipping the entire remaining season
+  // (~hundreds of KB serialized twice) bought nothing but the beyondCount
+  // integer, which the per-series counts below now carry instead.
+  const horizon = now.getTime() + HOME_WEEK_MS;
+  const inWindow = upcoming.filter(x => x.session.start.getTime() <= horizon);
+  const firstBeyondBySeries = new Map<string, (typeof upcoming)[number]>();
+  for (const x of upcoming) {
+    if (x.session.start.getTime() <= horizon) continue;
+    if (!firstBeyondBySeries.has(x.seriesSlug)) {
+      firstBeyondBySeries.set(x.seriesSlug, x);
+    }
+  }
+  const homeItems = [...inWindow, ...firstBeyondBySeries.values()].sort(
+    (a, b) => a.session.start.getTime() - b.session.start.getTime(),
+  );
+
+  // Mirrors HomeContent's upcomingItems predicate exactly — counts must
+  // agree with what the client would have computed from the full season.
+  const upcomingCountBySeries: Record<string, number> = {};
+  for (const x of upcoming) {
+    const isUpcoming = x.session.dateOnly
+      ? x.session.end > now
+      : x.session.start > now;
+    if (!isUpcoming) continue;
+    upcomingCountBySeries[x.seriesSlug] =
+      (upcomingCountBySeries[x.seriesSlug] ?? 0) + 1;
+  }
+
   const seriesBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
   const rawNews = await fetchAggregatedNews();
   const news = rawNews.flatMap(item => {
@@ -73,20 +103,26 @@ export default async function Home() {
     }];
   });
 
-  const weatherByUid = await weatherForSessions(upcoming);
+  const weatherByUid = await weatherForSessions(homeItems);
 
+  // Round lookup only for sessions actually shipped to the client.
   const roundLookup = buildRoundLookupAcrossSeries(all, now);
   const roundByKey: Record<string, number> = {};
-  for (const [k, v] of roundLookup) roundByKey[k] = v;
+  for (const x of homeItems) {
+    const key = `${x.seriesSlug}:${x.session.uid}`;
+    const round = roundLookup.get(key);
+    if (round) roundByKey[key] = round;
+  }
 
   return (
     <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <HomeContent
-        items={upcoming}
+        items={homeItems}
         news={news}
         weatherByUid={weatherByUid}
         roundByKey={roundByKey}
         serverNow={now.toISOString()}
+        upcomingCountBySeries={upcomingCountBySeries}
       />
     </div>
   );

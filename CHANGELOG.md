@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.3 — 2026-06-13
+
+Audit PR-2: honest clock times + the home payload diet (HIGHs 2-1 minimal + 2-2/3-2).
+
+### Fixed
+
+- **Every fixed-zone clock time now says its zone** (audit 2-1): `formatLocal` gains `timeZoneName: 'short'` — "Sat, 14:00 EEST" instead of an unlabeled "14:00" that read as the visitor's local time on /calendar, series Calendar tabs, weekend schedules and session pages. The calendar tab's meta description stops claiming "your local timezone" (audit 1b-9). The full device-local upgrade (HomeContent's serverNow pattern) ships with home v3, which rebuilds these surfaces.
+- **/app stops shipping the entire remaining season** (audit 2-2/3-2): the page now sends live + this-week sessions + the first beyond-week session per series (36 items vs ~520) plus an `upcomingCountBySeries` record that powers "+N ahead" exactly — SSR HTML drops 366 KB → 133 KB (−64%), and the round lookup is filtered to shipped sessions. Verified equal to the old full-payload formula at the same instant (499 = 499) after fixing a first-cut bug where the per-series beyond items were subtracted from the tail.
+- **Landmine discovered en route**: a constant exported from a `'use client'` module reaches server importers as a client-reference proxy, not a value — `WEEK_MS` imported into the page made `horizon` NaN and silently collapsed the payload to 14 items (caught by the parity check, not by tsc — the type system says `number`). The shared constant now lives in `lib/date.ts` as `HOME_WEEK_MS`.
+
 ## 0.36.2 — 2026-06-13
 
 Categories parity (operator: "results in the Results tab but not in the per-session tab for the same weekend — simply stupid"). The class-based series now show their race classifications on weekend session pages, same data the Results tab renders.
