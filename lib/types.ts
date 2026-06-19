@@ -18,6 +18,12 @@ export interface SeriesMeta {
   seasonPage?: string;
   officialStandingsUrl?: string;
   officialSite?: string;
+  /** Where to watch the series — the official global streaming product where
+   *  one exists (F1 TV, MotoGP VideoPass, WRC+…), else the series' official
+   *  "how to watch" page for broadcast-by-region cases. `service` is the
+   *  display label ("F1 TV", "Watch on FOX"). Rendered as a "Watch on …" link
+   *  on the home UP NEXT card. Optional — absent → no link (graceful). */
+  watch?: { service: string; url: string };
   /** True for single-event series (one annual race, not a championship).
    *  Drives a slimmer tab set: Calendar + About + Champions only. */
   singleEvent?: boolean;

@@ -9,5 +9,6 @@
   "championsPage": "List_of_NASCAR_Cup_Series_champions",
   "seasonPage": "2026_NASCAR_Cup_Series",
   "officialStandingsUrl": "https://www.nascar.com/standings/",
-  "officialSite": "https://www.nascar.com/"
+  "officialSite": "https://www.nascar.com/",
+  "watch": { "service": "NASCAR", "url": "https://www.nascar.com/" }
 }

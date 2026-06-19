@@ -232,11 +232,20 @@ followed-first + active-dominant + collapse beyond 6.
   upgrade extends to the new blocks.
 
 ### Sequencing (PRs, after #145 merges; one versioned PR at a time)
-- **PR A — data + curation**: `meta.watch` schema + 15 watch links; `media.json` loader
-  + latest-round highlight per series; `/app` latest-result fetch + KV cache. No new UI.
-- **PR B — home v3 UI**: JustMissed + UpNext + demoted week + demoted wire; desktop
-  two-column, phone stack. Browser-verify 390/820/1440 localhost + preview; motion +
-  sticky probes per gates.
+Refined 2026-06-19 from "all-data-then-all-UI" to **vertical slices** — each PR ships
+a complete, consumed, browser-verifiable surface, so no PR lands an orphaned loader
+(the audit's 1a-10 dead-code-with-tests anti-pattern). Same design, cleaner increments.
+- **Slice 1 — watch links** ✅ (0.36.6): `meta.watch` schema + 15 curated watch links +
+  "Watch on …" rendered on the UP NEXT chyron card AND the live-takeover card (where-to-
+  watch matters most when a session is on). Verified 390 + 1440, live (DTM→YouTube) and
+  next (F1→F1 TV) branches. imsa/nascar/indycar use official-site/how-to-watch fallbacks
+  (region-fragmented) — flagged for operator refinement.
+- **Slice 2 — JUST MISSED block**: `media.json` loader + curated highlights (latest race
+  per series) + `lib/home-results.ts` latest-finished-race fetch (KV-cached, 6 covered
+  series + link-out) + the block UI. Each piece consumed in the same PR.
+- **Slice 3 — restructure**: demote "This week" (collapsed) + Paddock-wire chip fix
+  (Hick's) + desktop two-column JUST MISSED | UP NEXT. Pure layout pass. Browser-verify
+  390/820/1440 localhost + preview; motion + sticky probes per gates.
 - Highlights back-catalog + weekend-page WeekendMedia reuse = follow-on, non-gating.
 
 ### Won't do in home v3

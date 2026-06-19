@@ -8,5 +8,6 @@
   "wikipediaPage": "FIA_World_Endurance_Championship",
   "seasonPage": "2026_FIA_World_Endurance_Championship",
   "officialStandingsUrl": "https://www.fiawec.com/en/page/manufacturers-classification",
-  "officialSite": "https://www.fiawec.com/"
+  "officialSite": "https://www.fiawec.com/",
+  "watch": { "service": "FIAWEC+", "url": "https://plus.fiawec.com/en" }
 }

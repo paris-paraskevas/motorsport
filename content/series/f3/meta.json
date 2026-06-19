@@ -9,5 +9,6 @@
   "championsPage": "List_of_FIA_Formula_3_Championship_drivers",
   "seasonPage": "2026_FIA_Formula_3_Championship",
   "officialStandingsUrl": "https://www.fiaformula3.com/Standings",
-  "officialSite": "https://www.fiaformula3.com/"
+  "officialSite": "https://www.fiaformula3.com/",
+  "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" }
 }

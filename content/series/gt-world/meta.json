@@ -8,5 +8,6 @@
   "wikipediaPage": "GT_World_Challenge_Europe",
   "seasonPage": "2026_GT_World_Challenge_Europe",
   "officialStandingsUrl": "https://www.gt-world-challenge-europe.com/standings",
-  "officialSite": "https://www.gt-world-challenge-europe.com/"
+  "officialSite": "https://www.gt-world-challenge-europe.com/",
+  "watch": { "service": "GT World", "url": "https://www.gt-world-challenge-europe.com/watch-live" }
 }

@@ -7,5 +7,6 @@
   "category": "endurance",
   "wikipediaPage": "24_Hours_of_Nürburgring",
   "officialSite": "https://www.24h-rennen.de/en/",
-  "singleEvent": true
+  "singleEvent": true,
+  "watch": { "service": "24h Nürburgring", "url": "https://www.24h-rennen.de/en/live-en/" }
 }

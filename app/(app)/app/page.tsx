@@ -52,6 +52,7 @@ export default async function Home() {
         color: s.meta.color,
         seriesName: s.meta.name,
         seriesSlug: s.meta.slug,
+        watch: s.meta.watch,
       })),
     )
     .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());

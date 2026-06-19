@@ -9,5 +9,6 @@
   "championsPage": "List_of_Formula_E_champions",
   "seasonPage": "2025%E2%80%9326_Formula_E_World_Championship",
   "officialStandingsUrl": "https://www.fiaformulae.com/en/standings",
-  "officialSite": "https://www.fiaformulae.com/"
+  "officialSite": "https://www.fiaformulae.com/",
+  "watch": { "service": "Formula E", "url": "https://www.fiaformulae.com/en/ways-to-watch" }
 }

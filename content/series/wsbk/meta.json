@@ -8,5 +8,6 @@
   "wikipediaPage": "Superbike_World_Championship",
   "seasonPage": "2026_Superbike_World_Championship",
   "officialStandingsUrl": "https://www.worldsbk.com/en/standings",
-  "officialSite": "https://www.worldsbk.com/"
+  "officialSite": "https://www.worldsbk.com/",
+  "watch": { "service": "WorldSBK VideoPass", "url": "https://www.worldsbk.com/en/videopass" }
 }
