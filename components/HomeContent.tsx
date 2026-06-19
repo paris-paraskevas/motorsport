@@ -208,9 +208,17 @@ export function HomeContent({
       }
     }
   }
-  const topNews = (
-    newsFilter ? filteredNews.filter(n => n.seriesSlug === newsFilter) : filteredNews
-  ).slice(0, NEWS_LIMIT);
+  // Dedupe by link before slicing: motorsport.com cross-posts the same story
+  // to multiple series feeds, so an unfiltered "All" view rendered it twice
+  // back-to-back under different chips (heuristic walk 2026-06). Per-series
+  // filtering is unaffected — a single-series view has no cross-series dups.
+  const newsForView = newsFilter
+    ? filteredNews.filter(n => n.seriesSlug === newsFilter)
+    : filteredNews;
+  const seenLinks = new Set<string>();
+  const topNews = newsForView
+    .filter(n => (seenLinks.has(n.link) ? false : seenLinks.add(n.link)))
+    .slice(0, NEWS_LIMIT);
 
   const isEmptyFromFilter =
     hydrated && followed !== null && followed.length < items.length;

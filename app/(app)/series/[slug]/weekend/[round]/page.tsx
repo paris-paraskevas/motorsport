@@ -177,10 +177,6 @@ export default async function WeekendPage({
       <WeekendStandingsSnapshot series={series} round={round} isPast={isPast} />
 
       <WeekendNews series={series} weekend={weekend} />
-
-      <p className="mt-10 text-center text-[11px] uppercase tracking-[0.16em] text-text-faint">
-        Predictions and comments coming soon
-      </p>
     </div>
   );
 }

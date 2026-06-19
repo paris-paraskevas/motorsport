@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.4 — 2026-06-19
+
+Heuristic-walk quick wins (read-only NN/g + Hick's + WCAG 2.2 pass over the live app, phone). The design-led items it surfaced — home v3, weekend "lead with result," the Hick's chip-row — are held for the W5/home-v3 spec; this PR is the well-scoped fixes only. Every fix browser-verified on a fresh server.
+
+### Fixed
+
+- **Contrast — WCAG 1.4.3.** `--text-faint` lifted `#71717a` → `#84848e`. The old value measured 3.6–4.2:1 (below the 4.5:1 AA floor) on the session times and 10px micro-labels that use it; the new value clears 4.5:1 on all three surface layers (verified worst-case 5.43:1) while staying dimmer than `--text-muted` (≈7:1, untouched) so the text → muted → faint hierarchy holds. One token, every screen.
+- **Live/past contradiction on /calendar (code-audit 2-8).** `SessionCard` computed live/past from a bare `new Date()` at module render — under the page's 5-min ISR that left finished sessions tagged "LIVE", and `formatRelative` returned "past" for *any* started session, so a genuinely-live one rendered the LIVE pill **and** a "past" label. Fixed two ways: a hydration-safe clock (`lib/use-now.ts`, extracted from HomeContent — its real second consumer) threaded calendar page → `FilteredSessions` → `SessionCard`, and the right-hand label now reads "now" for a live session. Verified: 0 contradictions, live card shows "MotoGP - FP1 · live · now".
+- **Duplicate news on the home wire (NN #8).** motorsport.com cross-posts the same story to multiple series feeds, so the unfiltered "All" view rendered it twice back-to-back under different chips. `HomeContent` now dedupes the rendered list by link; per-series filtering is unaffected.
+- **Removed the "Predictions and comments coming soon" placeholder** from weekend pages — it advertised an absent feature (NN #8).
+- **Honest calendar copy (NN #2).** The /calendar header claimed "your local time" while times render in a labelled fixed zone (EEST) for everyone until the device-local upgrade lands with home v3 — changed to "Every session · your followed series · one timeline". (The matching landing/metadata copy is noted for the home-v3 honesty sweep.)
+
+### Notes
+
+The full heuristic walk (per-screen findings + the held design items) is the evidence base for the W5 / home-v3 spec — see the session handoff. Deferred from this PR: the duplicate-`:root` merge (audit 4-7, cosmetic), the broad 24px target-size sweep (WCAG-pass session), tab-rail discoverability, and the Hick's chip-row redesign (folds into home v3).
+
 ## 0.36.3 — 2026-06-13
 
 Audit PR-2: honest clock times + the home payload diet (HIGHs 2-1 minimal + 2-2/3-2).
