@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.37.0 — 2026-06-19
+
+Home v3 / W5 — slice 2: the JUST MISSED block. The home gains a retrospective hero (what just happened) above the existing UP NEXT chyron — second increment of the signed-off home-v3 spec.
+
+### Added
+
+- **`lib/home-results.ts`** — "who won the last race" for the home. Reuses the Results-tab season fetchers but returns only the latest finished race's top-3. Coverage: single-class flat `RaceResult[]` series (f1/f3/formula-e/indycar/motogp) + WEC's overall (Hypercar) order; everything else (F2's custom shape, NASCAR/IMSA/GT-World/WRC/DTM/WSBK/NLS) link-outs. Each lookup is KV-cached on its small result (not the season) so a heavy fan-out — MotoGP re-fetches every round with no parser cache — runs at most once per TTL; fail-soft (any error → null → link-out). `latestRaceFromFlat` unit-tested.
+- **`lib/media.ts`** — `content/series/<slug>/media.json` loader (`{ [round]: { highlight } }`) + `highlightForRound`, both fail-soft. Seeds the long-parked WeekendMedia idea. First curation: `content/series/f1/media.json` (round 7 → official Barcelona GP race-highlights id, source-verified).
+- **`lib/date.ts` `JUST_MISSED_WINDOW_MS`** (14 days) — shared server-gate + client-cap window; non-`'use client'` module per the WEEK_MS client-reference-proxy landmine.
+- **JUST MISSED block** (`HomeContent`): hero (latest finished race) + up to 2 quiet rows, **cap 3, ranked podium-first then recency** — a result we can show beats a more recent race we can only link out to (NASCAR/WSBK/F2…), so the block always leads with "who won". Filtered to followed series client-side. Hero = top-3 **+ article** (latest series news, honestly labelled "Latest · <series>", not implied to be a race report) **+ highlight** (curated YouTube link); "See full results" link-out for uncovered series; hidden when nothing raced in-window.
+
+### Changed
+
+- **`app/(app)/app/page.tsx`** — builds `justMissed[]`: covered series fetch the authoritative podium (gated on being active in-window so the off-season + MotoGP fan-out don't fetch; kept only if the race day is itself in-window), uncovered series render a link-out from their latest in-window race session.
+- **`docs/redesign-2026-06.md`** — slice 2 marked done in the home-v3 sequencing.
+
+### Verified
+
+- 390 + 1440 on a fresh server: hero with full podium + article + highlights (F1 Barcelona — Hamilton/Russell/Norris + official highlights), quiet rows (F3 winner; WEC Le Mans → Toyota Racing); link-out path; graceful highlight/article absence. 0 console errors; `tsc` + lint + 405 tests green.
+
 ## 0.36.6 — 2026-06-19
 
 Home v3 / W5 — slice 1: "Watch on …" links. First increment of the signed-off home-v3 spec (`docs/redesign-2026-06.md`); vertical-slice sequencing (each PR ships a consumed, browser-verifiable surface — no orphaned loaders).
