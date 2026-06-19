@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.5 — 2026-06-19
+
+Android TWA enablement: Digital Asset Links hosting for the PWABuilder-packaged Play Store app (`com.paddock_tracker.twa`). Code-only half of the gating step — the operator hosts the `.aab`/keystore out of the repo.
+
+### Added
+
+- **`public/.well-known/assetlinks.json`** — Digital Asset Links statement delegating `handle_all_urls` to the Android app, so the installed TWA verifies the `paddock-tracker.com` origin and runs chromeless (no browser URL bar). Currently carries the PWABuilder **upload-key** SHA-256 only. The **Play App Signing** certificate fingerprint MUST be appended as a second entry in `sha256_cert_fingerprints` once the `.aab` is uploaded and Play App Signing is enabled — Play-distributed installs (including the 12-tester closed test) are re-signed with Google's key, so without it the store build shows the URL bar even though a sideloaded `.apk` (upload-key-signed) verifies fine.
+
+### Changed
+
+- **`proxy.ts` matcher** — added `\\.well-known` to the negative-lookahead so Clerk middleware skips the `.well-known` namespace. Required because the matcher's `js(?!on)` clause deliberately lets `.json` paths flow through middleware; without the skip Clerk would run on `/.well-known/assetlinks.json`. Idiomatic per the Next 16 proxy doc, whose own example matcher special-cases `.well-known`. Verified on a fresh dev server: the file returns 200 / `application/json` / no redirect, the landing still 200s, and `/api/user/*` stays protected.
+
 ## 0.36.4 — 2026-06-19
 
 Heuristic-walk quick wins (read-only NN/g + Hick's + WCAG 2.2 pass over the live app, phone). The design-led items it surfaced — home v3, weekend "lead with result," the Hick's chip-row — are held for the W5/home-v3 spec; this PR is the well-scoped fixes only. Every fix browser-verified on a fresh server.

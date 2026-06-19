@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.5 — 2026-06-19
+
+**Groundwork for the Android app.** Behind-the-scenes setup so Paddock can ship as an installable app on the Google Play Store. Nothing changes on the website itself yet.
+
 ## 0.36.4 — 2026-06-19
 
 **Readability and a few honesty fixes.** Dimmed text — session times, captions, small labels — is now brighter and easier to read across the whole app (it was below the accessibility contrast standard). Live sessions on the calendar no longer show a confusing "past" tag next to their LIVE marker. The home news feed no longer repeats the same story twice when it's filed under two series. Plus a couple of tidied-up labels.

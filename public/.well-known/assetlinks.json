@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.paddock_tracker.twa",
+      "sha256_cert_fingerprints": [
+        "AA:1E:ED:0E:8A:4F:CC:54:EB:B2:F5:45:B3:A7:7E:6C:B8:FB:23:68:EB:6A:5E:49:74:E1:6A:99:C6:26:0B:82"
+      ]
+    }
+  }
+]
