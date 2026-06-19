@@ -6,7 +6,58 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 0.12.13.1 GT-World trend chart (or 0.12.15 DTM)
+## ⚡ Next session pickup — 2026-06-19 (main 0.36.3; PR #144 = 0.36.4 OPEN)
+
+**First action: merge PR #144 (0.36.4) and prod-verify it** — /calendar shows no LIVE+past contradiction, /app has no duplicate news, faint text reads brighter. Then the queue below.
+
+### Shipped this session (0.36.0 → 0.36.4)
+
+- **#140 (0.36.0)** WEC per-round race results via fiawec.com's Symfony UX Live Component — there is NO open JSON feed for WEC (Al Kamel portal is PDF-only; the alkamelcloud host that serves IMSA JSON is a private backoffice). `lib/results/wec.ts` POSTs `/en/_components/Editorial%3ACMS%3ACompleteResultsComponent` with the signed props blob read fresh from the page each fetch (no cookies/CSRF; same-origin headers). Race + category ids curated in `content/series/wec/fiawec-races.json` — **category ids must be curated, the component response ships the select empty.** Class-aware (Hypercar/LMP2/LMGT3), crews joined from standings by car number, no points → no chart.
+- **#141 (0.36.1)** audit HIGH fixes. Round-assignment rewrite (`lib/rounds.ts`): weekends no rounds.json entry covers → **round 0** (excluded from URLs/sitemap/links, rendered "Testing · non-championship") — MotoGP pre-season tests were serving as /weekend/1-3. Multi-round weekends **split** per rounds.json (`splitAcrossRounds`) — 6 FE doubleheader rounds incl. the finale were 404'ing. Sitemap weekend URLs now derive from `groupByWeekend` (same as pages). F2 → canonical `Standings[].RacePoints` (pole/FL/red-flag exact; the F3 0.12.1 pattern). New `SnapshotSource.pointsExact` gate: FE + IndyCar get the link-out instead of summing inexact points. scaffold-series.mjs meta.json → write-if-missing. CLAUDE.md landmine #6 corrected (crons fail-CLOSED).
+- **#142 (0.36.2)** IMSA + GT World race-session class classifications (the "categories parity" fix — a class with results on the Results tab now shows them on the weekend session page too). GT World needed its missing rounds: curated `content/series/gt-world/event-rounds.json` substring map → unlocks BOTH session pages AND Results-tab weekend links (gap since 0.25.0). One consolidated class-results dispatch in `[session]/page.tsx` covers wec/imsa/gt-world.
+- **#143 (0.36.3)** tz labels on every fixed-zone clock (`formatLocal` → "Sat, 14:00 EEST") + honest tabs.ts copy; /app payload diet 366KB→133KB (ships live+week+one-next-per-series + per-series counts, not the whole season).
+- **#144 (0.36.4) OPEN** heuristic-walk fixes: WCAG contrast lift (`--text-faint` #71717a→#84848e, was 3.6–4.2:1, now ≥5.4:1, all surface layers); live/past label contradiction on /calendar (hydration-safe `lib/use-now.ts` threaded calendar→FilteredSessions→SessionCard + label reads "now" when live); home news dedup by link; removed weekend "predictions coming soon" placeholder; honest /calendar header copy.
+
+### The full codebase audit (docs/research/code-audit-2026-06.md)
+
+60 findings (7 HIGH / 23 MED / 30 LOW), 4 staged waves, every source line read. HIGHs all shipped (round/FE/F2/snapshot in #141, tz/payload in #143, contrast in #144). **MED/LOW batches remain, unscheduled:** notify-cron 15-min window slack + split the news job; sprint results-ready regex never matches; WEC standings fails OPEN (should fail closed); blog SEO trio (sitemap/canonical/ISR); dead `components/ui` kit + 9 droppable packages (next-themes drops today, zero refs); the 3 real lint hook-errors; copy-paste consolidations (3 accordion families, time helpers, cron gating). All itemized in the doc.
+
+### Home v3 + UX direction (operator's main thread — SPEC-FIRST)
+
+Operator wants the home rebuilt around two blocks: **"JUST MISSED"** (past: result + article + post-session video) and **"UP NEXT"** (upcoming: countdown + where-to-watch), news demoted to secondary. Their words: "simple, not another shitload of information... relaxing to the eye." **Write the W5/home-v3 spec into `docs/redesign-2026-06.md`, get sign-off, THEN build — do not redesign blind.**
+
+Evidence base = a read-only heuristic walk (NN/g 10 + Hick's + WCAG 2.2, prod @390px, this session). Held findings to fold into the spec (these live only here + in chat):
+- **Hick's chip row**: home news filter = 14 equal-weight chips → followed-first, active dominant, collapse past ~6 behind "Filter ▾". Reusable pattern.
+- **Weekend priority inversion**: a PAST race buries "who won" behind a session tap while showing 33 rows of frozen standings inline → lead with the result, standings top-N behind disclosure.
+- Collapsed day-rows = color dots + faint counts, no legend (recall-not-recognition, NN #6); tab-rail discoverability (7-8 tabs, later ones cut off); broad 24px target-size sweep (WCAG 2.5.8); the "Coffee" donation button is the loudest element on every page.
+- Operator's reference list: lawsofux.com, uilaws.com, Refactoring UI, Don't Make Me Think, NN/g heuristics, WCAG 2.2.
+
+After home v3: a landing scroll-animation set-piece ("an F1 car comes near as you scroll") — draft prototype, CSS scroll-timeline or canvas scrub, reduced-motion fallback. In IDEAS.
+
+### Play Store / Android TWA — PACKAGING IN FLIGHT, time-sensitive
+
+Approach: **TWA via PWABuilder** (not Bubblewrap). Operator has run PWABuilder against paddock-tracker.com and is **waiting on it to package the .aab.** Play Console account verification also in progress; the 12-tester / 14-day closed test is the launch critical path (needs account verified + .aab uploaded). PWABuilder captures the LIVE manifest + SW (currently 0.36.x).
+
+Tasks in order:
+1. **GATING — host Digital Asset Links.** PWABuilder hands over the .aab + a generated `assetlinks.json` + the signing SHA-256. Host at `https://paddock-tracker.com/.well-known/assetlinks.json` AND add a `.well-known` skip to `proxy.ts` (its matcher runs Clerk on `.json` paths — verify clean 200 `application/json`, no redirect). **Without this the TWA ships with the browser URL bar = looks broken.** GOTCHA: Play App Signing re-signs the app → the final fingerprint is the "App signing key certificate" in Play Console, not PWABuilder's upload key → **put BOTH fingerprints in assetlinks.json.** ~15-min task once the fingerprint is in hand; it's the one real blocker to a chrome-less TWA.
+2. **Offline route (ship-then-repackage):** no fallback exists → TWA shows Chrome's dino offline. Add `app/~offline` + serwist `fallbacks`, ship to prod, re-run PWABuilder. OK to launch v1 without, add next.
+3. **Manifest polish (ship-then-repackage):** `id`, `scope: "/"`, `shortcuts`.
+4. Operator: upload .aab → start the closed test the day the account verifies.
+
+### Other queued
+- **NLS standings** (content-gap #2): teilnehmer.vln.de PDF, direct-download verified May.
+- **OpenF1 KV-persist armor**: api.openf1.org 401s ALL endpoints (incl. historical) during any live F1 session → F1 per-session classifications break on race weekends. Persist-once to KV. (Gasly/Monaco results-override is moot — Jolpica caught up to the P3 correction.)
+- **Results re-check lifecycle** (operator idea): re-verify results at +1w/+1m/season-end because penalties overturn late. KV snapshot + diff cron + curation flag.
+
+### Date-bound
+- **IMSA Watkins Glen Jun 28**: add R6 race to `content/series/imsa/alkamel-rounds.json`.
+
+### Landmine learned this session
+A constant exported from a `'use client'` module reaches **server** importers as a client-reference proxy, NOT its value — silently became NaN, tsc didn't catch it (the WEEK_MS bug fixed in 0.36.3). Shared client/server constants live in a plain module (`lib/date.ts`), never exported from a `'use client'` file.
+
+---
+
+## ⚡ Archived pickup — 0.12.13.1 GT-World trend chart (or 0.12.15 DTM)
 
 **Fri 2026-05-22 shipped 5 PRs, all merged.** Versions in order:
 - **0.12.11 (PR #90)** — IMSA full-class results via Al Kamel JSON API at `imsa.results.alkamelcloud.com`. Open Apache index, no auth, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class. Per-round URLs curated in `content/series/imsa/alkamel-rounds.json` (folder layout isn't catalog-discoverable — 24h races nest under `24_Hour 24/`, sprints sit under `Race/`). Schema mirrors `lib/standings/imsa.ts` (`Partial<Record<ImsaClass, ...>>`). Operator-verified on prod.
