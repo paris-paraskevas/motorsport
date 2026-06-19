@@ -60,12 +60,12 @@ export default async function CalendarPage() {
             Calendar<span className="text-brand">.</span>
           </h1>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
-            Every session · followed series · your local time
+            Every session · your followed series · one timeline
           </p>
         </div>
       </header>
 
-      <FilteredSessions items={upcoming} roundByKey={roundByKey} />
+      <FilteredSessions items={upcoming} roundByKey={roundByKey} serverNow={now.toISOString()} />
     </div>
   );
 }

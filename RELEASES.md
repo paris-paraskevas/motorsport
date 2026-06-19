@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.4 — 2026-06-19
+
+**Readability and a few honesty fixes.** Dimmed text — session times, captions, small labels — is now brighter and easier to read across the whole app (it was below the accessibility contrast standard). Live sessions on the calendar no longer show a confusing "past" tag next to their LIVE marker. The home news feed no longer repeats the same story twice when it's filed under two series. Plus a couple of tidied-up labels.
+
 ## 0.36.3 — 2026-06-13
 
 **Clearer times, faster home.** Session times on calendars and weekend schedules now show their time zone ("15:00 EEST") so there's no guessing whose clock they're on — full automatic local-time conversion everywhere arrives with the upcoming home page redesign. And the home page got dramatically lighter: it loads about a third of the data it used to, with everything you see unchanged.

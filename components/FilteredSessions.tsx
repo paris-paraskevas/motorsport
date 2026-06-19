@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { Session } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
+import { useNow } from '@/lib/use-now';
 import { groupByDay } from '@/lib/group';
 import { monthKey, pickDefaultMonth } from '@/lib/months';
 import { SessionCard } from './SessionCard';
@@ -18,11 +19,14 @@ interface SessionEntry {
 export function FilteredSessions({
   items,
   roundByKey,
+  serverNow,
 }: {
   items: SessionEntry[];
   roundByKey?: Record<string, number>;
+  serverNow: string;
 }) {
   const { followed, hydrated } = useFollowedSeries();
+  const { now } = useNow(serverNow);
 
   const filtered =
     hydrated && followed !== null
@@ -103,6 +107,7 @@ export function FilteredSessions({
                   session={s}
                   color={colorByUid[s.uid]}
                   round={roundByKey?.[`${s.seriesSlug}:${s.uid}`]}
+                  now={now}
                 />
               ))}
             </div>

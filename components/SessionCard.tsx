@@ -10,13 +10,18 @@ export function SessionCard({
   color,
   round,
   weather,
+  now = new Date(),
 }: {
   session: Session;
   color: string;
   round?: number;
   weather?: DailyWeather;
+  // Hydration-safe clock from the client parent (FilteredSessions/useNow).
+  // A bare module-render `new Date()` ran at SSR time and, under the page's
+  // 5-min ISR, left finished sessions tagged "LIVE" until the next rebuild —
+  // the LIVE-and-"past"-at-once contradiction on /calendar (heuristic walk).
+  now?: Date;
 }) {
-  const now = new Date();
   const isLive = !session.dateOnly && session.start <= now && now <= session.end;
   const isPast = !isLive && session.end < now;
   const href = round
@@ -97,7 +102,10 @@ export function SessionCard({
       </div>
 
       <span className="text-xs font-medium text-text-muted tnum font-mono self-center whitespace-nowrap">
-        {session.dateOnly ? 'TBC' : formatRelative(session.start)}
+        {/* A started session has start < now, so formatRelative returns
+            "past" — which contradicts the LIVE pill for an in-progress one.
+            Live → "now"; only genuinely-finished sessions read "past". */}
+        {session.dateOnly ? 'TBC' : isLive ? 'now' : formatRelative(session.start, now)}
       </span>
     </Link>
   );
