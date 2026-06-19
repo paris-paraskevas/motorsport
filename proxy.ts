@@ -21,8 +21,10 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Skip Next.js internals, the .well-known namespace (Digital Asset Links —
+    // the matcher's js(?!on) deliberately lets .json through, so without this
+    // skip Clerk would run on /.well-known/assetlinks.json), and all static files
+    '/((?!_next|\\.well-known|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
