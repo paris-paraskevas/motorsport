@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.36.6 — 2026-06-19
+
+Home v3 / W5 — slice 1: "Watch on …" links. First increment of the signed-off home-v3 spec (`docs/redesign-2026-06.md`); vertical-slice sequencing (each PR ships a consumed, browser-verifiable surface — no orphaned loaders).
+
+### Added
+
+- **`SeriesMeta.watch` + 15 curated watch links** (`content/series/<slug>/meta.json`): the official global streaming product where one exists — F1 TV (f1/f2/f3), MotoGP VideoPass, WorldSBK VideoPass, Rally.TV, FIAWEC+, Formula E ways-to-watch, GT World watch-live, DTM + NLS free YouTube — else the series' official watch/how-to-follow page for the region-fragmented US series (imsa/nascar/indycar, flagged for operator refinement; adac → 24h-rennen live). Each URL checked against its official source.
+- **"Watch on <service>" link on the home chyron** (`HomeContent`): rendered on the UP NEXT card and on each live-takeover card (where-to-watch matters most while a session is on). Implemented as an external link **outside** the card's `<Link>` — nested anchors are invalid HTML — by wrapping the card + link in a padded `<div>`. Threaded via a new optional `HomeItem.watch` from `app/(app)/app/page.tsx` (`s.meta.watch`). Graceful absence: no `watch` → no link.
+
+### Changed
+
+- **`docs/redesign-2026-06.md`**: home-v3 (W5) spec authored + signed off (two-block JUST MISSED / UP NEXT home, news demoted, "This week" kept-demoted); build sequencing refined from all-data-then-all-UI to vertical slices (this is slice 1; slice 2 = JUST MISSED, slice 3 = restructure).
+
+### Verified
+
+- 390 + 1440 on a fresh dev server: live branch (DTM → "Watch on YouTube") and next branch (F1 → "Watch on F1 TV"); 0 console errors; `tsc` + scoped lint + 15-meta JSON parse all green.
+
 ## 0.36.5 — 2026-06-19
 
 Android TWA enablement: Digital Asset Links hosting for the PWABuilder-packaged Play Store app (`com.paddock_tracker.twa`). Code-only half of the gating step — the operator hosts the `.aab`/keystore out of the repo.

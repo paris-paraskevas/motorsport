@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ExternalLink, MapPin } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, MapPin, Tv } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -16,6 +16,7 @@ interface HomeItem {
   color: string;
   seriesName: string;
   seriesSlug: string;
+  watch?: { service: string; url: string };
 }
 
 interface NewsItemSerialized {
@@ -243,10 +244,10 @@ export function HomeContent({
         {liveItems.length > 0 ? (
           <div className="divide-y divide-border">
             {liveItems.map(item => (
+              <div key={`${item.seriesSlug}-${item.session.uid}`} className="py-4">
               <Link
-                key={`${item.seriesSlug}-${item.session.uid}`}
                 href={hrefFor(item)}
-                className="group flex flex-wrap items-center gap-x-4 gap-y-1 py-4"
+                className="group flex flex-wrap items-center gap-x-4 gap-y-1"
               >
                 <span className="inline-flex items-center gap-2">
                   <span className="relative inline-flex">
@@ -274,12 +275,26 @@ export function HomeContent({
                   <ArrowUpRight size={13} />
                 </span>
               </Link>
+              {item.watch && (
+                <a
+                  href={item.watch.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+                >
+                  <Tv size={12} />
+                  Watch on {item.watch.service}
+                  <ArrowUpRight size={12} className="opacity-60" />
+                </a>
+              )}
+              </div>
             ))}
           </div>
         ) : next ? (
+          <div className="py-4">
           <Link
             href={hrefFor(next)}
-            className="group flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between md:gap-6"
+            className="group flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6"
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
@@ -339,6 +354,19 @@ export function HomeContent({
               </div>
             )}
           </Link>
+          {next.watch && (
+            <a
+              href={next.watch.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+            >
+              <Tv size={12} />
+              Watch on {next.watch.service}
+              <ArrowUpRight size={12} className="opacity-60" />
+            </a>
+          )}
+          </div>
         ) : (
           <div className="py-4 text-sm text-text-faint">
             {isEmptyFromFilter ? (

@@ -8,5 +8,6 @@
   "wikipediaPage": "IndyCar_Series",
   "seasonPage": "2026_IndyCar_Series",
   "officialStandingsUrl": "https://www.indycar.com/Standings",
-  "officialSite": "https://www.indycar.com/"
+  "officialSite": "https://www.indycar.com/",
+  "watch": { "service": "IndyCar", "url": "https://www.indycar.com/how-to-follow" }
 }

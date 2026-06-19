@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.36.6 — 2026-06-19
+
+**Where to watch, right on the home page.** The "up next" and "live now" cards now carry a direct "Watch on …" link to each series' official stream or broadcast — F1 TV, MotoGP VideoPass, Rally.TV, FIAWEC+ and more — so you're one tap from tuning in.
+
 ## 0.36.5 — 2026-06-19
 
 **Groundwork for the Android app.** Behind-the-scenes setup so Paddock can ship as an installable app on the Google Play Store. Nothing changes on the website itself yet.

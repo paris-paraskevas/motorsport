@@ -9,5 +9,6 @@
   "championsPage": "List_of_IMSA_SportsCar_Championship_champions",
   "seasonPage": "2026_IMSA_SportsCar_Championship",
   "officialStandingsUrl": "https://www.imsa.com/standings",
-  "officialSite": "https://www.imsa.com/"
+  "officialSite": "https://www.imsa.com/",
+  "watch": { "service": "IMSA", "url": "https://www.imsa.com/" }
 }

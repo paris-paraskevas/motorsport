@@ -9,5 +9,6 @@
   "championsPage": "List_of_Grand_Prix_motorcycle_racing_World_champions",
   "seasonPage": "2026_MotoGP_World_Championship",
   "officialStandingsUrl": "https://www.motogp.com/en/standings",
-  "officialSite": "https://www.motogp.com/"
+  "officialSite": "https://www.motogp.com/",
+  "watch": { "service": "MotoGP VideoPass", "url": "https://www.motogp.com/en/videopass" }
 }

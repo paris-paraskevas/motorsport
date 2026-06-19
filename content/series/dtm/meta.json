@@ -8,5 +8,6 @@
   "wikipediaPage": "Deutsche_Tourenwagen_Masters",
   "seasonPage": "2026_Deutsche_Tourenwagen_Masters",
   "officialStandingsUrl": "https://www.dtm.com/en/live/standings",
-  "officialSite": "https://www.dtm.com/"
+  "officialSite": "https://www.dtm.com/",
+  "watch": { "service": "YouTube", "url": "https://www.youtube.com/@DTM/streams" }
 }

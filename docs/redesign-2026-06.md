@@ -128,6 +128,135 @@ the dashboard must link back to the landing (footer).
 **Folded-in audit items:** prompt stacking, desktop density, thin light-mode
 contrast bugs (mooted by dark-only), tab-grid density, chart-on-mobile.
 
+## Home v3 (W5) — spec — drafted 2026-06-19, awaiting sign-off
+
+**North star (operator):** a calm, time-symmetric home built around two blocks —
+**JUST MISSED** (what just happened) and **UP NEXT** (what's coming) — with news
+demoted. *"Simple, not another shitload of information… relaxing to the eye."*
+Replaces today's forward-only home (chyron + 7-day schedule + news two-column,
+0.15.0) with a past↔future pair. **Spec-first: build only after sign-off.**
+
+### Evidence base
+Read-only heuristic walk (NN/g + Hick's + Fitts's + WCAG 2.2, prod @390px, 2026-06).
+Findings that shape this home:
+- **Hick's** — the news filter is 14 equal-weight chips; choice cost is real →
+  followed-first ordering, active chip dominant, collapse beyond ~6 behind "+N more".
+- **Recall-not-recognition** — collapsed day-rows are dots + faint counts with no
+  legend → keep the dot language but always name the series on the row; dots are an
+  aid, not the only signal.
+- **Fitts's / target size** — 24px minimum tap targets across the home (several <24px today).
+- **Aesthetic-usability + Miller's** — the donation ("Coffee") button is currently the
+  loudest element on every page; home v3 must let content outweigh utility (site-wide
+  Coffee fix tracked separately; home v3 won't reintroduce the imbalance).
+- Weekend-page priority inversion (lead with result) is a separate W1 finding, noted
+  because JUST MISSED applies the same "who won first" principle on the home.
+
+### Locked decisions (AskUserQuestion 2026-06-19)
+1. **Where-to-watch = curated, one link per series.** New per-series official
+   watch/stream link (F1 TV, MotoGP VideoPass, WRC+, …). UP NEXT renders "Watch on …".
+   One global service link, **not** broadcast-by-country.
+2. **Post-session video = curated now.** Per-round YouTube highlight IDs. Bounded by
+   the block: JUST MISSED only shows the *latest finished* race per series, so
+   steady-state curation is ~1 ID per series per weekend, **not** the full back-catalog
+   (back-catalog is optional/lazy and seeds the long-parked WeekendMedia program for
+   reuse on weekend pages later).
+3. **"This week" = kept, demoted.** Two blocks are the hero; the 7-day list stays
+   beneath, collapsed/slim; Paddock wire becomes a thin strip under that.
+
+### Data availability (verified 2026-06-19)
+| Element | Source | Status |
+|---|---|---|
+| UP NEXT countdown | `session.start` + existing `Countdown` | ✓ live |
+| UP NEXT venue + weather | `matchCircuit` + `fetchWeather` | ✓ live |
+| UP NEXT where-to-watch | **new** per-series curated link (decision 1) | curate |
+| JUST MISSED winner/result | `results-ready.ts` fetchers — **f1, f3, formula-e, indycar, motogp, wec** | ✓ for 6; link-out for the other 9 |
+| JUST MISSED article | `fetchAggregatedNews` (latest from that series) | ✓ live |
+| JUST MISSED highlight | **new** per-round `media.json` (decision 2) | curate |
+
+### Layout — phone (390, primary)
+Single column, stacked:
+1. **JUST MISSED** — hero card (most-recent finished race across followed series) +
+   up to 2 quiet rows (cap 3, followed-first, most-recent-first). Hero: series dot +
+   name, race name (Saira), winner + podium (covered series) **or** "See results →"
+   (uncovered), one matched article link ("Latest from <series>"), highlight ▶ if
+   curated. Quiet rows: series · race · winner one-liner.
+2. **UP NEXT** — hero card (next session across followed series) + up to 2 quiet rows
+   (cap 3). Hero: series, session title, ticking countdown (existing), venue + weather,
+   "Watch on …" link. **Live takeover preserved**: a session on track turns the hero
+   into today's live chyron.
+3. **This week** — collapsed `<details>`, summary "This week · N sessions · TZ";
+   expands to today's day-grouped list. Default collapsed (the demotion); the
+   first-day-open behavior moves inside.
+4. **Paddock wire** — thin strip (~5 items), Hick's chip fix.
+
+### Layout — desktop (≥lg)
+Two-column hero: **JUST MISSED | UP NEXT** side by side (left = past, right = future).
+Below, full-width: **This week** (collapsed) then **Paddock wire** (thin). Max-width
+unchanged (max-w-6xl/7xl). No tabs.
+
+### Block detail
+**JUST MISSED** — selection: across followed series, most-recent race whose
+`end < now` and (covered series) results have rendered via `resultsRenderedFor`, else
+the most-recent finished race. Cap 3, followed-first, most-recent-first; hero = #1.
+Result line: covered → "P1 winner · P2 · P3" from `RaceResult[0..2]`; uncovered →
+"See full results →" to the Results tab. **Never fabricate.** Article: most-recent
+news item for that series (heuristic, not a guaranteed race report — labelled
+honestly). Video: `media.json[round].highlight` → `<YouTube>` thumb; absent → no row
+(no placeholder). Empty (pre-season, no finished races) → block hidden, UP NEXT leads.
+
+**UP NEXT** — existing `upcomingItems[0]` per followed series; cap 3; live takeover
+preserved. Countdown/venue/weather existing. Where-to-watch from the curated link.
+dateOnly → "This weekend · time TBC", no countdown (existing rule).
+
+**This week (demoted)** — today's `byDay` list inside a collapsed-by-default
+`<details>`. Dots + counts retained; series named on rows.
+
+**Paddock wire (demoted)** — `NEWS_LIMIT` ~5, dedupe-by-link (existing), chip row
+followed-first + active-dominant + collapse beyond 6.
+
+### New data models
+- **Watch link** — add `watch?: { service: string; url: string }` to `SeriesMeta`
+  (`content/series/<slug>/meta.json`). 15 curations, set once.
+- **media.json** — `content/series/<slug>/media.json`:
+  `{ [round: number]: { highlight?: string /* YouTube id */ } }`. Server loader
+  `lib/media.ts`. Seeds WeekendMedia; weekend pages reuse later.
+
+### Architecture / build plan
+- `/app` gains a "latest finished race per followed series" fetch via `results-ready.ts`
+  fetchers, **KV-cached** (reuse `results-cache.ts`; only fetch series with a race ended
+  in the last ~7 days). Serialize winner+podium like the news payload — keep the payload
+  diet (latest race per series only, never seasons).
+- `HomeContent` restructured into `<JustMissed>`, `<UpNext>` (absorbs the chyron live
+  takeover), `<ThisWeek>` (collapsed), `<PaddockWire>` (chip fix). Hydration-safe clock
+  (`useNow`/serverNow) preserved; TZ labels on all times (audit 2-1); device-local
+  upgrade extends to the new blocks.
+
+### Sequencing (PRs, after #145 merges; one versioned PR at a time)
+Refined 2026-06-19 from "all-data-then-all-UI" to **vertical slices** — each PR ships
+a complete, consumed, browser-verifiable surface, so no PR lands an orphaned loader
+(the audit's 1a-10 dead-code-with-tests anti-pattern). Same design, cleaner increments.
+- **Slice 1 — watch links** ✅ (0.36.6): `meta.watch` schema + 15 curated watch links +
+  "Watch on …" rendered on the UP NEXT chyron card AND the live-takeover card (where-to-
+  watch matters most when a session is on). Verified 390 + 1440, live (DTM→YouTube) and
+  next (F1→F1 TV) branches. imsa/nascar/indycar use official-site/how-to-watch fallbacks
+  (region-fragmented) — flagged for operator refinement.
+- **Slice 2 — JUST MISSED block**: `media.json` loader + curated highlights (latest race
+  per series) + `lib/home-results.ts` latest-finished-race fetch (KV-cached, 6 covered
+  series + link-out) + the block UI. Each piece consumed in the same PR.
+- **Slice 3 — restructure**: demote "This week" (collapsed) + Paddock-wire chip fix
+  (Hick's) + desktop two-column JUST MISSED | UP NEXT. Pure layout pass. Browser-verify
+  390/820/1440 localhost + preview; motion + sticky probes per gates.
+- Highlights back-catalog + weekend-page WeekendMedia reuse = follow-on, non-gating.
+
+### Won't do in home v3
+Driver/team enrichment, the landing scroll animation (sequenced after home v3), full
+WeekendMedia back-catalog, broadcast-by-country data.
+
+### Pre-mortem
+Most likely failure: the latest-result fetch makes `/app` slow/flaky on cold ISR (up to
+6 season fetchers). Mitigation: KV cache + only fetch series with a race ended in the
+last ~7 days; fail-soft to the "See results →" link-out, never block the page render.
+
 ## Verification gates (every redesign PR)
 
 - `npm test` + scoped lint + `tsc --noEmit` green.

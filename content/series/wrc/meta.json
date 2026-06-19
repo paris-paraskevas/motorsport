@@ -8,5 +8,6 @@
   "wikipediaPage": "World_Rally_Championship",
   "seasonPage": "2026_World_Rally_Championship",
   "officialStandingsUrl": "https://www.wrc.com/en/championship/standings/",
-  "officialSite": "https://www.wrc.com/"
+  "officialSite": "https://www.wrc.com/",
+  "watch": { "service": "Rally.TV", "url": "https://www.rally.tv/en" }
 }
