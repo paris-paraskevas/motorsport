@@ -240,9 +240,15 @@ a complete, consumed, browser-verifiable surface, so no PR lands an orphaned loa
   watch matters most when a session is on). Verified 390 + 1440, live (DTM→YouTube) and
   next (F1→F1 TV) branches. imsa/nascar/indycar use official-site/how-to-watch fallbacks
   (region-fragmented) — flagged for operator refinement.
-- **Slice 2 — JUST MISSED block**: `media.json` loader + curated highlights (latest race
-  per series) + `lib/home-results.ts` latest-finished-race fetch (KV-cached, 6 covered
-  series + link-out) + the block UI. Each piece consumed in the same PR.
+- **Slice 2 — JUST MISSED block** ✅ (0.37.0): `lib/home-results.ts` latest-finished-race
+  fetch (KV-cached + fail-soft) + `lib/media.ts` highlight loader + the block UI (hero +
+  2 rows). Podium coverage settled at the flat-`RaceResult[]` series (f1/f3/fe/indycar/
+  motogp) **+ WEC overall (Hypercar)** — the spec's "6"; the rest link-out. **Ranking
+  refined to podium-first then recency** (eyes-on caught that the 3 most-recent races were
+  all uncovered → block was all link-outs; podium-first makes it always lead with a
+  winner). Hero carries result + article (latest series news, honestly labelled) +
+  highlight. First highlight curated (F1 Barcelona r7). Ongoing per-race highlight
+  curation continues as a data task.
 - **Slice 3 — restructure**: demote "This week" (collapsed) + Paddock-wire chip fix
   (Hick's) + desktop two-column JUST MISSED | UP NEXT. Pure layout pass. Browser-verify
   390/820/1440 localhost + preview; motion + sticky probes per gates.

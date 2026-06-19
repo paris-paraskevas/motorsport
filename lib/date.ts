@@ -29,6 +29,13 @@ export function isWithinNextNDays(date: Date, n: number, now: Date = new Date())
 // client-reference proxy, not a number — horizon math silently became NaN.
 export const HOME_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
+// JUST MISSED (home v3) recency window: a finished race older than this drops
+// off the home's retrospective block, so it stays "just missed" not "a while
+// ago". Shared by the /app server gate (which series to fetch a podium for)
+// and HomeContent's client cap — same client-reference-proxy reason as
+// HOME_WEEK_MS keeps it out of a 'use client' module.
+export const JUST_MISSED_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
 export function formatLocal(date: Date, tz: string = 'Europe/Athens'): string {
   // These times are server-rendered in ONE fixed zone, so the zone must be
   // said: an unlabeled "14:00" reads as the visitor's own local time and is

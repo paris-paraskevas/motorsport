@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.37.0 — 2026-06-19
+
+**"Just missed" — your home now shows what just happened.** A new block at the top leads with the most recent race in the series you follow: who made the podium, a link to the latest story, and race highlights where we've added them. Series we don't yet carry full results for link straight to their results page. It sits above the "up next" countdown, so the home now covers both directions at a glance — the race you just missed and the one coming up.
+
 ## 0.36.6 — 2026-06-19
 
 **Where to watch, right on the home page.** The "up next" and "live now" cards now carry a direct "Watch on …" link to each series' official stream or broadcast — F1 TV, MotoGP VideoPass, Rally.TV, FIAWEC+ and more — so you're one tap from tuning in.

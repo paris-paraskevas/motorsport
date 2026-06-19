@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ExternalLink, MapPin, Tv } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, MapPin, Play, Tv } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -10,6 +10,7 @@ import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
 import { formatRelative, HOME_WEEK_MS } from '@/lib/date';
 import { SectionHead } from './SectionHead';
+import type { JustMissedItem } from '@/lib/home-results';
 
 interface HomeItem {
   session: Session;
@@ -126,6 +127,7 @@ function Countdown({ to, initialNow }: { to: Date; initialNow: Date }) {
 export function HomeContent({
   items,
   news,
+  justMissed,
   weatherByUid,
   roundByKey,
   serverNow,
@@ -135,6 +137,7 @@ export function HomeContent({
   // (so `next` resolves under any follow filter) — NOT the whole season.
   items: HomeItem[];
   news: NewsItemSerialized[];
+  justMissed?: JustMissedItem[];
   weatherByUid?: Record<string, DailyWeather>;
   roundByKey?: Record<string, number>;
   serverNow: string;
@@ -163,6 +166,32 @@ export function HomeContent({
     hydrated && followed !== null
       ? news.filter(n => followed.includes(n.seriesSlug))
       : news;
+
+  // JUST MISSED — filter to followed, cap 3 (hero + 2 rows). Rank cards that
+  // carry an actual podium ahead of link-out-only series, then by recency: the
+  // block's whole point is "who won", so a result we can show beats a more
+  // recent race we can only link out to (NASCAR/WSBK/F2 etc.).
+  const justMissedItems = (
+    hydrated && followed !== null
+      ? (justMissed ?? []).filter(j => followed.includes(j.seriesSlug))
+      : (justMissed ?? [])
+  )
+    .slice()
+    .sort((a, b) => {
+      const pa = a.podium && a.podium.length > 0 ? 1 : 0;
+      const pb = b.podium && b.podium.length > 0 ? 1 : 0;
+      if (pa !== pb) return pb - pa;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    })
+    .slice(0, 3);
+  const jmHero = justMissedItems[0];
+  const jmRest = justMissedItems.slice(1);
+  // Hero "article" — the latest news item for the hero's series. Honest
+  // heuristic (latest series story, not guaranteed a race report), so it's
+  // labelled "Latest · <series>" rather than implied to be about the race.
+  const heroArticle = jmHero
+    ? news.find(n => n.seriesSlug === jmHero.seriesSlug)
+    : undefined;
 
   const liveItems = filteredSessions.filter(
     i => !i.session.dateOnly && i.session.start <= now && now <= i.session.end,
@@ -386,6 +415,138 @@ export function HomeContent({
           </div>
         )}
       </section>
+
+      {/* ── JUST MISSED — what just happened. Hero (latest finished race) +
+             up to 2 quiet rows. Podium for covered series, link-out otherwise.
+             (Slice 3 pairs this side-by-side with UP NEXT on desktop.) ── */}
+      {jmHero && (
+        <section aria-label="Just missed" className="mb-8">
+          <SectionHead title="Just missed" sub="latest results" />
+          <div className="border-y border-border py-4">
+            <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: jmHero.color }}
+                />
+                <span className="font-semibold" style={{ color: jmHero.color }}>
+                  {jmHero.seriesName}
+                </span>
+              </span>
+              <span className="text-text-faint tnum">
+                {relativeAgo(new Date(jmHero.date), now)}
+              </span>
+            </div>
+            <a href={jmHero.resultsHref} className="group inline-block">
+              <span className="font-display text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-text leading-none">
+                {jmHero.raceName}
+              </span>
+            </a>
+            {jmHero.podium && jmHero.podium.length > 0 ? (
+              <ol className="mt-2.5 space-y-1">
+                {jmHero.podium.map(p => (
+                  <li
+                    key={p.position}
+                    className="flex items-baseline gap-2.5 text-sm min-w-0"
+                  >
+                    <span className="w-6 shrink-0 font-mono text-[11px] text-text-faint tnum">
+                      P{p.position}
+                    </span>
+                    <span
+                      className={
+                        p.position === 1
+                          ? 'font-semibold text-text'
+                          : 'text-text-muted'
+                      }
+                    >
+                      {p.name}
+                    </span>
+                    {p.detail && (
+                      <span className="min-w-0 truncate font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint">
+                        {p.detail}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <a
+                href={jmHero.resultsHref}
+                className="group mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+              >
+                See full results
+                <ArrowUpRight size={13} />
+              </a>
+            )}
+            {heroArticle && (
+              <a
+                href={heroArticle.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group mt-3 block min-w-0"
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                  Latest · {jmHero.seriesName}
+                </span>
+                <span className="mt-0.5 flex items-start gap-1.5 text-sm leading-snug text-text-muted transition-colors duration-(--duration-fast) group-hover:text-text">
+                  <span className="min-w-0 line-clamp-2">{heroArticle.title}</span>
+                  <ExternalLink size={12} className="mt-0.5 shrink-0 text-text-faint" />
+                </span>
+              </a>
+            )}
+            {jmHero.highlight && (
+              <a
+                href={`https://www.youtube.com/watch?v=${jmHero.highlight}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+              >
+                <Play size={12} />
+                Highlights
+                <ArrowUpRight size={12} className="opacity-60" />
+              </a>
+            )}
+          </div>
+          {jmRest.length > 0 && (
+            <div className="border-b border-border divide-y divide-border">
+              {jmRest.map(j => (
+                <a
+                  key={j.seriesSlug}
+                  href={j.resultsHref}
+                  className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                >
+                  <span
+                    className="self-stretch w-[3px] shrink-0"
+                    style={{ backgroundColor: j.color }}
+                  />
+                  <span className="flex-1 min-w-0">
+                    <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
+                      {j.raceName}
+                    </span>
+                    <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
+                      <span
+                        className="font-semibold whitespace-nowrap shrink-0"
+                        style={{ color: j.color }}
+                      >
+                        {j.seriesName}
+                      </span>
+                      {j.podium?.[0] && (
+                        <>
+                          <span>·</span>
+                          <span className="truncate">{j.podium[0].name}</span>
+                        </>
+                      )}
+                    </span>
+                  </span>
+                  <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
+                    {relativeAgo(new Date(j.date), now)}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
