@@ -11,6 +11,9 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
+import { Tv, ArrowUpRight } from 'lucide-react';
+import { VideoEmbed } from '@/components/VideoEmbed';
+import { loadMedia, highlightForRound } from '@/lib/media';
 
 // ISR: weekend pages edge-cache (was force-dynamic — uncached, slow per hit).
 // Everything here is cacheable — weather (KV), news, and the standings-snapshot
@@ -100,6 +103,11 @@ export default async function WeekendPage({
   const { start, end } = weekendStartEnd(weekend);
   const isPast = end.getTime() < now.getTime();
   const color = series.meta.color;
+  // Watch link + race highlights. loadMedia is an fs read (no fetch), so this
+  // stays ISR-safe. The headline clip shows once the weekend is in the past.
+  const media = await loadMedia(slug);
+  const raceHighlight = isPast ? highlightForRound(media, round) : undefined;
+  const watch = series.meta.watch;
   const { title: weekendTitleLabel } = weekendLabel(weekend, round);
   const eventName =
     weekendTitleLabel === `Round ${round}`
@@ -149,6 +157,29 @@ export default async function WeekendPage({
         seriesName={series.meta.name}
         color={color}
       />
+
+      {(raceHighlight || watch) && (
+        <section className="mb-8 border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+            {raceHighlight ? 'Highlights' : 'Where to watch'}
+          </h2>
+          {raceHighlight && (
+            <VideoEmbed id={raceHighlight} title={`${eventName} race highlights`} />
+          )}
+          {watch && (
+            <a
+              href={watch.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+            >
+              <Tv size={13} />
+              {isPast ? 'Watch on' : 'Watch live on'} {watch.service}
+              <ArrowUpRight size={12} className="opacity-60" />
+            </a>
+          )}
+        </section>
+      )}
 
       <WeekendWeatherStrip weekend={weekend} />
 

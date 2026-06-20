@@ -9,8 +9,14 @@ import path from 'path';
  * reuse the same file later.
  */
 export interface RoundMedia {
-  /** YouTube video id for the round's official post-session highlights. */
+  /** YouTube id for the round's headline (race) highlights — used by the home
+   *  JUST MISSED block, the weekend page, and the race session page. */
   highlight?: string;
+  /** Per-session YouTube ids keyed by session slug (`sessionSlug(title)` —
+   *  e.g. "qualifying", "free-practice-1", "sprint"), for the weekend's
+   *  individual session pages. The race session falls back to `highlight` so
+   *  the headline clip isn't curated twice. */
+  sessions?: Record<string, string>;
 }
 
 export interface MediaFile {
@@ -39,4 +45,18 @@ export function highlightForRound(
 ): string | undefined {
   if (round === undefined || round === null) return undefined;
   return media[String(round)]?.highlight;
+}
+
+/** YouTube id to embed for one session: its curated per-session clip if
+ *  present, else the round headline (`highlight`) when this IS the race
+ *  session. Undefined → no video for this session (renders nothing). */
+export function videoForSession(
+  media: MediaFile,
+  round: number | undefined,
+  sessionSlug: string,
+  isRace: boolean,
+): string | undefined {
+  if (round === undefined || round === null) return undefined;
+  const r = media[String(round)];
+  return r?.sessions?.[sessionSlug] ?? (isRace ? r?.highlight : undefined);
 }

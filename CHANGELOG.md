@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.0 — 2026-06-21
+
+Feat (WeekendMedia, prong c): **embedded session highlights + a watch link on race-weekend pages.**
+
+### Added
+
+- **`VideoEmbed`** (`components/VideoEmbed.tsx`) — a click-to-play YouTube facade: shows the video's poster (a thumbnail image — no cookies) with a play overlay; mounts the real `youtube-nocookie` iframe only on click. That's "an embedded video on every session" without N live iframes per page — zero iframes (and zero YouTube consent surface) until the user presses play, the one *minimize iframes* rule that applies to us. Tokens, not the blog `<YouTube>`'s zinc.
+- **Per-session media model** (`lib/media.ts`): `RoundMedia` gains `sessions?: Record<sessionSlug, youtubeId>` beside `highlight` (the race headline). `videoForSession(media, round, slug, isRace)` returns the per-session clip, falling back to `highlight` for the race session so the headline isn't curated twice. 6 new tests.
+- **Weekend `[round]` page**: a "Highlights" / "Where to watch" section — race highlight embedded on past weekends + a "Watch (live) on <service>" link from `meta.watch` (every series has one). `loadMedia` is an fs read, so the page stays ISR (`●`).
+- **`[session]` page**: that session's video embedded above the classification, for any series where a clip is curated.
+- **First curation**: F1 Barcelona-Catalunya GP (round 7) — every session (FP1 / FP2 / FP3 / Qualifying / Race), official F1-channel clips, each source-verified.
+
+### Notes
+
+The embed renders wherever `content/series/<slug>/media.json` carries a clip — graceful absence everywhere else; broad "all series, all sessions" coverage is an ongoing curation program seeded here. Series whose sessions aren't yet linked from the weekend page (DTM/WRC/NLS/ADAC) get the race highlight on the weekend page but no per-session pages yet (follow-up, tied to the deferred `[session]`-linking). Verified 390: weekend shows the race-highlights facade + "Watch on F1 TV"; each F1/7 session page embeds its own clip (race via the `highlight` fallback); build keeps weekend `●` ISR; `tsc` + lint + 11 media tests green.
+
 ## 0.37.3 — 2026-06-21
 
 Perf (caching, prong b): **weekend, driver, and team pages now edge-cache (ISR)** instead of rendering dynamically on every request. They were `force-dynamic` purely by config — every data source they touch is cacheable (weather via KV, news, and the standings-snapshot fetchers all `revalidate`; `loadSnapshotSource` excludes WEC's `no-store` live feed, the one uncacheable fetch in the results layer). Flipped to `revalidate` (weekend 300 s, profiles 3600 s); build confirms `ƒ` → `●` for all three.

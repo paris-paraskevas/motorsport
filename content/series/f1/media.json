@@ -1,3 +1,11 @@
 {
-  "7": { "highlight": "AYlc_HwTGi8" }
+  "7": {
+    "highlight": "AYlc_HwTGi8",
+    "sessions": {
+      "practice-1": "7DEPkd9lBUg",
+      "practice-2": "oh_VY40lO6w",
+      "practice-3": "pfiOI2rKc_o",
+      "qualifying": "Q2fMM4H9bWY"
+    }
+  }
 }
