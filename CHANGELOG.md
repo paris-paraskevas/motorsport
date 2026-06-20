@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.1 — 2026-06-21
+
+Fix + curation: **highlight clips link out to YouTube** (official channels block embedding).
+
+### Fixed
+
+- **`VideoEmbed` link-out by default.** F1/F2/F3 (FOM) — and most official motorsport channels, to protect their own traffic — disable third-party embedding, so the in-place `youtube-nocookie` iframe shipped in 0.38.0 rendered a broken "Watch on YouTube" player for those clips. The component now shows the poster + play overlay + a "YouTube ↗" badge and **opens the video on YouTube in a new tab** — same embedded-video look, no dead frame, respects each channel's policy. True in-place playback stays an `embeddable` opt-in for channels we verify allow it.
+
+### Added
+
+- **Curated clips** (link-out): WEC **24 Hours of Le Mans** (round 3, official FIA WEC channel), F3 **Barcelona** (round 4 — feature highlight + sprint clip, official F1 channel). F1 Barcelona (round 7, all five sessions) carries over from 0.38.0.
+
+### Notes
+
+Broader per-series curation is gated on the **round-provenance mismatch** (audit cross-wave note): for parser-indexed series the JUST MISSED feed round ≠ the canonical weekend round (F3 feed-r3 "Spain" vs weekend-r3 "Monaco"; IndyCar feed-r9 "Gateway" vs `/weekend/9` 404), so a single `media.json` round key can't serve both surfaces. WEC + F1 align (rounds.json / Jolpica round = canonical) and curate cleanly; the rest need round reconciliation first. MotoGP highlights are VideoPass-gated (no free official clip). Verified 390: F1/WEC/F3 highlight posters link out to YouTube with the badge; weekend stays `●` ISR; `tsc` + lint + media tests green.
+
 ## 0.38.0 — 2026-06-21
 
 Feat (WeekendMedia, prong c): **embedded session highlights + a watch link on race-weekend pages.**
