@@ -77,6 +77,15 @@ Three Google scripts together = **52% of the unused-JS budget**. Clerk alone = *
 
 ---
 
+## 2026-06-21 — `/app` restored to static/ISR (0.37.1)
+
+Lab / curl evidence; **field numbers pending** (capture PSI + Vercel SI ≥24–72 h post-deploy and append).
+
+- **Build:** `/app` was `ƒ` (Dynamic) → now `○` (Static, 5 m ISR). Root cause: slice-2's JUST MISSED WEC podium triggered a `no-store` live-component fetch in the page render, forcing the whole route dynamic (`Cache-Control: private, no-store`, `X-Vercel-Cache: MISS`).
+- **Prod TTFB before fix:** cold **~19.7 s**, warm ~1.0 s (vs `/calendar` 0.79 s — both ISR; `/calendar` + marketing edge-cache as `STALE`/`HIT`). After: `/app` should serve from edge cache like they do.
+- **Fix:** JUST MISSED → CDN-cached route handler (`/api/just-missed`, `s-maxage=300`), client-fetched; the WEC live fetch + podium fan-out run off the static page path.
+- **Still open:** content pages (`series/[slug]`, `weekend`, `[session]`, `drivers`, `teams`) remain `force-dynamic` — next caching PR. JS levers (Clerk ~224 KB for anon, AdSense/GTM `afterInteractive`) unaddressed.
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |

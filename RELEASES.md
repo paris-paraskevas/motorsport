@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.37.1 — 2026-06-21
+
+**A much faster home.** The home page now loads from cache instead of rebuilding on every visit — the "just missed" results block loads a moment after the page paints rather than holding everything up. First visits especially should feel dramatically quicker.
+
 ## 0.37.0 — 2026-06-19
 
 **"Just missed" — your home now shows what just happened.** A new block at the top leads with the most recent race in the series you follow: who made the podium, a link to the latest story, and race highlights where we've added them. Series we don't yet carry full results for link straight to their results page. It sits above the "up next" countdown, so the home now covers both directions at a glance — the race you just missed and the one coming up.

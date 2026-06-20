@@ -127,7 +127,6 @@ function Countdown({ to, initialNow }: { to: Date; initialNow: Date }) {
 export function HomeContent({
   items,
   news,
-  justMissed,
   weatherByUid,
   roundByKey,
   serverNow,
@@ -137,7 +136,6 @@ export function HomeContent({
   // (so `next` resolves under any follow filter) — NOT the whole season.
   items: HomeItem[];
   news: NewsItemSerialized[];
-  justMissed?: JustMissedItem[];
   weatherByUid?: Record<string, DailyWeather>;
   roundByKey?: Record<string, number>;
   serverNow: string;
@@ -157,6 +155,26 @@ export function HomeContent({
   };
   const { followed, hydrated } = useFollowedSeries();
   const [newsFilter, setNewsFilter] = useState<string | null>(null);
+  // JUST MISSED is fetched as cacheable Ajax (/api/just-missed) rather than
+  // server-rendered, so /app itself stays statically generated / edge-cached
+  // (the WEC podium path does a no-store live fetch that otherwise forces the
+  // whole route dynamic). Post-loads below the chyron — fine for a
+  // retrospective block.
+  const [justMissed, setJustMissed] = useState<JustMissedItem[] | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/just-missed')
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => {
+        if (alive) setJustMissed(d as JustMissedItem[]);
+      })
+      .catch(() => {
+        if (alive) setJustMissed([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const filteredSessions =
     hydrated && followed !== null
