@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.37.2 — 2026-06-21
+
+**Browse past races on the calendar.** The calendar now lets you step back to previous months, not just upcoming ones — handy for catching up on a race you missed. It still opens on the current month.
+
 ## 0.37.1 — 2026-06-21
 
 **A much faster home.** The home page now loads from cache instead of rebuilding on every visit — the "just missed" results block loads a moment after the page paints rather than holding everything up. First visits especially should feel dramatically quicker.

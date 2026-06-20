@@ -39,8 +39,10 @@ export default async function CalendarPage() {
     )
     .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());
 
-  const upcoming = flat.filter(x => x.session.end >= now);
-
+  // Pass the whole season (past + future), not just upcoming — otherwise the
+  // month navigator has no past months to page into. It defaults to the
+  // current month (pickDefaultMonth) and the ← button steps back through the
+  // season; past sessions render with their past/finished styling.
   const roundLookup = buildRoundLookupAcrossSeries(all, now);
   const roundByKey: Record<string, number> = {};
   for (const [k, v] of roundLookup) roundByKey[k] = v;
@@ -65,7 +67,7 @@ export default async function CalendarPage() {
         </div>
       </header>
 
-      <FilteredSessions items={upcoming} roundByKey={roundByKey} serverNow={now.toISOString()} />
+      <FilteredSessions items={flat} roundByKey={roundByKey} serverNow={now.toISOString()} />
     </div>
   );
 }
