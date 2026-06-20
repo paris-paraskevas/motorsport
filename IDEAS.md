@@ -125,6 +125,11 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Information-density pass (operator 2026-06-12, "serious discussion"): multiple users report pages show too much — needs a per-page information-budget review (what question does each page answer in 5 seconds; rest behind disclosure); pairs with W5 per-page layout spec.
 - Home v3 (operator 2026-06-12, direction agreed): two-block home — "Just missed" (results + article link + later media) and "Up next" (countdown + official stream link) with ranking/caps (followed-first, hard cap ~3, hero + quiet rows); news demoted to secondary strip; spec to be written as the W5 design session AFTER audit highs land (MotoGP/FE weekend-URL fixes + device-local times gate it).
 - Landing scroll-driven animation set-piece (operator 2026-06-12): "as you scroll an F1 car comes near the screen" — draft-form prototype first; candidate tech: CSS scroll-driven animations (animation-timeline: scroll) or canvas image-sequence scrub; landing-only, prefers-reduced-motion static fallback, perf budget (no jank on mid phones); sequence after home v3.
+- Android app dedicated discussion (operator 2026-06-21): revisit TWA/Play Store status — closed test, Play App Signing fingerprint to append after the .aab upload, branded offline route + serwist fallbacks, manifest id/scope/shortcuts.
+- Minigames (operator 2026-06-21): "guess the driver" and "guess the track" from photos of top drivers per category, "guess next turn" (show one corner of a circuit, user guesses if the next corner is left or right), and more — engagement/retention feature.
+- Re-look into the curated PRs for post-session blog posts (operator 2026-06-21).
+- Copyright-free photos of ALL drivers + ALL team logos (operator 2026-06-21) — licensing-led curation program (Wikimedia + per-image attribution, the landing circuit-photo pattern); feeds driver/team pages, the JUST MISSED block, and the minigames.
+- Race-weekend track-map photo showing sectors/corners (operator 2026-06-21) — per-circuit sector diagram on the weekend page.
 
 ## Parked (might do, with a revisit trigger)
 

@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.37.1 — 2026-06-21
+
+Perf: **restore `/app` to static/ISR** (un-regress slice 2). The home was rendering fully dynamic — `Cache-Control: private, no-store`, `X-Vercel-Cache: MISS`, never edge-cached, cold-start TTFB ~19.7 s — because slice 2's JUST MISSED podium path triggers WEC's `no-store` live-component fetch *during the page render*, which forces the whole `/app` route dynamic. Confirmed by build (`/app` was `ƒ` while `/calendar` + marketing `/` — same ISR config + `ClerkProvider`, both doing weather/news/KV — were `○`) and by elimination (the 5 flat result fetchers are all `revalidate:3600`, cache-safe; only WEC's live fetch is `no-store`).
+
+### Changed
+
+- **JUST MISSED moved off the `/app` render into a cacheable route handler** — `app/(app)/api/just-missed/route.ts` (`Cache-Control: public, s-maxage=300, stale-while-revalidate=600`), fetched client-side by `HomeContent` on mount (cacheable-Ajax / post-load pattern). The WEC live fetch + the podium fan-out now run off the static page path, so `/app` triggers no `no-store` fetch in render.
+- **`/app` is statically generated / ISR again** (build: `ƒ` → `○`, 5 m revalidate). Cold-start ~20 s → edge-cache HIT for most traffic. The JUST MISSED block post-loads below the chyron (fine for a retrospective block; its JSON is CDN-cached). Block behaviour otherwise unchanged — podium-first ranking, article, highlights, link-out all intact.
+
+### Notes
+
+Scope of this PR is `/app` only. Content pages (`series/[slug]`, `weekend/[round]`, `[session]`, `drivers/[slug]`, `teams/[slug]`) remain `force-dynamic` — next caching PR. JS levers (Clerk ~224 KB shipped to anon, AdSense/GTM `afterInteractive`) unaddressed. Verified: `/api/just-missed` 200/JSON (10 items, F1 Barcelona highlight present), JUST MISSED renders client-side (F3 hero podium + article, F1/WEC rows), 0 console errors; `tsc` + lint + 405 tests green.
+
 ## 0.37.0 — 2026-06-19
 
 Home v3 / W5 — slice 2: the JUST MISSED block. The home gains a retrospective hero (what just happened) above the existing UP NEXT chyron — second increment of the signed-off home-v3 spec.

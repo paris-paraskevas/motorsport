@@ -1,14 +1,11 @@
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 import { HomeContent } from '@/components/HomeContent';
-import { HOME_WEEK_MS, JUST_MISSED_WINDOW_MS } from '@/lib/date';
+import { HOME_WEEK_MS } from '@/lib/date';
 import { fetchAggregatedNews } from '@/lib/news';
 import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
-import { looksLikeRaceSession } from '@/lib/results-ready';
-import { fetchLatestPodium, homeResultsSupported, type JustMissedItem } from '@/lib/home-results';
-import { loadMedia, highlightForRound } from '@/lib/media';
 
 export const revalidate = 300;
 
@@ -118,69 +115,15 @@ export default async function Home() {
     if (round) roundByKey[key] = round;
   }
 
-  // JUST MISSED (home v3): latest finished race per series within the recency
-  // window. Covered series fetch the authoritative podium (KV-cached,
-  // fail-soft) — gated on the series being active in-window so the off-season
-  // and the MotoGP fan-out don't fetch needlessly; the result is then kept
-  // only if its own race day is in-window. Uncovered series render a link-out
-  // from their latest in-window race session. Client filters by followed + caps 3.
-  const jmWindowStart = now.getTime() - JUST_MISSED_WINDOW_MS;
-  const activeInWindow = new Set<string>();
-  for (const x of flat) {
-    const end = x.session.end.getTime();
-    if (!x.session.dateOnly && end <= now.getTime() && end >= jmWindowStart) {
-      activeInWindow.add(x.seriesSlug);
-    }
-  }
-  const justMissed: JustMissedItem[] = [];
-  await Promise.all(
-    [...activeInWindow].filter(homeResultsSupported).map(async slug => {
-      const meta = seriesBySlug.get(slug);
-      if (!meta) return;
-      const latest = await fetchLatestPodium(slug);
-      if (!latest || new Date(latest.date).getTime() < jmWindowStart) return;
-      justMissed.push({
-        seriesSlug: slug,
-        seriesName: meta.name,
-        color: meta.color,
-        raceName: latest.raceName,
-        date: latest.date,
-        round: latest.round,
-        podium: latest.podium,
-        highlight: highlightForRound(await loadMedia(slug), latest.round),
-        resultsHref: `/series/${slug}?tab=results`,
-      });
-    }),
-  );
-  const uncoveredRecent = new Map<string, (typeof flat)[number]>();
-  for (const x of flat) {
-    if (homeResultsSupported(x.seriesSlug)) continue;
-    const s = x.session;
-    if (s.dateOnly || !looksLikeRaceSession(s.title)) continue;
-    const end = s.end.getTime();
-    if (end > now.getTime() || end < jmWindowStart) continue;
-    uncoveredRecent.set(x.seriesSlug, x); // flat ascending → last = most recent
-  }
-  for (const [slug, x] of uncoveredRecent) {
-    const meta = seriesBySlug.get(slug);
-    if (!meta) continue;
-    justMissed.push({
-      seriesSlug: slug,
-      seriesName: meta.name,
-      color: meta.color,
-      raceName: x.session.location?.split(',')[0].trim() || x.session.title,
-      date: x.session.end.toISOString(),
-      resultsHref: `/series/${slug}?tab=results`,
-    });
-  }
-  justMissed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // JUST MISSED data is fetched client-side from /api/just-missed (cacheable
+  // Ajax) — keeping the WEC live-component fetch off this render is what lets
+  // /app stay statically generated / edge-cached. See HomeContent.
 
   return (
     <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <HomeContent
         items={homeItems}
         news={news}
-        justMissed={justMissed}
         weatherByUid={weatherByUid}
         roundByKey={roundByKey}
         serverNow={now.toISOString()}
