@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { findTeamBySlug, loadAllTeams } from '@/lib/people';
+import { findTeamBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource, type SnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import {
@@ -11,11 +11,13 @@ import {
 } from '@/lib/profile-stats';
 import { withSocialMeta } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+// ISR: team pages edge-cache (was force-dynamic). Same cached snapshot feeds
+// as driver pages (WEC excluded → no no-store).
+export const revalidate = 3600;
 
-export async function generateStaticParams() {
-  const teams = await loadAllTeams();
-  return teams.map(t => ({ slug: t.slug }));
+// On-demand generation + cache on first request. The sitemap still lists them.
+export function generateStaticParams() {
+  return [];
 }
 
 export async function generateMetadata({

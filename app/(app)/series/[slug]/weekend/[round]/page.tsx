@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { listSeriesSlugs, loadSeries } from '@/lib/series';
-import { groupByWeekend } from '@/lib/group';
+import { loadSeries } from '@/lib/series';
 import { weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
 import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
@@ -13,22 +12,16 @@ import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+// ISR: weekend pages edge-cache (was force-dynamic — uncached, slow per hit).
+// Everything here is cacheable — weather (KV), news, and the standings-snapshot
+// fetchers all revalidate, and the snapshot excludes WEC's no-store live feed.
+export const revalidate = 300;
 
-export async function generateStaticParams() {
-  const slugs = await listSeriesSlugs();
-  const all = await Promise.all(
-    slugs.map(async slug => {
-      try {
-        const series = await loadSeries(slug);
-        const weekends = groupByWeekend(series.sessions, new Date(), series.rounds);
-        return weekends.map(w => ({ slug, round: String(w.round) }));
-      } catch {
-        return [];
-      }
-    }),
-  );
-  return all.flat();
+// On-demand: generate + edge-cache on first request rather than prerendering
+// every series×round at build (which would fan out weather/results fetches
+// across ~200 weekends). The sitemap still enumerates them for crawlers.
+export function generateStaticParams() {
+  return [];
 }
 
 function parseRound(raw: string): number | null {
