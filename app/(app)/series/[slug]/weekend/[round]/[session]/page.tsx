@@ -27,6 +27,8 @@ import {
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
+import { VideoEmbed } from '@/components/VideoEmbed';
+import { loadMedia, videoForSession } from '@/lib/media';
 
 export const dynamic = 'force-dynamic';
 
@@ -466,6 +468,16 @@ export default async function SessionPage({
 
   const nav = weekendSessionNav(weekend, slug, round, session.uid);
 
+  // Embedded highlights for this session, where curated (any series). The race
+  // session falls back to the round's headline clip.
+  const media = await loadMedia(slug);
+  const sessionVid = videoForSession(
+    media,
+    round,
+    sessionSlug(session.title),
+    isRaceLikeTitle(session.title),
+  );
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -527,6 +539,10 @@ export default async function SessionPage({
       </section>
 
       <SessionRail items={nav.items} />
+
+      {sessionVid && (
+        <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />
+      )}
 
       {classification ? (
         <ClassificationTable data={classification} />
