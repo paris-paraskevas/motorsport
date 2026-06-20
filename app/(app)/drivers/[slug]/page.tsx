@@ -1,17 +1,20 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { findDriverBySlug, loadAllDrivers } from '@/lib/people';
+import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
 import { withSocialMeta } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+// ISR: profile pages edge-cache (was force-dynamic). Season form comes from
+// the cached results fetchers (loadSnapshotSource excludes WEC's no-store).
+export const revalidate = 3600;
 
-export async function generateStaticParams() {
-  const drivers = await loadAllDrivers();
-  return drivers.map(d => ({ slug: d.slug }));
+// On-demand generation + cache on first request (no build-time prerender of
+// ~600 driver pages). The sitemap still lists them.
+export function generateStaticParams() {
+  return [];
 }
 
 export async function generateMetadata({

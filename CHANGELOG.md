@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.37.3 — 2026-06-21
+
+Perf (caching, prong b): **weekend, driver, and team pages now edge-cache (ISR)** instead of rendering dynamically on every request. They were `force-dynamic` purely by config — every data source they touch is cacheable (weather via KV, news, and the standings-snapshot fetchers all `revalidate`; `loadSnapshotSource` excludes WEC's `no-store` live feed, the one uncacheable fetch in the results layer). Flipped to `revalidate` (weekend 300 s, profiles 3600 s); build confirms `ƒ` → `●` for all three.
+
+`generateStaticParams` now returns `[]` (on-demand ISR) so pages generate + edge-cache on first request rather than prerendering ~800 series×round / driver / team pages at build. Build prerender dropped **986 → 38 pages** (no weather/results fetch fan-out at build time); the sitemap still enumerates them for crawlers.
+
+### Notes
+
+Deferred to follow-ups (still `force-dynamic`): `series/[slug]/weekend/[round]/[session]` — WEC/IMSA/GT-World class results use a `no-store` live fetch, so it needs the same route-handler/cache treatment `/app` got; and `series/[slug]` — reads `searchParams.tab`, so true ISR needs path-based tabs. Verified: build `●` for all three; weekend/driver/team pages render 200 on a fresh server; `tsc` + lint green.
+
 ## 0.37.2 — 2026-06-21
 
 Fix: the **calendar can page into previous months**. `/calendar` fed `FilteredSessions` only the `upcoming` set (`end >= now`), so the month navigator derived its month list from future-only data and had no past months to step into. It now receives the full season; `pickDefaultMonth` still opens on the current month and the ← button steps back through the season. Past sessions render with their finished/`past` styling. No new dynamic data — `/calendar` stays statically generated (ISR 300) exactly as before. Verified 390: defaults to Jun 2026, ← → May 2026 shows that month's (past) sessions.

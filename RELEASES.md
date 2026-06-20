@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.37.3 — 2026-06-21
+
+**Faster race-weekend and driver/team pages.** Weekend pages and driver/team profiles now load from cache instead of being rebuilt on every visit — noticeably quicker, especially the first time you open one.
+
 ## 0.37.2 — 2026-06-21
 
 **Browse past races on the calendar.** The calendar now lets you step back to previous months, not just upcoming ones — handy for catching up on a race you missed. It still opens on the current month.
