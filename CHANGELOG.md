@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.37.2 — 2026-06-21
+
+Fix: the **calendar can page into previous months**. `/calendar` fed `FilteredSessions` only the `upcoming` set (`end >= now`), so the month navigator derived its month list from future-only data and had no past months to step into. It now receives the full season; `pickDefaultMonth` still opens on the current month and the ← button steps back through the season. Past sessions render with their finished/`past` styling. No new dynamic data — `/calendar` stays statically generated (ISR 300) exactly as before. Verified 390: defaults to Jun 2026, ← → May 2026 shows that month's (past) sessions.
+
+Known, pre-existing (not from this change): a session on a month boundary can show under the adjacent month due to UTC-vs-local day/month bucketing — captured separately.
+
 ## 0.37.1 — 2026-06-21
 
 Perf: **restore `/app` to static/ISR** (un-regress slice 2). The home was rendering fully dynamic — `Cache-Control: private, no-store`, `X-Vercel-Cache: MISS`, never edge-cached, cold-start TTFB ~19.7 s — because slice 2's JUST MISSED podium path triggers WEC's `no-store` live-component fetch *during the page render*, which forces the whole `/app` route dynamic. Confirmed by build (`/app` was `ƒ` while `/calendar` + marketing `/` — same ISR config + `ClerkProvider`, both doing weather/news/KV — were `○`) and by elimination (the 5 flat result fetchers are all `revalidate:3600`, cache-safe; only WEC's live fetch is `no-store`).
