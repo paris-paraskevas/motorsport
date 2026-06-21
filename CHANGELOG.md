@@ -4,18 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.38.2 — 2026-06-21
+## 0.38.1 — 2026-06-21
 
-Perf (JS levers, caching prong b): **defer the third-party scripts + preconnect Clerk.**
+Fix + curation: **highlight clips link out to YouTube** (official channels block embedding).
 
-### Changed
+### Fixed
 
-- **AdSense, GTM, and the GA init moved `afterInteractive` → `lazyOnload`** (`app/(app)/layout.tsx`). None are needed for first paint — AdSense isn't approved yet, and GA4 fires fine post-idle (consent updates queue into `dataLayer`, which the `beforeInteractive` gtag shim buffers until GTM loads). Moves ~319 KiB (AdSense ~226 + GTM ~154, per the audit baseline) off the critical path and the early main thread.
-- **Preconnect `clerk.paddock-tracker.com`** — Clerk's SDK + frontend API are the single biggest unused-JS item; warming the connection early trims its handshake (~90 ms LCP per the baseline).
+- **`VideoEmbed` link-out by default.** F1/F2/F3 (FOM) — and most official motorsport channels, to protect their own traffic — disable third-party embedding, so the in-place `youtube-nocookie` iframe shipped in 0.38.0 rendered a broken "Watch on YouTube" player for those clips. The component now shows the poster + play overlay + a "YouTube ↗" badge and **opens the video on YouTube in a new tab** — same embedded-video look, no dead frame, respects each channel's policy. True in-place playback stays an `embeddable` opt-in for channels we verify allow it.
+
+### Added
+
+- **Curated clips** (link-out): WEC **24 Hours of Le Mans** (round 3, official FIA WEC channel), F3 **Barcelona** (round 4 — feature highlight + sprint clip, official F1 channel). F1 Barcelona (round 7, all five sessions) carries over from 0.38.0.
 
 ### Notes
 
-Clerk SDK lazy-loading for anonymous users (the ~224 KiB item) is the remaining JS lever — its own pass (needs care not to break auth). Verified 390: `/app` 200, 0 console errors, consent flow intact, deferred scripts present. `tsc` (committed code) + lint green. (Parallel to #152; merge that first, then this needs a one-line version/changelog rebase.)
+Broader per-series curation is gated on the **round-provenance mismatch** (audit cross-wave note): for parser-indexed series the JUST MISSED feed round ≠ the canonical weekend round (F3 feed-r3 "Spain" vs weekend-r3 "Monaco"; IndyCar feed-r9 "Gateway" vs `/weekend/9` 404), so a single `media.json` round key can't serve both surfaces. WEC + F1 align (rounds.json / Jolpica round = canonical) and curate cleanly; the rest need round reconciliation first. MotoGP highlights are VideoPass-gated (no free official clip). Verified 390: F1/WEC/F3 highlight posters link out to YouTube with the badge; weekend stays `●` ISR; `tsc` + lint + media tests green.
 
 ## 0.38.0 — 2026-06-21
 
