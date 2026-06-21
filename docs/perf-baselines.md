@@ -86,6 +86,20 @@ Lab / curl evidence; **field numbers pending** (capture PSI + Vercel SI ≥24–
 - **Fix:** JUST MISSED → CDN-cached route handler (`/api/just-missed`, `s-maxage=300`), client-fetched; the WEC live fetch + podium fan-out run off the static page path.
 - **Still open:** content pages (`series/[slug]`, `weekend`, `[session]`, `drivers`, `teams`) remain `force-dynamic` — next caching PR. JS levers (Clerk ~224 KB for anon, AdSense/GTM `afterInteractive`) unaddressed.
 
+## 2026-06-21 — pre-launch audit verification (prod 0.38.3)
+
+Read-only prod verification of last session's PRs #145–#153 (caching / home-v3 / WeekendMedia / JS-defer). **All four areas pass.** Field RES re-baseline still **pending** — Vercel SI lags 24–72 h behind the #148/#150/#153 deploys; capture + append per the protocol below once settled.
+
+**Edge-cache, verified on prod (`curl`, 2 passes each):** `/app`, `/series/f1/weekend/7`, `/drivers/*`, `/teams/*` all return `X-Vercel-Cache: STALE`/`HIT`/`MISS→HIT` with ISR headers (`public, max-age=0, must-revalidate`). **None are `no-store`/dynamic** — the #148 `/app` un-regression and #150 weekend/driver/team ISR are live and holding. Warm TTFB 0.21–0.32 s.
+
+**`/api/just-missed` cold-start tail:** warm `HIT` 0.44 s, but **cold-on-cold MISS = 13.8 s** (vs the `/app` page itself now fast + static). Cause: the route fans out to full season-results fetchers (WEC live-component + MotoGP "re-fetches every round, no parser-level cache") whenever *both* its edge cache and the per-series `paddock:home:podium:*` KV cache are cold. Already mitigated for the common case (static page + lazy client-fetch + `s-maxage=300, swr=600` + KV podium cache) so the tail is rare; logged to IDEAS Inbox (fix candidates: cache-warm cron, or MotoGP parser-level cache).
+
+**`/app` lab warm-load (Chrome PerformanceAPI, desktop 1440, reload):** TTFB 104 ms · FCP 312 ms · DCL 199 ms · load 326 ms · 76 requests (35 JS). `transferSize`/LCP not reliable from this capture (disk-cache + cross-origin TAO zero out bytes; LCP buffer empty) — byte/LCP numbers must come from PSI.
+
+**GA4 after #153 `lazyOnload` (the key risk):** `googletagmanager.com/gtag/js?id=G-DDMJ2NMBWC` → 200; `window.gtag` is a function with a populated `dataLayer`; two `POST region1.google-analytics.com/g/collect …en=page_view` → **204** hits fired. Fresh visitor is in consent-**denied** mode (`gcs=G100`, `npa=1`, cookieless ping, no `_ga`) — correct Consent Mode v2 behavior. **`lazyOnload` did not break GA** (loads later, still fires). Custom CookieConsent modal is the active CMP (footer "Manage cookies" present; no Funding Choices UI). Consent-grant flip is unchanged by #153 (last verified 0.12.7).
+
+**Console:** 0 errors on `/app` at both 390 and 1440 (1–2 benign warnings).
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |

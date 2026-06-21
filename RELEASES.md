@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.39.2 — 2026-06-21
+
+*Internal: documentation and housekeeping — no changes to the app.*
+
 ## 0.39.1 — 2026-06-21
 
 **Faster, steadier session results.** Race-weekend session results now load near-instantly after the first view, and past Formula 1 sessions keep showing their results even while another session is running live.

@@ -57,3 +57,9 @@ Thumbs.db
 
 # playwright MCP browser profile
 /.playwright-mcp/
+
+# local verification artifacts — browser-check screenshots dropped at repo root
+# (committed images live under public/ and app/, which these globs don't touch)
+/*.png
+/*.jpg
+/*.jpeg

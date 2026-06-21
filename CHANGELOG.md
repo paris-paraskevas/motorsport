@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.39.2 — 2026-06-21
+
+Docs: **handoff refresh + audit-notes salvage (no app change).**
+
+### Changed
+
+- Refreshed `docs/HANDOFF.md` top block to 0.39.1 and committed the **#155–#158 (0.38.4→0.39.0) record for the first time** — it had only ever lived in an uncommitted working-tree, so main's handoff was missing the entire personalization-flash / news-dedup / chart-legend / session-classifications + health-monitors session. Added the 2026-06-21 `SCHEDULE.md` entry and IDEAS triage (OpenF1-lockout item marked partially-addressed by 0.39.1 + a pre-warm-cron follow-up). Salvaged the perf-baseline + 2026-06-21 security re-verification notes from a stale stash (`docs/perf-baselines.md`, `docs/research/security-audit-2026-06-11.md`). `.gitignore`d root-level browser-verification screenshots. No application code changed.
+
 ## 0.39.1 — 2026-06-21
 
 Changed: **KV-persist weekend session classifications — resolves the 0.39.0 Lens-B #3 follow-up.**
