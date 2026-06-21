@@ -742,6 +742,16 @@ SCHEDULE had drifted since 06-12 (the 0.13→0.36 redesign work was logged in `d
 
 Active: _(no `[+Nm]` prefixes captured; continuous multi-session run)_
 
+### 2026-06-21 (cont.) — Lens B #3 (session-page caching) + docs sweep
+
+Plan: cache the weekend `[session]` page — the deferred Lens-B #3 follow-up (#158 put the page on main, unblocking it).
+Won't touch: page-level ISR (no-op per handoff), a pre-warm cron, the penalty-correction lifecycle, the untracked screenshot litter beyond a `.gitignore`.
+
+- → done: **PR #159 (0.39.1)** — KV read-first / write-on-success around past-session classifications (7-day TTL, write-only-on-non-empty). Skips the upstream fan-out on warm renders and keeps past F1 sessions renderable through OpenF1's live-session 401 lockout once captured. Page-level ISR scrutinized + rejected (`wec.ts` `no-store` + the `now`-branch keep the route `ƒ`). **Prod-verified:** F1 R6 quali (OpenF1) + MotoGP R3 Q2 (Pulselive) render; localhost 0 console errors; 430 tests / tsc / build clean.
+- → done: **docs sweep** (this PR) — refreshed the HANDOFF top block (recorded #155–#158 for the first time + 0.39.1), this entry, IDEAS triage; salvaged `perf-baselines.md` + the security re-verification from the stale `stash@{0}`; `.gitignore`d root-level verification screenshots. Retired `docs/handoff-refresh` + its stash.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

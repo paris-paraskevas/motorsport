@@ -6,6 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-21 (main = 0.39.1)
+
+**main = 0.39.1.** This session shipped **Lens B #3 (PR #159)**. The `#155–#158` record below (0.38.4→0.39.0) had only ever lived in the *uncommitted* handoff working-tree — main's handoff never carried it — so it's committed here for the first time, along with the salvaged perf-baseline + security re-verification notes (the deferred docs sweep).
+
+### Shipped this session
+- **#159 (0.39.1) — weekend `[session]` classification caching + OpenF1 live-401 resilience (Lens B #3).** The page was `force-dynamic` and re-ran the full upstream classification pull every render (~1s: OpenF1's 4-call chain / the Pulselive event→session chain / the season-results fan-out). Now: **KV read-first → serve on hit** (skips upstream entirely), **write-on-success only** (never cache a null/empty miss), **7-day TTL** via the new `sessionClassCacheKey()` + an optional `ttlSeconds` arg on `writeResultsCache` (default unchanged 3h). A captured classification now renders **through OpenF1's live-session 401 lockout** for the TTL window. **Page-level ISR was deliberately NOT pursued** — `lib/results/wec.ts` `cache:'no-store'` + the `now`-branch keep the route `ƒ` (exactly the deferred-items #4 conclusion, re-confirmed in code). **Prod-verified (own eyes):** F1 R6 quali (full Q1/Q2/Q3 from OpenF1 datacenter) + MotoGP R3 Q2 (Pulselive) both render on prod; localhost 0 console errors; 430 tests / tsc / `next build` all clean; `[session]` stays `ƒ` as intended.
+
+### Shipped previously, recorded here for the first time (#155–#158 — were uncommitted-handoff-only)
+- **#155 (0.38.4)** — personalization-flash fix on `/app` + `/calendar` (skeleton-gate the personalized regions until prefs hydrate). Deferred fast-follows: instant-via-localStorage for *signed-in* users (needs a `useSyncExternalStore` refactor); `/calendar` SEO pre-paint-hide if no-JS indexing matters.
+- **#156 (0.38.5)** — news de-dup by article slug (cross-posted motorsport.com stories tripled in the wire + inflated chip counts).
+- **#157 (0.38.6)** — standings chart mobile legend collapsed to mirror the chart (top 6 + "+N more"); chart stays at the top (operator call, no demote).
+- **#158 (0.39.0)** — F2/F3/MotoGP/WSBK practice/qualifying session classifications + live source-drift health monitors (`/api/cron/health` fail-closed, `.github/workflows/health.yml` 6-hourly, `scripts/health-*.mts`). 428 tests at the time. **Correction to the 0.39.0 changelog note:** the `npm run health*` aliases ARE now wired into `package.json` (lines 13–15) — verified this session.
+
+### Do next (priority order)
+1. **Lens B #4 — driver/team enrichment + wire driver/team names as links everywhere.** Recheck `drivers.json` coverage first (was a 13-series gap in May). Highest remaining Lens-B impact.
+2. **Geo-restricted highlight clips (operator 2026-06-21).** Audit every curated `content/series/<slug>/media.json` clip's *global* availability; replace region-locked unofficial uploads with official-channel ones (FIA WEC / F1 / etc.) per the search-official-source rule.
+3. **Session-cache follow-up (optional, low ROI):** a pre-warm cron pinging past-session pages would close the residual gap — a cold/expired KV entry first opened *during* an unrelated OpenF1 live lockout still can't fetch. Pairs with the `/api/just-missed` cache-warm cron candidate (IDEAS Inbox).
+4. **Remaining Lens B (impact÷effort):** #5 calendar month-dividers/filter/jump-to-today · #6 blog-on-mobile + a "from the blog" card on `/app` · #7 restrained micro-motion · #8 path-based series tabs.
+5. **Launch gates (v1.0, operator 2026-06-11):** security audit (re-verified 2026-06-21 in `docs/research/security-audit-2026-06-11.md` — all fixes hold, no regressions; the **`npm audit fix` for the undici HIGH advisories is still owed pre-launch**), W3 About/rules ×15, W4 profiles, W8 launch program.
+
+### The big program (when ready)
+Full 3-lens audit + download-launch plan: **`~/.claude/plans/soft-orbiting-wombat.md`** (operator-approved 2026-06-21). Lens A = a device-aware install landing to drive **Android downloads** (the north-star KPI; build once the Play listing is public + assets ready). Lens C = the go-public path (closed-test graduation, append the Play **App-Signing cert fingerprint** to `assetlinks.json`, ASO copy, social-launch playbook — mostly operator actions). Locked: market-now-value-prop **+** build-exclusives-next; take the Play listing public.
+
+### Landmine learned / reconfirmed this session
+- **A KV read-first / write-on-success layer is the right lever when a route can't go ISR** (an uncacheable `no-store` fetch or a `now`-branch reachable in render). It cuts warm TTFB *and* buys source-outage resilience without fighting the framework — better here than chasing a no-op `revalidate`. `lib/results-cache.ts` is the shared helper; `writeResultsCache` now takes an optional TTL.
+- **OpenF1 401s ALL endpoints (incl. historical) during any live F1 session.** KV-persist makes captured sessions immune for the TTL window; only a pre-warm cron closes the cold-entry case.
+
+### Working-tree note
+This docs PR lands the sweep (this block + SCHEDULE + IDEAS triage + salvaged `perf-baselines.md` and the security re-verification). The stale `docs/handoff-refresh` branch and its `stash@{0}` are now fully superseded — **safe to delete**. ~73 untracked files remain at the repo root (browser-verification screenshots + `fe-champ.html` + `docs/research/agent-salvage-2026-06-10/`); root-level images are now `.gitignore`d — delete the rest at will.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-21 (main = 0.38.2)
 
 **This file's top block had drifted to 0.12.13 (2026-05-22) while prod ran 0.36→0.38; the live record between was `docs/redesign-2026-06.md` + `IDEAS.md`. Refreshed here.**

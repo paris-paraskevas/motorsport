@@ -64,3 +64,29 @@ Dependency audit (`npm audit` is CI-adjacent — run at launch checklist),
 Vercel WAF/Attack-Mode configuration (platform-level, operator console),
 DDoS economics (Vercel absorbs; spend caps are the operator's console
 setting).
+
+---
+
+## 2026-06-21 re-verification — v0.38.3 (read-only, pre-launch)
+
+Re-ran the surface sweep against current `main`/prod. **All 0.29.2 fixes hold; no regressions.** New surface since 0.29.1 audited:
+
+- **`/api/cron/health`** (new) — calls `authorizeCronRequest` → fail-closed (503 missing-secret / 401 wrong) ✓; returns per-parser status counts, no secret material. Cron coverage now **4/4** (health + news + notify + race-week), all fail-closed.
+- **`/(app)/api/just-missed`** (new, public, read-only) — emits series/race metadata + top-3 podium + curated highlight id only; no user data, no secrets. CDN-cached. No leak. (Perf: 13.8 s cold-on-cold tail — see `perf-baselines.md`, not a security issue.)
+- **Contact rate-limit (the long-standing carry-over): confirmed RESOLVED on prod** — IP 5/15 min + global 60/h + email/length/category validation + `\s` header-injection guard all live.
+- **Auth boundary** (`proxy.ts`), **security headers** (`next.config.ts`: HSTS/nosniff/`X-Frame-Options: DENY`/Referrer/Permissions), **push-subscribe validation** (https-only endpoint, length caps), **push-unsubscribe ownership**, **node-ical landmine config** (#1) — all re-verified intact.
+
+**Open gap unchanged — still no CSP.** This is now the single most material pre-launch security item. Recommendation stands: ship `Content-Security-Policy-Report-Only` (the W8 checklist's "CSP-RO"), collect a week of violations, then enforce. All other "known gaps / accepted risks" above remain as documented.
+
+**Verdict: the security launch-gate is essentially met.** Residual pre-launch work = CSP-RO + the `npm audit` fix below + Sentry/alerting (already queued).
+
+### npm audit snapshot (2026-06-21)
+
+`npm audit --omit=dev` (production deps): **9 vulnerabilities (4 high, 4 moderate, 1 low).**
+
+- **`undici` (HIGH — 7 advisories; transitive via Next's fetch):** TLS cert-validation bypass via SOCKS5 ProxyAgent, cross-user info-disclosure via shared-cache whitespace bypass, Set-Cookie header injection, WebSocket DoS, cross-origin request routing, response-queue poisoning, SameSite downgrade. **Fixable non-breaking via `npm audit fix`.** Real-world exploitability for our usage (server-side fetch to fixed/curated scrape targets, no SOCKS proxy, no cookie forwarding) is low — but the advisories are legitimate; bump it. **Top dependency action.**
+- `next` → `postcss`: build/dev-time only. **Ignore** the audit's bogus "downgrade to next@9.3.3" suggestion (we're on 16).
+
+`npm audit` (incl. dev): 11 total. The extra 2 are **dev-only** — `esbuild` (dev-server arbitrary file-read on Windows) and `hono` (Set-Cookie injection; verify it isn't on a prod path — likely tooling). Lower priority than undici.
+
+**Action:** run `npm audit fix` (non-breaking) in its own PR pre-launch, re-run at launch checklist.
