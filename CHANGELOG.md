@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.2 — 2026-06-21
+
+Perf (JS levers, caching prong b): **defer the third-party scripts + preconnect Clerk.**
+
+### Changed
+
+- **AdSense, GTM, and the GA init moved `afterInteractive` → `lazyOnload`** (`app/(app)/layout.tsx`). None are needed for first paint — AdSense isn't approved yet, and GA4 fires fine post-idle (consent updates queue into `dataLayer`, which the `beforeInteractive` gtag shim buffers until GTM loads). Moves ~319 KiB (AdSense ~226 + GTM ~154, per the audit baseline) off the critical path and the early main thread.
+- **Preconnect `clerk.paddock-tracker.com`** — Clerk's SDK + frontend API are the single biggest unused-JS item; warming the connection early trims its handshake (~90 ms LCP per the baseline).
+
+### Notes
+
+Clerk SDK lazy-loading for anonymous users (the ~224 KiB item) is the remaining JS lever — its own pass (needs care not to break auth). Verified 390: `/app` 200, 0 console errors, consent flow intact, deferred scripts present. `tsc` (committed code) + lint green. (Parallel to #152; merge that first, then this needs a one-line version/changelog rebase.)
+
 ## 0.38.0 — 2026-06-21
 
 Feat (WeekendMedia, prong c): **embedded session highlights + a watch link on race-weekend pages.**

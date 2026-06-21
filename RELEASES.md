@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.38.2 — 2026-06-21
+
+**Lighter, faster page loads.** Analytics and ad scripts now load after the page is interactive instead of competing with it, so pages become usable sooner — especially on phones.
+
 ## 0.38.0 — 2026-06-21
 
 **Race highlights, embedded.** Race-weekend pages now carry a highlights video and a "where to watch" link, and each session page (practice, qualifying, race) shows its own highlights clip where we've added one — starting with the full Barcelona-Catalunya Grand Prix weekend. Videos only load when you press play, so pages stay fast.
