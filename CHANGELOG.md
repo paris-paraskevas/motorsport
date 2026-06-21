@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.3 — 2026-06-21
+
+Docs: **refreshed the stale operating record.** `docs/HANDOFF.md`'s top "Next session pickup" block had drifted to 0.12.13 (2026-05-22) while prod ran 0.36→0.38 (the live log was `docs/redesign-2026-06.md`). Rewrote it to capture this session — PRs #145–#153 (TWA Digital Asset Links, home v3 watch-links + JUST MISSED, `/app`/weekend/driver/team ISR, calendar prev-months, WeekendMedia + link-out, JS levers), the deferred queue (home-v3 slice 3, `[session]` ISR refactor, Clerk lazy, media-curation breadth, launch gates), and the session's landmines (no-store-forces-dynamic, round-provenance mismatch, FOM embed block). Added a SCHEDULE catch-up entry. No product change.
+
+## 0.38.2 — 2026-06-21
+
+Perf (JS levers, caching prong b): **defer the third-party scripts + preconnect Clerk.** (Re-added — this entry was dropped in the #152/#153 parallel-merge conflict resolution; RELEASES + package.json carried 0.38.2 but CHANGELOG skipped it.)
+
+### Changed
+
+- **AdSense, GTM, and the GA init moved `afterInteractive` → `lazyOnload`** (`app/(app)/layout.tsx`) — none needed for first paint (AdSense unapproved; GA4 fires post-idle, consent updates buffer in `dataLayer`). ~319 KiB off the critical path. **Preconnect `clerk.paddock-tracker.com`** (biggest unused-JS item).
+
 ## 0.38.1 — 2026-06-21
 
 Fix + curation: **highlight clips link out to YouTube** (official channels block embedding).

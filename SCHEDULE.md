@@ -729,6 +729,21 @@ _(awaiting [+Nm] prefixes)_
 
 ---
 
+## Week of 2026-06-15
+
+### 2026-06-19 → 06-21 — TWA + home v3 + perf sprint (continuous run)
+
+SCHEDULE had drifted since 06-12 (the 0.13→0.36 redesign work was logged in `docs/redesign-2026-06.md`); catching up. Shipped PRs #145–#153, all merged:
+
+- → done: #145 (0.36.5) TWA Digital Asset Links; #146 (0.36.6) home-v3 watch links; #147 (0.37.0) JUST MISSED block.
+- → done: #148 (0.37.1) `/app` → static/ISR (un-regressed slice-2's `no-store` podium fetch); #149 (0.37.2) calendar previous-months; #150 (0.37.3) weekend / drivers / teams → ISR.
+- → done: #151 (0.38.0) WeekendMedia embeds; #152 (0.38.1) highlights link-out (FOM embed block) + WEC/F3 curation; #153 (0.38.2) JS levers (defer AdSense/GTM + preconnect Clerk).
+- → deferred (see `docs/HANDOFF.md` top block): home-v3 slice 3 (restructure), `[session]` ISR (route-handler refactor, low ROI), Clerk SDK lazy-load (auth-risky), media-curation breadth (round-provenance mismatch), launch gates (security audit / W3 / W4 / W8).
+
+Active: _(no `[+Nm]` prefixes captured; continuous multi-session run)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**

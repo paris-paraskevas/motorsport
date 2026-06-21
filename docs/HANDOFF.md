@@ -6,7 +6,36 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 0.12.13.1 GT-World trend chart (or 0.12.15 DTM)
+## ⚡ Next session pickup — 2026-06-21 (main = 0.38.2)
+
+**This file's top block had drifted to 0.12.13 (2026-05-22) while prod ran 0.36→0.38; the live record between was `docs/redesign-2026-06.md` + `IDEAS.md`. Refreshed here.**
+
+### Shipped this session (PRs #145–#153, all merged unless noted)
+- **#145 (0.36.5) Android TWA Digital Asset Links.** `public/.well-known/assetlinks.json` (upload-key SHA-256, pkg `com.paddock_tracker.twa`) + `.well-known` skip in `proxy.ts`. ⚠️ **Open:** the **Play App Signing cert fingerprint** must be appended as a 2nd `sha256_cert_fingerprints` entry after the operator uploads the `.aab` — Play re-signs, so the **closed test shows the URL bar** until then. Keystore/password are operator-held off-repo.
+- **Home v3 (W5)** — spec written + signed off in `docs/redesign-2026-06.md`. Slices shipped: **#146 (0.36.6) watch links** (`meta.watch`, 15 series, "Watch on …" on the home chyron); **#147 (0.37.0) JUST MISSED block** (retrospective hero: podium + article + highlight; podium-first ranking; covered = f1/f3/fe/indycar/motogp + WEC-overall). **Slice 3 NOT done:** restructure (demote "This week", Paddock-wire Hick's chip fix, desktop two-column JUST MISSED | UP NEXT).
+- **Perf / caching** — **#148 (0.37.1) `/app` → static/ISR** (was `no-store`/dynamic, cold TTFB ~20s; root cause = slice-2's WEC `no-store` podium fetch in render; fix = JUST MISSED moved to cacheable route handler `/api/just-missed`, client-fetched). **#150 (0.37.3) weekend/[round] + drivers/[slug] + teams/[slug] → ISR** (`force-dynamic` was config-only; `generateStaticParams` → `[]` for on-demand). **#153 (0.38.2) JS levers** — AdSense/GTM `afterInteractive`→`lazyOnload` + preconnect Clerk.
+- **#149 (0.37.2) calendar previous-months** — `/calendar` now feeds the full season (was upcoming-only), navigator opens on current month + pages back.
+- **WeekendMedia** — **#151 (0.38.0)** `VideoEmbed` + per-session `media.json` model + embeds on weekend/[round] (race highlight) + [session] (per-session). **#152 (0.38.1)** flipped `VideoEmbed` to **link-out** (FOM/most official channels block embedding → poster + "YouTube ↗" that opens YouTube; in-place `embeddable` opt-in kept). Curated: F1 r7 (5 sessions), WEC Le Mans r3, F3 Barcelona r4.
+
+### Deferred / open (priority-ish)
+1. **TWA Play App Signing fingerprint** — gated on operator's `.aab` upload. Closed test (12 testers / 14 days) is the launch critical path.
+2. **Home v3 slice 3** — the restructure (demote week, Hick's news chips, desktop two-column).
+3. **Clerk SDK lazy-load** (~224 KiB, biggest remaining unused-JS item) — auth-sensitive, own careful pass. Preconnect already shipped (#153).
+4. **`[session]` ISR** — flip to `revalidate` is a **no-op** (stays `ƒ`): WEC/IMSA/GT-World class results use a `no-store` live fetch, reachable in prerender → whole route dynamic. Needs the **route-handler refactor** (move class results to a cached `/api` + client-fetch, the `/app` pattern). **Low ROI** (few low-traffic class-based session pages).
+5. **`series/[slug]` ISR** — blocked on `searchParams.tab`; needs path-based tabs (parked B11).
+6. **Media-curation breadth** — blocked by **round-provenance mismatch**: the JUST MISSED *feed* round ≠ the canonical *weekend* round for parser-indexed series (F3 feed-r3 "Spain" vs weekend-r3 "Monaco"; IndyCar feed-r9 vs `/weekend/9` 404). WEC/F1 align (rounds.json / Jolpica). Reconcile rounds first, then curate the rest. MotoGP highlights are VideoPass-gated.
+7. **Launch gates still open** (v1.0, operator 2026-06-11): **security audit**, W3 About/rules ×15, W4 driver/team profiles, W8 launch program.
+8. **Captured ideas (IDEAS Inbox)** — Android-app talk; minigames (guess-the-driver / track / next-turn); copyright-free driver photos + team logos; race-weekend track-sector maps; post-session blog PRs. Features need a design pass before build.
+
+### Landmines learned this session
+- **A `no-store` fetch (or bare uncached `fetch`) reachable during a page's render forces the WHOLE route dynamic** — defeated `/app`'s ISR (slice-2 regression) and blocks `[session]` ISR. Fix pattern: move the uncacheable fetch to a CDN-cached **route handler** (`Cache-Control: s-maxage`) + client-fetch (the `/api/just-missed` pattern). Cacheable fetches (`next: { revalidate }`) + KV reads are static-safe (marketing/calendar prove it).
+- **Round-provenance mismatch** — results-parser round (feed) ≠ canonical weekend round (rounds.json/groupByWeekend) for parser-indexed series; a single `media.json` round key can't serve both the home and the weekend page for those. Audit cross-wave note; now also blocks media curation.
+- **FOM (F1/F2/F3) + most official motorsport channels disable YouTube embedding** → highlights must link out, not iframe-embed.
+- **Build symbols:** `○` static · `●` ISR/SSG · `ƒ` dynamic. Verify caching changes with `next build` route table + prod `X-Vercel-Cache` (`HIT`/`PRERENDER` = cached).
+
+---
+
+## Archived pickup — 0.12.13.1 era (2026-05-22)
 
 **Fri 2026-05-22 shipped 5 PRs, all merged.** Versions in order:
 - **0.12.11 (PR #90)** — IMSA full-class results via Al Kamel JSON API at `imsa.results.alkamelcloud.com`. Open Apache index, no auth, sibling endpoint `05_Results by Class_Race_Official.JSON` pre-buckets by class. Per-round URLs curated in `content/series/imsa/alkamel-rounds.json` (folder layout isn't catalog-discoverable — 24h races nest under `24_Hour 24/`, sprints sit under `Race/`). Schema mirrors `lib/standings/imsa.ts` (`Partial<Record<ImsaClass, ...>>`). Operator-verified on prod.
