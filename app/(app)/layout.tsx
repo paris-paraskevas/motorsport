@@ -93,6 +93,9 @@ export default async function RootLayout({
         className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
       >
         <body className="min-h-screen bg-bg text-text">
+          {/* Clerk's SDK + frontend API are the single biggest unused-JS item
+              (audit baseline); warm the connection early. */}
+          <link rel="preconnect" href="https://clerk.paddock-tracker.com" />
           <Script id="consent-default" strategy="beforeInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
@@ -115,17 +118,22 @@ export default async function RootLayout({
           <CookieConsent />
           <Analytics />
           <SpeedInsights />
+          {/* Deferred to lazyOnload (was afterInteractive): none of these are
+              needed for first paint — AdSense isn't even approved yet, and GA4
+              fires fine post-idle (consent updates queue into dataLayer, which
+              the consent-default gtag shim buffers until GTM loads). Together
+              ~319 KiB of the unused-JS budget moves off the critical path. */}
           <Script
             id="adsense-init"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             crossOrigin="anonymous"
           />
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
-          <Script id="ga-init" strategy="afterInteractive">
+          <Script id="ga-init" strategy="lazyOnload">
             {`
               gtag('js', new Date());
               gtag('config', '${GA_MEASUREMENT_ID}');

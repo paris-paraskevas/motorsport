@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.38.2 — 2026-06-21
+
+**Lighter, faster page loads.** Analytics and ad scripts now load after the page is interactive instead of competing with it, so pages become usable sooner — especially on phones.
+
 ## 0.38.1 — 2026-06-21
 
 **Highlights open on YouTube.** Race and session highlight clips now open on YouTube when you tap them — Formula 1 and most series don't allow their videos to play on other sites — shown as a poster with a play button so it still reads as a video. Added the Le Mans 24 Hours and the Barcelona F3 weekend.
