@@ -1,4 +1,5 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -313,6 +314,114 @@ function orderOf(raceName: string): number {
   if (/Superpole Race/i.test(raceName)) return 2;
   if (/Race 2/i.test(raceName)) return 3;
   return 1; // Race 1 default
+}
+
+// --- Per-session classifications (practice / Superpole) ---------------------
+// The three races ship as RaceResults above; these are the non-race weekend
+// sessions for the session pages. The session list lives on the events API
+// (source_ids like L1A/Q1A, not the short names), so we resolve short_name →
+// source_id there, then pull that session's classification. `time` is the best
+// LAP in ms (not cumulative), so these render as timed sessions (best/gap), no points.
+
+// Paddock session slug → WorldSBK short_name (race + superpole-race go through
+// the season-results path like every race).
+const SESSION_SHORT_BY_SLUG: Record<string, string> = {
+  fp1: 'FP1',
+  fp2: 'FP2',
+  fp3: 'FP3',
+  superpole: 'SP',
+  'warm-up': 'WUP',
+};
+
+export function parseSessionClassification(env: JsonApiEnvelope): SessionClassification | null {
+  const rows = env?.data;
+  if (!Array.isArray(rows)) return null;
+  const included = buildIncludedMap(env.included);
+  const riders = { ...(included['rider'] || {}), ...(included['riders'] || {}) };
+  const teams = { ...(included['team'] || {}), ...(included['teams'] || {}) };
+
+  const parsed: { position: number; name: string; code?: string; team: string; ms: number | null; status?: string }[] = [];
+  for (const row of rows) {
+    if (!row || row.type !== 'results') continue;
+    const position = asNumber(row.attributes?.position);
+    if (position == null) continue;
+    const rider = riders[row.relationships?.rider?.data?.id ?? ''];
+    const team = teams[row.relationships?.team?.data?.id ?? ''];
+    const name = asString(rider?.attributes?.name);
+    const surname = asString(rider?.attributes?.surname);
+    const teamName = asString(team?.attributes?.name);
+    if (!name || !surname || !teamName) continue;
+    const num = asNumber(rider?.attributes?.number);
+    const ms = asNumber(row.attributes?.time);
+    parsed.push({
+      position,
+      name: `${name} ${surname}`.trim(),
+      code: num != null ? `#${num}` : undefined,
+      team: teamName,
+      ms: typeof ms === 'number' && ms > 0 ? ms : null,
+      status: asString(row.attributes?.status),
+    });
+  }
+  if (parsed.length < MIN_FINISHERS) return null;
+  parsed.sort((a, b) => a.position - b.position);
+
+  // `time` is each rider's best LAP in ms. Topper shows the lap; the rest show
+  // the gap to it. (Unlike the race feed, this is not cumulative race time.)
+  const topMs = parsed.find(p => p.position === 1)?.ms ?? null;
+  const entries: SessionClassificationEntry[] = parsed.map(p => {
+    let time: string | undefined;
+    let gap: string | undefined;
+    if (p.ms != null) {
+      if (p.position === 1 || topMs == null || p.ms <= topMs) time = formatRaceTime(p.ms);
+      else gap = `+${formatGap(p.ms - topMs)}`;
+    }
+    const status: SessionClassificationEntry['status'] =
+      !p.status || /classified|finished/i.test(p.status)
+        ? undefined
+        : /^dns/i.test(p.status)
+          ? 'DNS'
+          : /excl|dsq|dnq/i.test(p.status)
+            ? 'DSQ'
+            : 'DNF';
+    return { position: p.position, driverName: p.name, driverCode: p.code, team: p.team, time, gap, status };
+  });
+  return { isQualifying: false, isRace: false, entries };
+}
+
+// One weekend session's classification (practice / Superpole), on demand:
+// rounds → the round's source_id → its session list → the matching session's
+// source_id → that session's results. Round numbering = sequence_order.
+export async function fetchWsbkSessionClassification(
+  season: number,
+  round: number,
+  sessionSlug: string,
+): Promise<SessionClassification | null> {
+  const short = SESSION_SHORT_BY_SLUG[sessionSlug];
+  if (!short) return null;
+
+  const roundsEnv = await fetchJson<JsonApiEnvelope>(
+    `${API_BASE}/wsbk-events/v1/seasons/${season}/rounds`,
+  );
+  if (!roundsEnv) return null;
+  const rd = parseRounds(roundsEnv).find(r => r.sequenceOrder === round);
+  if (!rd) return null;
+
+  const sessionsEnv = await fetchJson<JsonApiEnvelope>(
+    `${API_BASE}/wsbk-events/v1/seasons/${season}/rounds/${rd.sourceId}/sessions`,
+  );
+  // The list carries both SBK and Supersport sessions; the SBK ones have
+  // "-SBK-" in their resource id. Match by short_name within that category.
+  const session = (sessionsEnv?.data ?? []).find(
+    s => s?.id?.includes('-SBK-') && asString(s.attributes?.short_name) === short,
+  );
+  const sourceId = asString(session?.attributes?.source_id);
+  if (!sourceId) return null;
+
+  const env = await fetchJson<JsonApiEnvelope>(
+    `${API_BASE}/wsbk-results/v1/seasons/${season}/categories/SBK/rounds/${rd.sourceId}/sessions/${sourceId}/results`,
+  );
+  if (!env) return null;
+  return parseSessionClassification(env);
 }
 
 /**
