@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.38.2",
+  "version": "0.38.3",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -10,7 +10,9 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "indexnow:submit": "tsx scripts/submit-sitemap-to-indexnow.ts",
-    "health:standings": "tsx scripts/health-standings.mts"
+    "health:standings": "tsx scripts/health-standings.mts",
+    "health:results": "tsx scripts/health-results.mts",
+    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

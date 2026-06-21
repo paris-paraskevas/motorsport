@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.38.3 — 2026-06-21
+
+*Internal: documentation upkeep — no changes to the app.*
+
 ## 0.38.2 — 2026-06-21
 
 **Lighter, faster page loads.** Analytics and ad scripts now load after the page is interactive instead of competing with it, so pages become usable sooner — especially on phones.
