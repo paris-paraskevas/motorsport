@@ -74,13 +74,19 @@ export async function readResultsCache<T>(key: string): Promise<T | null> {
 }
 
 /**
- * Write `payload` to KV under `key` with a 3-hour TTL. Failure is non-fatal:
- * the caller still has fresh data in hand from the upstream fetch.
+ * Write `payload` to KV under `key`. TTL defaults to the 3-hour season window;
+ * callers caching immutable post-race data (e.g. weekend session classifications)
+ * pass a longer `ttlSeconds`. Failure is non-fatal: the caller still has fresh
+ * data in hand from the upstream fetch.
  */
-export async function writeResultsCache<T>(key: string, payload: T): Promise<void> {
+export async function writeResultsCache<T>(
+  key: string,
+  payload: T,
+  ttlSeconds: number = TTL_SECONDS,
+): Promise<void> {
   if (!isKvConfigured()) return;
   try {
-    await kv.set(key, payload, { ex: TTL_SECONDS });
+    await kv.set(key, payload, { ex: ttlSeconds });
   } catch {
     // Swallow — KV write failure should not affect the page render.
   }
@@ -92,4 +98,21 @@ export function seasonCacheKey(
   season: number,
 ): string {
   return `paddock:results:${series}:season:${season}`;
+}
+
+/**
+ * Cache key for a single weekend session's computed classification(s). Keyed by
+ * series + season + round + session slug — immutable post-race and safe across
+ * season rollover. Used by the weekend `[session]` page to KV-persist the
+ * classification it would otherwise re-fetch upstream every render, and to keep
+ * past F1 sessions renderable through OpenF1's live-session 401 lockout once
+ * captured.
+ */
+export function sessionClassCacheKey(
+  slug: string,
+  season: number,
+  round: number,
+  sessionSlug: string,
+): string {
+  return `paddock:session-class:${slug}:${season}:${round}:${sessionSlug}`;
 }

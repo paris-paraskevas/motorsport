@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.39.1 — 2026-06-21
+
+Changed: **KV-persist weekend session classifications — resolves the 0.39.0 Lens-B #3 follow-up.**
+
+### Changed
+
+- **The weekend session page (`app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`) now KV-persists each past session's computed classification and reads it first.** Classifications are immutable once a session is past, so on a cache hit the page serves the stored `{ classification, classClassifications }` and skips the upstream pull entirely — OpenF1's ~4-call chain (sessions list → session_result + drivers), the Pulselive event→session→classification chain (MotoGP/WSBK), or the season-results fan-out (F2/F3/WEC/IMSA/GT-World). Warm renders drop from ~1s of upstream I/O to a single KV read. `writeResultsCache` gained an optional `ttlSeconds` arg (default unchanged at 3h); session classifications use a 7-day TTL via the new `sessionClassCacheKey(slug, season, round, sessionSlug)`. **Only non-empty results are written** — a transient upstream failure is never cached, so the page retries next render instead of freezing an empty classification for the TTL. Covered by new `sessionClassCacheKey` + custom-TTL cases in `lib/results-cache.test.ts`.
+- **Page-level ISR was evaluated and deliberately not pursued.** `lib/results/wec.ts` uses a `cache: 'no-store'` fetch reachable in render, which forces the route dynamic regardless of `revalidate`, and the page branches on `now` (live/past) which CDN-cached HTML would freeze. The route stays `ƒ` (Dynamic) on purpose; the KV layer is where the win lands.
+
+### Fixed
+
+- **Past F1 session pages no longer go blank during a live F1 session.** OpenF1 returns 401 on *all* endpoints (including historical) whenever any session is live, so a previously-working classification page would break exactly on race weekends. Once a session's classification has been captured to KV it renders from the cache and is immune to the live-session lockout for the 7-day TTL window. (A cold or expired entry first opened *during* an unrelated live lockout still can't be fetched — closing that fully needs a pre-warm cron, tracked separately in `IDEAS.md`.)
+
 ## 0.39.0 — 2026-06-21
 
 Added: **per-session classifications for F2/F3/MotoGP/WSBK + live source-drift health monitors.**

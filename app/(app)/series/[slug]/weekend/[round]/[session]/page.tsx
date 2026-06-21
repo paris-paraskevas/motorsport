@@ -33,8 +33,28 @@ import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { loadMedia, videoForSession } from '@/lib/media';
+import {
+  readResultsCache,
+  writeResultsCache,
+  sessionClassCacheKey,
+} from '@/lib/results-cache';
 
 export const dynamic = 'force-dynamic';
+
+// Post-race classifications are immutable, so we KV-persist each session's
+// computed result and read it first on later renders — eliding the upstream
+// fan-out (OpenF1's ~4-call chain, Pulselive, or the season-results pull).
+// The 7-day TTL is the balance between two pressures: long enough that a
+// session captured on Friday survives the live-session 401 lockout OpenF1
+// imposes across the rest of the race weekend; short enough to re-pull within
+// the window where late penalty corrections land (those are otherwise owned by
+// the results-overrides lifecycle, not this cache).
+const SESSION_CLASS_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+type CachedSessionClassification = {
+  classification: SessionClassification | null;
+  classClassifications: { cls: string; data: SessionClassification }[];
+};
 
 function parseRound(raw: string): number | null {
   if (!/^\d+$/.test(raw)) return null;
@@ -478,28 +498,55 @@ export default async function SessionPage({
 
   // Classification: F1 has every session via OpenF1; the class-based series
   // (WEC / IMSA / GT World) render per-class tables from their season feeds;
-  // the RACE_SESSION_SERIES set reuses flat season-results feeds.
+  // the RACE_SESSION_SERIES set reuses flat season-results feeds. Only past
+  // sessions have a classification, and once a session is past it's immutable —
+  // so read a KV-persisted copy first and only hit upstream on a miss.
   let classification: SessionClassification | null = null;
   let classClassifications: { cls: string; data: SessionClassification }[] = [];
-  if (slug === 'f1' && isPast) {
-    const { start, end } = weekendStartEnd(weekend);
-    const candidates = await fetchOpenF1WeekendSessions(start, end);
-    const match = session.dateOnly
-      ? null
-      : matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
-    if (match) classification = await fetchSessionClassification(match);
-  } else if (CLASS_RESULT_SERIES.has(slug) && isPast && isRaceLikeTitle(session.title)) {
-    classClassifications = await fetchClassClassifications(series, round, session.title);
-  } else if (FORMULA_SESSION_SERIES.has(slug) && isPast && !isRaceLikeTitle(session.title)) {
-    classification = await fetchFormulaNonRaceClassification(slug, series.meta.season, round, session.title);
-  } else if ((slug === 'motogp' || slug === 'wsbk') && isPast && !isRaceLikeTitle(session.title)) {
-    const sl = sessionSlug(session.title);
-    classification =
-      slug === 'wsbk'
-        ? await fetchWsbkSessionClassification(series.meta.season, round, sl)
-        : await fetchMotoGPSessionClassification(series.meta.season, round, sl);
-  } else if (isPast) {
-    classification = await fetchRoundClassification(series, round, session.title);
+  if (isPast) {
+    const cacheKey = sessionClassCacheKey(
+      slug,
+      series.meta.season,
+      round,
+      sessionSlug(session.title),
+    );
+    const cached = await readResultsCache<CachedSessionClassification>(cacheKey);
+    if (cached) {
+      classification = cached.classification;
+      classClassifications = cached.classClassifications ?? [];
+    } else {
+      if (slug === 'f1') {
+        const { start, end } = weekendStartEnd(weekend);
+        const candidates = await fetchOpenF1WeekendSessions(start, end);
+        const match = session.dateOnly
+          ? null
+          : matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
+        if (match) classification = await fetchSessionClassification(match);
+      } else if (CLASS_RESULT_SERIES.has(slug) && isRaceLikeTitle(session.title)) {
+        classClassifications = await fetchClassClassifications(series, round, session.title);
+      } else if (FORMULA_SESSION_SERIES.has(slug) && !isRaceLikeTitle(session.title)) {
+        classification = await fetchFormulaNonRaceClassification(slug, series.meta.season, round, session.title);
+      } else if ((slug === 'motogp' || slug === 'wsbk') && !isRaceLikeTitle(session.title)) {
+        const sl = sessionSlug(session.title);
+        classification =
+          slug === 'wsbk'
+            ? await fetchWsbkSessionClassification(series.meta.season, round, sl)
+            : await fetchMotoGPSessionClassification(series.meta.season, round, sl);
+      } else {
+        classification = await fetchRoundClassification(series, round, session.title);
+      }
+
+      // Persist only a real result — never cache a null/empty miss, so a
+      // transient upstream failure (e.g. the OpenF1 live-session 401) doesn't
+      // freeze an empty page for the whole TTL; it retries next render instead.
+      if (classification || classClassifications.length > 0) {
+        await writeResultsCache(
+          cacheKey,
+          { classification, classClassifications },
+          SESSION_CLASS_TTL_SECONDS,
+        );
+      }
+    }
   }
 
   const nav = weekendSessionNav(weekend, slug, round, session.uid);
