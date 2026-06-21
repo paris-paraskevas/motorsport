@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.40.0 — 2026-06-21
+
+Added: **native DTM race results on the Results tab — replaces the dtm.com link-out.**
+
+### Added
+
+- **The DTM Results tab now renders real per-race classifications** instead of falling through to the dtm.com link-out card. New `fetchDTMSeasonResults` (`lib/results/dtm.ts`) scrapes motorsport.com per-event result pages (`/dtm/results/<season>/<event>/?st=RACE1|RACE2` — SSR `table.ms-table--result`, the same `ms-*` markup family the DTM standings parser already reads, so datacenter access is the proven standings path). Two points races per weekend → two `RaceResult`s per round (the WSBK/MotoGP precedent). Driver + team come from the `.result_driver_id` cell (the `--result_team` column is empty); the winner's row carries total time, others the gap; DNF/DSQ are mapped from the position cell. Fails closed below 12 rows. Wired into `components/tabs/ResultsTab.tsx` via the standard `SeasonResultsPanel` dispatch. Covered by `lib/results/dtm.test.ts` against a real Lausitzring RACE1 fixture.
+- **Events are enumerated from the results page's own event picker** (each event page lists the *others*, so the landing redirect's target + its picker covers the full set; names/dates harvested from the pickers). **Round numbers map to curated `rounds.json` by date, not chronological position** (`canonicalRound`) — DTM 2026's calendar skips round 4 (jumps 3 → 5), so a positional index would mis-link the weekend pages after the gap. KV-cached via `seasonCacheKey('dtm', …)`.
+
+### Note
+
+- The DTM season-trend chart is unchanged — it stays on the standings points-matrix source (`fetchDTMSeasonChartData`), so the chart-vs-standings invariant is untouched. Per-session DTM weekend pages (`/weekend/<round>/race1|race2`) remain a deferred fast-follow (the round-provenance mapping wants end-to-end verification first). Prod-verify on the Vercel datacenter follows the merge, per the working-agreement rule for new server-side fetches.
+
 ## 0.39.2 — 2026-06-21
 
 Docs: **handoff refresh + audit-notes salvage (no app change).**

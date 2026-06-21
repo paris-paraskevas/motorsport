@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.40.0 — 2026-06-21
+
+**DTM race results are here.** The DTM Results tab now shows full race-by-race classifications — every driver's finishing position, time, and points for each race — instead of sending you to the official site. Covers the season so far: Red Bull Ring, Zandvoort, and the Lausitzring.
+
 ## 0.39.2 — 2026-06-21
 
 *Internal: documentation and housekeeping — no changes to the app.*

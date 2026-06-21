@@ -28,6 +28,7 @@ import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
+import { fetchDTMSeasonResults } from '@/lib/results/dtm';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
@@ -948,10 +949,27 @@ export async function ResultsTab({ series }: { series: Series }) {
     );
   }
 
-  // DTM intentionally falls through to the link-out card: its only per-round
-  // data is the points matrix powering the season-trend chart, which lives on
-  // the Standings tab as of 0.26.0. A per-race classification accordion needs
-  // the motorsport.com per-event pages probed first (0.12.15.1 entry note).
+  if (series.meta.slug === 'dtm') {
+    const [races, overrides] = await Promise.all([
+      fetchDTMSeasonResults(series.meta.season, series.rounds?.rounds),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel races={merged} preserveOrder seriesSlug={slug} weekendRounds={weekendRounds} />
+        <SourceLink
+          href={`https://www.motorsport.com/dtm/results/${series.meta.season}/`}
+          label="motorsport.com"
+        />
+      </div>
+    );
+  }
 
   if (!series.meta.officialStandingsUrl) {
     return <PlaceholderTab tabLabel="Results" />;
