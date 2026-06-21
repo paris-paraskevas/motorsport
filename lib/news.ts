@@ -63,9 +63,23 @@ export interface AggregatedNewsItem extends NewsItem {
   seriesSlug: string;
 }
 
+// motorsport.com cross-posts one article to multiple category feeds, each with a
+// category-specific URL (`/f1/news/<slug>/` vs `/wec/news/<slug>/`). The article
+// SLUG (last path segment) is its canonical identity across categories — keying
+// on the full link misses the duplicate because the category path differs.
+function articleKey(link: string): string {
+  try {
+    const segs = new URL(link).pathname.split('/').filter(Boolean);
+    return segs.length ? segs[segs.length - 1] : link;
+  } catch {
+    return link;
+  }
+}
+
 /**
  * Fetch top N items from every configured series in parallel, return a flat
- * array sorted by pubDate descending. Caller applies followed-series filter.
+ * array sorted by pubDate descending, with cross-posted duplicates removed.
+ * Caller applies followed-series filter.
  */
 export async function fetchAggregatedNews(
   perSeries: number = MAX_PER_SERIES_AGGREGATE,
@@ -77,9 +91,19 @@ export async function fetchAggregatedNews(
       return items.slice(0, perSeries).map(i => ({ ...i, seriesSlug: slug }));
     }),
   );
-  return results
-    .flat()
-    .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
+  // Dedupe cross-posts: the same story tagged to F1 + WEC + WRC arrives once per
+  // feed. Keep the first occurrence (earliest series in NEWS_SLUG_MAP order = its
+  // most-specific tag); without this the wire showed a story 3× and inflated the
+  // per-series chip counts (audit 2026-06-21).
+  const seen = new Set<string>();
+  const deduped: AggregatedNewsItem[] = [];
+  for (const item of results.flat()) {
+    const key = articleKey(item.link);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(item);
+  }
+  return deduped.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
 }
 
 export async function fetchNews(seriesSlug: string): Promise<NewsItem[]> {

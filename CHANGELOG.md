@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.5 — 2026-06-21
+
+Fix: **de-duplicate cross-posted news in the wire + per-series chips.**
+
+### Fixed
+
+- **Triplicated articles in "Paddock wire" / the news feed.** motorsport.com cross-posts one story to several category feeds (e.g. F1 + WEC + WRC), each with a category-specific URL, so `fetchAggregatedNews` (`lib/news.ts`) returned the same article once per feed — it rendered up to 3× and inflated the per-series chip counts on `/app` and the landing. The home's exact-link de-dupe missed it because the category path differs between cross-posts. Now de-duped at the source by the article **slug** (last path segment — canonical across categories), keeping the first occurrence = its earliest/most-specific series in `NEWS_SLUG_MAP` order. Each story shows once, under one series, with accurate chip counts. Covered by a `fetchAggregatedNews` cross-post test in `lib/news.test.ts`.
+
 ## 0.38.4 — 2026-06-21
 
 Fix: **kill the followed-series personalization flash on `/app` + `/calendar`.**

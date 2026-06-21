@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fetchNews } from './news';
+import { fetchNews, fetchAggregatedNews } from './news';
 
 const SAMPLE_RSS = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -60,5 +60,33 @@ describe('fetchNews', () => {
     );
     const items = await fetchNews('f1');
     expect(items).toEqual([]);
+  });
+});
+
+describe('fetchAggregatedNews', () => {
+  it('dedupes a cross-posted article by slug, keeping the earliest series', async () => {
+    // Every category feed cross-posts the same article (same slug, category-
+    // specific URL — as motorsport.com does), plus one feed-unique item.
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input: RequestInfo | URL) => {
+      const cat = String(input).match(/\/rss\/([^/]+)\/news/)?.[1] ?? 'x';
+      const rss = `<?xml version="1.0"?><rss version="2.0"><channel>
+        <item><title>Shared cross-post</title>
+        <link>https://www.motorsport.com/${cat}/news/shared-story/</link>
+        <pubDate>Mon, 12 May 2026 10:00:00 +0000</pubDate></item>
+        <item><title>${cat} exclusive</title>
+        <link>https://www.motorsport.com/${cat}/news/${cat}-only/</link>
+        <pubDate>Mon, 12 May 2026 09:00:00 +0000</pubDate></item>
+      </channel></rss>`;
+      return Promise.resolve(
+        new Response(rss, {
+          status: 200,
+          headers: { 'Content-Type': 'application/rss+xml' },
+        }),
+      );
+    });
+    const items = await fetchAggregatedNews();
+    const shared = items.filter(i => i.title === 'Shared cross-post');
+    expect(shared).toHaveLength(1);
+    expect(shared[0].seriesSlug).toBe('f1'); // first in NEWS_SLUG_MAP order
   });
 });
