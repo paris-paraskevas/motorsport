@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.39.0 — 2026-06-21
+
+Added: **per-session classifications for F2/F3/MotoGP/WSBK + live source-drift health monitors.**
+
+### Added
+
+- **Weekend session pages now show practice + qualifying classifications for F2, F3, MotoGP, and WSBK** (was F1-only). F2/F3 parse the practice/qualifying sessions already on each round's results page (`__NEXT_DATA__`); MotoGP/WSBK pull the session classification from Pulselive on demand. Single-lap qualifying shows best-lap-then-gaps. Touches `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`, `lib/results/{f2,f3,motogp,wsbk}.ts`, `lib/results-cache.ts`; covered by `lib/results/session-parsers.test.ts`.
+- **Live source-drift health monitors** — `lib/health-core.ts` + `lib/standings-health.ts` + `lib/results-health.ts` run every series' production standings/results fetcher against its live source and grade OK/LOW/EMPTY/ERROR, catching parser drift that frozen fixtures miss (e.g. the WRC Wikipedia break). Surfaced via `app/api/cron/health/route.ts` (503 when any source is down) + a 6-hourly GitHub Actions workflow (`.github/workflows/health.yml`); dev CLIs in `scripts/health-*.mts`.
+
+### Note
+
+- The session page stays `force-dynamic` and the new MotoGP/WSBK fetches run per render — caching it (ISR/KV; results are immutable post-race) is the deferred Lens-B #3 follow-up. The `npm run health*` script aliases referenced by the health CLIs are not yet wired into `package.json` (the `.mts` files run directly meanwhile).
+
 ## 0.38.6 — 2026-06-21
 
 Fix: **tighten the season-trend chart legend on mobile (chart stays at the top).**
