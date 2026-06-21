@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.38.4 — 2026-06-21
+
+**Your series load cleanly.** When you follow specific series, the home and calendar no longer flicker through every other series before settling on yours — you'll briefly see a loading placeholder, then your selection, with no jarring flash.
+
 ## 0.38.3 — 2026-06-21
 
 *Internal: documentation upkeep — no changes to the app.*

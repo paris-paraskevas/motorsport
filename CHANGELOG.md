@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.4 — 2026-06-21
+
+Fix: **kill the followed-series personalization flash on `/app` + `/calendar`.**
+
+### Fixed
+
+- **Flash of unfiltered content.** `/app` and `/calendar` are statically cached / user-agnostic, so the SSR HTML can't know the visitor's followed series. The personalized regions (`components/HomeContent.tsx` — chyron / This week / Paddock wire / Just missed; `components/FilteredSessions.tsx` — the calendar list) fell back to the **full unfiltered list while `!hydrated`**, so the cached page painted every series and the post-hydration filter (`useFollowedSeries`) then yanked the non-followed ones away — a visible flicker of other-series sessions/news on every load. Both now render a height-stable **skeleton until prefs hydrate** (`HomeContent` early-returns `HomeSkeleton`, keeping the sr-only H1 for SEO; `FilteredSessions` returns `SessionsSkeleton`) instead of the unfiltered list. The server never paints other-series data; the client swaps to the filtered view on hydration. Caching is untouched — guests resolve from localStorage in ~1 frame; signed-in users see a brief honest skeleton during the existing prefs fetch (instant-via-localStorage-mirror is a documented fast-follow, deferred because the optimistic sync `setState` tripped the `set-state-in-effect` lint rule and the clean fix needs a `useSyncExternalStore` refactor). Trade noted: SSR for these two routes now ships the skeleton, not the schedule/news text — Google renders JS so it still indexes them, and a pre-paint CSS-hide is the SEO-preserving option for the list pages if Bing/no-JS indexing of `/calendar` matters.
+
 ## 0.38.3 — 2026-06-21
 
 Docs: **refreshed the stale operating record.** `docs/HANDOFF.md`'s top "Next session pickup" block had drifted to 0.12.13 (2026-05-22) while prod ran 0.36→0.38 (the live log was `docs/redesign-2026-06.md`). Rewrote it to capture this session — PRs #145–#153 (TWA Digital Asset Links, home v3 watch-links + JUST MISSED, `/app`/weekend/driver/team ISR, calendar prev-months, WeekendMedia + link-out, JS levers), the deferred queue (home-v3 slice 3, `[session]` ISR refactor, Clerk lazy, media-curation breadth, launch gates), and the session's landmines (no-store-forces-dynamic, round-provenance mismatch, FOM embed block). Added a SCHEDULE catch-up entry. No product change.
