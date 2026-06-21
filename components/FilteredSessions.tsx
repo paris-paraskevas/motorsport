@@ -27,9 +27,18 @@ export function FilteredSessions({
 }) {
   const { followed, hydrated } = useFollowedSeries();
   const { now } = useNow(serverNow);
+  const [selectedMonthRaw, setSelectedMonth] = useState<string | null>(null);
+
+  // Until followed-series prefs resolve on the client, render a skeleton — never
+  // the unfiltered list. The page is statically cached/user-agnostic, so the SSR
+  // HTML can't know the user's series; without this gate it paints EVERY series,
+  // then the post-hydration filter yanks the non-followed ones away (the
+  // personalization flash). Skeleton → your series, never other-series data.
+  // Guests resolve from localStorage in ~1 frame; signed-in from the local mirror.
+  if (!hydrated) return <SessionsSkeleton />;
 
   const filtered =
-    hydrated && followed !== null
+    followed !== null
       ? items.filter(i => followed.includes(i.seriesSlug))
       : items;
 
@@ -37,7 +46,6 @@ export function FilteredSessions({
     new Set(filtered.map(i => monthKey(i.session.start))),
   ).sort();
 
-  const [selectedMonthRaw, setSelectedMonth] = useState<string | null>(null);
   const selectedMonth =
     selectedMonthRaw && months.includes(selectedMonthRaw)
       ? selectedMonthRaw
@@ -115,5 +123,26 @@ export function FilteredSessions({
         ))
       )}
     </>
+  );
+}
+
+// Shown until followed-series prefs resolve on the client, in place of the
+// unfiltered list — so the cached page never paints other series then yanks
+// them. Roughly matches the month-nav + day-group height to avoid layout shift.
+function SessionsSkeleton() {
+  return (
+    <div aria-hidden="true" className="animate-pulse">
+      <div className="mb-4 h-8 w-full max-w-md bg-surface" />
+      {[0, 1].map(g => (
+        <div key={g} className="mb-4">
+          <div className="mb-2 h-5 w-40 bg-surface" />
+          <div className="grid grid-cols-1 gap-x-8 border-t border-border md:grid-cols-2 xl:grid-cols-3">
+            {[0, 1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="h-16 border-b border-border bg-surface/60" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

@@ -176,8 +176,17 @@ export function HomeContent({
     };
   }, []);
 
+  // Until followed-series prefs resolve on the client, render a skeleton — never
+  // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
+  // HTML can't know the user's series; without this gate it paints EVERY series
+  // (chyron, week, wire, just-missed) and the post-hydration filter then yanks
+  // the non-followed ones away — the personalization flash. Skeleton → your
+  // paddock, never other-series data. Guests resolve from localStorage in ~1
+  // frame; signed-in returns from the local mirror (see useFollowedSeries).
+  if (!hydrated) return <HomeSkeleton />;
+
   const filteredSessions =
-    hydrated && followed !== null
+    followed !== null
       ? items.filter(i => followed.includes(i.seriesSlug))
       : items;
   const filteredNews =
@@ -830,6 +839,45 @@ export function HomeContent({
           },
         ]}
       />
+    </>
+  );
+}
+
+// Shown until followed-series prefs resolve on the client (see the early return
+// in HomeContent), in place of the unfiltered page. Keeps the sr-only H1 so the
+// page keeps its heading for crawlers, and roughly mirrors the chyron + two-column
+// week/wire layout to avoid layout shift when the real content swaps in.
+function HomeSkeleton() {
+  return (
+    <>
+      <h1 className="sr-only">
+        Paddock Tracker — live motorsport schedule and news across F1, MotoGP, WEC,
+        Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
+      </h1>
+      <div aria-hidden="true" className="animate-pulse">
+        <div className="mb-8 -mx-4 border-y border-border bg-surface px-4 py-5 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8">
+          <div className="mb-2 h-4 w-40 bg-surface-elevated" />
+          <div className="h-9 w-3/4 max-w-md bg-surface-elevated" />
+        </div>
+        <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:gap-16">
+          <div>
+            <div className="mb-3 h-5 w-28 bg-surface" />
+            <div className="border-y border-border divide-y divide-border">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="h-12 bg-surface/60" />
+              ))}
+            </div>
+          </div>
+          <div className="mt-10 lg:mt-0">
+            <div className="mb-3 h-5 w-28 bg-surface" />
+            <div className="border-y border-border divide-y divide-border">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="h-14 bg-surface/60" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
