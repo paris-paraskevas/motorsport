@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.39.1 — 2026-06-21
+
+**Faster, steadier session results.** Race-weekend session results now load near-instantly after the first view, and past Formula 1 sessions keep showing their results even while another session is running live.
+
 ## 0.39.0 — 2026-06-21
 
 **More session results.** Practice and qualifying classifications now appear on race-weekend session pages for Formula 2, Formula 3, MotoGP, and World Superbikes — not just Formula 1. Plus behind-the-scenes monitoring so we catch and fix broken data sources faster.
