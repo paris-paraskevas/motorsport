@@ -87,6 +87,9 @@ export async function writeResultsCache<T>(key: string, payload: T): Promise<voi
 }
 
 /** Cache-key builder. Series-scoped + season-scoped so rolling over years is safe. */
-export function seasonCacheKey(series: 'f2' | 'f3' | 'wec', season: number): string {
+export function seasonCacheKey(
+  series: 'f2' | 'f3' | 'wec' | 'f3-sessions',
+  season: number,
+): string {
   return `paddock:results:${series}:season:${season}`;
 }

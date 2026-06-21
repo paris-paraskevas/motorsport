@@ -1,0 +1,37 @@
+name: standings health
+
+on:
+  schedule:
+    # Every 6 hours (offset off the hour to dodge runner congestion).
+    # Standings change at most a few times a weekend — no need for the 15-min
+    # cadence of the notify cron.
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read CRON_SECRET from repo secrets.
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/health (live standings parsers)
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/health.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/health)
+          echo "Status: $STATUS"
+          cat /tmp/health.json
+          echo ""
+          # 200 = every source parsed; 503 = at least one is DOWN → fail the job
+          # so GitHub surfaces it. (The body names which series broke.)
+          test "$STATUS" = "200"

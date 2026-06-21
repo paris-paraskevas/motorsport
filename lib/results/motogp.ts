@@ -1,4 +1,5 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import {
   MOTOGP_API_BASE,
   MOTOGP_CATEGORY_UUID_EXPORT,
@@ -54,6 +55,7 @@ interface PulseliveEvent {
 interface PulseliveSession {
   id?: string;
   type?: string;
+  number?: number;
   date?: string;
   status?: string;
 }
@@ -237,4 +239,100 @@ export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult
   });
 
   return races;
+}
+
+// --- Per-session classifications (practice / qualifying) ---------------------
+// The race + sprint already ship as RaceResults above; these are the non-race
+// sessions for the weekend session pages. The classification endpoint returns
+// gap-to-leader (and absolute time on some sessions) but no points — so these
+// render as timed sessions (best/gap), not races.
+
+// Paddock session slug → Pulselive (type, number). RAC/SPR are intentionally
+// absent: those go through the season-results / snapshot path like every race.
+const SESSION_TYPE_BY_SLUG: Record<string, { type: string; number?: number }> = {
+  fp1: { type: 'FP', number: 1 },
+  fp2: { type: 'FP', number: 2 },
+  practice: { type: 'PR' },
+  q1: { type: 'Q', number: 1 },
+  q2: { type: 'Q', number: 2 },
+  'warm-up': { type: 'WUP' },
+};
+
+export function buildSessionClassification(
+  rows: PulseliveClassificationRow[],
+): SessionClassification {
+  const entries: SessionClassificationEntry[] = [];
+  for (const row of rows) {
+    const driverName = row.rider?.full_name;
+    const team = row.team?.name;
+    if (!driverName || !team) continue;
+    const pos =
+      typeof row.position === 'number' && Number.isFinite(row.position) ? row.position : null;
+    // gap.first is "0.000" for the session-topper — drop it so P1 isn't "+0.000".
+    const gap = row.gap?.first && row.gap.first !== '0.000' ? `+${row.gap.first}` : undefined;
+    // Map Pulselive status to the classification union; "INSTND" = classified.
+    // Anything else not-started/disqualified falls back to DNF (rare off-race).
+    const status: SessionClassificationEntry['status'] =
+      !row.status || row.status === 'INSTND'
+        ? undefined
+        : row.status === 'DNS'
+          ? 'DNS'
+          : row.status === 'DSQ'
+            ? 'DSQ'
+            : 'DNF';
+    entries.push({
+      position: pos,
+      driverName,
+      driverCode: row.rider?.number != null ? `#${row.rider.number}` : undefined,
+      team,
+      time: row.time || undefined,
+      gap,
+      status,
+    });
+  }
+  entries.sort((a, b) => (a.position ?? 999) - (b.position ?? 999));
+  return { isQualifying: false, isRace: false, entries };
+}
+
+// One weekend session's classification, fetched on demand (no season fan-out):
+// season → events → the round's event → its sessions → the matching session's
+// classification. Round numbering matches fetchMotoGPSeasonResults (events
+// ordered by date_start, 1-indexed).
+export async function fetchMotoGPSessionClassification(
+  year: number,
+  round: number,
+  sessionSlug: string,
+): Promise<SessionClassification | null> {
+  const target = SESSION_TYPE_BY_SLUG[sessionSlug];
+  if (!target) return null;
+
+  const seasonUuid = await resolveMotoGPSeasonUuid(year);
+  if (!seasonUuid) return null;
+
+  const events = await fetchJson<PulseliveEvent[]>(
+    `${MOTOGP_API_BASE}/motogp/v1/results/events?seasonUuid=${seasonUuid}&isFinished=true`,
+  );
+  if (!Array.isArray(events)) return null;
+  const ordered = events
+    .filter(e => e?.test !== true && e?.id && (e.date_start || e.date_end))
+    .sort((a, b) => (a.date_start ?? '').localeCompare(b.date_start ?? ''));
+  const event = ordered[round - 1];
+  if (!event?.id) return null;
+
+  const sessions = await fetchJson<PulseliveSession[]>(
+    `${MOTOGP_API_BASE}/motogp/v1/results/sessions?eventUuid=${event.id}` +
+      `&categoryUuid=${MOTOGP_CATEGORY_UUID_EXPORT}`,
+  );
+  if (!Array.isArray(sessions)) return null;
+  const session = sessions.find(
+    s => s?.type === target.type && (target.number == null || s.number === target.number),
+  );
+  if (!session?.id) return null;
+
+  const resp = await fetchJson<PulseliveClassificationResponse>(
+    `${MOTOGP_API_BASE}/motogp/v1/results/session/${session.id}/classification?test=false`,
+  );
+  if (!resp?.classification || resp.classification.length < MIN_FINISHERS) return null;
+
+  return buildSessionClassification(resp.classification);
 }

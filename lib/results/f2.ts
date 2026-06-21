@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import {
   readResultsCache,
   writeResultsCache,
@@ -70,6 +71,7 @@ interface NextDataResultRow {
   TeamName?: string;
   TimeOrFinishReason?: string | null;
   Gap?: string | null;
+  Best?: string | null;
   ResultStatus?: string | null;
   DisplayFinishPosition?: string | null;
 }
@@ -262,6 +264,50 @@ function buildRaceResult(
   return { round, raceName, date, circuit, results };
 }
 
+// Practice and qualifying are timed sessions, not races — no points. F2
+// qualifying is a single-lap shootout (not F1's Q1/Q2/Q3), so isQualifying stays
+// false and the table shows the best lap (P1) then gaps, like practice. The
+// rows come from the same Results page as the races, under SessionShortName
+// "Prac" / "Qual" (probed live 2026-06-21).
+export function buildSessionClassification(
+  data: NextDataResultsRoot | null,
+  shortName: 'Qual' | 'Prac',
+): SessionClassification | null {
+  const session = data?.props?.pageProps?.pageData?.SessionResults?.find(
+    s => s?.SessionShortName === shortName,
+  );
+  if (!session || !session.Results || session.Results.length === 0) return null;
+  if (session.HideSessionResult || session.SessionResultsAvailable === false) return null;
+
+  const ranked = [...session.Results].sort(
+    (a, b) =>
+      (a.FinishPosition ?? Number.MAX_SAFE_INTEGER) -
+      (b.FinishPosition ?? Number.MAX_SAFE_INTEGER),
+  );
+
+  const entries: SessionClassificationEntry[] = [];
+  for (const r of ranked) {
+    const driverName =
+      r.DriverForename && r.DriverSurname
+        ? `${r.DriverForename} ${r.DriverSurname}`
+        : r.DriverDisplayName;
+    if (!driverName || !r.TeamName) continue;
+    const timed = typeof r.FinishPosition === 'number' && Number.isFinite(r.FinishPosition);
+    const gapRaw = r.Gap?.trim();
+    entries.push({
+      position: timed ? (r.FinishPosition as number) : null,
+      driverName,
+      driverCode: r.TLA,
+      team: r.TeamName,
+      time: r.Best || r.TimeOrFinishReason || undefined,
+      gap: gapRaw ? (gapRaw.startsWith('+') ? gapRaw : `+${gapRaw}`) : undefined,
+      status: timed ? undefined : 'DNS',
+    });
+  }
+  if (entries.length === 0) return null;
+  return { isQualifying: false, isRace: false, entries };
+}
+
 async function mapWithLimit<T, R>(
   items: T[],
   limit: number,
@@ -296,9 +342,18 @@ function pickResultRaceIds(seasonRaces: NextDataSeasonRace[]): number[] {
   return out;
 }
 
+export interface F2SessionClassification {
+  round: number;
+  data: SessionClassification;
+}
+
 export interface F2SeasonResults {
   feature: RaceResult[];
   sprint: RaceResult[];
+  // Per-round practice and qualifying classifications, for the weekend session
+  // pages. Optional so cached payloads written before this field stay valid.
+  qualifying?: F2SessionClassification[];
+  practice?: F2SessionClassification[];
 }
 
 export async function fetchF2SeasonResults(season?: number): Promise<F2SeasonResults> {
@@ -339,17 +394,28 @@ export async function fetchF2SeasonResults(season?: number): Promise<F2SeasonRes
 
   const feature: RaceResult[] = [];
   const sprint: RaceResult[] = [];
+  const qualifying: F2SessionClassification[] = [];
+  const practice: F2SessionClassification[] = [];
   for (const page of racePages) {
     const fr = buildRaceResult(page, 'FR', driverPoints);
     if (fr) feature.push(fr);
     const sr = buildRaceResult(page, 'SR', driverPoints);
     if (sr) sprint.push(sr);
+
+    const round = Number(page?.props?.pageProps?.pageData?.RoundNumber);
+    if (!Number.isFinite(round)) continue;
+    const q = buildSessionClassification(page, 'Qual');
+    if (q) qualifying.push({ round, data: q });
+    const p = buildSessionClassification(page, 'Prac');
+    if (p) practice.push({ round, data: p });
   }
 
   feature.sort((a, b) => a.round - b.round);
   sprint.sort((a, b) => a.round - b.round);
+  qualifying.sort((a, b) => a.round - b.round);
+  practice.sort((a, b) => a.round - b.round);
 
-  const out: F2SeasonResults = { feature, sprint };
+  const out: F2SeasonResults = { feature, sprint, qualifying, practice };
   if (typeof season === 'number' && (feature.length > 0 || sprint.length > 0)) {
     // Only cache non-empty results — caching an empty payload would freeze the
     // "temporarily unavailable" UI for 3h when upstream had a transient blip.

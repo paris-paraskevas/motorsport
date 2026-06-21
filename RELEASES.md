@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.39.0 — 2026-06-21
+
+**More session results.** Practice and qualifying classifications now appear on race-weekend session pages for Formula 2, Formula 3, MotoGP, and World Superbikes — not just Formula 1. Plus behind-the-scenes monitoring so we catch and fix broken data sources faster.
+
 ## 0.38.6 — 2026-06-21
 
 **Cleaner standings chart on phones.** The season-trend chart's legend now shows just the drivers currently on the chart, with the rest a tap away — so the standings table is easier to reach on mobile. The chart stays right where it is, up top.

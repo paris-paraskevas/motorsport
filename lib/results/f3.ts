@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import {
   readResultsCache,
   writeResultsCache,
@@ -69,6 +70,7 @@ interface NextDataResultRow {
   TeamName?: string;
   TimeOrFinishReason?: string | null;
   Gap?: string | null;
+  Best?: string | null;
   ResultStatus?: string | null;
   DisplayFinishPosition?: string | null;
 }
@@ -247,6 +249,50 @@ function buildRaceResult(
   return { round, raceName, date, circuit, results };
 }
 
+// Practice and qualifying are timed sessions, not races — no points. F3
+// qualifying is a single-lap shootout (not F1's Q1/Q2/Q3), so isQualifying
+// stays false and the table shows the best lap (P1) then gaps, like practice.
+// Matched by SessionType, not short name: F3 calls practice "Prac 1" where F2
+// uses "Prac" (probed live 2026-06-21); the first session of the type wins.
+export function buildSessionClassification(
+  data: NextDataResultsRoot | null,
+  sessionType: 'QUALIFYING' | 'PRACTICE',
+): SessionClassification | null {
+  const session = data?.props?.pageProps?.pageData?.SessionResults?.find(
+    s => s?.SessionType === sessionType,
+  );
+  if (!session || !session.Results || session.Results.length === 0) return null;
+  if (session.HideSessionResult || session.SessionResultsAvailable === false) return null;
+
+  const ranked = [...session.Results].sort(
+    (a, b) =>
+      (a.FinishPosition ?? Number.MAX_SAFE_INTEGER) -
+      (b.FinishPosition ?? Number.MAX_SAFE_INTEGER),
+  );
+
+  const entries: SessionClassificationEntry[] = [];
+  for (const r of ranked) {
+    const driverName =
+      r.DriverForename && r.DriverSurname
+        ? `${r.DriverForename} ${r.DriverSurname}`
+        : r.DriverDisplayName;
+    if (!driverName || !r.TeamName) continue;
+    const timed = typeof r.FinishPosition === 'number' && Number.isFinite(r.FinishPosition);
+    const gapRaw = r.Gap?.trim();
+    entries.push({
+      position: timed ? (r.FinishPosition as number) : null,
+      driverName,
+      driverCode: r.TLA,
+      team: r.TeamName,
+      time: r.Best || r.TimeOrFinishReason || undefined,
+      gap: gapRaw ? (gapRaw.startsWith('+') ? gapRaw : `+${gapRaw}`) : undefined,
+      status: timed ? undefined : 'DNS',
+    });
+  }
+  if (entries.length === 0) return null;
+  return { isQualifying: false, isRace: false, entries };
+}
+
 async function mapWithLimit<T, R>(
   items: T[],
   limit: number,
@@ -330,4 +376,64 @@ export async function fetchF3SeasonResults(season: number): Promise<RaceResult[]
     await writeResultsCache(cacheKey, all);
   }
   return all;
+}
+
+export interface F3SessionClassification {
+  round: number;
+  data: SessionClassification;
+}
+
+export interface F3SessionResults {
+  qualifying: F3SessionClassification[];
+  practice: F3SessionClassification[];
+}
+
+// Per-round practice + qualifying classifications for the weekend session
+// pages. Kept separate from fetchF3SeasonResults (which returns a flat
+// RaceResult[] that can't carry them) and cached under its own key. Mirrors that
+// function's manifest → per-round fan-out.
+export async function fetchF3SessionResults(season: number): Promise<F3SessionResults> {
+  const cacheKey = seasonCacheKey('f3-sessions', season);
+  const cached = await readResultsCache<F3SessionResults>(cacheKey);
+  if (cached) return cached;
+
+  const manifestHtml = await fetchHtml(SEASON_MANIFEST_URL);
+  if (!manifestHtml) return { qualifying: [], practice: [] };
+
+  const manifestData = extractNextData(manifestHtml) as NextDataStandingsRoot | null;
+  const seasonRaces = manifestData?.props?.pageProps?.pageData?.SeasonRaces;
+  if (!Array.isArray(seasonRaces) || seasonRaces.length === 0) {
+    return { qualifying: [], practice: [] };
+  }
+
+  const raceIds = pickResultRaceIds(seasonRaces);
+  if (raceIds.length === 0) return { qualifying: [], practice: [] };
+
+  const racePages = await mapWithLimit(
+    raceIds,
+    MAX_CONCURRENT_RACE_FETCHES,
+    async id => {
+      const html = await fetchHtml(RESULTS_URL(id));
+      return html ? (extractNextData(html) as NextDataResultsRoot | null) : null;
+    },
+  );
+
+  const qualifying: F3SessionClassification[] = [];
+  const practice: F3SessionClassification[] = [];
+  for (const page of racePages) {
+    const round = Number(page?.props?.pageProps?.pageData?.RoundNumber);
+    if (!Number.isFinite(round)) continue;
+    const q = buildSessionClassification(page, 'QUALIFYING');
+    if (q) qualifying.push({ round, data: q });
+    const p = buildSessionClassification(page, 'PRACTICE');
+    if (p) practice.push({ round, data: p });
+  }
+  qualifying.sort((a, b) => a.round - b.round);
+  practice.sort((a, b) => a.round - b.round);
+
+  const out: F3SessionResults = { qualifying, practice };
+  if (qualifying.length > 0 || practice.length > 0) {
+    await writeResultsCache(cacheKey, out);
+  }
+  return out;
 }

@@ -18,6 +18,10 @@ import {
   type SessionClassification,
 } from '@/lib/results/openf1';
 import { fetchWecSeasonResults, WEC_RESULT_CLASSES } from '@/lib/results/wec';
+import { fetchF2SeasonResults } from '@/lib/results/f2';
+import { fetchF3SessionResults } from '@/lib/results/f3';
+import { fetchMotoGPSessionClassification } from '@/lib/results/motogp';
+import { fetchWsbkSessionClassification } from '@/lib/results/wsbk';
 import { fetchImsaSeasonResults } from '@/lib/results/imsa';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import {
@@ -213,6 +217,28 @@ async function fetchClassClassifications(
   return [];
 }
 
+// F2/F3 practice and qualifying classifications (their races go through
+// fetchRoundClassification like the other flat-feed series). The FIA junior
+// series carry every session — practice, qualifying, both races — on the same
+// per-round results page; these are the two non-race ones, keyed per round.
+const FORMULA_SESSION_SERIES = new Set(['f2', 'f3']);
+
+async function fetchFormulaNonRaceClassification(
+  slug: string,
+  season: number,
+  round: number,
+  sessionTitle: string,
+): Promise<SessionClassification | null> {
+  const name = sessionTitle.replace(/^.*?[-–—:]\s*/, '');
+  const isQuali = /qualifying|superpole/i.test(name);
+  const isPractice = /practice/i.test(name) || /^fp\s*\d/i.test(name);
+  if (!isQuali && !isPractice) return null;
+  const { qualifying, practice } =
+    slug === 'f3' ? await fetchF3SessionResults(season) : await fetchF2SeasonResults(season);
+  const list = isQuali ? qualifying : practice;
+  return list?.find(r => r.round === round)?.data ?? null;
+}
+
 async function fetchRoundClassification(
   series: Series,
   round: number,
@@ -264,7 +290,9 @@ export async function generateMetadata(
   const { title: weekendTitle } = weekendLabel(ctx.weekend, ctx.round);
   const base = `${ctx.series.meta.name} · ${weekendTitle} · ${ctx.session.title.replace(/^.*?-\s*/, '')}`;
   const title = base.length > 60 ? `${base.slice(0, 59)}…` : base;
-  const description = `${ctx.session.title} at the ${ctx.series.meta.name} ${weekendTitle} — session time in your time zone${ctx.slug === 'f1' ? ', full classification and results' : ''}.`;
+  const hasFullClassification =
+    ['f1', 'f2', 'f3', 'motogp', 'wsbk'].includes(ctx.slug);
+  const description = `${ctx.session.title} at the ${ctx.series.meta.name} ${weekendTitle} — session time in your time zone${hasFullClassification ? ', full classification and results' : ''}.`;
   const path = `/series/${ctx.slug}/weekend/${ctx.round}/${ctx.sessionParam}`;
   return {
     title,
@@ -462,6 +490,14 @@ export default async function SessionPage({
     if (match) classification = await fetchSessionClassification(match);
   } else if (CLASS_RESULT_SERIES.has(slug) && isPast && isRaceLikeTitle(session.title)) {
     classClassifications = await fetchClassClassifications(series, round, session.title);
+  } else if (FORMULA_SESSION_SERIES.has(slug) && isPast && !isRaceLikeTitle(session.title)) {
+    classification = await fetchFormulaNonRaceClassification(slug, series.meta.season, round, session.title);
+  } else if ((slug === 'motogp' || slug === 'wsbk') && isPast && !isRaceLikeTitle(session.title)) {
+    const sl = sessionSlug(session.title);
+    classification =
+      slug === 'wsbk'
+        ? await fetchWsbkSessionClassification(series.meta.season, round, sl)
+        : await fetchMotoGPSessionClassification(series.meta.season, round, sl);
   } else if (isPast) {
     classification = await fetchRoundClassification(series, round, session.title);
   }
