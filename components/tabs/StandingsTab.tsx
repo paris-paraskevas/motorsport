@@ -1,7 +1,9 @@
+import { Suspense } from 'react';
 import type {
   Series,
   DriverStanding,
   ConstructorStanding,
+  RaceResult,
   StandingsOverridesFile,
 } from '@/lib/types';
 import { fetchF1Standings } from '@/lib/standings/f1';
@@ -31,6 +33,9 @@ import { fetchF1SeasonResults, fetchF1SeasonSprints } from '@/lib/results/f1';
 import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWRCSeasonChartPoints } from '@/lib/results/wrc';
 import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
+import { fetchF2SeasonResults } from '@/lib/results/f2';
+import { fetchF3SeasonResults } from '@/lib/results/f3';
+import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { applyResultsOverrides } from '@/components/tabs/ResultsTab';
 import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
 import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
@@ -248,6 +253,50 @@ function TrendSection({ trend }: { trend: SeasonTrendData | null }) {
   );
 }
 
+// Streams the trend chart independently of the standings tables: the tables
+// paint immediately from the already-resolved standings data, while the
+// (slower) season-results fetch the chart needs resolves behind this Suspense
+// boundary. Keeps slow-feed series (e.g. F3) as fast to first paint as before
+// while still gaining a chart. Used only for invariant-reconciled series
+// (chart totals == standings totals — verified per series before wiring).
+async function StreamedTrend({
+  slug,
+  season,
+  load,
+}: {
+  slug: string;
+  season: number;
+  load: (season: number) => Promise<{ races: RaceResult[]; extras?: RaceResult[] }>;
+}) {
+  const [{ races, extras }, overrides] = await Promise.all([
+    load(season),
+    loadResultsOverrides(slug),
+  ]);
+  const trend =
+    races.length > 0
+      ? buildSeasonTrendData(applyResultsOverrides(races, overrides), extras)
+      : null;
+  return <TrendSection trend={trend} />;
+}
+
+// Reserves the chart's footprint (chart area + legend strip) so the streamed
+// chart doesn't shove the standings tables down when it arrives.
+function TrendSkeleton() {
+  return (
+    <section className="border-y border-border py-4" aria-hidden>
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        Drivers&apos; season trend
+      </h2>
+      <div className="h-64 sm:h-72 md:h-80 bg-surface/40 animate-pulse" />
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <span key={i} className="h-6 w-20 bg-surface/40 animate-pulse" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export async function StandingsTab({ series }: { series: Series }) {
   if (series.meta.slug === 'f1') {
     const [data, overrides, races, sprints, resultsOverrides] = await Promise.all([
@@ -299,6 +348,16 @@ export async function StandingsTab({ series }: { series: Series }) {
     );
     return (
       <div className="space-y-4">
+        <Suspense fallback={<TrendSkeleton />}>
+          <StreamedTrend
+            slug={series.meta.slug}
+            season={series.meta.season}
+            load={async s => {
+              const r = await fetchF2SeasonResults(s);
+              return { races: r.feature, extras: r.sprint };
+            }}
+          />
+        </Suspense>
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
         <SourceLink
@@ -326,6 +385,13 @@ export async function StandingsTab({ series }: { series: Series }) {
     );
     return (
       <div className="space-y-4">
+        <Suspense fallback={<TrendSkeleton />}>
+          <StreamedTrend
+            slug={series.meta.slug}
+            season={series.meta.season}
+            load={s => fetchF3SeasonResults(s).then(races => ({ races }))}
+          />
+        </Suspense>
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
         <SourceLink
@@ -700,6 +766,13 @@ export async function StandingsTab({ series }: { series: Series }) {
     );
     return (
       <div className="space-y-4">
+        <Suspense fallback={<TrendSkeleton />}>
+          <StreamedTrend
+            slug={series.meta.slug}
+            season={series.meta.season}
+            load={s => fetchWsbkSeasonResults(s).then(races => ({ races }))}
+          />
+        </Suspense>
         <DriversTable drivers={drivers} />
         <ConstructorsTable constructors={constructors} />
         <SourceLink href="https://www.worldsbk.com/en/standings" label="worldsbk.com" />
