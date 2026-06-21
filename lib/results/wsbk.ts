@@ -1,5 +1,10 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
+import {
+  readResultsCache,
+  writeResultsCache,
+  seasonCacheKey,
+} from '@/lib/results-cache';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -263,6 +268,10 @@ function parseRounds(env: JsonApiEnvelope): RoundDescriptor[] {
 export async function fetchWsbkSeasonResults(
   season: number,
 ): Promise<RaceResult[]> {
+  const cacheKey = seasonCacheKey('wsbk', season);
+  const cached = await readResultsCache<RaceResult[]>(cacheKey);
+  if (cached) return cached;
+
   const roundsEnv = await fetchJson<JsonApiEnvelope>(
     `${API_BASE}/wsbk-events/v1/seasons/${season}/rounds`,
   );
@@ -304,10 +313,12 @@ export async function fetchWsbkSeasonResults(
   );
 
   // Stable order: most recent round first, then R1 → SP → R2 within a round.
-  return out.sort((a, b) => {
+  const races = out.sort((a, b) => {
     if (a.round !== b.round) return b.round - a.round;
     return orderOf(a.raceName) - orderOf(b.raceName);
   });
+  if (races.length > 0) await writeResultsCache(cacheKey, races);
+  return races;
 }
 
 function orderOf(raceName: string): number {

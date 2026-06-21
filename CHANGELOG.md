@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.41.0 — 2026-06-22
+
+Added: **season-trend charts on F2/F3/WSBK standings + a streamed-chart pattern that keeps slow tabs fast.**
+
+### Added
+
+- **Season-trend charts now render on the F2, F3 and WSBK standings tabs.** Each builds cumulative-points-per-round from the series' season results (`buildSeasonTrendData`) and was verified to **reconcile to its standings table** (chart total == table total, Δ=0 per driver, top-12) before wiring — the chart-vs-standings invariant. **MotoGP was checked and deliberately held back:** its results fan-out under-counts (e.g. Di Giannantonio 132 vs standings 157 — a dropped round/session), so its chart would disagree with its own table.
+- **Streamed chart (`StreamedTrend` + `TrendSkeleton` in `components/tabs/StandingsTab.tsx`).** The chart renders inside its own `<Suspense>` boundary, so the standings tables paint immediately from already-resolved standings data while the slower season-results fetch the chart needs resolves behind the boundary. Slow-feed series (F3: cold standings ~1.5s, results fan-out ~3s) stay as fast to first paint as before and gain a chart that streams in — instead of the whole tab blocking on the results fetch. A height-matched skeleton reserves the chart's footprint to avoid layout shift.
+
+### Changed
+
+- **WSBK season results are now KV-cached** (`seasonCacheKey('wsbk', …)`, mirroring F2/F3) — the chart adds a second consumer of WSBK's 36-call season fan-out, so caching keeps repeat standings/results renders fast.
+
+### Note
+
+- The existing F1/NASCAR/WRC/DTM charts are unchanged (inline render). MotoGP's chart (pending the under-count fix) and the structural cold-load cure (path-based tabs → ISR; standings last-good resilience) remain follow-ups. These fetchers already run on prod for the Results tabs, so no new datacenter source is introduced.
+
 ## 0.40.0 — 2026-06-21
 
 Added: **native DTM race results on the Results tab — replaces the dtm.com link-out.**
