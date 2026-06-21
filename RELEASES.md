@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.38.6 — 2026-06-21
+
+**Cleaner standings chart on phones.** The season-trend chart's legend now shows just the drivers currently on the chart, with the rest a tap away — so the standings table is easier to reach on mobile. The chart stays right where it is, up top.
+
 ## 0.38.5 — 2026-06-21
 
 **No more repeated headlines.** When a story is relevant to several series, the news feed now shows it once under its main series instead of repeating it — and the per-series counts are accurate.

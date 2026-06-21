@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.38.6 — 2026-06-21
+
+Fix: **tighten the season-trend chart legend on mobile (chart stays at the top).**
+
+### Fixed
+
+- **Standings chart legend was redundant chrome that buried the table on phones.** On `/series/<slug>?tab=standings` the season-trend chart (kept at the top — operator-preferred) draws the top 6 drivers' lines, but the chip legend below it listed 12 — four wrapping rows at 390px — pushing the actual standings table (which lists every driver's points anyway) fully below the fold. The collapsed legend now mirrors the chart: a chip per *drawn* line (top `DEFAULT_VISIBLE_COUNT` = 6, plus any toggled on), the rest one "+N more" tap away (`components/SeasonTrendChart.tsx`). Roughly halves the legend, surfaces the table sooner, and every visible line keeps its chip. Chart position, height, lines, team colours, and the always-on dots are unchanged.
+
 ## 0.38.5 — 2026-06-21
 
 Fix: **de-duplicate cross-posted news in the wire + per-series chips.**

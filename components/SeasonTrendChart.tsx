@@ -80,7 +80,7 @@ function legendLabel(codeOrName: string): string {
   return codeOrName.replace(/\s*\((i|R)\)\s*$/i, '');
 }
 
-const LEGEND_COLLAPSED_COUNT = 12;
+const DEFAULT_VISIBLE_COUNT = 6;
 
 export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendData) {
   const ranked = useMemo(
@@ -92,7 +92,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
   );
 
   const [visible, setVisible] = useState<Set<string>>(
-    () => new Set(ranked.slice(0, 6).map(d => d.name)),
+    () => new Set(ranked.slice(0, DEFAULT_VISIBLE_COUNT).map(d => d.name)),
   );
   const [legendExpanded, setLegendExpanded] = useState(false);
   const lineStyles = useMemo(() => buildLineStyles(ranked), [ranked]);
@@ -112,9 +112,14 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
     );
   }
 
-  // Legend soup fix (audit + NASCAR's 47-driver field): collapsed by default
-  // to the championship's sharp end, one tap away from everyone.
-  const shown = legendExpanded ? ranked : ranked.slice(0, LEGEND_COLLAPSED_COUNT);
+  // Legend soup fix (audit + NASCAR's 47-driver field): collapsed by default to
+  // the charted lines only — the top DEFAULT_VISIBLE_COUNT plus anything toggled
+  // on, so every drawn line keeps its chip. The full standings table sits
+  // directly below the chart, so a longer legend was redundant chrome that
+  // buried the table on mobile (audit 2026-06-21). Everyone else is one tap away.
+  const shown = legendExpanded
+    ? ranked
+    : ranked.filter((d, i) => i < DEFAULT_VISIBLE_COUNT || visible.has(d.name));
   const hiddenCount = ranked.length - shown.length;
 
   return (
@@ -216,7 +221,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
             <ChevronDown size={12} />
           </button>
         )}
-        {legendExpanded && ranked.length > LEGEND_COLLAPSED_COUNT && (
+        {legendExpanded && ranked.length > DEFAULT_VISIBLE_COUNT && (
           <button
             type="button"
             onClick={() => setLegendExpanded(false)}
