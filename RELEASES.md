@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.56.0 — 2026-06-22
+
+**Invite friends to your league with a link.** Open Play, pick a league, and tap "Copy invite link" — anyone you share it with can create an account (or sign in), become your friend, and join the league in a couple of taps. Richer league pages land next.
+
 ## 0.55.0 — 2026-06-22
 
 **Friends are coming to Play.** There's now a Friends section on the Play tab — accept or decline friend requests from people you meet in your leagues. Adding friends (through league invites) and richer league pages land next.

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
-import { createLeague, joinLeague } from '@/lib/betting/leagues';
+import { createLeague, joinLeague, getOrCreateInvite, joinLeagueByToken } from '@/lib/betting/leagues';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  let body: { action?: unknown; name?: unknown; joinCode?: unknown };
+  let body: { action?: unknown; name?: unknown; joinCode?: unknown; leagueId?: unknown; token?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -46,5 +46,29 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ error: "action must be 'create' or 'join'" }, { status: 400 });
+  if (body.action === 'invite') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    if (!leagueId) return NextResponse.json({ error: 'leagueId required' }, { status: 400 });
+    try {
+      const token = await getOrCreateInvite(leagueId, userId);
+      return NextResponse.json({ ok: true, token });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not create invite';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'joinByToken') {
+    const token = typeof body.token === 'string' ? body.token : '';
+    if (!token) return NextResponse.json({ error: 'token required' }, { status: 400 });
+    try {
+      const { leagueId } = await joinLeagueByToken(userId, token);
+      return NextResponse.json({ ok: true, id: leagueId });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not join';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  return NextResponse.json({ error: 'unknown action' }, { status: 400 });
 }

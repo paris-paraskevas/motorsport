@@ -99,3 +99,85 @@ export async function getUserLeagues(userId: string): Promise<UserLeague[]> {
     memberCount: counts.get(l.id as string) ?? 0,
   }));
 }
+
+// ---- invite links ----------------------------------------------------------
+
+function makeInviteToken(): string {
+  return crypto.randomUUID().replace(/-/g, '');
+}
+
+/** Get (or create) a member's stable invite token for a league. Members only. */
+export async function getOrCreateInvite(leagueId: string, inviterId: string): Promise<string> {
+  const db = betDb();
+  const { data: member } = await db
+    .from('league_member')
+    .select('league_id')
+    .eq('league_id', leagueId)
+    .eq('user_id', inviterId)
+    .maybeSingle();
+  if (!member) throw new Error('only league members can invite');
+
+  const { data: existing } = await db
+    .from('league_invite')
+    .select('token')
+    .eq('league_id', leagueId)
+    .eq('inviter_id', inviterId)
+    .maybeSingle();
+  if (existing) return existing.token as string;
+
+  const token = makeInviteToken();
+  const { error } = await db.from('league_invite').insert({ token, league_id: leagueId, inviter_id: inviterId });
+  if (error) {
+    // lost a race to create the (league, inviter) row — re-read the winner's token
+    const { data: again } = await db
+      .from('league_invite')
+      .select('token')
+      .eq('league_id', leagueId)
+      .eq('inviter_id', inviterId)
+      .maybeSingle();
+    if (again) return again.token as string;
+    throw new Error(`getOrCreateInvite failed: ${error.message}`);
+  }
+  return token;
+}
+
+export interface InviteInfo {
+  token: string;
+  leagueId: string;
+  leagueName: string;
+  inviterId: string;
+  inviterName: string | null;
+}
+
+/** Resolve an invite token → league + inviter, or null if unknown. */
+export async function getInvite(token: string): Promise<InviteInfo | null> {
+  const db = betDb();
+  const { data, error } = await db
+    .from('league_invite')
+    .select('token, league_id, inviter_id')
+    .eq('token', token)
+    .maybeSingle();
+  if (error || !data) return null;
+  const [{ data: league }, { data: inviter }] = await Promise.all([
+    db.from('league').select('name').eq('id', data.league_id).maybeSingle(),
+    db.from('app_user').select('display_name').eq('clerk_user_id', data.inviter_id).maybeSingle(),
+  ]);
+  return {
+    token: data.token as string,
+    leagueId: data.league_id as string,
+    leagueName: (league?.name as string) ?? 'a league',
+    inviterId: data.inviter_id as string,
+    inviterName: (inviter?.display_name as string | null) ?? null,
+  };
+}
+
+/** Join a league via an invite token. Adds the member; returns the league + inviter. */
+export async function joinLeagueByToken(userId: string, token: string): Promise<{ leagueId: string; inviterId: string }> {
+  const invite = await getInvite(token);
+  if (!invite) throw new Error('invalid or expired invite');
+  const { error } = await betDb()
+    .from('league_member')
+    .upsert({ league_id: invite.leagueId, user_id: userId }, { onConflict: 'league_id,user_id', ignoreDuplicates: true });
+  if (error) throw new Error(`joinLeagueByToken failed: ${error.message}`);
+  return { leagueId: invite.leagueId, inviterId: invite.inviterId };
+}
