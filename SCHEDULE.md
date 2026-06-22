@@ -772,6 +772,16 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 Active: _(no `[+Nm]` prefixes captured)_
 
+### 2026-06-22 (cont.) — Betting go-LIVE + weekend embed
+
+Betting went dormant → **live** end-to-end and got refined onto the F1 weekend pages.
+- → done: recovered + shipped **1c** (PR #166, was stranded local-only), **play UI** (#167), **grant cron** (#168), **open-markets automation + Play nav** (#169), **settlement** (#170 — open→bet→settle loop closed), **weekend-embed + lean credits + quali−1h lock + /play-hub** (#171, 0.46.0).
+- → done: **provisioned cloud Supabase** (`Paddock`, eu-west-1, ref `dzelqrtajnauunzmxfic`) + Vercel prod env + 3 GitHub-Actions crons; all verified green from datacenter; F1 R8 winner market live + bettable on the weekend page.
+- → done: **docs handoff (0.46.1)** — HANDOFF top block rewritten (betting LIVE + next-steps), IDEAS triaged.
+- → next (operator handoff): relock R8 before quali (SQL in Studio); open more markets; reduce returns (favourite ~1.5×, cap longshots); add market types (podium/top-10/exact-position/grid-quali).
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

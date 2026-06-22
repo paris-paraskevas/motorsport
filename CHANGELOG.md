@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.46.1 — 2026-06-22
+
+Docs: **session handoff — Paddock Betting is live; operator next-steps recorded (no app change).**
+
+### Changed
+
+- `docs/HANDOFF.md` top block rewritten: betting went live end-to-end this session (1c recovery #166, UI #167, grant cron #168, open-markets + Play nav #169, settlement #170, weekend-embed + lean credits + quali−1h #171); cloud Supabase `Paddock` (eu-west-1, ref `dzelqrtajnauunzmxfic`) + Vercel prod env + three GitHub-Actions crons provisioned. Recorded the operator's next-steps (relock R8 before quali; open more markets; reduce returns to ~1.5× favourite + cap the 900× longshots; new market types — podium/top-10/exact-position/grid-quali) and landmines (PAT + Vercel token in chat to revoke; settlement unproven until R8 settles). `IDEAS.md` + `SCHEDULE.md` updated; restored the stashed standings-charts spec. No application code changed.
+
 ## 0.46.0 — 2026-06-22
 
 Changed: **Paddock Betting — moved onto the race-weekend pages, lean monthly credits, lock at qualifying − 1h (F1).**
