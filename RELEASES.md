@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.54.0 — 2026-06-22
+
+**New ways to bet each weekend.** Alongside the race winner, you can now back a **podium (top-3) finish** and a **top-10 finish** on upcoming Formula 1 weekends — each with its own odds, in the Paddock Betting section of the weekend page. Odds now run on a wider, bookmaker-style curve, so an outside pick can pay big.
+
 ## 0.53.0 — 2026-06-22
 
 *Internal: built the driver + finishing-position picker for the (not-yet-live) exact-finish betting market. No user-facing change.*

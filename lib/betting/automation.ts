@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { createWinnerMarket, settleMarket } from './markets';
+import { createWinnerMarket, createPodiumMarket, createTop10Market, settleMarket } from './markets';
 import { PODIUM_SLOTS, TOP10_SLOTS, type DriverForm } from './pricing';
 import { loadAllSeries } from '@/lib/series';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
@@ -24,6 +24,14 @@ const FIELD_SOURCES: Record<string, () => Promise<DriverForm[] | null>> = {
 // How many upcoming weekends to keep an open winner market for, per series —
 // gives bettors real lead time instead of only ever the single next race.
 const LOOKAHEAD_WEEKENDS = 3;
+
+// Market types opened per upcoming weekend. exact_position is built + settles but
+// is held from auto-open until its driver/position picker is interaction-verified.
+const MARKET_BUILDERS: { type: string; create: (opts: Parameters<typeof createWinnerMarket>[0]) => Promise<string> }[] = [
+  { type: 'winner', create: createWinnerMarket },
+  { type: 'podium', create: createPodiumMarket },
+  { type: 'top10', create: createTop10Market },
+];
 
 export interface OpenMarketsSummary {
   opened: string[];
@@ -91,26 +99,28 @@ export async function openUpcomingMarkets(): Promise<OpenMarketsSummary> {
         continue;
       }
       for (const { round, locksAt } of targets) {
-        const { data: existing } = await db
-          .from('market')
-          .select('id')
-          .eq('series_slug', slug)
-          .eq('round', round)
-          .eq('type', 'winner')
-          .maybeSingle();
-        if (existing) {
-          summary.skipped.push(`${slug} R${round}: winner market already open`);
-          continue;
+        for (const b of MARKET_BUILDERS) {
+          const { data: existing } = await db
+            .from('market')
+            .select('id')
+            .eq('series_slug', slug)
+            .eq('round', round)
+            .eq('type', b.type)
+            .maybeSingle();
+          if (existing) {
+            summary.skipped.push(`${slug} R${round} ${b.type}: market already open`);
+            continue;
+          }
+          const id = await b.create({
+            seriesSlug: slug,
+            round,
+            locksAt: locksAt.toISOString(),
+            field,
+          });
+          summary.opened.push(
+            `${slug} R${round} ${b.type} — ${field.length} drivers, locks ${locksAt.toISOString()} (quali−1h) (${id})`,
+          );
         }
-        const id = await createWinnerMarket({
-          seriesSlug: slug,
-          round,
-          locksAt: locksAt.toISOString(),
-          field,
-        });
-        summary.opened.push(
-          `${slug} R${round} winner — ${field.length} drivers, locks ${locksAt.toISOString()} (quali−1h) (${id})`,
-        );
       }
     } catch (err) {
       summary.errors.push(`${slug}: ${err instanceof Error ? err.message : 'error'}`);

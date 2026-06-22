@@ -16,10 +16,15 @@
 // Each driver is priced off their OWN win chance, so adding or dropping a
 // backmarker barely moves anyone else's odds (unlike an endpoint-anchored curve).
 
+// NOTE (operator 2026-06-22): interim model loosened toward real betting-app odds
+// until the odds-API adapter lands — big longshots are wanted, so the cap is high
+// and the margin is book-like. Supersedes the "narrow band / no 900x" description
+// above (the earlier reduce-returns tuning). Real bookmaker odds replace this
+// per-market once a provider + key are wired; the model stays the fallback.
 export const FORM_EXPONENT = 2.6;
-export const HOUSE_MARGIN = 0.25;
+export const HOUSE_MARGIN = 0.15;
 export const MIN_MULTIPLIER = 1.3;
-export const MAX_MULTIPLIER = 30;
+export const MAX_MULTIPLIER = 500;
 
 export interface DriverForm {
   name: string;

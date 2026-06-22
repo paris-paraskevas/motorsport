@@ -6,7 +6,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-06-22 (main = 0.53.0) — **Paddock Betting is LIVE (F1)**
+## ⚡ Next session pickup — 2026-06-22 (main = 0.54.0) — **Paddock Betting is LIVE (F1)**
 
 Betting went from dormant (1a/1b only on main) to **live end-to-end** this session: recovered the stranded 1c engine, built the UI, provisioned cloud Supabase, wired the crons, shipped settlement, then moved betting onto the F1 weekend pages with lean credits + a quali−1h lock. **Live at paddock-tracker.com** — a signed-in user claims monthly credits and backs the F1 race winner (solo or friend-league) on the upcoming weekend's page; bets settle automatically off the official result.
 
