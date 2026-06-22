@@ -6,7 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-06-22 (main = 0.57.0) — **Paddock Betting is LIVE (F1)**
+## ⚡ Next session pickup — 2026-06-22 (main = 0.57.1) — Betting LIVE + Leagues P1–P3 — **FIRST: P4 league prizes**
+
+Huge session (PRs #173–#184): betting odds reworked, 3 new market types built, **podium + top-10 gone LIVE on prod**, then the **leagues overhaul P1–P3**. Per-version detail in `CHANGELOG.md` 0.47.0→0.57.0.
+
+### LIVE on prod now
+- **Betting markets:** winner + podium + top-10 open for F1 **R8/R9/R10** (rendered on weekend pages, browser-verified on paddock-tracker.com). `exact_position` is BUILT + settles + has a UI but is **HELD from auto-open** — `MARKET_BUILDERS` in `lib/betting/automation.ts` = winner/podium/top10 only.
+- **Odds = the model**, tuned real-book-like per operator (`lib/betting/pricing.ts`: `FORM_EXPONENT 2.6`, `HOUSE_MARGIN 0.15`, `MIN_MULTIPLIER 1.3`, `MAX_MULTIPLIER 500` → big longshots). Operator wants REAL bookmaker odds next (step #2).
+- **Leagues:** global friends graph + per-member invite links (`/play/leagues/join/<token>`, join-&-befriend) + dedicated league page `/play/leagues/[id]` (members by win-rate, nicknames + colours **anyone-sets-anyone**, owner rename/kick/disband, per-member add-friend). Friends section on `/play`.
+
+### ⚠️ CRITICAL LANDMINE — Supabase migration-history DRIFT
+Migrations **20260622120000 → 170000** (settle_market for podium/top10/exact; `friendship`; `league_invite`; league_member nickname/color) were applied to **PROD via the Management API** (raw SQL + the PAT), **NOT `supabase db push`** (no DB password to hand). Prod's `supabase_migrations` does **NOT** record them. A future `supabase db push` will try to re-run all six → the CREATE TABLE ones (150000 `friendship`, 160000 `league_invite`) **ERROR "already exists"**.
+**FIX before any db push:** `supabase migration repair --status applied 20260622120000 20260622130000 20260622140000 20260622150000 20260622160000 20260622170000`. Or keep applying new migrations via the Management API (the session pattern: `python -c "import json;print(json.dumps({'query':open('<file>').read()}))" | curl -X POST https://api.supabase.com/v1/projects/dzelqrtajnauunzmxfic/database/query -H "Authorization: Bearer $PAT" -H "Content-Type: application/json" -d @-`).
+
+### ⏳ Next steps
+1. **P4 — league prizes (FIRST).** Month/season-end → **titles/badges for the top 3** (NO credits — locked decision). Build like P1–P3: a `league_award` table (league_id, period e.g. `2026-06` / `2026-season`, rank 1–3, user_id, title, awarded_at) + a boundary job awarding top-3 by win-rate per league + display on the league page + a badge on members. Apply the migration via the Management API. Plan/decisions in `IDEAS.md` "Leagues overhaul".
+2. **Real odds API** (operator: "betting-app numbers, big longshots, no clamp"). Can't get a key myself. Operator has RapidAPI (AllSportsApi `allsportsapi2` sub; key was pasted — ROTATE). Path: subscribe to **API-FORMULA-1** (api-sports) — the account key works for any sub — OR check whether AllSportsApi exposes F1 race-winner odds. Then an `OddsSource` adapter: real odds for **winner** (uncapped longshots), model fallback for podium/top10/exact (books don't price those). **Direct api-sports.io is datacenter-blocked (confirmed 403) → MUST go via the RapidAPI gateway + Vercel-preview-verify.** Seam: `winMultipliers → createMarket`.
+3. **exact_position go-live** — engine + UI built, held. Enable: add `{ type: 'exact_position', create: createExactPositionMarket }` to `MARKET_BUILDERS`. **First interaction-verify the picker signed-in** (its interactive render was never browser-tested).
+4. **Verify the invite click-through** — Clerk sign-up → `redirect_url` → join+befriend is built but **NOT browser-verified** (token survival through Clerk's hosted sign-up; fallback if it strips it = cookie + post-auth finish step). Operator is testing with 2 accounts.
+
+### Security (do soon)
+- **Rotate the Supabase PAT** `sbp_8ea34ab777…` — used heavily this session for the Management API.
+- **Rotate the RapidAPI key** `91463715c9msh…` (in chat). `service_role` key + old `vcp_` Vercel token also in transcripts.
+
+### State
+- **Prod Supabase** `dzelqrtajnauunzmxfic`: betting settle covers winner/podium/top10/exact_position; tables `friendship`, `league_invite`; `league_member` has `nickname`/`color`. ~2 app_users (operator's test accounts), a test league, **0 real bets**.
+- **Local Supabase + `:3000` dev server still up**; `.env.local` points the dev server at **PROD** Supabase (localhost reads prod data — don't run unguarded write scripts against the dev env). Local DB has verify test rows (`verify_*` users, rounds 989–991/999, test leagues) — harmless; `npx supabase db reset` to clear.
+- **Verify scripts** (all green vs local): `scripts/verify-{podium,top10,exact-position,friends,invite,league-detail}.mts` + the original `verify-betting*.mts`.
+- **R8 (Jun 28) is the first REAL settlement** — now winner+podium+top10. Watch the `settle markets` GitHub Action after the official classification posts.
+
+---
+
+## Earlier this session (superseded by the pickup above) — Paddock Betting is LIVE (F1)
 
 Betting went from dormant (1a/1b only on main) to **live end-to-end** this session: recovered the stranded 1c engine, built the UI, provisioned cloud Supabase, wired the crons, shipped settlement, then moved betting onto the F1 weekend pages with lean credits + a quali−1h lock. **Live at paddock-tracker.com** — a signed-in user claims monthly credits and backs the F1 race winner (solo or friend-league) on the upcoming weekend's page; bets settle automatically off the official result.
 
