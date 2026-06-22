@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
@@ -61,25 +61,50 @@ export default async function PlayPage() {
     );
   }
 
-  const displayName = clerkDisplayName(await currentUser());
-  const balance = await ensureBettingUser(userId);
-  await setDisplayNameIfMissing(userId, displayName);
-  const [markets, bets, leagues, friends, incoming] = await Promise.all([
+  // The shell paints immediately; the per-user panels stream in. This page is
+  // inherently dynamic (per-user + auth-gated) so it can't be CDN/ISR-cached —
+  // the win is not blocking first paint on the auth + Supabase round-trips.
+  return frame(
+    <Suspense fallback={<PlaySkeleton />}>
+      <PlayData userId={userId} />
+    </Suspense>,
+  );
+}
+
+// Every per-user read in ONE parallel wave — was a sequential
+// currentUser → ensureBettingUser (3 calls) → name-backfill chain *before* the
+// data batch even started. The market/bet/league/friend reads don't depend on
+// the app_user row, so they safely race ensureBettingUser (which creates it).
+async function PlayData({ userId }: { userId: string }) {
+  const [balance, markets, bets, leagues, friends, incoming, user] = await Promise.all([
+    ensureBettingUser(userId),
     getOpenMarkets(),
     getUserBets(userId),
     getUserLeagues(userId),
     listFriends(userId),
     listIncomingRequests(userId),
+    currentUser(),
   ]);
+  await setDisplayNameIfMissing(userId, clerkDisplayName(user));
   const leaderboards = await Promise.all(
     leagues.map(async league => ({ league, rows: await getLeaderboard(league.id, 0) })),
   );
 
-  return frame(
+  return (
     <div className="space-y-8">
       <PlayMarkets balance={balance} markets={markets} bets={bets} />
       <LeaguesPanel leagues={leaderboards} currentUserId={userId} />
       <FriendsPanel friends={friends} incoming={incoming} />
-    </div>,
+    </div>
+  );
+}
+
+function PlaySkeleton() {
+  return (
+    <div className="space-y-8" aria-hidden="true">
+      <div className="h-24 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+      <div className="h-40 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+      <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+    </div>
   );
 }
