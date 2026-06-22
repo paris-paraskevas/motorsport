@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.45.0 — 2026-06-22
+
+Added: **Paddock Betting — settlement automation (closes the loop).**
+
+### Added
+
+- **`settleDueMarkets()`** (`lib/betting/automation.ts`): for every market past its lock that isn't settled, once the OFFICIAL classification is in (`fetchF1SeasonResults`, P1 = winner — the same feed/name format used to price the market, so picks resolve cleanly), settles **league peer pools pari-mutuel first** (`settleLeagueMarket`), then the **solo book fixed-odds** (`settleMarket`, which flips the market to `settled`). Idempotent (settled markets drop out of the `status='open'` query; the SQL refuses to re-settle a pool/market), fail-soft per market, and skips a round whose result hasn't posted yet. F1 first. Driven by `GET /api/cron/settle-markets` (`.github/workflows/settle-markets.yml`, every 3h, fail-closed cron-auth, dormant-safe 503).
+- `scripts/verify-settle.mts` — builds a market for a finished F1 round, places solo + league winner/loser bets, settles, and asserts payouts.
+
+### Verified
+
+- Local Supabase, full loop: solo winner paid stake×odds (R1 George Russell, ×7.09 → +709), solo loser forfeited stake, the league pari-mutuel pool paid the lone winner the whole 200, the win-rate leaderboard updated, and the market closed. `tsc` + eslint + 446 tests clean.
+
+### Note
+
+- **The betting loop is now complete: open → bet → settle.** Winner markets only for now (podium/top-10 + more series are follow-ups). Provisional-is-final — settles once on the official classification, no claw-back (design §5).
+
 ## 0.44.0 — 2026-06-22
 
 Added: **Paddock Betting — market automation + the Play nav entry (go-live wiring).**
