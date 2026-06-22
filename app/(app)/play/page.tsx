@@ -10,7 +10,7 @@ import { getUserLeagues, getLeaderboard } from '@/lib/betting/leagues';
 import { PlayMarkets } from '@/components/betting/PlayMarkets';
 import { LeaguesPanel } from '@/components/betting/LeaguesPanel';
 import { FriendsPanel } from '@/components/betting/FriendsPanel';
-import { listFriends, listIncomingRequests, setDisplayNameIfMissing } from '@/lib/betting/friends';
+import { listFriends, listIncomingRequests, setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,8 +61,7 @@ export default async function PlayPage() {
     );
   }
 
-  const u = await currentUser();
-  const displayName = [u?.firstName, u?.lastName].filter(Boolean).join(' ').trim() || u?.username || null;
+  const displayName = clerkDisplayName(await currentUser());
   const balance = await ensureBettingUser(userId);
   await setDisplayNameIfMissing(userId, displayName);
   const [markets, bets, leagues, friends, incoming] = await Promise.all([

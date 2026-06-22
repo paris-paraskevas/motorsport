@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.57.0 — 2026-06-22
+
+**League pages are here.** Each league now has its own page (open it from Play): everyone ranked by win-rate, give any member a **nickname and colour**, add friends, and copy the invite link. League owners can **rename**, **remove members**, or **disband** the league. Names now show properly instead of a random tag.
+
 ## 0.56.0 — 2026-06-22
 
 **Invite friends to your league with a link.** Open Play, pick a league, and tap "Copy invite link" — anyone you share it with can create an account (or sign in), become your friend, and join the league in a couple of taps. Richer league pages land next.

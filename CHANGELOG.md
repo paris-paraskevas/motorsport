@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.57.0 — 2026-06-22
+
+Added: **Leagues overhaul P3 — dedicated league page + nicknames/colours + owner controls.**
+
+### Added
+
+- **`/play/leagues/[id]`** — members ranked by win-rate with a colour dot + nickname; **owner rename**; **per-member nickname + colour editing (any member can set any member's**, per the decision); per-member **add-friend / accept** (friends graph); an invite-link button; and (owner) **disband league** + **kick member**. `lib/betting/leagues.ts`: `getLeagueDetail`, `setMemberProfile`, `renameLeague`, `disbandLeague`, `kickMember`. Migration `20260622170000` (league_member `nickname`/`color`) applied to prod. League names in the Play panel now link here.
+- **Names fixed** — `clerkDisplayName` resolves full-name → username → email local-part (name-less Clerk accounts stop showing as "Racer ####"), backfilled on every Play/league/join visit; `getLeaderboard` + the Play panel surface display names; nicknames override per-league.
+
+### Notes
+- Disband detaches any pending league bets (`bet.league_id` → null) — they settle solo thereafter. Verified e2e vs local (`scripts/verify-league-detail.mts`: profile / rename / kick / disband). tsc + build clean.
+
+### Next
+- **P4** month/season prizes (titles/badges, top 3).
+
 ## 0.56.0 — 2026-06-22
 
 Added: **Leagues overhaul P2 — invite links + join-&-befriend.**

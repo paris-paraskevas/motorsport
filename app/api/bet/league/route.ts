@@ -2,7 +2,16 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
-import { createLeague, joinLeague, getOrCreateInvite, joinLeagueByToken } from '@/lib/betting/leagues';
+import {
+  createLeague,
+  joinLeague,
+  getOrCreateInvite,
+  joinLeagueByToken,
+  setMemberProfile,
+  renameLeague,
+  disbandLeague,
+  kickMember,
+} from '@/lib/betting/leagues';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,7 +25,16 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  let body: { action?: unknown; name?: unknown; joinCode?: unknown; leagueId?: unknown; token?: unknown };
+  let body: {
+    action?: unknown;
+    name?: unknown;
+    joinCode?: unknown;
+    leagueId?: unknown;
+    token?: unknown;
+    targetUserId?: unknown;
+    nickname?: unknown;
+    color?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -66,6 +84,63 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, id: leagueId });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'could not join';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'setProfile') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    const targetUserId = typeof body.targetUserId === 'string' ? body.targetUserId : '';
+    if (!leagueId || !targetUserId) {
+      return NextResponse.json({ error: 'leagueId and targetUserId required' }, { status: 400 });
+    }
+    try {
+      await setMemberProfile(leagueId, userId, targetUserId, {
+        nickname: typeof body.nickname === 'string' ? body.nickname : undefined,
+        color: typeof body.color === 'string' ? body.color : undefined,
+      });
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not update';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'rename') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    if (!leagueId) return NextResponse.json({ error: 'leagueId required' }, { status: 400 });
+    try {
+      await renameLeague(leagueId, userId, typeof body.name === 'string' ? body.name : '');
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not rename';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'disband') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    if (!leagueId) return NextResponse.json({ error: 'leagueId required' }, { status: 400 });
+    try {
+      await disbandLeague(leagueId, userId);
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not disband';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'kick') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    const targetUserId = typeof body.targetUserId === 'string' ? body.targetUserId : '';
+    if (!leagueId || !targetUserId) {
+      return NextResponse.json({ error: 'leagueId and targetUserId required' }, { status: 400 });
+    }
+    try {
+      await kickMember(leagueId, userId, targetUserId);
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not remove member';
       return NextResponse.json({ ok: false, error: message }, { status: 422 });
     }
   }
