@@ -1,5 +1,6 @@
 import { betDb } from './client';
 import { winMultipliers, podiumMultipliers, type DriverForm } from './pricing';
+import { MARKET_TYPE_META } from './constants';
 
 // Server-only. Create/settle betting markets. Odds are priced once here and
 // stored on the market (server-authoritative, fixed for the window).
@@ -93,4 +94,16 @@ export async function getOpenMarkets(): Promise<OpenMarket[]> {
     locksAt: m.locks_at as string,
     odds: (m.odds_json as Record<string, number> | null) ?? {},
   }));
+}
+
+/**
+ * The selection JSON for a `pick` on a market, keyed per the market's type so it
+ * matches what settlement reads ({winner} for winner, {driver} for podium). The
+ * server owns this mapping — clients send only the picked driver name.
+ */
+export async function selectionForMarket(marketId: string, pick: string): Promise<Record<string, string>> {
+  const { data, error } = await betDb().from('market').select('type').eq('id', marketId).single();
+  if (error || !data) throw new Error('market not found');
+  const key = MARKET_TYPE_META[(data as { type: string }).type]?.selectionKey ?? 'winner';
+  return { [key]: pick };
 }

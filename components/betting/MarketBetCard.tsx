@@ -1,15 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { STANDARD_STAKE } from '@/lib/betting/constants';
+import { STANDARD_STAKE, MARKET_TYPE_META } from '@/lib/betting/constants';
 import type { OpenMarket } from '@/lib/betting/markets';
 import type { UserBet } from '@/lib/betting/bets';
 import type { UserLeague } from '@/lib/betting/leagues';
 
-// The bet interaction for ONE winner market: balance, an optional Solo/league
-// context selector, driver picks (odds), a stake, and your existing bets on this
-// market. Solo = fixed-odds (the shown multiplier); a league = pari-mutuel pool.
-// POSTs to /api/bet/place, then calls onPlaced() so the host re-fetches.
+// The bet interaction for ONE market (winner / podium / …): an optional
+// Solo/league context selector, driver picks (odds), a stake, and your existing
+// bets on this market. Solo = fixed-odds (the shown multiplier); a league =
+// pari-mutuel pool. POSTs to /api/bet/place, then calls onPlaced() to re-fetch.
+// The market's `type` drives the heading, the copy, and (server-side) the
+// selection key the pick is stored under — see MARKET_TYPE_META.
 export function MarketBetCard({
   market,
   balance,
@@ -29,6 +31,7 @@ export function MarketBetCard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const meta = MARKET_TYPE_META[market.type] ?? MARKET_TYPE_META.winner;
   const drivers = Object.entries(market.odds).sort((a, b) => a[1] - b[1]);
 
   async function place() {
@@ -42,7 +45,7 @@ export function MarketBetCard({
       const res = await fetch('/api/bet/place', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ marketId: market.id, winner: pick, stake, leagueId: context || undefined }),
+        body: JSON.stringify({ marketId: market.id, pick, stake, leagueId: context || undefined }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (!res.ok) {
@@ -59,10 +62,12 @@ export function MarketBetCard({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Balance</span>
-        <span className="font-display text-xl font-extrabold tabular-nums text-brand">{balance.toLocaleString()}</span>
+    <div className="space-y-3 rounded border border-border p-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <div>
+          <h3 className="font-display text-sm font-bold text-text">{meta.label}</h3>
+          <p className="font-mono text-[11px] text-text-muted">{meta.blurb}</p>
+        </div>
         {leagues.length > 0 && (
           <select
             value={context}
@@ -129,7 +134,8 @@ export function MarketBetCard({
       {bets.length > 0 && (
         <ul className="divide-y divide-border border-t border-border pt-1">
           {bets.map(b => {
-            const sel = typeof b.selection.winner === 'string' ? b.selection.winner : JSON.stringify(b.selection);
+            const selVal = b.selection[meta.selectionKey];
+            const sel = typeof selVal === 'string' ? selVal : JSON.stringify(b.selection);
             const tone =
               b.outcome === 'won' ? 'text-emerald-400' : b.outcome === 'pending' ? 'text-brand' : 'text-text-muted';
             return (
