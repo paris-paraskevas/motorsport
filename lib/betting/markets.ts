@@ -112,9 +112,18 @@ export async function getOpenMarkets(): Promise<OpenMarket[]> {
  * matches what settlement reads ({winner} for winner, {driver} for podium). The
  * server owns this mapping — clients send only the picked driver name.
  */
-export async function selectionForMarket(marketId: string, pick: string): Promise<Record<string, string>> {
+export async function selectionForMarket(
+  marketId: string,
+  pick: string,
+  position?: number,
+): Promise<Record<string, string | number>> {
   const { data, error } = await betDb().from('market').select('type').eq('id', marketId).single();
   if (error || !data) throw new Error('market not found');
-  const key = MARKET_TYPE_META[(data as { type: string }).type]?.selectionKey ?? 'winner';
+  const type = (data as { type: string }).type;
+  if (type === 'exact_position') {
+    if (!Number.isInteger(position) || (position as number) < 1) throw new Error('position required');
+    return { driver: pick, position: position as number };
+  }
+  const key = MARKET_TYPE_META[type]?.selectionKey ?? 'winner';
   return { [key]: pick };
 }

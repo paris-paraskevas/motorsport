@@ -6,6 +6,7 @@ import {
   positionProbabilities, exactPositionMultipliers,
   MIN_MULTIPLIER, MAX_MULTIPLIER, HOUSE_MARGIN, PODIUM_SLOTS,
 } from './pricing';
+import { parseExactPositionOdds } from './constants';
 
 const field = [
   { name: 'Antonelli', points: 250 },
@@ -166,5 +167,16 @@ describe('exact-position pricing (finishing-position distribution)', () => {
       expect(v).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
       expect(v).toBeLessThanOrEqual(MAX_MULTIPLIER);
     }
+  });
+
+  it('its odds map round-trips through the UI parser (parseExactPositionOdds)', () => {
+    const small = [
+      { name: 'A', points: 100 },
+      { name: 'B', points: 50 },
+      { name: 'C', points: 10 },
+    ];
+    const { drivers, positions } = parseExactPositionOdds(exactPositionMultipliers(small));
+    expect(drivers).toEqual(['A', 'B', 'C']); // favourite-first by win odds
+    expect(positions).toEqual([1, 2, 3]);
   });
 });

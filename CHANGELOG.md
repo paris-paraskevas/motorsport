@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.53.0 — 2026-06-22
+
+Added: **Paddock Betting — exact-finish driver+position picker (UI), so exact-position markets can render.**
+
+### Added
+
+- **`ExactPositionBetCard`** (`components/betting/ExactPositionBetCard.tsx`): exact-finish is a **2-field pick** (driver + position), so it gets its own card — two selects (driver, then P-position) showing the live `driver@position` multiplier — instead of the flat odds grid. `WeekendBetting` now dispatches `exact_position` → this card; its signed-out teaser shows heading + CTA only (a flat odds list of `driver@position` keys would be gibberish). `MARKET_TYPE_META.exact_position` added; `parseExactPositionOdds` (client-safe, `constants.ts`) splits the odds map into drivers (favourite-first) + positions.
+- **Place path** (`/api/bet/place` + `selectionForMarket`): accepts a `position` and, for `exact_position`, builds the selection `{driver, position}` server-side so it always matches settlement; other types unchanged.
+- **Tests:** round-trip — `exactPositionMultipliers` keys parse back to the right drivers/positions via `parseExactPositionOdds`. 15 pricing tests; tsc + `next build` clean; browser-checked F1 R8 (winner path unchanged, 0 console errors). The interactive picker's signed-in render verifies at enable-time (needs an open exact-position market + sign-in).
+
+### Note
+
+- Still dormant — exact-position markets aren't opened until the settlement migration is on prod + auto-open is enabled. This makes the UI ready so it renders the moment one opens.
+
 ## 0.52.0 — 2026-06-22
 
 Added: **Paddock Betting — exact-finishing-position market engine, shipped dormant.**

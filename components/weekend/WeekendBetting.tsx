@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MarketBetCard } from '@/components/betting/MarketBetCard';
+import { ExactPositionBetCard } from '@/components/betting/ExactPositionBetCard';
 import { MARKET_TYPE_META } from '@/lib/betting/constants';
 import type { OpenMarket } from '@/lib/betting/markets';
 import type { UserBet } from '@/lib/betting/bets';
@@ -11,9 +12,10 @@ import type { UserLeague } from '@/lib/betting/leagues';
 // Betting embed for a FUTURE race-weekend page (F1 only at the call site). A
 // self-contained client island so it never busts the page's ISR cache: it fetches
 // the round's open markets from /api/bet/market and renders a bet card per market
-// (winner, podium, …) when signed in, an odds teaser + sign-in CTA per market when
-// signed out, or a "opens near qualifying" note. Renders nothing for past
-// weekends or when betting isn't live.
+// (winner/podium/top-10 in the flat card; exact-position in its own driver+position
+// picker) when signed in, an odds teaser + sign-in CTA per market when signed out,
+// or a "opens near qualifying" note. Renders nothing for past weekends or when
+// betting isn't live.
 interface MarketResponse {
   available: boolean;
   signedIn?: boolean;
@@ -94,16 +96,20 @@ export function WeekendBetting({
         </p>
       ) : data.signedIn ? (
         <div className="space-y-4">
-          {markets.map(m => (
-            <MarketBetCard
-              key={m.id}
-              market={m}
-              balance={data.balance ?? 0}
-              bets={(data.bets ?? []).filter(b => b.marketId === m.id)}
-              leagues={data.leagues ?? []}
-              onPlaced={refresh}
-            />
-          ))}
+          {markets.map(m => {
+            const shared = {
+              market: m,
+              balance: data.balance ?? 0,
+              bets: (data.bets ?? []).filter(b => b.marketId === m.id),
+              leagues: data.leagues ?? [],
+              onPlaced: refresh,
+            };
+            return m.type === 'exact_position' ? (
+              <ExactPositionBetCard key={m.id} {...shared} />
+            ) : (
+              <MarketBetCard key={m.id} {...shared} />
+            );
+          })}
         </div>
       ) : (
         <div className="space-y-4">
@@ -118,26 +124,33 @@ export function WeekendBetting({
 
 function SignedOutTeaser({ market }: { market: OpenMarket }) {
   const meta = MARKET_TYPE_META[market.type] ?? MARKET_TYPE_META.winner;
-  const drivers = Object.entries(market.odds)
-    .sort((a, b) => a[1] - b[1])
-    .slice(0, 6);
+  // exact-position odds are keyed `driver@position` — a flat top-6 list would be
+  // gibberish, so its teaser is heading + CTA only.
+  const preview =
+    market.type === 'exact_position'
+      ? []
+      : Object.entries(market.odds)
+          .sort((a, b) => a[1] - b[1])
+          .slice(0, 6);
   return (
     <div className="space-y-3 rounded border border-border p-3">
       <div>
         <h3 className="font-display text-sm font-bold text-text">{meta.label}</h3>
         <p className="font-mono text-xs text-text-muted">Sign in to {meta.cta} with free Paddock credits — no cashout.</p>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {drivers.map(([name, mult]) => (
-          <div
-            key={name}
-            className="flex items-center justify-between rounded border border-border px-3 py-2 text-sm text-text-muted"
-          >
-            <span className="truncate font-mono">{name}</span>
-            <span className="font-display font-bold tabular-nums text-brand">×{mult}</span>
-          </div>
-        ))}
-      </div>
+      {preview.length > 0 && (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {preview.map(([name, mult]) => (
+            <div
+              key={name}
+              className="flex items-center justify-between rounded border border-border px-3 py-2 text-sm text-text-muted"
+            >
+              <span className="truncate font-mono">{name}</span>
+              <span className="font-display font-bold tabular-nums text-brand">×{mult}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <Link href="/sign-in" className="inline-block rounded bg-brand px-4 py-1.5 font-semibold text-bg">
         Sign in to {meta.cta}
       </Link>
