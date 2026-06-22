@@ -5,7 +5,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { getInvite } from '@/lib/betting/leagues';
-import { sendFriendRequest, setDisplayNameIfMissing } from '@/lib/betting/friends';
+import { sendFriendRequest, setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { JoinLeagueFlow } from '@/components/betting/JoinLeagueFlow';
 
 export const dynamic = 'force-dynamic';
@@ -82,8 +82,7 @@ export default async function JoinLeaguePage({ params }: { params: Promise<{ tok
 
   // Signed in and not the inviter: backfill the viewer's name, then raise the
   // pending friend request (inviter → viewer) so the flow below can accept it.
-  const u = await currentUser();
-  const dn = [u?.firstName, u?.lastName].filter(Boolean).join(' ').trim() || u?.username || null;
+  const dn = clerkDisplayName(await currentUser());
   await setDisplayNameIfMissing(userId, dn);
   await ensureAppUser(invite.inviterId);
   await sendFriendRequest(invite.inviterId, userId);

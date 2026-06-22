@@ -21,7 +21,7 @@ const pairFilter = (a: string, b: string) =>
   `and(requester_id.eq.${a},addressee_id.eq.${b}),and(requester_id.eq.${b},addressee_id.eq.${a})`;
 
 /** Resolve display names for a set of clerk ids → Map(id -> name|null). */
-async function displayNames(ids: string[]): Promise<Map<string, string | null>> {
+export async function displayNames(ids: string[]): Promise<Map<string, string | null>> {
   if (ids.length === 0) return new Map();
   const { data } = await betDb().from('app_user').select('clerk_user_id, display_name').in('clerk_user_id', ids);
   return new Map((data ?? []).map(u => [u.clerk_user_id as string, (u.display_name as string | null) ?? null]));
@@ -119,4 +119,41 @@ export async function listIncomingRequests(userId: string): Promise<IncomingRequ
 export async function setDisplayNameIfMissing(userId: string, name: string | null): Promise<void> {
   if (!name) return;
   await betDb().from('app_user').update({ display_name: name }).eq('clerk_user_id', userId).is('display_name', null);
+}
+
+/** Best display name from a Clerk user: full name → username → email local-part → null. */
+export function clerkDisplayName(
+  u: {
+    firstName?: string | null;
+    lastName?: string | null;
+    username?: string | null;
+    primaryEmailAddress?: { emailAddress?: string | null } | null;
+  } | null,
+): string | null {
+  if (!u) return null;
+  const full = [u.firstName, u.lastName].filter(Boolean).join(' ').trim();
+  if (full) return full;
+  if (u.username) return u.username;
+  const email = u.primaryEmailAddress?.emailAddress;
+  if (email) return email.split('@')[0];
+  return null;
+}
+
+export type FriendState = 'none' | 'pending-out' | 'pending-in' | 'friends';
+
+/** Each `otherId`'s relationship to `userId` — for a member list's friend buttons. One query. */
+export async function friendStates(userId: string, otherIds: string[]): Promise<Map<string, FriendState>> {
+  const out = new Map<string, FriendState>();
+  if (otherIds.length === 0) return out;
+  const { data } = await betDb()
+    .from('friendship')
+    .select('requester_id, addressee_id, status')
+    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
+  const wanted = new Set(otherIds);
+  for (const r of data ?? []) {
+    const other = (r.requester_id === userId ? r.addressee_id : r.requester_id) as string;
+    if (!wanted.has(other)) continue;
+    out.set(other, r.status === 'accepted' ? 'friends' : r.requester_id === userId ? 'pending-out' : 'pending-in');
+  }
+  return out;
 }

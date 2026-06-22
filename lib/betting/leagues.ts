@@ -1,4 +1,5 @@
 import { betDb } from './client';
+import { displayNames, friendStates, type FriendState } from './friends';
 
 // Server-only. Friend leagues: create, join by code, and the win-rate
 // leaderboard. League bets pool pari-mutuel (see settlement.ts).
@@ -43,6 +44,7 @@ export async function joinLeague(userId: string, joinCode: string): Promise<stri
 
 export interface LeaderboardRow {
   userId: string;
+  displayName: string | null;
   wins: number;
   placed: number;
   winRate: number;
@@ -55,10 +57,12 @@ export async function getLeaderboard(leagueId: string, minPlaced = 1): Promise<L
     .select('user_id, wins, placed, win_rate')
     .eq('league_id', leagueId);
   if (error) throw new Error(`getLeaderboard failed: ${error.message}`);
-  return (data ?? [])
+  const rows = (data ?? [])
     .map(r => ({ userId: r.user_id as string, wins: r.wins as number, placed: r.placed as number, winRate: Number(r.win_rate) }))
     .filter(r => r.placed >= minPlaced)
     .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
+  const names = await displayNames(rows.map(r => r.userId));
+  return rows.map(r => ({ ...r, displayName: names.get(r.userId) ?? null }));
 }
 
 export interface UserLeague {
@@ -180,4 +184,129 @@ export async function joinLeagueByToken(userId: string, token: string): Promise<
     .upsert({ league_id: invite.leagueId, user_id: userId }, { onConflict: 'league_id,user_id', ignoreDuplicates: true });
   if (error) throw new Error(`joinLeagueByToken failed: ${error.message}`);
   return { leagueId: invite.leagueId, inviterId: invite.inviterId };
+}
+
+// ---- league detail (dedicated page) ----------------------------------------
+
+export interface LeagueMemberDetail {
+  userId: string;
+  displayName: string | null;
+  nickname: string | null;
+  color: string | null;
+  wins: number;
+  placed: number;
+  winRate: number;
+  isYou: boolean;
+  friendState: FriendState;
+}
+export interface LeagueDetail {
+  id: string;
+  name: string;
+  joinCode: string;
+  isOwner: boolean;
+  isMember: boolean;
+  members: LeagueMemberDetail[];
+}
+
+/** Everything the league page needs (members ranked by win-rate, names, nicknames,
+ *  colours, friend state vs the viewer). Null if the league doesn't exist. */
+export async function getLeagueDetail(leagueId: string, viewerId: string): Promise<LeagueDetail | null> {
+  const db = betDb();
+  const { data: league } = await db.from('league').select('id, name, join_code, owner_id').eq('id', leagueId).maybeSingle();
+  if (!league) return null;
+  const { data: members } = await db
+    .from('league_member')
+    .select('user_id, nickname, color, wins, placed')
+    .eq('league_id', leagueId);
+  const rows = members ?? [];
+  const ids = rows.map(m => m.user_id as string);
+  const [names, states] = await Promise.all([
+    displayNames(ids),
+    friendStates(viewerId, ids.filter(id => id !== viewerId)),
+  ]);
+  const detail: LeagueMemberDetail[] = rows
+    .map(m => {
+      const uid = m.user_id as string;
+      const wins = (m.wins as number) ?? 0;
+      const placed = (m.placed as number) ?? 0;
+      return {
+        userId: uid,
+        displayName: names.get(uid) ?? null,
+        nickname: (m.nickname as string | null) ?? null,
+        color: (m.color as string | null) ?? null,
+        wins,
+        placed,
+        winRate: placed > 0 ? wins / placed : 0,
+        isYou: uid === viewerId,
+        friendState: (uid === viewerId ? 'friends' : states.get(uid) ?? 'none') as FriendState,
+      };
+    })
+    .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
+  return {
+    id: league.id as string,
+    name: league.name as string,
+    joinCode: league.join_code as string,
+    isOwner: (league.owner_id as string) === viewerId,
+    isMember: ids.includes(viewerId),
+    members: detail,
+  };
+}
+
+/** Set a member's nickname/colour. ANY league member may set it for ANY member. */
+export async function setMemberProfile(
+  leagueId: string,
+  byUserId: string,
+  targetUserId: string,
+  profile: { nickname?: string | null; color?: string | null },
+): Promise<void> {
+  const db = betDb();
+  const { data: editor } = await db
+    .from('league_member')
+    .select('user_id')
+    .eq('league_id', leagueId)
+    .eq('user_id', byUserId)
+    .maybeSingle();
+  if (!editor) throw new Error('only league members can edit profiles');
+  const patch: Record<string, string | null> = {};
+  if (profile.nickname !== undefined) {
+    const n = profile.nickname?.trim() ?? '';
+    patch.nickname = n ? n.slice(0, 40) : null;
+  }
+  if (profile.color !== undefined) {
+    const c = profile.color?.trim() ?? '';
+    patch.color = /^#[0-9a-fA-F]{6}$/.test(c) ? c : null; // only #rrggbb
+  }
+  if (Object.keys(patch).length === 0) return;
+  const { error } = await db.from('league_member').update(patch).eq('league_id', leagueId).eq('user_id', targetUserId);
+  if (error) throw new Error(`setMemberProfile failed: ${error.message}`);
+}
+
+/** Rename a league (owner only). */
+export async function renameLeague(leagueId: string, ownerId: string, name: string): Promise<void> {
+  const trimmed = name.trim();
+  if (!trimmed || trimmed.length > 60) throw new Error('name must be 1–60 characters');
+  const { error } = await betDb().from('league').update({ name: trimmed }).eq('id', leagueId).eq('owner_id', ownerId);
+  if (error) throw new Error(`renameLeague failed: ${error.message}`);
+}
+
+/** Disband a league (owner only). Cascades members + invites; any pending league
+ *  bets are detached (bet.league_id → null) and thereafter settle solo. */
+export async function disbandLeague(leagueId: string, ownerId: string): Promise<void> {
+  const { error, count } = await betDb()
+    .from('league')
+    .delete({ count: 'exact' })
+    .eq('id', leagueId)
+    .eq('owner_id', ownerId);
+  if (error) throw new Error(`disbandLeague failed: ${error.message}`);
+  if (!count) throw new Error('league not found, or you are not the owner');
+}
+
+/** Remove a member (owner only; the owner can't kick themselves — disband instead). */
+export async function kickMember(leagueId: string, ownerId: string, targetUserId: string): Promise<void> {
+  const db = betDb();
+  const { data: league } = await db.from('league').select('owner_id').eq('id', leagueId).maybeSingle();
+  if (!league || (league.owner_id as string) !== ownerId) throw new Error('only the owner can remove members');
+  if (targetUserId === ownerId) throw new Error('the owner cannot be removed — disband the league instead');
+  const { error } = await db.from('league_member').delete().eq('league_id', leagueId).eq('user_id', targetUserId);
+  if (error) throw new Error(`kickMember failed: ${error.message}`);
 }
