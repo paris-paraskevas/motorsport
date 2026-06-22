@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.42.0 — 2026-06-22
+
+*Internal: groundwork for an upcoming credits & predictions game — not yet live.*
+
 ## 0.41.1 — 2026-06-22
 
 *Internal: documentation and planning — no changes to the app.*

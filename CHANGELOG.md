@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.42.0 — 2026-06-22
+
+Added: **Paddock Betting — Phase 1a data-layer foundation (dormant until provisioned).**
+
+### Added
+
+- **Supabase betting database** (`supabase/`; design `docs/research/predictions-design.md`): migrations for `app_user`, append-only `credit_ledger` (balance = SUM(delta), enforced append-only by a trigger), `market`, `bet`, `league`, `league_member`, `settlement`; a `user_balance` view; idempotent monthly-grant functions (`grant_monthly`, `grant_monthly_all`). RLS on every table with **no policies** + `service_role`-only grants — Clerk is the auth, so all access is server-side via the service role; anon/authenticated get nothing. `config.toml` trimmed to Postgres/PostgREST/Studio (auth/storage/realtime/inbucket disabled — we use Clerk).
+- **Server-only data layer** `lib/betting/{client,credits}.ts` — service-role client + `ensureAppUser` / `getBalance` / `grantMonthlyAllowance` / `grantMonthlyToAll`. Verified end-to-end against the local stack (`scripts/verify-betting.mts`): grant → balance, idempotent per calendar month.
+- **`GET /api/cron/grant-credits`** — monthly free-credit grant for all users; fail-closed cron auth; **503s cleanly when the betting DB isn't provisioned**, so it's inert in prod until the Supabase env is set.
+
+### Note
+
+- **Entirely dormant in production** until the operator provisions a cloud Supabase project + sets `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` (steps in `supabase/README.md`); the paid path is additionally gated on legal review. No user-facing surface yet. Adds `@supabase/supabase-js`.
+
 ## 0.41.1 — 2026-06-22
 
 Docs: **session-record catch-up + the Paddock Betting design spec (no app change).**
