@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.43.0 — 2026-06-22
+
+Added: **Paddock Betting — the play surface (solo-vs-house + friend leagues), still dormant in prod.**
+
+### Added
+
+- **`/play` page** (`app/(app)/play/page.tsx`; server component, `force-dynamic`, noindex): balance, open winner markets, your bets, and friend leagues. Guarded by `isBettingConfigured()` — in prod (no Supabase env) it renders a "coming soon" state and never touches the DB; signed-out it prompts sign-in.
+- **Solo-vs-house UI** (`components/betting/PlayMarkets.tsx`, client): pick a driver (odds shown, favourites first) → stake → place via `POST /api/bet/place` → `router.refresh()`. Fixed-odds payout preview from the market multiplier.
+- **Friend-league UI** (`components/betting/LeaguesPanel.tsx`, client): create a league (returns an 8-char share code), join by code, per-league win-rate leaderboard. A "Betting as: Solo / <league>" selector routes a stake into a pari-mutuel peer pool instead of solo; the payout hint switches to "winners split the pool".
+- **API routes** (`app/api/bet/place`, `app/api/bet/league`; node, `force-dynamic`): Clerk-auth'd, lazily onboard the user (`ensureBettingUser` = mirror + idempotent monthly grant), then call the engine. Shape-validate only — the atomic SQL `place_bet` is the real guard. Both 503 when the DB isn't provisioned, 401 unauthenticated.
+- **Server reads** added to `lib/betting/*`: `ensureBettingUser` (credits), `getOpenMarkets` (markets), `getUserBets` (bets, joined to its market), `getUserLeagues` (leagues + member counts). `place_bet`'s optional league context threads through the place route.
+- **Dev tooling:** `scripts/seed-market.mts` (one open F1 winner market priced from live standings; idempotent) + `scripts/verify-play.mts` (onboard → list → place → balance/bets → league, against the local stack).
+
+### Verified
+
+- Local Supabase stack: `verify-betting` + `verify-league-flow` + new `verify-play` all green; `tsc --noEmit` + eslint clean; `/play` renders 200 on a running dev server with `isBettingConfigured` gating + 401 auth-gating on both routes confirmed by request. Full signed-in click-through is verifiable with a Clerk session locally / on preview once the cloud DB is provisioned.
+
+### Note
+
+- **Still dormant in prod.** No nav link — `/play` is only reachable by URL and shows "coming soon" until `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` are set. Go-live also needs the cloud Supabase project + a scheduled grant cron; the paid path stays gated on legal review.
+
 ## 0.42.2 — 2026-06-22
 
 Added: **Paddock Betting — Phase 1c (pari-mutuel friend leagues) — code now actually on `main` (dormant).**
