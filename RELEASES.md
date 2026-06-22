@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.43.1 — 2026-06-22
+
+*Internal: scheduled the monthly free-credit grant for the (not-yet-live) betting game.*
+
 ## 0.43.0 — 2026-06-22
 
 *Internal: the Paddock Betting play screen — solo bets plus friend leagues — is built but not yet live. A /play page shows "coming soon" until it's switched on.*
