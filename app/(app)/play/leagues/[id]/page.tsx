@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
@@ -31,22 +31,7 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
       </div>,
     );
   }
-  const dn = clerkDisplayName(await currentUser());
-  await ensureBettingUser(userId);
-  await setDisplayNameIfMissing(userId, dn);
-
-  const league = await getLeagueDetail(id, userId);
-  if (!league || !league.isMember) {
-    return frame(
-      <div className="font-mono text-sm text-text-muted">
-        <p className="mb-3">You&apos;re not a member of this league — leagues are invite-only.</p>
-        <Link href="/play" className="text-brand">
-          Back to Play →
-        </Link>
-      </div>,
-    );
-  }
-
+  // Shell (the back link) paints immediately; the league detail streams in.
   return frame(
     <>
       <Link
@@ -55,7 +40,40 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
       >
         ← Play
       </Link>
-      <LeagueDetailView league={league} currentUserId={userId} />
+      <Suspense fallback={<LeagueSkeleton />}>
+        <LeagueData id={id} userId={userId} />
+      </Suspense>
     </>,
+  );
+}
+
+// Onboarding + detail in one parallel wave (was a sequential currentUser →
+// ensureBettingUser → name-backfill → getLeagueDetail chain). getLeagueDetail's
+// reads don't need the app_user row, so they race ensureBettingUser safely.
+async function LeagueData({ id, userId }: { id: string; userId: string }) {
+  const [, user, league] = await Promise.all([
+    ensureBettingUser(userId),
+    currentUser(),
+    getLeagueDetail(id, userId),
+  ]);
+  await setDisplayNameIfMissing(userId, clerkDisplayName(user));
+  if (!league || !league.isMember) {
+    return (
+      <p className="font-mono text-sm text-text-muted">
+        You&apos;re not a member of this league — leagues are invite-only.
+      </p>
+    );
+  }
+  return <LeagueDetailView league={league} currentUserId={userId} />;
+}
+
+function LeagueSkeleton() {
+  return (
+    <div className="space-y-3" aria-hidden="true">
+      <div className="h-8 w-2/3 animate-pulse rounded bg-white/5" />
+      <div className="h-16 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+      <div className="h-16 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+      <div className="h-16 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+    </div>
   );
 }
