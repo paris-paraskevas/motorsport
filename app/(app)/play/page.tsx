@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import { getOpenMarkets } from '@/lib/betting/markets';
@@ -9,6 +9,8 @@ import { getUserBets } from '@/lib/betting/bets';
 import { getUserLeagues, getLeaderboard } from '@/lib/betting/leagues';
 import { PlayMarkets } from '@/components/betting/PlayMarkets';
 import { LeaguesPanel } from '@/components/betting/LeaguesPanel';
+import { FriendsPanel } from '@/components/betting/FriendsPanel';
+import { listFriends, listIncomingRequests, setDisplayNameIfMissing } from '@/lib/betting/friends';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,11 +61,16 @@ export default async function PlayPage() {
     );
   }
 
+  const u = await currentUser();
+  const displayName = [u?.firstName, u?.lastName].filter(Boolean).join(' ').trim() || u?.username || null;
   const balance = await ensureBettingUser(userId);
-  const [markets, bets, leagues] = await Promise.all([
+  await setDisplayNameIfMissing(userId, displayName);
+  const [markets, bets, leagues, friends, incoming] = await Promise.all([
     getOpenMarkets(),
     getUserBets(userId),
     getUserLeagues(userId),
+    listFriends(userId),
+    listIncomingRequests(userId),
   ]);
   const leaderboards = await Promise.all(
     leagues.map(async league => ({ league, rows: await getLeaderboard(league.id, 0) })),
@@ -73,6 +80,7 @@ export default async function PlayPage() {
     <div className="space-y-8">
       <PlayMarkets balance={balance} markets={markets} bets={bets} />
       <LeaguesPanel leagues={leaderboards} currentUserId={userId} />
+      <FriendsPanel friends={friends} incoming={incoming} />
     </div>,
   );
 }
