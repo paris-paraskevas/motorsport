@@ -1,4 +1,5 @@
 import { betDb } from './client';
+import { computeMonthlyAllowance } from './allowance';
 
 // Server-only credit operations over the append-only ledger. The DB is the
 // source of truth: balance = SUM(credit_ledger.delta); the monthly grant's
@@ -65,6 +66,6 @@ export async function grantMonthlyToAll(amount: number = MONTHLY_ALLOWANCE): Pro
  */
 export async function ensureBettingUser(clerkUserId: string, displayName?: string): Promise<number> {
   await ensureAppUser(clerkUserId, displayName);
-  await grantMonthlyAllowance(clerkUserId);
+  await grantMonthlyAllowance(clerkUserId, computeMonthlyAllowance(new Date()));
   return getBalance(clerkUserId);
 }

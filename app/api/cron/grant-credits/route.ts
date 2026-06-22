@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { grantMonthlyToAll } from '@/lib/betting/credits';
+import { computeMonthlyAllowance } from '@/lib/betting/allowance';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,7 @@ export async function GET(req: Request) {
     );
   }
   try {
-    const grantedThisRun = await grantMonthlyToAll();
+    const grantedThisRun = await grantMonthlyToAll(computeMonthlyAllowance(new Date()));
     return NextResponse.json({ ok: true, grantedThisRun, at: new Date().toISOString() });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown error';

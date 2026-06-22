@@ -71,7 +71,7 @@ export default async function PlayPage() {
 
   return frame(
     <div className="space-y-8">
-      <PlayMarkets balance={balance} markets={markets} bets={bets} leagues={leagues} />
+      <PlayMarkets balance={balance} markets={markets} bets={bets} />
       <LeaguesPanel leagues={leaderboards} currentUserId={userId} />
     </div>,
   );

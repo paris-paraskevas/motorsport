@@ -7,6 +7,7 @@ import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendStandingsSnapshot } from '@/components/weekend/WeekendStandingsSnapshot';
 import { WeekendNews } from '@/components/weekend/WeekendNews';
+import { WeekendBetting } from '@/components/weekend/WeekendBetting';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
@@ -197,6 +198,11 @@ export default async function WeekendPage({
             : undefined
         }
       />
+
+      {/* Betting embed — F1 only for now; the component self-hides for past
+          weekends and when betting isn't provisioned, and fetches its own
+          market data client-side so it never busts this page's ISR cache. */}
+      {slug === 'f1' && <WeekendBetting seriesSlug={slug} round={round} isPast={isPast} />}
 
       <WeekendStandingsSnapshot series={series} round={round} isPast={isPast} />
 
