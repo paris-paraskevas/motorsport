@@ -6,7 +6,31 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-06-22 (main = 0.42.0) — Betting 1a–1c built; FULL remaining-work list
+## ⚡ Next session pickup — 2026-06-22 (main = 0.46.0) — **Paddock Betting is LIVE (F1)**
+
+Betting went from dormant (1a/1b only on main) to **live end-to-end** this session: recovered the stranded 1c engine, built the UI, provisioned cloud Supabase, wired the crons, shipped settlement, then moved betting onto the F1 weekend pages with lean credits + a quali−1h lock. **Live at paddock-tracker.com** — a signed-in user claims monthly credits and backs the F1 race winner (solo or friend-league) on the upcoming weekend's page; bets settle automatically off the official result.
+
+### Shipped (all merged)
+- **#166** 1c engine recovery (it was committed locally last session but never pushed — PR #164 had only 1a/1b). **#167** play UI. **#168** grant cron. **#169** open-markets automation + Play nav. **#170** settlement (open→bet→settle loop closed). **#171** weekend-embedded betting + lean credits + quali−1h lock + `/play`-as-hub.
+- **Cloud provisioned:** Supabase project **`Paddock`** (ref **`dzelqrtajnauunzmxfic`**, **eu-west-1**) — 6 migrations applied + verified, pristine. Vercel **Production** env set: `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` (+ pre-existing `CRON_SECRET`). Crons are **GitHub Actions** (`.github/workflows/`): `grant-credits` (daily), `open-markets` (12h), `settle-markets` (3h) — dormant-safe (503→green), all verified green from Vercel's datacenter.
+- **Where it lives:** bet UI = **weekend-page embed** (`components/weekend/WeekendBetting.tsx` → shared `components/betting/MarketBetCard.tsx` → `GET /api/bet/market`, an ISR-safe client island), **F1 only, future weekends only**; signed-out shows odds + a sign-in CTA. **`/play` is the hub** (balance · your bets · leagues + win-rate leaderboard; links out to weekend pages — no bet form). Credits: `lib/betting/allowance.ts` = `50 + raceWeekends_this_month × 100` (June 2026 = 350); constants in client-safe `lib/betting/constants.ts`. Markets lock at **grid-quali − 1h** (`openUpcomingMarkets` + new `looksLikeQualifying`, excludes sprint quali).
+
+### ⏳ Next steps (operator handoff 2026-06-22)
+1. **Relock R8 (imminent Austrian GP) to quali−1h** — the ONE market still on the old race-start lock; the prod-DB write was blocked by the auto-mode safety classifier. Run in **Supabase Studio → SQL editor**: `UPDATE market SET locks_at='2026-06-27 13:00:00+00' WHERE series_slug='f1' AND round=8 AND type='winner';` (every *future* market already locks at quali−1h automatically).
+2. **More markets** — only one F1 winner market opens at a time today. Open with more lead time / across more series; pairs with new types below.
+3. **Reduce returns / recompress odds** — the favourite should pay ~**1.5×** (Antonelli is ×3.44 now) and longshots currently hit the **900× ceiling** (Stroll/Pérez). Rework `lib/betting/pricing.ts`: flatten the `(points+1)^1.5` weight, raise the floor probability, and/or widen the house margin so the whole curve compresses.
+4. **New market types** — **podium / top-10 / exact position** (the `market_type` enum already lists these; need a pricing model + a settle path each) and a NEW **grid / qualifying position** market (predict where a driver qualifies).
+
+### Landmines / state
+- **Tokens are in the chat transcript:** Supabase PAT `sbp_8ea3…` (full-account) + Vercel token `vcp_…` — **revoke when convenient** (operator declined mid-session; still advised). `service_role` key is in Vercel env + chat; rotate if worried.
+- **Longshot 900× ceiling** = `multiplierFromProb`'s p≥0.001 clamp → fixed by next-step #3.
+- Cloud DB is **pristine** (no real users/bets) — first real bets arrive when users open `/play` or an F1 weekend page.
+- **Settlement is unproven against a real race** — R8 (Jun 28) is the first; watch the `settle-markets` cron after the official classification posts.
+- Local Supabase + the `:3000` dev server are still up (operator's machine).
+
+---
+
+## (superseded 2026-06-22 — betting is now LIVE, see the block above) — Betting 1a–1c built; FULL remaining-work list
 
 **main = 0.42.0.** This session built the **Paddock Betting** engine end-to-end (Phases 1a–1c, PR #164, merged) on top of the day's DTM-results / charts / docs work (the 0.41.1 block below). Betting ships **dormant** — no cloud DB, no UI. **Operator will tackle ALL remaining items next session; the full list is below.**
 
