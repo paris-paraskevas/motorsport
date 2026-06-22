@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.55.0 — 2026-06-22
+
+Added: **Leagues overhaul P1 — global friends graph.**
+
+### Added
+
+- Foundation for the leagues overhaul (operator-approved plan: dedicated league pages, invite *links* that befriend the inviter, per-member nicknames/colours, month/season prizes — phased P1–P4). New **`friendship`** table (one row per unordered pair via a `least/greatest` unique index; `pending`→`accepted`, decline deletes; RLS-on / service-role-only) + **`lib/betting/friends.ts`** (`sendFriendRequest` — idempotent + reciprocal-aware, `respondToFriendRequest`, `listFriends`, `listIncomingRequests`, `setDisplayNameIfMissing`). **`POST /api/friends`** (request/accept/decline). A **Friends** section on `/play` (friends + incoming requests with accept/decline); display names backfilled from Clerk on visit (never clobbered). Sending requests is driven by leagues (P2+), not a stranger-search.
+- Migration `20260622150000_friendship.sql` applied to prod (Management API; table verified) + verified end-to-end against local (`scripts/verify-friends.mts` — request → accept both-sides → reciprocal no-op → decline removes). tsc + build clean.
+
+### Next (leagues overhaul)
+
+- **P2** invite links (join + prompted friend-request to the inviter), **P3** league page + nicknames/colours + settings, **P4** month/season prizes (titles/badges, top 3). Decisions locked: badges-not-credits for top 3; anyone-sets-anyone nicknames/colours; invite prompts friend-accept then join; friends global; leagues invite-only.
+
 ## 0.54.0 — 2026-06-22
 
 Changed: **Paddock Betting — podium + top-10 markets go live; odds loosened to a real-book-like curve.**

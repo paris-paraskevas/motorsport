@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.55.0 — 2026-06-22
+
+**Friends are coming to Play.** There's now a Friends section on the Play tab — accept or decline friend requests from people you meet in your leagues. Adding friends (through league invites) and richer league pages land next.
+
 ## 0.54.0 — 2026-06-22
 
 **New ways to bet each weekend.** Alongside the race winner, you can now back a **podium (top-3) finish** and a **top-10 finish** on upcoming Formula 1 weekends — each with its own odds, in the Paddock Betting section of the weekend page. Odds now run on a wider, bookmaker-style curve, so an outside pick can pay big.
