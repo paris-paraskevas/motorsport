@@ -3,19 +3,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MarketBetCard } from '@/components/betting/MarketBetCard';
+import { MARKET_TYPE_META } from '@/lib/betting/constants';
 import type { OpenMarket } from '@/lib/betting/markets';
 import type { UserBet } from '@/lib/betting/bets';
 import type { UserLeague } from '@/lib/betting/leagues';
 
 // Betting embed for a FUTURE race-weekend page (F1 only at the call site). A
 // self-contained client island so it never busts the page's ISR cache: it fetches
-// the round's open market from /api/bet/market and renders the bet card (signed
-// in), an odds teaser + sign-in CTA (signed out), or a "opens near qualifying"
-// note. Renders nothing for past weekends or when betting isn't live.
+// the round's open markets from /api/bet/market and renders a bet card per market
+// (winner, podium, …) when signed in, an odds teaser + sign-in CTA per market when
+// signed out, or a "opens near qualifying" note. Renders nothing for past
+// weekends or when betting isn't live.
 interface MarketResponse {
   available: boolean;
   signedIn?: boolean;
-  market?: OpenMarket | null;
+  markets?: OpenMarket[];
   balance?: number;
   bets?: UserBet[];
   leagues?: UserLeague[];
@@ -36,7 +38,7 @@ export function WeekendBetting({
   // Fetch only — returns the payload, never sets state, so the effect body stays
   // setState-free; the .then callbacks below own the updates (the recommended
   // "set state when the external fetch resolves" pattern).
-  const fetchMarket = useCallback(async (): Promise<MarketResponse> => {
+  const fetchMarkets = useCallback(async (): Promise<MarketResponse> => {
     try {
       const res = await fetch(`/api/bet/market?series=${encodeURIComponent(seriesSlug)}&round=${round}`);
       return (await res.json()) as MarketResponse;
@@ -46,16 +48,16 @@ export function WeekendBetting({
   }, [seriesSlug, round]);
 
   const refresh = useCallback(() => {
-    fetchMarket().then(d => {
+    fetchMarkets().then(d => {
       setData(d);
       setLoaded(true);
     });
-  }, [fetchMarket]);
+  }, [fetchMarkets]);
 
   useEffect(() => {
     if (isPast) return;
     let active = true;
-    fetchMarket().then(d => {
+    fetchMarkets().then(d => {
       if (!active) return;
       setData(d);
       setLoaded(true);
@@ -63,44 +65,68 @@ export function WeekendBetting({
     return () => {
       active = false;
     };
-  }, [isPast, fetchMarket]);
+  }, [isPast, fetchMarkets]);
 
   if (isPast) return null; // betting closes with the weekend
   if (!loaded || !data?.available) return null; // not loaded yet / betting not live in this env
 
-  const market = data.market ?? null;
+  const markets = data.markets ?? [];
 
   return (
     <section className="mb-8 border-y border-border py-4">
-      <h2 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-text">
-        Paddock Betting<span className="text-brand">.</span>
-      </h2>
-      {!market ? (
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text">
+          Paddock Betting<span className="text-brand">.</span>
+        </h2>
+        {data.signedIn && (
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
+            Balance{' '}
+            <span className="font-display text-base font-extrabold tabular-nums text-brand">
+              {(data.balance ?? 0).toLocaleString()}
+            </span>
+          </span>
+        )}
+      </div>
+
+      {markets.length === 0 ? (
         <p className="font-mono text-xs text-text-muted">
-          The winner market opens closer to the weekend — bet before qualifying, free Paddock credits, no cashout.
+          Markets open closer to the weekend — bet before qualifying, free Paddock credits, no cashout.
         </p>
       ) : data.signedIn ? (
-        <MarketBetCard
-          market={market}
-          balance={data.balance ?? 0}
-          bets={data.bets ?? []}
-          leagues={data.leagues ?? []}
-          onPlaced={refresh}
-        />
+        <div className="space-y-4">
+          {markets.map(m => (
+            <MarketBetCard
+              key={m.id}
+              market={m}
+              balance={data.balance ?? 0}
+              bets={(data.bets ?? []).filter(b => b.marketId === m.id)}
+              leagues={data.leagues ?? []}
+              onPlaced={refresh}
+            />
+          ))}
+        </div>
       ) : (
-        <SignedOutTeaser market={market} />
+        <div className="space-y-4">
+          {markets.map(m => (
+            <SignedOutTeaser key={m.id} market={m} />
+          ))}
+        </div>
       )}
     </section>
   );
 }
 
 function SignedOutTeaser({ market }: { market: OpenMarket }) {
+  const meta = MARKET_TYPE_META[market.type] ?? MARKET_TYPE_META.winner;
   const drivers = Object.entries(market.odds)
     .sort((a, b) => a[1] - b[1])
     .slice(0, 6);
   return (
-    <div className="space-y-3">
-      <p className="font-mono text-xs text-text-muted">Back the race winner with free Paddock credits — no cashout.</p>
+    <div className="space-y-3 rounded border border-border p-3">
+      <div>
+        <h3 className="font-display text-sm font-bold text-text">{meta.label}</h3>
+        <p className="font-mono text-xs text-text-muted">Sign in to {meta.cta} with free Paddock credits — no cashout.</p>
+      </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {drivers.map(([name, mult]) => (
           <div
@@ -113,7 +139,7 @@ function SignedOutTeaser({ market }: { market: OpenMarket }) {
         ))}
       </div>
       <Link href="/sign-in" className="inline-block rounded bg-brand px-4 py-1.5 font-semibold text-bg">
-        Sign in to back the winner
+        Sign in to {meta.cta}
       </Link>
     </div>
   );

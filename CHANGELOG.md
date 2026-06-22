@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.50.0 — 2026-06-22
+
+Changed: **Paddock Betting — the weekend embed renders multiple markets per round (winner, podium, …).**
+
+### Changed
+
+- **`/api/bet/market` returns `markets[]`** (all open markets for a series+round, sorted by `MARKET_TYPE_ORDER`) instead of a single `market`; `bets` now spans those markets. `WeekendBetting` renders one `MarketBetCard` per market (balance lifted to the section header, shown once); the signed-out teaser renders per market.
+- **`MarketBetCard` is market-type-aware** — heading / blurb / CTA from a new client-safe `MARKET_TYPE_META` map (`lib/betting/constants.ts`), and the place POST now sends a generic `pick`. The server keys the selection by the market's type (`selectionForMarket` → `{winner}` for winner, `{driver}` for podium) so a stored bet always matches settlement, whatever the client sends.
+- **This unblocks podium** (and every future type): once a podium market is opened, it renders alongside the winner card with no further UI work.
+
+### Verified
+
+- tsc + 450 tests + `next build` clean. Browser-checked the F1 R8 weekend page on the dev server against live data: the betting section renders the type-titled "Race winner" card with sorted odds + the right CTA, 0 console errors. The multi-market array path is exercised (one market today — podium still dormant).
+
 ## 0.49.0 — 2026-06-22
 
 Added: **Paddock Betting — podium (top-3) market engine, shipped dormant.**
