@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.49.0 — 2026-06-22
+
+*Internal: groundwork for podium (top-3) betting — the pricing and settlement are built and tested but not yet switched on. No user-facing change.*
+
 ## 0.48.0 — 2026-06-22
 
 **Bet further ahead.** You can now place race-winner bets on the next few Formula 1 weekends at once, instead of only the very next race — handy for planning your picks. Each weekend still locks an hour before its qualifying.

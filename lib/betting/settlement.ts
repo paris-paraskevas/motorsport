@@ -23,7 +23,7 @@ export interface LeagueSettlement {
 export async function settleLeagueMarket(
   marketId: string,
   leagueId: string,
-  result: { winner?: string },
+  result: { winner?: string; podium?: string[] },
 ): Promise<LeagueSettlement> {
   const db = betDb();
   const { data: market, error: mErr } = await db.from('market').select('type').eq('id', marketId).single();
@@ -39,14 +39,21 @@ export async function settleLeagueMarket(
   const pending = ((betsData ?? []) as BetRow[]).filter(b => b.outcome === 'pending');
   if (pending.length === 0) return { won: 0, lost: 0, paidCredits: 0 };
 
-  const isWinner = (sel: Record<string, unknown> | null): boolean =>
-    (market as { type: string }).type === 'winner' && !!sel && sel.winner === result.winner;
+  const mtype = (market as { type: string }).type;
+  // Win rule per market type (mirrors the SQL settle_market). Winner: your
+  // driver is P1. Podium: your driver is in the official top 3.
+  const betWon = (sel: Record<string, unknown> | null): boolean => {
+    if (!sel) return false;
+    if (mtype === 'winner') return sel.winner === result.winner;
+    if (mtype === 'podium') return typeof sel.driver === 'string' && (result.podium ?? []).includes(sel.driver);
+    return false;
+  };
 
   const poolBets: PoolBet[] = pending.map(b => ({
     betId: b.id,
     userId: b.user_id,
     stake: b.stake,
-    won: isWinner(b.selection_json),
+    won: betWon(b.selection_json),
   }));
   const { payouts } = settlePool(poolBets);
 

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   winProbabilities, winMultipliers, multiplierFromProb,
-  MIN_MULTIPLIER, MAX_MULTIPLIER, HOUSE_MARGIN,
+  podiumProbabilities, podiumMultipliers,
+  MIN_MULTIPLIER, MAX_MULTIPLIER, HOUSE_MARGIN, PODIUM_SLOTS,
 } from './pricing';
 
 const field = [
@@ -46,5 +47,46 @@ describe('pricing model', () => {
     ]);
     expect(flat.A).toBe(flat.B);
     expect(flat.B).toBe(flat.C);
+  });
+});
+
+describe('podium pricing (Harville top-3)', () => {
+  const grid = [
+    { name: 'A', points: 200 },
+    { name: 'B', points: 150 },
+    { name: 'C', points: 120 },
+    { name: 'D', points: 80 },
+    { name: 'E', points: 40 },
+    { name: 'F', points: 5 },
+  ];
+
+  it('probabilities sum to the number of podium slots and rank with points', () => {
+    const p = podiumProbabilities(grid);
+    const sum = [...p.values()].reduce((s, x) => s + x, 0);
+    expect(sum).toBeCloseTo(PODIUM_SLOTS, 3);
+    expect(p.get('A')!).toBeGreaterThan(p.get('B')!);
+    expect(p.get('E')!).toBeGreaterThan(p.get('F')!);
+    expect(p.get('A')!).toBeLessThanOrEqual(1);
+  });
+
+  it('a podium is likelier than the win, so it pays less — and stays in the band', () => {
+    const win = winProbabilities(grid);
+    const pod = podiumProbabilities(grid);
+    expect(pod.get('A')!).toBeGreaterThan(win.get('A')!);
+    const m = podiumMultipliers(grid);
+    for (const v of Object.values(m)) {
+      expect(v).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
+      expect(v).toBeLessThanOrEqual(MAX_MULTIPLIER);
+    }
+  });
+
+  it('a field of three-or-fewer makes every driver a certain podium', () => {
+    const p = podiumProbabilities([
+      { name: 'A', points: 10 },
+      { name: 'B', points: 5 },
+      { name: 'C', points: 1 },
+    ]);
+    expect(p.get('A')!).toBeCloseTo(1, 6);
+    expect(p.get('C')!).toBeCloseTo(1, 6);
   });
 });

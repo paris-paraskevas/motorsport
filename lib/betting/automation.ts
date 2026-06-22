@@ -1,6 +1,6 @@
 import { betDb } from './client';
 import { createWinnerMarket, settleMarket } from './markets';
-import type { DriverForm } from './pricing';
+import { PODIUM_SLOTS, type DriverForm } from './pricing';
 import { loadAllSeries } from '@/lib/series';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { looksLikeRaceSession, looksLikeQualifying } from '@/lib/results-ready';
@@ -134,6 +134,19 @@ function winnerForRound(races: RaceResult[], round: number): string | null {
   return p1?.driverName ?? null;
 }
 
+/** The official top-PODIUM_SLOTS driver names (P1..P3) for a round, in order, or
+ *  null until the classification is in. Same feed/names as pricing, so picks
+ *  resolve cleanly. */
+function podiumForRound(races: RaceResult[], round: number): string[] | null {
+  const race = races.find(r => r.round === round && (r.results?.length ?? 0) > 0);
+  if (!race) return null;
+  const top = race.results
+    .filter(e => e.position >= 1 && e.position <= PODIUM_SLOTS)
+    .sort((a, b) => a.position - b.position)
+    .map(e => e.driverName);
+  return top.length === PODIUM_SLOTS ? top : null;
+}
+
 export interface SettleSummary {
   settled: string[];
   awaiting: string[];
@@ -164,7 +177,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
     const round = m.round as number;
     const marketId = m.id as string;
     try {
-      if (m.type !== 'winner') {
+      if (m.type !== 'winner' && m.type !== 'podium') {
         summary.awaiting.push(`${slug} R${round}: ${m.type} settlement not supported yet`);
         continue;
       }
@@ -182,11 +195,28 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
         summary.errors.push(`${slug} R${round}: result fetch failed`);
         continue;
       }
-      const winner = winnerForRound(feed, round);
-      if (!winner) {
-        summary.awaiting.push(`${slug} R${round}: official result not in yet`);
-        continue;
+
+      // Build the official result for this market's type from the classification.
+      let result: { winner?: string; podium?: string[] };
+      let label: string;
+      if (m.type === 'winner') {
+        const winner = winnerForRound(feed, round);
+        if (!winner) {
+          summary.awaiting.push(`${slug} R${round}: official result not in yet`);
+          continue;
+        }
+        result = { winner };
+        label = winner;
+      } else {
+        const podium = podiumForRound(feed, round);
+        if (!podium) {
+          summary.awaiting.push(`${slug} R${round}: official podium not in yet`);
+          continue;
+        }
+        result = { podium };
+        label = podium.join(' / ');
       }
+
       // League peer pools first (pari-mutuel), then the solo book (fixed-odds),
       // which also flips the market to settled.
       const { data: leagueRows } = await db
@@ -196,11 +226,11 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
         .not('league_id', 'is', null);
       const leagueIds = [...new Set((leagueRows ?? []).map(r => r.league_id as string))];
       for (const leagueId of leagueIds) {
-        await settleLeagueMarket(marketId, leagueId, { winner });
+        await settleLeagueMarket(marketId, leagueId, result);
       }
-      const solo = await settleMarket(marketId, { winner });
+      const solo = await settleMarket(marketId, result);
       summary.settled.push(
-        `${slug} R${round} → ${winner} · solo ${solo.won}W/${solo.lost}L paid ${solo.paidCredits} · ${leagueIds.length} pool(s)`,
+        `${slug} R${round} ${m.type} → ${label} · solo ${solo.won}W/${solo.lost}L paid ${solo.paidCredits} · ${leagueIds.length} pool(s)`,
       );
     } catch (err) {
       summary.errors.push(`${slug} R${round}: ${err instanceof Error ? err.message : 'error'}`);

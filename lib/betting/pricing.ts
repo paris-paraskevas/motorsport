@@ -53,3 +53,45 @@ export function winMultipliers(drivers: DriverForm[], margin = HOUSE_MARGIN): Re
   for (const [name, p] of probs) out[name] = multiplierFromProb(p, margin);
   return out;
 }
+
+export const PODIUM_SLOTS = 3;
+
+/**
+ * Probability each driver finishes in the top PODIUM_SLOTS, via the Harville /
+ * Plackett-Luce model: P(top-3) = P(1st) + P(2nd) + P(3rd), where each finishing
+ * position is drawn without replacement proportional to the same form weights
+ * used for the winner market. Exact (under the PL assumption), not a heuristic —
+ * the per-driver probabilities sum to exactly PODIUM_SLOTS across the field
+ * (three podium slots). O(n³), trivial for a ~22-car grid.
+ */
+export function podiumProbabilities(drivers: DriverForm[]): Map<string, number> {
+  const ds = drivers.map(d => ({ name: d.name, w: Math.pow(Math.max(d.points, 0) + 1, FORM_EXPONENT) }));
+  const W = ds.reduce((s, x) => s + x.w, 0) || 1;
+  const out = new Map<string, number>();
+  for (const i of ds) {
+    let p = i.w / W; // P(i = 1st)
+    for (const a of ds) {
+      if (a === i) continue;
+      const denom2 = W - a.w; // field after `a` takes 1st
+      if (denom2 <= 0) continue;
+      const pa = a.w / W;
+      p += pa * (i.w / denom2); // P(a 1st, i 2nd)
+      for (const b of ds) {
+        if (b === a || b === i) continue;
+        const denom3 = W - a.w - b.w; // field after a, b take 1st/2nd
+        if (denom3 <= 0) continue;
+        p += pa * (b.w / denom2) * (i.w / denom3); // P(a 1st, b 2nd, i 3rd)
+      }
+    }
+    out.set(i.name, Math.min(p, 1));
+  }
+  return out;
+}
+
+/** {driver -> decimal multiplier} for a podium (top-3) market — same clamp band as winner. */
+export function podiumMultipliers(drivers: DriverForm[], margin = HOUSE_MARGIN): Record<string, number> {
+  const probs = podiumProbabilities(drivers);
+  const out: Record<string, number> = {};
+  for (const [name, p] of probs) out[name] = multiplierFromProb(p, margin);
+  return out;
+}
