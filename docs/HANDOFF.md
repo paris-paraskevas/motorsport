@@ -6,6 +6,34 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-22 (main = 0.41.1)
+
+**Big multi-track session** (continuation of 2026-06-21). Shipped 0.40.0 + 0.41.0; stood up a **native Android spike on-device**; specced the **betting initiative**. Records below; the 0.39.1 block follows.
+
+### Shipped (merged)
+- **#161 (0.40.0) — native DTM race results.** Replaced the dtm.com link-out with real per-race classifications scraped from motorsport.com per-event pages (`?st=RACE1|RACE2`). `fetchDTMSeasonResults` (`lib/results/dtm.ts`): enumerates events from the page's own picker; round numbers mapped to `rounds.json` **by date** via `canonicalRound` — DTM 2026 skips round 4 (3→5), so positional indexing would mis-link the weekend pages. Prod-verified on datacenter.
+- **#162 (0.41.0) — season-trend charts for F2/F3/WSBK.** Reconciliation-gated (chart total == standings table, Δ=0 per driver, verified before wiring). **MotoGP held back** — its results fan-out under-counts (Di Giannantonio chart 132 vs table 157; a dropped round/session). Charts render inside a **`<Suspense>` boundary** (`StreamedTrend` in `components/tabs/StandingsTab.tsx`) so the standings table paints immediately and the chart streams in — F3 cold first-paint stays ~1.5s instead of ~3s. WSBK season results gained a KV cache.
+- *(This docs sweep ships as 0.41.1.)*
+
+### Do next (priority order)
+1. **MotoGP chart under-count** — find the dropped round/session in `fetchMotoGPSeasonResults` (chart 132 vs standings 157 for Di Giannantonio; likely a session under the finisher floor being skipped). Fix → MotoGP joins the chart set.
+2. **Standings "last-good" resilience** (operator's "both #2", still owed) — KV fallback so a transient motorsport.com/datacenter failure can't blank standings; also softens cold-load delays across motorsport.com series.
+3. **NLS Nürburgring results** (operator 2026-06-21) — none today; Phase-1 source = `teilnehmer.vln.de` PDF. New scraper, DTM-shaped.
+4. **Nav/breadcrumb fix** (operator 2026-06-21) — from a session page, reaching a series' Standings is "too far back"; breadcrumb isn't an obvious back-path. IA polish; pairs with path-based tabs (B11).
+5. **Remaining charts** — FE/IndyCar/GT-World/IMSA/WEC are **data-gated** (winners-only / no per-position points; GT-World/IMSA/WEC need a points-scale module). Per-series, not a batch.
+
+### Native Android spike (operator wanted to "try a native rebuild")
+Built + flashed to the operator's **Pixel 9** from scratch — proves the on-device native loop end-to-end. Lives at **`C:\Dev\Personal\paddock-android`** (separate from this repo), package `com.paddock.spike`, Compose + Paddock's `/api/just-missed` feed (tap a card → opens the Paddock results page). Toolchain installed cold (no Android SDK existed): platform-tools/adb, cmdline-tools, platform-35, build-tools 35, Gradle 8.11.1 (under `~/AppData/Local/{Android/Sdk,Gradle}`). **Polish PARKED** (~10 min): `res/` dirs created; chequered-flag adaptive icon + Paddock dark-theme XML + manifest icon/theme swap still pending (currently generic icon + `Theme.Material.Light`). **Verdict: proves "can we?" = yes; NOT "is the full rewrite cheap?" = no** — detail still punts to the web; the other 14 series + auth/push/offline/content layer are the months-long rebuild.
+
+### Paddock Betting initiative (NEW — the long-parked S9/Supabase trigger, now specced)
+Full spec: **`docs/research/predictions-design.md`**. Operator decisions **locked 2026-06-22**: a **virtual-credit BETTING game** (multiplied returns) · **free credits + optional paid IAP** · **NO CASHOUT (the legal anchor)** · **win-rate leaderboard** (not bankroll) · **persistent + deliberately-lean bankroll** · **"provisional is final" = official classification, no claw-back** · **paid-in-peer-pools = option (b)** (geo-gated + 18+). Operator wants a **real betting-odds API** → hybrid (API for winner/podium; model for exact positions, which books don't price; pari-mutuel for leagues). **Risk box, chosen knowingly: this is the "simulated/social-casino" app category** (17+/18+, geo-restrictions, store scrutiny) — no-cashout is what keeps it a game. **Build gates:** operator provisions Supabase (greenlit) + **legal review + territory allow-list before the paid path**. Multi-week (Phase 1a–1d in the doc); does NOT block v1.0.
+
+### Branches / working tree
+- This docs sweep + the predictions spec are on **`docs/predictions-design`** (→ 0.41.1).
+- `paddock-android` is a separate dir (not tracked by this repo); its device screenshots are scratch.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-21 (main = 0.39.1)
 
 **main = 0.39.1.** This session shipped **Lens B #3 (PR #159)**. The `#155–#158` record below (0.38.4→0.39.0) had only ever lived in the *uncommitted* handoff working-tree — main's handoff never carried it — so it's committed here for the first time, along with the salvaged perf-baseline + security re-verification notes (the deferred docs sweep).

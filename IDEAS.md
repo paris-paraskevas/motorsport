@@ -133,6 +133,13 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Race-weekend track-map photo showing sectors/corners (operator 2026-06-21) — per-circuit sector diagram on the weekend page.
 - /api/just-missed cold-on-cold TTFB ~13.8s (audit 2026-06-21): warm HIT 0.44s but full season-results fan-out (WEC live-component + MotoGP no parser cache) runs when edge + KV podium caches both cold; fix candidates = cache-warm cron pinging the route, or add parser-level KV cache to lib/results/motogp.ts.
 - Geo-restricted highlight clips (operator 2026-06-21): some curated WeekendMedia highlights in content/series/<slug>/media.json point to unofficial/random YouTube channels whose uploads are region-locked (won't play outside their country); audit every curated clip's global availability and replace with official-channel uploads (FIA WEC / F1 / etc.) per the search-official-source rule.
+- Paddock Betting game (S9 trigger, operator 2026-06-22): virtual-credit betting (NO cashout — the anchor), free + optional paid IAP, win-rate leaderboard, persistent deliberately-lean bankroll, pari-mutuel + model + odds-API hybrid pricing; full spec + locked decisions in `docs/research/predictions-design.md`; gated on Supabase provisioning + legal review (paid path = simulated-casino category, geo/age gated).
+- Native Android rebuild spike (operator 2026-06-22): built + flashed to Pixel 9 (`C:\Dev\Personal\paddock-android`, Compose + /api/just-missed); Android toolchain installed cold; polish parked (chequered-flag icon + Paddock theme); proves on-device feasibility, NOT that the full 15-series/auth/push/content rewrite is cheap — detail still punts to web.
+- MotoGP standings chart under-count (0.41.0 follow-up): chart sums 132 vs standings 157 (Di Giannantonio) — a round/session dropped under the finisher floor in `fetchMotoGPSeasonResults`; fix → MotoGP joins the F2/F3/WSBK chart set.
+- Standings last-good resilience (operator's "both #2", owed): KV fallback so a transient motorsport.com/datacenter failure can't blank standings; also softens cold-load delays across motorsport.com-sourced series.
+- NLS Nürburgring results (operator 2026-06-21): no results today; Phase-1 source = teilnehmer.vln.de PDF; new scraper, DTM-shaped, datacenter-verify required.
+- Session-page → series-tab navigation (operator 2026-06-22): from a weekend/session page, reaching a series' Standings is "too far back"; breadcrumb isn't an obvious back-path — IA polish, pairs with path-based tabs (B11).
+- Remaining standings charts FE/IndyCar/GT-World/IMSA/WEC (after MotoGP): data-gated — winners-only / no per-position points; GT-World/IMSA/WEC need a per-series points-scale module before a chart can reconcile.
 
 ## Parked (might do, with a revisit trigger)
 

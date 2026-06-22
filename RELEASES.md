@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.41.1 — 2026-06-22
+
+*Internal: documentation and planning — no changes to the app.*
+
 ## 0.41.0 — 2026-06-22
 
 **Championship charts for more series.** The standings pages for Formula 2, Formula 3 and World Superbikes now show a season-trend chart of how the points race has unfolded. The chart loads in just after the table, so the page stays quick — especially on slower connections.

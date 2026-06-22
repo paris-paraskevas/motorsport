@@ -752,6 +752,17 @@ Won't touch: page-level ISR (no-op per handoff), a pre-warm cron, the penalty-co
 
 Active: _(no `[+Nm]` prefixes captured this session)_
 
+### 2026-06-21→22 (cont.) — DTM results · F2/F3/WSBK charts · native Android spike · betting design
+
+- → done: **#161 (0.40.0)** native DTM race results (motorsport.com per-event `?st=RACE1|RACE2`; `canonicalRound` date-maps to rounds.json across the round-4 gap; prod-verified on datacenter).
+- → done: **#162 (0.41.0)** F2/F3/WSBK season-trend charts via a streamed `<Suspense>` chart (reconciliation-gated Δ=0; **MotoGP held back** — results under-count); WSBK results KV-cached.
+- → done: **native Android spike** — built + flashed to the operator's Pixel 9 (`C:\Dev\Personal\paddock-android`, Compose + `/api/just-missed`, tap→Paddock); Android toolchain installed cold. Polish parked (icon/theme).
+- → done: **betting initiative specced** — `docs/research/predictions-design.md`; operator decisions locked (betting framing / free+paid IAP / no-cashout / win-rate board / persistent-lean / provisional-final / peer-pool option b); S9/Supabase trigger; gated on Supabase provisioning + legal review.
+- → done: **docs sweep (0.41.1)** — HANDOFF top block + this entry + IDEAS triage.
+- → deferred: MotoGP chart fix · standings last-good resilience · NLS results · nav/breadcrumb fix · remaining data-gated charts · Android polish · the full betting build.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

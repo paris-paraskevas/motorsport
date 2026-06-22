@@ -70,7 +70,7 @@ OPEN ──(session start, server time)──▶ LOCKED ──(OFFICIAL final cl
 
 - Settlement fires on the **official final classification** — the post-stewards result our sources show a few **hours** after the flag — **not** the live / first-parsed result. Penalties (DSQ, time penalties) are common and land in that official classification; settling before it would pay out **false wins and corrupt the win-rate leaderboard** (§4). So the engine waits for the result to stabilise, then settles **once and permanently**.
 - The rare **week-later appeal reversal** (e.g. Gasly-Monaco reinstatement) is **accepted as standing** — no claw-back. This is the simplification the operator chose; it's fine because such reversals are rare and the alternative (reopening settled pools/leaderboards days later) is worse UX.
-- **CONFIRM (§14):** "final = official classification (hours post-race), not the live result." If the operator literally means "settle on the first result we parse," flag — that produces visibly-wrong payouts on most penalty races.
+- **CONFIRMED (operator 2026-06-22):** final = official classification (hours post-race, post-stewards), **not** the live/first-parsed result.
 
 ---
 
@@ -112,10 +112,7 @@ First Paddock surface that can't live in the file-CMS/KV model — relational us
 - **Mechanism:** Google Play Billing / Apple StoreKit only (their cut; cannot bypass for digital goods). Server-verified receipts → `credit_ledger` grant `reason=purchase, source=paid`.
 - **No cashout (§0).** Paid credits are spendable in-game only.
 - **Solo-vs-house with paid credits:** low risk (standard simulated-gambling IAP).
-- **Paid credits in PEER POOLS:** the riskiest combination (real money → credits → won off other players on chance). **OPEN DECISION (§14)** — pick one:
-  1. peer pools **free-credits-only** forever (cleanest);
-  2. paid peer pools **geo-gated + 18+**, per-territory legal sign-off;
-  3. peer "pools" become **non-transfer scoring** (score vs a model; no stake moves between users).
+- **Paid credits in PEER POOLS — DECIDED: option (b)** (operator 2026-06-22): paid peer pools are **geo-gated + 18+** with per-territory legal sign-off. This is the highest-compliance path of the three (alternatives were free-credits-only pools, or non-transfer scoring) — it explicitly hard-gates on the legal review (§14.6) and a confirmed territory allow-list before any paid peer pool goes live.
 - **Age + territory gating** required; **legal review before the paid path ships** (operator agreed, §14.6).
 
 ---
@@ -169,5 +166,5 @@ Multi-week; **does not block v1.0 launch** (own track after the launch gates).
 | 4 | **Persistent** bankroll, monthly grant tuned **lean** | ✅ locked |
 | 5 | **Green-light Supabase** (Phase 1a) | ✅ locked |
 | 6 | **Legal review** before paid path | ✅ agreed |
-| 7 | **"Provisional is final" = official classification, not live result** | ⏳ confirm (§5) |
-| 8 | **Paid-in-peer-pools** model (§9 option 1/2/3) | ⏳ choose |
+| 7 | **"Provisional is final" = official classification** (not live result) | ✅ locked |
+| 8 | **Paid-in-peer-pools** = **option (b)**: geo-gated + 18+, per-territory legal sign-off | ✅ locked |
