@@ -1,5 +1,5 @@
 'use client';
-import { CalendarDays, CircleUser, Dices, Flag, House } from 'lucide-react';
+import { CalendarDays, CircleUser, Dices, Flag, House, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -16,7 +16,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
       aria-label="Primary"
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated/90 backdrop-blur-xl border-t border-border pb-[env(safe-area-inset-bottom)]"
     >
-      <div className={`grid ${bettingEnabled ? 'grid-cols-5' : 'grid-cols-4'} h-14 max-w-2xl mx-auto`}>
+      <div className={`grid ${bettingEnabled ? 'grid-cols-6' : 'grid-cols-4'} h-14 max-w-2xl mx-auto`}>
         <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} />
         <BarLink
           href="/calendar"
@@ -37,6 +37,14 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
             active={pathname === '/play' || pathname.startsWith('/play/')}
             label="Play"
             Icon={Dices}
+          />
+        )}
+        {bettingEnabled && (
+          <BarLink
+            href="/social"
+            active={pathname === '/social' || pathname.startsWith('/social/')}
+            label="Social"
+            Icon={Users}
           />
         )}
         <BarLink

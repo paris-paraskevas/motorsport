@@ -29,6 +29,17 @@ const nextConfig: NextConfig = {
       "./node_modules/moment/**/*",
     ],
   },
+  async redirects() {
+    // Leagues + friends moved under /social (the Social area). Old links —
+    // notably already-shared invite links — keep working. join is two segments,
+    // so it doesn't collide with the single-segment :id rule.
+    return [
+      { source: "/social", destination: "/social/leagues", permanent: false },
+      { source: "/play/leagues", destination: "/social/leagues", permanent: true },
+      { source: "/play/leagues/join/:token", destination: "/social/leagues/join/:token", permanent: true },
+      { source: "/play/leagues/:id", destination: "/social/leagues/:id", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

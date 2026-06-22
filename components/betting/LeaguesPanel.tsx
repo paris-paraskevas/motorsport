@@ -61,7 +61,7 @@ export function LeaguesPanel({
         setError(data.error ?? 'Could not create an invite link.');
         return;
       }
-      const link = `${window.location.origin}/play/leagues/join/${data.token}`;
+      const link = `${window.location.origin}/social/leagues/join/${data.token}`;
       setInvites(prev => ({ ...prev, [leagueId]: link }));
       try {
         await navigator.clipboard.writeText(link);
@@ -143,7 +143,7 @@ export function LeaguesPanel({
             <li key={league.id} className="rounded border border-white/10 p-3">
               <div className="flex items-baseline justify-between gap-2">
                 <Link
-                  href={`/play/leagues/${league.id}`}
+                  href={`/social/leagues/${league.id}`}
                   className="font-display uppercase tracking-wide text-text hover:text-brand"
                 >
                   {league.name}
@@ -172,7 +172,7 @@ export function LeaguesPanel({
                   {rows.map((r, i) => (
                     <li key={r.userId} className="flex items-center justify-between font-mono text-sm">
                       <span className="text-text">
-                        {i + 1}. {r.userId === currentUserId ? 'You' : r.displayName ?? `Racer ${r.userId.slice(-4)}`}
+                        {i + 1}. {r.userId === currentUserId ? 'You' : r.nickname || r.displayName || `Racer ${r.userId.slice(-4)}`}
                       </span>
                       <span className="text-text-muted">
                         {r.wins}/{r.placed} · {(r.winRate * 100).toFixed(0)}%

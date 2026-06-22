@@ -35,10 +35,10 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
   return frame(
     <>
       <Link
-        href="/play"
+        href="/social/leagues"
         className="mb-4 inline-block font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text"
       >
-        ← Play
+        ← Leagues
       </Link>
       <Suspense fallback={<LeagueSkeleton />}>
         <LeagueData id={id} userId={userId} />

@@ -55,12 +55,12 @@ export function JoinLeagueFlow({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ action: 'joinByToken', token }),
       });
-      const d = (await res.json()) as { ok?: boolean; error?: string };
+      const d = (await res.json()) as { ok?: boolean; id?: string; error?: string };
       if (!res.ok) {
         setError(d.error ?? 'Could not join.');
         return;
       }
-      router.push('/play');
+      router.push(d.id ? `/social/leagues/${d.id}` : '/social/leagues');
     } catch {
       setError('Network error — try again.');
     } finally {
@@ -110,7 +110,7 @@ export function JoinLeagueFlow({
             </button>
             <button
               type="button"
-              onClick={() => router.push('/play')}
+              onClick={() => router.push('/social/leagues')}
               disabled={busy}
               className="rounded border border-white/10 px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
             >

@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.59.0 — 2026-06-23
+
+Added: **Social area — friends + leagues get their own home at `/social`.**
+
+### Changed
+- New **`/social`** area with a Friends | Leagues sub-nav: **`/social/friends`** (requests + friend list) and **`/social/leagues`** (your leagues, create/join, win-rate tables) — both lifted out of the `/play` hub. The **league page** moved to **`/social/leagues/[id]`** (carries the P4 medals + Honours) and **invite-join** to **`/social/leagues/join/[token]`**. `/play` is now the **betting hub** (balance + your bets) with quick links across to Social. Nav gains a **Social** entry in the header (lg+) and the mobile bottom bar, gated on betting being provisioned.
+- **Old `/play/leagues/*` URLs permanently redirect (308) to `/social/leagues/*`** (`next.config.ts`) so already-shared invite links survive. `JoinLeagueFlow` now lands you on the joined league's page (returns the id), and disband/decline land on `/social/leagues`.
+- All `/social` pages shell-paint instantly + stream their data (the 0.58.1 perf pattern); pages stay `ƒ` (per-user/auth-gated). Internal links updated across `LeaguesPanel`, `LeagueDetailView`, `JoinLeagueFlow`.
+
+### Fixed
+- **League leaderboard now shows per-league nicknames.** `getLeaderboard` read the `league_leaderboard` view (global display names only); it now reads `league_member` directly so a member's league nickname rides along, and the panel renders `nickname || displayName`. Regression added to `scripts/verify-league-flow.mts` (owner nicknames a member → the leaderboard surfaces it). The league *page* already showed nicknames; this was the leaderboard panel specifically.
+
+### Notes
+- IA move (no schema change) reusing `lib/betting/{friends,leagues}.ts` — `FriendsPanel`/`LeaguesPanel` move unchanged; only the leaderboard nickname read + the `/play`/redirect links changed. tsc clean; `/social/*` renders + the old-URL 308 redirects (incl. shared invite links) verified on the dev server. Landing-page marketing for the game is the planned follow-on.
+
 ## 0.58.1 — 2026-06-23
 
 Changed: **`/play` + league page render fast — one parallel data wave behind a streamed shell.**
