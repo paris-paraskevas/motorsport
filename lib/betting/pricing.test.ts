@@ -3,6 +3,7 @@ import {
   winProbabilities, winMultipliers, multiplierFromProb,
   podiumProbabilities, podiumMultipliers,
   topKProbabilities, topTenMultipliers,
+  positionProbabilities, exactPositionMultipliers,
   MIN_MULTIPLIER, MAX_MULTIPLIER, HOUSE_MARGIN, PODIUM_SLOTS,
 } from './pricing';
 
@@ -120,6 +121,47 @@ describe('top-K pricing (mean-field PL)', () => {
   it('a midfielder makes the top-10 at least as easily as the podium, and prices in band', () => {
     expect(topKProbabilities(grid, 10).get('D8')!).toBeGreaterThanOrEqual(podiumProbabilities(grid).get('D8')!);
     const m = topTenMultipliers(grid);
+    for (const v of Object.values(m)) {
+      expect(v).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
+      expect(v).toBeLessThanOrEqual(MAX_MULTIPLIER);
+    }
+  });
+});
+
+describe('exact-position pricing (finishing-position distribution)', () => {
+  const grid = Array.from({ length: 12 }, (_, i) => ({ name: `D${i}`, points: 240 - i * 20 }));
+
+  it('each finishing position sums to 1 across the field, every prob bounded', () => {
+    const rows = [...positionProbabilities(grid).values()];
+    // the meaningful invariant: each position (column) is filled by exactly one
+    // driver, so probabilities sum to 1 across the field. (Row sums are ~1 but
+    // not exact — the mean-field normalises columns, not rows.)
+    for (let pos = 0; pos < grid.length; pos++) {
+      const col = rows.reduce((s, ps) => s + ps[pos], 0);
+      expect(col).toBeCloseTo(1, 6);
+    }
+    for (const ps of rows) for (const p of ps) {
+      expect(p).toBeGreaterThanOrEqual(0);
+      expect(p).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('position 1 equals the win probability', () => {
+    const dist = positionProbabilities(grid);
+    const win = winProbabilities(grid);
+    for (const [name, ps] of dist) expect(ps[0]).toBeCloseTo(win.get(name)!, 9);
+  });
+
+  it('the favourite peaks at P1; the leader is likelier P1 than a backmarker', () => {
+    const dist = positionProbabilities(grid);
+    expect(dist.get('D0')![0]).toBeGreaterThan(dist.get('D0')![5]);
+    expect(dist.get('D0')![0]).toBeGreaterThan(dist.get('D11')![0]);
+  });
+
+  it('prices every (driver, position) pair in the band, keyed driver@position', () => {
+    const m = exactPositionMultipliers(grid);
+    expect(Object.keys(m).length).toBe(grid.length * grid.length);
+    expect(m['D0@1']).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
     for (const v of Object.values(m)) {
       expect(v).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
       expect(v).toBeLessThanOrEqual(MAX_MULTIPLIER);

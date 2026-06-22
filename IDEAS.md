@@ -142,7 +142,7 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Remaining standings charts FE/IndyCar/GT-World/IMSA/WEC (after MotoGP): data-gated — winners-only / no per-position points; GT-World/IMSA/WEC need a per-series points-scale module before a chart can reconcile.
 - Standings charts = ranked name + points list (operator 2026-06-22): each chart should show driver name + points sorted descending (most points at top → least at bottom), not only a points-over-time trend; refines the MotoGP + remaining-series standings-chart items above.
 - Betting — open more markets across more SERIES (operator 2026-06-22): lead-time shipped 0.48.0 (next 3 F1 weekends open at once); remaining = non-F1 series, gated on per-series winner-race disambiguation (F2/F3/MotoGP/WSBK have sprint+feature) + standings↔results driver-name verification + datacenter check (blockers in HANDOFF).
-- Betting — new market types (operator 2026-06-22): PODIUM + TOP-10 engines shipped dormant (0.49.0–0.51.0) + multi-market UI (0.50.0) — pricing + settle migrations + verify scripts done, not auto-opened (go-live steps in HANDOFF); remaining = exact-position (finishing-position distribution model) + grid/qualifying-position (quali-pace model + a `market_type` enum addition).
+- Betting — new market types (operator 2026-06-22): PODIUM + TOP-10 + EXACT-POSITION engines shipped dormant (0.49.0–0.51.0) + multi-market UI (0.50.0) — pricing + settle migrations + verify scripts done, not auto-opened (go-live steps in HANDOFF); exact-position is engine-done but UI-blocked (2-field driver+position pick needs a bespoke selector); remaining = grid/qualifying-position (quali-pace model + a `market_type` enum addition).
 
 ## Parked (might do, with a revisit trigger)
 

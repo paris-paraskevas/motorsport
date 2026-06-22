@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.52.0 — 2026-06-22
+
+Added: **Paddock Betting — exact-finishing-position market engine, shipped dormant.**
+
+### Added
+
+- **Finishing-position distribution** (`lib/betting/pricing.ts`): `positionProbabilities` returns each driver's full `[P(1st), …, P(nth)]` via the mean-field sequential Plackett-Luce (each position normalised to sum to 1 across the field; exact for the win). `topKProbabilities` now derives from it (DRY; top-10 pricing unchanged). `exactPositionMultipliers` prices every (driver, position) pair through the clamp band, keyed `driver@position`. `createExactPositionMarket` added (`createMarket` now also `'exact_position'`).
+- **Exact-position settlement** (migration `20260622140000_exact_position_settlement.sql`): `settle_market` extended for `type='exact_position'` — selection `{driver, position}` wins when the driver's official finish equals the predicted position (`p_result={positions:{name:pos}}`), paid at the `driver@position` odds. `settleLeagueMarket` + `settleDueMarkets` (+ a `positionsForRound` reader) follow.
+- **Tests + verify:** `pricing.test.ts` adds finishing-position cases (each position sums to 1 across the field, P1 = win prob, favourite peaks at P1, every pair priced in band). New `scripts/verify-exact-position.mts` ran end-to-end against local Supabase: a correct driver+position hit paid at its odds (`floor(stake × mult)`, numeric-exact), a miss lost, 1W/1L. 457 tests green; tsc clean.
+
+### Dormant — go-live needs a bespoke UI (operator)
+
+- Unlike podium/top-10 (which the existing flat card renders automatically), exact-position is a **2-field pick (driver + position)**: the weekend card and the `/api/bet/place` flow (single `pick` → `selectionForMarket`) must be extended to a driver+position selector before it can be opened. It's intentionally **absent from `MARKET_TYPE_META`** so it never renders in the flat card. Engine + settlement are ready and verified; the picker UI + place-path are the remaining work. Last enum type **grid/qualifying-position** needs a quali-pace model + a `market_type` enum addition.
+
 ## 0.51.0 — 2026-06-22
 
 Added: **Paddock Betting — top-10 (points finish) market engine, shipped dormant.**

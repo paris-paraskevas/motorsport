@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { winMultipliers, podiumMultipliers, topTenMultipliers, type DriverForm } from './pricing';
+import { winMultipliers, podiumMultipliers, topTenMultipliers, exactPositionMultipliers, type DriverForm } from './pricing';
 import { MARKET_TYPE_META } from './constants';
 
 // Server-only. Create/settle betting markets. Odds are priced once here and
@@ -16,7 +16,7 @@ interface CreateMarketOpts {
 // Shared market insert — winner/podium/top10 differ only in `type` and how the
 // field is priced into the {selection -> multiplier} odds snapshot on the row.
 async function createMarket(
-  type: 'winner' | 'podium' | 'top10',
+  type: 'winner' | 'podium' | 'top10' | 'exact_position',
   odds: Record<string, number>,
   opts: CreateMarketOpts,
 ): Promise<string> {
@@ -50,6 +50,12 @@ export function createPodiumMarket(opts: CreateMarketOpts): Promise<string> {
 /** Create a 'top10' (top-10 finish) market, pricing its odds from current standings. Returns market id. */
 export function createTop10Market(opts: CreateMarketOpts): Promise<string> {
   return createMarket('top10', topTenMultipliers(opts.field), opts);
+}
+
+/** Create an 'exact_position' market (every driver × finishing position priced).
+ *  Odds are keyed `driver@position`; a bet's selection is `{driver, position}`. */
+export function createExactPositionMarket(opts: CreateMarketOpts): Promise<string> {
+  return createMarket('exact_position', exactPositionMultipliers(opts.field), opts);
 }
 
 export interface SettlementSummary {
