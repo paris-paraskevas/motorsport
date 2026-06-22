@@ -6,6 +6,50 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-22 (main = 0.42.0) — Betting 1a–1c built; FULL remaining-work list
+
+**main = 0.42.0.** This session built the **Paddock Betting** engine end-to-end (Phases 1a–1c, PR #164, merged) on top of the day's DTM-results / charts / docs work (the 0.41.1 block below). Betting ships **dormant** — no cloud DB, no UI. **Operator will tackle ALL remaining items next session; the full list is below.**
+
+### Betting — what's BUILT (PR #164, dormant)
+- **1a foundation:** Supabase data layer in `supabase/` — `app_user`, append-only `credit_ledger` (balance = `SUM(delta)`, trigger-enforced), `market`/`bet`/`league`/`league_member`/`settlement`, `user_balance` view; `grant_monthly`/`grant_monthly_all`. RLS-on / no-policies / **service_role-only** (Clerk is the auth, all access server-side). `lib/betting/{client,credits}.ts`; `GET /api/cron/grant-credits` (fail-closed, 503s without env). `config.toml` trimmed (auth/storage/realtime/inbucket off).
+- **1b solo engine:** model pricing `lib/betting/pricing.ts` (win-prob from standings → inverse-prob multiplier; longshots pay more); `createWinnerMarket` (server-locked odds in `market.odds_json`); atomic `place_bet`; fixed-odds `settle_market` (provisional-is-final, one-shot). `lib/betting/{markets,bets}.ts`.
+- **1c pari-mutuel leagues:** `createLeague`/`joinLeague`/`getLeaderboard` (`lib/betting/leagues.ts`); pure pool math `lib/betting/pari-mutuel.ts` (winners split the pool pro-rata; no-winner → void refund; dust → house); `settleLeagueMarket` + `apply_league_settlement` (atomic, idempotent per pool); `league_leaderboard` view (win-rate). The 10-vs-1 model.
+- **Verified:** 6 migrations apply clean; `scripts/verify-betting{,-flow,-league-flow}.mts` all green (grant→balance; solo 177× longshot payout; league pool payout + leaderboard); 446 unit tests; tsc + build clean.
+- **Spec + decisions:** `docs/research/predictions-design.md`. Locked: virtual-credit betting, **NO CASHOUT** (the legal anchor), free + paid IAP, win-rate leaderboard, persistent-lean bankroll, provisional-is-final = **official classification**, paid-peer-pools = **option (b)** geo-gated+18+. Legal framing (§0): no-cashout = **social-casino, not real-money gambling** (legal in most markets); store **17+ content-rating, NOT KYC**; exclude a few territories; paid-in-peer-pools is the one stricter spot.
+
+### Run it locally
+`npx supabase start` (needs Docker) → `npx supabase migration up`. Studio :54323. For `next dev`/scripts: `.env.local` with `SUPABASE_URL=http://127.0.0.1:54321` + the local default service_role key (in **`supabase/README.md`**). Verify scripts under `scripts/verify-*.mts`. The local stack may still be running — `npx supabase stop` to free it.
+
+### ⏳ REMAINING WORK — operator will tackle next session
+
+**Betting → make it live:**
+1. **Provision cloud Supabase** (operator): create project → `supabase login && link && db push` → set `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in Vercel (Production, server-only) → schedule `/api/cron/grant-credits` (GH Action like `health.yml`, or a Vercel cron). Steps in `supabase/README.md`.
+2. **Legal/territory diligence + 17+ store rating** before the **paid** path (the free path needs neither).
+3. **Betting UI** — place-bet / leagues / leaderboard / balance screens (Clerk-gated; best built once the cloud DB exists).
+4. **Clerk↔user wiring** — `ensureAppUser` on sign-in (Clerk webhook or lazy on first betting request) + **age gate** (store `dob`). Reconcile the league place-bet path while wiring the UI.
+5. **Market automation** — cron to OPEN markets for upcoming sessions (from the schedule) + LOCK at session start + SETTLE from the results pipeline (tie to results-ready; call `settle_market` / `settleLeagueMarket` with the **official** classification only — penalties land in it; never the live result).
+6. **Podium / top-10 market types** — extend pricing + settle for ordered/set selections (currently winner-only).
+7. **Odds-API adapter** — pluggable real winner/podium odds (operator paid key); model + pari-mutuel stay the default.
+8. **Longshot multiplier cap** — 177× is too steep; cap + floor the probability.
+
+**Web app (earlier batch + chart follow-ups):**
+9. **MotoGP standings chart under-count** — chart 132 vs standings 157 (Di Giannantonio); a round/session dropped under the finisher floor in `fetchMotoGPSeasonResults`; fix → MotoGP joins the F2/F3/WSBK chart set.
+10. **Standings "last-good" resilience** — KV fallback so a transient motorsport.com/datacenter failure can't blank standings (also softens cold-load delays).
+11. **NLS Nürburgring results** — new scraper (`teilnehmer.vln.de` PDF), DTM-shaped; datacenter-verify.
+12. **Nav/breadcrumb fix** — session page → series Standings is "too far back"; pairs with path-based tabs (B11).
+13. **Remaining standings charts** — FE/IndyCar/GT-World/IMSA/WEC: data-gated (winners-only / no per-position points; GT/IMSA/WEC need a points-scale module).
+
+**Native Android:**
+14. **Polish the spike** (`C:\Dev\Personal\paddock-android`) — chequered-flag adaptive icon + Paddock dark theme (`res/` dirs created, files pending). Then the native-vs-TWA decision. Spike proves on-device feasibility, NOT full-rewrite cheapness.
+
+### Landmines / setup learned this session
+- **Local Supabase:** Docker required; auth/storage/realtime/inbucket disabled in `config.toml` (we use Clerk). The local default service_role key works against PostgREST even with auth off, BUT migration-created tables need an explicit `grant … to service_role` (Supabase's default privileges didn't cover them — see `…_grants.sql`). Access model = RLS-on + service-role-only.
+- **Betting legal (corrected):** no-cashout = social-casino, legal most markets; 17+ store rating ≠ KYC; paid-in-peer-pools is the stricter case (geo-gate+18+). `predictions-design.md §0`.
+- **Credits = integer bigint**, append-only ledger; pari-mutuel rounds down, dust → house.
+- **Android toolchain installed cold** (no SDK existed): platform-tools/adb, cmdline-tools, platform-35, build-tools 35, Gradle 8.11.1 under `~/AppData/Local/{Android/Sdk,Gradle}`; Pixel 9 authorized over USB.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-22 (main = 0.41.1)
 
 **Big multi-track session** (continuation of 2026-06-21). Shipped 0.40.0 + 0.41.0; stood up a **native Android spike on-device**; specced the **betting initiative**. Records below; the 0.39.1 block follows.
