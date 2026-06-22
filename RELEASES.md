@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.44.0 — 2026-06-22
+
+*Internal: betting go-live wiring — race markets now open automatically and a Play menu entry appears once enabled. Bet settlement is still to come before betting is promoted.*
+
 ## 0.43.0 — 2026-06-22
 
 *Internal: the Paddock Betting play screen — solo bets plus friend leagues — is built but not yet live. A /play page shows "coming soon" until it's switched on.*

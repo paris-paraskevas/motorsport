@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.44.0 — 2026-06-22
+
+Added: **Paddock Betting — market automation + the Play nav entry (go-live wiring).**
+
+### Added
+
+- **Open-markets automation** (`lib/betting/automation.ts` `openUpcomingMarkets()`): opens a winner market for each configured series' next upcoming race (detected via `looksLikeRaceSession`), priced from current standings (`DriverForm` `{name, points}`), locking at the race session start. Idempotent (skips a round that already has a winner market), fail-soft per series. **F1 first** — Jolpica driver names match the results feed used at settlement, so a winning pick resolves cleanly; more series as field adapters land. Driven by `GET /api/cron/open-markets` (`.github/workflows/open-markets.yml`, twice-daily, fail-closed cron-auth, dormant-safe 503). `scripts/verify-automation.mts`.
+- **Play nav entry**: `AppShell` inline nav (lg+) + `BottomBar` (mobile, `Dices` icon) gain a **Play** link, gated on `isBettingConfigured()` (resolved server-side in the `(app)` layout, passed down) — so it only appears once the betting env is provisioned.
+
+### Provisioned
+
+- Cloud Supabase project **`Paddock`** (eu-west-1) created + all 6 migrations applied (verified with the service_role key, pristine); prod env (`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`) set in Vercel. On the next prod deploy `/play` goes live with the F1 next-race winner market already open.
+
+### Note
+
+- **Settlement automation is NOT built yet.** Markets open and accept bets, but nothing resolves them against the official classification (`settle_market` / `settleLeagueMarket` exist, but no cron calls them). Placed bets stay `pending` until that lands — **build it before promoting betting.**
+
 ## 0.43.0 — 2026-06-22
 
 Added: **Paddock Betting — the play surface (solo-vs-house + friend leagues), still dormant in prod.**

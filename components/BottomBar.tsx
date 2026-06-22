@@ -1,14 +1,14 @@
 'use client';
-import { CalendarDays, CircleUser, Flag, House } from 'lucide-react';
+import { CalendarDays, CircleUser, Dices, Flag, House } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 // Mobile bottom navigation (PR 2a, docs/redesign-2026-06.md): thumb-reach
 // nav for phones and the installed PWA. Every tab is a real destination —
 // Series goes to the /series hub (operator feedback on 0.15.0: a nav tab
-// must not open a menu); the drawer stays reachable from the header burger.
-// Hidden on lg+ where the permanent sidebar covers navigation.
-export function BottomBar() {
+// must not open a menu). Hidden on lg+ where the header's inline nav takes
+// over. Play appears only when betting is provisioned (bettingEnabled).
+export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -16,7 +16,7 @@ export function BottomBar() {
       aria-label="Primary"
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated/90 backdrop-blur-xl border-t border-border pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="grid grid-cols-4 h-14 max-w-2xl mx-auto">
+      <div className={`grid ${bettingEnabled ? 'grid-cols-5' : 'grid-cols-4'} h-14 max-w-2xl mx-auto`}>
         <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} />
         <BarLink
           href="/calendar"
@@ -31,6 +31,14 @@ export function BottomBar() {
           Icon={Flag}
           dataTour="series"
         />
+        {bettingEnabled && (
+          <BarLink
+            href="/play"
+            active={pathname === '/play' || pathname.startsWith('/play/')}
+            label="Play"
+            Icon={Dices}
+          />
+        )}
         <BarLink
           href="/settings"
           active={pathname === '/settings'}

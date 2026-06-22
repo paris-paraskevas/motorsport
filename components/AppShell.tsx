@@ -26,11 +26,20 @@ const NAV = [
 export function AppShell({
   children,
   seriesList,
+  bettingEnabled,
 }: {
   children: React.ReactNode;
   seriesList: SeriesMeta[];
+  // Server-resolved (isBettingConfigured) — gates the Play nav entry so the
+  // betting surface only appears once the Supabase env is provisioned.
+  bettingEnabled: boolean;
 }) {
   const pathname = usePathname();
+
+  const nav = [
+    ...NAV,
+    ...(bettingEnabled ? [{ href: '/play', label: 'Play', exact: false }] : []),
+  ];
 
   // Installed-PWA detection (same condition as StandaloneRedirect). In the
   // PWA the wordmark must NOT link to the landing: the standalone guard on /
@@ -69,7 +78,7 @@ export function AppShell({
 
           {/* Inline nav on lg+ only — below that the bottom bar owns primary nav. */}
           <nav aria-label="Sections" className="hidden lg:flex items-stretch self-stretch gap-5">
-            {NAV.map(item => {
+            {nav.map(item => {
               const active = item.exact
                 ? pathname === item.href
                 : pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -102,7 +111,7 @@ export function AppShell({
         <Footer />
       </main>
 
-      <BottomBar />
+      <BottomBar bettingEnabled={bettingEnabled} />
 
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
