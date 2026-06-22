@@ -763,6 +763,15 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 Active: _(no `[+Nm]` prefixes captured)_
 
+### 2026-06-22 (cont.) — Betting Phases 1a–1c + handoff
+
+- → done: **Betting 1a–1c (PR #164, 0.42.0)** — Supabase data layer + append-only ledger + monthly grant (1a); solo-vs-house engine (model pricing, atomic place, fixed-odds settle) (1b); pari-mutuel friend leagues + win-rate leaderboard (1c). 6 migrations, 3 verify scripts green, 446 tests. Dormant until cloud Supabase + UI.
+- → done: **legal framing corrected** in the design doc (no-cashout social-casino; store 17+ rating, not KYC).
+- → done: **handoff (0.42.1)** — full remaining-work list (betting go-live, web items, Android polish) for next session in `docs/HANDOFF.md` top block.
+- → next session (operator): tackle ALL remaining items.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
