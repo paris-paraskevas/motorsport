@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.47.0 — 2026-06-22
+
+**Fairer betting odds.** We've rebalanced the race-winner odds: backing the runaway championship leader now pays a slim return, and the wild four-figure payouts on no-hope drivers are gone — every outside pick now tops out at a sensible cap. The result is a tighter, more honest card where picking well matters more than chasing one lucky longshot. Applies to markets that open from now on.
+
 ## 0.46.2 — 2026-06-22
 
 *Internal: documentation housekeeping — confirmed the Austrian GP betting market locks an hour before qualifying. No changes to the app.*

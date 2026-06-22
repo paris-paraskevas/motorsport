@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.47.0 — 2026-06-22
+
+Changed: **Paddock Betting — recompressed the winner-market odds (cheaper favourites, no four-figure longshots).**
+
+### Changed
+
+- **`lib/betting/pricing.ts` reworked into an honest book with four named knobs.** The old model priced fair inverse-probability with a 10% margin and a `p≥0.001` clamp, which let the favourite pay ~3.4× and pinned every 0-point driver at the **900× ceiling**. New model: win probability is still `(points+1)^FORM_EXPONENT` normalized, but the exponent is raised (`1.5 → 2.6`, concentrating probability on the leader), the house margin is widened (`0.10 → 0.25`, scaling all returns down), and the multiplier is clamped to a band — `MIN_MULTIPLIER = 1.3` (favourite floor) and `MAX_MULTIPLIER = 30` (hard longshot cap, replacing the implicit 900×). Each driver is still priced off their own win chance, so adding/dropping a backmarker barely moves the rest of the field.
+- **Resulting F1 curve (tuned + verified against live standings 2026-06-22):** favourite Antonelli ~3.44×→**1.78×**; Hamilton ~5.4→3.9, Russell ~6.1→4.8, Leclerc/Norris/Piastri ~10–12→11.8/12.6/15.1, Verstappen ~16→26; everyone 8th-and-below (Gasly through the four 0-point drivers, previously 80×–900×) now caps at **30×**. The top contenders stay gradated; the lottery tail is gone.
+- **Tests** (`lib/betting/pricing.test.ts`) rewritten for the new model: longshot > favourite, every price inside `[MIN, MAX]`, extreme longshot → cap, near-certain favourite → floor, flat field prices everyone equally. 447 tests green; tsc clean.
+
+### Note
+
+- Odds are priced **once at market creation** and stored on the market, so this only affects markets opened from here on (R9+). **R8's already-open market keeps its old odds** unless re-priced — ready-to-run `UPDATE` SQL is in `docs/HANDOFF.md` next-step #3 (DB is pristine, no bets placed, so re-pricing is safe). No schema change; the settlement path is untouched.
+
 ## 0.46.2 — 2026-06-22
 
 Docs: **reconcile betting next-steps — R8 relock to quali−1h is done (no app change).**

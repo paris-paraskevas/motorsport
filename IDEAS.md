@@ -142,7 +142,6 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Remaining standings charts FE/IndyCar/GT-World/IMSA/WEC (after MotoGP): data-gated — winners-only / no per-position points; GT-World/IMSA/WEC need a per-series points-scale module before a chart can reconcile.
 - Standings charts = ranked name + points list (operator 2026-06-22): each chart should show driver name + points sorted descending (most points at top → least at bottom), not only a points-over-time trend; refines the MotoGP + remaining-series standings-chart items above.
 - Betting — open more markets (operator 2026-06-22): more lead time + more series; only one F1 winner market opens at a time today.
-- Betting — reduce returns / recompress odds (operator 2026-06-22): favourite ~1.5× (Antonelli ×3.44 now) and cap longshots off the 900× ceiling — rework `lib/betting/pricing.ts` weighting + floor probability + house margin.
 - Betting — new market types (operator 2026-06-22): podium / top-10 / exact position (the `market_type` enum already has these) + a new grid/qualifying-position market; pricing model + settle path per type.
 
 ## Parked (might do, with a revisit trigger)
