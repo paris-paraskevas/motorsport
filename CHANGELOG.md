@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.57.1 — 2026-06-22
+
+Docs: **session handoff — betting-live + leagues P1–P3 recap; next-session pickup led by P4 (no app change).**
+
+### Changed
+- `docs/HANDOFF.md` top block rewritten as the end-of-session pickup: what's live (betting markets + leagues P1–P3), the **migration-history drift landmine** (migrations 120000–170000 applied via the Supabase Management API, not `db push` — reconcile with `supabase migration repair` before any future push), security to-dos (rotate PAT + RapidAPI key), and next steps led by **P4 league prizes**, then the real-odds adapter, `exact_position` go-live, and the invite click-through verification.
+
 ## 0.57.0 — 2026-06-22
 
 Added: **Leagues overhaul P3 — dedicated league page + nicknames/colours + owner controls.**
