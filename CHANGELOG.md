@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.41.1 — 2026-06-22
+
+Docs: **session-record catch-up + the Paddock Betting design spec (no app change).**
+
+### Added
+
+- **`docs/research/predictions-design.md`** — full design for the long-parked **S9 betting/credits game** (the Supabase trigger). Operator decisions locked 2026-06-22: virtual-credit betting (multiplied returns), free + optional paid IAP, **no cashout** (the legal anchor), win-rate leaderboard, persistent deliberately-lean bankroll, "provisional is final" = official classification (no claw-back), paid-in-peer-pools = geo-gated + 18+; pari-mutuel + model + odds-API hybrid pricing. Gated on Supabase provisioning + legal review (it lands in the simulated/social-casino app category).
+
+### Changed
+
+- Caught the `HANDOFF.md` top block up to 0.41.0 (DTM results #161, F2/F3/WSBK charts #162), recorded the **native Android spike** (built + flashed to a Pixel 9; lives at `C:\Dev\Personal\paddock-android`, a separate repo), and triaged `IDEAS.md` (MotoGP chart under-count, standings last-good resilience, NLS results, session→standings navigation, remaining data-gated charts) + a `SCHEDULE.md` entry for the 06-21→22 run. No application code changed.
+
 ## 0.41.0 — 2026-06-22
 
 Added: **season-trend charts on F2/F3/WSBK standings + a streamed-chart pattern that keeps slow tabs fast.**
