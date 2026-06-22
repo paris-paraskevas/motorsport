@@ -188,6 +188,12 @@ export async function joinLeagueByToken(userId: string, token: string): Promise<
 
 // ---- league detail (dedicated page) ----------------------------------------
 
+/** A prize a member has won in this league (rank → medal in the UI). */
+export interface MemberAward {
+  period: string;
+  rank: number;
+  title: string;
+}
 export interface LeagueMemberDetail {
   userId: string;
   displayName: string | null;
@@ -198,6 +204,13 @@ export interface LeagueMemberDetail {
   winRate: number;
   isYou: boolean;
   friendState: FriendState;
+  awards: MemberAward[];
+}
+/** One completed period's podium (the league's trophy cabinet). */
+export interface LeagueHonour {
+  period: string;
+  label: string;
+  podium: { rank: number; userId: string; name: string; title: string }[];
 }
 export interface LeagueDetail {
   id: string;
@@ -206,6 +219,7 @@ export interface LeagueDetail {
   isOwner: boolean;
   isMember: boolean;
   members: LeagueMemberDetail[];
+  honours: LeagueHonour[];
 }
 
 /** Everything the league page needs (members ranked by win-rate, names, nicknames,
@@ -220,10 +234,21 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
     .eq('league_id', leagueId);
   const rows = members ?? [];
   const ids = rows.map(m => m.user_id as string);
+  const awards = await getLeagueAwards(leagueId);
+  // names must also cover award winners who may have since left the league.
+  const allIds = [...new Set([...ids, ...awards.map(a => a.userId)])];
   const [names, states] = await Promise.all([
-    displayNames(ids),
+    displayNames(allIds),
     friendStates(viewerId, ids.filter(id => id !== viewerId)),
   ]);
+
+  const awardsByUser = new Map<string, MemberAward[]>();
+  for (const a of awards) {
+    const list = awardsByUser.get(a.userId) ?? [];
+    list.push({ period: a.period, rank: a.rank, title: a.title });
+    awardsByUser.set(a.userId, list);
+  }
+
   const detail: LeagueMemberDetail[] = rows
     .map(m => {
       const uid = m.user_id as string;
@@ -239,9 +264,29 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
         winRate: placed > 0 ? wins / placed : 0,
         isYou: uid === viewerId,
         friendState: (uid === viewerId ? 'friends' : states.get(uid) ?? 'none') as FriendState,
+        awards: awardsByUser.get(uid) ?? [],
       };
     })
     .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
+
+  // Group awards into per-period podiums (already ordered period-desc, rank-asc).
+  const byPeriod = new Map<string, typeof awards>();
+  for (const a of awards) {
+    const list = byPeriod.get(a.period) ?? [];
+    list.push(a);
+    byPeriod.set(a.period, list);
+  }
+  const honours: LeagueHonour[] = [...byPeriod.entries()].map(([period, list]) => ({
+    period,
+    label: formatPeriodLabel(period),
+    podium: list.map(a => ({
+      rank: a.rank,
+      userId: a.userId,
+      name: names.get(a.userId) ?? `Racer ${a.userId.slice(-4)}`,
+      title: a.title,
+    })),
+  }));
+
   return {
     id: league.id as string,
     name: league.name as string,
@@ -249,6 +294,7 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
     isOwner: (league.owner_id as string) === viewerId,
     isMember: ids.includes(viewerId),
     members: detail,
+    honours,
   };
 }
 
@@ -309,4 +355,105 @@ export async function kickMember(leagueId: string, ownerId: string, targetUserId
   if (targetUserId === ownerId) throw new Error('the owner cannot be removed — disband the league instead');
   const { error } = await db.from('league_member').delete().eq('league_id', leagueId).eq('user_id', targetUserId);
   if (error) throw new Error(`kickMember failed: ${error.message}`);
+}
+
+// ---- prizes (P4) -----------------------------------------------------------
+// Period titles/badges for the top 3 by win-rate. NO credits (locked). Awards
+// are a point-in-time snapshot per completed period, written by the daily
+// award-prizes cron at the boundary and rendered as medals on the league page.
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** Human label for a period key: '2026-06' → 'June 2026'; '2026-season' → '2026 Season'. */
+export function formatPeriodLabel(period: string): string {
+  if (period.endsWith('-season')) return `${period.slice(0, 4)} Season`;
+  const [year, month] = period.split('-');
+  const name = MONTH_NAMES[Number(month) - 1];
+  return name ? `${name} ${year}` : period;
+}
+
+export interface LeagueAwardRow {
+  period: string;
+  rank: number;
+  userId: string;
+  title: string;
+  wins: number;
+  placed: number;
+  awardedAt: string;
+}
+
+/** Every award a league has earned, newest period first, ranks ascending. */
+export async function getLeagueAwards(leagueId: string): Promise<LeagueAwardRow[]> {
+  const { data, error } = await betDb()
+    .from('league_award')
+    .select('period, rank, user_id, title, wins, placed, awarded_at')
+    .eq('league_id', leagueId)
+    .order('period', { ascending: false })
+    .order('rank', { ascending: true });
+  if (error) throw new Error(`getLeagueAwards failed: ${error.message}`);
+  return (data ?? []).map(a => ({
+    period: a.period as string,
+    rank: a.rank as number,
+    userId: a.user_id as string,
+    title: a.title as string,
+    wins: a.wins as number,
+    placed: a.placed as number,
+    awardedAt: a.awarded_at as string,
+  }));
+}
+
+/** Award the top-3 (by win-rate, min `minPlaced` settled bets) of every league
+ *  over [startISO, endISO). Idempotent per (league, period) in SQL. */
+export async function awardLeaguePrizes(
+  period: string,
+  label: string,
+  startISO: string,
+  endISO: string,
+  minPlaced = 3,
+): Promise<{ period: string; awarded: number }> {
+  const { data, error } = await betDb().rpc('award_league_prizes', {
+    p_period: period,
+    p_label: label,
+    p_start: startISO,
+    p_end: endISO,
+    p_min_placed: minPlaced,
+  });
+  if (error) throw new Error(`awardLeaguePrizes failed: ${error.message}`);
+  return data as { period: string; awarded: number };
+}
+
+export interface AwardSummary {
+  awarded: { period: string; awarded: number }[];
+}
+
+// Award only periods that ended at least this many days ago, so a race that runs
+// at the very end of a period and settles a day or two later still counts.
+const GRACE_DAYS = 3;
+
+/** Award the most-recently-completed calendar month and season (year), once each
+ *  is past the grace window. Called by the daily cron; idempotent. */
+export async function awardDuePrizes(now: Date = new Date()): Promise<AwardSummary> {
+  const cutoff = new Date(now.getTime() - GRACE_DAYS * 24 * 60 * 60 * 1000);
+  const out: AwardSummary = { awarded: [] };
+
+  // Latest completed month relative to the (graced) cutoff.
+  const monthEnd = new Date(Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth(), 1));
+  const monthStart = new Date(Date.UTC(monthEnd.getUTCFullYear(), monthEnd.getUTCMonth() - 1, 1));
+  const monthPeriod = `${monthStart.getUTCFullYear()}-${String(monthStart.getUTCMonth() + 1).padStart(2, '0')}`;
+  out.awarded.push(
+    await awardLeaguePrizes(monthPeriod, formatPeriodLabel(monthPeriod), monthStart.toISOString(), monthEnd.toISOString()),
+  );
+
+  // Latest completed calendar year (the "season").
+  const yearEnd = new Date(Date.UTC(cutoff.getUTCFullYear(), 0, 1));
+  const yearStart = new Date(Date.UTC(yearEnd.getUTCFullYear() - 1, 0, 1));
+  const seasonPeriod = `${yearStart.getUTCFullYear()}-season`;
+  out.awarded.push(
+    await awardLeaguePrizes(seasonPeriod, formatPeriodLabel(seasonPeriod), yearStart.toISOString(), yearEnd.toISOString()),
+  );
+
+  return out;
 }

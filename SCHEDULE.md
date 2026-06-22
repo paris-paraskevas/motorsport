@@ -782,6 +782,14 @@ Betting went dormant → **live** end-to-end and got refined onto the F1 weekend
 
 Active: _(no `[+Nm]` prefixes captured)_
 
+### 2026-06-22 (cont.) — Leagues P4 prizes + post-P4 IA/landing plan
+
+Plan: ship **P4 league prizes** (0.58.0) — `league_award` table + `award_league_prizes()` SQL fn (top-3 by win-rate per period, NO credits) + daily award cron + medal badges/honours on the league page + `verify-league-prizes.mts`. Period = calendar month + year, bucketed by `market.locks_at`, 3-day grace, `minPlaced≥3`. Migration applied to prod via the Management API (drift landmine), not `db push`. Then plan the post-P4 **Social area** (`/social/friends` + `/social/leagues`, play stays `/play`) + **landing marketing**.
+
+Won't touch: real-odds API, exact_position go-live, invite click-through browser-verify, the Social-area build itself (planning only this session), PAT/RapidAPI rotation (operator action).
+
+Active: _(awaiting `[+Nm]` prefixes)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

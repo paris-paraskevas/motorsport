@@ -1,0 +1,42 @@
+name: betting award prizes
+
+on:
+  schedule:
+    # Daily (offset off the hour). Awards only change at month/season boundaries;
+    # the route is idempotent (a league already awarded for a period is skipped),
+    # so a daily check is cheap and catches the boundary without a per-month timer.
+    - cron: '19 5 * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read CRON_SECRET from repo secrets.
+permissions:
+  contents: read
+
+jobs:
+  award:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/award-prizes (award league prizes)
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/award.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/award-prizes)
+          echo "Status: $STATUS"
+          cat /tmp/award.json
+          echo ""
+          # 200 = ran (award summary in body). 503 = betting DB not provisioned
+          # yet (dormant) — expected until go-live, stay green.
+          # 401 (bad secret) / 500 = real failure.
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "503" ]; then
+            exit 0
+          fi
+          echo "Unexpected status $STATUS — failing."
+          exit 1
