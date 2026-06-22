@@ -21,6 +21,10 @@ const FIELD_SOURCES: Record<string, () => Promise<DriverForm[] | null>> = {
   },
 };
 
+// How many upcoming weekends to keep an open winner market for, per series —
+// gives bettors real lead time instead of only ever the single next race.
+const LOOKAHEAD_WEEKENDS = 3;
+
 export interface OpenMarketsSummary {
   opened: string[];
   skipped: string[];
@@ -28,10 +32,11 @@ export interface OpenMarketsSummary {
 }
 
 /**
- * Open a winner market for each configured series' next bettable race weekend —
- * priced from current standings, locking 1h before the grid qualifying (you bet
- * before quali reveals pace). Idempotent: skips a round that already has a
- * winner market. Fail-soft per series, so one bad feed never blocks the others.
+ * Open winner markets for each configured series' next few bettable race
+ * weekends (LOOKAHEAD_WEEKENDS) — priced from current standings, each locking 1h
+ * before its grid qualifying (you bet before quali reveals pace). Idempotent:
+ * skips a round that already has a winner market. Fail-soft per series, so one
+ * bad feed never blocks the others.
  */
 export async function openUpcomingMarkets(): Promise<OpenMarketsSummary> {
   const summary: OpenMarketsSummary = { opened: [], skipped: [], errors: [] };
@@ -47,17 +52,19 @@ export async function openUpcomingMarkets(): Promise<OpenMarketsSummary> {
         summary.errors.push(`${slug}: series not loaded`);
         continue;
       }
-      // Pick the soonest upcoming race weekend whose grid-qualifying is more
-      // than an hour away — an in-progress weekend past that cutoff rolls to
-      // the next. Lock = quali start − 1h.
+      // Collect the next LOOKAHEAD_WEEKENDS upcoming weekends whose grid
+      // qualifying is still >1h away (an in-progress weekend past that cutoff
+      // drops out). One winner market per round; lock = grid-quali start − 1h.
       const upcomingRaces = series.sessions
         .filter(ss => ss.start > now && looksLikeRaceSession(ss.title))
         .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-      let target: { round: number; locksAt: Date } | null = null;
+      const targets: { round: number; locksAt: Date }[] = [];
+      const seenRounds = new Set<number>();
       for (const race of upcomingRaces) {
+        if (targets.length >= LOOKAHEAD_WEEKENDS) break;
         const r = roundLookup.get(`${slug}:${race.uid}`);
-        if (!r) continue;
+        if (!r || seenRounds.has(r)) continue;
         const quali = series.sessions.find(
           ss => !ss.dateOnly && looksLikeQualifying(ss.title) && roundLookup.get(`${slug}:${ss.uid}`) === r,
         );
@@ -67,40 +74,44 @@ export async function openUpcomingMarkets(): Promise<OpenMarketsSummary> {
         }
         const locksAt = new Date(quali.start.getTime() - 60 * 60 * 1000);
         if (locksAt.getTime() <= now.getTime()) continue; // betting window already closed
-        target = { round: r, locksAt };
-        break;
+        seenRounds.add(r);
+        targets.push({ round: r, locksAt });
       }
-      if (!target) {
+      if (targets.length === 0) {
         summary.skipped.push(`${slug}: no upcoming weekend still open for betting`);
         continue;
       }
-      const { round, locksAt } = target;
 
-      const { data: existing } = await db
-        .from('market')
-        .select('id')
-        .eq('series_slug', slug)
-        .eq('round', round)
-        .eq('type', 'winner')
-        .maybeSingle();
-      if (existing) {
-        summary.skipped.push(`${slug} R${round}: winner market already open`);
-        continue;
-      }
+      // Price the field once from current standings; every weekend opened this
+      // pass shares these creation-time odds (futures-style — a market's odds
+      // are never re-priced after it opens, by design).
       const field = await getField();
       if (!field || field.length === 0) {
         summary.errors.push(`${slug}: could not price field`);
         continue;
       }
-      const id = await createWinnerMarket({
-        seriesSlug: slug,
-        round,
-        locksAt: locksAt.toISOString(),
-        field,
-      });
-      summary.opened.push(
-        `${slug} R${round} winner — ${field.length} drivers, locks ${locksAt.toISOString()} (quali−1h) (${id})`,
-      );
+      for (const { round, locksAt } of targets) {
+        const { data: existing } = await db
+          .from('market')
+          .select('id')
+          .eq('series_slug', slug)
+          .eq('round', round)
+          .eq('type', 'winner')
+          .maybeSingle();
+        if (existing) {
+          summary.skipped.push(`${slug} R${round}: winner market already open`);
+          continue;
+        }
+        const id = await createWinnerMarket({
+          seriesSlug: slug,
+          round,
+          locksAt: locksAt.toISOString(),
+          field,
+        });
+        summary.opened.push(
+          `${slug} R${round} winner — ${field.length} drivers, locks ${locksAt.toISOString()} (quali−1h) (${id})`,
+        );
+      }
     } catch (err) {
       summary.errors.push(`${slug}: ${err instanceof Error ? err.message : 'error'}`);
     }
