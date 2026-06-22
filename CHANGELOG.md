@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.48.0 — 2026-06-22
+
+Changed: **Paddock Betting — open the next few race weekends, not just the soonest.**
+
+### Changed
+
+- **`openUpcomingMarkets` now opens up to `LOOKAHEAD_WEEKENDS` (3) upcoming weekends per series** instead of only the single soonest one, so bettors get real lead time. Each round still gets one winner market locking at its own grid-quali − 1h; the field is priced once per pass from current standings and shared across the weekends opened that pass. Idempotent and fail-soft as before — an already-open round is skipped, a round with no quali session is noted and skipped. Odds are creation-time and never re-priced (futures-style), so a weekend opened early locks in today's odds.
+
+### Deferred (with rationale)
+
+- **More _series_ is not a safe blind-add** — left for a per-series pass. The settle path matches the official P1 driver name against the standings names used to price the market, and a clean single "winner per round" only holds for F1 today. Blockers found: F2/F3/MotoGP/WSBK have multiple races per round (sprint + feature → ambiguous winner); IndyCar/NASCAR result fetchers need args (`{drivers}` / `rounds.json`); several price and settle from different sources, risking driver-name mismatch (→ mis-settlement on a money surface). Each candidate needs winner-race disambiguation + standings↔results name verification + a datacenter check before going into `FIELD_SOURCES`/`RESULT_SOURCES`.
+
 ## 0.47.0 — 2026-06-22
 
 Changed: **Paddock Betting — recompressed the winner-market odds (cheaper favourites, no four-figure longshots).**

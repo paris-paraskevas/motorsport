@@ -6,7 +6,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-06-22 (main = 0.47.0) — **Paddock Betting is LIVE (F1)**
+## ⚡ Next session pickup — 2026-06-22 (main = 0.48.0) — **Paddock Betting is LIVE (F1)**
 
 Betting went from dormant (1a/1b only on main) to **live end-to-end** this session: recovered the stranded 1c engine, built the UI, provisioned cloud Supabase, wired the crons, shipped settlement, then moved betting onto the F1 weekend pages with lean credits + a quali−1h lock. **Live at paddock-tracker.com** — a signed-in user claims monthly credits and backs the F1 race winner (solo or friend-league) on the upcoming weekend's page; bets settle automatically off the official result.
 
@@ -17,7 +17,7 @@ Betting went from dormant (1a/1b only on main) to **live end-to-end** this sessi
 
 ### ⏳ Next steps (operator handoff 2026-06-22)
 1. **✅ R8 relock — DONE (2026-06-22).** The Austrian-GP winner market now locks at quali−1h. Operator ran the Supabase Studio `UPDATE` (the auto-mode SQL safety classifier had blocked the original write); verified live — `GET /api/bet/market?series=f1&round=8` returns `locks_at=2026-06-27T13:00:00Z`. Every *future* market already auto-locks at quali−1h.
-2. **More markets** — only one F1 winner market opens at a time today. Open with more lead time / across more series; pairs with new types below.
+2. **✅ More markets (lead time) — DONE (0.48.0).** `openUpcomingMarkets` opens the next `LOOKAHEAD_WEEKENDS=3` F1 weekends, each locking at its own quali−1h (was only the soonest). **More _series_ deferred** — not a safe blind-add: settle matches the official P1 name against the standings names used to price, and only F1 has a clean single-winner-per-round today. Per-series blockers: F2/F3/MotoGP/WSBK = multi-race rounds (ambiguous winner); IndyCar/NASCAR = result-fetcher args + cross-source name-mismatch risk. Each needs winner-race disambiguation + name verification + a datacenter check before going into `FIELD_SOURCES`/`RESULT_SOURCES`.
 3. **✅ Reduce returns / recompress odds — DONE (0.47.0).** `lib/betting/pricing.ts` reworked into a clamped book: form exponent `1.5→2.6`, house margin `0.10→0.25`, favourite floor `MIN_MULTIPLIER=1.3`, hard longshot cap `MAX_MULTIPLIER=30` (kills the 900× ceiling). Verified on the live F1 field: favourite **1.78×** (was 3.44), top-7 gradated, everyone 8th-and-below capped at 30×. Odds are priced once at creation, so this only affects markets opened from R9 on — **R8 keeps its old odds**. To show the new curve on the imminent race, re-price R8 in Supabase Studio (DB pristine, no bets, safe): `UPDATE market SET odds_json='{"Andrea Kimi Antonelli":1.78,"Lewis Hamilton":3.92,"George Russell":4.83,"Charles Leclerc":11.77,"Lando Norris":12.61,"Oscar Piastri":15.13,"Max Verstappen":26.03,"Pierre Gasly":30,"Isack Hadjar":30,"Liam Lawson":30,"Oliver Bearman":30,"Franco Colapinto":30,"Arvid Lindblad":30,"Carlos Sainz":30,"Alexander Albon":30,"Esteban Ocon":30,"Gabriel Bortoleto":30,"Fernando Alonso":30,"Nico Hülkenberg":30,"Valtteri Bottas":30,"Sergio Pérez":30,"Lance Stroll":30}' WHERE series_slug='f1' AND round=8 AND type='winner';`
 4. **New market types** — **podium / top-10 / exact position** (the `market_type` enum already lists these; need a pricing model + a settle path each) and a NEW **grid / qualifying position** market (predict where a driver qualifies).
 

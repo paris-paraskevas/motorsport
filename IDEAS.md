@@ -141,7 +141,7 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Session-page → series-tab navigation (operator 2026-06-22): from a weekend/session page, reaching a series' Standings is "too far back"; breadcrumb isn't an obvious back-path — IA polish, pairs with path-based tabs (B11).
 - Remaining standings charts FE/IndyCar/GT-World/IMSA/WEC (after MotoGP): data-gated — winners-only / no per-position points; GT-World/IMSA/WEC need a per-series points-scale module before a chart can reconcile.
 - Standings charts = ranked name + points list (operator 2026-06-22): each chart should show driver name + points sorted descending (most points at top → least at bottom), not only a points-over-time trend; refines the MotoGP + remaining-series standings-chart items above.
-- Betting — open more markets (operator 2026-06-22): more lead time + more series; only one F1 winner market opens at a time today.
+- Betting — open more markets across more SERIES (operator 2026-06-22): lead-time shipped 0.48.0 (next 3 F1 weekends open at once); remaining = non-F1 series, gated on per-series winner-race disambiguation (F2/F3/MotoGP/WSBK have sprint+feature) + standings↔results driver-name verification + datacenter check (blockers in HANDOFF).
 - Betting — new market types (operator 2026-06-22): podium / top-10 / exact position (the `market_type` enum already has these) + a new grid/qualifying-position market; pricing model + settle path per type.
 
 ## Parked (might do, with a revisit trigger)

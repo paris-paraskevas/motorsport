@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.48.0 — 2026-06-22
+
+**Bet further ahead.** You can now place race-winner bets on the next few Formula 1 weekends at once, instead of only the very next race — handy for planning your picks. Each weekend still locks an hour before its qualifying.
+
 ## 0.47.0 — 2026-06-22
 
 **Fairer betting odds.** We've rebalanced the race-winner odds: backing the runaway championship leader now pays a slim return, and the wild four-figure payouts on no-hope drivers are gone — every outside pick now tops out at a sensible cap. The result is a tighter, more honest card where picking well matters more than chasing one lucky longshot. Applies to markets that open from now on.
