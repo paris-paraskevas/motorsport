@@ -1,6 +1,6 @@
 import { betDb } from './client';
 import { createWinnerMarket, settleMarket } from './markets';
-import { PODIUM_SLOTS, type DriverForm } from './pricing';
+import { PODIUM_SLOTS, TOP10_SLOTS, type DriverForm } from './pricing';
 import { loadAllSeries } from '@/lib/series';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { looksLikeRaceSession, looksLikeQualifying } from '@/lib/results-ready';
@@ -134,17 +134,17 @@ function winnerForRound(races: RaceResult[], round: number): string | null {
   return p1?.driverName ?? null;
 }
 
-/** The official top-PODIUM_SLOTS driver names (P1..P3) for a round, in order, or
- *  null until the classification is in. Same feed/names as pricing, so picks
- *  resolve cleanly. */
-function podiumForRound(races: RaceResult[], round: number): string[] | null {
+/** The official top-`n` driver names (P1..Pn) for a round, in order, or null
+ *  until the full top-`n` classification is in. Same feed/names as pricing, so
+ *  picks resolve cleanly. */
+function topNForRound(races: RaceResult[], round: number, n: number): string[] | null {
   const race = races.find(r => r.round === round && (r.results?.length ?? 0) > 0);
   if (!race) return null;
   const top = race.results
-    .filter(e => e.position >= 1 && e.position <= PODIUM_SLOTS)
+    .filter(e => e.position >= 1 && e.position <= n)
     .sort((a, b) => a.position - b.position)
     .map(e => e.driverName);
-  return top.length === PODIUM_SLOTS ? top : null;
+  return top.length === n ? top : null;
 }
 
 export interface SettleSummary {
@@ -177,7 +177,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
     const round = m.round as number;
     const marketId = m.id as string;
     try {
-      if (m.type !== 'winner' && m.type !== 'podium') {
+      if (m.type !== 'winner' && m.type !== 'podium' && m.type !== 'top10') {
         summary.awaiting.push(`${slug} R${round}: ${m.type} settlement not supported yet`);
         continue;
       }
@@ -197,7 +197,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
       }
 
       // Build the official result for this market's type from the classification.
-      let result: { winner?: string; podium?: string[] };
+      let result: { winner?: string; podium?: string[]; top10?: string[] };
       let label: string;
       if (m.type === 'winner') {
         const winner = winnerForRound(feed, round);
@@ -207,14 +207,22 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
         }
         result = { winner };
         label = winner;
-      } else {
-        const podium = podiumForRound(feed, round);
+      } else if (m.type === 'podium') {
+        const podium = topNForRound(feed, round, PODIUM_SLOTS);
         if (!podium) {
           summary.awaiting.push(`${slug} R${round}: official podium not in yet`);
           continue;
         }
         result = { podium };
         label = podium.join(' / ');
+      } else {
+        const top10 = topNForRound(feed, round, TOP10_SLOTS);
+        if (!top10) {
+          summary.awaiting.push(`${slug} R${round}: official top-10 not in yet`);
+          continue;
+        }
+        result = { top10 };
+        label = top10.join(', ');
       }
 
       // League peer pools first (pari-mutuel), then the solo book (fixed-odds),

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.51.0 — 2026-06-22
+
+*Internal: groundwork for a top-10 finish betting market — pricing and settlement are built and tested but not yet switched on. No user-facing change.*
+
 ## 0.50.0 — 2026-06-22
 
 **More ways to bet, coming to each weekend.** The betting section now supports several markets per race weekend — the race-winner card is labelled and laid out to sit alongside new bet types (like a podium-finish market) as they arrive.

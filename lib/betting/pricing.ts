@@ -95,3 +95,42 @@ export function podiumMultipliers(drivers: DriverForm[], margin = HOUSE_MARGIN):
   for (const [name, p] of probs) out[name] = multiplierFromProb(p, margin);
   return out;
 }
+
+export const TOP10_SLOTS = 10;
+
+/**
+ * Probability each driver finishes in the top `k`, for `k` too large for the
+ * exact Harville sum (O(nᵏ)). Mean-field sequential Plackett-Luce: fill k slots
+ * in turn; each slot a driver is picked ∝ its weight among those not yet picked,
+ * and the field's total weight is reduced by the expected weight removed. Slot
+ * picks are normalised to sum to 1, so the per-driver probabilities sum to ~k
+ * (a clamped driver can shave a little off). Exact for k=1 (= winProbabilities);
+ * a close, monotonic approximation for larger k. O(n·k).
+ */
+export function topKProbabilities(drivers: DriverForm[], k: number): Map<string, number> {
+  const ds = drivers.map(d => ({ name: d.name, w: Math.pow(Math.max(d.points, 0) + 1, FORM_EXPONENT) }));
+  const cum = new Map<string, number>(ds.map(d => [d.name, 0]));
+  let remainingW = ds.reduce((s, x) => s + x.w, 0) || 1;
+  const slots = Math.min(k, ds.length);
+  for (let slot = 0; slot < slots; slot++) {
+    const raw = ds.map(d => (d.w / remainingW) * (1 - cum.get(d.name)!));
+    const rawTotal = raw.reduce((s, x) => s + x, 0);
+    if (rawTotal <= 0) break;
+    let removedW = 0;
+    ds.forEach((d, i) => {
+      const pick = raw[i] / rawTotal; // this slot's picks sum to 1
+      cum.set(d.name, Math.min(1, cum.get(d.name)! + pick));
+      removedW += pick * d.w;
+    });
+    remainingW = Math.max(remainingW - removedW, 1e-9);
+  }
+  return cum;
+}
+
+/** {driver -> decimal multiplier} for a top-10 finish market — same clamp band as winner. */
+export function topTenMultipliers(drivers: DriverForm[], margin = HOUSE_MARGIN): Record<string, number> {
+  const probs = topKProbabilities(drivers, TOP10_SLOTS);
+  const out: Record<string, number> = {};
+  for (const [name, p] of probs) out[name] = multiplierFromProb(p, margin);
+  return out;
+}
