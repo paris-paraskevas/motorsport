@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { LeagueDetail, LeagueMemberDetail } from '@/lib/betting/leagues';
 
 const FALLBACK_COLOR = '#9ca3af';
+const MEDALS: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 // The dedicated league page: ranked members (colour + nickname + win-rate), an
 // invite link, owner rename, per-member profile editing (anyone can set any
@@ -130,6 +131,15 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
                   style={{ backgroundColor: m.color || FALLBACK_COLOR }}
                 />
                 {memberName(m)}
+                {m.awards.length > 0 && (
+                  <span className="flex items-center gap-0.5" aria-label="prizes">
+                    {m.awards.map(a => (
+                      <span key={a.period} title={a.title} className="cursor-default">
+                        {MEDALS[a.rank] ?? '🏅'}
+                      </span>
+                    ))}
+                  </span>
+                )}
                 {m.isYou && <span className="text-text-muted"> (you)</span>}
               </span>
               <span className="flex items-center gap-3 font-mono text-xs text-text-muted">
@@ -189,6 +199,26 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
           </li>
         ))}
       </ol>
+
+      {league.honours.length > 0 && (
+        <div className="border-t border-white/10 pt-3">
+          <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Honours</h2>
+          <ul className="space-y-1.5">
+            {league.honours.map(h => (
+              <li key={h.period} className="font-mono text-xs text-text-muted">
+                <span className="text-text">{h.label}</span>
+                {' — '}
+                {h.podium.map((p, idx) => (
+                  <span key={p.rank}>
+                    {idx > 0 && ' · '}
+                    <span title={p.title}>{MEDALS[p.rank] ?? '🏅'}</span> {p.name}
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {league.isOwner &&
         (confirmDisband ? (

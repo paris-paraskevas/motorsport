@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.58.0 — 2026-06-22
+
+Added: **Leagues overhaul P4 — period prizes (titles/badges for the top 3 by win-rate).**
+
+### Added
+
+- **`league_award`** table + **`award_league_prizes(period, label, start, end, min_placed)`** SQL fn (migration `20260622180000`) — snapshots a league's top 3 by win-rate over a completed period (a calendar **month** `2026-06` or **season**/year `2026-season`), ranked `win_rate desc, wins desc`. **NO credits** (locked decision) — an award is purely a title + a medal rank. Counts league (peer-pool) bets only; a bet falls in a period when its market's `locks_at` (the betting deadline ≈ race weekend) is inside the window; only settled `won`/`lost` outcomes count (matching `league_leaderboard`, void excluded). `min_placed` (default **3**) stops a 1-bet 100%-er outranking a steadier bettor. Idempotent per (league, period) — a league already awarded for the period is skipped.
+- **Award job** — `lib/betting/leagues.ts`: `awardLeaguePrizes`, `awardDuePrizes` (awards the most-recently-completed month + season once each is **3 days** past its boundary, so a late end-of-period settlement still counts), `getLeagueAwards`, `formatPeriodLabel`. New cron `GET /api/cron/award-prizes` (fail-closed cron auth; 503 dormant) + `.github/workflows/award-prizes.yml` (daily, idempotent — boundary check is a cheap no-op between months).
+- **Badges on the league page** — `getLeagueDetail` now carries each member's `awards` + a league `honours` list; `LeagueDetailView` renders 🥇🥈🥉 next to member names (full title on hover) + an **Honours** trophy-cabinet of past period podiums.
+
+### Notes
+- Migration `20260622180000_league_award.sql` applied to prod via the **Management API** (drift landmine — not `db push`; `service_role` auto-granted by 094000's `alter default privileges`). Verified e2e vs local (`scripts/verify-league-prizes.mts`: A 3/3 → Champion, B 2/3 → Runner-up, C 0/3 → Third, D's single bet excluded by `min_placed`, idempotent re-run awards 0). tsc + build clean; `/play/leagues/[id]` stays `ƒ`.
+- **No visual regression pre-award:** a league with no awards renders exactly as before (`honours: []`, no medals). Badges only appear once an award exists — at the first month boundary, or from a seeded row.
+
+### Next
+- Post-P4 (planned): a dedicated **Social area** — `/social/friends` + `/social/leagues` (Play stays `/play`) — and landing-page marketing for the predictions/leagues game.
+
 ## 0.57.2 — 2026-06-22
 
 Fixed: **invite sign-up no longer 500s for brand-new accounts.**

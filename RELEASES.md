@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.58.0 — 2026-06-22
+
+**League champions.** Your leagues now hand out end-of-month and end-of-season honours — the top three by win-rate earn 🥇 🥈 🥉 titles that appear as badges next to their names, with an Honours list on the league page. No credits change hands; it's all bragging rights.
+
 ## 0.57.2 — 2026-06-22
 
 **Fixed: joining a league from an invite link now works on a brand-new account.** Signing up through an invite — then accepting the friend request and joining the league — no longer hits an error if you hadn't opened the Play page first.
