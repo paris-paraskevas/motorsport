@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.58.1 — 2026-06-23
+
+**Play loads faster.** The Play page and your league pages now show their layout instantly and stream in your balance, bets, leagues and friends — instead of waiting for everything before anything appears.
+
 ## 0.58.0 — 2026-06-22
 
 **League champions.** Your leagues now hand out end-of-month and end-of-season honours — the top three by win-rate earn 🥇 🥈 🥉 titles that appear as badges next to their names, with an Honours list on the league page. No credits change hands; it's all bragging rights.
