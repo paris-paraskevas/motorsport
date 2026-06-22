@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.43.1 — 2026-06-22
+
+Added: **betting monthly-grant cron (GitHub Actions) — dormant-safe.**
+
+### Added
+
+- `.github/workflows/grant-credits.yml` — daily (`workflow_dispatch`-able) cron that pings `GET /api/cron/grant-credits` with `CRON_SECRET`, same pattern as `health.yml`. The grant is idempotent per calendar month (SQL-enforced), so daily just guarantees the month-rollover top-up lands. **Lenient by design:** treats HTTP **503** (betting DB not provisioned in prod yet) as success so it stays green while the feature is dormant; only 401 (bad secret) / 500 fail the job. Activates automatically once the betting Supabase env is set in Vercel prod.
+
 ## 0.43.0 — 2026-06-22
 
 Added: **Paddock Betting — the play surface (solo-vs-house + friend leagues), still dormant in prod.**
