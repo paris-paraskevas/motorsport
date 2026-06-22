@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.45.0 — 2026-06-22
+
+**Paddock Betting is playable.** Claim your monthly credits and back a race winner — solo against the house, or in a friend league where everyone's stakes pool and the winners split it. Wins now pay out automatically once the official result is in, and leagues rank by win-rate. Open the **Play** tab to try it.
+
 ## 0.44.0 — 2026-06-22
 
 *Internal: betting go-live wiring — race markets now open automatically and a Play menu entry appears once enabled. Bet settlement is still to come before betting is promoted.*
