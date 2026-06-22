@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.46.0 — 2026-06-22
+
+**Bet right on the race-weekend page.** Open an upcoming Formula 1 weekend and you'll find a Paddock Betting card — back the winner with your monthly credits, solo or in a friend league. Betting locks an hour before qualifying, so you pick before the grid takes shape, and your monthly credits now scale to how many races that month holds. The Play tab keeps your balance, bets, and league leaderboards.
+
 ## 0.45.0 — 2026-06-22
 
 **Paddock Betting is playable.** Claim your monthly credits and back a race winner — solo against the house, or in a friend league where everyone's stakes pool and the winners split it. Wins now pay out automatically once the official result is in, and leagues rank by win-rate. Open the **Play** tab to try it.

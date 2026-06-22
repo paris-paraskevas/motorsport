@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.46.0 — 2026-06-22
+
+Changed: **Paddock Betting — moved onto the race-weekend pages, lean monthly credits, lock at qualifying − 1h (F1).**
+
+### Added
+
+- **Weekend-embedded betting** — a "Paddock Betting" section on future **F1** race-weekend pages (`components/weekend/WeekendBetting.tsx`, gated `slug === 'f1'` + `!isPast`): pick the winner, stake, place — solo or into a friend-league pool — via the shared `components/betting/MarketBetCard.tsx`. Signed-out shows the favourites' odds + a sign-in CTA (discoverability). A self-contained `'use client'` island fetching `GET /api/bet/market?series&round`, so it never busts the page's ISR cache.
+
+### Changed
+
+- **`/play` is now the hub, not a bet surface** — balance, your bets, leagues + win-rate leaderboard; each open market links out to its weekend page. The bet form moved to the weekend embed (one bet surface, no duplication). `PlayMarkets` is now a pure render (no client state).
+- **Lean monthly credits scale to race weekends** (`lib/betting/allowance.ts`): `grant = 50 + raceWeekendsThisMonth × 100` (June 2026 = 3 → 350), replacing the flat 1000. Reads `content/series/f1/rounds.json` (cheap, cached). Rationale: returns are *multiplied* and the leaderboard ranks by *win-rate* (not bankroll), so the grant only floors losing players — ~one standard 100 bet per weekend + a thin cushion; floored at 50 for F1's 0-race months (Jan/Feb/Apr). Wired into `ensureBettingUser` + the grant cron; constants in client-safe `lib/betting/constants.ts`; default stake 50 → 100.
+- **Markets lock at qualifying − 1h** (`openUpcomingMarkets`, new `looksLikeQualifying` excluding sprint quali): you commit before grid qualifying reveals pace. Opens the soonest F1 weekend whose quali−1h is still ahead; skips a round with no quali session.
+
+### Verified
+
+- `tsc` + eslint + 446 tests; `verify-automation` (R8 now locks 2026-06-27 13:00 = quali−1h, not race start; allowance June=350 / Jan=50); browser pass on a future F1 weekend (embed renders odds + CTA, no new console errors) and `GET /api/bet/market` 200.
+
 ## 0.45.0 — 2026-06-22
 
 Added: **Paddock Betting — settlement automation (closes the loop).**

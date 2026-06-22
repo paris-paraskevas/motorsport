@@ -64,6 +64,16 @@ export function looksLikeRaceSession(title: string): boolean {
   return RACE_TITLE.test(title) && !NON_RACE_TITLE.test(title);
 }
 
+// Race-GRID qualifying only — excludes sprint qualifying / sprint shootout
+// ("Sprint Qualifying" curated, "Sprint Qualification" in the ICS feed), which
+// set the sprint grid, not the race grid betting locks against.
+const QUALIFYING_TITLE = /\bqualifying\b/i;
+const SPRINT_TITLE = /\bsprint\b/i;
+
+export function looksLikeQualifying(title: string): boolean {
+  return QUALIFYING_TITLE.test(title) && !SPRINT_TITLE.test(title);
+}
+
 function sameUTCDay(a: Date, b: Date): boolean {
   return a.toISOString().slice(0, 10) === b.toISOString().slice(0, 10);
 }
