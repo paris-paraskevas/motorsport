@@ -45,20 +45,33 @@ export async function joinLeague(userId: string, joinCode: string): Promise<stri
 export interface LeaderboardRow {
   userId: string;
   displayName: string | null;
+  nickname: string | null;
   wins: number;
   placed: number;
   winRate: number;
 }
 
-/** League standings by win-rate (wins / placed), then wins; only members with >= minPlaced bets rank. */
+/** League standings by win-rate (wins / placed), then wins; only members with >= minPlaced bets rank.
+ *  Reads league_member directly so the per-league nickname rides along — the leaderboard shows it
+ *  over the global display name (the league_leaderboard view dropped it). */
 export async function getLeaderboard(leagueId: string, minPlaced = 1): Promise<LeaderboardRow[]> {
   const { data, error } = await betDb()
-    .from('league_leaderboard')
-    .select('user_id, wins, placed, win_rate')
+    .from('league_member')
+    .select('user_id, nickname, wins, placed')
     .eq('league_id', leagueId);
   if (error) throw new Error(`getLeaderboard failed: ${error.message}`);
   const rows = (data ?? [])
-    .map(r => ({ userId: r.user_id as string, wins: r.wins as number, placed: r.placed as number, winRate: Number(r.win_rate) }))
+    .map(r => {
+      const wins = (r.wins as number) ?? 0;
+      const placed = (r.placed as number) ?? 0;
+      return {
+        userId: r.user_id as string,
+        nickname: (r.nickname as string | null) ?? null,
+        wins,
+        placed,
+        winRate: placed > 0 ? wins / placed : 0,
+      };
+    })
     .filter(r => r.placed >= minPlaced)
     .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
   const names = await displayNames(rows.map(r => r.userId));

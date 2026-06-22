@@ -38,7 +38,12 @@ export function AppShell({
 
   const nav = [
     ...NAV,
-    ...(bettingEnabled ? [{ href: '/play', label: 'Play', exact: false }] : []),
+    ...(bettingEnabled
+      ? [
+          { href: '/play', label: 'Play', exact: false },
+          { href: '/social', label: 'Social', exact: false },
+        ]
+      : []),
   ];
 
   // Installed-PWA detection (same condition as StandaloneRedirect). In the

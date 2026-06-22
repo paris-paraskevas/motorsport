@@ -46,7 +46,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
     const data = await call('/api/bet/league', { action: 'invite', leagueId: league.id }, false);
     const token = data?.token as string | undefined;
     if (token) {
-      const link = `${window.location.origin}/play/leagues/join/${token}`;
+      const link = `${window.location.origin}/social/leagues/join/${token}`;
       setInvite(link);
       try {
         await navigator.clipboard.writeText(link);
@@ -58,7 +58,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
 
   async function disband() {
     const r = await call('/api/bet/league', { action: 'disband', leagueId: league.id }, false);
-    if (r) router.push('/play');
+    if (r) router.push('/social/leagues');
   }
 
   const memberName = (m: LeagueMemberDetail) => m.nickname || m.displayName || `Racer ${m.userId.slice(-4)}`;

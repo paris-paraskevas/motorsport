@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.59.0 — 2026-06-23
+
+**Friends and leagues have their own home.** There's now a **Social** tab: manage friend requests under Friends, and your leagues — with their win-rate tables and champion honours — under Leagues. Play is now just for betting, with quick links across to Social. Old league and invite links still work. Also fixed: league leaderboards now show the nicknames you've set for members.
+
 ## 0.58.1 — 2026-06-23
 
 **Play loads faster.** The Play page and your league pages now show their layout instantly and stream in your balance, bets, leagues and friends — instead of waiting for everything before anything appears.
