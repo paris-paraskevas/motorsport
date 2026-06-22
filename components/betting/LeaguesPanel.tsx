@@ -20,6 +20,7 @@ export function LeaguesPanel({
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [invites, setInvites] = useState<Record<string, string>>({});
 
   async function call(body: Record<string, string>): Promise<boolean> {
     setBusy(true);
@@ -40,6 +41,34 @@ export function LeaguesPanel({
     } catch {
       setError('Network error — try again.');
       return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function invite(leagueId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/bet/league', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'invite', leagueId }),
+      });
+      const data = (await res.json()) as { ok?: boolean; token?: string; error?: string };
+      if (!res.ok || !data.token) {
+        setError(data.error ?? 'Could not create an invite link.');
+        return;
+      }
+      const link = `${window.location.origin}/play/leagues/join/${data.token}`;
+      setInvites(prev => ({ ...prev, [leagueId]: link }));
+      try {
+        await navigator.clipboard.writeText(link);
+      } catch {
+        /* clipboard may be blocked — the link is shown to copy manually */
+      }
+    } catch {
+      setError('Network error — try again.');
     } finally {
       setBusy(false);
     }
@@ -116,6 +145,19 @@ export function LeaguesPanel({
                 <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">
                   code {league.joinCode} · {league.memberCount} member{league.memberCount === 1 ? '' : 's'}
                 </span>
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => invite(league.id)}
+                  disabled={busy}
+                  className="rounded border border-white/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
+                >
+                  {invites[league.id] ? 'Copied — copy again' : 'Copy invite link'}
+                </button>
+                {invites[league.id] && (
+                  <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-text-muted">{invites[league.id]}</span>
+                )}
               </div>
               {rows.length === 0 ? (
                 <p className="mt-2 font-mono text-xs text-text-muted">No members yet.</p>

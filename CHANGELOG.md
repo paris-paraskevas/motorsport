@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.56.0 — 2026-06-22
+
+Added: **Leagues overhaul P2 — invite links + join-&-befriend.**
+
+### Added
+
+- **Per-member invite links** (`league_invite` table — stable token per league per inviter). A member taps **Copy invite link** in the Play › Leagues panel → `/play/leagues/join/<token>`. `lib/betting/leagues.ts`: `getOrCreateInvite` (members-only, race-safe), `getInvite`, `joinLeagueByToken`. `POST /api/bet/league` gains `invite` + `joinByToken`.
+- **Join + befriend flow** (`/play/leagues/join/[token]`): signed-out → sign-up/in with `redirect_url` back to the invite; signed-in → the page raises a pending friend request from the inviter, then `JoinLeagueFlow` prompts **accept the friend request, then join the league** (both explicit, per the locked decision). Viewer's display name backfilled from Clerk.
+- Migration `20260622160000_league_invite.sql` applied to prod (Management API; table verified) + verified e2e vs local (`scripts/verify-invite.mts` — token stable, resolves, join adds the member + returns the inviter). tsc + build clean.
+
+### Next
+- **P3** league page + nicknames/colours + settings, **P4** month/season prizes (titles/badges, top 3).
+
 ## 0.55.0 — 2026-06-22
 
 Added: **Leagues overhaul P1 — global friends graph.**
