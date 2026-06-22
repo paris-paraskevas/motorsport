@@ -1,0 +1,43 @@
+name: betting monthly grant
+
+on:
+  schedule:
+    # Daily (offset off the hour to dodge runner congestion). The grant is
+    # idempotent per calendar month (enforced in SQL), so only the first run
+    # each month actually grants — daily just guarantees the month-rollover
+    # top-up lands even if a run is missed.
+    - cron: '41 4 * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read CRON_SECRET from repo secrets.
+permissions:
+  contents: read
+
+jobs:
+  grant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/grant-credits (monthly free-credit grant)
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/grant.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/grant-credits)
+          echo "Status: $STATUS"
+          cat /tmp/grant.json
+          echo ""
+          # 200 = granted (or already granted this month). 503 = betting DB not
+          # provisioned in prod yet (dormant) — expected until go-live, so treat
+          # it as success and stay green. 401 (bad secret) / 500 = real failure.
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "503" ]; then
+            exit 0
+          fi
+          echo "Unexpected status $STATUS — failing."
+          exit 1

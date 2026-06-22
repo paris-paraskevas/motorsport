@@ -21,6 +21,14 @@ Added: **Paddock Betting — market automation + the Play nav entry (go-live wir
 
 - **Settlement automation is NOT built yet.** Markets open and accept bets, but nothing resolves them against the official classification (`settle_market` / `settleLeagueMarket` exist, but no cron calls them). Placed bets stay `pending` until that lands — **build it before promoting betting.**
 
+## 0.43.1 — 2026-06-22
+
+Added: **betting monthly-grant cron (GitHub Actions) — dormant-safe.**
+
+### Added
+
+- `.github/workflows/grant-credits.yml` — daily (`workflow_dispatch`-able) cron that pings `GET /api/cron/grant-credits` with `CRON_SECRET`, same pattern as `health.yml`. The grant is idempotent per calendar month (SQL-enforced), so daily just guarantees the month-rollover top-up lands. **Lenient by design:** treats HTTP **503** (betting DB not provisioned in prod yet) as success so it stays green while the feature is dormant; only 401 (bad secret) / 500 fail the job. Activates automatically once the betting Supabase env is set in Vercel prod.
+
 ## 0.43.0 — 2026-06-22
 
 Added: **Paddock Betting — the play surface (solo-vs-house + friend leagues), still dormant in prod.**
