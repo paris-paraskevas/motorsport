@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.49.0 — 2026-06-22
+
+Added: **Paddock Betting — podium (top-3) market engine, shipped dormant.**
+
+### Added
+
+- **Podium pricing model** (`lib/betting/pricing.ts`): `podiumProbabilities` computes P(top-3) per driver via the **Harville / Plackett-Luce** order-statistic model — P(1st)+P(2nd)+P(3rd) drawn without replacement on the same `(points+1)^FORM_EXPONENT` weights as the winner book. Exact under the PL assumption (not a heuristic), sums to exactly `PODIUM_SLOTS=3` across the field, O(n³). `podiumMultipliers` prices it through the same `[MIN_MULTIPLIER, MAX_MULTIPLIER]` clamp band. `createPodiumMarket` mirrors `createWinnerMarket` via a shared private `createMarket`.
+- **Podium settlement** (migration `20260622120000_podium_settlement.sql`): `settle_market` extended to settle `type='podium'` — selection `{"driver":"<name>"}` wins when that driver is in the official top 3 (`p_result={"podium":[...]}`), paid at the odds stored at creation; the `winner` branch is byte-for-byte unchanged. TS settle paths follow: `settleLeagueMarket` (pari-mutuel) and `settleDueMarkets` (solo dispatch + a new `podiumForRound` top-3 reader) now handle podium.
+- **Tests + verify:** `pricing.test.ts` adds Harville cases (sums to 3, ranks with points, podium-likelier-than-win, ≤3-car certainty). New `scripts/verify-podium.mts` ran end-to-end against local Supabase (migration applied locally first): a top-3 pick paid at its odds, an off-podium pick lost, summary 1W/1L. 450 unit tests green; tsc clean.
+
+### Dormant — go-live steps (operator)
+
+- Podium markets are **not auto-opened and not in the UI yet** — nothing changes for users and nothing can mis-settle. To go live: (1) **apply migration `20260622120000` to prod** (`supabase db push`) and run `verify-podium.mts` against it; (2) have `openUpcomingMarkets` also call `createPodiumMarket`, and wire the weekend UI to render **multiple markets per round** (`/api/bet/market` returns a single market today — it needs an array; `MarketBetCard`'s selection key becomes `driver` for podium). **top-10** then follows podium's exact pattern (slots=10); **exact-position** needs a finishing-position distribution model; **grid/qualifying-position** needs a quali-pace model + a `market_type` enum addition.
+
 ## 0.48.0 — 2026-06-22
 
 Changed: **Paddock Betting — open the next few race weekends, not just the soonest.**

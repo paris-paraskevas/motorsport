@@ -1,32 +1,49 @@
 import { betDb } from './client';
-import { winMultipliers, type DriverForm } from './pricing';
+import { winMultipliers, podiumMultipliers, type DriverForm } from './pricing';
 
 // Server-only. Create/settle betting markets. Odds are priced once here and
 // stored on the market (server-authoritative, fixed for the window).
 
-/** Create a 'winner' market, pricing its odds from current standings. Returns market id. */
-export async function createWinnerMarket(opts: {
+interface CreateMarketOpts {
   seriesSlug: string;
   round: number;
   sessionUid?: string;
   locksAt: string; // ISO; bets reject at/after this (session start)
   field: DriverForm[];
-}): Promise<string> {
+}
+
+// Shared market insert — winner/podium differ only in `type` and how the field
+// is priced into the {selection -> multiplier} odds snapshot stored on the row.
+async function createMarket(
+  type: 'winner' | 'podium',
+  odds: Record<string, number>,
+  opts: CreateMarketOpts,
+): Promise<string> {
   const { data, error } = await betDb()
     .from('market')
     .insert({
       series_slug: opts.seriesSlug,
       round: opts.round,
       session_uid: opts.sessionUid ?? null,
-      type: 'winner',
+      type,
       locks_at: opts.locksAt,
       status: 'open',
-      odds_json: winMultipliers(opts.field),
+      odds_json: odds,
     })
     .select('id')
     .single();
-  if (error) throw new Error(`createWinnerMarket failed: ${error.message}`);
+  if (error) throw new Error(`create ${type} market failed: ${error.message}`);
   return data.id as string;
+}
+
+/** Create a 'winner' market, pricing its odds from current standings. Returns market id. */
+export function createWinnerMarket(opts: CreateMarketOpts): Promise<string> {
+  return createMarket('winner', winMultipliers(opts.field), opts);
+}
+
+/** Create a 'podium' (top-3 finish) market, pricing its odds from current standings. Returns market id. */
+export function createPodiumMarket(opts: CreateMarketOpts): Promise<string> {
+  return createMarket('podium', podiumMultipliers(opts.field), opts);
 }
 
 export interface SettlementSummary {
