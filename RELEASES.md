@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.57.2 — 2026-06-22
+
+**Fixed: joining a league from an invite link now works on a brand-new account.** Signing up through an invite — then accepting the friend request and joining the league — no longer hits an error if you hadn't opened the Play page first.
+
 ## 0.57.1 — 2026-06-22
 
 *Internal: session handoff / documentation. No user-facing change.*

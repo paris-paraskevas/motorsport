@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
-import { ensureAppUser } from '@/lib/betting/credits';
+import { ensureAppUser, ensureBettingUser } from '@/lib/betting/credits';
 import { getInvite } from '@/lib/betting/leagues';
 import { sendFriendRequest, setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { JoinLeagueFlow } from '@/components/betting/JoinLeagueFlow';
@@ -80,9 +80,13 @@ export default async function JoinLeaguePage({ params }: { params: Promise<{ tok
     );
   }
 
-  // Signed in and not the inviter: backfill the viewer's name, then raise the
-  // pending friend request (inviter → viewer) so the flow below can accept it.
+  // Signed in and not the inviter: fully onboard the viewer FIRST (app_user row +
+  // monthly credits) — arriving straight from sign-up on the invite link, they may
+  // never have visited /play, and the friend-request + membership FKs require their
+  // app_user row to exist. A missing row was the "internal error" on invite sign-up.
+  // Then backfill the name and raise the pending friend request (inviter → viewer).
   const dn = clerkDisplayName(await currentUser());
+  await ensureBettingUser(userId, dn ?? undefined);
   await setDisplayNameIfMissing(userId, dn);
   await ensureAppUser(invite.inviterId);
   await sendFriendRequest(invite.inviterId, userId);

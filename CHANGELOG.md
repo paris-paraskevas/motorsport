@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.57.2 — 2026-06-22
+
+Fixed: **invite sign-up no longer 500s for brand-new accounts.**
+
+### Fixed
+- **`/play/leagues/join/[token]`** — a user arriving straight from sign-up on an invite link (never having opened `/play`) hit an internal error. The page raises the inviter→viewer friend request server-side, but `friendship.addressee_id` FK-requires the viewer's `app_user` row — which is created lazily on the first `/play`/betting touch, and the page ensured only the *inviter's* row. Now it calls `ensureBettingUser(viewer)` first (mirrors `/play`: creates the row + grants the monthly allowance), so the friend request + league join work without ever visiting `/play`. Regression covered in `scripts/verify-invite.mts` (control proves the FK fails for a never-onboarded user; fix path proves onboarding-first makes the full join work). tsc + build clean.
+
 ## 0.57.1 — 2026-06-22
 
 Docs: **session handoff — betting-live + leagues P1–P3 recap; next-session pickup led by P4 (no app change).**
