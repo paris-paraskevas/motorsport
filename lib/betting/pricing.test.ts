@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   winProbabilities, winMultipliers, multiplierFromProb,
   podiumProbabilities, podiumMultipliers,
+  topKProbabilities, topTenMultipliers,
   MIN_MULTIPLIER, MAX_MULTIPLIER, HOUSE_MARGIN, PODIUM_SLOTS,
 } from './pricing';
 
@@ -88,5 +89,40 @@ describe('podium pricing (Harville top-3)', () => {
     ]);
     expect(p.get('A')!).toBeCloseTo(1, 6);
     expect(p.get('C')!).toBeCloseTo(1, 6);
+  });
+});
+
+describe('top-K pricing (mean-field PL)', () => {
+  // 22-car grid, points descending and close at the front (no single runaway).
+  const grid = Array.from({ length: 22 }, (_, i) => ({ name: `D${i}`, points: Math.max(220 - i * 11, 0) }));
+
+  it('is exact for K=1 (equals the win probability)', () => {
+    const k1 = topKProbabilities(grid, 1);
+    const win = winProbabilities(grid);
+    for (const name of win.keys()) expect(k1.get(name)!).toBeCloseTo(win.get(name)!, 9);
+  });
+
+  it('top-10 favours form, stays bounded, and covers ~10 slots', () => {
+    const p = topKProbabilities(grid, 10);
+    // top-10 saturates near 1 across the strong front, so only compare drivers
+    // far apart in form: a frontrunner beats a backmarker; the tail still orders.
+    expect(p.get('D0')!).toBeGreaterThan(p.get('D20')!);
+    expect(p.get('D18')!).toBeGreaterThan(p.get('D21')!);
+    for (const v of p.values()) {
+      expect(v).toBeGreaterThanOrEqual(0);
+      expect(v).toBeLessThanOrEqual(1);
+    }
+    const sum = [...p.values()].reduce((s, x) => s + x, 0);
+    expect(sum).toBeGreaterThan(9);
+    expect(sum).toBeLessThanOrEqual(10.0001);
+  });
+
+  it('a midfielder makes the top-10 at least as easily as the podium, and prices in band', () => {
+    expect(topKProbabilities(grid, 10).get('D8')!).toBeGreaterThanOrEqual(podiumProbabilities(grid).get('D8')!);
+    const m = topTenMultipliers(grid);
+    for (const v of Object.values(m)) {
+      expect(v).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
+      expect(v).toBeLessThanOrEqual(MAX_MULTIPLIER);
+    }
   });
 });

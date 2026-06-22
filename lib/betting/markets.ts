@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { winMultipliers, podiumMultipliers, type DriverForm } from './pricing';
+import { winMultipliers, podiumMultipliers, topTenMultipliers, type DriverForm } from './pricing';
 import { MARKET_TYPE_META } from './constants';
 
 // Server-only. Create/settle betting markets. Odds are priced once here and
@@ -13,10 +13,10 @@ interface CreateMarketOpts {
   field: DriverForm[];
 }
 
-// Shared market insert — winner/podium differ only in `type` and how the field
-// is priced into the {selection -> multiplier} odds snapshot stored on the row.
+// Shared market insert — winner/podium/top10 differ only in `type` and how the
+// field is priced into the {selection -> multiplier} odds snapshot on the row.
 async function createMarket(
-  type: 'winner' | 'podium',
+  type: 'winner' | 'podium' | 'top10',
   odds: Record<string, number>,
   opts: CreateMarketOpts,
 ): Promise<string> {
@@ -45,6 +45,11 @@ export function createWinnerMarket(opts: CreateMarketOpts): Promise<string> {
 /** Create a 'podium' (top-3 finish) market, pricing its odds from current standings. Returns market id. */
 export function createPodiumMarket(opts: CreateMarketOpts): Promise<string> {
   return createMarket('podium', podiumMultipliers(opts.field), opts);
+}
+
+/** Create a 'top10' (top-10 finish) market, pricing its odds from current standings. Returns market id. */
+export function createTop10Market(opts: CreateMarketOpts): Promise<string> {
+  return createMarket('top10', topTenMultipliers(opts.field), opts);
 }
 
 export interface SettlementSummary {

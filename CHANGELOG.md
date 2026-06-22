@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.51.0 — 2026-06-22
+
+Added: **Paddock Betting — top-10 (points finish) market engine, shipped dormant.**
+
+### Added
+
+- **Top-10 pricing** (`lib/betting/pricing.ts`): `topKProbabilities(drivers, k)` computes P(top-k) via a mean-field sequential Plackett-Luce (fill k slots in turn, each pick ∝ remaining weight, field weight reduced by expected removal; slot picks normalised so the per-driver probs sum to ~k). Exact for k=1 (= `winProbabilities`); used for k=10 because the exact Harville sum is O(nᵏ). `topTenMultipliers` prices it through the same clamp band; `createTop10Market` added (shared `createMarket`, now `'winner' | 'podium' | 'top10'`).
+- **Top-10 settlement** (migration `20260622130000_top10_settlement.sql`): `settle_market` extended for `type='top10'` — `{"driver":"<name>"}` wins when the driver is in the official top 10 (`p_result={"top10":[...]}`). `settleLeagueMarket` + `settleDueMarkets` follow; `podiumForRound` generalised to `topNForRound(…, n)` (podium n=3, top-10 n=10). `MARKET_TYPE_META.top10` added (selection key `driver`), so the multi-market UI renders it automatically once opened.
+- **Tests + verify:** `pricing.test.ts` adds top-K cases (exact at k=1; ranks / bounded / sums-to-~10; top-10 ≥ podium). New `scripts/verify-top10.mts` ran end-to-end against local Supabase (migration applied locally): an in-top-10 pick paid at its odds, an outside pick lost, 1W/1L. 453 tests green; tsc clean.
+
+### Dormant — go-live (operator)
+
+- Like podium, top-10 is **not auto-opened**. Go-live: apply migrations `20260622120000` + `20260622130000` to prod, run `verify-podium.mts` + `verify-top10.mts`, then call `createPodiumMarket`/`createTop10Market` in `openUpcomingMarkets` — both render in the weekend embed automatically. Remaining types: **exact-position** (finishing-position distribution model) and **grid/qualifying-position** (quali-pace model + a `market_type` enum addition).
+
 ## 0.50.0 — 2026-06-22
 
 Changed: **Paddock Betting — the weekend embed renders multiple markets per round (winner, podium, …).**
