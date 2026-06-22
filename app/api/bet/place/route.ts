@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  let body: { marketId?: unknown; pick?: unknown; stake?: unknown; leagueId?: unknown };
+  let body: { marketId?: unknown; pick?: unknown; position?: unknown; stake?: unknown; leagueId?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -37,19 +37,20 @@ export async function POST(req: Request) {
   }
 
   const leagueId = typeof body.leagueId === 'string' && body.leagueId ? body.leagueId : undefined;
+  const position = body.position != null ? Number(body.position) : undefined;
 
   try {
     await ensureBettingUser(userId);
-    // The server keys the selection by market type (winner→{winner}, podium→{driver})
-    // so it always matches settlement, whatever the client sends.
-    const selection = await selectionForMarket(marketId, pick);
+    // The server keys the selection by market type (winner→{winner}, podium/top10→
+    // {driver}, exact_position→{driver,position}) so it always matches settlement.
+    const selection = await selectionForMarket(marketId, pick, position);
     const betId = await placeBet(userId, marketId, selection, stake, leagueId);
     return NextResponse.json({ ok: true, betId });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown error';
     // place_bet raises domain errors (market not open / insufficient balance /
     // already bet) — surface those as 422, anything else as 500.
-    const domain = /not open|insufficient|already|not a member|market not found|stake must|positive/i.test(message);
+    const domain = /not open|insufficient|already|not a member|market not found|stake must|positive|position required/i.test(message);
     return NextResponse.json({ ok: false, error: message }, { status: domain ? 422 : 500 });
   }
 }

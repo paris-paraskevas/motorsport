@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.53.0 — 2026-06-22
+
+*Internal: built the driver + finishing-position picker for the (not-yet-live) exact-finish betting market. No user-facing change.*
+
 ## 0.52.0 — 2026-06-22
 
 *Internal: groundwork for an exact-finishing-position betting market — pricing and settlement are built and tested but not yet switched on (it needs a dedicated picker before launch). No user-facing change.*
