@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.42.2 — 2026-06-22
+
+Added: **Paddock Betting — Phase 1c (pari-mutuel friend leagues) — code now actually on `main` (dormant).**
+
+### Added
+
+- **Pari-mutuel leagues (Phase 1c)** — the league engine the 0.42.0 notes deferred to "Phase 1c+". Friend leagues in `lib/betting/leagues.ts` (`createLeague` / `joinLeague` by 8-char code, `getLeaderboard`); peer-pool settlement in `lib/betting/settlement.ts` over pure, unit-tested pool math (`lib/betting/pari-mutuel.ts`): all stakes pool, winners split pro-rata to stake; integer credits, rounding dust → house; no-winner → void refund (those bets don't count against win-rate). Migration `20260622110000_leagues_parimutuel.sql` recreates `place_bet` with an optional, membership-checked league context (solo stays `league_id = null`), adds `apply_league_settlement` (writes a pool atomically + idempotently — refuses to re-settle), and a `league_leaderboard` view ranking members by win-rate (`wins / placed`). Exactly the operator's 10-vs-1 model: the lone winner takes the pool; the many split it when the favourite lands.
+
+### Fixed
+
+- **Recovered stranded 1c work.** This engine was committed locally last session (`d71c545`) but never pushed — PR #164 merged only through the 1b solo engine (`b842d07`), so `main` shipped 0.42.0 with 1c absent even though `docs/HANDOFF.md` recorded it as shipped. Cherry-picked onto a fresh branch and re-verified end-to-end against a clean local stack: `supabase db reset` applies all 6 migrations from zero, `scripts/verify-betting.mts` + `scripts/verify-league-flow.mts` pass (pool paid the lone winner, losers lost the stake, leaderboard by win-rate), and 446 tests + `tsc --noEmit` + eslint on `lib/betting` are clean.
+
+### Note
+
+- **Still entirely dormant in production** — no UI, nothing imports it into the live app, and the betting DB env is unset in prod (the grant cron 503s cleanly). Go-live remains gated on cloud Supabase provisioning + (paid path) legal review.
+
 ## 0.42.1 — 2026-06-22
 
 Docs: **session handoff — betting 1a–1c recorded + the full remaining-work list (no app change).**
