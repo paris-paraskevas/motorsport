@@ -45,3 +45,14 @@ export async function grantMonthlyAllowance(
   if (error) throw new Error(`grantMonthlyAllowance failed: ${error.message}`);
   return data != null;
 }
+
+/**
+ * Grant this month's allowance to EVERY user, in one set-based statement (the
+ * cron entrypoint). Idempotent per calendar month, so safe to run daily.
+ * Returns how many users were granted this run.
+ */
+export async function grantMonthlyToAll(amount: number = MONTHLY_ALLOWANCE): Promise<number> {
+  const { data, error } = await betDb().rpc('grant_monthly_all', { p_amount: amount });
+  if (error) throw new Error(`grantMonthlyToAll failed: ${error.message}`);
+  return Number(data ?? 0);
+}
