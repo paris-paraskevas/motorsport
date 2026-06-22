@@ -6,13 +6,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 ## 0.42.0 — 2026-06-22
 
-Added: **Paddock Betting — Phase 1a data-layer foundation (dormant until provisioned).**
+Added: **Paddock Betting — Phase 1a + 1b foundation: data layer + solo betting engine (dormant until provisioned).**
 
 ### Added
 
 - **Supabase betting database** (`supabase/`; design `docs/research/predictions-design.md`): migrations for `app_user`, append-only `credit_ledger` (balance = SUM(delta), enforced append-only by a trigger), `market`, `bet`, `league`, `league_member`, `settlement`; a `user_balance` view; idempotent monthly-grant functions (`grant_monthly`, `grant_monthly_all`). RLS on every table with **no policies** + `service_role`-only grants — Clerk is the auth, so all access is server-side via the service role; anon/authenticated get nothing. `config.toml` trimmed to Postgres/PostgREST/Studio (auth/storage/realtime/inbucket disabled — we use Clerk).
 - **Server-only data layer** `lib/betting/{client,credits}.ts` — service-role client + `ensureAppUser` / `getBalance` / `grantMonthlyAllowance` / `grantMonthlyToAll`. Verified end-to-end against the local stack (`scripts/verify-betting.mts`): grant → balance, idempotent per calendar month.
 - **`GET /api/cron/grant-credits`** — monthly free-credit grant for all users; fail-closed cron auth; **503s cleanly when the betting DB isn't provisioned**, so it's inert in prod until the Supabase env is set.
+- **Solo-vs-house betting engine (Phase 1b):** server-authoritative model pricing (`lib/betting/pricing.ts` — win probability from championship points → inverse-probability multiplier with a house margin, so longshots pay far more; unit-tested), odds locked onto the market at creation (`createWinnerMarket`), atomic `place_bet` (validate open + balance, advisory-locked per user, deduct stake) and fixed-odds `settle_market` (provisional-is-final, one-shot, no claw-back). Verified end-to-end via `scripts/verify-betting-flow.mts`: a 177× longshot win paid out and a favourite-backer lost the stake, balances exact. Pari-mutuel leagues, podium/top-10 markets, the odds-API adapter, and the UI are Phase 1c+. (Longshot multipliers want a cap before launch — the curve is steep.)
 
 ### Note
 
