@@ -147,6 +147,16 @@ function topNForRound(races: RaceResult[], round: number, n: number): string[] |
   return top.length === n ? top : null;
 }
 
+/** The official finishing position of every classified driver for a round
+ *  (driverName -> position), or null until the classification is in. */
+function positionsForRound(races: RaceResult[], round: number): Record<string, number> | null {
+  const race = races.find(r => r.round === round && (r.results?.length ?? 0) > 0);
+  if (!race) return null;
+  const map: Record<string, number> = {};
+  for (const e of race.results) if (e.position >= 1) map[e.driverName] = e.position;
+  return Object.keys(map).length > 0 ? map : null;
+}
+
 export interface SettleSummary {
   settled: string[];
   awaiting: string[];
@@ -177,7 +187,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
     const round = m.round as number;
     const marketId = m.id as string;
     try {
-      if (m.type !== 'winner' && m.type !== 'podium' && m.type !== 'top10') {
+      if (m.type !== 'winner' && m.type !== 'podium' && m.type !== 'top10' && m.type !== 'exact_position') {
         summary.awaiting.push(`${slug} R${round}: ${m.type} settlement not supported yet`);
         continue;
       }
@@ -197,7 +207,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
       }
 
       // Build the official result for this market's type from the classification.
-      let result: { winner?: string; podium?: string[]; top10?: string[] };
+      let result: { winner?: string; podium?: string[]; top10?: string[]; positions?: Record<string, number> };
       let label: string;
       if (m.type === 'winner') {
         const winner = winnerForRound(feed, round);
@@ -215,7 +225,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
         }
         result = { podium };
         label = podium.join(' / ');
-      } else {
+      } else if (m.type === 'top10') {
         const top10 = topNForRound(feed, round, TOP10_SLOTS);
         if (!top10) {
           summary.awaiting.push(`${slug} R${round}: official top-10 not in yet`);
@@ -223,6 +233,14 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
         }
         result = { top10 };
         label = top10.join(', ');
+      } else {
+        const positions = positionsForRound(feed, round);
+        if (!positions) {
+          summary.awaiting.push(`${slug} R${round}: official classification not in yet`);
+          continue;
+        }
+        result = { positions };
+        label = `${Object.keys(positions).length} classified`;
       }
 
       // League peer pools first (pari-mutuel), then the solo book (fixed-odds),

@@ -23,7 +23,7 @@ export interface LeagueSettlement {
 export async function settleLeagueMarket(
   marketId: string,
   leagueId: string,
-  result: { winner?: string; podium?: string[]; top10?: string[] },
+  result: { winner?: string; podium?: string[]; top10?: string[]; positions?: Record<string, number> },
 ): Promise<LeagueSettlement> {
   const db = betDb();
   const { data: market, error: mErr } = await db.from('market').select('type').eq('id', marketId).single();
@@ -47,6 +47,8 @@ export async function settleLeagueMarket(
     if (mtype === 'winner') return sel.winner === result.winner;
     if (mtype === 'podium') return typeof sel.driver === 'string' && (result.podium ?? []).includes(sel.driver);
     if (mtype === 'top10') return typeof sel.driver === 'string' && (result.top10 ?? []).includes(sel.driver);
+    if (mtype === 'exact_position')
+      return typeof sel.driver === 'string' && (result.positions ?? {})[sel.driver] === Number(sel.position);
     return false;
   };
 
