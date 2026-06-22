@@ -1,0 +1,41 @@
+name: betting open markets
+
+on:
+  schedule:
+    # Twice daily (offset off the hour). Opening a winner market for the next
+    # race well ahead is plenty; the route is idempotent so repeats are no-ops.
+    - cron: '29 */12 * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read CRON_SECRET from repo secrets.
+permissions:
+  contents: read
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/open-markets (open upcoming winner markets)
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/open.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/open-markets)
+          echo "Status: $STATUS"
+          cat /tmp/open.json
+          echo ""
+          # 200 = ran (opened/skipped summary in body). 503 = betting DB not
+          # provisioned yet (dormant) — expected until go-live, stay green.
+          # 401 (bad secret) / 500 = real failure.
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "503" ]; then
+            exit 0
+          fi
+          echo "Unexpected status $STATUS — failing."
+          exit 1

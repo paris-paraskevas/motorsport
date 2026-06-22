@@ -9,6 +9,7 @@ import { Saira_Condensed } from 'next/font/google';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { loadAllSeriesMeta } from '@/lib/series';
+import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import '../globals.css';
 
@@ -109,7 +110,7 @@ export default async function RootLayout({
               });
             `}
           </Script>
-          <AppShell seriesList={seriesList}>{children}</AppShell>
+          <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()}>{children}</AppShell>
           {/* Custom consent UI replacing Google Funding Choices (0.12.6). FC
               was dropped because adsbygoogle.js never summons a banner until
               the AdSense site is approved, leaving Consent Mode v2 stuck on
