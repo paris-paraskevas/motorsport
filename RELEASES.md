@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.46.2 — 2026-06-22
+
+*Internal: documentation housekeeping — confirmed the Austrian GP betting market locks an hour before qualifying. No changes to the app.*
+
 ## 0.46.1 — 2026-06-22
 
 *Internal: documentation and handoff — no changes to the app.*

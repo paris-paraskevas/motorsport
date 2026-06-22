@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.46.2 — 2026-06-22
+
+Docs: **reconcile betting next-steps — R8 relock to quali−1h is done (no app change).**
+
+### Changed
+
+- `docs/HANDOFF.md` top block: marked next-step #1 (relock R8 / Austrian GP) **done** — the operator ran `UPDATE market SET locks_at='2026-06-27 13:00:00+00' WHERE series_slug='f1' AND round=8 AND type='winner';` in Supabase Studio (the original automated write was blocked by the auto-mode SQL safety classifier). Verified live via `GET /api/bet/market?series=f1&round=8` → `locks_at=2026-06-27T13:00:00Z` (quali−1h). Bumped the block heading `0.46.0`→`0.46.2` (the label had lagged the version bump). Dropped the now-complete R8-lock line from the `IDEAS.md` Inbox; betting next-steps #2–#4 (more markets, recompress odds, new market types) remain open. No application code changed.
+
 ## 0.46.1 — 2026-06-22
 
 Docs: **session handoff — Paddock Betting is live; operator next-steps recorded (no app change).**
