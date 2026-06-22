@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { winProbabilities, winMultipliers, multiplierFromProb } from './pricing';
+import {
+  winProbabilities, winMultipliers, multiplierFromProb,
+  MIN_MULTIPLIER, MAX_MULTIPLIER, HOUSE_MARGIN,
+} from './pricing';
 
 const field = [
   { name: 'Antonelli', points: 250 },
@@ -16,18 +19,32 @@ describe('pricing model', () => {
     expect(p.get('Russell')!).toBeGreaterThan(p.get('Bottas')!);
   });
 
-  it('longshots pay more than favourites (the core requirement)', () => {
+  it('longshots pay more than favourites, every price inside the [min,max] band', () => {
     const m = winMultipliers(field);
-    // Bottas (8 pts) must pay a bigger multiplier than Antonelli (250 pts).
-    expect(m.Bottas).toBeGreaterThan(m.Antonelli);
-    // every multiplier returns something
-    expect(m.Antonelli).toBeGreaterThan(1);
+    expect(m.Bottas).toBeGreaterThan(m.Antonelli); // the core requirement
     expect(m.Bottas).toBeGreaterThan(m.Russell);
+    for (const v of Object.values(m)) {
+      expect(v).toBeGreaterThanOrEqual(MIN_MULTIPLIER);
+      expect(v).toBeLessThanOrEqual(MAX_MULTIPLIER);
+    }
   });
 
-  it('multiplier is inverse-probability with margin, floored at 1.01', () => {
-    expect(multiplierFromProb(0.5)).toBeCloseTo(1.8, 2); // (1-0.1)/0.5
-    expect(multiplierFromProb(0.999)).toBe(1.01); // favourite floor
-    expect(multiplierFromProb(0.001)).toBeGreaterThan(100); // extreme longshot
+  it('caps longshots and floors the favourite (no 900x, no ~1x)', () => {
+    // an extreme longshot is capped, not paid a four-figure jackpot
+    expect(multiplierFromProb(1e-6)).toBe(MAX_MULTIPLIER);
+    // a near-certain favourite is floored, not paid a meaningless ~1x
+    expect(multiplierFromProb(0.999)).toBe(MIN_MULTIPLIER);
+    // a mid probability is the honest inverse-with-margin, inside the band
+    expect(multiplierFromProb(0.5)).toBeCloseTo((1 - HOUSE_MARGIN) / 0.5, 2);
+  });
+
+  it('a flat field (equal points) prices everyone identically', () => {
+    const flat = winMultipliers([
+      { name: 'A', points: 10 },
+      { name: 'B', points: 10 },
+      { name: 'C', points: 10 },
+    ]);
+    expect(flat.A).toBe(flat.B);
+    expect(flat.B).toBe(flat.C);
   });
 });
