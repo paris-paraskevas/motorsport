@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.54.0 — 2026-06-22
+
+Changed: **Paddock Betting — podium + top-10 markets go live; odds loosened to a real-book-like curve.**
+
+### Changed
+
+- **`openUpcomingMarkets` now opens winner + podium + top-10** per upcoming F1 weekend (a `MARKET_BUILDERS` loop — one market per type, each idempotent). `exact_position` is built + settles but is **held from auto-open** until its driver/position picker is interaction-verified.
+- **Settlement is on prod:** the `settle_market` function covering all four types was applied via the Supabase Management API (verified live — `podium`/`top10`/`exact_position` branches present). Applied outside `supabase db push` (no DB password to hand), so it's not recorded in `supabase_migrations` — reconcile with a later `db push`.
+- **Odds re-tuned toward real betting-app numbers** (operator direction — big longshots wanted): `HOUSE_MARGIN` 0.25→0.15 (book-like), `MAX_MULTIPLIER` 30→500 (a no-hoper can pay into the thousands on a standard stake). Reverses the 0.47.0 30× cap; favourite floor (1.3) + form exponent (2.6) unchanged. **Interim** — the real odds-API adapter (provider + key) replaces the model per-market when wired; the model stays the fallback (and for exact-position/grid, which books don't price).
+- 458 tests green; tsc + `next build` clean.
+
 ## 0.53.0 — 2026-06-22
 
 Added: **Paddock Betting — exact-finish driver+position picker (UI), so exact-position markets can render.**
