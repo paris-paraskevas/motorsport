@@ -56,3 +56,15 @@ export async function grantMonthlyToAll(amount: number = MONTHLY_ALLOWANCE): Pro
   if (error) throw new Error(`grantMonthlyToAll failed: ${error.message}`);
   return Number(data ?? 0);
 }
+
+/**
+ * Idempotent onboarding for a signed-in Clerk user the first time they touch
+ * betting: mirror them into `app_user` and grant this month's allowance. Safe to
+ * call on every betting request — both halves are idempotent (upsert +
+ * the once-per-calendar-month SQL guard). Returns the user's current balance.
+ */
+export async function ensureBettingUser(clerkUserId: string, displayName?: string): Promise<number> {
+  await ensureAppUser(clerkUserId, displayName);
+  await grantMonthlyAllowance(clerkUserId);
+  return getBalance(clerkUserId);
+}

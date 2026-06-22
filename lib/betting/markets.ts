@@ -47,3 +47,33 @@ export async function settleMarket(marketId: string, result: object): Promise<Se
   if (error) throw new Error(`settleMarket failed: ${error.message}`);
   return data as SettlementSummary;
 }
+
+export interface OpenMarket {
+  id: string;
+  seriesSlug: string;
+  round: number;
+  sessionUid: string | null;
+  type: string;
+  locksAt: string;
+  odds: Record<string, number>;
+}
+
+/** Open markets not yet past their lock time, soonest-locking first. */
+export async function getOpenMarkets(): Promise<OpenMarket[]> {
+  const { data, error } = await betDb()
+    .from('market')
+    .select('id, series_slug, round, session_uid, type, locks_at, odds_json')
+    .eq('status', 'open')
+    .gt('locks_at', new Date().toISOString())
+    .order('locks_at', { ascending: true });
+  if (error) throw new Error(`getOpenMarkets failed: ${error.message}`);
+  return (data ?? []).map(m => ({
+    id: m.id as string,
+    seriesSlug: m.series_slug as string,
+    round: m.round as number,
+    sessionUid: (m.session_uid as string | null) ?? null,
+    type: m.type as string,
+    locksAt: m.locks_at as string,
+    odds: (m.odds_json as Record<string, number> | null) ?? {},
+  }));
+}

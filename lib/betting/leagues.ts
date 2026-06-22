@@ -60,3 +60,42 @@ export async function getLeaderboard(leagueId: string, minPlaced = 1): Promise<L
     .filter(r => r.placed >= minPlaced)
     .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
 }
+
+export interface UserLeague {
+  id: string;
+  name: string;
+  joinCode: string;
+  mode: string;
+  isOwner: boolean;
+  memberCount: number;
+}
+
+/** Leagues the user belongs to, with member counts. */
+export async function getUserLeagues(userId: string): Promise<UserLeague[]> {
+  const db = betDb();
+  const { data: mine, error } = await db.from('league_member').select('league_id').eq('user_id', userId);
+  if (error) throw new Error(`getUserLeagues failed: ${error.message}`);
+  const ids = (mine ?? []).map(r => r.league_id as string);
+  if (ids.length === 0) return [];
+
+  const [{ data: leagues, error: lErr }, { data: members, error: mErr }] = await Promise.all([
+    db.from('league').select('id, name, join_code, mode, owner_id').in('id', ids),
+    db.from('league_member').select('league_id').in('league_id', ids),
+  ]);
+  if (lErr) throw new Error(`getUserLeagues (leagues) failed: ${lErr.message}`);
+  if (mErr) throw new Error(`getUserLeagues (members) failed: ${mErr.message}`);
+
+  const counts = new Map<string, number>();
+  for (const m of members ?? []) {
+    const id = m.league_id as string;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return (leagues ?? []).map(l => ({
+    id: l.id as string,
+    name: l.name as string,
+    joinCode: l.join_code as string,
+    mode: l.mode as string,
+    isOwner: (l.owner_id as string) === userId,
+    memberCount: counts.get(l.id as string) ?? 0,
+  }));
+}

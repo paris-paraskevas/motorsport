@@ -27,3 +27,43 @@ export async function placeBet(
   if (error) throw new Error(`placeBet failed: ${error.message}`);
   return data as string;
 }
+
+export interface UserBet {
+  id: string;
+  marketId: string;
+  seriesSlug: string;
+  round: number;
+  type: string;
+  selection: Record<string, unknown>;
+  stake: number;
+  multiplier: number | null;
+  outcome: string;
+  createdAt: string;
+}
+
+/** A user's bets, newest first, each joined to the market it was placed on. */
+export async function getUserBets(userId: string): Promise<UserBet[]> {
+  const { data, error } = await betDb()
+    .from('bet')
+    .select('id, market_id, selection_json, stake, multiplier, outcome, created_at, market (series_slug, round, type)')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(`getUserBets failed: ${error.message}`);
+  return (data ?? []).map(b => {
+    const row = b as Record<string, unknown> & { market?: unknown };
+    const mk = (Array.isArray(row.market) ? row.market[0] : row.market) ?? {};
+    const m = mk as { series_slug?: string; round?: number; type?: string };
+    return {
+      id: row.id as string,
+      marketId: row.market_id as string,
+      seriesSlug: m.series_slug ?? '',
+      round: m.round ?? 0,
+      type: m.type ?? '',
+      selection: (row.selection_json as Record<string, unknown> | null) ?? {},
+      stake: row.stake as number,
+      multiplier: row.multiplier != null ? Number(row.multiplier) : null,
+      outcome: row.outcome as string,
+      createdAt: row.created_at as string,
+    };
+  });
+}
