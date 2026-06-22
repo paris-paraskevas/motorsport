@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.58.1 — 2026-06-23
+
+Changed: **`/play` + league page render fast — one parallel data wave behind a streamed shell.**
+
+### Changed
+- **`/play`** was `force-dynamic` with a sequential server chain blocking first paint: `currentUser()` (a full Clerk fetch) → `ensureBettingUser` (3 sequential Supabase calls) → name-backfill → *then* the data batch → *then* one leaderboard query per league. Now the page shell paints immediately and a single `<Suspense>` streams a `PlayData` island that runs every per-user read (balance / markets / bets / leagues / friends + `currentUser`) in **one parallel wave** — the league/friend reads don't need the `app_user` row, so they safely race `ensureBettingUser` (which creates it). Same treatment for **`/play/leagues/[id]`** (`LeagueData` island — onboarding + `getLeagueDetail` in parallel). Skeleton fallbacks while the islands stream.
+- Both pages stay `ƒ` (per-user + auth-gated → can't be CDN/ISR-cached); the win is first paint no longer waiting on the auth + Supabase round-trips. tsc + build clean; `/play` 200 on a fresh dev server (signed-out path verified; authed streaming render wants a signed-in eyeball).
+
 ## 0.58.0 — 2026-06-22
 
 Added: **Leagues overhaul P4 — period prizes (titles/badges for the top 3 by win-rate).**
