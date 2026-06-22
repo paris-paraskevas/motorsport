@@ -6,7 +6,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-06-22 (main = 0.46.0) — **Paddock Betting is LIVE (F1)**
+## ⚡ Next session pickup — 2026-06-22 (main = 0.46.2) — **Paddock Betting is LIVE (F1)**
 
 Betting went from dormant (1a/1b only on main) to **live end-to-end** this session: recovered the stranded 1c engine, built the UI, provisioned cloud Supabase, wired the crons, shipped settlement, then moved betting onto the F1 weekend pages with lean credits + a quali−1h lock. **Live at paddock-tracker.com** — a signed-in user claims monthly credits and backs the F1 race winner (solo or friend-league) on the upcoming weekend's page; bets settle automatically off the official result.
 
@@ -16,7 +16,7 @@ Betting went from dormant (1a/1b only on main) to **live end-to-end** this sessi
 - **Where it lives:** bet UI = **weekend-page embed** (`components/weekend/WeekendBetting.tsx` → shared `components/betting/MarketBetCard.tsx` → `GET /api/bet/market`, an ISR-safe client island), **F1 only, future weekends only**; signed-out shows odds + a sign-in CTA. **`/play` is the hub** (balance · your bets · leagues + win-rate leaderboard; links out to weekend pages — no bet form). Credits: `lib/betting/allowance.ts` = `50 + raceWeekends_this_month × 100` (June 2026 = 350); constants in client-safe `lib/betting/constants.ts`. Markets lock at **grid-quali − 1h** (`openUpcomingMarkets` + new `looksLikeQualifying`, excludes sprint quali).
 
 ### ⏳ Next steps (operator handoff 2026-06-22)
-1. **Relock R8 (imminent Austrian GP) to quali−1h** — the ONE market still on the old race-start lock; the prod-DB write was blocked by the auto-mode safety classifier. Run in **Supabase Studio → SQL editor**: `UPDATE market SET locks_at='2026-06-27 13:00:00+00' WHERE series_slug='f1' AND round=8 AND type='winner';` (every *future* market already locks at quali−1h automatically).
+1. **✅ R8 relock — DONE (2026-06-22).** The Austrian-GP winner market now locks at quali−1h. Operator ran the Supabase Studio `UPDATE` (the auto-mode SQL safety classifier had blocked the original write); verified live — `GET /api/bet/market?series=f1&round=8` returns `locks_at=2026-06-27T13:00:00Z`. Every *future* market already auto-locks at quali−1h.
 2. **More markets** — only one F1 winner market opens at a time today. Open with more lead time / across more series; pairs with new types below.
 3. **Reduce returns / recompress odds** — the favourite should pay ~**1.5×** (Antonelli is ×3.44 now) and longshots currently hit the **900× ceiling** (Stroll/Pérez). Rework `lib/betting/pricing.ts`: flatten the `(points+1)^1.5` weight, raise the floor probability, and/or widen the house margin so the whole curve compresses.
 4. **New market types** — **podium / top-10 / exact position** (the `market_type` enum already lists these; need a pricing model + a settle path each) and a NEW **grid / qualifying position** market (predict where a driver qualifies).
