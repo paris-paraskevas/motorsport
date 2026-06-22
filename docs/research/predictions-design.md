@@ -9,11 +9,12 @@
 
 ## 0. Risk acknowledgement (operator has chosen this knowingly)
 
-The operator's decisions (call it "betting", paid credits, multiplied returns, a deliberately-lean bankroll) place this in the **"simulated / social-casino" app category**, not the safe "free fantasy/prediction" category. Consequences, accepted:
+This is the **simulated / social-casino** model — the free-to-play-with-IAP shape of Zynga Poker / Huuuge: **not** real-money gambling, and **not** the frictionless cosmetics-IAP of Clash of Clans either. It sits between the two. Accurately:
 
-- **No cashout, ever — this is the one anchor** that keeps it out of *licensed real-money gambling*. Credits/winnings never convert to money, goods, or anything of value, and never transfer off-platform. If this ever breaks, Paddock becomes a licensed sportsbook (per-territory licences, KYC/AML) — a different company.
-- **App stores treat it as simulated gambling:** 17+/18+ rating, mandatory "no real money gambling" disclosure, and **geo-restrictions** — several countries must be excluded. Apple/Google can still reject; expect review friction.
-- **Paid credits + lean bankroll = monetisation pressure** that regulators scrutinise as gambling-adjacent. Legitimate, common (social casinos), but it raises the compliance bar and **requires legal review before the paid path goes live** (§9, §14).
+- **No cashout is the whole game.** Credits flow IN (free monthly grant + optional purchase) and AROUND (bet / win / lose in-game) but **never OUT** — no money, goods, or off-platform transfer. With no prize of *monetary* value, it is not real-money gambling: legal in the US (most states), the UK, and most major markets, exactly like social-casino apps. Buying credits is a one-way sink. **If this anchor ever breaks (any cashout), Paddock becomes a licensed sportsbook** (per-territory licences, KYC/AML) — a different company.
+- **App-store treatment is a content RATING, not a KYC age-check.** Because you wager currency on a chance outcome to win more currency (unlike Clash of Clans, which sells deterministic progress), the stores classify it "simulated gambling" → a **17+ (Apple) / Gambling-content (Google) age rating** + a "no real money gambling" disclosure. That is the store's *rating*, not the hard identity-verification real gambling requires — there is **no KYC age-check**.
+- **A few jurisdictions restrict even no-cashout social casino** (e.g., Washington State has litigated social-casino chips as illegal gambling). So the real compliance task is modest: **carry the 17+ rating + exclude a handful of territories** — diligence, not a blocker.
+- **The one genuinely stricter spot is paid credits inside the PEER POOL** — winning/losing a *friend's purchased* credits on a chance outcome is closer to peer-betting than solo social-casino, and Clash of Clans has no equivalent. That single mode is geo-gated + 18+ (§9 option b); **solo-vs-house with paid credits is clean** standard social-casino IAP.
 
 ---
 
