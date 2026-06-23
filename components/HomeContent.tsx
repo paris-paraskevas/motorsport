@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ExternalLink, MapPin, Play, Tv } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, MapPin, Play, SlidersHorizontal, Tv } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -11,6 +11,9 @@ import { groupByDay } from '@/lib/group';
 import { formatRelative, HOME_WEEK_MS } from '@/lib/date';
 import { SectionHead } from './SectionHead';
 import type { JustMissedItem } from '@/lib/home-results';
+import { useHomeLayout } from '@/lib/useHomeLayout';
+import type { HomeElementId } from '@/lib/homeLayout';
+import { HomeCustomizeBar } from './HomeCustomizeBar';
 
 interface HomeItem {
   session: Session;
@@ -154,6 +157,8 @@ export function HomeContent({
       : `/series/${item.seriesSlug}?tab=calendar`;
   };
   const { followed, hydrated } = useFollowedSeries();
+  const { layout, hydrated: layoutHydrated, move, toggleHidden, reset } = useHomeLayout();
+  const [customizing, setCustomizing] = useState(false);
   const [newsFilter, setNewsFilter] = useState<string | null>(null);
   // JUST MISSED is fetched as cacheable Ajax (/api/just-missed) rather than
   // server-rendered, so /app itself stays statically generated / edge-cached
@@ -183,7 +188,7 @@ export function HomeContent({
   // the non-followed ones away — the personalization flash. Skeleton → your
   // paddock, never other-series data. Guests resolve from localStorage in ~1
   // frame; signed-in returns from the local mirror (see useFollowedSeries).
-  if (!hydrated) return <HomeSkeleton />;
+  if (!hydrated || !layoutHydrated) return <HomeSkeleton />;
 
   const filteredSessions =
     followed !== null
@@ -283,6 +288,15 @@ export function HomeContent({
   const nextWeather = next ? weatherByUid?.[next.session.uid] : undefined;
   const nextW = nextWeather ? weatherLabel(nextWeather.weatherCode) : null;
 
+  // Home-layout customization: each top-level block gets a CSS `order` from the
+  // user's prefs (so the DEFAULT order renders identically), and hidden blocks
+  // are dropped. Applied on a flex column below.
+  const orderOf = (id: HomeElementId): number => {
+    const i = layout.order.indexOf(id);
+    return i < 0 ? 99 : i;
+  };
+  const isHidden = (id: HomeElementId): boolean => layout.hidden.includes(id);
+
   return (
     <>
       <h1 className="sr-only">
@@ -290,11 +304,34 @@ export function HomeContent({
         Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
       </h1>
 
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setCustomizing(c => !c)}
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          <SlidersHorizontal size={13} />
+          {customizing ? 'Done customising' : 'Customise'}
+        </button>
+      </div>
+      {customizing && (
+        <HomeCustomizeBar
+          layout={layout}
+          move={move}
+          toggleHidden={toggleHidden}
+          reset={reset}
+          onDone={() => setCustomizing(false)}
+        />
+      )}
+
+      <div className="flex flex-col">
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next
              session with a ticking countdown. ── */}
+      {!isHidden('chyron') && (
       <section
         aria-label={liveItems.length > 0 ? 'Live now' : 'Up next'}
         data-tour="chyron"
+        style={{ order: orderOf('chyron') }}
         className="mb-8 border-y border-border bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
       >
         {liveItems.length > 0 ? (
@@ -442,12 +479,13 @@ export function HomeContent({
           </div>
         )}
       </section>
+      )}
 
       {/* ── JUST MISSED — what just happened. Hero (latest finished race) +
              up to 2 quiet rows. Podium for covered series, link-out otherwise.
              (Slice 3 pairs this side-by-side with UP NEXT on desktop.) ── */}
-      {jmHero && (
-        <section aria-label="Just missed" className="mb-8">
+      {jmHero && !isHidden('just-missed') && (
+        <section aria-label="Just missed" className="mb-8" style={{ order: orderOf('just-missed') }}>
           <SectionHead title="Just missed" sub="latest results" />
           <div className="border-y border-border py-4">
             <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
@@ -577,7 +615,8 @@ export function HomeContent({
 
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
-      <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 xl:gap-16 lg:items-start">
+      {!isHidden('schedule') && (
+      <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 xl:gap-16 lg:items-start" style={{ order: orderOf('schedule') }}>
         <section aria-label="This week's sessions" data-tour="week">
           <SectionHead
             title="This week"
@@ -814,6 +853,8 @@ export function HomeContent({
             Source: motorsport.com
           </div>
         </section>
+      </div>
+      )}
       </div>
       <Tour
         stops={[
