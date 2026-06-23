@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.63.0 — 2026-06-23
+
+**Tidier Play page.** Each race weekend's bets (winner, podium, top-10) now collapse into a single "Round N" bar you can expand — instead of one long flat list.
+
 ## 0.62.0 — 2026-06-23
 
 **A tidier Account page.** Your notification settings now sit in collapsible sections, and your followed series are split into expandable **Followed** and **Not followed** lists — so there's far less to scroll.
