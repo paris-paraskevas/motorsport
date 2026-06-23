@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Bell } from 'lucide-react';
+import { Accordion } from './Accordion';
 
 interface NotifPrefs {
   sessions: boolean;
@@ -85,20 +86,12 @@ export function NotifPrefsSection() {
   };
 
   return (
-    <div className="border-y border-border py-5 md:py-6 mb-6">
-      <div className="flex items-start gap-3 mb-4">
-        <Bell size={18} className="text-text-muted mt-0.5 shrink-0" />
-        <div>
-          <h2 className="text-text text-base font-semibold">What gets notified</h2>
-          <p className="text-text-faint text-xs mt-1">
-            Choose which alerts you receive. Push must be enabled on this device for any of these to fire.
-          </p>
-        </div>
-      </div>
-
-      {!prefs && !error && (
-        <div className="text-text-faint text-sm">Loading…</div>
-      )}
+    <Accordion
+      title="What gets notified"
+      subtitle="Choose which alerts you receive. Push must be enabled on this device for any of these to fire."
+      icon={<Bell size={18} className="text-text-muted" />}
+    >
+      {!prefs && !error && <div className="text-text-faint text-sm">Loading…</div>}
 
       {error && <div className="text-amber-400 text-sm mb-3">{error}</div>}
 
@@ -126,6 +119,6 @@ export function NotifPrefsSection() {
           ))}
         </div>
       )}
-    </div>
+    </Accordion>
   );
 }

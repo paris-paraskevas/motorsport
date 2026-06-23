@@ -9,6 +9,7 @@ import {
   subscribeToPush,
   unsubscribeFromPush,
 } from '@/lib/pushClient';
+import { Accordion } from './Accordion';
 
 type Status =
   | 'checking'
@@ -102,97 +103,93 @@ export function EnableNotifications() {
     }
   };
 
+  const statusIcon =
+    status === 'subscribed' ? (
+      <BellRing size={20} className="text-emerald-400" />
+    ) : status === 'denied' ? (
+      <BellOff size={20} className="text-text-faint" />
+    ) : (
+      <Bell size={20} className="text-text-muted" />
+    );
+
   return (
-    <div className="border-y border-border py-5 md:py-6 mb-6">
-      <div className="flex items-start gap-3 mb-4">
-        <div className="shrink-0 mt-0.5">
-          {status === 'subscribed' ? (
-            <BellRing size={20} className="text-emerald-400" />
-          ) : status === 'denied' ? (
-            <BellOff size={20} className="text-text-faint" />
-          ) : (
-            <Bell size={20} className="text-text-muted" />
-          )}
-        </div>
-        <div className="flex-1">
-          <h2 className="text-text text-base font-semibold">Session notifications</h2>
-          <p className="text-text-faint text-xs mt-1 leading-relaxed">
-            Pushes to this device ~30 and ~10 minutes before sessions in your
-            followed series, plus a ping when a race&apos;s results land on Paddock.
-          </p>
-        </div>
-      </div>
+    <div className="border-t border-border">
+      <Accordion
+        title="Session notifications"
+        subtitle="Pushes to this device ~30 and ~10 min before sessions in your followed series, plus a ping when a race's results land."
+        icon={statusIcon}
+      >
+        {/* The subscribe/test APIs are auth-protected; the page no longer is.
+            Guests get the why instead of a button that 401s. */}
+        {isLoaded && !isSignedIn ? (
+          <div className="text-text-faint text-sm">
+            Sign in above to enable push notifications on this device.
+          </div>
+        ) : (
+          <>
+            {status === 'checking' && (
+              <div className="text-text-faint text-sm">Checking…</div>
+            )}
 
-      {/* The subscribe/test APIs are auth-protected; the page no longer is.
-          Guests get the why instead of a button that 401s. */}
-      {isLoaded && !isSignedIn ? (
-        <div className="text-text-faint text-sm">
-          Sign in above to enable push notifications on this device.
-        </div>
-      ) : (
-        <>
-      {status === 'checking' && (
-        <div className="text-text-faint text-sm">Checking…</div>
-      )}
+            {status === 'unsupported' && (
+              <div className="text-text-faint text-sm">
+                Push notifications aren&apos;t supported on this browser.
+              </div>
+            )}
 
-      {status === 'unsupported' && (
-        <div className="text-text-faint text-sm">
-          Push notifications aren&apos;t supported on this browser.
-        </div>
-      )}
+            {status === 'no-vapid' && (
+              <div className="text-amber-400 text-sm">
+                Server isn&apos;t configured for push yet. (Missing VAPID env vars.)
+              </div>
+            )}
 
-      {status === 'no-vapid' && (
-        <div className="text-amber-400 text-sm">
-          Server isn&apos;t configured for push yet. (Missing VAPID env vars.)
-        </div>
-      )}
+            {status === 'server-not-ready' && (
+              <div className="text-amber-400 text-sm">{message}</div>
+            )}
 
-      {status === 'server-not-ready' && (
-        <div className="text-amber-400 text-sm">{message}</div>
-      )}
+            {status === 'denied' && (
+              <div className="text-amber-400 text-sm">
+                Notifications are blocked in browser settings. Allow them for this site to enable.
+              </div>
+            )}
 
-      {status === 'denied' && (
-        <div className="text-amber-400 text-sm">
-          Notifications are blocked in browser settings. Allow them for this site to enable.
-        </div>
-      )}
+            {(status === 'idle' || status === 'working') && (
+              <button
+                type="button"
+                onClick={enable}
+                disabled={status === 'working'}
+                className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
+              >
+                <Bell size={14} />
+                {status === 'working' ? 'Enabling…' : 'Enable notifications'}
+              </button>
+            )}
 
-      {(status === 'idle' || status === 'working') && (
-        <button
-          type="button"
-          onClick={enable}
-          disabled={status === 'working'}
-          className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
-        >
-          <Bell size={14} />
-          {status === 'working' ? 'Enabling…' : 'Enable notifications'}
-        </button>
-      )}
+            {status === 'subscribed' && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={sendTest}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
+                >
+                  Send test
+                </button>
+                <button
+                  type="button"
+                  onClick={disable}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium font-mono text-text-faint hover:text-text-muted px-3 py-1.5 transition-colors"
+                >
+                  Turn off
+                </button>
+              </div>
+            )}
 
-      {status === 'subscribed' && (
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={sendTest}
-            className="inline-flex items-center gap-1.5 text-xs font-medium font-mono text-text-muted hover:text-text border border-border hover:border-border-strong px-3 py-1.5 transition-colors"
-          >
-            Send test
-          </button>
-          <button
-            type="button"
-            onClick={disable}
-            className="inline-flex items-center gap-1.5 text-xs font-medium font-mono text-text-faint hover:text-text-muted px-3 py-1.5 transition-colors"
-          >
-            Turn off
-          </button>
-        </div>
-      )}
-
-      {message && status !== 'server-not-ready' && (
-        <div className="mt-3 text-xs text-text-muted">{message}</div>
-      )}
-        </>
-      )}
+            {message && status !== 'server-not-ready' && (
+              <div className="mt-3 text-xs text-text-muted">{message}</div>
+            )}
+          </>
+        )}
+      </Accordion>
     </div>
   );
 }
