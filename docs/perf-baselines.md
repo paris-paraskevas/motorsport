@@ -100,6 +100,18 @@ Read-only prod verification of last session's PRs #145–#153 (caching / home-v3
 
 **Console:** 0 errors on `/app` at both 390 and 1440 (1–2 benign warnings).
 
+## 2026-06-23 — weekend page tabbed, heavy content deferred (0.61.0)
+
+The race-weekend page (`/series/[slug]/weekend/[round]`, `● ISR`) was server-rendering everything on every cold render: schedule + weather + the standings **season-results fan-out** + the news feed. Now split into client tabs (Schedule | Bets | News | Sessions) — only Schedule (+ weather) renders with the page; the rest mount + fetch on first tab-open from cached route handlers (`/api/weekend/{news,standings}`, `s-maxage=300`).
+
+**Local dev, F1 R8 (compiled, single render — dev has no ISR cache, so this is the raw per-render server cost):**
+- **Page render: 0.66 s** (previously also paid standings + news inline).
+- Deferred `/api/weekend/standings` cold: **3.1 s** (the season-results fan-out) — now only paid when the Sessions tab is opened.
+- Deferred `/api/weekend/news` cold: 0.74 s — only on the News tab.
+- Page HTML no longer contains the standings table (`"Standings at this round"` 0×) — deferral confirmed; page stayed `●` (ISR), not dynamic.
+
+Net: a cold weekend page sheds ~**3–4 s** of upstream fan-out off its render path; the page stays ISR-cacheable and the deferred APIs are independently CDN-cached. **Field numbers pending** — capture PSI + Vercel SI ≥24 h post-deploy and append.
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |

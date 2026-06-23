@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.61.0 — 2026-06-23
+
+Changed: **Race-weekend page is tabbed + lazy — Schedule | Bets | News | Sessions; heavy content loads on tab open.**
+
+### Changed
+- `/series/[slug]/weekend/[round]` split into client tabs via `WeekendTabs`. **Schedule** (server-rendered timetable + weather, cheap) paints with the page; **Bets** (F1, future weekends), **News**, and **Sessions** (per-session result links + standings-at-this-round) mount + fetch only when their tab is first opened, then stay mounted (no refetch on re-select).
+- The two heavy server fetches that ran on every cold render — the standings **season-results fan-out** (`loadSnapshotSource` + `buildStandingsAtRound`) and the **news feed** (`fetchNews`) — moved to cached route handlers **`/api/weekend/standings`** + **`/api/weekend/news`** (`s-maxage=300`), client-fetched on tab open. `WeekendBetting` was already a client island; it now mounts on the Bets tab.
+- The page **stays `● ISR`** (not made dynamic). `loadSnapshotSource` (still imported by drivers/teams/session pages) is unchanged; the snapshot **component** + `WeekendNews` are no longer rendered — `WeekendNews.tsx` deleted, its window logic now in the news route.
+
+### Perf (local dev, F1 R8, raw per-render server cost)
+- **Weekend page render 0.66 s** (was schedule + weather + standings + news). Standings fan-out **~3.1 s cold** + news **~0.7 s** now deferred — a cold weekend page sheds ~3–4 s off its render path; the standings table is absent from the page HTML (confirmed). Field numbers pending. Detail in `docs/perf-baselines.md`.
+
+### Notes
+- tsc + `next build` clean (page `●`, new routes `ƒ`); **458 unit tests pass**; deferred APIs return correct data (standings 22 drivers/11 teams, news 8 items) with `s-maxage` cache headers; all 4 tabs render on the dev server. SEO-safe: title/metadata/JSON-LD + schedule stay server-rendered; news (links out) + standings are secondary.
+
 ## 0.60.0 — 2026-06-23
 
 Added: **Find + add friends by name, and remove them — no league invite required.**
