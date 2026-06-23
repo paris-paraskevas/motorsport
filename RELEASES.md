@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.61.1 — 2026-06-23
+
+*Internal: documentation housekeeping (session handoff + idea-ledger triage). No user-facing change.*
+
 ## 0.61.0 — 2026-06-23
 
 **Race weekends load faster, with tabs.** Each weekend page now has **Schedule**, **Bets**, **News** and **Sessions** tabs — the schedule shows instantly and the rest load only when you tap their tab, so the page opens much quicker.

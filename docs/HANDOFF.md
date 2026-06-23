@@ -6,6 +6,30 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-23 (main = 0.61.0) — Betting/Leagues/Social shipped end-to-end
+
+Continuation of the 2026-06-22 betting-live session. Shipped **0.58.0 → 0.61.0** (PRs #186–#192): P4 league prizes, `/play` perf, the **Social area** (`/social/friends` + `/social/leagues`), self-serve **friend search/add/remove**, and the **tabbed weekend page**. Per-version detail in `CHANGELOG.md` 0.58.0→0.61.0.
+
+### What shipped (all merged to main)
+- **P4 league prizes — `0.58.0` (#187).** `league_award` table + `award_league_prizes()` SQL fn (top-3 by win-rate per period, **no credits**), bucketed by `market.locks_at`, calendar month + season, 3-day grace, `minPlaced≥3`, idempotent per (league, period). `awardDuePrizes`/`awardLeaguePrizes`/`getLeagueAwards`/`formatPeriodLabel` in `lib/betting/leagues.ts`; daily `/api/cron/award-prizes` + workflow; 🥇🥈🥉 medals + Honours on the league page; `verify-league-prizes.mts`. Migration `20260622180000` applied to **prod via the Management API**. **Verified on prod** (seeded a demo June award → medals render).
+- **Invite hotfix — `0.57.2` (#186).** New invite-link accounts 500'd: the join page raised the inviter→viewer friend request but only ensured the *inviter's* `app_user` row. Fix: `ensureBettingUser(viewer)` first. Regression in `verify-invite.mts`.
+- **`/play` perf — `0.58.1` (#189).** `/play` + `/play/leagues/[id]` were `force-dynamic` with a sequential server chain blocking first paint → now shell-instant + `<Suspense>` streaming one parallel data wave. *(Original #188 mis-merged into the P4 branch; re-landed as #189.)*
+- **Social area — `0.59.0` (#190).** Friends + leagues moved out of `/play` into **`/social/friends`** + **`/social/leagues`** (Friends|Leagues sub-nav); league detail → `/social/leagues/[id]`; invite-join relocated. Old `/play/leagues/*` **308-redirect** (shared invite links survive). `/play` slimmed to betting + Social links; **Social** nav entry (header + bottom bar). Fixed: leaderboard now shows per-league **nicknames** (`getLeaderboard` reads `league_member` directly).
+- **Friend search/add/remove — `0.60.0` (#191).** Self-serve friends: `searchUsers` + `removeFriend` + `listOutgoingRequests` + `GET /api/friends?q=` + POST `{action:'remove'}`. Search→add, accept/decline, cancel sent, remove. No schema change.
+- **Weekend tabs + lazy — `0.61.0` (#192).** Weekend page tabbed (**Schedule · Bets · News · Sessions**); standings fan-out + news deferred to cached `/api/weekend/{standings,news}`, loaded on tab-open; page stays `● ISR`. **Page render 0.66s; ~3–4s of fan-out deferred** off the cold path. Logged in `docs/perf-baselines.md`.
+
+### State
+- **Prod Supabase `dzelqrtajnauunzmxfic`:** `league_award` added. ⚠️ A **demo `'2026-06'` award is seeded** on the largest league — **delete before early July (~Jul 1)** or it blocks the real June award (idempotent per league+period): `delete from league_award where period = '2026-06';`
+- **Migration drift continues:** `20260622180000` applied via the Management API, NOT recorded in `supabase_migrations`. Before any `supabase db push`: `supabase migration repair --status applied 20260622120000 … 20260622180000`.
+- **`.env.local` points at LOCAL Supabase (127.0.0.1), not prod.** The `:3000` dev server serves local data; local DB was reset last session.
+
+### Owed / next
+- **Security:** rotate the Supabase PAT + the RapidAPI key (used heavily). Operator action.
+- **Authed eyeballs (no Clerk session this side):** `/social/*` signed-in + the weekend **Bets** tab signed-in. (P4 medals already confirmed via the prod seed.)
+- **Queued (IDEAS Now/Next):** landing-page marketing for the betting/social game · richer league leaderboard · real-odds API adapter · `exact_position` go-live.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-22 (main = 0.57.1) — Betting LIVE + Leagues P1–P3 — **FIRST: P4 league prizes**
 
 Huge session (PRs #173–#184): betting odds reworked, 3 new market types built, **podium + top-10 gone LIVE on prod**, then the **leagues overhaul P1–P3**. Per-version detail in `CHANGELOG.md` 0.47.0→0.57.0.
