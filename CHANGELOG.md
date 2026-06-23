@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.60.0 — 2026-06-23
+
+Added: **Find + add friends by name, and remove them — no league invite required.**
+
+### Added
+- **Friend search** on `/social/friends`: a name box → results with **Add friend** / Requested / Friend / Accept per hit. `GET /api/friends?q=` → `searchUsers` (case-insensitive `display_name` match, ILIKE wildcards escaped, excludes the viewer, capped at 20, each hit carries its friend state).
+- **Remove a friend / cancel a sent request:** `removeFriend` (deletes the edge either direction, any status) + `POST /api/friends {action:'remove'}`; a **Remove** button on each friend and a **Sent** section (pending outgoing via `listOutgoingRequests`) with **Cancel**. Incoming accept/decline unchanged.
+- Friends are now fully self-serve — previously you could only befriend someone through a league invite.
+
+### Notes
+- No schema change (reuses `friendship` + `app_user`). `verify-friends.mts` extended (search finds by name + excludes the searcher; `removeFriend` unfriends both sides). tsc + build clean; verify green vs local.
+
 ## 0.59.0 — 2026-06-23
 
 Added: **Social area — friends + leagues get their own home at `/social`.**

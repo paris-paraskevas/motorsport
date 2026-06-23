@@ -4,7 +4,13 @@ import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
-import { listFriends, listIncomingRequests, setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import {
+  listFriends,
+  listIncomingRequests,
+  listOutgoingRequests,
+  setDisplayNameIfMissing,
+  clerkDisplayName,
+} from '@/lib/betting/friends';
 import { FriendsPanel } from '@/components/betting/FriendsPanel';
 
 export const dynamic = 'force-dynamic';
@@ -59,14 +65,15 @@ export default async function FriendsPage() {
 }
 
 async function FriendsData({ userId }: { userId: string }) {
-  const [, friends, incoming, user] = await Promise.all([
+  const [, friends, incoming, outgoing, user] = await Promise.all([
     ensureBettingUser(userId),
     listFriends(userId),
     listIncomingRequests(userId),
+    listOutgoingRequests(userId),
     currentUser(),
   ]);
   await setDisplayNameIfMissing(userId, clerkDisplayName(user));
-  return <FriendsPanel friends={friends} incoming={incoming} />;
+  return <FriendsPanel friends={friends} incoming={incoming} outgoing={outgoing} />;
 }
 
 function FriendsSkeleton() {

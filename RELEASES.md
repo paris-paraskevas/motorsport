@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.60.0 — 2026-06-23
+
+**Add friends by name.** Under Social → Friends you can now search for anyone by name and send a friend request — no league invite needed. You can also see the requests you've sent (and cancel them), and remove friends.
+
 ## 0.59.0 — 2026-06-23
 
 **Friends and leagues have their own home.** There's now a **Social** tab: manage friend requests under Friends, and your leagues — with their win-rate tables and champion honours — under Leagues. Play is now just for betting, with quick links across to Social. Old league and invite links still work. Also fixed: league leaderboards now show the nicknames you've set for members.

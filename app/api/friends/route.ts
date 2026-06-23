@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
-import { sendFriendRequest, respondToFriendRequest } from '@/lib/betting/friends';
+import { sendFriendRequest, respondToFriendRequest, searchUsers, removeFriend } from '@/lib/betting/friends';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -38,9 +38,25 @@ export async function POST(req: Request) {
       await respondToFriendRequest(userId, target, action === 'accept');
       return NextResponse.json({ ok: true });
     }
+    if (action === 'remove') {
+      await removeFriend(userId, target);
+      return NextResponse.json({ ok: true });
+    }
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'error';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
+}
+
+// Friend search by display name — GET /api/friends?q=<query>. Returns matches with
+// each one's friend state vs the viewer (drives the add-friend UI). Inert until provisioned.
+export async function GET(req: Request) {
+  if (!isBettingConfigured()) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  await ensureAppUser(userId);
+  const q = new URL(req.url).searchParams.get('q') ?? '';
+  const results = await searchUsers(userId, q);
+  return NextResponse.json({ results });
 }
