@@ -1,0 +1,104 @@
+// Per-user home (/app) layout prefs: the order of the home's top-level blocks
+// and which are hidden. Phase-1 customizes the three top-level blocks (the
+// schedule + news pair stays coupled as one block on desktop). Reordering is
+// applied via CSS `order` on a flex column, so the DEFAULT order renders the
+// home byte-identically — only a user who customizes sees a change.
+//
+// Nav-item and series-tab customization are deferred (phase 2/3).
+
+export const HOME_LAYOUT_VERSION = 1;
+
+export type HomeElementId = 'chyron' | 'just-missed' | 'schedule';
+
+export interface HomeElementMeta {
+  id: HomeElementId;
+  label: string;
+  hint: string;
+}
+
+// Single source of element ids + default order + labels. Adding an element later
+// is a one-line change here; reconcile() lights it up for existing users.
+export const HOME_ELEMENTS: HomeElementMeta[] = [
+  { id: 'chyron', label: 'Live / up next', hint: 'The broadcast strip — live session or the next countdown.' },
+  { id: 'just-missed', label: 'Just missed', hint: 'The latest results from your series.' },
+  { id: 'schedule', label: 'Schedule & news', hint: 'This week’s sessions and the Paddock wire.' },
+];
+
+const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
+
+export interface HomeLayoutPrefs {
+  version: number;
+  order: HomeElementId[];
+  hidden: HomeElementId[];
+}
+
+export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
+  version: HOME_LAYOUT_VERSION,
+  order: [...ALL_IDS],
+  hidden: [],
+};
+
+function isHomeElementId(x: unknown): x is HomeElementId {
+  return typeof x === 'string' && (ALL_IDS as string[]).includes(x);
+}
+
+function dedupe(ids: HomeElementId[]): HomeElementId[] {
+  const seen = new Set<HomeElementId>();
+  const out: HomeElementId[] = [];
+  for (const id of ids) {
+    if (!seen.has(id)) {
+      seen.add(id);
+      out.push(id);
+    }
+  }
+  return out;
+}
+
+/**
+ * Reconcile stored prefs against the live registry: keep known ids in their
+ * stored order, append any registry ids missing from `order` (so a newly shipped
+ * element appears for existing users without a migration), and drop unknown /
+ * renamed ids. `hidden` is filtered to known ids. Always returns a complete,
+ * valid layout — the read path never trusts stored `order` to be exhaustive.
+ */
+export function reconcileHomeLayout(stored: Partial<HomeLayoutPrefs> | null | undefined): HomeLayoutPrefs {
+  const storedOrder = Array.isArray(stored?.order) ? stored!.order.filter(isHomeElementId) : [];
+  const order = dedupe(storedOrder);
+  for (const id of ALL_IDS) {
+    if (!order.includes(id)) order.push(id);
+  }
+  const hidden = Array.isArray(stored?.hidden) ? dedupe(stored!.hidden.filter(isHomeElementId)) : [];
+  return { version: HOME_LAYOUT_VERSION, order, hidden };
+}
+
+/** Validate + normalize an API payload; null when the shape is wrong. */
+export function parseHomeLayout(body: unknown): HomeLayoutPrefs | null {
+  if (typeof body !== 'object' || body === null) return null;
+  const b = body as Record<string, unknown>;
+  if (b.order !== undefined && !Array.isArray(b.order)) return null;
+  if (b.hidden !== undefined && !Array.isArray(b.hidden)) return null;
+  return reconcileHomeLayout(b as Partial<HomeLayoutPrefs>);
+}
+
+// ── localStorage (signed-out fallback, mirrors lib/follow.ts) ───────────────
+const LS_KEY = 'paddock:home-layout';
+
+export function getLocalHomeLayout(): HomeLayoutPrefs | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    return reconcileHomeLayout(JSON.parse(raw) as Partial<HomeLayoutPrefs>);
+  } catch {
+    return null;
+  }
+}
+
+export function setLocalHomeLayout(prefs: HomeLayoutPrefs): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(LS_KEY, JSON.stringify(prefs));
+  } catch {
+    /* quota / disabled — best effort */
+  }
+}

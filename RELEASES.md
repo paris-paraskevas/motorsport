@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.66.0 — 2026-06-23
+
+**Make the home yours.** A new **Customise** button on your home page lets you reorder or hide its sections — Live/Up next, Just missed, and Schedule & news — in whatever order suits you. Your choices save to your account (or this device when signed out). More customisation (navigation and series tabs) is coming next.
+
 ## 0.65.0 — 2026-06-23
 
 **A real calendar.** The Calendar page now has proper **Month, Week and Day** views you can switch between and click through — jump to any month, scan a week, or open a single day. Times show in your device's timezone, and to-be-confirmed sessions read "TBC" instead of a made-up time.

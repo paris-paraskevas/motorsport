@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.66.0 — 2026-06-23
+
+Added: **Customise your home — reorder or hide the home blocks.**
+
+### Added
+- A **Customise** toggle on `/app` opens a panel to **reorder** (up/down) and **show/hide** the three top-level home blocks — **Live / up next**, **Just missed**, **Schedule & news** — with Reset to default. Saved per-user (Vercel KV, cross-device when signed in; `localStorage` otherwise), mirroring the followed-series prefs.
+- Order applies via CSS `order` on a flex column, so the **default layout renders identically** — only a user who customises sees a change; hidden blocks are dropped.
+- New: `lib/homeLayout.ts` (3-element registry + `reconcileHomeLayout`, 5 unit tests), `lib/useHomeLayout.ts` (auth-aware hook), `app/api/user/home-layout` (GET/PUT, Clerk-auth + validated), `getUserHomeLayout`/`setUserHomeLayout` in `lib/userPrefs.ts`, `components/HomeCustomizeBar.tsx`.
+
+### Notes
+- Phase-1: schedule + news stay coupled as one block; **nav-item + series-tab ordering deferred** (phase 2/3). `/app` stays `○` static; layout resolves client-side behind the existing skeleton gate (no SSR mismatch). tsc clean; **470 tests** pass; `next build` clean. Needs a signed-in pass of the customise flow.
+
 ## 0.65.0 — 2026-06-23
 
 Added: **Calendar redesigned — interactive Month / Week / Day views.**

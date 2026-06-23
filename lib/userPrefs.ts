@@ -1,4 +1,5 @@
 import { kv } from '@vercel/kv';
+import { reconcileHomeLayout, type HomeLayoutPrefs } from './homeLayout';
 
 const PREFIX = 'paddock:user:';
 
@@ -86,4 +87,17 @@ export async function setUserNotifPrefs(
   const next: NotifPrefs = { ...current, ...patch };
   await kv.set(`${PREFIX}${userId}:notifPrefs`, next);
   return next;
+}
+
+export async function getUserHomeLayout(userId: string): Promise<HomeLayoutPrefs | null> {
+  if (!isKvConfigured()) return null;
+  const stored = await kv.get<Partial<HomeLayoutPrefs>>(`${PREFIX}${userId}:homeLayout`);
+  return stored ? reconcileHomeLayout(stored) : null;
+}
+
+export async function setUserHomeLayout(userId: string, prefs: HomeLayoutPrefs): Promise<void> {
+  if (!isKvConfigured()) {
+    throw new Error('Vercel KV is not configured.');
+  }
+  await kv.set(`${PREFIX}${userId}:homeLayout`, reconcileHomeLayout(prefs));
 }
