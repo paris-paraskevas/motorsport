@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.64.0 — 2026-06-23
+
+**Add friends with a link.** Under Social → Friends, tap "Copy friend link" and share it — whoever opens it can create an account (or sign in) and become your friend in a tap, no league invite required.
+
 ## 0.63.0 — 2026-06-23
 
 **Tidier Play page.** Each race weekend's bets (winner, podium, top-10) now collapse into a single "Round N" bar you can expand — instead of one long flat list.
