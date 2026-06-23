@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { after } from 'next/server';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
@@ -83,13 +84,24 @@ export default async function JoinLeaguePage({ params }: { params: Promise<{ tok
   // Signed in and not the inviter: fully onboard the viewer FIRST (app_user row +
   // monthly credits) — arriving straight from sign-up on the invite link, they may
   // never have visited /play, and the friend-request + membership FKs require their
-  // app_user row to exist. Then backfill the name and raise the pending friend
-  // request (inviter → viewer) so the flow below can accept it.
-  const dn = clerkDisplayName(await currentUser());
-  await ensureBettingUser(userId, dn ?? undefined);
-  await setDisplayNameIfMissing(userId, dn);
+  // app_user row to exist. Then raise the pending friend request (inviter → viewer)
+  // so the flow below can accept it. The join only needs userId (from auth()).
+  //
+  // The display-name backfill is deliberately OFF the critical path: it calls
+  // currentUser() (Clerk's backend API), which throws "authorization invalid" on a
+  // fresh post-sign-in handshake — notably Safari/ITP arriving here straight from
+  // the hosted sign-in redirect. That previously 500'd the whole join; now it runs
+  // best-effort in after() and can never block joining.
+  await ensureBettingUser(userId);
   await ensureAppUser(invite.inviterId);
   await sendFriendRequest(invite.inviterId, userId);
+  after(async () => {
+    try {
+      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+    } catch {
+      /* best-effort name backfill — a Clerk hiccup must not block joining */
+    }
+  });
 
   return frame(
     <div className="space-y-4">

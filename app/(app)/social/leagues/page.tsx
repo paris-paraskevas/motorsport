@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { after } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
@@ -60,8 +61,16 @@ export default async function LeaguesPage() {
 }
 
 async function LeaguesData({ userId }: { userId: string }) {
-  const [, leagues, user] = await Promise.all([ensureBettingUser(userId), getUserLeagues(userId), currentUser()]);
-  await setDisplayNameIfMissing(userId, clerkDisplayName(user));
+  const [, leagues] = await Promise.all([ensureBettingUser(userId), getUserLeagues(userId)]);
+  // Name backfill off the critical path (see the join page) — Clerk's currentUser()
+  // can fail on a fresh sign-in handshake and must never block the page.
+  after(async () => {
+    try {
+      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+    } catch {
+      /* best-effort */
+    }
+  });
   const leaderboards = await Promise.all(
     leagues.map(async league => ({ league, rows: await getLeaderboard(league.id, 0) })),
   );

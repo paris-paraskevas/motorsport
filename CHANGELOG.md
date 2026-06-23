@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.61.2 — 2026-06-23
+
+Fixed: **League invite-join no longer 500s on a fresh sign-in (Safari).**
+
+### Fixed
+- The invite-join page (`/social/leagues/join/[token]`) called `currentUser()` (Clerk's **backend** API) synchronously on the critical path, only to backfill a display name. On a fresh post-sign-in handshake — notably Safari/ITP arriving straight from the hosted sign-in redirect — `currentUser()` throws "authorization invalid (clerk trace id …)", which 500'd the **entire join**. The viewer is now onboarded with just their `userId` (all the join actually needs: `ensureBettingUser` + `ensureAppUser(inviter)` + `sendFriendRequest`); the name backfill moved to a best-effort `after()` that can never block joining.
+- Removed the same fragile pattern from `/play`, `/social/friends`, `/social/leagues`: `currentUser()` and the blocking `setDisplayNameIfMissing` write are off the render critical path now (deferred to `after()`), so a Clerk hiccup can't 500 those pages either — and the per-render Clerk backend round-trip no longer blocks first paint (a perf win on every authed render, per the perf audit).
+
+### Notes
+- No schema change. `tsc --noEmit` clean; 458 unit tests pass; `next build` clean (route table unchanged — `/play`, `/social/*` stay `ƒ`). Needs a signed-in browser pass on the invite-join flow (the original Safari repro) — can't be done without a Clerk session this side.
+
 ## 0.61.1 — 2026-06-23
 
 Changed: **Session close-out — operational docs brought current with 0.58.0→0.61.0 (no code change).**
