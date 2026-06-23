@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.65.0 — 2026-06-23
+
+Added: **Calendar redesigned — interactive Month / Week / Day views.**
+
+### Added
+- `/calendar` is now a real calendar with a **Month / Week / Day** switcher, ‹ / Today / › navigation, and click-through interconnection (a month cell or week-day header opens that day). Replaces the month-by-month list.
+  - **Month:** 7-col grid (ISO Monday start); session pills on desktop, series-colour dots on mobile, "+N more" overflow.
+  - **Week:** 7 day columns (desktop) / vertical day stack (mobile).
+  - **Day:** the day's sessions via the existing `SessionCard` (live pill, significance, weekend link-through).
+- New pure `lib/calendar-grid.ts` (+ 7 unit tests): the single device-local day-bucketing engine — timed sessions bucket by the **device-local** day, `dateOnly` sessions by their **UTC** wall date and render "TBC" (never an invented clock time). The grid is gated on the synced clock + followed-series prefs, so the route stays static/ISR with no SSR-timezone mismatch or personalization flash.
+
+### Notes
+- `/calendar` stays **`○` static (5-min ISR)** — view/anchor state is client-only (no server `searchParams`). `FilteredSessions`/`MonthNavigator` left in place (now unused by `/calendar`). tsc clean; **465 tests** pass; `next build` clean. Needs a signed-in + multi-timezone browser pass.
+
 ## 0.64.0 — 2026-06-23
 
 Added: **Shareable friend-request links.**

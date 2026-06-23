@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.65.0 — 2026-06-23
+
+**A real calendar.** The Calendar page now has proper **Month, Week and Day** views you can switch between and click through — jump to any month, scan a week, or open a single day. Times show in your device's timezone, and to-be-confirmed sessions read "TBC" instead of a made-up time.
+
 ## 0.64.0 — 2026-06-23
 
 **Add friends with a link.** Under Social → Friends, tap "Copy friend link" and share it — whoever opens it can create an account (or sign in) and become your friend in a tap, no league invite required.
