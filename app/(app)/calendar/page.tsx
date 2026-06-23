@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
-import { FilteredSessions } from '@/components/FilteredSessions';
+import { CalendarView } from '@/components/calendar/CalendarView';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
@@ -67,7 +67,7 @@ export default async function CalendarPage() {
         </div>
       </header>
 
-      <FilteredSessions items={flat} roundByKey={roundByKey} serverNow={now.toISOString()} />
+      <CalendarView items={flat} roundByKey={roundByKey} serverNow={now.toISOString()} />
     </div>
   );
 }
