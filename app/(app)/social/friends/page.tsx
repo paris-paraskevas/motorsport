@@ -81,7 +81,7 @@ async function FriendsData({ userId }: { userId: string }) {
       /* best-effort */
     }
   });
-  return <FriendsPanel friends={friends} incoming={incoming} outgoing={outgoing} />;
+  return <FriendsPanel friends={friends} incoming={incoming} outgoing={outgoing} myUserId={userId} />;
 }
 
 function FriendsSkeleton() {

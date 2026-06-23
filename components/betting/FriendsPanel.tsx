@@ -12,10 +12,12 @@ export function FriendsPanel({
   friends,
   incoming,
   outgoing,
+  myUserId,
 }: {
   friends: Friend[];
   incoming: IncomingRequest[];
   outgoing: OutgoingRequest[];
+  myUserId: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -23,6 +25,17 @@ export function FriendsPanel({
   const [q, setQ] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
+  const [linkCopied, setLinkCopied] = useState<string | null>(null);
+
+  async function copyFriendLink() {
+    const link = `${window.location.origin}/social/friends/add/${myUserId}`;
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      /* clipboard may be blocked — the link is shown to copy manually */
+    }
+    setLinkCopied(link);
+  }
 
   // Debounced name search.
   useEffect(() => {
@@ -125,6 +138,19 @@ export function FriendsPanel({
             ))}
           </ul>
         )}
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">Or share your link</span>
+          <button
+            type="button"
+            onClick={copyFriendLink}
+            className="rounded border border-white/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint"
+          >
+            {linkCopied ? 'Copied — copy again' : 'Copy friend link'}
+          </button>
+          {linkCopied && (
+            <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-text-muted">{linkCopied}</span>
+          )}
+        </div>
       </div>
 
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}

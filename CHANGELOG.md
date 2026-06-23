@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.64.0 — 2026-06-23
+
+Added: **Shareable friend-request links.**
+
+### Added
+- A "Copy friend link" button on `/social/friends` (Add friends) copies `…/social/friends/add/<your-id>`. Anyone who opens it (creating an account or signing in first) lands on a page that raises the friend request and offers Accept / Decline — no league invite needed.
+- New route `app/(app)/social/friends/add/[id]` + `FriendInviteFlow`. The path id is the inviter's opaque user id — knowing it only lets you friend them (every mutation still checks the requester's own Clerk auth), so no token table / migration is needed. Onboards the viewer with just `userId` and keeps Clerk's backend call off the critical path (the 0.61.2 pattern).
+
+### Notes
+- Reuses `sendFriendRequest` / `respondToFriendRequest` / `displayNames`; no schema change. tsc clean; 458 tests pass; `next build` clean (`/social/friends/add/[id]` = ƒ). Needs a signed-in pass on the copy → open → accept flow.
+
 ## 0.63.0 — 2026-06-23
 
 Changed: **Play groups each weekend's markets into one collapsible bar.**
