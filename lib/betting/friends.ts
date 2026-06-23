@@ -157,3 +157,65 @@ export async function friendStates(userId: string, otherIds: string[]): Promise<
   }
   return out;
 }
+
+export interface SearchResult {
+  userId: string;
+  displayName: string | null;
+  friendState: FriendState;
+}
+
+/** Find users by display name (case-insensitive substring), excluding the viewer,
+ *  each with its friend state vs the viewer. Empty for queries under 2 chars; capped. */
+export async function searchUsers(viewerId: string, query: string, limit = 20): Promise<SearchResult[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const escaped = q.replace(/[\\%_]/g, '\\$&'); // treat ILIKE wildcards as literals
+  const { data, error } = await betDb()
+    .from('app_user')
+    .select('clerk_user_id, display_name')
+    .neq('clerk_user_id', viewerId)
+    .not('display_name', 'is', null)
+    .ilike('display_name', `%${escaped}%`)
+    .limit(limit);
+  if (error) throw new Error(`searchUsers failed: ${error.message}`);
+  const rows = data ?? [];
+  const states = await friendStates(viewerId, rows.map(u => u.clerk_user_id as string));
+  return rows
+    .map(u => ({
+      userId: u.clerk_user_id as string,
+      displayName: (u.display_name as string | null) ?? null,
+      friendState: states.get(u.clerk_user_id as string) ?? ('none' as FriendState),
+    }))
+    .sort((a, b) => (a.displayName ?? a.userId).localeCompare(b.displayName ?? b.userId));
+}
+
+/** Remove the friendship edge between two users in either direction, any status —
+ *  unfriend an accepted friend, or cancel a request you sent. Idempotent. */
+export async function removeFriend(userId: string, otherId: string): Promise<void> {
+  const { error } = await betDb().from('friendship').delete().or(pairFilter(userId, otherId));
+  if (error) throw new Error(`removeFriend failed: ${error.message}`);
+}
+
+export interface OutgoingRequest {
+  addresseeId: string;
+  displayName: string | null;
+  createdAt: string;
+}
+
+/** Pending requests this user has SENT (for a "sent" list + cancel), name-resolved (newest first). */
+export async function listOutgoingRequests(userId: string): Promise<OutgoingRequest[]> {
+  const { data, error } = await betDb()
+    .from('friendship')
+    .select('addressee_id, created_at')
+    .eq('requester_id', userId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(`listOutgoingRequests failed: ${error.message}`);
+  const rows = data ?? [];
+  const names = await displayNames(rows.map(r => r.addressee_id as string));
+  return rows.map(r => ({
+    addresseeId: r.addressee_id as string,
+    displayName: names.get(r.addressee_id as string) ?? null,
+    createdAt: r.created_at as string,
+  }));
+}
