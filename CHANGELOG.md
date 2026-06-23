@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.61.1 — 2026-06-23
+
+Changed: **Session close-out — operational docs brought current with 0.58.0→0.61.0 (no code change).**
+
+### Changed
+- `docs/HANDOFF.md`: new top block recording 0.58.0→0.61.0 (P4 prizes #187, `/play` perf #189, Social area #190, friend search #191, weekend tabs #192, invite hotfix #186), prod state, the migration-drift repair reminder, and the demo-award deletion deadline (~Jul 1).
+- `IDEAS.md`: triaged — W1 weekend-overhaul retired from Now (all shipped); a "Betting / Social game — LIVE, in refinement" umbrella takes Now §1 (landing marketing → richer leaderboard → real-odds adapter → `exact_position` go-live); betting/leagues/social Inbox items annotated shipped/promoted.
+- `SCHEDULE.md`: 2026-06-22 P4 plan marked done; 2026-06-23 close-out + perf-investigation entry added.
+- No source change — tsc/build/tests untouched.
+
 ## 0.61.0 — 2026-06-23
 
 Changed: **Race-weekend page is tabbed + lazy — Schedule | Bets | News | Sessions; heavy content loads on tab open.**

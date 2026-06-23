@@ -788,6 +788,23 @@ Plan: ship **P4 league prizes** (0.58.0) — `league_award` table + `award_leagu
 
 Won't touch: real-odds API, exact_position go-live, invite click-through browser-verify, the Social-area build itself (planning only this session), PAT/RapidAPI rotation (operator action).
 
+Outcomes:
+
+- → done: **P4 league prizes (0.58.0, #187)** — `league_award` + `award_league_prizes()` (top-3 by win-rate, no credits) + daily cron + medals/Honours + `verify-league-prizes.mts`; migration applied to prod via the Management API; prod-verified via a seeded demo June award.
+- → done: the post-P4 plan executed in the same run — **`/play` perf (0.58.1, #189)**, **Social area (0.59.0, #190)**, **friend search/add/remove (0.60.0, #191)**, **weekend tabs + lazy (0.61.0, #192)**; invite hotfix (0.57.2, #186) folded in.
+- → carried (operator): authed-eyeball verify of `/social/*` + the weekend Bets tab signed-in; real-odds adapter; `exact_position` go-live.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+### 2026-06-23 — session close-out (docs) + perf investigation
+
+Plan: bring the three ops docs current with 0.58.0→0.61.0 (CHANGELOG/RELEASES/package.json were already logged last session) and ship as a docs-only **0.61.1**; then a perf investigation of `/social`, `/play`, `/account` (operator: "ULTRA slow") — investigate first, discuss the fix before touching code.
+
+- → done: `docs/HANDOFF.md` new 0.61.0 top block; `IDEAS.md` triage (W1 retired from Now; betting/social refinement umbrella → Now §1; betting/leagues/social shipped-items annotated; landing-marketing + richer-leaderboard + real-odds + exact_position slotted); this `SCHEDULE.md` entry. Shipped as **0.61.1** (docs-only).
+- perf investigation of `/social` + `/play` + `/account` — operator-requested mid-session; findings + a fix discussion to follow.
+
+Won't touch: feature code (perf is investigate-first, discuss-before-fix), the untracked litter, the demo-award prod delete (~Jul 1), key rotation.
+
 Active: _(awaiting `[+Nm]` prefixes)_
 
 ---
