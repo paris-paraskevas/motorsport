@@ -4,8 +4,48 @@ import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
-import { groupSeriesByCategory } from '@/lib/categories';
+import { Accordion } from './Accordion';
 import { NotifPrefsSection } from './NotifPrefsSection';
+
+// One row per series: colour dot + name + a follow checkbox. The checkbox is
+// checked inside the "Followed" accordion and unchecked inside "Not followed";
+// toggling re-buckets the series on the next render.
+function SeriesList({
+  series,
+  isFollowing,
+  toggle,
+  emptyLabel,
+}: {
+  series: SeriesMeta[];
+  isFollowing: (slug: string) => boolean;
+  toggle: (slug: string) => void;
+  emptyLabel: string;
+}) {
+  if (series.length === 0) {
+    return <p className="text-text-faint text-sm px-1 py-2">{emptyLabel}</p>;
+  }
+  return (
+    <div className="border-t border-border">
+      {series.map((s, i) => (
+        <label
+          key={s.slug}
+          className={`flex items-center gap-3 px-1 py-3 cursor-pointer hover:bg-surface transition-colors ${
+            i > 0 ? 'border-t border-border' : ''
+          }`}
+        >
+          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+          <span className="flex-1 text-text text-sm font-medium">{s.name}</span>
+          <input
+            type="checkbox"
+            checked={isFollowing(s.slug)}
+            onChange={() => toggle(s.slug)}
+            className="w-5 h-5 rounded accent-brand cursor-pointer"
+          />
+        </label>
+      ))}
+    </div>
+  );
+}
 
 export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
   const { isSignedIn } = useAuth();
@@ -31,8 +71,9 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
   const unfollowAll = () => setFollowed([]);
   const resetToDefault = () => setFollowed(seriesList.map(s => s.slug));
 
-  const grouped = groupSeriesByCategory(seriesList);
-  const followedCount = effectiveFollowed.length;
+  const followedSeries = seriesList.filter(s => isFollowing(s.slug));
+  const notFollowedSeries = seriesList.filter(s => !isFollowing(s.slug));
+  const followedCount = followedSeries.length;
   const totalCount = seriesList.length;
 
   return (
@@ -45,7 +86,8 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
           Replay the tour →
         </Link>
       </div>
-      <div className="border-y border-border py-5 md:py-6 mb-6">
+
+      <div className="border-t border-border py-5 md:py-6">
         <div className="flex items-baseline justify-between mb-1">
           <div>
             <h2 className="text-text text-base font-semibold">Followed championships</h2>
@@ -87,39 +129,23 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
 
       {isSignedIn && <NotifPrefsSection />}
 
-      <div className="space-y-6">
-        {grouped.map(group => (
-          <section key={group.category.id}>
-            <div className="text-[10px] uppercase tracking-[0.16em] text-text-faint font-semibold mb-2 px-1">
-              {group.category.label}
-            </div>
-            <div className="border-y border-border">
-              {group.series.map((s, i) => (
-                <label
-                  key={s.slug}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface transition-colors ${
-                    i > 0 ? 'border-t border-border' : ''
-                  }`}
-                >
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: s.color }}
-                  />
-                  <span className="flex-1 text-text text-sm font-medium">
-                    {s.name}
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={isFollowing(s.slug)}
-                    onChange={() => toggle(s.slug)}
-                    className="w-5 h-5 rounded accent-brand cursor-pointer"
-                  />
-                </label>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+      <Accordion title="Followed" count={`${followedCount}`} defaultOpen>
+        <SeriesList
+          series={followedSeries}
+          isFollowing={isFollowing}
+          toggle={toggle}
+          emptyLabel="You're not following any series yet — add some below."
+        />
+      </Accordion>
+
+      <Accordion title="Not followed" count={`${notFollowedSeries.length}`}>
+        <SeriesList
+          series={notFollowedSeries}
+          isFollowing={isFollowing}
+          toggle={toggle}
+          emptyLabel="You're following every series."
+        />
+      </Accordion>
     </div>
   );
 }

@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.62.0 — 2026-06-23
+
+Changed: **Account page tidied into collapsible sections.**
+
+### Changed
+- New reusable `Accordion` (`components/Accordion.tsx`) — keyboard-operable, `aria-expanded`, body unmounts when collapsed.
+- **Session notifications** (`EnableNotifications`) and **What gets notified** (`NotifPrefsSection`) are now collapsible accordions.
+- **Followed championships** split into **Followed (N)** (open by default) + **Not followed (M)** accordions, replacing the single category-grouped checkbox list. Follow all / Unfollow all / Reset + the count are unchanged; toggling a series re-buckets it between the two lists.
+
+### Notes
+- Client-only; no schema change. tsc clean; 458 tests pass; `next build` clean. Needs a signed-in browser pass on `/settings`.
+
 ## 0.61.2 — 2026-06-23
 
 Fixed: **League invite-join no longer 500s on a fresh sign-in (Safari).**

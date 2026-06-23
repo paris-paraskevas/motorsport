@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.62.0 — 2026-06-23
+
+**A tidier Account page.** Your notification settings now sit in collapsible sections, and your followed series are split into expandable **Followed** and **Not followed** lists — so there's far less to scroll.
+
 ## 0.61.2 — 2026-06-23
 
 **Fixed: joining a league from an invite link no longer errors right after you sign in** — including in Safari. The page that handles invites did one fragile step (fetching your profile name) that could fail mid-sign-in and break the whole join; that step is now optional and runs quietly in the background, so joining always goes through.
