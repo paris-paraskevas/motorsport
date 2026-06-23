@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { after } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
@@ -65,14 +66,21 @@ export default async function FriendsPage() {
 }
 
 async function FriendsData({ userId }: { userId: string }) {
-  const [, friends, incoming, outgoing, user] = await Promise.all([
+  const [, friends, incoming, outgoing] = await Promise.all([
     ensureBettingUser(userId),
     listFriends(userId),
     listIncomingRequests(userId),
     listOutgoingRequests(userId),
-    currentUser(),
   ]);
-  await setDisplayNameIfMissing(userId, clerkDisplayName(user));
+  // Name backfill off the critical path (see the join page) — Clerk's currentUser()
+  // can fail on a fresh sign-in handshake and must never block the page.
+  after(async () => {
+    try {
+      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+    } catch {
+      /* best-effort */
+    }
+  });
   return <FriendsPanel friends={friends} incoming={incoming} outgoing={outgoing} />;
 }
 

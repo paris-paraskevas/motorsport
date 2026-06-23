@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { after } from 'next/server';
 import { Suspense, type ReactNode } from 'react';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
@@ -71,13 +72,20 @@ export default async function PlayPage() {
 // Betting reads in one parallel wave. Friends + leagues moved to /social — Play
 // is the betting hub now, with quick links across to the Social area.
 async function PlayData({ userId }: { userId: string }) {
-  const [balance, markets, bets, user] = await Promise.all([
+  const [balance, markets, bets] = await Promise.all([
     ensureBettingUser(userId),
     getOpenMarkets(),
     getUserBets(userId),
-    currentUser(),
   ]);
-  await setDisplayNameIfMissing(userId, clerkDisplayName(user));
+  // Name backfill off the critical path — currentUser() (Clerk backend) can fail
+  // on a fresh sign-in handshake and must never block the page (see the join page).
+  after(async () => {
+    try {
+      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+    } catch {
+      /* best-effort */
+    }
+  });
 
   return (
     <div className="space-y-8">
