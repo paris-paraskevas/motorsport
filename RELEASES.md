@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.61.0 — 2026-06-23
+
+**Race weekends load faster, with tabs.** Each weekend page now has **Schedule**, **Bets**, **News** and **Sessions** tabs — the schedule shows instantly and the rest load only when you tap their tab, so the page opens much quicker.
+
 ## 0.60.0 — 2026-06-23
 
 **Add friends by name.** Under Social → Friends you can now search for anyone by name and send a friend request — no league invite needed. You can also see the requests you've sent (and cancel them), and remove friends.

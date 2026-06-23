@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
-import { weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
+import { weekendFor, weekendLabel, weekendStartEnd, sessionSlug } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
 import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
-import { WeekendStandingsSnapshot } from '@/components/weekend/WeekendStandingsSnapshot';
-import { WeekendNews } from '@/components/weekend/WeekendNews';
-import { WeekendBetting } from '@/components/weekend/WeekendBetting';
+import { WeekendTabs } from '@/components/weekend/WeekendTabs';
+import { isBettingConfigured } from '@/lib/betting/client';
+import { NEWS_SLUG_MAP } from '@/lib/news';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
@@ -115,6 +115,18 @@ export default async function WeekendPage({
       ? `${series.meta.name} Round ${round}`
       : `${series.meta.name} — ${weekendTitleLabel}`;
 
+  // Per-session result pages: F1 via OpenF1; the listed series carry race-session
+  // classifications; WEC/IMSA/GT World render per-class tables; others stay
+  // unlinked. Computed here, rendered in the Sessions tab (Schedule is just the
+  // timetable now).
+  const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world'].includes(slug)
+    ? `/series/${slug}/weekend/${round}`
+    : undefined;
+  const sessionLinks = weekend.sessions.map(s => ({
+    title: s.title,
+    href: sessionLinkBase ? `${sessionLinkBase}/${sessionSlug(s.title)}` : null,
+  }));
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -182,31 +194,26 @@ export default async function WeekendPage({
         </section>
       )}
 
-      <WeekendWeatherStrip weekend={weekend} />
-
-      <WeekendSchedule
-        weekend={weekend}
-        color={color}
-        // Per-session pages: F1 has every session via OpenF1; the listed
-        // series carry race-session classifications from their results
-        // feeds (0.35.0); WEC/IMSA/GT World race sessions render per-class
-        // tables (0.36.0 / 0.36.2 categories parity). DTM/NLS/ADAC stay
-        // unlinked until a per-race source exists for them.
-        sessionLinkBase={
-          ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world'].includes(slug)
-            ? `/series/${slug}/weekend/${round}`
-            : undefined
+      {/* Tabs: Schedule (server-rendered timetable + weather, paints with the
+          page) | Bets (F1, future) | News | Sessions (per-session result links +
+          standings). The non-default tabs mount + fetch only when first opened,
+          so a cold weekend page render does only the cheap schedule + weather —
+          not the news feed, the season-results fan-out, or the betting markets.
+          The page stays ISR-cacheable. */}
+      <WeekendTabs
+        scheduleSlot={
+          <>
+            <WeekendSchedule weekend={weekend} color={color} />
+            <WeekendWeatherStrip weekend={weekend} />
+          </>
         }
+        slug={slug}
+        round={round}
+        isPast={isPast}
+        showBets={slug === 'f1' && !isPast && isBettingConfigured()}
+        showNews={NEWS_SLUG_MAP[slug] != null}
+        sessionLinks={sessionLinks}
       />
-
-      {/* Betting embed — F1 only for now; the component self-hides for past
-          weekends and when betting isn't provisioned, and fetches its own
-          market data client-side so it never busts this page's ISR cache. */}
-      {slug === 'f1' && <WeekendBetting seriesSlug={slug} round={round} isPast={isPast} />}
-
-      <WeekendStandingsSnapshot series={series} round={round} isPast={isPast} />
-
-      <WeekendNews series={series} weekend={weekend} />
     </div>
   );
 }
