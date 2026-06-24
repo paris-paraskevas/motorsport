@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.72.3 — 2026-06-24
+
+**Snappier Play & leagues.** Upcoming markets and your league standings are now cached for a short window, so opening Play, a weekend's bets, or your leagues page is noticeably quicker — your bets and odds stay exactly as fresh as before.
+
 ## 0.72.2 — 2026-06-23
 
 *Internal: documentation housekeeping (handoff de-stale). No user-facing change.*

@@ -1,6 +1,7 @@
 import { betDb } from './client';
 import { winMultipliers, podiumMultipliers, topTenMultipliers, exactPositionMultipliers, type DriverForm } from './pricing';
 import { MARKET_TYPE_META } from './constants';
+import { readBetCache, writeBetCache, bustBetCache, OPEN_MARKETS_KEY, OPEN_MARKETS_TTL } from './cache';
 
 // Server-only. Create/settle betting markets. Odds are priced once here and
 // stored on the market (server-authoritative, fixed for the window).
@@ -34,6 +35,7 @@ async function createMarket(
     .select('id')
     .single();
   if (error) throw new Error(`create ${type} market failed: ${error.message}`);
+  await bustBetCache(OPEN_MARKETS_KEY); // a new open market just appeared
   return data.id as string;
 }
 
@@ -74,6 +76,7 @@ export async function settleMarket(marketId: string, result: object): Promise<Se
     p_result: result,
   });
   if (error) throw new Error(`settleMarket failed: ${error.message}`);
+  await bustBetCache(OPEN_MARKETS_KEY); // settled → no longer an open market
   return data as SettlementSummary;
 }
 
@@ -87,8 +90,7 @@ export interface OpenMarket {
   odds: Record<string, number>;
 }
 
-/** Open markets not yet past their lock time, soonest-locking first. */
-export async function getOpenMarkets(): Promise<OpenMarket[]> {
+async function fetchOpenMarkets(): Promise<OpenMarket[]> {
   const { data, error } = await betDb()
     .from('market')
     .select('id, series_slug, round, session_uid, type, locks_at, odds_json')
@@ -105,6 +107,21 @@ export async function getOpenMarkets(): Promise<OpenMarket[]> {
     locksAt: m.locks_at as string,
     odds: (m.odds_json as Record<string, number> | null) ?? {},
   }));
+}
+
+/** Open markets not yet past their lock time, soonest-locking first.
+ *  KV read-through (shared key, short TTL): the heavy path on /play and every
+ *  weekend page's `/api/bet/market`. A market that locks *within* the cache
+ *  window is dropped on read, so it never shows as bettable past its lock —
+ *  and the place path is atomic regardless. */
+export async function getOpenMarkets(): Promise<OpenMarket[]> {
+  let markets = await readBetCache<OpenMarket[]>(OPEN_MARKETS_KEY);
+  if (!markets) {
+    markets = await fetchOpenMarkets();
+    await writeBetCache(OPEN_MARKETS_KEY, markets, OPEN_MARKETS_TTL);
+  }
+  const now = Date.now();
+  return markets.filter(m => Date.parse(m.locksAt) > now);
 }
 
 /**

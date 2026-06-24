@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.72.3 — 2026-06-24
+
+Changed: **App-wide KV read-through caching on the hot betting display reads (open markets + per-league leaderboards).**
+
+### Added
+- `lib/betting/cache.ts` — a thin fail-open KV layer (`readBetCache` / `writeBetCache` / `bustBetCache`) mirroring `lib/results-cache.ts`'s contract: a KV outage or missing config returns null and the caller falls through to a fresh Supabase read. Display-only — never used for balance or settlement-path reads.
+
+### Changed
+- `getOpenMarkets` (`lib/betting/markets.ts`) reads through a single shared key (`paddock:bet:open-markets`, 60s TTL) — the heavy path behind `/play` and every weekend page's `/api/bet/market`. A market that locks *within* the cache window is dropped on read (re-filtered by `locks_at` via `Date.parse`), so it can never show as bettable past its lock; the place path stays atomic regardless. Busted on `createMarket` (a market opened) and `settleMarket` (a market closed).
+- Per-league leaderboards (`lib/betting/leagues.ts`): `getLeaderboard` + `getLeaderboardsForLeagues` read through a per-league key (`paddock:bet:leaderboard:<id>`, 120s TTL). A new shared `buildLeaderboardRows` builder caches the unfiltered, win-rate-sorted rows so one entry serves every `minPlaced`; misses are still built together in two round-trips (no N+1). Busted on join (code + token), nickname/colour edits, kick, disband, and league settlement (`apply_league_settlement` in `settlement.ts`).
+
+### Notes
+- Region stays `iad1` / Supabase `eu-west-1` (not on Pro) — caching is the perf lever; the cross-region round-trip is what these reads paid on every render, and cache hits now cost zero DB round-trips.
+- recharts is already lazy (`components/LazySeasonTrendChart.tsx`) and no other heavy client component is eagerly imported, so no further `next/dynamic` split was warranted.
+- tsc clean; 473 tests; `next build` clean (`/play`, `/social/leagues` stay `ƒ`). The 6 pre-existing `react-hooks/set-state-in-effect` lint errors (`OnboardingWizard`, `FriendsPanel`, `useHomeLayout`) are untouched here — tracked debt; the `useHomeLayout` one is fixed in the home overhaul.
+
 ## 0.72.2 — 2026-06-23
 
 Changed: **Handoff de-staled — top block marked authoritative; superseded same-day items pruned.**
