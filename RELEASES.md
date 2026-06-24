@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.72.1 — 2026-06-23
+
+*Internal: documentation housekeeping (session handoff). No user-facing change.*
+
 ## 0.72.0 — 2026-06-23
 
 **Cleaner leagues.** Create and Join are now two clear buttons that open pop-ups — create a league and get a link to share, or join with a code or a pasted invite link.

@@ -6,6 +6,23 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-23 (main = 0.72.0) — batch #2 continued (account + leagues) + what's left
+
+Continued after the operator resolved the gated items: **NOT on Pro → the region move is permanently off the table**, so caching is the only perf lever left; demo award deleted; keys rotated; the 18 PRs eyeballed on prod. Shipped **0.71.0 → 0.72.0** (PRs #208–#209).
+
+### Shipped
+- **Account hub — `0.71.0` (#208).** `/settings` → identity + personal stats (credits·friends·leagues·joined, signed-in) + category rows → `/settings/notifications` + `/settings/series`. `getAccountStats` (4 batched reads); `NotifPrefsSection` self-gates when signed out.
+- **Leagues Create/Join modals — `0.72.0` (#209).** Two discrete buttons → modal popups (Create → name → shareable invite link; Join → 8-char code OR a pasted link). New generic `components/Modal.tsx`.
+
+### ⏳ Left (next session)
+- **Account — cross-user profiles + friends-only visibility.** Own-account stats shipped; viewing *another* user's profile (friends see leagues, strangers don't) is the follow-on — needs a profile route + a viewer-vs-friend gate.
+- **Leagues — invite friends directly + per-league bet limits.** Both need new backend (a direct add-member API; a `league` bet-limit column = migration).
+- **Home customisation++ (#12).** Collapse Just-missed by default + finer reorder/hide + maybe move news off home. Touches the critical `HomeContent` — do it fresh, not at depth.
+- **App-wide caching/lazy (perf — now the ONLY lever; region permanently `iad1`).** Recommendation: cache `getOpenMarkets` (shared) + per-league leaderboards. API choice — `unstable_cache` is recommended-against in Next 16; `use cache` needs `cacheComponents` enabled app-wide (global change); **KV read-through is the codebase's existing pattern (`lib/results-cache.ts`) → likely lowest-risk.** Plus dynamic-import heavy client components. The `ensureBettingUser` 3→1 collapse needs a migration (PAT).
+- **Forecast market + Threads (`/blog`→Social UGC)** — both DB-gated (local Supabase down + the operator's PAT for the Management-API migration); turnkey plans in the 0.66.0 block.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-23 (main = 0.70.0) — operator batch #2 (6 PRs) + outstanding queue
 
 Second autonomous batch the same day, off another big operator request (10+ asks) + rapid follow-up thoughts. Shipped **0.66.2 → 0.70.0** (PRs #201–#206). Per-version detail in `CHANGELOG.md`.
