@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { createWinnerMarket, createPodiumMarket, createTop10Market, settleMarket } from './markets';
+import { createWinnerMarket, createPodiumMarket, createTop10Market, createForecastMarket, settleMarket } from './markets';
 import { PODIUM_SLOTS, TOP10_SLOTS, type DriverForm } from './pricing';
 import { loadAllSeries } from '@/lib/series';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
@@ -25,12 +25,15 @@ const FIELD_SOURCES: Record<string, () => Promise<DriverForm[] | null>> = {
 // gives bettors real lead time instead of only ever the single next race.
 const LOOKAHEAD_WEEKENDS = 3;
 
-// Market types opened per upcoming weekend. exact_position is built + settles but
-// is held from auto-open until its driver/position picker is interaction-verified.
+// Market types opened per upcoming weekend. forecast (≥2 drivers + exact finishing
+// positions, all-or-nothing; payout = least(product of per-pair odds, 500)) went
+// LIVE 0.88.0 by operator decision. exact_position (single driver + exact position)
+// stays held from auto-open.
 const MARKET_BUILDERS: { type: string; create: (opts: Parameters<typeof createWinnerMarket>[0]) => Promise<string> }[] = [
   { type: 'winner', create: createWinnerMarket },
   { type: 'podium', create: createPodiumMarket },
   { type: 'top10', create: createTop10Market },
+  { type: 'forecast', create: createForecastMarket },
 ];
 
 export interface OpenMarketsSummary {
@@ -197,7 +200,7 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
     const round = m.round as number;
     const marketId = m.id as string;
     try {
-      if (m.type !== 'winner' && m.type !== 'podium' && m.type !== 'top10' && m.type !== 'exact_position') {
+      if (m.type !== 'winner' && m.type !== 'podium' && m.type !== 'top10' && m.type !== 'exact_position' && m.type !== 'forecast') {
         summary.awaiting.push(`${slug} R${round}: ${m.type} settlement not supported yet`);
         continue;
       }

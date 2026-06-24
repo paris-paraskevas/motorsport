@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.88.0 — 2026-06-24
+
+Added: **Forecast market is LIVE** (operator go-live). Removed the demo league award.
+
+### Added
+- **Forecast market auto-opens** on upcoming F1 weekends. `createForecastMarket` added to `MARKET_BUILDERS`, and `settleDueMarkets` now routes `forecast` through the official `positions` result → `settle_market`'s forecast branch (all-or-nothing across ≥2 `driver@position` legs; payout = `least(product of per-pair odds, 500)`). The engine (pricing `forecastMultiplier`, `selectionForMarket` legs validation, solo + league settlement) was already built, prod-migrated (`20260624140000`) and adversarially audited — this flips it on. exact_position stays held.
+
+### Removed
+- Demo `'2026-06'` league award + its seed artifacts (`scripts/seed-league-award.mts`, `supabase/seed-award-2026-06.sql`) — the prod row was deleted by the operator; the active carried reminder is dropped from the handoff.
+
+### Notes
+- ⚠️ The forecast **picker UI** (`ForecastBetCard`) was never interaction-verified signed-in — place one test forecast on prod after the next open-markets cron tick (it adds a forecast market to each upcoming F1 round) to confirm the multi-leg selector end-to-end. Settlement is verified (SQL + the TS league mirror both read `positions`). tsc + 490 tests + `next build` clean.
+
 ## 0.87.1 — 2026-06-24
 
 Changed: **Session close-out — handoff / ideas / schedule for the 0.84.0→0.87.0 parallel batch (4 PRs #229–#232).**
