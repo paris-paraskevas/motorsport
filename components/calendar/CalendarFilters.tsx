@@ -40,9 +40,9 @@ function CheckRow({
 // Calendar filters as a modal box (opened from the toolbar's Filters button).
 // DRAFT model: edits stay local and the calendar does NOT change until Save
 // commits them. Reset re-selects everything; Save applies + closes; the X /
-// backdrop cancels (discards the draft). "Select all" lives in the Series
-// accordion only (not Session), so picking one series no longer means
-// unticking the other thirteen.
+// backdrop cancels (discards the draft). Both accordions carry a "Select all"
+// toggle, so showing just one session type or one series is a single click
+// instead of unticking the rest.
 export function CalendarFilters({
   initialTypes,
   initialSeriesSel,
@@ -74,6 +74,8 @@ export function CalendarFilters({
       else next.add(slug);
       return next;
     });
+  const allTypesSelected = draftTypes.size === TYPES.length;
+  const toggleAllTypes = () => setDraftTypes(allTypesSelected ? new Set() : new Set(TYPES.map(t => t.kind)));
   const allSeriesSelected = allSlugs.length > 0 && draftSeries.size === allSlugs.length;
   const toggleAllSeries = () => setDraftSeries(allSeriesSelected ? new Set() : new Set(allSlugs));
 
@@ -111,6 +113,8 @@ export function CalendarFilters({
         <div className="flex-1 overflow-y-auto px-4">
           <Accordion title="Session" titleClassName="font-display uppercase tracking-wide">
             <div>
+              <CheckRow label="Select all" checked={allTypesSelected} onToggle={toggleAllTypes} strong />
+              <div className="my-1 border-t border-border/60" />
               {TYPES.map(({ kind, label }) => (
                 <CheckRow key={kind} label={label} checked={draftTypes.has(kind)} onToggle={() => toggleType(kind)} />
               ))}
