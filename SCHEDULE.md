@@ -811,6 +811,24 @@ Won't touch: the forecast build (deferred), the region move (operator/plan-gated
 
 Active: _(no `[+Nm]` prefixes captured — long autonomous batch)_
 
+### 2026-06-24 — operator 3-prompt autonomous batch (6 feature PRs + docs)
+
+Three prompts in one session: (1) a 5-item priority list, (2) home/calendar feedback, (3) IA + filters + customise-relocation. Built everything not DB/PAT-gated; stopped at the gated tail.
+
+- → done: **caching (0.72.3, #212)** — KV read-through for `getOpenMarkets` + per-league leaderboards (`lib/betting/cache.ts`), busted on writes. The perf lever now the region move is permanently off (not on Pro).
+- → done: **home customise reworked (0.73.0, #213)** — fixed the reorder/hide rollback + the un-customised flash; moved customise into an Account banner with a live preview; Just-missed folds by default; net-fixed a legacy lint error.
+- → done: **IA tidy (0.74.0, #214)** — Social one page (Friends|Leagues columns; fixes the 404'ing `/social` link); dropped the Account/Social/Play subheader strips; slimmed Play.
+- → done: **calendar filters (0.75.0, #215)** — checkboxes not colour chips + a Clear button.
+- → done: **cross-user profiles (0.76.0, #216)** — `/social/users/[id]`, friends-only league visibility, balance never exposed.
+- → done: **league direct-invite (0.77.0, #217)** — "Invite friends" straight into a league (no migration).
+- → done: docs close-out (this) as **0.77.1**.
+- → STOPPED (PAT-gated): per-league bet limits (item 4b migration), forecast market, threads/UGC — need local Supabase up + the rotated PAT.
+- → advisory (not executed): Supabase Dublin→Frankfurt = counterproductive while compute is iad1; Cloudflare D1 = not lighter from iad1 + can't host the atomic ledger. Verdicts in HANDOFF + IDEAS Parked.
+
+Won't touch: anything needing the PAT/local Supabase (above); authed browser-verify (no Clerk key this side — operator preview); the untracked repo litter; key rotation / demo-award delete.
+
+Active: _(no `[+Nm]` prefixes captured — long autonomous batch)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

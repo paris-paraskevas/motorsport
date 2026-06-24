@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.77.1 — 2026-06-24
+
+*Internal: documentation housekeeping (session close-out). No user-facing change.*
+
 ## 0.77.0 — 2026-06-24
 
 **Add friends to a league in one tap.** Your league page now shows the friends you can add, so you can bring them in directly instead of sending an invite link.
