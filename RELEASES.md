@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.93.1 — 2026-06-24
+
+**Select all, for sessions too.** The calendar filter's "Select all" toggle now covers session types as well as series.
+
 ## 0.93.0 — 2026-06-24
 
 **Tidier calendar filters.** The filter box now has **Save** and **Reset** buttons — your picks apply when you hit Save — plus a **Select all** toggle for series, so showing just one series is a single click instead of unticking the rest.
