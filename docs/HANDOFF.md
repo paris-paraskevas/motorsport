@@ -6,6 +6,36 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-24 (main = 0.77.0) — operator 3-prompt batch (6 feature PRs) + what's PAT-gated
+
+Three operator prompts in one autonomous session (priority list → home/calendar feedback → IA/filters/customise-relocation). Shipped **0.72.3 → 0.77.0** (PRs #212–#217) + a docs close-out **0.77.1**. Per-version detail in `CHANGELOG.md`.
+
+### Shipped (all merged to main)
+- **Perf — `0.72.3` (#212).** KV read-through on the hot betting *display* reads: `getOpenMarkets` (shared key, 60s) + per-league leaderboards (per-league key, 120s), busted on the write paths (`createMarket`/`settleMarket`/join/edit/kick/disband/settlement). `lib/betting/cache.ts` (fail-open, mirrors `results-cache.ts`). Display-only — balance/settlement stay uncached + atomic. **Caching is the perf lever now (region permanently off — not on Pro; verdict below).** recharts already lazy; no other heavy client component is eager.
+- **Home customise reworked — `0.73.0` (#213).** Fixed the signed-in **reorder/hide rollback** (a per-change KV refetch raced the fire-and-forget PUT → now a one-shot, dirty-guarded reconcile) and the **un-customised flash** (layout seeds synchronously from localStorage; `/app` stays `○` static — no server cookie). Customise **moved off the home into an Account banner with a live schematic preview** (`HomeCustomizeBanner`; on-home button/bar removed). New `collapsed` pref dimension (`HOME_LAYOUT_VERSION`→2) — **Just-missed folds by default**; hidden blocks skip their `/api/just-missed` fetch. Net-fixed a legacy lint error (repo 6→5).
+- **IA tidy — `0.74.0` (#214).** **Social is one page** (`/social`, new index — also fixes the previously-404ing header/bottom-bar link): Friends left, Leagues right (two columns, stacked mobile), no sub-nav; `/social/friends|leagues` redirect there (detail/join/friend-add routes preserved). Dropped the redundant subheader strips on Account/Social/Play; removed Play's Leagues/Friends CTA cards.
+- **Calendar filters — `0.75.0` (#215).** Options are **checkboxes** (single brand accent; series keep a small dot) not colour-filled chips; **Clear** button right of Filters (shown when active; resets + persists).
+- **Cross-user profiles — `0.76.0` (#216).** `/social/users/[id]` (id = opaque user id) — name, join date, friend/league counts; **friends (and you) see the user's leagues, strangers don't**; **balance never exposed**; relationship-aware add-friend control; own id → Account. `getUserProfile`; friend/search names link here.
+- **League direct-invite — `0.77.0` (#217).** "Invite friends" on the league page — add an existing friend straight in (`addFriendToLeague`: caller must be a member + accepted friends; idempotent upsert; busts the cache). `getLeagueDetail.addableFriends` + new `areFriends` helper.
+
+### ⏳ PAT-gated — needs the operator: **start local Supabase + hand over the rotated PAT** (Management-API migration). STOP here until then.
+- **Per-league bet limits (item 4b).** A `league` bet-limit column = migration. The direct-invite half shipped (0.77.0); the limit is the remaining half.
+- **Forecast market (multi-driver + finishing position).** Live-economy settlement; unverifiable without local Supabase + the migration. Turnkey plan in the 0.66.0 block below.
+- **Threads / `/blog`→Social UGC (W7).** Relational user-writes; Supabase + Clerk-role gating. Design-doc-first.
+
+### Infra verdicts (operator asked 2026-06-24; analysed, NOT executed — also in IDEAS Parked)
+- **Supabase Dublin (`eu-west-1`) → Frankfurt (`eu-central-1`): don't.** Counterproductive while compute is `iad1` — Dublin is the closest EU region to iad1; Frankfurt is *further*, so per-query latency rises. Can't change in place anyway (new project + data migration + env swap). Real lever = move *compute* to the EU (needs Pro). Caching is the lever until then.
+- **Cloudflare D1: don't.** Not lighter from iad1 (HTTP, same transatlantic hop) and can't host the atomic ledger / `place_bet` / `settle_market` RPCs + triggers. KV already fills the light read-cache role. Only viable as a full Workers platform move.
+
+### Owed (carried, operator)
+- **Authed eyeballs — nothing was browser-verified this side** (clerkMiddleware 500s without a Clerk publishable key in this env; `next build` static-gens `/app` fine, but client/auth paths can't run locally). Verify on the Vercel preview/prod, signed-in: home order + no-flash + Just-missed fold; the Account customise banner + preview; `/social` two columns; `/social/users/[id]` friend-vs-stranger; league "Invite friends".
+- **Legacy lint:** 5 pre-existing `react-hooks/set-state-in-effect` errors remain (OnboardingWizard ×2, FriendsPanel, CalendarView, +1) — IDEAS Inbox.
+- Carried: demo `'2026-06'` award delete (~Jul 1); the forecast + threads builds (above).
+
+_Authoritative end-of-day state (main = **0.77.1**, 2026-06-24). The dated blocks below are prior-session history._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-23 (main = 0.72.0) — batch #2 continued (account + leagues) + what's left
 
 Continued after the operator resolved the gated items: **NOT on Pro → the region move is permanently off the table**, so caching is the only perf lever left; demo award deleted; keys rotated; the 18 PRs eyeballed on prod. Shipped **0.71.0 → 0.72.0** (PRs #208–#209).
