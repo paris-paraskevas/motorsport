@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.83.0 — 2026-06-24
+
+**Threads — talk to the paddock.** A new community space: sign in to start a thread, and posts go live once a moderator approves them. Find it in the footer. The footer is also now two tidy columns.
+
 ## 0.82.1 — 2026-06-24
 
 **Footer, readable.** The footer links are now in two tidy rows — Site and Legal — instead of one long jumble.
