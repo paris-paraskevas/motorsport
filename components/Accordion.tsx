@@ -12,6 +12,7 @@ export function Accordion({
   count,
   icon,
   defaultOpen = false,
+  titleClassName,
   children,
 }: {
   title: string;
@@ -19,6 +20,7 @@ export function Accordion({
   count?: ReactNode;
   icon?: ReactNode;
   defaultOpen?: boolean;
+  titleClassName?: string;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -32,7 +34,7 @@ export function Accordion({
       >
         {icon && <span className="mt-0.5 shrink-0">{icon}</span>}
         <span className="min-w-0 flex-1">
-          <span className="block text-text text-base font-semibold">{title}</span>
+          <span className={`block text-text text-base font-semibold ${titleClassName ?? ''}`}>{title}</span>
           {subtitle && <span className="mt-1 block text-text-faint text-xs leading-relaxed">{subtitle}</span>}
         </span>
         {count != null && (
