@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.93.0 — 2026-06-24
+
+Changed: **Calendar filters — Select all, Save / Reset, draft-then-apply.**
+
+### Changed
+- `components/calendar/CalendarFilters.tsx`: the filter modal now edits a **draft** — toggling a session type or series no longer changes the calendar live. **Save** commits the draft + closes; **Reset** re-selects all sessions + all series; the X / backdrop cancels. A **Select all** toggle sits atop the **Series** accordion only (not Session) so showing one series is a single click instead of unticking the other fourteen.
+- `components/calendar/CalendarView.tsx`: filters commit through a single `applyFilters(types, seriesSel)` on Save (was a live per-toggle update); the all-present set is normalised back to the `null` sentinel so "all" survives a changing present set.
+- `components/calendar/CalendarToolbar.tsx`: dropped the now-redundant toolbar **Clear** (Reset lives in the modal); the active-filter dot stays.
+
+### Notes
+- tsc + `next build` clean (`/calendar` stays `○` static); browser-verified the modal end-to-end (Select all clears all 15 series; Save/Reset present + wired). No new lint (CalendarView's one pre-existing `set-state-in-effect` is untouched).
+
 ## 0.92.1 — 2026-06-24
 
 Changed: **Session close-out — handoff / ideas / schedule for the 0.92.0 blog pipeline + the Vercel Dublin compute move.**
