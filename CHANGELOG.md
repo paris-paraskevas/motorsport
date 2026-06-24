@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.80.0 — 2026-06-24
+
+Changed: **Home — Schedule & News are separate blocks; every content block collapses; drag to reorder.**
+
+### Changed
+- **Split "Schedule & news" into two independent blocks** — **This week** (`schedule`) and **News** (`news`) — each its own orderable / hideable / collapsible home block. The old desktop two-column grid is retired; they stack and reorder like the others. `HOME_LAYOUT_VERSION` → 3; reconcile appends `news` to existing users' stored order.
+- **All content blocks collapse now** — Just missed, This week, and News each fold behind their header (the chyron stays show/hide only). Just missed still folds by default.
+- **Drag to reorder** in the Account customise banner — a ≡ grip handle (HTML5 drag-and-drop, with a Firefox-safe `setData`) alongside the up/down arrows; `useHomeLayout` gains `reorder`.
+
+### Notes
+- tsc clean; 476 tests (homeLayout reconcile tests updated for the 4th block + the collapsible set); `next build` clean; `/app` stays `○` static. The banner's live preview reflects the new block set automatically. Removed the now-unused `SectionHead` import from `HomeContent`.
+
 ## 0.79.0 — 2026-06-24
 
 Changed: **Account — flatter Notifications + Championships; Replay-the-tour is its own row.**

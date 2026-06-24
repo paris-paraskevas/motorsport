@@ -9,7 +9,6 @@ import { weatherLabel } from '@/lib/weather';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
 import { formatRelative, HOME_WEEK_MS } from '@/lib/date';
-import { SectionHead } from './SectionHead';
 import type { JustMissedItem } from '@/lib/home-results';
 import { useHomeLayout } from '@/lib/useHomeLayout';
 import type { HomeElementId } from '@/lib/homeLayout';
@@ -610,12 +609,15 @@ export function HomeContent({
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
       {!isHidden('schedule') && (
-      <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 xl:gap-16 lg:items-start" style={{ order: orderOf('schedule') }}>
-        <section aria-label="This week's sessions" data-tour="week">
-          <SectionHead
+        <section aria-label="This week's sessions" data-tour="week" className="mb-8" style={{ order: orderOf('schedule') }}>
+          <CollapsibleSectionHead
             title="This week"
             sub={`${weekItems.length} sessions · ${tz}`}
+            collapsed={isCollapsed('schedule')}
+            onToggle={() => toggleCollapsed('schedule')}
           />
+          {!isCollapsed('schedule') && (
+          <>
           {byDay.length === 0 ? (
             <div className="border border-border bg-surface/40 p-6 text-sm text-text-faint">
               {isEmptyFromFilter ? (
@@ -755,10 +757,21 @@ export function HomeContent({
             )}
             <ArrowUpRight size={13} />
           </Link>
+          </>
+          )}
         </section>
+      )}
 
-        <section aria-label="Latest news" className="mt-10 lg:mt-0">
-          <SectionHead title="Paddock wire" sub="motorsport.com" />
+      {!isHidden('news') && (
+        <section aria-label="Latest news" className="mb-8" style={{ order: orderOf('news') }}>
+          <CollapsibleSectionHead
+            title="Paddock wire"
+            sub="motorsport.com"
+            collapsed={isCollapsed('news')}
+            onToggle={() => toggleCollapsed('news')}
+          />
+          {!isCollapsed('news') && (
+          <>
           {seriesWithNews.length > 1 && (
             <div className="mb-3 -mx-1 px-1 flex gap-1.5 overflow-x-auto scrollbar-none">
               <button
@@ -846,8 +859,9 @@ export function HomeContent({
           <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
             Source: motorsport.com
           </div>
+          </>
+          )}
         </section>
-      </div>
       )}
       </div>
       <Tour
