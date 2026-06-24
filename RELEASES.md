@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.74.0 — 2026-06-24
+
+**Cleaner navigation.** Friends and Leagues now sit side by side on one Social page instead of behind separate tabs. We also removed the little description lines under the Account, Social and Play titles, and the duplicate Leagues/Friends shortcuts on Play — less clutter, same features.
+
 ## 0.73.0 — 2026-06-24
 
 **Home, your way — now in Account.** Customising your home screen has moved into Account, with a live preview as you reorder, fold or hide blocks. Two long-standing annoyances are gone: your changes no longer snap back after you make them, and the page no longer flashes its default layout before showing yours. "Just missed" now starts folded — tap its heading on the home screen to open it.
