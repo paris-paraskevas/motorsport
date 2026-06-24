@@ -124,6 +124,12 @@
   --ease-in-hard: cubic-bezier(0.5, 0, 0.75, 0);
 }
 
+/* Wide-screen tier: content scales up on 2K/32"+ panels (≥1700px). Named (not an
+   arbitrary min-[1700px] variant) so it sorts AFTER 2xl in the cascade and wins. */
+@theme {
+  --breakpoint-3xl: 1700px;
+}
+
 /* Expose tokens as Tailwind utilities. */
 @theme inline {
   /* Paddock 2.0 */

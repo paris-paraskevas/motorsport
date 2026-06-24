@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.89.0 — 2026-06-24
+
+**Built for big screens.** On large / 2K monitors the site now fills the width — a wider layout with a two-column home — instead of a narrow centered column. Phones and laptops look exactly as before.
+
 ## 0.88.0 — 2026-06-24
 
 **Forecast bets are live.** Pick two or more drivers and the exact positions you think they'll finish — all or nothing, for a bigger multiplier. Look for the Forecast market on upcoming F1 weekend pages.

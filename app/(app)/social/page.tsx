@@ -25,7 +25,7 @@ export const metadata: Metadata = { title: 'Social', robots: { index: false, fol
 // the old /social/friends + /social/leagues list pages redirect here.
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-6xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className="mx-auto max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! p-4 pb-16 md:p-6 lg:p-8">
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
