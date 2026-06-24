@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.90.0 — 2026-06-24
+
+Changed: **Leagues are their own page** (`/social/leagues`), not an in-page anchor.
+
+### Changed
+- The Social hub's "Play with friends" card now links to **`/social/leagues`** (a real page) instead of scrolling to a `#leagues` anchor (operator feedback). `/social/leagues` was a redirect-to-`/social` stub; it's now a dedicated page rendering the leagues panel (your leagues + Create/Join + leaderboards) with a back-link to Social.
+- `/social` is now a Friends-focused hub — the play launcher (solo → `/play`, with-friends → `/social/leagues`), the friends panel, and the community row (blog + threads). The duplicated leagues column was removed; the `3xl` wide cap was dropped on `/social` (its lighter content doesn't need 2000px).
+- `next.config.ts`: `/play/leagues` now redirects to `/social/leagues` (was `/social`), so old leagues-list links land on the leagues page.
+
+### Notes
+- tsc clean; 5 pre-existing lint errors (0 new). Verified in-browser (signed-in): the card opens `/social/leagues`, leagues no longer duplicated on `/social`, the page keeps its own URL (no redirect).
+
 ## 0.89.0 — 2026-06-24
 
 Changed: **Wide-screen layout — the app uses 2K / 32" displays instead of a 1536px center ribbon.**
