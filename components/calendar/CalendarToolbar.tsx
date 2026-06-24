@@ -12,6 +12,9 @@ export function CalendarToolbar({
   onPrev,
   onNext,
   onToday,
+  filtersOpen,
+  onToggleFilters,
+  filterActive,
 }: {
   view: CalendarViewMode;
   onView: (v: CalendarViewMode) => void;
@@ -19,6 +22,9 @@ export function CalendarToolbar({
   onPrev: () => void;
   onNext: () => void;
   onToday: () => void;
+  filtersOpen: boolean;
+  onToggleFilters: () => void;
+  filterActive: boolean;
 }) {
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-y-2 border-y border-border">
@@ -50,20 +56,33 @@ export function CalendarToolbar({
           {label}
         </span>
       </div>
-      <div className="flex py-1.5 pr-1">
-        {VIEWS.map(v => (
-          <button
-            key={v}
-            type="button"
-            onClick={() => onView(v)}
-            aria-pressed={view === v}
-            className={`-ml-px border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-              view === v ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
-            }`}
-          >
-            {v}
-          </button>
-        ))}
+      <div className="flex items-center gap-2 py-1.5 pr-1">
+        <div className="flex">
+          {VIEWS.map(v => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => onView(v)}
+              aria-pressed={view === v}
+              className={`-ml-px border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
+                view === v ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onToggleFilters}
+          aria-expanded={filtersOpen}
+          className={`inline-flex items-center gap-1.5 border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
+            filtersOpen ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
+          }`}
+        >
+          Filters
+          {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="active" />}
+        </button>
       </div>
     </div>
   );

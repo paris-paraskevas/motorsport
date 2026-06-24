@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.69.0 — 2026-06-23
+
+Changed: **Calendar filters — inline toolbar button + modal box, and they persist.**
+
+### Changed
+- The **Filters** control now sits inline on the toolbar's right (same chip styling as Month/Week/Day) and opens a **modal box** with collapsed-by-default **Session** + **Series** categories (multi-select chips inside), replacing the inline filter bar.
+- Filters now **persist per device** (`localStorage` `paddock:calendar-filters`) — your session-type + series selection survives reloads.
+
+### Notes
+- Client-only; `/calendar` stays `○` static. tsc clean; 473 tests; `next build` clean.
+
 ## 0.68.1 — 2026-06-23
 
 Changed: **Collapsibles default to collapsed (Account + Play).**

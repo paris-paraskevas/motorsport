@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Filter } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { useNow } from '@/lib/use-now';
 import {
@@ -43,6 +42,36 @@ export function CalendarView({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [types, setTypes] = useState<Set<SessionKind>>(() => new Set(['practice', 'qualifying', 'race']));
   const [seriesSel, setSeriesSel] = useState<Set<string> | null>(null); // null = all present
+  const [filtersHydrated, setFiltersHydrated] = useState(false);
+
+  // Persist filters per device (localStorage): load once on mount, then save on
+  // change (gated on the load so defaults don't clobber stored prefs).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('paddock:calendar-filters');
+      if (raw) {
+        const p = JSON.parse(raw) as { types?: unknown; series?: unknown };
+        if (Array.isArray(p.types)) {
+          setTypes(new Set(p.types.filter((t): t is SessionKind => t === 'practice' || t === 'qualifying' || t === 'race')));
+        }
+        setSeriesSel(Array.isArray(p.series) ? new Set(p.series.filter((s): s is string => typeof s === 'string')) : null);
+      }
+    } catch {
+      /* ignore corrupt prefs */
+    }
+    setFiltersHydrated(true);
+  }, []);
+  useEffect(() => {
+    if (!filtersHydrated) return;
+    try {
+      localStorage.setItem(
+        'paddock:calendar-filters',
+        JSON.stringify({ types: [...types], series: seriesSel ? [...seriesSel] : null }),
+      );
+    } catch {
+      /* quota / disabled */
+    }
+  }, [types, seriesSel, filtersHydrated]);
 
   // Gate on BOTH prefs (no other-series flash) AND the synced clock (so day
   // bucketing uses the device timezone, never the server's — no SSR mismatch).
@@ -99,19 +128,10 @@ export function CalendarView({
         onPrev={() => step(-1)}
         onNext={() => step(1)}
         onToday={() => setAnchorMs(null)}
+        filtersOpen={filtersOpen}
+        onToggleFilters={() => setFiltersOpen(o => !o)}
+        filterActive={filterActive}
       />
-      <div className="mb-3 -mt-1">
-        <button
-          type="button"
-          onClick={() => setFiltersOpen(o => !o)}
-          aria-expanded={filtersOpen}
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-        >
-          <Filter size={13} />
-          Filters
-          {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="filters active" />}
-        </button>
-      </div>
       {filtersOpen && (
         <CalendarFilters
           types={types}
@@ -119,6 +139,7 @@ export function CalendarView({
           series={present}
           seriesShown={seriesShown}
           onToggleSeries={toggleSeries}
+          onClose={() => setFiltersOpen(false)}
         />
       )}
       {view === 'month' && (
