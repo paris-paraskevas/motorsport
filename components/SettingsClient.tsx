@@ -1,10 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
-import { Accordion } from './Accordion';
 
 // One row per series: colour dot + name + a follow checkbox. The checkbox is
 // checked inside the "Followed" accordion and unchecked inside "Not followed";
@@ -77,15 +75,6 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   return (
     <div>
-      <div className="mb-6 text-right">
-        <Link
-          href="/app?tour=1"
-          className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
-        >
-          Replay the tour →
-        </Link>
-      </div>
-
       <div className="border-t border-border py-5 md:py-6">
         <div className="flex items-baseline justify-between mb-1">
           <div>
@@ -126,23 +115,29 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
         </div>
       </div>
 
-      <Accordion title="Followed" count={`${followedCount}`}>
+      <div className="border-t border-border py-5">
+        <h2 className="mb-1 text-text text-base font-semibold">
+          Followed <span className="font-normal text-text-faint">({followedCount})</span>
+        </h2>
         <SeriesList
           series={followedSeries}
           isFollowing={isFollowing}
           toggle={toggle}
           emptyLabel="You're not following any series yet — add some below."
         />
-      </Accordion>
+      </div>
 
-      <Accordion title="Not followed" count={`${notFollowedSeries.length}`}>
+      <div className="border-t border-border py-5">
+        <h2 className="mb-1 text-text text-base font-semibold">
+          Not followed <span className="font-normal text-text-faint">({notFollowedSeries.length})</span>
+        </h2>
         <SeriesList
           series={notFollowedSeries}
           isFollowing={isFollowing}
           toggle={toggle}
           emptyLabel="You're following every series."
         />
-      </Accordion>
+      </div>
     </div>
   );
 }
