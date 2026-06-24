@@ -28,6 +28,14 @@ export function isAdmin(user: { publicMetadata?: { role?: unknown } } | null | u
   return user?.publicMetadata?.role === 'admin';
 }
 
+/** Staff = admin OR moderator (Clerk `publicMetadata.role`). Admins also pass
+ *  isAdmin for admin-only actions; moderators are staff but not admin. Used to
+ *  gate the staff feedback board. */
+export function isStaff(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
+  const role = user?.publicMetadata?.role;
+  return role === 'admin' || role === 'moderator';
+}
+
 function toThread(r: Record<string, unknown>, name: string | null): Thread {
   return {
     id: r.id as string,

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.96.0 — 2026-06-24
+
+*Internal: a staff-only feedback board for triaging bugs and feature ideas. No change for regular users.*
+
 ## 0.95.2 — 2026-06-24
 
 **Cleaner weekend schedule.** A weekend's sessions are no longer listed twice — each row in the schedule now links straight to that session's results.
