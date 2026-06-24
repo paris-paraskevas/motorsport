@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.95.1 — 2026-06-24
+
+Changed: **Bets tab — collapsed market cards + a form-links row.**
+
+### Changed
+- `components/weekend/WeekendBetting.tsx`: each open market (winner / podium / top-10 / exact-finish / forecast) is now a collapsed `<details>` disclosure — the label + your-bet count in the summary, the full picker on expand — so the now-five-market tab is scannable instead of a wall of forms. Added a **Form** links row (Standings · Results · Drivers) into the series' tabs to size up a pick. Collapse hides each card's own heading + outer chrome via scoped Tailwind variants, so the card components are untouched. Browser-verified signed-in (5 collapsed cards, expand reveals the 22-driver picker, no duplicate heading, links resolve). tsc + `next build` clean; 0 new lint.
+
 ## 0.95.0 — 2026-06-24
 
 Added: **exact_position betting market is now live** (the last held market).
