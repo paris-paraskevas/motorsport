@@ -1,5 +1,6 @@
 import { betDb } from './client';
 import { displayNames, friendStates, type FriendState } from './friends';
+import { readBetCache, writeBetCache, bustBetCache, leaderboardKey, LEADERBOARD_TTL } from './cache';
 
 // Server-only. Friend leagues: create, join by code, and the win-rate
 // leaderboard. League bets pool pari-mutuel (see settlement.ts).
@@ -39,6 +40,7 @@ export async function joinLeague(userId: string, joinCode: string): Promise<stri
     .from('league_member')
     .upsert({ league_id: league.id, user_id: userId }, { onConflict: 'league_id,user_id', ignoreDuplicates: true });
   if (mErr) throw new Error(`joinLeague failed: ${mErr.message}`);
+  await bustBetCache(leaderboardKey(league.id as string));
   return league.id as string;
 }
 
@@ -51,49 +53,20 @@ export interface LeaderboardRow {
   winRate: number;
 }
 
-/** League standings by win-rate (wins / placed), then wins; only members with >= minPlaced bets rank.
- *  Reads league_member directly so the per-league nickname rides along — the leaderboard shows it
- *  over the global display name (the league_leaderboard view dropped it). */
-export async function getLeaderboard(leagueId: string, minPlaced = 1): Promise<LeaderboardRow[]> {
-  const { data, error } = await betDb()
-    .from('league_member')
-    .select('user_id, nickname, wins, placed')
-    .eq('league_id', leagueId);
-  if (error) throw new Error(`getLeaderboard failed: ${error.message}`);
-  const rows = (data ?? [])
-    .map(r => {
-      const wins = (r.wins as number) ?? 0;
-      const placed = (r.placed as number) ?? 0;
-      return {
-        userId: r.user_id as string,
-        nickname: (r.nickname as string | null) ?? null,
-        wins,
-        placed,
-        winRate: placed > 0 ? wins / placed : 0,
-      };
-    })
-    .filter(r => r.placed >= minPlaced)
-    .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
-  const names = await displayNames(rows.map(r => r.userId));
-  return rows.map(r => ({ ...r, displayName: names.get(r.userId) ?? null }));
-}
-
-/** Leaderboards for several leagues in TWO round-trips instead of 2×N: one
- *  league_member read across all the leagues + one batched name lookup. Same
- *  ranking + nickname rules as getLeaderboard. Keyed by league id (missing =
- *  empty). The /social/leagues page used to call getLeaderboard per league
- *  (an N+1 of 2 round-trips each) — this is the perf fix. */
-export async function getLeaderboardsForLeagues(
-  leagueIds: string[],
-  minPlaced = 1,
-): Promise<Map<string, LeaderboardRow[]>> {
+/** Build unfiltered, win-rate-sorted leaderboard rows for one or more leagues in
+ *  two round-trips (one `league_member` read across all of them + one batched
+ *  name lookup). Reads `league_member` directly so the per-league nickname rides
+ *  along — the leaderboard shows it over the global display name. The `minPlaced`
+ *  cut is applied by callers *after* the cache read, so one cached entry per
+ *  league serves every minPlaced value. */
+async function buildLeaderboardRows(leagueIds: string[]): Promise<Map<string, LeaderboardRow[]>> {
   const out = new Map<string, LeaderboardRow[]>();
   if (leagueIds.length === 0) return out;
   const { data, error } = await betDb()
     .from('league_member')
     .select('league_id, user_id, nickname, wins, placed')
     .in('league_id', leagueIds);
-  if (error) throw new Error(`getLeaderboardsForLeagues failed: ${error.message}`);
+  if (error) throw new Error(`buildLeaderboardRows failed: ${error.message}`);
   const rows = data ?? [];
   const names = await displayNames([...new Set(rows.map(r => r.user_id as string))]);
   const byLeague = new Map<string, typeof rows>();
@@ -117,11 +90,56 @@ export async function getLeaderboardsForLeagues(
           winRate: placed > 0 ? wins / placed : 0,
         };
       })
-      .filter(r => r.placed >= minPlaced)
       .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
     out.set(lid, ranked);
   }
   return out;
+}
+
+/** League standings by win-rate (wins / placed), then wins; only members with
+ *  >= minPlaced settled bets rank. KV read-through on a per-league key. */
+export async function getLeaderboard(leagueId: string, minPlaced = 1): Promise<LeaderboardRow[]> {
+  let rows = await readBetCache<LeaderboardRow[]>(leaderboardKey(leagueId));
+  if (!rows) {
+    rows = (await buildLeaderboardRows([leagueId])).get(leagueId) ?? [];
+    await writeBetCache(leaderboardKey(leagueId), rows, LEADERBOARD_TTL);
+  }
+  return rows.filter(r => r.placed >= minPlaced);
+}
+
+/** Leaderboards for several leagues, each KV-cached per league — the /social/leagues
+ *  page calls this once for all of a user's leagues. Cache hits cost zero DB
+ *  round-trips; the misses are built together in the same two round-trips as before
+ *  (no N+1). Keyed by league id (missing = empty). */
+export async function getLeaderboardsForLeagues(
+  leagueIds: string[],
+  minPlaced = 1,
+): Promise<Map<string, LeaderboardRow[]>> {
+  const out = new Map<string, LeaderboardRow[]>();
+  if (leagueIds.length === 0) return out;
+
+  const cached = await Promise.all(leagueIds.map(id => readBetCache<LeaderboardRow[]>(leaderboardKey(id))));
+  const misses: string[] = [];
+  leagueIds.forEach((id, i) => {
+    const hit = cached[i];
+    if (hit) out.set(id, hit);
+    else misses.push(id);
+  });
+
+  if (misses.length > 0) {
+    const built = await buildLeaderboardRows(misses);
+    await Promise.all(
+      misses.map(id => {
+        const rows = built.get(id) ?? [];
+        out.set(id, rows);
+        return writeBetCache(leaderboardKey(id), rows, LEADERBOARD_TTL);
+      }),
+    );
+  }
+
+  const filtered = new Map<string, LeaderboardRow[]>();
+  for (const [id, rows] of out) filtered.set(id, rows.filter(r => r.placed >= minPlaced));
+  return filtered;
 }
 
 export interface UserLeague {
@@ -242,6 +260,7 @@ export async function joinLeagueByToken(userId: string, token: string): Promise<
     .from('league_member')
     .upsert({ league_id: invite.leagueId, user_id: userId }, { onConflict: 'league_id,user_id', ignoreDuplicates: true });
   if (error) throw new Error(`joinLeagueByToken failed: ${error.message}`);
+  await bustBetCache(leaderboardKey(invite.leagueId));
   return { leagueId: invite.leagueId, inviterId: invite.inviterId };
 }
 
@@ -384,6 +403,7 @@ export async function setMemberProfile(
   if (Object.keys(patch).length === 0) return;
   const { error } = await db.from('league_member').update(patch).eq('league_id', leagueId).eq('user_id', targetUserId);
   if (error) throw new Error(`setMemberProfile failed: ${error.message}`);
+  await bustBetCache(leaderboardKey(leagueId)); // nickname rides on the leaderboard
 }
 
 /** Rename a league (owner only). */
@@ -404,6 +424,7 @@ export async function disbandLeague(leagueId: string, ownerId: string): Promise<
     .eq('owner_id', ownerId);
   if (error) throw new Error(`disbandLeague failed: ${error.message}`);
   if (!count) throw new Error('league not found, or you are not the owner');
+  await bustBetCache(leaderboardKey(leagueId));
 }
 
 /** Remove a member (owner only; the owner can't kick themselves — disband instead). */
@@ -414,6 +435,7 @@ export async function kickMember(leagueId: string, ownerId: string, targetUserId
   if (targetUserId === ownerId) throw new Error('the owner cannot be removed — disband the league instead');
   const { error } = await db.from('league_member').delete().eq('league_id', leagueId).eq('user_id', targetUserId);
   if (error) throw new Error(`kickMember failed: ${error.message}`);
+  await bustBetCache(leaderboardKey(leagueId));
 }
 
 // ---- prizes (P4) -----------------------------------------------------------

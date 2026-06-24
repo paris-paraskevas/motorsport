@@ -1,5 +1,6 @@
 import { betDb } from './client';
 import { settlePool, type PoolBet } from './pari-mutuel';
+import { bustBetCache, leaderboardKey } from './cache';
 
 // Server-only. Settle one (market, league) peer pool: load the league's bets,
 // compute the pari-mutuel split in TS (pure, tested), apply atomically in SQL.
@@ -67,5 +68,6 @@ export async function settleLeagueMarket(
     p_payouts: payouts.map(p => ({ bet_id: p.betId, user_id: p.userId, outcome: p.outcome, payout: p.payout })),
   });
   if (error) throw new Error(`apply_league_settlement failed: ${error.message}`);
+  await bustBetCache(leaderboardKey(leagueId)); // wins/placed changed → standings shift
   return data as LeagueSettlement;
 }
