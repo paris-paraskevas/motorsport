@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.84.0 — 2026-06-24
+
+Fixed: **F1 standings + results stopped blanking when the upstream data API (Jolpica) is down.**
+
+### Fixed
+- F1 standings (`lib/standings/f1.ts`) and results (`lib/results/f1.ts`) read only from Jolpica (`api.jolpi.ca`), which was returning **HTTP 521 (origin unreachable) on every endpoint** (`current`/`2026`/`2025`; legacy Ergast also dead) — both fail-soft to `null`/`[]`, so the F1 standings + results pages rendered blank. Not a parser bug; an upstream outage with no resilience layer.
+- New `lib/f1-cache.ts` — a Vercel KV last-good read-through (mirrors `lib/results-cache.ts`; **fails open** when KV is absent). `fetchF1Standings` / `fetchF1SeasonResults` / `fetchF1SeasonSprints` / `fetchF1LastRace` now persist every successful non-empty fetch (21-day TTL) and serve the last-good copy when a fetch fails or comes back empty — so a transient or multi-day Jolpica outage never blanks the page, and it self-heals the moment Jolpica returns. Public signatures unchanged; no caller touched.
+
+### Notes
+- 14 new vitest cases (`lib/f1-cache.test.ts`): success→writes-cache, failure→serves-last-good, KV-absent→passthrough, single-object Date rehydration (a bug the tests caught in the inherited revive helper). 490 tests green; tsc + `next build` clean.
+- Known trade-off: `lib/standings-health.ts` / `lib/results-health.ts` use these fetchers as liveness probes, so they now read healthy during a Jolpica outage (monitoring nuance — logged to IDEAS). The KV round-trip itself should be confirmed on a KV-configured Vercel preview.
+
 ## 0.83.1 — 2026-06-24
 
 Changed: **Session close-out — handoff / ideas / schedule for the 0.72.3→0.83.0 mega-session (16 PRs).**

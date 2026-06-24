@@ -1,4 +1,5 @@
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
+import { withF1LastGood } from '@/lib/f1-cache';
 
 export type { DriverStanding, ConstructorStanding };
 
@@ -82,10 +83,12 @@ function parseConstructors(payload: ConstructorPayload): ConstructorStanding[] |
   return constructors;
 }
 
-export async function fetchF1Standings(): Promise<{
+type F1Standings = {
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];
-} | null> {
+};
+
+async function fetchF1StandingsLive(): Promise<F1Standings | null> {
   try {
     const [driverRes, constructorRes] = await Promise.all([
       fetch(DRIVER_URL, { next: { revalidate: 3600 } }),
@@ -103,4 +106,19 @@ export async function fetchF1Standings(): Promise<{
   } catch {
     return null;
   }
+}
+
+/**
+ * Public standings fetch, wrapped in the KV last-good read-through so a Jolpica
+ * outage (HTTP 521, network error, or unexpected shape → null) serves the last
+ * successful standings instead of blanking the page. Self-heals on the next
+ * good fetch. Fails open when KV is unconfigured (local dev): behaves exactly
+ * like `fetchF1StandingsLive`. Return type is unchanged for callers.
+ */
+export async function fetchF1Standings(): Promise<F1Standings | null> {
+  return withF1LastGood<F1Standings | null>(
+    'standings',
+    fetchF1StandingsLive,
+    result => result == null || result.drivers.length === 0 || result.constructors.length === 0,
+  );
 }

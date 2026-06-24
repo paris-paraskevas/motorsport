@@ -1,4 +1,5 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import { withF1LastGood } from '@/lib/f1-cache';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -151,7 +152,7 @@ function parseRace(
   return { round, raceName, date, circuit, results };
 }
 
-export async function fetchF1LastRace(): Promise<RaceResult | null> {
+async function fetchF1LastRaceLive(): Promise<RaceResult | null> {
   try {
     const res = await fetch(LAST_RACE_URL, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
@@ -164,7 +165,7 @@ export async function fetchF1LastRace(): Promise<RaceResult | null> {
   }
 }
 
-export async function fetchF1SeasonResults(): Promise<RaceResult[]> {
+async function fetchF1SeasonResultsLive(): Promise<RaceResult[]> {
   try {
     const races = mergeRacesByRound(await fetchAllPages(SEASON_RESULTS_URL), 'Results');
     const results: RaceResult[] = [];
@@ -178,11 +179,7 @@ export async function fetchF1SeasonResults(): Promise<RaceResult[]> {
   }
 }
 
-// Sprint races have their own season-trend impact (P1-P8 = 8-7-6-5-4-3-2-1
-// points). Returned as standalone RaceResult[] keyed by the parent race's
-// `round` so the consumer can fold sprint points into that round's running
-// totals without adding extra x-axis ticks to the trend chart.
-export async function fetchF1SeasonSprints(): Promise<RaceResult[]> {
+async function fetchF1SeasonSprintsLive(): Promise<RaceResult[]> {
   try {
     const races = mergeRacesByRound(await fetchAllPages(SEASON_SPRINTS_URL), 'SprintResults');
     const results: RaceResult[] = [];
@@ -194,4 +191,38 @@ export async function fetchF1SeasonSprints(): Promise<RaceResult[]> {
   } catch {
     return [];
   }
+}
+
+// Each public fetcher below is wrapped in the KV last-good read-through so a
+// Jolpica outage (HTTP 521 / network error / empty payload) serves the last
+// successful result instead of blanking the results page. Each self-heals on
+// the next good fetch. All FAIL OPEN: with KV unconfigured (local dev) they
+// behave exactly like their `*Live` body. Return types are unchanged.
+
+export async function fetchF1LastRace(): Promise<RaceResult | null> {
+  return withF1LastGood<RaceResult | null>(
+    'last-race',
+    fetchF1LastRaceLive,
+    result => result == null,
+  );
+}
+
+export async function fetchF1SeasonResults(): Promise<RaceResult[]> {
+  return withF1LastGood<RaceResult[]>(
+    'season-results',
+    fetchF1SeasonResultsLive,
+    result => result.length === 0,
+  );
+}
+
+// Sprint races have their own season-trend impact (P1-P8 = 8-7-6-5-4-3-2-1
+// points). Returned as standalone RaceResult[] keyed by the parent race's
+// `round` so the consumer can fold sprint points into that round's running
+// totals without adding extra x-axis ticks to the trend chart.
+export async function fetchF1SeasonSprints(): Promise<RaceResult[]> {
+  return withF1LastGood<RaceResult[]>(
+    'season-sprints',
+    fetchF1SeasonSprintsLive,
+    result => result.length === 0,
+  );
 }

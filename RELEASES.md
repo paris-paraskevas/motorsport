@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.84.0 — 2026-06-24
+
+**F1 standings & results, resilient.** When the upstream F1 data provider has an outage, the standings and results pages now keep showing the last good data instead of going blank — and refresh automatically once the provider is back.
+
 ## 0.83.1 — 2026-06-24
 
 *Internal: documentation housekeeping (session close-out). No user-facing change.*
