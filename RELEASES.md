@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.91.2 — 2026-06-24
+
+*Internal: documentation (next-session planning). No user-facing change.*
+
 ## 0.91.1 — 2026-06-24
 
 *Internal: documentation housekeeping (session close-out). No user-facing change.*
