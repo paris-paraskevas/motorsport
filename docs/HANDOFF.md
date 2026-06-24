@@ -6,6 +6,32 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-23 (main = 0.70.0) — operator batch #2 (6 PRs) + outstanding queue
+
+Second autonomous batch the same day, off another big operator request (10+ asks) + rapid follow-up thoughts. Shipped **0.66.2 → 0.70.0** (PRs #201–#206). Per-version detail in `CHANGELOG.md`.
+
+### Shipped (all merged)
+- **Perf — `0.66.2` (#201).** `/social/leagues` N+1 killed: `getLeaderboardsForLeagues` reads all members in 2 round-trips, not 2×N. (Region co-location stays the bigger lever — operator-gated.)
+- **Calendar filters — `0.67.0` (#202) → redesigned `0.69.0` (#205).** Filter by **session type** (Practice/Qualifying/Race + combos) + **series**. v2: Filters button inline on the toolbar right (same chip style as M/W/D), opens a **modal box** with collapsed Session/Series categories; selection **persists** (localStorage). Client-safe `classifySession()`.
+- **Series accordions — `0.68.0` (#203).** `/series` categories default-collapsed accordions (`Accordion` gained `titleClassName`). Per-category image pages deferred (licensing).
+- **Default-collapsed — `0.68.1` (#204).** Account **Followed** + `/play` round bars start collapsed.
+- **Weekend tabs v2 — `0.70.0` (#206).** **Sessions** folded into **Schedule** (session links shown; standings = lazy disclosure so the default stays fast); tabs now Schedule·Bets·News. `/play` "Bet" deep-links to **?tab=bets** (read client-side → page stays `● ISR`).
+
+### ⏳ OUTSTANDING from batch #2 (not built — next session)
+- **Account restructure + personal stats (biggest).** Clickable category rows → dedicated pages (`/account/notifications`, `/account/series`); personal stats = **credits · date joined · friend count (IG-style) · leagues**, with **friends-only visibility** (strangers can't see). Needs a profile read (friend count = a `friendship` count; join date — check `app_user.created_at`, else add via migration), a viewer-vs-friend check, 2 new routes.
+- **Leagues create/join modals (#9).** Two discrete buttons → modal popups. Create = name + invite existing friends (+ optional bet limits); Join = code/link → the existing friend-request+join flow. Wrap `LeaguesPanel`'s existing create/join logic in modals.
+- **Home customisation++ (#12).** Collapse **Just-missed** by default + finer reorder/hide; consider moving **news** off home. Extends 0.66.0 (`homeLayout`/`useHomeLayout`).
+- **App-wide caching + lazy-load** ("no more delays"). Code-only levers left: cache `getOpenMarkets` (shared) + per-league leaderboards (Next Data Cache + tag-invalidate on the open/settle crons), dynamic-import heavy client components. `ensureBettingUser` 3→1 SQL collapse needs a migration (PAT).
+- **Threads / `/blog` → Social (#13, DEFERRED — DB epic).** UGC threads tagged by series/weekend/session/driver/team/date — new Supabase tables + moderation + auth (the W7/S9 trigger). Needs Management API migration + PAT + local DB.
+- **Forecast market** (still deferred from batch #1 — turnkey plan in the 0.66.0 block below).
+
+### Owed / operator-gated (unchanged)
+- **Region move `iad1`→`eu-west-1`** — THE perf lever; project-wide + Pro+-gated + scraper re-verify. Dashboard flip.
+- **Non-copyright series/driver images** — licensing curation (gates the series per-category cards + driver photos).
+- Rotate Supabase PAT + RapidAPI key; delete the demo `'2026-06'` award before ~Jul 1; authed-eyeball verify the new authed surfaces on prod.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-23 (main = 0.66.0) — operator feature batch (7 PRs) + forecast deferred
 
 Large autonomous batch off one operator request (7 asks). Shipped **0.61.1 → 0.66.0** (PRs #193–#199). Per-version detail in `CHANGELOG.md`.
