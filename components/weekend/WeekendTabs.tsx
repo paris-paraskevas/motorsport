@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { WeekendBetting } from './WeekendBetting';
 import { WeekendNewsClient } from './WeekendNewsClient';
 import { WeekendStandingsClient } from './WeekendStandingsClient';
@@ -13,10 +11,6 @@ import { WeekendStandingsClient } from './WeekendStandingsClient';
 // round" disclosure — the one heavy fetch, kept behind a click so the default
 // view stays fast (the 0.61.0 speed-up). Bets / News mount only when their tab
 // is first opened, then stay mounted (hidden) so re-selecting doesn't refetch.
-interface SessionLink {
-  title: string;
-  href: string | null;
-}
 type TabKey = 'schedule' | 'bets' | 'news';
 
 export function WeekendTabs({
@@ -26,7 +20,6 @@ export function WeekendTabs({
   isPast,
   showBets,
   showNews,
-  sessionLinks,
 }: {
   scheduleSlot: ReactNode;
   slug: string;
@@ -34,7 +27,6 @@ export function WeekendTabs({
   isPast: boolean;
   showBets: boolean;
   showNews: boolean;
-  sessionLinks: SessionLink[];
 }) {
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'schedule', label: 'Schedule' },
@@ -91,28 +83,6 @@ export function WeekendTabs({
 
       <div hidden={active !== 'schedule'} className="space-y-8">
         {scheduleSlot}
-        {sessionLinks.length > 0 && (
-          <div>
-            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-text">Sessions</h3>
-            <ul className="divide-y divide-border/60">
-              {sessionLinks.map((s, i) => (
-                <li key={`${i}-${s.title}`} className="py-2.5">
-                  {s.href ? (
-                    <Link
-                      href={s.href}
-                      className="group/sess inline-flex items-center gap-1 text-sm font-medium text-text transition-colors duration-(--duration-fast) hover:text-tint"
-                    >
-                      {s.title}
-                      <ArrowUpRight size={12} aria-hidden className="text-text-faint group-hover/sess:text-tint" />
-                    </Link>
-                  ) : (
-                    <span className="text-sm font-medium text-text">{s.title}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
         <div>
           <button
             type="button"
