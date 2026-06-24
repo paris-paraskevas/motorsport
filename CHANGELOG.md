@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.77.2 — 2026-06-24
+
+Fixed: **`/social` redirect loop (0.74.0 regression) — the Social page wouldn't load.**
+
+### Fixed
+- `next.config.ts` still redirected `/social` → `/social/leagues` (added in 0.59.0 when `/social` had no index page). 0.74.0 turned `/social` into a real combined page and made `/social/leagues` redirect → `/social`, so the two formed an **infinite 307 loop** and the page never loaded. Removed the `/social` config redirect (added a comment warning against re-adding it); repointed the legacy `/play/leagues` link straight to `/social`. League detail + join routes unchanged. Verified on prod: `/social` now 200s instead of looping.
+
 ## 0.77.1 — 2026-06-24
 
 Changed: **Session close-out — handoff + idea-ledger + schedule brought current with the 0.72.3→0.77.0 batch.**

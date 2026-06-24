@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.77.2 — 2026-06-24
+
+**Fixed: Social now loads.** A redirect loop from the new combined Social page stopped it opening — fixed; Friends and Leagues load side by side as intended.
+
 ## 0.77.1 — 2026-06-24
 
 *Internal: documentation housekeeping (session close-out). No user-facing change.*
