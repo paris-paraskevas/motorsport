@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.95.0 — 2026-06-24
+
+**New bet: exact finish.** You can now back a single driver to finish in an exact position (e.g. Norris P3) on upcoming F1 weekends — alongside winner, podium, top-10 and forecast.
+
 ## 0.94.0 — 2026-06-24
 
 **Write posts from the site (admins).** Admins now get a "New post" composer and a review queue right on the Blog page — write a draft, approve it with a publish time, and the scheduler takes it live.
