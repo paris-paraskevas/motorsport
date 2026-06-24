@@ -165,11 +165,14 @@ export function HomeContent({
   // whole route dynamic). Post-loads below the chyron — fine for a
   // retrospective block.
   const [justMissed, setJustMissed] = useState<JustMissedItem[] | null>(null);
-  // Lighter when hidden: a hidden Just-missed block skips the /api/just-missed
-  // fetch entirely (the WEC podium fan-out behind it isn't free).
+  // Lighter when hidden OR collapsed: the /api/just-missed fetch (a WEC podium
+  // fan-out — not free) is deferred until the block is both shown and expanded.
+  // Just-missed is collapsed by default, so a fresh /app pays nothing for it
+  // until the user opens it; the effect re-runs when the collapse state flips.
   const justMissedHidden = layout.hidden.includes('just-missed');
+  const justMissedCollapsed = layout.collapsed.includes('just-missed');
   useEffect(() => {
-    if (justMissedHidden) return;
+    if (justMissedHidden || justMissedCollapsed) return;
     let alive = true;
     fetch('/api/just-missed')
       .then(r => (r.ok ? r.json() : []))
@@ -182,7 +185,7 @@ export function HomeContent({
     return () => {
       alive = false;
     };
-  }, [justMissedHidden]);
+  }, [justMissedHidden, justMissedCollapsed]);
 
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
@@ -468,7 +471,7 @@ export function HomeContent({
       {/* ── JUST MISSED — what just happened. Hero (latest finished race) +
              up to 2 quiet rows. Podium for covered series, link-out otherwise.
              (Slice 3 pairs this side-by-side with UP NEXT on desktop.) ── */}
-      {jmHero && !isHidden('just-missed') && (
+      {!isHidden('just-missed') && (
         <section aria-label="Just missed" className="mb-8" style={{ order: orderOf('just-missed') }}>
           <CollapsibleSectionHead
             title="Just missed"
@@ -476,7 +479,18 @@ export function HomeContent({
             collapsed={isCollapsed('just-missed')}
             onToggle={() => toggleCollapsed('just-missed')}
           />
-          {!isCollapsed('just-missed') && (
+          {!isCollapsed('just-missed') &&
+            (justMissed === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-40 animate-pulse bg-surface" />
+                <div className="h-8 w-3/4 max-w-sm animate-pulse bg-surface" />
+                <div className="h-4 w-1/2 animate-pulse bg-surface/60" />
+              </div>
+            ) : !jmHero ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                Nothing wrapped up recently.
+              </p>
+            ) : (
           <>
           <div className="border-y border-border py-4">
             <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
@@ -602,7 +616,7 @@ export function HomeContent({
             </div>
           )}
           </>
-          )}
+            ))}
         </section>
       )}
 

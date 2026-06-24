@@ -38,12 +38,9 @@ export function AppShell({
 
   const nav = [
     ...NAV,
-    ...(bettingEnabled
-      ? [
-          { href: '/play', label: 'Play', exact: false },
-          { href: '/social', label: 'Social', exact: false },
-        ]
-      : []),
+    // Play folded into the Social hub (0.84.0): Social is the umbrella for play
+    // (solo + leagues), friends, blog and threads.
+    ...(bettingEnabled ? [{ href: '/social', label: 'Social', exact: false }] : []),
   ];
 
   // Installed-PWA detection (same condition as StandaloneRedirect). In the

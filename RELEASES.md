@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.85.0 — 2026-06-24
+
+**A faster home, and a tidier Social.** The "Just missed" block now loads only when you open it, so the home paints quicker. Customising your home moved to its own screen — with a preview of new home widgets on the way. And Social is now the home base for everything social: play solo or in a league with friends, plus Blog and community Threads, all in one place.
+
 ## 0.84.0 — 2026-06-24
 
 **F1 standings & results, resilient.** When the upstream F1 data provider has an outage, the standings and results pages now keep showing the last good data instead of going blank — and refresh automatically once the provider is back.

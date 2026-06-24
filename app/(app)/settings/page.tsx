@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Compass, Trophy } from 'lucide-react';
+import { ArrowUpRight, Bell, Compass, SlidersHorizontal, Trophy } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
 import { AccountIdentity } from '@/components/AccountIdentity';
 import { AccountStats } from '@/components/AccountStats';
-import { HomeCustomizeBanner } from '@/components/HomeCustomizeBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,9 +33,18 @@ export default async function AccountPage() {
       <AccountIdentity />
       {stats && <AccountStats stats={stats} />}
 
-      <HomeCustomizeBanner />
-
       <nav className="border-t border-border">
+        <Link
+          href="/settings/customize"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <SlidersHorizontal size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Customise home</span>
+            <span className="block text-text-faint text-xs">Reorder, fold or hide your home blocks</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
         <Link
           href="/settings/notifications"
           className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
