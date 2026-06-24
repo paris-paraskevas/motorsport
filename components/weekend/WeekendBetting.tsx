@@ -91,12 +91,23 @@ export function WeekendBetting({
         )}
       </div>
 
+      {/* Quick links to the form that informs a pick — standings charts, results,
+          and driver pages (last-5 etc.) for this series. */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
+        <span className="text-text-faint">Form</span>
+        <Link href={`/series/${seriesSlug}?tab=standings`} className="text-text-muted hover:text-brand">Standings</Link>
+        <span className="text-text-faint">·</span>
+        <Link href={`/series/${seriesSlug}?tab=results`} className="text-text-muted hover:text-brand">Results</Link>
+        <span className="text-text-faint">·</span>
+        <Link href={`/series/${seriesSlug}?tab=drivers`} className="text-text-muted hover:text-brand">Drivers</Link>
+      </div>
+
       {markets.length === 0 ? (
         <p className="font-mono text-xs text-text-muted">
           Markets open closer to the weekend — bet before qualifying, free Paddock credits, no cashout.
         </p>
       ) : data.signedIn ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {markets.map(m => {
             const shared = {
               market: m,
@@ -105,12 +116,37 @@ export function WeekendBetting({
               leagues: data.leagues ?? [],
               onPlaced: refresh,
             };
-            return m.type === 'exact_position' ? (
-              <ExactPositionBetCard key={m.id} {...shared} />
-            ) : m.type === 'forecast' ? (
-              <ForecastBetCard key={m.id} {...shared} />
-            ) : (
-              <MarketBetCard key={m.id} {...shared} />
+            const meta = MARKET_TYPE_META[m.type] ?? MARKET_TYPE_META.winner;
+            const myBets = shared.bets.length;
+            const card =
+              m.type === 'exact_position' ? (
+                <ExactPositionBetCard {...shared} />
+              ) : m.type === 'forecast' ? (
+                <ForecastBetCard {...shared} />
+              ) : (
+                <MarketBetCard {...shared} />
+              );
+            // Collapsed by default — keeps the (five-market) tab scannable. The
+            // arbitrary variants hide each card's own heading (the summary carries
+            // the label) and strip its outer border/padding so the <details> owns
+            // the container.
+            return (
+              <details key={m.id} className="group rounded border border-border [&_h3]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
+                  <span className="font-display text-sm font-bold text-text">
+                    {meta.label}
+                    {myBets > 0 && (
+                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.14em] text-brand">
+                        {myBets} bet{myBets > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </span>
+                  <span aria-hidden="true" className="text-text-faint transition-transform group-open:rotate-90">
+                    ›
+                  </span>
+                </summary>
+                <div className="px-3 pb-3 [&>div]:rounded-none [&>div]:border-0 [&>div]:p-0">{card}</div>
+              </details>
             );
           })}
         </div>

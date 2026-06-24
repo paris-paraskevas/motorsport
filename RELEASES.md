@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.95.1 — 2026-06-24
+
+**Tidier bets.** Each market on a weekend's Bets tab now starts collapsed — tap to open the one you want — with quick links to that series' standings, results and drivers to size up your pick.
+
 ## 0.95.0 — 2026-06-24
 
 **New bet: exact finish.** You can now back a single driver to finish in an exact position (e.g. Norris P3) on upcoming F1 weekends — alongside winner, podium, top-10 and forecast.
