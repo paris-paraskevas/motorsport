@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { displayNames, friendStates, type FriendState } from './friends';
+import { displayNames, friendStates, listFriends, areFriends, type FriendState } from './friends';
 import { readBetCache, writeBetCache, bustBetCache, leaderboardKey, LEADERBOARD_TTL } from './cache';
 
 // Server-only. Friend leagues: create, join by code, and the win-rate
@@ -298,6 +298,9 @@ export interface LeagueDetail {
   isMember: boolean;
   members: LeagueMemberDetail[];
   honours: LeagueHonour[];
+  // The viewer's accepted friends who are NOT already members — for the
+  // "invite friends directly" control. Empty for non-members / signed-out.
+  addableFriends: { userId: string; displayName: string | null }[];
 }
 
 /** Everything the league page needs (members ranked by win-rate, names, nicknames,
@@ -315,9 +318,10 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
   const awards = await getLeagueAwards(leagueId);
   // names must also cover award winners who may have since left the league.
   const allIds = [...new Set([...ids, ...awards.map(a => a.userId)])];
-  const [names, states] = await Promise.all([
+  const [names, states, viewerFriends] = await Promise.all([
     displayNames(allIds),
     friendStates(viewerId, ids.filter(id => id !== viewerId)),
+    listFriends(viewerId),
   ]);
 
   const awardsByUser = new Map<string, MemberAward[]>();
@@ -365,6 +369,11 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
     })),
   }));
 
+  const memberSet = new Set(ids);
+  const addableFriends = viewerFriends
+    .filter(f => !memberSet.has(f.userId))
+    .map(f => ({ userId: f.userId, displayName: f.displayName }));
+
   return {
     id: league.id as string,
     name: league.name as string,
@@ -373,6 +382,7 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
     isMember: ids.includes(viewerId),
     members: detail,
     honours,
+    addableFriends,
   };
 }
 
@@ -435,6 +445,27 @@ export async function kickMember(leagueId: string, ownerId: string, targetUserId
   if (targetUserId === ownerId) throw new Error('the owner cannot be removed — disband the league instead');
   const { error } = await db.from('league_member').delete().eq('league_id', leagueId).eq('user_id', targetUserId);
   if (error) throw new Error(`kickMember failed: ${error.message}`);
+  await bustBetCache(leaderboardKey(leagueId));
+}
+
+/** Add an existing friend straight into a league. The caller must be a member of
+ *  the league AND accepted friends with the target (no consent step — they're
+ *  already friends, and a league is just a leaderboard). Idempotent: a no-op if
+ *  the friend is already a member. */
+export async function addFriendToLeague(leagueId: string, byUserId: string, friendUserId: string): Promise<void> {
+  const db = betDb();
+  const { data: member } = await db
+    .from('league_member')
+    .select('league_id')
+    .eq('league_id', leagueId)
+    .eq('user_id', byUserId)
+    .maybeSingle();
+  if (!member) throw new Error('only league members can add friends');
+  if (!(await areFriends(byUserId, friendUserId))) throw new Error('you can only add your own friends');
+  const { error } = await db
+    .from('league_member')
+    .upsert({ league_id: leagueId, user_id: friendUserId }, { onConflict: 'league_id,user_id', ignoreDuplicates: true });
+  if (error) throw new Error(`addFriendToLeague failed: ${error.message}`);
   await bustBetCache(leaderboardKey(leagueId));
 }
 

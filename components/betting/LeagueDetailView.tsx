@@ -200,6 +200,30 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
         ))}
       </ol>
 
+      {league.addableFriends.length > 0 && (
+        <div className="border-t border-white/10 pt-3">
+          <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Invite friends</h2>
+          <ul className="space-y-1">
+            {league.addableFriends.map(f => (
+              <li
+                key={f.userId}
+                className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
+              >
+                <span className="text-text">{f.displayName || `Racer ${f.userId.slice(-4)}`}</span>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => call('/api/bet/league', { action: 'addFriend', leagueId: league.id, friendUserId: f.userId })}
+                  className="text-brand disabled:opacity-40"
+                >
+                  Add to league
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {league.honours.length > 0 && (
         <div className="border-t border-white/10 pt-3">
           <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Honours</h2>

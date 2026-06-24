@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.77.0 — 2026-06-24
+
+**Add friends to a league in one tap.** Your league page now shows the friends you can add, so you can bring them in directly instead of sending an invite link.
+
 ## 0.76.0 — 2026-06-24
 
 **See other racers' profiles.** Tap a friend's name to view their profile — their join date, friend and league counts, and (for friends) the leagues they're in. People who aren't your friends see the basics and can send you a request, but not your leagues.

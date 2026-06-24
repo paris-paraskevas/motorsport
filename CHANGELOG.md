@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.77.0 — 2026-06-24
+
+Added: **Invite existing friends straight into a league.**
+
+### Added
+- The league page lists your friends who aren't members under **Invite friends**, each with an "Add to league" button. New `addFriend` action on `POST /api/bet/league` → `addFriendToLeague(leagueId, by, friend)`: the caller must be a league member AND accepted friends with the target (new `areFriends` helper in `friends.ts`), then an idempotent `league_member` upsert (busts the leaderboard cache). No consent step — they're already friends and a league is just a leaderboard.
+- `getLeagueDetail` gains `addableFriends` (the viewer's accepted friends not already in the league) via one extra `listFriends` read in its existing fan-out.
+
+### Notes
+- tsc clean; 476 tests; `next build` clean. No schema change. **Per-league bet limits remain deferred** — that needs a `league` column (a Management-API migration via the operator's PAT) + a local-Supabase verify; not in this PR.
+
 ## 0.76.0 — 2026-06-24
 
 Added: **Cross-user profiles with friends-only league visibility.**
