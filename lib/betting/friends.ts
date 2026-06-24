@@ -196,6 +196,17 @@ export async function removeFriend(userId: string, otherId: string): Promise<voi
   if (error) throw new Error(`removeFriend failed: ${error.message}`);
 }
 
+/** True if `a` and `b` are accepted friends (either direction). */
+export async function areFriends(a: string, b: string): Promise<boolean> {
+  const { data } = await betDb()
+    .from('friendship')
+    .select('id')
+    .eq('status', 'accepted')
+    .or(pairFilter(a, b))
+    .maybeSingle();
+  return Boolean(data);
+}
+
 export interface OutgoingRequest {
   addresseeId: string;
   displayName: string | null;

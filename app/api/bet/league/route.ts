@@ -11,6 +11,7 @@ import {
   renameLeague,
   disbandLeague,
   kickMember,
+  addFriendToLeague,
 } from '@/lib/betting/leagues';
 
 export const runtime = 'nodejs';
@@ -32,6 +33,7 @@ export async function POST(req: Request) {
     leagueId?: unknown;
     token?: unknown;
     targetUserId?: unknown;
+    friendUserId?: unknown;
     nickname?: unknown;
     color?: unknown;
   };
@@ -141,6 +143,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'could not remove member';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'addFriend') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    const friendUserId = typeof body.friendUserId === 'string' ? body.friendUserId : '';
+    if (!leagueId || !friendUserId) {
+      return NextResponse.json({ error: 'leagueId and friendUserId required' }, { status: 400 });
+    }
+    try {
+      await addFriendToLeague(leagueId, userId, friendUserId);
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not add friend';
       return NextResponse.json({ ok: false, error: message }, { status: 422 });
     }
   }
