@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.86.0 — 2026-06-24
+
+**Prediction reminders, richer leagues, and a proper intro.** Get a heads-up the day before predictions close, and a ping when results are in — toggle it under Account → Notifications. League tables now show more: net credits, win/loss streak, recent form, total bets and honours. The landing page now explains the free, friends-first prediction game (virtual credits, no cashout). Also fixed: the notification Sound toggle now saves.
+
 ## 0.85.0 — 2026-06-24
 
 **A faster home, and a tidier Social.** The "Just missed" block now loads only when you open it, so the home paints quicker. Customising your home moved to its own screen — with a preview of new home widgets on the way. And Social is now the home base for everything social: play solo or in a league with friends, plus Blog and community Threads, all in one place.

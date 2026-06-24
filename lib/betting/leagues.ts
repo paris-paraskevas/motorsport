@@ -283,6 +283,17 @@ export interface LeagueMemberDetail {
   isYou: boolean;
   friendState: FriendState;
   awards: MemberAward[];
+  // League-scoped P&L (returns − stakes on resolved bets). Never the user's
+  // global balance — purely this league's pari-mutuel ledger. Pending/void net 0.
+  netCredits: number;
+  // Current run of like outcomes (won/lost), most recent first: +n = n-bet win
+  // streak, -n = n-bet losing streak, 0 = no settled bets (voids don't break it).
+  streak: number;
+  // Last up-to-5 settled outcomes, most-recent-first: 'W' | 'L'. Voids skipped.
+  form: ('W' | 'L')[];
+  // Total bets placed in this league (all outcomes incl. pending/void). Distinct
+  // from `placed`, which counts only settled (won/lost) bets.
+  betCount: number;
 }
 /** One completed period's podium (the league's trophy cabinet). */
 export interface LeagueHonour {
@@ -305,6 +316,80 @@ export interface LeagueDetail {
   addableFriends: { userId: string; displayName: string | null }[];
 }
 
+/** Per-member, league-scoped derived stats for the detail page: net credits,
+ *  current streak, last-5 form, total bet count. Two small reads (the league's
+ *  bets + the matching payout/refund ledger deltas) — no migration, no new
+ *  columns. The maths is league-scoped P&L only; it never reads a balance.
+ *
+ *  net = Σ(payout for that member's bets in this league) − Σ(stake on settled
+ *  bets). Voids refund the stake (net 0) and pending stakes are still in play,
+ *  so both are excluded from the stake side; only won bets carry a payout. */
+type MemberStats = { netCredits: number; streak: number; form: ('W' | 'L')[]; betCount: number };
+async function leagueMemberStats(leagueId: string): Promise<Map<string, MemberStats>> {
+  const db = betDb();
+  const out = new Map<string, MemberStats>();
+
+  const { data: betRows, error } = await db
+    .from('bet')
+    .select('id, user_id, stake, outcome, created_at')
+    .eq('league_id', leagueId)
+    .order('created_at', { ascending: false }); // most-recent-first → streak/form read off the top
+  if (error) throw new Error(`leagueMemberStats (bets) failed: ${error.message}`);
+  const bets = betRows ?? [];
+  if (bets.length === 0) return out;
+
+  // Returns live only in the ledger (league pools pay the pool, not bet.multiplier).
+  // Pull just the payout/refund deltas tagged with one of these bets' ids.
+  const betIds = bets.map(b => b.id as string);
+  const { data: ledgerRows, error: lErr } = await db
+    .from('credit_ledger')
+    .select('delta, ref_id')
+    .in('reason', ['payout', 'refund'])
+    .in('ref_id', betIds);
+  if (lErr) throw new Error(`leagueMemberStats (ledger) failed: ${lErr.message}`);
+  const returnByBet = new Map<string, number>();
+  for (const r of ledgerRows ?? []) {
+    const id = r.ref_id as string;
+    returnByBet.set(id, (returnByBet.get(id) ?? 0) + Number(r.delta ?? 0));
+  }
+
+  // bets are already newest-first; group per user preserving that order.
+  const perUser = new Map<string, typeof bets>();
+  for (const b of bets) {
+    const uid = b.user_id as string;
+    const arr = perUser.get(uid);
+    if (arr) arr.push(b);
+    else perUser.set(uid, [b]);
+  }
+
+  for (const [uid, rows] of perUser) {
+    let netReturns = 0;
+    let netStakes = 0;
+    const form: ('W' | 'L')[] = [];
+    let streak = 0;
+    let streakLocked = false; // stop extending the streak once the run breaks
+
+    for (const b of rows) {
+      const outcome = b.outcome as string;
+      const stake = Number(b.stake ?? 0);
+      if (outcome === 'won' || outcome === 'lost') {
+        netReturns += returnByBet.get(b.id as string) ?? 0; // 0 for a lost bet
+        netStakes += stake;
+        const mark: 'W' | 'L' = outcome === 'won' ? 'W' : 'L';
+        if (form.length < 5) form.push(mark);
+        if (!streakLocked) {
+          const step = mark === 'W' ? 1 : -1;
+          if (streak === 0 || Math.sign(streak) === step) streak += step;
+          else streakLocked = true;
+        }
+      }
+      // pending/void: no P&L, don't break the streak, don't count in form.
+    }
+    out.set(uid, { netCredits: netReturns - netStakes, streak, form, betCount: rows.length });
+  }
+  return out;
+}
+
 /** Everything the league page needs (members ranked by win-rate, names, nicknames,
  *  colours, friend state vs the viewer). Null if the league doesn't exist. */
 export async function getLeagueDetail(leagueId: string, viewerId: string): Promise<LeagueDetail | null> {
@@ -324,10 +409,11 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
   const awards = await getLeagueAwards(leagueId);
   // names must also cover award winners who may have since left the league.
   const allIds = [...new Set([...ids, ...awards.map(a => a.userId)])];
-  const [names, states, viewerFriends] = await Promise.all([
+  const [names, states, viewerFriends, stats] = await Promise.all([
     displayNames(allIds),
     friendStates(viewerId, ids.filter(id => id !== viewerId)),
     listFriends(viewerId),
+    leagueMemberStats(leagueId),
   ]);
 
   const awardsByUser = new Map<string, MemberAward[]>();
@@ -342,6 +428,7 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
       const uid = m.user_id as string;
       const wins = (m.wins as number) ?? 0;
       const placed = (m.placed as number) ?? 0;
+      const s = stats.get(uid);
       return {
         userId: uid,
         displayName: names.get(uid) ?? null,
@@ -350,6 +437,10 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
         wins,
         placed,
         winRate: placed > 0 ? wins / placed : 0,
+        netCredits: s?.netCredits ?? 0,
+        streak: s?.streak ?? 0,
+        form: s?.form ?? [],
+        betCount: s?.betCount ?? 0,
         isYou: uid === viewerId,
         friendState: (uid === viewerId ? 'friends' : states.get(uid) ?? 'none') as FriendState,
         awards: awardsByUser.get(uid) ?? [],
