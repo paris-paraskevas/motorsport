@@ -124,6 +124,24 @@ export function CalendarView({
 
   const label = view === 'month' ? monthLabel(anchor) : view === 'week' ? weekLabel(anchor) : dayLabel(anchor);
 
+  // Month-picker options: every month spanned by the season's sessions, always
+  // including now's month and the month currently in view (so the <select> value
+  // always matches an option, even after arrowing past the season edge).
+  const monthStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+  const currentMonthValue = monthStart(anchor).getTime();
+  const monthOptions = (() => {
+    const times = items.map(i => i.session.start.getTime());
+    const lo = monthStart(new Date(Math.min(now.getTime(), currentMonthValue, ...times)));
+    const hi = monthStart(new Date(Math.max(now.getTime(), currentMonthValue, ...times)));
+    const opts: { value: number; label: string }[] = [];
+    let cur = lo;
+    for (let guard = 0; cur.getTime() <= hi.getTime() && guard < 60; guard++) {
+      opts.push({ value: cur.getTime(), label: monthLabel(cur) });
+      cur = addMonths(cur, 1);
+    }
+    return opts;
+  })();
+
   return (
     <>
       <CalendarToolbar
@@ -132,7 +150,9 @@ export function CalendarView({
         label={label}
         onPrev={() => step(-1)}
         onNext={() => step(1)}
-        onToday={() => setAnchorMs(null)}
+        monthOptions={monthOptions}
+        currentMonthValue={currentMonthValue}
+        onPickMonth={ms => setAnchorMs(ms)}
         filtersOpen={filtersOpen}
         onToggleFilters={() => setFiltersOpen(o => !o)}
         onClearFilters={clearFilters}

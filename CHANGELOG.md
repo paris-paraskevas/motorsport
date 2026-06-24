@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.78.0 — 2026-06-24
+
+Changed: **Calendar — full-width month nav with a month picker.**
+
+### Changed
+- The toolbar's `‹ Today ›` is now a full-width `‹ [month] ›` bar whose centre is a **month-picker `<select>`** spanning the season's months — jump straight to any month instead of stepping. Arrows still step by the current view; the precise week/day range shows below the bar when zoomed in. The standalone "Today" button is gone (pick the current month to return).
+- Dropped the `/calendar` "Every session · your followed series · one timeline" subheader.
+
+### Notes
+- `monthOptions` is built in `CalendarView` from the session date range (+ now + the in-view month, so the `<select>` value always resolves to an option even after arrowing past the season edge). tsc clean; 476 tests; `/calendar` stays `○` static.
+
 ## 0.77.3 — 2026-06-24
 
 Changed: **Compact footer.**

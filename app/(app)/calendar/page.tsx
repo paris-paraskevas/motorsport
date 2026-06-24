@@ -57,14 +57,9 @@ export default async function CalendarPage() {
       />
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
-        <div>
-          <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
-            Calendar<span className="text-brand">.</span>
-          </h1>
-          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
-            Every session · your followed series · one timeline
-          </p>
-        </div>
+        <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
+          Calendar<span className="text-brand">.</span>
+        </h1>
       </header>
 
       <CalendarView items={flat} roundByKey={roundByKey} serverNow={now.toISOString()} />
