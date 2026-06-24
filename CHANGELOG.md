@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.93.3 — 2026-06-24
+
+Added: **Discoverable Account link in the desktop header.**
+
+### Added
+- `components/HeaderUtils.tsx`: signed-in PC users now get an explicit **Account** link (→ `/settings`) in the top-right, beside the avatar. The Clerk `UserButton` alone buried Paddock's Account + Customize behind its "Preferences" submenu, so PC users couldn't find it (operator-reported). lg+ only; mobile keeps the bottom bar + avatar. Browser-verified; tsc + `next build` clean; 0 new lint.
+
 ## 0.93.2 — 2026-06-24
 
 Fixed: **Landing no longer shows "Sign in" to signed-in visitors.**

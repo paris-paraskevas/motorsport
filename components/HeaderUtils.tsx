@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { Coffee, LogIn, Mail, Settings } from 'lucide-react';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
@@ -38,6 +39,19 @@ export function HeaderUtils({
         <span className="hidden sm:inline">Buy me a coffee</span>
         <span className="sm:hidden">Coffee</span>
       </a>
+      {/* Discoverable account access on desktop — the Clerk avatar alone hides
+          Paddock's own Account + Customize behind its "Preferences" submenu, so
+          PC users couldn't find it (operator-reported). Mobile keeps the bottom
+          bar + avatar. */}
+      {isLoaded && isSignedIn && (
+        <Link
+          href="/settings"
+          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+        >
+          <Settings size={13} />
+          <span>Account</span>
+        </Link>
+      )}
       {isLoaded && isSignedIn && (
         <UserButton
           appearance={{ elements: { avatarBox: 'w-8 h-8' } }}
