@@ -4,12 +4,27 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TITLE_MAX, BODY_MAX } from '@/lib/threads';
 
+// One series option for the optional tag picker (slug + display name).
+export interface SeriesOption {
+  slug: string;
+  name: string;
+}
+
 // Signed-in submit form. POSTs to /api/threads; the thread lands `pending` and is
 // public only after a moderator approves. router.refresh() re-reads the page.
-export function ThreadComposer() {
+// `series` (optional) populates a "tag a series" picker; `defaultSeries`
+// pre-selects one (e.g. when the composer is reached from a series context).
+export function ThreadComposer({
+  series = [],
+  defaultSeries = '',
+}: {
+  series?: SeriesOption[];
+  defaultSeries?: string;
+}) {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [seriesSlug, setSeriesSlug] = useState(defaultSeries);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +38,7 @@ export function ThreadComposer() {
       const res = await fetch('/api/threads', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title, body }),
+        body: JSON.stringify({ title, body, seriesSlug: seriesSlug || undefined }),
       });
       const d = (await res.json()) as { ok?: boolean; error?: string };
       if (!res.ok) {
@@ -32,6 +47,7 @@ export function ThreadComposer() {
       }
       setTitle('');
       setBody('');
+      setSeriesSlug(defaultSeries);
       setMsg('Submitted — a moderator will review it shortly.');
       router.refresh();
     } catch {
@@ -61,6 +77,21 @@ export function ThreadComposer() {
         className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-text"
         aria-label="Thread body"
       />
+      {series.length > 0 && (
+        <select
+          value={seriesSlug}
+          onChange={e => setSeriesSlug(e.target.value)}
+          className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-text"
+          aria-label="Tag a series (optional)"
+        >
+          <option value="">No series — general discussion</option>
+          {series.map(s => (
+            <option key={s.slug} value={s.slug}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      )}
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="submit"

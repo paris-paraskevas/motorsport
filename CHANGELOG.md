@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.87.0 — 2026-06-24
+
+Added: **Per-series thread tags + a conditional Threads link on series pages.**
+
+### Added
+- Threads can now be **tagged to one series** (`thread.series_slug`, nullable). The composer gains an optional series picker (15-series `<select>`, "general discussion" default); `POST /api/threads` validates the slug against `lib/series` meta (unknown → untagged, no error). `lib/threads.ts`: `seriesSlug` on the type, `listThreads(status, seriesSlug?)` filter, new `seriesWithThreads()` (which slugs have ≥1 approved thread — one indexed aggregate, fail-soft → empty set).
+- **Series pages** (`/series/[slug]`) show a "<Series> threads →" link to `/threads?series=<slug>` **only when that series has an approved thread** (nothing otherwise). The `seriesWithThreads()` query runs in parallel with the local series load (settled, never blocks; Supabase down → no link, page unaffected). `/threads` reads `?series=` to filter the approved list + pre-selects the composer.
+
+### Notes
+- Migration `20260624170000_thread_series.sql` (nullable `series_slug` + `(status, series_slug)` index) **applied to prod via the Management API** (verified — column present), NOT `db push`. Hardened with `IF NOT EXISTS`. **Migration-drift repair list += `20260624170000`.** No FK by design (series live in the repo; slug validated at write). tsc + 490 tests + `next build` clean. Composer picker + the conditional series link need an authed eyeball.
+
 ## 0.86.0 — 2026-06-24
 
 Added: **Betting reminders + results-in notifications, a richer league leaderboard, and landing-page marketing for the prediction game.**

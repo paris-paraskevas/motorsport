@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.87.0 — 2026-06-24
+
+**Threads, by series.** When you start a thread you can now tag it to a series — and a series' page links straight to its discussion when there's something to read (the "Threads" link only shows when that series has a thread).
+
 ## 0.86.0 — 2026-06-24
 
 **Prediction reminders, richer leagues, and a proper intro.** Get a heads-up the day before predictions close, and a ping when results are in — toggle it under Account → Notifications. League tables now show more: net credits, win/loss streak, recent form, total bets and honours. The landing page now explains the free, friends-first prediction game (virtual credits, no cashout). Also fixed: the notification Sound toggle now saves.

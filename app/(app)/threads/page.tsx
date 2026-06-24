@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { listThreads, isAdmin } from '@/lib/threads';
+import { loadAllSeriesMeta } from '@/lib/series';
 import { ThreadComposer } from '@/components/threads/ThreadComposer';
 import { ThreadModeration } from '@/components/threads/ThreadModeration';
 
@@ -27,20 +28,38 @@ function frame(children: ReactNode) {
   );
 }
 
-export default async function ThreadsPage() {
+export default async function ThreadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ series?: string }>;
+}) {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
   const { userId } = await auth();
+  const { series: rawSeries } = await searchParams;
   const user = userId ? await currentUser() : null;
   const admin = isAdmin(user);
+  const allSeries = await loadAllSeriesMeta();
+  // Validate the ?series= filter against real slugs; ignore anything unknown.
+  const seriesFilter = rawSeries && allSeries.some(s => s.slug === rawSeries) ? rawSeries : undefined;
+  const filterName = seriesFilter ? allSeries.find(s => s.slug === seriesFilter)?.name : undefined;
+  const seriesOptions = allSeries.map(s => ({ slug: s.slug, name: s.name }));
   const [approved, pending] = await Promise.all([
-    listThreads('approved'),
+    listThreads('approved', seriesFilter),
     admin ? listThreads('pending') : Promise.resolve([]),
   ]);
 
   return frame(
     <div className="space-y-8">
+      {seriesFilter && (
+        <p className="font-mono text-xs uppercase tracking-[0.12em] text-text-muted">
+          Filtered to <span className="text-text">{filterName}</span> ·{' '}
+          <Link href="/threads" className="text-brand underline underline-offset-2">
+            Show all
+          </Link>
+        </p>
+      )}
       {userId ? (
-        <ThreadComposer />
+        <ThreadComposer series={seriesOptions} defaultSeries={seriesFilter ?? ''} />
       ) : (
         <p className="font-mono text-sm text-text-muted">
           <Link href="/sign-in" className="text-brand underline underline-offset-2">
