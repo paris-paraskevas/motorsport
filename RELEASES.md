@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.91.0 — 2026-06-24
+
+**Fewer blank spots.** Paddock now keeps a durable copy of upstream data (starting with the news wire), so if a provider has an outage you see the last good data instead of an empty section — plus a behind-the-scenes per-source health check.
+
 ## 0.90.0 — 2026-06-24
 
 **Leagues, their own page.** "Play with friends" now opens a dedicated Leagues page instead of jumping down the Social page.

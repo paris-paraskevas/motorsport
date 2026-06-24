@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.91.0 — 2026-06-24
+
+Added: **Durable DB cache + health for upstream feeds (`source_snapshot`).**
+
+### Added
+- `source_snapshot` table (migration `20260624180000`) — one row per source key: last successful `payload` (jsonb), `fetched_at`, `ok`, `http_status`. The DB-as-fallback the operator asked for: serve from our DB, survive upstream outages, and double as a per-source health record. RLS-on / service-role-only. **Applied to prod via the Management API** (verified) + local.
+- `lib/source-snapshot.ts` — `withSourceSnapshot(key, fetcher, isEmpty?)`: persists every non-empty success and serves the last-good payload on a thrown/empty fetch (durable fallback). The write is **awaited** (a floating write isn't guaranteed to flush before a render / serverless invocation ends). Fail-soft if Supabase is absent (runs the fetcher uncached). `getSourceHealth()` returns per-source freshness (age, ok, stale >24h).
+- **News wired through it** — `fetchAggregatedNews` now serves the last-good aggregate if motorsport.com's RSS is unreachable instead of blanking the wire (`pubDate` rehydrated after a snapshot read).
+- **`GET /api/cron/health`** now includes a `sources` block (the `source_snapshot` freshness) alongside the existing standings/results live-probes.
+
+### Notes
+- tsc + `next build` clean; 5 pre-existing lint errors (0 new). Verified locally end-to-end: a home render persisted the `news:aggregate:3` snapshot (ok / 200); the health endpoint surfaced it (age 0, not stale). **Migration-drift repair list += `20260624180000`.**
+- Next (handoff): extend `withSourceSnapshot` to the other flaky feeds (F1 standings/results — currently on the 0.84.0 KV last-good — and the motorsport.com scrapes), and add a warm cron so the request path never hits upstream cold.
+
 ## 0.90.0 — 2026-06-24
 
 Changed: **Leagues are their own page** (`/social/leagues`), not an in-page anchor.
