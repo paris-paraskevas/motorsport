@@ -89,27 +89,13 @@ export function CalendarView({
   );
   const buckets = bucketByDay(shown);
 
-  const toggleType = (k: SessionKind) =>
-    setTypes(cur => {
-      const next = new Set(cur);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
-  const toggleSeries = (slug: string) =>
-    setSeriesSel(cur => {
-      const base = cur ?? new Set(present.map(p => p.slug));
-      const next = new Set(base);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
-  const filterActive = !allTypes || (seriesSel !== null && seriesSel.size !== present.length);
-  // Reset to "show everything"; the persistence effect writes it through.
-  const clearFilters = () => {
-    setTypes(new Set(['practice', 'qualifying', 'race']));
-    setSeriesSel(null);
+  // Filters are edited as a draft inside the modal and committed on Save; the
+  // persistence effect then writes the committed values through.
+  const applyFilters = (t: Set<SessionKind>, s: Set<string> | null) => {
+    setTypes(t);
+    setSeriesSel(s);
   };
+  const filterActive = !allTypes || (seriesSel !== null && seriesSel.size !== present.length);
 
   const setAnchor = (d: Date) => setAnchorMs(startOfDay(d).getTime());
   const step = (n: number) => {
@@ -155,16 +141,14 @@ export function CalendarView({
         onPickMonth={ms => setAnchorMs(ms)}
         filtersOpen={filtersOpen}
         onToggleFilters={() => setFiltersOpen(o => !o)}
-        onClearFilters={clearFilters}
         filterActive={filterActive}
       />
       {filtersOpen && (
         <CalendarFilters
-          types={types}
-          onToggleType={toggleType}
+          initialTypes={types}
+          initialSeriesSel={seriesSel}
           series={present}
-          seriesShown={seriesShown}
-          onToggleSeries={toggleSeries}
+          onApply={applyFilters}
           onClose={() => setFiltersOpen(false)}
         />
       )}
