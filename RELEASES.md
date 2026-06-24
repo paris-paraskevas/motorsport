@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.81.0 — 2026-06-24
+
+**League bet limits.** A league owner can now cap the maximum stake per bet to keep stakes sensible — bets over the limit are turned away. Leave it blank for no limit.
+
 ## 0.80.0 — 2026-06-24
 
 **Home, more yours.** This week's schedule and the news wire are now separate blocks you can order, fold or hide independently — and you can drag blocks to reorder them on the Account screen (the arrows still work too). Most blocks now fold away to keep the home tidy.

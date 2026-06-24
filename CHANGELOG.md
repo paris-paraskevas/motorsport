@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.81.0 — 2026-06-24
+
+Added: **Per-league bet limit — an owner-set max stake per bet.**
+
+### Added
+- League owners can set a **max stake per bet** on the league page (`league.bet_limit`; `null` = no limit); everyone sees the current limit. Enforced in `placeBet` (`lib/betting/bets.ts`) before the atomic `place_bet` RPC — a per-bet ceiling is a house-rule, not a balance-integrity invariant, so it doesn't need the locked transaction. New `setBetLimit` (owner-only) + `betLimitFor` in `leagues.ts`; `getLeagueDetail` returns `betLimit`; `setBetLimit` action on `POST /api/bet/league`; the place route surfaces the limit error as 422.
+- Migration `20260624120000_league_bet_limit.sql` (additive — nullable bigint + `> 0` check). `scripts/verify-bet-limit.mts` green vs local (set → under allowed → over rejected → cleared → big bet allowed).
+
+### Notes
+- Applied to **prod via the Management API** (column verified: `bigint`, nullable) — NOT `supabase db push`, so it isn't in prod's `supabase_migrations`. **Drift repair list before any future `db push` is now `20260622120000`…`20260622180000` + `20260624120000`.** tsc clean; 476 tests; `next build` clean.
+
 ## 0.80.0 — 2026-06-24
 
 Changed: **Home — Schedule & News are separate blocks; every content block collapses; drag to reorder.**

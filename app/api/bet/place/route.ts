@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     const message = err instanceof Error ? err.message : 'unknown error';
     // place_bet raises domain errors (market not open / insufficient balance /
     // already bet) — surface those as 422, anything else as 500.
-    const domain = /not open|insufficient|already|not a member|market not found|stake must|positive|position required/i.test(message);
+    const domain = /not open|insufficient|already|not a member|market not found|stake must|positive|position required|bet limit/i.test(message);
     return NextResponse.json({ ok: false, error: message }, { status: domain ? 422 : 500 });
   }
 }
