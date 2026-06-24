@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.77.3 — 2026-06-24
+
+**Tidier footer.** The footer is now a compact single band instead of running a full screen tall on phones.
+
 ## 0.77.2 — 2026-06-24
 
 **Fixed: Social now loads.** A redirect loop from the new combined Social page stopped it opening — fixed; Friends and Leagues load side by side as intended.
