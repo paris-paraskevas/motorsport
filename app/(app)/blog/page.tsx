@@ -46,6 +46,21 @@ export default async function BlogIndexPage() {
         </p>
       </header>
 
+      <Link
+        href="/threads"
+        className="mb-8 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface/40 px-5 py-4 transition-colors duration-(--duration-fast) hover:border-brand/50"
+      >
+        <div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-brand font-semibold">
+            Community
+          </div>
+          <div className="mt-1 text-text font-semibold">
+            Threads — fan discussion across the grid
+          </div>
+        </div>
+        <span aria-hidden="true" className="text-text-faint">→</span>
+      </Link>
+
       {posts.length === 0 ? (
         <div className="rounded-2xl bg-surface/40 border border-border/60 p-8 text-center">
           <div className="text-text text-base font-medium mb-1">

@@ -32,6 +32,71 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
 const COLLAPSIBLE_IDS = HOME_ELEMENTS.filter(e => e.collapsible).map(e => e.id) as string[];
 
+// ── Widget-discovery catalogue (UI-only) ────────────────────────────────────
+// Descriptors for the "More widgets" gallery on /settings/customize. These are
+// NOT part of HomeLayoutPrefs and never touch DEFAULT_HOME_LAYOUT or the home
+// render path — they're a forward-looking menu of blocks a user might add. Each
+// `status: 'coming-soon'` card is display-only (no toggle wired). When one ships
+// it graduates to HOME_ELEMENTS + the pref shape; until then this list is the
+// single place to curate what's advertised. `icon` is the lucide export name;
+// the page maps it to a component (keeps this module free of React imports).
+export type WidgetStatus = 'live' | 'coming-soon';
+
+export interface AvailableWidget {
+  /** Stable key for React lists; matches a HomeElementId once it ships. */
+  id: string;
+  label: string;
+  blurb: string;
+  /** lucide-react export name, resolved to a component by the gallery. */
+  icon: string;
+  status: WidgetStatus;
+}
+
+export const AVAILABLE_WIDGETS: AvailableWidget[] = [
+  {
+    id: 'series-countdowns',
+    label: 'Per-series countdowns',
+    blurb: 'A distinct next-session countdown for each championship you follow.',
+    icon: 'Timer',
+    status: 'coming-soon',
+  },
+  {
+    id: 'series-just-missed',
+    label: 'Per-series “just missed”',
+    blurb: 'Split the latest results out by series instead of one combined block.',
+    icon: 'FlagTriangleRight',
+    status: 'coming-soon',
+  },
+  {
+    id: 'track-layout',
+    label: 'Upcoming track layout',
+    blurb: 'The circuit map for the next round, with corner and DRS detail.',
+    icon: 'MapPin',
+    status: 'coming-soon',
+  },
+  {
+    id: 'standings-snapshot',
+    label: 'Standings snapshot',
+    blurb: 'A compact top-of-table view for your series, refreshed each round.',
+    icon: 'ChartBar',
+    status: 'coming-soon',
+  },
+  {
+    id: 'championship-leader',
+    label: 'Championship leader',
+    blurb: 'Who’s leading right now, and by how much, across your series.',
+    icon: 'Crown',
+    status: 'coming-soon',
+  },
+  {
+    id: 'from-the-blog',
+    label: 'From the blog',
+    blurb: 'The latest Paddock long-reads and explainers, surfaced on your home.',
+    icon: 'Newspaper',
+    status: 'coming-soon',
+  },
+];
+
 export interface HomeLayoutPrefs {
   version: number;
   order: HomeElementId[];

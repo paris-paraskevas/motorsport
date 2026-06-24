@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.85.0 — 2026-06-24
+
+Changed: **Home loads lighter, a dedicated Customise page, and Social becomes the umbrella for play + community.**
+
+### Added
+- **Customise on its own page** (`/settings/customize`) — moved off the Account screen, reached via a "Customise home" row on Account. The reorder/fold/hide controls + live schematic preview (`HomeCustomizeBanner` refactored into reusable `HomeCustomizePanel`/`BlockControls`) plus a **widget-discovery gallery**: the four live home blocks toggle as before, and a "More widgets" section previews what's coming (per-series countdowns, per-series just-missed, upcoming track layout, standings snapshot, championship leader, from-the-blog) as "Coming soon" cards. Purely additive to `lib/homeLayout.ts` (`AVAILABLE_WIDGETS`) — `HomeLayoutPrefs`/`DEFAULT_HOME_LAYOUT` unchanged, existing prefs fully compatible.
+
+### Changed
+- **Home: load only what's shown.** The Just-missed block (a WEC podium fan-out behind `/api/just-missed`) no longer fetches when hidden OR collapsed — it lazy-loads on expand (the effect re-runs when collapse flips), with a loading skeleton. Just-missed is collapsed by default, so a fresh `/app` now pays nothing for it until opened. The section header renders whenever the block is shown (decoupled from the data) so it can always be expanded. (`components/HomeContent.tsx`.)
+- **Social is the umbrella** (`/social`): a "how do you want to play" launcher (Play solo → `/play`; Play with friends → leagues), the existing Friends | Leagues columns, and a Community row (Blog + Threads). **Play folded into Social** in the nav (removed the standalone Play entry from header + bottom bar; bottom bar 6→5 cols) — Social is the single play/friends/community hub. Public `/blog` + `/threads` URLs unchanged (SEO/sitemap preserved); Blog now carries a visible Threads card, so Threads is no longer footer-only.
+
+### Notes
+- tsc + 490 tests + `next build` clean (verified across the full multi-lane union). Signed-in surfaces (home fetch-on-expand, the customise page, the Social hub, nav) need an authed prod eyeball — no Clerk key in this build env.
+
 ## 0.84.0 — 2026-06-24
 
 Fixed: **F1 standings + results stopped blanking when the upstream data API (Jolpica) is down.**

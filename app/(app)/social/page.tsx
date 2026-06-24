@@ -51,13 +51,62 @@ export default async function SocialPage() {
     );
   }
   return frame(
-    <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-      <Suspense fallback={<PanelSkeleton />}>
-        <FriendsData userId={userId} />
-      </Suspense>
-      <Suspense fallback={<PanelSkeleton />}>
-        <LeaguesData userId={userId} />
-      </Suspense>
+    <div className="space-y-8">
+      {/* How do you want to play — solo vs with friends */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/play"
+          className="rounded-2xl border border-border bg-surface/60 p-5 transition-colors duration-(--duration-fast) hover:border-brand/50"
+        >
+          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Play solo</div>
+          <div className="mt-1 font-semibold text-text">Back the grid</div>
+          <p className="mt-1 text-sm text-text-muted">
+            Spend your monthly virtual credits predicting race results, solo against the house.
+          </p>
+        </Link>
+        <a
+          href="#leagues"
+          className="rounded-2xl border border-border bg-surface/60 p-5 transition-colors duration-(--duration-fast) hover:border-brand/50"
+        >
+          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Play with friends</div>
+          <div className="mt-1 font-semibold text-text">Private leagues</div>
+          <p className="mt-1 text-sm text-text-muted">
+            Create or join a league, share an invite link, climb the win-rate leaderboard.
+          </p>
+        </a>
+      </div>
+
+      {/* Friends | Leagues */}
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <Suspense fallback={<PanelSkeleton />}>
+          <FriendsData userId={userId} />
+        </Suspense>
+        <div id="leagues" className="scroll-mt-20">
+          <Suspense fallback={<PanelSkeleton />}>
+            <LeaguesData userId={userId} />
+          </Suspense>
+        </div>
+      </div>
+
+      {/* Community — blog + threads */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/blog"
+          className="rounded-2xl border border-border bg-surface/60 p-5 transition-colors duration-(--duration-fast) hover:border-brand/50"
+        >
+          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Read</div>
+          <div className="mt-1 font-semibold text-text">Blog</div>
+          <p className="mt-1 text-sm text-text-muted">Analysis, recaps and championship deep-dives.</p>
+        </Link>
+        <Link
+          href="/threads"
+          className="rounded-2xl border border-border bg-surface/60 p-5 transition-colors duration-(--duration-fast) hover:border-brand/50"
+        >
+          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Discuss</div>
+          <div className="mt-1 font-semibold text-text">Threads</div>
+          <p className="mt-1 text-sm text-text-muted">Fan discussion, lightly moderated — start one or join in.</p>
+        </Link>
+      </div>
     </div>,
   );
 }
