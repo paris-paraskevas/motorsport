@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.72.0 — 2026-06-23
+
+**Cleaner leagues.** Create and Join are now two clear buttons that open pop-ups — create a league and get a link to share, or join with a code or a pasted invite link.
+
 ## 0.71.0 — 2026-06-23
 
 **A real Account page.** Your account now shows your stats — credits, friends, leagues and when you joined — and splits notifications and followed championships into their own tidy pages.
