@@ -3,6 +3,7 @@ import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { runStandingsHealth } from '@/lib/standings-health';
 import { runResultsHealth } from '@/lib/results-health';
 import { summarize, type HealthResult } from '@/lib/health-core';
+import { getSourceHealth } from '@/lib/source-snapshot';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,11 @@ export async function GET(req: Request) {
   if (auth !== 'ok') return cronAuthFailureResponse(auth);
 
   try {
-    const [standings, results] = await Promise.all([runStandingsHealth(), runResultsHealth()]);
+    const [standings, results, sources] = await Promise.all([
+      runStandingsHealth(),
+      runResultsHealth(),
+      getSourceHealth(),
+    ]);
     const sSum = summarize(standings);
     const rSum = summarize(results);
     const down = sSum.down + rSum.down;
@@ -34,6 +39,7 @@ export async function GET(req: Request) {
         down,
         standings: { ...sSum, checks: standings.map(detail) },
         results: { ...rSum, checks: results.map(detail) },
+        sources, // durable last-good freshness per upstream feed (source_snapshot)
       },
       { status: down > 0 ? 503 : 200 },
     );

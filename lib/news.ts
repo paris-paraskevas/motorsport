@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import type { NewsItem } from './types';
+import { withSourceSnapshot } from './source-snapshot';
 
 const UA = 'PaddockTracker-PWA (https://paddock-tracker.com)';
 const BASE = 'https://www.motorsport.com/rss';
@@ -81,7 +82,7 @@ function articleKey(link: string): string {
  * array sorted by pubDate descending, with cross-posted duplicates removed.
  * Caller applies followed-series filter.
  */
-export async function fetchAggregatedNews(
+async function fetchAggregatedNewsLive(
   perSeries: number = MAX_PER_SERIES_AGGREGATE,
 ): Promise<AggregatedNewsItem[]> {
   const slugs = Object.keys(NEWS_SLUG_MAP).filter(s => NEWS_SLUG_MAP[s]);
@@ -104,6 +105,23 @@ export async function fetchAggregatedNews(
     deduped.push(item);
   }
   return deduped.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
+}
+
+// Durable last-good (source_snapshot): if motorsport.com's RSS is unreachable the
+// wire serves the last good aggregate instead of blanking. pubDate round-trips
+// through jsonb as a string, so rehydrate it after a last-good read.
+export async function fetchAggregatedNews(
+  perSeries: number = MAX_PER_SERIES_AGGREGATE,
+): Promise<AggregatedNewsItem[]> {
+  const items = await withSourceSnapshot(
+    `news:aggregate:${perSeries}`,
+    () => fetchAggregatedNewsLive(perSeries),
+    v => !Array.isArray(v) || v.length === 0,
+  );
+  return items.map(i => ({
+    ...i,
+    pubDate: i.pubDate instanceof Date ? i.pubDate : new Date(i.pubDate as unknown as string),
+  }));
 }
 
 export async function fetchNews(seriesSlug: string): Promise<NewsItem[]> {
