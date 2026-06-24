@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.71.0 — 2026-06-23
+
+**A real Account page.** Your account now shows your stats — credits, friends, leagues and when you joined — and splits notifications and followed championships into their own tidy pages.
+
 ## 0.70.1 — 2026-06-23
 
 *Internal: documentation housekeeping (session handoff). No user-facing change.*
