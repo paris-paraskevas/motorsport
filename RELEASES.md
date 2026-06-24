@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.66.1 — 2026-06-23
+
+*Internal: documentation housekeeping (session handoff + idea-ledger). No user-facing change.*
+
 ## 0.66.0 — 2026-06-23
 
 **Make the home yours.** A new **Customise** button on your home page lets you reorder or hide its sections — Live/Up next, Just missed, and Schedule & news — in whatever order suits you. Your choices save to your account (or this device when signed out). More customisation (navigation and series tabs) is coming next.

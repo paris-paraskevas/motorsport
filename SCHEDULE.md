@@ -801,11 +801,15 @@ Active: _(no `[+Nm]` prefixes captured)_
 Plan: bring the three ops docs current with 0.58.0→0.61.0 (CHANGELOG/RELEASES/package.json were already logged last session) and ship as a docs-only **0.61.1**; then a perf investigation of `/social`, `/play`, `/account` (operator: "ULTRA slow") — investigate first, discuss the fix before touching code.
 
 - → done: `docs/HANDOFF.md` new 0.61.0 top block; `IDEAS.md` triage (W1 retired from Now; betting/social refinement umbrella → Now §1; betting/leagues/social shipped-items annotated; landing-marketing + richer-leaderboard + real-odds + exact_position slotted); this `SCHEDULE.md` entry. Shipped as **0.61.1** (docs-only).
-- perf investigation of `/social` + `/play` + `/account` — operator-requested mid-session; findings + a fix discussion to follow.
+- → done: perf investigation of `/social` + `/play` + `/account` (operator "ULTRA slow"). Root cause = Vercel functions in **iad1** but Supabase in **eu-west-1** (+ EU users) → every per-user query crosses the Atlantic ~75ms × 4–6 **sequential** round-trips, amplified by a per-render `currentUser()` + `setDisplayNameIfMissing` and the `/social/leagues` N+1. The region move is the #1 lever but is plan-gated (serverless region is project-wide + needs Pro+ + a scraper re-verify) — surfaced for the operator. The per-render Clerk-hop waste was removed in 0.61.2.
+- → done (operator follow-up: "ok … keep going"): **7 PRs #194–#199, 0.61.2 → 0.66.0** — invite-join Safari fix · account accordions · play round-bars · friend-request links · calendar Month/Week/Day · home-customise phase-1. Each tsc + tests (→ **470**) + `next build` green before a self-merge.
+- → DEFERRED: **forecast market** (multi-driver + finishing position) — live-economy settlement unverifiable without the local Supabase + the migration needs the rotated PAT; turnkey plan captured in `docs/HANDOFF.md`.
+- → this docs close-out ships as **0.66.1**.
+- → carried: authed-eyeball verify of all 7 new authed surfaces on prod (no Clerk session this side); PAT/RapidAPI rotation; demo-award delete (~Jul 1).
 
-Won't touch: feature code (perf is investigate-first, discuss-before-fix), the untracked litter, the demo-award prod delete (~Jul 1), key rotation.
+Won't touch: the forecast build (deferred), the region move (operator/plan-gated), the untracked litter, the demo-award prod delete, key rotation.
 
-Active: _(awaiting `[+Nm]` prefixes)_
+Active: _(no `[+Nm]` prefixes captured — long autonomous batch)_
 
 ---
 
