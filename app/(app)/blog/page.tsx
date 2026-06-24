@@ -37,7 +37,12 @@ function formatDate(iso: string): string {
 }
 
 export default async function BlogIndexPage() {
-  const [dbPosts, mdxPosts] = await Promise.all([publishedPosts(), loadAllPosts()]);
+  const [dbPosts, mdxPosts, seriesMetas] = await Promise.all([
+    publishedPosts(),
+    loadAllPosts(),
+    loadAllSeriesMeta(),
+  ]);
+  const nameBySlug = new Map(seriesMetas.map(m => [m.slug, m.name] as const));
 
   const mdxCards: Card[] = mdxPosts.map(p => ({
     slug: p.slug,
@@ -47,17 +52,13 @@ export default async function BlogIndexPage() {
     tags: p.frontmatter.tags,
   }));
 
-  let dbCards: Card[] = [];
-  if (dbPosts.length) {
-    const nameBySlug = new Map((await loadAllSeriesMeta()).map(m => [m.slug, m.name] as const));
-    dbCards = dbPosts.map(p => ({
-      slug: p.slug,
-      title: p.title,
-      summary: p.summary,
-      publishedAt: p.publishedAt ?? p.createdAt,
-      tags: p.seriesSlug ? [nameBySlug.get(p.seriesSlug) ?? p.seriesSlug] : undefined,
-    }));
-  }
+  const dbCards: Card[] = dbPosts.map(p => ({
+    slug: p.slug,
+    title: p.title,
+    summary: p.summary,
+    publishedAt: p.publishedAt ?? p.createdAt,
+    tags: p.seriesSlug ? [nameBySlug.get(p.seriesSlug) ?? p.seriesSlug] : undefined,
+  }));
 
   const bySlug = new Map<string, Card>();
   for (const c of mdxCards) bySlug.set(c.slug, c);
@@ -86,7 +87,7 @@ export default async function BlogIndexPage() {
         </p>
       </header>
 
-      <PostModeration />
+      <PostModeration series={seriesMetas.map(m => ({ slug: m.slug, name: m.name }))} />
 
       <Link
         href="/threads"

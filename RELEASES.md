@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.94.0 — 2026-06-24
+
+**Write posts from the site (admins).** Admins now get a "New post" composer and a review queue right on the Blog page — write a draft, approve it with a publish time, and the scheduler takes it live.
+
 ## 0.93.3 — 2026-06-24
 
 **Find your account on desktop.** Signed-in users now get a clear "Account" link in the header on larger screens, not just the avatar menu.
