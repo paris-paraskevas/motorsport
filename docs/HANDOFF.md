@@ -6,6 +6,39 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-24 (main = 0.91.0) — forecast LIVE · signed-in browser verification · wide-screen · leagues page · durable source-snapshot
+
+Long continuation: forecast go-live, a full **signed-in browser verification pass** (operator handed over Clerk **dev** keys), then a→b→c per operator order. Shipped **0.88.0 → 0.91.0** (PRs #234–#237). THIS is the authoritative end-of-day state.
+
+### ▶ NEXT SESSION — START HERE: Blog pipeline (operator brainstormed + locked this session)
+Build a scheduled blog-authoring pipeline. **DB wins** (operator):
+- **`post` table** (migration via Management API): `id, slug, title, body (markdown), series_slug (nullable, like thread), status ('draft'|'approved'|'published'|'rejected'), author_id, publish_at timestamptz, approved_by, approved_at, created_at`. RLS-on / service-role-only.
+- **Pipeline** (= threads moderation + a scheduled-release layer + two notify audiences): draft → **admin-only push** ("Draft ready to review") → admin approves (may approve EARLY) → post stays hidden until `publish_at` → a cron flips it live AT `publish_at` and fires the **all-users** push ("New: <title>"). So admins needn't be online at publish time. Reuse the Clerk admin role (set), the push infra, cron-auth, and the betting-notify cron pattern.
+- **Authoring:** I draft (senior-article-writer voice) — a preview + a recap per race weekend; original prose, **cited** sources (link, never paste), no-BS (sourced facts) per `docs/content-authoring/`. **Scheduled trigger** (operator's idea): a recurring `ScheduleWakeup`/cron/`/loop` prompts the draft (I can't self-run on a timer otherwise). Cadence: start 1 preview + 1 recap/weekend; scale toward 2–3/day.
+- **Images — free + attributed, NO Getty** (Getty is copyrighted/licensed — operator's "not copyrighted" was wrong). Wikimedia Commons for driver portraits + blog photos + **series logos** (find non-infringing), per-image license+attribution (the landing circuit-photo pattern). Separate long-tail curation; F1 first.
+- **Also drop the F1-radio notification sound** (likely copyrighted) → generate/source an original CC0 cue. `components/PushSoundPlayer.tsx` + `public/` audio.
+
+### Shipped this continuation
+- **Forecast market LIVE — 0.88.0 (#234).** Added `createForecastMarket` to `MARKET_BUILDERS` **and** routed `forecast` through `settleDueMarkets` (settles via the official `positions`, all-or-nothing, `least(product,500)`). Verified `settle_market`'s forecast branch reads `positions`. Demo `'2026-06'` award + its seed scripts removed. The multi-leg picker was then browser-verified signed-in (below).
+- **Signed-in browser verification — operator gave Clerk DEV keys** (`pk_test`/`sk_test`, instance `quiet-lark-65`), now in `.env.local`. Cloudflare Turnstile blocks Playwright sign-UP → created a test user via the Clerk **Backend API** (admin-create, email pre-verified) then signed IN (no Turnstile on sign-in). **Confirmed working signed-in:** nav (Social umbrella, no "Play"); home Just-missed **lazy-load** (the `/api/just-missed` fetch fires only on expand — request #99, not on load); `/settings/customize` page + widget gallery; `/social` hub (launcher + community); threads composer + **series picker** + the conditional series-page Threads link (shows for F1 w/ a tagged thread, hidden for MotoGP); the **forecast multi-leg picker** (Driver+Position legs, +Add another) — the previously-unverified live-economy UI, now confirmed.
+- **Wide-screen layout — 0.89.0 (#235).** `3xl` (≥1700px) breakpoint; shell + dashboard containers → `max-w-[2000px]` (`!important` to beat the legacy `2xl:max-w-screen-2xl`), home 2-column. **Mobile + laptop byte-identical** (measured: 390→375, 1440→1280 unchanged; 2560 1536→2000 + 2-col). Reading pages kept narrow.
+- **Leagues own page — 0.90.0 (#236).** `/social/leagues` is a real page (was a redirect-to-/social); the "Play with friends" card links there; leagues removed from `/social` (now a Friends hub).
+- **Durable source_snapshot — 0.91.0 (#237).** DB last-good cache + per-source health (`source_snapshot` table); `withSourceSnapshot` (awaited durable write, fail-soft, serves last-good on failure); **news wired through it**; `/api/cron/health` gains a `sources` block. **Next:** extend to F1 standings/results (currently on the 0.84.0 KV last-good) + the motorsport.com scrapes, and add a warm cron so the request path never hits upstream cold.
+
+### Local dev state (persists for next session)
+- `.env.local` now has the **Clerk dev keys** + a local **`CRON_SECRET`** (both gitignored) on top of the local Supabase env. **Local Supabase is UP** (127.0.0.1) with ALL migrations applied incl. `thread_series` + `source_snapshot`. So `npm run dev` runs **signed-in** and Playwright can drive it (admin-create a test user via the Backend API; `+clerk_test` emails use OTP `424242`; route-stub `/api/user/onboarded`→`{onboarded:true}` to suppress the wizard, which re-shows locally because KV is absent). Dev server is currently STOPPED (killed for the final build).
+
+### Migration drift — repair list now += `20260624170000`, `20260624180000`
+Full list before any `db push`: `…120000 130000 140000 150000 160000 170000(622) 180000(622) 120000 130000 140000 150000 170000 180000(624)`. Or keep applying via the Management API.
+
+### Owed (operator)
+- **Rotate the Supabase PAT** (still in `.supabase-pat`; used this session for 2 prod migrations). **exact_position go-live** (held; interaction-verify its picker → add to `MARKET_BUILDERS`). **Real-odds adapter** parked (keep last). **Account analytics/admin view** — brainstorm idea captured (GA4 already wired; admin-gate via the Clerk role).
+- Authed prod eyeballs are now largely covered by this session's local signed-in verification; the **betting-notify cron + actual push delivery** still want a prod confirm once a market is within 24h / has settled.
+
+_Authoritative end-of-day state (main = **0.91.1**, 2026-06-24). Blocks below are prior-session history._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-24 (main = 0.87.0) — 4-PR parallel batch (#229–#232): F1 outage-resilience · home perf · IA · betting notifs+features · threads tags
 
 Autonomous session off a multi-prompt operator batch, run as a **file-disjoint parallel-subagent workflow**: 6 worktree coding agents (F1 resilience, landing, betting-notify, leaderboard, customise page, threads tags) + 2 hand-driven lanes (Social-umbrella IA, home perf), verified together on one integration branch (tsc + lint + **490 tests** + `next build`), then shipped as 4 grouped version-bumped PRs. Shipped **0.84.0 → 0.87.0**; per-version detail in `CHANGELOG.md`. THIS is the authoritative end-of-day state.
