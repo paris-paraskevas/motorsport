@@ -1,4 +1,4 @@
-import { betDb } from './betting/client';
+import { betDb, isBettingConfigured } from './betting/client';
 import { displayNames } from './betting/friends';
 
 // Server-only. Community threads (W7): signed-in users submit top-level posts
@@ -15,6 +15,8 @@ export interface Thread {
   title: string;
   body: string;
   status: ThreadStatus;
+  /** Optional series tag (a slug from content/series/<slug>). null = untagged. */
+  seriesSlug: string | null;
   createdAt: string;
 }
 
@@ -34,43 +36,73 @@ function toThread(r: Record<string, unknown>, name: string | null): Thread {
     title: r.title as string,
     body: r.body as string,
     status: r.status as ThreadStatus,
+    seriesSlug: (r.series_slug as string | null) ?? null,
     createdAt: r.created_at as string,
   };
 }
 
-/** Submit a thread (lands `pending`). Caller must be an onboarded app_user. */
-export async function createThread(authorId: string, title: string, body: string): Promise<string> {
+/** Submit a thread (lands `pending`). Caller must be an onboarded app_user.
+ *  `seriesSlug` is optional — null/empty tags the thread as general discussion.
+ *  Slug validity is the caller's job (the API checks it against lib/series). */
+export async function createThread(
+  authorId: string,
+  title: string,
+  body: string,
+  seriesSlug?: string | null,
+): Promise<string> {
   const t = title.trim();
   const b = body.trim();
   if (!t || t.length > TITLE_MAX) throw new Error(`title must be 1–${TITLE_MAX} characters`);
   if (!b || b.length > BODY_MAX) throw new Error(`body must be 1–${BODY_MAX} characters`);
+  const slug = seriesSlug?.trim() || null;
   const { data, error } = await betDb()
     .from('thread')
-    .insert({ author_id: authorId, title: t, body: b })
+    .insert({ author_id: authorId, title: t, body: b, series_slug: slug })
     .select('id')
     .single();
   if (error) throw new Error(`createThread failed: ${error.message}`);
   return data.id as string;
 }
 
-/** Threads in a given status, newest first, author names resolved. */
-export async function listThreads(status: ThreadStatus): Promise<Thread[]> {
-  const { data, error } = await betDb()
+/** Threads in a given status, newest first, author names resolved.
+ *  Pass `seriesSlug` to return only threads tagged with that series. */
+export async function listThreads(status: ThreadStatus, seriesSlug?: string): Promise<Thread[]> {
+  let q = betDb()
     .from('thread')
-    .select('id, author_id, title, body, status, created_at')
-    .eq('status', status)
-    .order('created_at', { ascending: false });
+    .select('id, author_id, title, body, status, series_slug, created_at')
+    .eq('status', status);
+  if (seriesSlug) q = q.eq('series_slug', seriesSlug);
+  const { data, error } = await q.order('created_at', { ascending: false });
   if (error) throw new Error(`listThreads failed: ${error.message}`);
   const rows = data ?? [];
   const names = await displayNames([...new Set(rows.map(r => r.author_id as string))]);
   return rows.map(r => toThread(r, names.get(r.author_id as string) ?? null));
 }
 
+/** Slugs of series that have >=1 APPROVED thread — lets a series page show a
+ *  "Threads" link only when there's something to read. One cheap aggregate over
+ *  the (status, series_slug) index. Fail-soft: returns an empty set if Supabase
+ *  isn't configured or the query errors, so the series page never breaks on it. */
+export async function seriesWithThreads(): Promise<Set<string>> {
+  if (!isBettingConfigured()) return new Set();
+  try {
+    const { data, error } = await betDb()
+      .from('thread')
+      .select('series_slug')
+      .eq('status', 'approved')
+      .not('series_slug', 'is', null);
+    if (error || !data) return new Set();
+    return new Set(data.map(r => r.series_slug as string).filter(Boolean));
+  } catch {
+    return new Set();
+  }
+}
+
 /** One thread (any status), or null. The page gates who may see a non-approved one. */
 export async function getThread(id: string): Promise<Thread | null> {
   const { data, error } = await betDb()
     .from('thread')
-    .select('id, author_id, title, body, status, created_at')
+    .select('id, author_id, title, body, status, series_slug, created_at')
     .eq('id', id)
     .maybeSingle();
   if (error || !data) return null;

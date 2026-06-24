@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '@/lib/series';
+import { seriesWithThreads } from '@/lib/threads';
 import { resolveTab, labelForTab, describeTab, TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
@@ -92,12 +94,20 @@ export default async function SeriesPage({
 }) {
   const { slug } = await params;
   const { tab } = await searchParams;
-  let series;
-  try {
-    series = await loadSeries(slug);
-  } catch {
-    notFound();
-  }
+  // Fetch the series and the "which series have threads?" set together — the
+  // latter is fail-soft (empty set on any error / Supabase down), so it can
+  // never slow or break the series page. settled, not awaited inline, so a slow
+  // Supabase call doesn't block the (local-file) series load.
+  const [seriesResult, threadSlugs] = await Promise.all([
+    loadSeries(slug).then(
+      s => ({ ok: true as const, series: s }),
+      () => ({ ok: false as const, series: null }),
+    ),
+    seriesWithThreads(),
+  ]);
+  if (!seriesResult.ok) notFound();
+  const series = seriesResult.series;
+  const hasThreads = threadSlugs.has(slug);
 
   const activeTab = resolveTab(tab, series.meta.singleEvent);
 
@@ -160,6 +170,17 @@ export default async function SeriesPage({
           )}
         </div>
         <StaleBanner configured={series.configured} stale={series.stale} />
+        {hasThreads && (
+          <div className="mt-3">
+            <Link
+              href={`/threads?series=${slug}`}
+              className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
+            >
+              <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint" />
+              {series.meta.name} threads →
+            </Link>
+          </div>
+        )}
       </header>
 
       <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />

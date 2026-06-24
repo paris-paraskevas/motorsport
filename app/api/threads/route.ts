@@ -5,6 +5,7 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { createThread, listThreads } from '@/lib/threads';
+import { listSeriesSlugs } from '@/lib/series';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  let body: { title?: unknown; body?: unknown };
+  let body: { title?: unknown; body?: unknown; seriesSlug?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -33,10 +34,15 @@ export async function POST(req: Request) {
   }
   const title = typeof body.title === 'string' ? body.title : '';
   const text = typeof body.body === 'string' ? body.body : '';
+  // Optional series tag. Validate against the real series slugs (the source of
+  // truth is content/series/<slug>) and silently drop anything unknown — a stale
+  // picker option shouldn't 4xx; it just lands the thread untagged.
+  const rawSlug = typeof body.seriesSlug === 'string' ? body.seriesSlug.trim() : '';
+  const seriesSlug = rawSlug && (await listSeriesSlugs()).includes(rawSlug) ? rawSlug : null;
 
   try {
     await ensureAppUser(userId);
-    const id = await createThread(userId, title, text);
+    const id = await createThread(userId, title, text, seriesSlug);
     // Name backfill off the critical path (currentUser can fail on a fresh
     // sign-in handshake) so the author shows a name, not "Racer ####".
     after(async () => {
