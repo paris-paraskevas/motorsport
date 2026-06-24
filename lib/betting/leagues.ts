@@ -298,6 +298,8 @@ export interface LeagueDetail {
   isMember: boolean;
   members: LeagueMemberDetail[];
   honours: LeagueHonour[];
+  // Owner-set max stake per bet (null = no limit).
+  betLimit: number | null;
   // The viewer's accepted friends who are NOT already members — for the
   // "invite friends directly" control. Empty for non-members / signed-out.
   addableFriends: { userId: string; displayName: string | null }[];
@@ -307,7 +309,11 @@ export interface LeagueDetail {
  *  colours, friend state vs the viewer). Null if the league doesn't exist. */
 export async function getLeagueDetail(leagueId: string, viewerId: string): Promise<LeagueDetail | null> {
   const db = betDb();
-  const { data: league } = await db.from('league').select('id, name, join_code, owner_id').eq('id', leagueId).maybeSingle();
+  const { data: league } = await db
+    .from('league')
+    .select('id, name, join_code, owner_id, bet_limit')
+    .eq('id', leagueId)
+    .maybeSingle();
   if (!league) return null;
   const { data: members } = await db
     .from('league_member')
@@ -382,6 +388,7 @@ export async function getLeagueDetail(leagueId: string, viewerId: string): Promi
     isMember: ids.includes(viewerId),
     members: detail,
     honours,
+    betLimit: (league.bet_limit as number | null) ?? null,
     addableFriends,
   };
 }
@@ -467,6 +474,26 @@ export async function addFriendToLeague(leagueId: string, byUserId: string, frie
     .upsert({ league_id: leagueId, user_id: friendUserId }, { onConflict: 'league_id,user_id', ignoreDuplicates: true });
   if (error) throw new Error(`addFriendToLeague failed: ${error.message}`);
   await bustBetCache(leaderboardKey(leagueId));
+}
+
+/** The league's per-bet stake limit (null = no limit). */
+export async function betLimitFor(leagueId: string): Promise<number | null> {
+  const { data } = await betDb().from('league').select('bet_limit').eq('id', leagueId).maybeSingle();
+  return (data?.bet_limit as number | null) ?? null;
+}
+
+/** Set (or clear, with null) the league's per-bet stake limit. Owner only. */
+export async function setBetLimit(leagueId: string, ownerId: string, limit: number | null): Promise<void> {
+  if (limit != null && (!Number.isInteger(limit) || limit <= 0)) {
+    throw new Error('bet limit must be a positive whole number');
+  }
+  const { error, count } = await betDb()
+    .from('league')
+    .update({ bet_limit: limit }, { count: 'exact' })
+    .eq('id', leagueId)
+    .eq('owner_id', ownerId);
+  if (error) throw new Error(`setBetLimit failed: ${error.message}`);
+  if (!count) throw new Error('only the owner can set the bet limit');
 }
 
 // ---- prizes (P4) -----------------------------------------------------------

@@ -12,6 +12,7 @@ import {
   disbandLeague,
   kickMember,
   addFriendToLeague,
+  setBetLimit,
 } from '@/lib/betting/leagues';
 
 export const runtime = 'nodejs';
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     token?: unknown;
     targetUserId?: unknown;
     friendUserId?: unknown;
+    betLimit?: unknown;
     nickname?: unknown;
     color?: unknown;
   };
@@ -158,6 +160,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'could not add friend';
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    }
+  }
+
+  if (body.action === 'setBetLimit') {
+    const leagueId = typeof body.leagueId === 'string' ? body.leagueId : '';
+    if (!leagueId) return NextResponse.json({ error: 'leagueId required' }, { status: 400 });
+    const raw = body.betLimit;
+    const limit = raw == null || raw === '' ? null : Number(raw);
+    if (limit !== null && (!Number.isInteger(limit) || limit <= 0)) {
+      return NextResponse.json({ error: 'bet limit must be a positive whole number' }, { status: 400 });
+    }
+    try {
+      await setBetLimit(leagueId, userId, limit);
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'could not set bet limit';
       return NextResponse.json({ ok: false, error: message }, { status: 422 });
     }
   }

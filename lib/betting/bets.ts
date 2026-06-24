@@ -1,4 +1,5 @@
 import { betDb } from './client';
+import { betLimitFor } from './leagues';
 
 // Server-only. Placing a bet is atomic in SQL (place_bet): it validates the
 // market is open and the user has balance, inserts the bet, and deducts the
@@ -17,6 +18,15 @@ export async function placeBet(
   stake: number,
   leagueId?: string,
 ): Promise<string> {
+  // League house-rule: reject a stake over the league's per-bet limit (if set).
+  // A per-bet ceiling has no race to guard, so it lives here rather than in the
+  // atomic RPC; balance/market-open stay the RPC's job.
+  if (leagueId) {
+    const limit = await betLimitFor(leagueId);
+    if (limit != null && stake > limit) {
+      throw new Error(`stake exceeds this league's bet limit (${limit})`);
+    }
+  }
   const { data, error } = await betDb().rpc('place_bet', {
     p_user_id: userId,
     p_market_id: marketId,

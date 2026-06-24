@@ -21,6 +21,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(league.name);
   const [confirmDisband, setConfirmDisband] = useState(false);
+  const [limitInput, setLimitInput] = useState(league.betLimit != null ? String(league.betLimit) : '');
 
   async function call(url: string, body: Record<string, string>, refresh = true): Promise<Record<string, unknown> | null> {
     setBusy(true);
@@ -119,6 +120,37 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
       </div>
       {invite && <p className="truncate font-mono text-[11px] text-text-muted">{invite}</p>}
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
+
+      {/* Per-bet stake limit — owner sets it, everyone sees it. */}
+      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3 font-mono text-xs">
+        <span className="uppercase tracking-[0.14em] text-text-faint">Bet limit</span>
+        {league.isOwner ? (
+          <form
+            onSubmit={async e => {
+              e.preventDefault();
+              await call('/api/bet/league', { action: 'setBetLimit', leagueId: league.id, betLimit: limitInput.trim() });
+            }}
+            className="flex items-center gap-2"
+          >
+            <input
+              type="number"
+              min="1"
+              value={limitInput}
+              onChange={e => setLimitInput(e.target.value)}
+              placeholder="No limit"
+              className="w-24 rounded border border-white/10 bg-white/5 px-2 py-1 text-text"
+            />
+            <span className="text-text-faint">credits / bet</span>
+            <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">
+              Save
+            </button>
+          </form>
+        ) : (
+          <span className="text-text">
+            {league.betLimit != null ? `${league.betLimit} credits max per bet` : 'No limit'}
+          </span>
+        )}
+      </div>
 
       <ol className="space-y-2">
         {league.members.map((m, i) => (
