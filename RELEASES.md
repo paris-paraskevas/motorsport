@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.66.2 — 2026-06-23
+
+**Faster leagues.** Your leagues page now loads everyone's standings in a couple of database reads instead of one per league — noticeably quicker when you're in several.
+
 ## 0.66.1 — 2026-06-23
 
 *Internal: documentation housekeeping (session handoff + idea-ledger). No user-facing change.*
