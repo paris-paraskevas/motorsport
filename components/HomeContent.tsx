@@ -311,7 +311,11 @@ export function HomeContent({
         Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
       </h1>
 
-      <div className="flex flex-col">
+      {/* On 2K+ (≥1700px) the blocks flow into two columns so the wide container is
+          used, not stretched into over-long rows; the chyron spans both. Below that
+          it stays a single flex column (mobile/laptop unchanged). CSS `order` from
+          the customise prefs still applies to grid items. */}
+      <div className="flex flex-col 3xl:grid 3xl:grid-cols-2 3xl:gap-x-10 3xl:items-start">
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next
              session with a ticking countdown. ── */}
       {!isHidden('chyron') && (
@@ -319,7 +323,7 @@ export function HomeContent({
         aria-label={liveItems.length > 0 ? 'Live now' : 'Up next'}
         data-tour="chyron"
         style={{ order: orderOf('chyron') }}
-        className="mb-8 border-y border-border bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
+        className="mb-8 border-y border-border bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 3xl:col-span-2"
       >
         {liveItems.length > 0 ? (
           <div className="divide-y divide-border">

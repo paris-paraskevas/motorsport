@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.89.0 — 2026-06-24
+
+Changed: **Wide-screen layout — the app uses 2K / 32" displays instead of a 1536px center ribbon.**
+
+### Changed
+- New `3xl` breakpoint (≥1700px) in `app/globals.css`. The shell + dashboard containers (home, social, calendar, series, weekend, session) scale to `max-w-[2000px]` at `3xl` (was capped at `max-w-screen-2xl` = 1536px → ~40% dead margin on a 2560px panel; now ~272px each side). The wide cap is `!important` so it beats the legacy `2xl:max-w-screen-2xl` regardless of Tailwind's media-query source order (a named-breakpoint cascade quirk verified in-browser).
+- **Home goes 2-column at `3xl`** — chyron full-width hero, then the blocks (just-missed / this-week / news) flow into two columns; the customise `order`/hide/collapse prefs still apply (grid items honour CSS `order`). Below `3xl` it stays a single flex column.
+- **Mobile + laptop are byte-identical** — only `3xl` (≥1700px) variants were added; no base/`sm`/`md`/`lg`/`xl` class was touched. Verified in-browser: 390px → 375px full-width, 1440px → 1280px (both unchanged); 2560px → 2000px + 2-column.
+- Reading pages (blog post, threads detail, about, legal, settings) intentionally keep their narrower max-width for readability.
+
 ## 0.88.0 — 2026-06-24
 
 Added: **Forecast market is LIVE** (operator go-live). Removed the demo league award.
