@@ -44,7 +44,7 @@ export function PlayMarkets({
           </p>
         ) : (
           <div className="border-t border-border">
-            {roundGroups.map((group, i) => {
+            {roundGroups.map(group => {
               const { seriesSlug, round } = group[0];
               return (
                 <Accordion
@@ -66,7 +66,7 @@ export function PlayMarkets({
                     ))}
                   </ul>
                   <Link
-                    href={`/series/${seriesSlug}/weekend/${round}`}
+                    href={`/series/${seriesSlug}/weekend/${round}?tab=bets`}
                     className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.14em] text-brand hover:underline"
                   >
                     Bet on the weekend page →
