@@ -129,7 +129,7 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
 
       {isSignedIn && <NotifPrefsSection />}
 
-      <Accordion title="Followed" count={`${followedCount}`} defaultOpen>
+      <Accordion title="Followed" count={`${followedCount}`}>
         <SeriesList
           series={followedSeries}
           isFollowing={isFollowing}

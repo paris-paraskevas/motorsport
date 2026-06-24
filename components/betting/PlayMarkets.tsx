@@ -51,7 +51,7 @@ export function PlayMarkets({
                   key={`${seriesSlug}#${round}`}
                   title={`${seriesSlug.toUpperCase()} · Round ${round}`}
                   count={`${group.length} ${group.length === 1 ? 'market' : 'markets'}`}
-                  defaultOpen={i === 0}
+                  defaultOpen={false}
                 >
                   <ul className="divide-y divide-white/10">
                     {group.map(m => (
