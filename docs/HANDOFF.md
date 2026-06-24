@@ -19,7 +19,9 @@ Continued after the operator resolved the gated items: **NOT on Pro → the regi
 - **Leagues — invite friends directly + per-league bet limits.** Both need new backend (a direct add-member API; a `league` bet-limit column = migration).
 - **Home customisation++ (#12).** Collapse Just-missed by default + finer reorder/hide + maybe move news off home. Touches the critical `HomeContent` — do it fresh, not at depth.
 - **App-wide caching/lazy (perf — now the ONLY lever; region permanently `iad1`).** Recommendation: cache `getOpenMarkets` (shared) + per-league leaderboards. API choice — `unstable_cache` is recommended-against in Next 16; `use cache` needs `cacheComponents` enabled app-wide (global change); **KV read-through is the codebase's existing pattern (`lib/results-cache.ts`) → likely lowest-risk.** Plus dynamic-import heavy client components. The `ensureBettingUser` 3→1 collapse needs a migration (PAT).
-- **Forecast market + Threads (`/blog`→Social UGC)** — both DB-gated (local Supabase down + the operator's PAT for the Management-API migration); turnkey plans in the 0.66.0 block.
+- **Forecast market + Threads (`/blog`→Social UGC)** — both DB-gated (local Supabase down + the operator's PAT for the Management-API migration); turnkey plan in the 0.66.0 block below.
+
+_This is the authoritative end-of-day state (main = **0.72.1**, 2026-06-23). The dated blocks below are same-day history — kept only for per-PR detail + the forecast turnkey plan (0.66.0 block). Done this session: demo award deleted · PAT + RapidAPI keys rotated · the 18 PRs eyeballed on prod · region confirmed off (not on Pro, so caching is the perf lever). Today shipped 0.58.0 → 0.72.1; per-version detail in `CHANGELOG.md`._
 
 ---
 
@@ -34,13 +36,8 @@ Second autonomous batch the same day, off another big operator request (10+ asks
 - **Default-collapsed — `0.68.1` (#204).** Account **Followed** + `/play` round bars start collapsed.
 - **Weekend tabs v2 — `0.70.0` (#206).** **Sessions** folded into **Schedule** (session links shown; standings = lazy disclosure so the default stays fast); tabs now Schedule·Bets·News. `/play` "Bet" deep-links to **?tab=bets** (read client-side → page stays `● ISR`).
 
-### ⏳ OUTSTANDING from batch #2 (not built — next session)
-- **Account restructure + personal stats (biggest).** Clickable category rows → dedicated pages (`/account/notifications`, `/account/series`); personal stats = **credits · date joined · friend count (IG-style) · leagues**, with **friends-only visibility** (strangers can't see). Needs a profile read (friend count = a `friendship` count; join date — check `app_user.created_at`, else add via migration), a viewer-vs-friend check, 2 new routes.
-- **Leagues create/join modals (#9).** Two discrete buttons → modal popups. Create = name + invite existing friends (+ optional bet limits); Join = code/link → the existing friend-request+join flow. Wrap `LeaguesPanel`'s existing create/join logic in modals.
-- **Home customisation++ (#12).** Collapse **Just-missed** by default + finer reorder/hide; consider moving **news** off home. Extends 0.66.0 (`homeLayout`/`useHomeLayout`).
-- **App-wide caching + lazy-load** ("no more delays"). Code-only levers left: cache `getOpenMarkets` (shared) + per-league leaderboards (Next Data Cache + tag-invalidate on the open/settle crons), dynamic-import heavy client components. `ensureBettingUser` 3→1 SQL collapse needs a migration (PAT).
-- **Threads / `/blog` → Social (#13, DEFERRED — DB epic).** UGC threads tagged by series/weekend/session/driver/team/date — new Supabase tables + moderation + auth (the W7/S9 trigger). Needs Management API migration + PAT + local DB.
-- **Forecast market** (still deferred from batch #1 — turnkey plan in the 0.66.0 block below).
+### ⏳ (superseded — see the authoritative top block)
+_Account restructure + leagues modals from this list **shipped** (0.71.0 / 0.72.0). The still-open items (home++, app-wide caching, cross-user profiles, league direct-invite/bet-limits, forecast, threads) are rolled into the top block's "Left" list._
 
 ### Owed / operator-gated (unchanged)
 - **Region move `iad1`→`eu-west-1`** — THE perf lever; project-wide + Pro+-gated + scraper re-verify. Dashboard flip.
