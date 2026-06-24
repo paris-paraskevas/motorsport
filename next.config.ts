@@ -30,12 +30,14 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    // Leagues + friends moved under /social (the Social area). Old links —
-    // notably already-shared invite links — keep working. join is two segments,
-    // so it doesn't collide with the single-segment :id rule.
+    // Friends + leagues now live on one /social page; league detail + join keep
+    // their own routes. Old links — notably already-shared invite links — keep
+    // working. join is two segments, so it doesn't collide with the :id rule.
+    // NB: do NOT redirect /social itself — it's a real page now, and the league
+    // list route redirects /social/leagues → /social, so a /social → /social/leagues
+    // rule here would form an infinite 307 loop (the 0.74.0 regression).
     return [
-      { source: "/social", destination: "/social/leagues", permanent: false },
-      { source: "/play/leagues", destination: "/social/leagues", permanent: true },
+      { source: "/play/leagues", destination: "/social", permanent: true },
       { source: "/play/leagues/join/:token", destination: "/social/leagues/join/:token", permanent: true },
       { source: "/play/leagues/:id", destination: "/social/leagues/:id", permanent: true },
     ];
