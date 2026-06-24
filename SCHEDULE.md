@@ -873,6 +873,19 @@ Won't touch: the blog pipeline build (next session, operator order); real-odds a
 
 Active: _(no `[+Nm]` prefixes captured — very long autonomous session)_
 
+### 2026-06-24 (cont.) — blog pipeline SHIPPED (0.92.0, #240) + Dublin compute cutover
+
+Opened on the locked first task (blog pipeline). Plan-mode plan approved; built + prod-migrated + went live end-to-end. Mid-session the operator (a) parked the "all content in DB / prefetch" idea after an ESPA, and (b) moved Vercel compute to Dublin.
+
+- → done: **blog pipeline (0.92.0, #240)** — `post` table (prod via the Management API) + `lib/blog` + admin moderation + `*/15` publish cron + dual push + `blog` notif pref + DB/MDX `/blog` coexistence + `scripts/{draft-post,verify-blog}`. verify-blog green; tsc + 490 tests + build clean; blog files lint-clean (5 legacy errors untouched).
+- → done: **Dublin cutover verified** — merging #240 triggered the first Dublin deploy; the `health` workflow ran GREEN from Dublin (13 standings + 8 results sources healthy), prod pages 200, publish-posts cron green. **Jolpica/F1 recovered** (health-green) — the 0.84.0 landmine is resolved.
+- → ESPA: rejected "all content in DB" (static/ISR + CDN beats DB reads; rewrite cost; loses git-CMS — and Dublin makes the latency objection moot anyway); parked the idle-prefetch half as a B-perf sub-task.
+- → owed (operator): signed-in blog push-walkthrough; rotate the Supabase PAT; first real posts + the scheduled-authoring trigger; the sound swap + imagery curation (follow-ons).
+
+Won't touch (held): exact_position go-live (next-session task 2); the scheduled-authoring timer / sound / imagery (follow-ons).
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

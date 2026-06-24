@@ -6,6 +6,34 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-24 (main = 0.92.0) — BLOG PIPELINE LIVE + Vercel compute moved to DUBLIN
+
+Shipped the DB-backed blog pipeline (#240); the operator moved Vercel compute `iad1` → **Dublin** (now co-located with Supabase `eu-west-1`) and the cutover was verified green. THIS is the authoritative end-of-day state.
+
+### ▶ NEXT SESSION — START HERE
+1. **Blog pipeline — signed-in push-walkthrough (owed).** Infra is live + verified (prod migration; Dublin health-green; publish cron green). Wants one human eyeball: draft via `npx tsx scripts/draft-post.mts <post.json>` (authorId = the operator's Clerk id; run with prod env) → admin "Draft ready" push lands → approve in the `/blog` review queue with a near-future `publish_at` → the `*/15` `publish-posts` cron flips it live + the all-users push lands → it shows at `/blog/<slug>`. Then real content (preview + recap per weekend) + the **scheduled-authoring trigger** (ScheduleWakeup / `/loop`) so drafts get written on a timer.
+2. **exact_position go-live** (unchanged — built + held; one-line `MARKET_BUILDERS` flip after a signed-in picker check).
+
+### Shipped this session — blog pipeline 0.92.0 (#240)
+`post` table (draft/approved/published/rejected; prod via the Management API) + `lib/blog.ts` + admin moderation (`/blog` review queue, `POST /api/blog`, `POST /api/blog/[id]`) + scheduled-release `/api/cron/publish-posts` (`*/15`) + dual push (`lib/blog-notify` admin draft-ready; all-users on publish) + a `blog` notif pref + `/blog` rendering DB+MDX (DB wins on slug) + `scripts/{draft-post,verify-blog}`. Mirrors threads + betting-notify + cron-auth; reuses the Clerk admin role + the markdown renderer (`renderMarkdown` extracted from `lib/content`). verify-blog green; 490 tests; build clean.
+
+### ⚠️ Vercel compute moved to DUBLIN (operator, 2026-06-24)
+- **Win:** compute now co-located with Supabase (`eu-west-1`) — kills the transatlantic latency that made `/social`/`/play`/`/account` slow (the #1 perf lever, done). The IDEAS Parked "Frankfurt move" + "Cloudflare D1" verdicts are now STALE (both reasoned from iad1) — annotated there.
+- **Watch:** all outbound scrapes now leave a **Dublin datacenter IP**. Verified clean on the first Dublin deploy — the `health` workflow ran GREEN from Dublin (13 standings + 8 results sources healthy), prod pages 200, publish cron green. Re-check `/api/cron/health` after future deploys; a Dublin-IP block on any feed shows there (caches fail-soft meanwhile).
+- **Jolpica/F1 RECOVERED** — the 0.84.0 "521-down" landmine is resolved; F1 standings + results parse again (health-green). Prod F1 pages self-heal on the next successful fetch.
+
+### Migration drift — repair list `+= 20260624190000`
+`post` applied to prod via the Management API (verified: 15 cols, RLS on, 5 indexes), NOT `db push`. Add before any future `db push`.
+
+### Owed (operator)
+- **Rotate the Supabase PAT** (still in `.supabase-pat`; used again this session for the post migration).
+- Blog: the signed-in push-walkthrough (above), first real posts, the scheduled-authoring trigger; plus the F1-radio→CC0 sound swap + Wikimedia hero-image curation (the `hero_image` column ships now).
+- Real-odds adapter still parked (keep last).
+
+_Authoritative end-of-day state (main = **0.92.0**, 2026-06-24). Blocks below are prior-session history._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-24 (main = 0.91.0) — forecast LIVE · signed-in browser verification · wide-screen · leagues page · durable source-snapshot
 
 Long continuation: forecast go-live, a full **signed-in browser verification pass** (operator handed over Clerk **dev** keys), then a→b→c per operator order. Shipped **0.88.0 → 0.91.0** (PRs #234–#237). THIS is the authoritative end-of-day state.
