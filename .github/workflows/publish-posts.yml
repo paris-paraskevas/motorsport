@@ -1,0 +1,37 @@
+name: publish posts cron
+
+on:
+  schedule:
+    # Every 15 min. publishDuePosts is idempotent and a KV ledger dedupes the
+    # push, so the exact tick never matters — a post goes live within ~15 min of
+    # its publish_at.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read the CRON_SECRET from repo secrets
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/publish-posts
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/publish-posts.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/publish-posts)
+          echo "Status: $STATUS"
+          cat /tmp/publish-posts.json
+          echo ""
+          # 503 (cron secret not configured) is acceptable while secrets are
+          # being provisioned; the route 200s when betting itself is unconfigured.
+          test "$STATUS" = "200" -o "$STATUS" = "503"

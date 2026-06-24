@@ -45,6 +45,7 @@ export interface NotifPrefs {
   news: boolean;       // new article from a followed series
   raceWeek: boolean;   // Monday-morning summary if any race this week
   betting: boolean;    // prediction market: quali-eve lock reminder + results-in notice
+  blog: boolean;       // a new blog post goes live (site-wide; followed-filtered when series-tagged)
   sound: boolean;      // play the OS default notification sound (off = silent)
   mutedSeries?: string[];  // per-series mute (independent of follow state)
 }
@@ -54,6 +55,7 @@ export const DEFAULT_NOTIF_PREFS: NotifPrefs = {
   news: true,
   raceWeek: true,
   betting: true,
+  blog: true,
   sound: true,
   mutedSeries: [],
 };

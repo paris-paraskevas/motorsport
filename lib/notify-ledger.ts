@@ -7,7 +7,14 @@ import { kv } from '@vercel/kv';
 // prod the subscriptions themselves live in KV, so the cron exits before any
 // send if KV is down.
 
-export type NotifyKind = 't30' | 't10' | 'res' | 'bet-lock' | 'bet-settled';
+export type NotifyKind =
+  | 't30'
+  | 't10'
+  | 'res'
+  | 'bet-lock'
+  | 'bet-settled'
+  | 'blog-draft'
+  | 'blog-publish';
 
 const KEY_PREFIX = 'paddock:notified:';
 // Sessions are one-shot events — 48h covers any cron retry horizon. Results
@@ -22,6 +29,11 @@ const TTL_SECONDS: Record<NotifyKind, number> = {
   res: 7 * 24 * 3600,
   'bet-lock': 48 * 3600,
   'bet-settled': 30 * 24 * 3600,
+  // Blog: the draft-ready ping is one-shot (48h covers any retry horizon); the
+  // publish announce is once-ever per post (30d, like bet-settled) so an
+  // overlapping cron tick can't double-announce the same post.
+  'blog-draft': 48 * 3600,
+  'blog-publish': 30 * 24 * 3600,
 };
 
 function isKvConfigured(): boolean {

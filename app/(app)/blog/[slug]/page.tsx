@@ -3,13 +3,37 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft } from 'lucide-react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { currentUser } from '@clerk/nextjs/server';
 import { listPostSlugs, loadPost } from '@/lib/posts';
+import { getPostBySlug, type BlogPost } from '@/lib/blog';
+import { isAdmin } from '@/lib/threads';
+import { renderMarkdown } from '@/lib/content';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
+import type { Post } from '@/lib/types';
 
+// Force-dynamic: required for the admin scheduled-preview branch (currentUser),
+// and DB posts render at request time anyway. generateStaticParams stays
+// MDX-only — DB posts are served dynamically, not enumerated at build.
 export const dynamic = 'force-dynamic';
+
+// Adapt a DB post to the file-based Post shape so articleLd() + generateMetadata
+// reuse unchanged. `source` carries the markdown body (rendered separately).
+function dbToPost(p: BlogPost): Post {
+  return {
+    slug: p.slug,
+    frontmatter: {
+      title: p.title,
+      summary: p.summary,
+      publishedAt: p.publishedAt ?? p.publishAt ?? p.createdAt,
+      heroImage: p.heroImage ?? undefined,
+      seriesSlug: p.seriesSlug ?? undefined,
+    },
+    source: p.body,
+  };
+}
 
 export async function generateStaticParams() {
   const slugs = await listPostSlugs();
@@ -22,7 +46,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await loadPost(slug);
+  // DB-first (published only — unpublished drafts get generic metadata), MDX fallback.
+  const db = await getPostBySlug(slug);
+  const post = db && db.status === 'published' ? dbToPost(db) : await loadPost(slug);
   if (!post) return { title: 'Post not found' };
   // Blog posts carry article-specific openGraph fields (publishedTime, hero
   // images) that the shared withSocialMeta() helper doesn't model, so build
@@ -59,13 +85,47 @@ function formatDate(iso: string): string {
   });
 }
 
+function formatDateTime(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'UTC',
+  });
+}
+
 export default async function PostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await loadPost(slug);
+
+  let post: Post | null = null;
+  let bodyHtml: string | null = null; // set for DB posts (rendered markdown)
+  let scheduledAt: string | null = null; // admin preview of a not-yet-published post
+
+  const db = await getPostBySlug(slug);
+  if (db) {
+    if (db.status === 'published') {
+      post = dbToPost(db);
+      bodyHtml = await renderMarkdown(db.body);
+    } else if (db.status === 'approved' && isAdmin(await currentUser())) {
+      // Scheduled but not yet live — only admins may preview it.
+      post = dbToPost(db);
+      bodyHtml = await renderMarkdown(db.body);
+      scheduledAt = db.publishAt;
+    } else {
+      notFound(); // draft / rejected / approved-but-not-admin → hidden; slug is taken
+    }
+  } else {
+    post = await loadPost(slug); // MDX fallback
+    if (!post) notFound();
+  }
   if (!post) notFound();
 
   const postUrl = `${SITE_URL}/blog/${slug}`;
@@ -87,6 +147,12 @@ export default async function PostPage({
         <ChevronLeft size={14} />
         Back to blog
       </Link>
+
+      {scheduledAt && (
+        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
+          Scheduled preview · publishes {formatDateTime(scheduledAt)} UTC · only admins can see this
+        </div>
+      )}
 
       <header className="mb-8">
         <div className="flex items-baseline gap-3 mb-3 flex-wrap">
@@ -119,7 +185,11 @@ export default async function PostPage({
                    prose-strong:text-text
                    prose-a:text-text prose-a:underline-offset-4"
       >
-        <MDXRemote source={post.source} components={mdxComponents} />
+        {bodyHtml !== null ? (
+          <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+        ) : (
+          <MDXRemote source={post.source} components={mdxComponents} />
+        )}
       </article>
     </div>
   );

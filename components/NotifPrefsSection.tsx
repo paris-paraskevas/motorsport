@@ -8,6 +8,7 @@ interface NotifPrefs {
   news: boolean;
   raceWeek: boolean;
   betting: boolean;
+  blog: boolean;
   sound: boolean;
 }
 
@@ -31,6 +32,11 @@ const ROWS: Array<{ key: keyof NotifPrefs; label: string; description: string }>
     key: 'betting',
     label: 'Prediction reminders',
     description: 'A nudge the day before predictions lock, plus a note when results settle.',
+  },
+  {
+    key: 'blog',
+    label: 'Blog posts',
+    description: 'Alert when a new post is published (followed series only when a post is tagged).',
   },
   {
     key: 'sound',
