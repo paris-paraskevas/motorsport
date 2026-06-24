@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.68.1 — 2026-06-23
+
+**Less to scroll.** The Followed list on Account and the round bars on Play now start collapsed — tap to expand what you want.
+
 ## 0.68.0 — 2026-06-23
 
 **Tidier Series page.** Championships are now grouped into collapsible categories (Open-Wheel, Endurance, GT, Motorcycles, Rally, Stock Cars) — tap a category to expand its series.
