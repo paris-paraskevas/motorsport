@@ -22,10 +22,10 @@ Before any `db push`: `supabase migration repair --status applied 20260622120000
 ### Owed (operator) — the session's final message has the why/how of each
 - **Authed prod eyeballs (no Clerk key this side):** home Just-missed fetch-on-expand + loading skeleton; `/settings/customize` page + gallery; the Social hub launcher + Community row + nav (Play gone, Social only, bottom bar 5-up); Account→Notifications new **betting** toggle + **Sound** now saving; richer leaderboard columns; threads series picker + the conditional series-page link.
 - **Betting notif cron** — confirm a reminder/results push lands once a market is within 24h / has settled.
-- **Forecast + exact_position go-live** (this is the "can't multi-select podium/points" ask): both built + dormant — interaction-verify the signed-in picker, then add to `MARKET_BUILDERS` (one line each).
+- **Forecast market — LIVE 0.88.0 (#234)** (operator go-live; this was the "can't multi-select podium/points" ask). ⚠️ Its picker UI (`ForecastBetCard`) was never signed-in-verified — place one test forecast on prod after the next open-markets cron tick. exact_position still held (interaction-verify its picker, then add to `MARKET_BUILDERS`).
 - **Rotate the Supabase PAT** (still in `.supabase-pat`; used this session for the threads migration). **Threads admin role** (Clerk `publicMetadata.role='admin'`). **Real-odds adapter** parked (operator: keep last).
 - **F1 monitoring nuance:** the F1 health probes now read healthy during a Jolpica outage (they call the last-good-wrapped fetchers).
-- Carried: demo `'2026-06'` award delete (~Jul 1); 5 legacy `set-state-in-effect` lint errors (untouched); untracked repo litter; local lane/pr branches + agent worktrees (safe to prune).
+- Carried: 5 legacy `set-state-in-effect` lint errors (untouched); untracked repo litter (`fe-champ.html`, `prod-weekend8.md`); local lane/pr branches + agent worktrees (safe to prune). _(Demo `'2026-06'` award + its seed artifacts removed 0.88.0 — done.)_
 
 _Authoritative end-of-day state (main = **0.87.1**, 2026-06-24). Blocks below are prior-session history._
 
