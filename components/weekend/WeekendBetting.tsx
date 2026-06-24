@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MarketBetCard } from '@/components/betting/MarketBetCard';
 import { ExactPositionBetCard } from '@/components/betting/ExactPositionBetCard';
+import { ForecastBetCard } from '@/components/betting/ForecastBetCard';
 import { MARKET_TYPE_META } from '@/lib/betting/constants';
 import type { OpenMarket } from '@/lib/betting/markets';
 import type { UserBet } from '@/lib/betting/bets';
@@ -106,6 +107,8 @@ export function WeekendBetting({
             };
             return m.type === 'exact_position' ? (
               <ExactPositionBetCard key={m.id} {...shared} />
+            ) : m.type === 'forecast' ? (
+              <ForecastBetCard key={m.id} {...shared} />
             ) : (
               <MarketBetCard key={m.id} {...shared} />
             );
@@ -124,10 +127,10 @@ export function WeekendBetting({
 
 function SignedOutTeaser({ market }: { market: OpenMarket }) {
   const meta = MARKET_TYPE_META[market.type] ?? MARKET_TYPE_META.winner;
-  // exact-position odds are keyed `driver@position` — a flat top-6 list would be
-  // gibberish, so its teaser is heading + CTA only.
+  // exact-position / forecast odds are keyed `driver@position` — a flat top-6 list
+  // would be gibberish, so their teaser is heading + CTA only.
   const preview =
-    market.type === 'exact_position'
+    market.type === 'exact_position' || market.type === 'forecast'
       ? []
       : Object.entries(market.odds)
           .sort((a, b) => a[1] - b[1])

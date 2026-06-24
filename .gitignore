@@ -55,6 +55,9 @@ Thumbs.db
 # clerk configuration (can include secrets)
 /.clerk/
 
+# local secret: Supabase PAT handed in for Management-API migrations (rotate after use)
+/.supabase-pat
+
 # playwright MCP browser profile
 /.playwright-mcp/
 

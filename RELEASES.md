@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.82.0 — 2026-06-24
+
+*Internal: a new Forecast bet — pick two or more drivers and their exact finishing positions — is built, tested and ready, but not switched on yet. It'll appear on weekend pages once enabled.*
+
 ## 0.81.0 — 2026-06-24
 
 **League bet limits.** A league owner can now cap the maximum stake per bet to keep stakes sensible — bets over the limit are turned away. Leave it blank for no limit.
