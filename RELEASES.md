@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.78.0 — 2026-06-24
+
+**Jump to any month on the calendar.** The calendar's top bar now spans the full width with a month picker — hop straight to a future month instead of tapping through one at a time.
+
 ## 0.77.3 — 2026-06-24
 
 **Tidier footer.** The footer is now a compact single band instead of running a full screen tall on phones.

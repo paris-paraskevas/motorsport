@@ -11,7 +11,9 @@ export function CalendarToolbar({
   label,
   onPrev,
   onNext,
-  onToday,
+  monthOptions,
+  currentMonthValue,
+  onPickMonth,
   filtersOpen,
   onToggleFilters,
   onClearFilters,
@@ -22,15 +24,19 @@ export function CalendarToolbar({
   label: string;
   onPrev: () => void;
   onNext: () => void;
-  onToday: () => void;
+  monthOptions: { value: number; label: string }[];
+  currentMonthValue: number;
+  onPickMonth: (ms: number) => void;
   filtersOpen: boolean;
   onToggleFilters: () => void;
   onClearFilters: () => void;
   filterActive: boolean;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-y-2 border-y border-border">
-      <div className="flex items-stretch">
+    <div className="mb-4">
+      {/* Full-width month nav: ‹ [month dropdown] › — the dropdown jumps to any
+          month in the season; the arrows step by the current view. */}
+      <div className="flex items-stretch border-y border-border">
         <button
           type="button"
           onClick={onPrev}
@@ -39,26 +45,35 @@ export function CalendarToolbar({
         >
           <ChevronLeft size={16} />
         </button>
-        <button
-          type="button"
-          onClick={onToday}
-          className="border-r border-border px-3 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors hover:bg-surface hover:text-text"
+        <select
+          value={currentMonthValue}
+          onChange={e => onPickMonth(Number(e.target.value))}
+          aria-label="Jump to month"
+          className="min-w-0 flex-1 cursor-pointer bg-transparent px-3 py-2.5 text-center font-display text-base font-extrabold uppercase tracking-wide text-text transition-colors hover:bg-surface md:text-lg"
         >
-          Today
-        </button>
+          {monthOptions.map(o => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
         <button
           type="button"
           onClick={onNext}
           aria-label="Next"
-          className="border-r border-border px-3 py-2.5 text-text-muted transition-colors hover:bg-surface hover:text-text"
+          className="border-l border-border px-3 py-2.5 text-text-muted transition-colors hover:bg-surface hover:text-text"
         >
           <ChevronRight size={16} />
         </button>
-        <span className="ml-3 self-center font-display text-base font-extrabold uppercase tracking-wide text-text md:text-lg">
-          {label}
-        </span>
       </div>
-      <div className="flex items-center gap-2 py-1.5 pr-1">
+
+      {/* The precise week/day range when zoomed in (the month dropdown already
+          carries the label in month view). */}
+      {view !== 'month' && (
+        <div className="mt-2 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">{label}</div>
+      )}
+
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
         <div className="flex">
           {VIEWS.map(v => (
             <button
@@ -74,26 +89,28 @@ export function CalendarToolbar({
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={onToggleFilters}
-          aria-expanded={filtersOpen}
-          className={`inline-flex items-center gap-1.5 border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-            filtersOpen ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
-          }`}
-        >
-          Filters
-          {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="active" />}
-        </button>
-        {filterActive && (
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={onClearFilters}
-            className="border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+            onClick={onToggleFilters}
+            aria-expanded={filtersOpen}
+            className={`inline-flex items-center gap-1.5 border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
+              filtersOpen ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
+            }`}
           >
-            Clear
+            Filters
+            {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="active" />}
           </button>
-        )}
+          {filterActive && (
+            <button
+              type="button"
+              onClick={onClearFilters}
+              className="border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
