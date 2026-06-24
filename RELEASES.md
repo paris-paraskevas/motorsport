@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.95.2 — 2026-06-24
+
+**Cleaner weekend schedule.** A weekend's sessions are no longer listed twice — each row in the schedule now links straight to that session's results.
+
 ## 0.95.1 — 2026-06-24
 
 **Tidier bets.** Each market on a weekend's Bets tab now starts collapsed — tap to open the one you want — with quick links to that series' standings, results and drivers to size up your pick.

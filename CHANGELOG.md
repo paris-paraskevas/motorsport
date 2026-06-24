@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.95.2 — 2026-06-24
+
+Fixed: **Weekend Schedule no longer lists sessions twice.**
+
+### Fixed
+- The weekend Schedule tab rendered the timetable AND a separate "Sessions" list of the same sessions (operator-reported). Now the schedule rows themselves link to each session's result page (`WeekendSchedule` receives `sessionLinkBase`), and the redundant standalone Sessions block + the `sessionLinks` prop are gone (`components/weekend/WeekendTabs.tsx`, the weekend round page). One list, linked. Browser-verified (no "Sessions" heading; 5 linked session rows in the schedule). tsc + `next build` clean; 0 new lint.
+
 ## 0.95.1 — 2026-06-24
 
 Changed: **Bets tab — collapsed market cards + a form-links row.**

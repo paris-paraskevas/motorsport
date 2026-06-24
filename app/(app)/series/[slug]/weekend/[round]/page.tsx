@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
-import { weekendFor, weekendLabel, weekendStartEnd, sessionSlug } from '@/lib/weekend';
+import { weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
 import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
@@ -117,15 +117,11 @@ export default async function WeekendPage({
 
   // Per-session result pages: F1 via OpenF1; the listed series carry race-session
   // classifications; WEC/IMSA/GT World render per-class tables; others stay
-  // unlinked. Computed here, rendered in the Sessions tab (Schedule is just the
-  // timetable now).
+  // unlinked. Passed straight to the Schedule so each session ROW links to its
+  // page — no separate "Sessions" list (it duplicated the timetable).
   const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world'].includes(slug)
     ? `/series/${slug}/weekend/${round}`
     : undefined;
-  const sessionLinks = weekend.sessions.map(s => ({
-    title: s.title,
-    href: sessionLinkBase ? `${sessionLinkBase}/${sessionSlug(s.title)}` : null,
-  }));
 
   return (
     <div
@@ -195,15 +191,15 @@ export default async function WeekendPage({
       )}
 
       {/* Tabs: Schedule (server-rendered timetable + weather, paints with the
-          page) | Bets (F1, future) | News | Sessions (per-session result links +
-          standings). The non-default tabs mount + fetch only when first opened,
-          so a cold weekend page render does only the cheap schedule + weather —
-          not the news feed, the season-results fan-out, or the betting markets.
-          The page stays ISR-cacheable. */}
+          page; each session row links to its result page, and standings sit
+          behind a lazy disclosure) | Bets (F1) | News. The non-default tabs mount
+          + fetch only when first opened, so a cold weekend render does only the
+          cheap schedule + weather — not the news feed, the results fan-out, or
+          the betting markets. The page stays ISR-cacheable. */}
       <WeekendTabs
         scheduleSlot={
           <>
-            <WeekendSchedule weekend={weekend} color={color} />
+            <WeekendSchedule weekend={weekend} color={color} sessionLinkBase={sessionLinkBase} />
             <WeekendWeatherStrip weekend={weekend} />
           </>
         }
@@ -212,7 +208,6 @@ export default async function WeekendPage({
         isPast={isPast}
         showBets={slug === 'f1' && !isPast && isBettingConfigured()}
         showNews={NEWS_SLUG_MAP[slug] != null}
-        sessionLinks={sessionLinks}
       />
     </div>
   );
