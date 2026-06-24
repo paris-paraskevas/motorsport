@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.69.0 — 2026-06-23
+
+**Calendar filters, refined.** The Filters button now sits right next to Month / Week / Day and opens a tidy box with Session and Series categories — and your filter choices are remembered next time.
+
 ## 0.68.1 — 2026-06-23
 
 **Less to scroll.** The Followed list on Account and the round bars on Play now start collapsed — tap to expand what you want.
