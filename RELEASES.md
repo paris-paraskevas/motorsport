@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.82.1 — 2026-06-24
+
+**Footer, readable.** The footer links are now in two tidy rows — Site and Legal — instead of one long jumble.
+
 ## 0.82.0 — 2026-06-24
 
 *Internal: a new Forecast bet — pick two or more drivers and their exact finishing positions — is built, tested and ready, but not switched on yet. It'll appear on weekend pages once enabled.*
