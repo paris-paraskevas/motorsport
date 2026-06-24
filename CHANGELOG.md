@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.66.2 — 2026-06-23
+
+Changed: **/social/leagues loads in 2 DB round-trips instead of 2× per league.**
+
+### Changed
+- New `getLeaderboardsForLeagues(leagueIds)` in `lib/betting/leagues.ts` reads every league's members in **one** `league_member` query + **one** batched name lookup, replacing the page's per-league `getLeaderboard` N+1 (was 2 round-trips × N leagues → now 2 total). Same ranking + nickname rules. Meaningful on the cross-region DB latency (functions in `iad1`, DB in `eu-west-1`), multiplied across leagues — the region co-location remains the bigger lever (operator-gated).
+
+### Notes
+- No schema change; single-league `getLeaderboard` kept for other callers. tsc clean; 470 tests pass; `next build` clean. Runtime correctness wants `verify-league-flow.mts` vs local Supabase (down this session) — the logic is a faithful batch of `getLeaderboard`.
+
 ## 0.66.1 — 2026-06-23
 
 Changed: **Session close-out — handoff + idea-ledger updated for the 0.61.2→0.66.0 batch (no code change).**

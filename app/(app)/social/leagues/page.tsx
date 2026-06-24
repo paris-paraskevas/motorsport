@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
-import { getUserLeagues, getLeaderboard } from '@/lib/betting/leagues';
+import { getUserLeagues, getLeaderboardsForLeagues } from '@/lib/betting/leagues';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { LeaguesPanel } from '@/components/betting/LeaguesPanel';
 
@@ -71,9 +71,8 @@ async function LeaguesData({ userId }: { userId: string }) {
       /* best-effort */
     }
   });
-  const leaderboards = await Promise.all(
-    leagues.map(async league => ({ league, rows: await getLeaderboard(league.id, 0) })),
-  );
+  const boards = await getLeaderboardsForLeagues(leagues.map(l => l.id), 0);
+  const leaderboards = leagues.map(league => ({ league, rows: boards.get(league.id) ?? [] }));
   return <LeaguesPanel leagues={leaderboards} currentUserId={userId} />;
 }
 

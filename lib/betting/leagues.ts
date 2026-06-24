@@ -78,6 +78,52 @@ export async function getLeaderboard(leagueId: string, minPlaced = 1): Promise<L
   return rows.map(r => ({ ...r, displayName: names.get(r.userId) ?? null }));
 }
 
+/** Leaderboards for several leagues in TWO round-trips instead of 2×N: one
+ *  league_member read across all the leagues + one batched name lookup. Same
+ *  ranking + nickname rules as getLeaderboard. Keyed by league id (missing =
+ *  empty). The /social/leagues page used to call getLeaderboard per league
+ *  (an N+1 of 2 round-trips each) — this is the perf fix. */
+export async function getLeaderboardsForLeagues(
+  leagueIds: string[],
+  minPlaced = 1,
+): Promise<Map<string, LeaderboardRow[]>> {
+  const out = new Map<string, LeaderboardRow[]>();
+  if (leagueIds.length === 0) return out;
+  const { data, error } = await betDb()
+    .from('league_member')
+    .select('league_id, user_id, nickname, wins, placed')
+    .in('league_id', leagueIds);
+  if (error) throw new Error(`getLeaderboardsForLeagues failed: ${error.message}`);
+  const rows = data ?? [];
+  const names = await displayNames([...new Set(rows.map(r => r.user_id as string))]);
+  const byLeague = new Map<string, typeof rows>();
+  for (const r of rows) {
+    const lid = r.league_id as string;
+    const arr = byLeague.get(lid);
+    if (arr) arr.push(r);
+    else byLeague.set(lid, [r]);
+  }
+  for (const lid of leagueIds) {
+    const ranked = (byLeague.get(lid) ?? [])
+      .map(r => {
+        const wins = (r.wins as number) ?? 0;
+        const placed = (r.placed as number) ?? 0;
+        return {
+          userId: r.user_id as string,
+          nickname: (r.nickname as string | null) ?? null,
+          displayName: names.get(r.user_id as string) ?? null,
+          wins,
+          placed,
+          winRate: placed > 0 ? wins / placed : 0,
+        };
+      })
+      .filter(r => r.placed >= minPlaced)
+      .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
+    out.set(lid, ranked);
+  }
+  return out;
+}
+
 export interface UserLeague {
   id: string;
   name: string;
