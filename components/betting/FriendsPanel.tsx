@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { Friend, IncomingRequest, OutgoingRequest, SearchResult, FriendState } from '@/lib/betting/friends';
 
 // Manage friends independently of leagues: search people by name + send requests,
@@ -111,7 +112,9 @@ export function FriendsPanel({
                 key={r.userId}
                 className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
               >
-                <span className="text-text">{label(r.displayName, r.userId)}</span>
+                <Link href={`/social/users/${r.userId}`} className="text-text hover:text-brand">
+                  {label(r.displayName, r.userId)}
+                </Link>
                 {r.friendState === 'none' && (
                   <button
                     type="button"
@@ -231,7 +234,9 @@ export function FriendsPanel({
                 key={f.userId}
                 className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
               >
-                <span className="text-text">{label(f.displayName, f.userId)}</span>
+                <Link href={`/social/users/${f.userId}`} className="text-text hover:text-brand">
+                  {label(f.displayName, f.userId)}
+                </Link>
                 <button
                   type="button"
                   disabled={busy}

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.76.0 — 2026-06-24
+
+**See other racers' profiles.** Tap a friend's name to view their profile — their join date, friend and league counts, and (for friends) the leagues they're in. People who aren't your friends see the basics and can send you a request, but not your leagues.
+
 ## 0.75.0 — 2026-06-24
 
 **Simpler calendar filters.** Filters are now plain checkboxes instead of coloured chips, and there's a Clear button to reset them in one tap.
