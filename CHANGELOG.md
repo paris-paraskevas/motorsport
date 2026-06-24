@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.70.0 — 2026-06-23
+
+Changed: **Weekend page — Sessions folded into Schedule; Play deep-links to Bets.**
+
+### Changed
+- The weekend page's **Sessions** tab is gone — its per-session result links now live under **Schedule** (always shown, cheap), and "standings at this round" is a **lazy disclosure** there (loads only on click, so the default view stays fast). Tabs are now Schedule · Bets · News.
+- `/play` "Bet on the weekend page →" deep-links to the **Bets** tab (`?tab=bets`), read client-side (`window`, not `useSearchParams`) so the page stays `● ISR`.
+
+### Notes
+- `?tab=bets|news` opens that tab on load (post-mount setState — no hydration mismatch, scoped lint disable). Weekend page stays `● ISR`. tsc + lint clean; 473 tests; `next build` clean.
+
 ## 0.69.0 — 2026-06-23
 
 Changed: **Calendar filters — inline toolbar button + modal box, and they persist.**

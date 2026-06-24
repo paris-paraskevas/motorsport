@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { WeekendBetting } from './WeekendBetting';
@@ -8,17 +8,16 @@ import { WeekendNewsClient } from './WeekendNewsClient';
 import { WeekendStandingsClient } from './WeekendStandingsClient';
 
 // Tabbed weekend content. Schedule (+ weather) is server-rendered and passed in
-// as `scheduleSlot`, so it paints with the page — cheap (no upstream fetch).
-// Bets / News / Sessions mount only when their tab is FIRST opened (then stay
-// mounted, hidden, so re-selecting doesn't refetch). Each fetches its own data
-// client-side, so the weekend page render no longer loads any of it. That's the
-// speed-up: a cold weekend page does only the schedule + weather, not the
-// season-results fan-out, the news feed, or the betting markets.
+// as `scheduleSlot`, so it paints with the page. Schedule also carries the
+// per-session result links (cheap, server data) and a LAZY "standings at this
+// round" disclosure — the one heavy fetch, kept behind a click so the default
+// view stays fast (the 0.61.0 speed-up). Bets / News mount only when their tab
+// is first opened, then stay mounted (hidden) so re-selecting doesn't refetch.
 interface SessionLink {
   title: string;
   href: string | null;
 }
-type TabKey = 'schedule' | 'bets' | 'news' | 'sessions';
+type TabKey = 'schedule' | 'bets' | 'news';
 
 export function WeekendTabs({
   scheduleSlot,
@@ -41,15 +40,33 @@ export function WeekendTabs({
     { key: 'schedule', label: 'Schedule' },
     ...(showBets ? [{ key: 'bets' as const, label: 'Bets' }] : []),
     ...(showNews ? [{ key: 'news' as const, label: 'News' }] : []),
-    { key: 'sessions', label: 'Sessions' },
   ];
 
   const [active, setActive] = useState<TabKey>('schedule');
   const [seen, setSeen] = useState<Set<TabKey>>(() => new Set<TabKey>(['schedule']));
+  const [showStandings, setShowStandings] = useState(false);
   const open = (k: TabKey) => {
     setActive(k);
     setSeen(s => (s.has(k) ? s : new Set(s).add(k)));
   };
+
+  // Deep-link to a tab via ?tab= (e.g. /play "Bet on the weekend page" links to
+  // ?tab=bets). Read client-side from window — NOT useSearchParams — so the
+  // weekend page stays statically rendered / ISR.
+  useEffect(() => {
+    // One-time deep-link from the URL on mount (e.g. /play → ?tab=bets). Can't use
+    // useSearchParams (would deopt this ISR page to dynamic) or a useState lazy
+    // initializer (SSR has no window → hydration mismatch), so it's a single
+    // post-mount setState — intentional, runs once.
+    const t = new URLSearchParams(window.location.search).get('tab');
+    if ((t === 'bets' && showBets) || (t === 'news' && showNews)) {
+      /* eslint-disable react-hooks/set-state-in-effect */
+      setActive(t);
+      setSeen(s => new Set(s).add(t as TabKey));
+      /* eslint-enable react-hooks/set-state-in-effect */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section>
@@ -72,8 +89,46 @@ export function WeekendTabs({
         ))}
       </nav>
 
-      {/* Schedule: server-rendered, always present (cheap), just toggled. */}
-      <div hidden={active !== 'schedule'}>{scheduleSlot}</div>
+      <div hidden={active !== 'schedule'} className="space-y-8">
+        {scheduleSlot}
+        {sessionLinks.length > 0 && (
+          <div>
+            <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-text">Sessions</h3>
+            <ul className="divide-y divide-border/60">
+              {sessionLinks.map((s, i) => (
+                <li key={`${i}-${s.title}`} className="py-2.5">
+                  {s.href ? (
+                    <Link
+                      href={s.href}
+                      className="group/sess inline-flex items-center gap-1 text-sm font-medium text-text transition-colors duration-(--duration-fast) hover:text-tint"
+                    >
+                      {s.title}
+                      <ArrowUpRight size={12} aria-hidden className="text-text-faint group-hover/sess:text-tint" />
+                    </Link>
+                  ) : (
+                    <span className="text-sm font-medium text-text">{s.title}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowStandings(v => !v)}
+            aria-expanded={showStandings}
+            className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+          >
+            {showStandings ? 'Hide standings' : 'Standings at this round →'}
+          </button>
+          {showStandings && (
+            <div className="mt-4">
+              <WeekendStandingsClient slug={slug} round={round} isPast={isPast} />
+            </div>
+          )}
+        </div>
+      </div>
 
       {showBets && seen.has('bets') && (
         <div hidden={active !== 'bets'}>
@@ -84,34 +139,6 @@ export function WeekendTabs({
       {showNews && seen.has('news') && (
         <div hidden={active !== 'news'}>
           <WeekendNewsClient slug={slug} round={round} />
-        </div>
-      )}
-
-      {seen.has('sessions') && (
-        <div hidden={active !== 'sessions'} className="space-y-8">
-          {sessionLinks.length > 0 && (
-            <div>
-              <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-wide text-text">Sessions</h3>
-              <ul className="divide-y divide-border/60">
-                {sessionLinks.map((s, i) => (
-                  <li key={`${i}-${s.title}`} className="py-2.5">
-                    {s.href ? (
-                      <Link
-                        href={s.href}
-                        className="group/sess inline-flex items-center gap-1 text-sm font-medium text-text transition-colors duration-(--duration-fast) hover:text-tint"
-                      >
-                        {s.title}
-                        <ArrowUpRight size={12} aria-hidden className="text-text-faint group-hover/sess:text-tint" />
-                      </Link>
-                    ) : (
-                      <span className="text-sm font-medium text-text">{s.title}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          <WeekendStandingsClient slug={slug} round={round} isPast={isPast} />
         </div>
       )}
     </section>

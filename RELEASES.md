@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.70.0 — 2026-06-23
+
+**Weekend pages, streamlined.** Session links now sit under the Schedule tab (with standings one tap away), so there's one less tab. And "Bet on the weekend page" from Play drops you straight onto the Bets tab.
+
 ## 0.69.0 — 2026-06-23
 
 **Calendar filters, refined.** The Filters button now sits right next to Month / Week / Day and opens a tidy box with Session and Series categories — and your filter choices are remembered next time.
