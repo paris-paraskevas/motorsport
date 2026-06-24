@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.92.1 — 2026-06-24
+
+**Faster signed-in pages.** The app now runs next to its database (moved to Dublin), so Social, Play and Account load noticeably quicker. Plus internal documentation housekeeping.
+
 ## 0.92.0 — 2026-06-24
 
 **A proper blog, with notifications.** Paddock can now publish original posts — previews and recaps — on a schedule, and you can get a push the moment a new one goes live. Toggle "Blog posts" under Account → Notifications (on by default; when a post is tagged to a series, you'll only be alerted for series you follow). First posts are on the way.
