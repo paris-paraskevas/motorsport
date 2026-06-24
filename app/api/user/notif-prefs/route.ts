@@ -42,6 +42,10 @@ export async function PUT(request: Request) {
   if (typeof body.prefs.sessions === 'boolean') patch.sessions = body.prefs.sessions;
   if (typeof body.prefs.news === 'boolean') patch.news = body.prefs.news;
   if (typeof body.prefs.raceWeek === 'boolean') patch.raceWeek = body.prefs.raceWeek;
+  if (typeof body.prefs.betting === 'boolean') patch.betting = body.prefs.betting;
+  // Pre-existing gap (fixed 0.86.0): the Sound toggle POSTs `sound` but the PUT
+  // dropped it, so it silently never persisted. Accept it.
+  if (typeof body.prefs.sound === 'boolean') patch.sound = body.prefs.sound;
   try {
     const next = await setUserNotifPrefs(userId, patch);
     return NextResponse.json({ prefs: next });

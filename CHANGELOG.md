@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.86.0 — 2026-06-24
+
+Added: **Betting reminders + results-in notifications, a richer league leaderboard, and landing-page marketing for the prediction game.**
+
+### Added
+- **Betting notifications** — new `GET /api/cron/betting-notify` (hourly workflow `.github/workflows/betting-notify.yml`, fail-closed cron auth). (a) **Lock reminder** ~1 day out: open markets locking in [now+23h, now+25h] → one push per series+round ("predictions close tomorrow"); (b) **results-in**: settled markets → one push per series+round. Fans out via the existing per-user filter (followed-series + mutedSeries + `sound`), deduped in the notify ledger (`bet-lock` 48h / `bet-settled` 30d TTL). New `betting` notification preference (default on) in `NotifPrefs` + the Account → Notifications UI. No-ops when betting is unconfigured.
+- **Richer league leaderboard** (`/social/leagues/[id]`) — each member row now shows **net credits** (league P&L from the ledger), **current W/L streak**, **last-5 form**, **#bets**, **honours count** and the member colour dot, alongside W/L · win-rate. All from existing data (no migration); detail-page only (the cached `LeaguesPanel` path is unchanged). Phone-first reflow.
+- **Landing marketing for the prediction game** — a new section on the public landing (`components/landing/PredictionGame.tsx`) introducing the free virtual-credit prediction game + friend leagues, with strict no-cashout framing (free / virtual / "not gambling" / "no cashout, ever"). CTAs to Play + sign-up.
+
+### Fixed
+- **Notification Sound toggle now saves** — the notif-prefs PUT validated sessions/news/raceWeek but dropped `sound`, so the toggle silently never persisted. Now accepted. (Pre-existing; surfaced while adding the betting category.)
+
+### Notes
+- tsc + 490 tests + `next build` clean (full-union verified). The betting reminders fire from the GitHub-Actions cron — need a prod check once a market is within the 24h window / has settled. Signed-in leaderboard + notif prefs need an authed eyeball.
+
 ## 0.85.0 — 2026-06-24
 
 Changed: **Home loads lighter, a dedicated Customise page, and Social becomes the umbrella for play + community.**

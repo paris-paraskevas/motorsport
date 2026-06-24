@@ -7,6 +7,7 @@ interface NotifPrefs {
   sessions: boolean;
   news: boolean;
   raceWeek: boolean;
+  betting: boolean;
   sound: boolean;
 }
 
@@ -25,6 +26,11 @@ const ROWS: Array<{ key: keyof NotifPrefs; label: string; description: string }>
     key: 'raceWeek',
     label: 'Race week summary',
     description: 'Monday morning recap of races coming up this week.',
+  },
+  {
+    key: 'betting',
+    label: 'Prediction reminders',
+    description: 'A nudge the day before predictions lock, plus a note when results settle.',
   },
   {
     key: 'sound',

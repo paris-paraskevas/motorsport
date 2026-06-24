@@ -175,9 +175,6 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
                 {m.isYou && <span className="text-text-muted"> (you)</span>}
               </span>
               <span className="flex items-center gap-3 font-mono text-xs text-text-muted">
-                <span>
-                  {m.wins}/{m.placed} · {(m.winRate * 100).toFixed(0)}%
-                </span>
                 <button type="button" onClick={() => setEditing(editing === m.userId ? null : m.userId)} className="hover:text-text">
                   edit
                 </button>
@@ -215,6 +212,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
                 )}
               </span>
             </div>
+            <MemberStats m={m} />
             {editing === m.userId && (
               <ProfileEditor
                 member={m}
@@ -307,6 +305,56 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
             </button>
           </div>
         ))}
+    </div>
+  );
+}
+
+// Read-only stats strip under each member row. Full-width and wrapping so it
+// collapses gracefully on phones (top row keeps name + actions; stats reflow
+// onto as many lines as needed). All league-scoped — never a global balance.
+function MemberStats({ m }: { m: LeagueMemberDetail }) {
+  const net = m.netCredits;
+  const netClass = net > 0 ? 'text-emerald-400' : net < 0 ? 'text-red-400' : 'text-text-muted';
+  const netLabel = `${net > 0 ? '+' : ''}${net.toLocaleString()}`;
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-text-muted">
+      <span className="tabular-nums">
+        <span className="text-text">{m.wins}</span>/{m.placed} · {(m.winRate * 100).toFixed(0)}%
+      </span>
+      <span className="text-text-faint">·</span>
+      <span title="Net credits won/lost in this league">
+        <span className="uppercase tracking-[0.12em] text-text-faint">net </span>
+        <span className={`tabular-nums font-semibold ${netClass}`}>{netLabel}</span>
+      </span>
+      {m.streak !== 0 && (
+        <span title="Current win/loss streak">
+          <span className="uppercase tracking-[0.12em] text-text-faint">streak </span>
+          <span className={`tabular-nums font-semibold ${m.streak > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {m.streak > 0 ? `W${m.streak}` : `L${-m.streak}`}
+          </span>
+        </span>
+      )}
+      {m.form.length > 0 && (
+        <span className="inline-flex items-center gap-1" title="Last 5 settled bets (most recent first)">
+          <span className="uppercase tracking-[0.12em] text-text-faint">form</span>
+          <span className="inline-flex items-center gap-0.5 tabular-nums">
+            {m.form.map((r, idx) => (
+              <span key={idx} className={r === 'W' ? 'text-emerald-400' : 'text-red-400'}>
+                {r}
+              </span>
+            ))}
+          </span>
+        </span>
+      )}
+      <span title="Total bets placed in this league">
+        <span className="tabular-nums text-text">{m.betCount}</span>{' '}
+        <span className="uppercase tracking-[0.12em] text-text-faint">{m.betCount === 1 ? 'bet' : 'bets'}</span>
+      </span>
+      {m.awards.length > 0 && (
+        <span title={`${m.awards.length} podium ${m.awards.length === 1 ? 'finish' : 'finishes'}`}>
+          <span aria-hidden>🏅</span> <span className="tabular-nums text-text">×{m.awards.length}</span>
+        </span>
+      )}
     </div>
   );
 }
