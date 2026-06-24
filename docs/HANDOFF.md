@@ -6,6 +6,36 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-23 (main = 0.66.0) — operator feature batch (7 PRs) + forecast deferred
+
+Large autonomous batch off one operator request (7 asks). Shipped **0.61.1 → 0.66.0** (PRs #193–#199). Per-version detail in `CHANGELOG.md`.
+
+### Shipped (all merged to main)
+- **Docs close-out — `0.61.1` (#193).** HANDOFF/IDEAS/SCHEDULE brought current with 0.58.0→0.61.0.
+- **Invite-join Safari bug — `0.61.2` (#194).** The league invite-join 500'd on a fresh sign-in (Safari/ITP): the join page called `currentUser()` (Clerk **backend** API) synchronously just to backfill a name → "authorization invalid / clerk trace id". Fix: onboard with `userId` only; defer the name backfill to `after()`. Same fragile pattern removed from `/play` + `/social/*` (also drops a per-render Clerk hop from first paint).
+- **Account accordions — `0.62.0` (#195).** New reusable `Accordion`; notifications collapsible; followed-series split into **Followed / Not followed** accordions.
+- **Play round-grouping — `0.63.0` (#196).** `/play` markets group per weekend into one collapsible "SERIES · Round N" bar (expand → winner/podium/top-10).
+- **Friend-request links — `0.64.0` (#197).** "Copy friend link" on `/social/friends` → `…/social/friends/add/<id>` → open (sign up/in) → Accept/Decline. No token table (path id = inviter's opaque user id; auth enforced per-mutation).
+- **Calendar redesign — `0.65.0` (#198).** `/calendar` → interactive **Month/Week/Day** views (switcher + ‹/Today/› + click-through). New pure `lib/calendar-grid.ts` (device-local bucketing; `dateOnly`→UTC + "TBC") with 7 unit tests; `/calendar` stays `○` static.
+- **Home customise, phase-1 — `0.66.0` (#199).** A **Customise** toggle on `/app` reorders/hides the 3 top-level home blocks (Live/up-next · Just-missed · Schedule&news) via CSS `order` (**default renders identically**); KV/localStorage prefs (`lib/homeLayout.ts` + `useHomeLayout` + `/api/user/home-layout`), 5 unit tests. **Nav-item + series-tab ordering deferred (phase 2/3).**
+
+### ⏳ DEFERRED — forecast market (multi-driver + finishing position)
+Operator ask: "multiple drivers chosen for podium/points — choosing what spot they finish in." **Not built** — it's a **live-credit-economy** change whose settlement can't be verified this side (local Supabase down → `verify-forecast.mts` can't run; prod migration needs the rotated PAT). Turnkey plan (build next session with the DB up):
+- **Dormant**, like `exact_position` (NOT added to `MARKET_BUILDERS`). New type `forecast`; selection `{legs:[{driver,position}, …]}` (≥2 legs).
+- **Odds:** reuse `exactPositionMultipliers(field)` (per-pair `driver@pos`) + a `__forecastLegs` count key. **Display price** = product of the picked legs' per-pair multipliers, clamped to `MAX_MULTIPLIER` (500).
+- **Settle = all-or-nothing** (every leg's driver in its exact position). SQL `settle_market` gains a `forecast` branch (copy the existing fn verbatim, add the branch; combined `v_mult = least(product(stored per-leg odds), 500)` — **that clamp is the one safety-critical line, the no-900× guarantee**). Migration via the **Management API** (drift landmine — add the new timestamp to the repair list). TS league mirror = a `betWon` `forecast` branch in `settlement.ts`.
+- **UI:** `ForecastBetCard` (k driver→position rows, disable already-picked driver/pos); `WeekendBetting` branch; `place` route accepts `legs`; `selectionForMarket` guards (≥2 legs, no dup driver/pos, every `driver@pos` in odds). `MARKET_TYPE_META.forecast`. `scripts/verify-forecast.mts`.
+- **Go-live gates:** run `verify-forecast.mts` vs local Supabase → apply migration via Management API → interaction-verify the picker signed-in → add to `MARKET_BUILDERS`.
+
+### Owed / next (carried)
+- **Authed eyeballs (no Clerk session this side) — verify on prod the new authed surfaces:** invite-join in **Safari** (the 0.61.2 fix), `/settings` accordions, `/play` round bars, `/social/friends` copy-link + add-flow, `/app` **Customise** (reorder/hide), and the new `/calendar` views signed-in + **multi-timezone** (the bucketing landmine).
+- **Security:** rotate the Supabase PAT + RapidAPI key (operator).
+- **Demo award:** delete the seeded `'2026-06'` award before ~Jul 1 — `delete from league_award where period = '2026-06';`
+- **Migration drift unchanged** — no migrations applied this session (forecast deferred). The prior repair list still stands before any `supabase db push`.
+- **Queued (IDEAS Now §1):** landing marketing · richer leaderboard · real-odds adapter · `exact_position` go-live · **forecast build** (above).
+
+---
+
 ## ⚡ Next session pickup — 2026-06-23 (main = 0.61.0) — Betting/Leagues/Social shipped end-to-end
 
 Continuation of the 2026-06-22 betting-live session. Shipped **0.58.0 → 0.61.0** (PRs #186–#192): P4 league prizes, `/play` perf, the **Social area** (`/social/friends` + `/social/leagues`), self-serve **friend search/add/remove**, and the **tabbed weekend page**. Per-version detail in `CHANGELOG.md` 0.58.0→0.61.0.
