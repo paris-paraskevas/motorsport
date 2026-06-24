@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { createWinnerMarket, createPodiumMarket, createTop10Market, createForecastMarket, settleMarket } from './markets';
+import { createWinnerMarket, createPodiumMarket, createTop10Market, createForecastMarket, createExactPositionMarket, settleMarket } from './markets';
 import { PODIUM_SLOTS, TOP10_SLOTS, type DriverForm } from './pricing';
 import { loadAllSeries } from '@/lib/series';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
@@ -27,13 +27,16 @@ const LOOKAHEAD_WEEKENDS = 3;
 
 // Market types opened per upcoming weekend. forecast (≥2 drivers + exact finishing
 // positions, all-or-nothing; payout = least(product of per-pair odds, 500)) went
-// LIVE 0.88.0 by operator decision. exact_position (single driver + exact position)
-// stays held from auto-open.
+// LIVE 0.88.0; exact_position (single driver + exact finishing position) went LIVE
+// by operator decision — its picker (ExactPositionBetCard) is wired in
+// WeekendBetting and settlement is routed in settleDueMarkets (the `positions`
+// branch). All five share the same creation-time-priced field.
 const MARKET_BUILDERS: { type: string; create: (opts: Parameters<typeof createWinnerMarket>[0]) => Promise<string> }[] = [
   { type: 'winner', create: createWinnerMarket },
   { type: 'podium', create: createPodiumMarket },
   { type: 'top10', create: createTop10Market },
   { type: 'forecast', create: createForecastMarket },
+  { type: 'exact_position', create: createExactPositionMarket },
 ];
 
 export interface OpenMarketsSummary {

@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.95.0 — 2026-06-24
+
+Added: **exact_position betting market is now live** (the last held market).
+
+### Added
+- `lib/betting/automation.ts`: added `{ type: 'exact_position', create: createExactPositionMarket }` to `MARKET_BUILDERS`, so the open-markets cron now opens a single-driver-at-an-exact-finishing-position market for each upcoming F1 weekend. Engine, the `ExactPositionBetCard` picker (already wired in `WeekendBetting`), and settlement (`settleDueMarkets` `positions` branch + the prod `20260622140000` `settle_market` branch) were all already in place — this is the one-line go-live flip.
+
+### Notes
+- Browser-verified the picker signed-in on a locally-opened market: 22 drivers × 22 positions, live per-pair `driver@position` multiplier (e.g. ×2.02), correct "Bet N on <driver> P<n>" CTA. No prod migration needed (settlement shipped earlier). tsc + `next build` clean; 0 new lint.
+
 ## 0.94.0 — 2026-06-24
 
 Added: **Blog admin console — in-app draft composer + always-visible review queue.**
