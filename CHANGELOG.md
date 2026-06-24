@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.72.1 — 2026-06-23
+
+Changed: **Session close-out — handoff updated (account + leagues shipped; remaining queue + perf path recorded).**
+
+### Changed
+- `docs/HANDOFF.md`: new top block — account hub (0.71.0) + leagues modals (0.72.0) shipped; **region move permanently off (not on Pro)** so caching is the only perf lever; remaining = cross-user profiles, direct league invites + bet limits, home++, app-wide caching (KV read-through recommended), forecast + threads (DB-gated). No code change.
+
 ## 0.72.0 — 2026-06-23
 
 Changed: **Leagues — Create / Join are now two buttons + modal popups.**
