@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.93.2 — 2026-06-24
+
+Fixed: **Landing no longer shows "Sign in" to signed-in visitors.**
+
+### Fixed
+- The marketing landing is deliberately Clerk-SDK-free + cookieless, so its CTAs were always the signed-out set (the "ludicrous" Sign-in shown to signed-in users). New `components/landing/LandingAuth.tsx` reads Clerk's `__client_uat` cookie via `useSyncExternalStore` (0 = signed out, ts > 0 = signed in) — no Clerk SDK, no cookie set, the page stays `○` static. `LandingNav` swaps "Sign in" → "Account" when signed in; `LandingMenu` collapses its Account group to a single "Account" link; `PerksCta` hides "Create free account". Browser-verified both auth states; tsc + `next build` clean; 0 new lint.
+
 ## 0.93.1 — 2026-06-24
 
 Changed: **Calendar filters — Select all for Sessions too.**

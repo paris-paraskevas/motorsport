@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { useSignedIn } from './LandingAuth';
 
 const GROUPS: Array<{ heading: string; links: Array<{ href: string; label: string }> }> = [
   {
@@ -40,6 +41,12 @@ export function LandingMenu() {
   const [open, setOpen] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const signedIn = useSignedIn();
+  // Signed in → the auth links (Sign in / Create account) are nonsense; collapse
+  // the Account group to a single link into the app's account surface.
+  const groups = signedIn
+    ? GROUPS.map(g => (g.heading === 'Account' ? { ...g, links: [{ href: '/settings', label: 'Account' }] } : g))
+    : GROUPS;
 
   useEffect(() => {
     if (!open) return;
@@ -112,7 +119,7 @@ export function LandingMenu() {
               </div>
 
               <nav className="mt-8 space-y-8 pb-16" aria-label="Site">
-                {GROUPS.map(group => (
+                {groups.map(group => (
                   <div key={group.heading}>
                     <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">
                       {group.heading}

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.93.2 — 2026-06-24
+
+**Landing knows you're signed in.** If you're already signed in, the landing page no longer shows "Sign in" / "Create account" — it points you to your account instead.
+
 ## 0.93.1 — 2026-06-24
 
 **Select all, for sessions too.** The calendar filter's "Select all" toggle now covers session types as well as series.
