@@ -6,6 +6,31 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-24 (main = 0.87.0) — 4-PR parallel batch (#229–#232): F1 outage-resilience · home perf · IA · betting notifs+features · threads tags
+
+Autonomous session off a multi-prompt operator batch, run as a **file-disjoint parallel-subagent workflow**: 6 worktree coding agents (F1 resilience, landing, betting-notify, leaderboard, customise page, threads tags) + 2 hand-driven lanes (Social-umbrella IA, home perf), verified together on one integration branch (tsc + lint + **490 tests** + `next build`), then shipped as 4 grouped version-bumped PRs. Shipped **0.84.0 → 0.87.0**; per-version detail in `CHANGELOG.md`. THIS is the authoritative end-of-day state.
+
+### Shipped (all merged + auto-deployed to prod)
+- **F1 resilience `0.84.0` (#229).** Root cause of "F1 standings + results broken" = **Jolpica (`api.jolpi.ca`) is DOWN — HTTP 521 on every endpoint** (not our code; legacy Ergast also dead). New `lib/f1-cache.ts` KV last-good read-through (mirrors `results-cache.ts`, fails open); the 4 F1 fetchers cache successes (21d) + serve last-good on failure → never blanks, self-heals when Jolpica returns. 14 tests. ⚠️ **No seed exists yet** (Jolpica down → nothing cached), so the live F1 pages stay blank **until the first successful fetch after Jolpica recovers** — this prevents recurrence + self-heals, it can't conjure data mid-outage.
+- **UX `0.85.0` (#230).** (a) **Home loads lighter** — Just-missed (`/api/just-missed` WEC fan-out) no longer fetches when hidden OR collapsed; lazy-loads on expand (collapsed by default → a fresh `/app` pays nothing for it). (b) **Customise on its own page** `/settings/customize` (off Account) + a widget-discovery gallery (4 live blocks toggle; per-series countdowns / track-layout / standings-snapshot / championship-leader / from-the-blog shown "Coming soon"). (c) **Social umbrella** — Play folded into the Social nav entry (header + bottom-bar; bar 6→5 cols), Social hub gains a solo/with-friends launcher + a Community row (Blog + Threads); `/blog` + `/threads` URLs unchanged (SEO preserved), Threads surfaced on the Blog page.
+- **Betting/social `0.86.0` (#231).** (a) **Betting notifications** — hourly `/api/cron/betting-notify` + `betting-notify.yml`: a reminder ~1d before a market closes + a results-in ping when it settles; new `betting` notif pref (default on); ledger-deduped (`bet-lock` 48h / `bet-settled` 30d); no-ops when betting unconfigured. (b) **Richer league leaderboard** — net credits / streak / last-5 form / #bets / honours / colour dot (detail page only, no migration). (c) **Landing marketing** — `PredictionGame` section, strict no-cashout framing. (d) **Fix:** the notif **Sound** toggle never persisted (PUT dropped the key) — fixed.
+- **Threads tags `0.87.0` (#232).** `thread.series_slug` (nullable) + a composer series picker; series pages render a "Threads" link to `/threads?series=<slug>` **only** when that series has an approved thread (parallel, fail-soft query — never blocks the page). Migration `20260624170000` **applied to prod via the Management API** (verified; `IF NOT EXISTS`-hardened).
+
+### ⚠️ Migration drift — repair list now includes `20260624170000`
+Before any `db push`: `supabase migration repair --status applied 20260622120000 20260622130000 20260622140000 20260622150000 20260622160000 20260622170000 20260622180000 20260624120000 20260624130000 20260624140000 20260624150000 20260624170000` (or keep applying via the Management API — the established pattern).
+
+### Owed (operator) — the session's final message has the why/how of each
+- **Authed prod eyeballs (no Clerk key this side):** home Just-missed fetch-on-expand + loading skeleton; `/settings/customize` page + gallery; the Social hub launcher + Community row + nav (Play gone, Social only, bottom bar 5-up); Account→Notifications new **betting** toggle + **Sound** now saving; richer leaderboard columns; threads series picker + the conditional series-page link.
+- **Betting notif cron** — confirm a reminder/results push lands once a market is within 24h / has settled.
+- **Forecast + exact_position go-live** (this is the "can't multi-select podium/points" ask): both built + dormant — interaction-verify the signed-in picker, then add to `MARKET_BUILDERS` (one line each).
+- **Rotate the Supabase PAT** (still in `.supabase-pat`; used this session for the threads migration). **Threads admin role** (Clerk `publicMetadata.role='admin'`). **Real-odds adapter** parked (operator: keep last).
+- **F1 monitoring nuance:** the F1 health probes now read healthy during a Jolpica outage (they call the last-good-wrapped fetchers).
+- Carried: demo `'2026-06'` award delete (~Jul 1); 5 legacy `set-state-in-effect` lint errors (untouched); untracked repo litter; local lane/pr branches + agent worktrees (safe to prune).
+
+_Authoritative end-of-day state (main = **0.87.1**, 2026-06-24). Blocks below are prior-session history._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-24 (main = 0.83.0) — mega-session: 16 PRs (#212–#227), betting gated work LANDED
 
 One very long autonomous session across ~6 operator prompts. Shipped **0.72.3 → 0.83.0** (PRs #212–#227); per-version detail in `CHANGELOG.md`. The block below (main=0.77.0) is the same-day mid-point — kept for the #212–#217 detail; THIS block is the authoritative end-of-day state.
