@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { Bell } from 'lucide-react';
-import { Accordion } from './Accordion';
 
 interface NotifPrefs {
   sessions: boolean;
@@ -89,11 +88,14 @@ export function NotifPrefsSection() {
   };
 
   return (
-    <Accordion
-      title="What gets notified"
-      subtitle="Choose which alerts you receive. Push must be enabled on this device for any of these to fire."
-      icon={<Bell size={18} className="text-text-muted" />}
-    >
+    <div className="border-t border-border py-5">
+      <div className="mb-1.5 flex items-center gap-2">
+        <Bell size={18} className="text-text-muted" />
+        <h2 className="text-text text-base font-semibold">What gets notified</h2>
+      </div>
+      <p className="mb-4 text-text-faint text-xs leading-relaxed">
+        Choose which alerts you receive. Push must be enabled on this device for any of these to fire.
+      </p>
       {isLoaded && !isSignedIn ? (
         <p className="text-text-faint text-sm">Sign in to choose what gets notified.</p>
       ) : (
@@ -128,6 +130,6 @@ export function NotifPrefsSection() {
       )}
         </>
       )}
-    </Accordion>
+    </div>
   );
 }

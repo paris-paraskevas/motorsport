@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.79.0 — 2026-06-24
+
+Changed: **Account — flatter Notifications + Championships; Replay-the-tour is its own row.**
+
+### Changed
+- **Notifications** (`/settings/notifications`): the "Session notifications" + "What gets notified" accordions are gone — both render flat (heading + controls). Dropped the page's "Opt in · choose what pings you" subheader.
+- **Championships** (`/settings/series`): the Followed / Not-followed accordions are gone — both lists render flat under headings. Dropped the "Choose the series you follow" subheader. **Removed the "Replay the tour" link from here.**
+- **Account hub** (`/settings`): new **"Replay the tour"** row (beside Notifications + Championships) → `/app?tour=1` (the existing `Tour` `?tour=1` trigger), so the walkthrough is replayable from the obvious place instead of buried in Championships.
+
+### Notes
+- `Accordion` is untouched (still used by the calendar filters). tsc clean; 476 tests; `next build` clean (`/settings/*` = ƒ).
+
 ## 0.78.0 — 2026-06-24
 
 Changed: **Calendar — full-width month nav with a month picker.**

@@ -9,7 +9,6 @@ import {
   subscribeToPush,
   unsubscribeFromPush,
 } from '@/lib/pushClient';
-import { Accordion } from './Accordion';
 
 type Status =
   | 'checking'
@@ -113,14 +112,17 @@ export function EnableNotifications() {
     );
 
   return (
-    <div className="border-t border-border">
-      <Accordion
-        title="Session notifications"
-        subtitle="Pushes to this device ~30 and ~10 min before sessions in your followed series, plus a ping when a race's results land."
-        icon={statusIcon}
-      >
-        {/* The subscribe/test APIs are auth-protected; the page no longer is.
-            Guests get the why instead of a button that 401s. */}
+    <div className="border-t border-border py-5">
+      <div className="mb-1.5 flex items-center gap-2">
+        {statusIcon}
+        <h2 className="text-text text-base font-semibold">Session notifications</h2>
+      </div>
+      <p className="mb-4 text-text-faint text-xs leading-relaxed">
+        Pushes to this device ~30 and ~10 min before sessions in your followed series, plus a ping when a
+        race&apos;s results land.
+      </p>
+      {/* The subscribe/test APIs are auth-protected; the page no longer is.
+          Guests get the why instead of a button that 401s. */}
         {isLoaded && !isSignedIn ? (
           <div className="text-text-faint text-sm">
             Sign in above to enable push notifications on this device.
@@ -189,7 +191,6 @@ export function EnableNotifications() {
             )}
           </>
         )}
-      </Accordion>
     </div>
   );
 }

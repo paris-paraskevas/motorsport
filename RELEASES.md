@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.79.0 — 2026-06-24
+
+**Simpler Account.** Notifications and Championships no longer hide their options behind drop-downs — everything's laid out plainly. And "Replay the tour" is now its own clear option on the Account screen.
+
 ## 0.78.0 — 2026-06-24
 
 **Jump to any month on the calendar.** The calendar's top bar now spans the full width with a month picker — hop straight to a future month instead of tapping through one at a time.

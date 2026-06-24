@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Trophy } from 'lucide-react';
+import { ArrowUpRight, Bell, Compass, Trophy } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
@@ -56,6 +56,17 @@ export default async function AccountPage() {
           <span className="min-w-0 flex-1">
             <span className="block text-text text-base font-semibold">Championships</span>
             <span className="block text-text-faint text-xs">Choose the series you follow</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+        <Link
+          href="/app?tour=1"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <Compass size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Replay the tour</span>
+            <span className="block text-text-faint text-xs">Take the guided walkthrough again</span>
           </span>
           <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
         </Link>
