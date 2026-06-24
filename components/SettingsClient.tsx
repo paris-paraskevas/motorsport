@@ -5,7 +5,6 @@ import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { Accordion } from './Accordion';
-import { NotifPrefsSection } from './NotifPrefsSection';
 
 // One row per series: colour dot + name + a follow checkbox. The checkbox is
 // checked inside the "Followed" accordion and unchecked inside "Not followed";
@@ -126,8 +125,6 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
           </button>
         </div>
       </div>
-
-      {isSignedIn && <NotifPrefsSection />}
 
       <Accordion title="Followed" count={`${followedCount}`}>
         <SeriesList

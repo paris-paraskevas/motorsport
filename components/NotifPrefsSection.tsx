@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import { Bell } from 'lucide-react';
 import { Accordion } from './Accordion';
 
@@ -37,8 +38,10 @@ export function NotifPrefsSection() {
   const [prefs, setPrefs] = useState<NotifPrefs | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const { isLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
+    if (!isSignedIn) return; // signed-out: the prefs API would 401
     let cancelled = false;
     (async () => {
       try {
@@ -58,7 +61,7 @@ export function NotifPrefsSection() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isSignedIn]);
 
   const toggle = async (key: keyof NotifPrefs) => {
     if (!prefs) return;
@@ -91,6 +94,10 @@ export function NotifPrefsSection() {
       subtitle="Choose which alerts you receive. Push must be enabled on this device for any of these to fire."
       icon={<Bell size={18} className="text-text-muted" />}
     >
+      {isLoaded && !isSignedIn ? (
+        <p className="text-text-faint text-sm">Sign in to choose what gets notified.</p>
+      ) : (
+        <>
       {!prefs && !error && <div className="text-text-faint text-sm">Loading…</div>}
 
       {error && <div className="text-amber-400 text-sm mb-3">{error}</div>}
@@ -118,6 +125,8 @@ export function NotifPrefsSection() {
             </label>
           ))}
         </div>
+      )}
+        </>
       )}
     </Accordion>
   );

@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
-import { loadAllSeriesMeta } from '@/lib/series';
+import Link from 'next/link';
+import { ArrowUpRight, Bell, Trophy } from 'lucide-react';
+import { auth } from '@clerk/nextjs/server';
+import { isBettingConfigured } from '@/lib/betting/client';
+import { getAccountStats } from '@/lib/betting/account';
 import { AccountIdentity } from '@/components/AccountIdentity';
-import { SettingsClient } from '@/components/SettingsClient';
-import { EnableNotifications } from '@/components/EnableNotifications';
+import { AccountStats } from '@/components/AccountStats';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,10 +14,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// URL stays /settings (bookmarks, sitemap, Clerk redirects); the surface is
-// the Account page the bottom bar promises.
+// The Account hub: identity, your personal stats (own account, signed-in), and
+// links into the dedicated Notifications + Championships pages. URL stays
+// /settings (bookmarks, Clerk redirects); the surface is "Account".
 export default async function AccountPage() {
-  const seriesList = await loadAllSeriesMeta();
+  const { userId } = await auth();
+  const stats = userId && isBettingConfigured() ? await getAccountStats(userId).catch(() => null) : null;
 
   return (
     <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
@@ -25,13 +30,38 @@ export default async function AccountPage() {
             Account<span className="text-brand">.</span>
           </h1>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
-            Profile · notifications · followed series
+            Profile · credits · notifications · series
           </p>
         </div>
       </header>
+
       <AccountIdentity />
-      <EnableNotifications />
-      <SettingsClient seriesList={seriesList} />
+      {stats && <AccountStats stats={stats} />}
+
+      <nav className="border-t border-border">
+        <Link
+          href="/settings/notifications"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <Bell size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Notifications</span>
+            <span className="block text-text-faint text-xs">Opt in, and choose what pings you</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+        <Link
+          href="/settings/series"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <Trophy size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Championships</span>
+            <span className="block text-text-faint text-xs">Choose the series you follow</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+      </nav>
     </div>
   );
 }

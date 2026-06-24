@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.71.0 — 2026-06-23
+
+Added: **Account hub — personal stats + dedicated Notifications & Championships pages.**
+
+### Added
+- The Account page (`/settings`) is now a hub: identity, your **personal stats** (signed-in: credits · friends · leagues · joined), and two category rows linking to dedicated pages.
+- **`/settings/notifications`** — enable push + "what gets notified" (moved off the main page; `NotifPrefsSection` now self-gates when signed out).
+- **`/settings/series`** — the Followed / Not-followed championship picker (moved off the main page).
+- New `getAccountStats` (`lib/betting/account.ts`) — balance + join date + friend count + league count in one parallel wave — and the `AccountStats` strip.
+
+### Notes
+- Friend/league counts use `{ count: 'exact', head: true }` (no rows fetched); join date = `app_user.created_at`. Own-account stats only — cross-user profiles + friends-only visibility are a follow-on. tsc + lint clean; 473 tests; `next build` clean (`/settings/*` = ƒ).
+
 ## 0.70.1 — 2026-06-23
 
 Changed: **Session close-out — handoff updated for batch #2 (0.66.2→0.70.0) + the outstanding queue.**
