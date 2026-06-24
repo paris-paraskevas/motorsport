@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.75.0 — 2026-06-24
+
+Changed: **Calendar filters are plain checkboxes now, with a Clear button.**
+
+### Changed
+- The Filters modal renders Session + Series options as **checkbox rows** (single brand accent) instead of colour-filled chips — series keep a small colour dot for identity, but the control itself is no longer a block of colour. Series sit in a two-column grid.
+- **Clear** button on the toolbar, right of Filters, shown only when a filter is active — resets session types + series to "show everything" and persists it (the write rides the existing localStorage effect).
+
+### Notes
+- tsc clean; 476 tests; `next build` clean (`/calendar` stays `○`). No data change; the filter-state model + persistence key (`paddock:calendar-filters`) are unchanged.
+
 ## 0.74.0 — 2026-06-24
 
 Changed: **Tidier navigation — Social is one two-column page; the redundant subheader strips + Play's social cards are gone.**

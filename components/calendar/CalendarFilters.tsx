@@ -10,15 +10,33 @@ const TYPES: { kind: SessionKind; label: string }[] = [
   { kind: 'race', label: 'Race' },
 ];
 
-function chipClass(active: boolean): string {
-  return `inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
-    active ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
-  }`;
+// One filter option = a checkbox row (single brand accent, not a coloured fill).
+// Series keep a small colour dot for identity, but the control itself is plain.
+function CheckRow({
+  label,
+  checked,
+  onToggle,
+  dotColor,
+}: {
+  label: string;
+  checked: boolean;
+  onToggle: () => void;
+  dotColor?: string;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2.5 py-1.5 text-sm">
+      <input type="checkbox" checked={checked} onChange={onToggle} className="h-4 w-4 shrink-0 accent-brand" />
+      {dotColor && (
+        <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: dotColor }} />
+      )}
+      <span className={checked ? 'text-text' : 'text-text-muted'}>{label}</span>
+    </label>
+  );
 }
 
 // Calendar filters as a modal box (opened from the toolbar's Filters button):
-// collapsed-by-default Session + Series categories. Multi-select chips — a
-// type/series shows when its chip is active; all active (the default) = all.
+// collapsed-by-default Session + Series categories, as plain checkboxes — a
+// type/series shows when ticked; all ticked (the default) = everything.
 export function CalendarFilters({
   types,
   onToggleType,
@@ -51,39 +69,24 @@ export function CalendarFilters({
         </div>
         <div className="px-4">
           <Accordion title="Session" titleClassName="font-display uppercase tracking-wide">
-            <div className="flex flex-wrap gap-1.5">
+            <div>
               {TYPES.map(({ kind, label }) => (
-                <button
-                  key={kind}
-                  type="button"
-                  onClick={() => onToggleType(kind)}
-                  aria-pressed={types.has(kind)}
-                  className={chipClass(types.has(kind))}
-                >
-                  {label}
-                </button>
+                <CheckRow key={kind} label={label} checked={types.has(kind)} onToggle={() => onToggleType(kind)} />
               ))}
             </div>
           </Accordion>
           {series.length > 1 && (
             <Accordion title="Series" titleClassName="font-display uppercase tracking-wide">
-              <div className="flex flex-wrap gap-1.5">
-                {series.map(s => {
-                  const active = seriesShown(s.slug);
-                  return (
-                    <button
-                      key={s.slug}
-                      type="button"
-                      onClick={() => onToggleSeries(s.slug)}
-                      aria-pressed={active}
-                      className={chipClass(active)}
-                      style={active ? { borderColor: s.color } : undefined}
-                    >
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: s.color }} />
-                      {s.slug.toUpperCase()}
-                    </button>
-                  );
-                })}
+              <div className="grid grid-cols-2 gap-x-4">
+                {series.map(s => (
+                  <CheckRow
+                    key={s.slug}
+                    label={s.slug.toUpperCase()}
+                    checked={seriesShown(s.slug)}
+                    onToggle={() => onToggleSeries(s.slug)}
+                    dotColor={s.color}
+                  />
+                ))}
               </div>
             </Accordion>
           )}

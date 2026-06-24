@@ -105,6 +105,11 @@ export function CalendarView({
       return next;
     });
   const filterActive = !allTypes || (seriesSel !== null && seriesSel.size !== present.length);
+  // Reset to "show everything"; the persistence effect writes it through.
+  const clearFilters = () => {
+    setTypes(new Set(['practice', 'qualifying', 'race']));
+    setSeriesSel(null);
+  };
 
   const setAnchor = (d: Date) => setAnchorMs(startOfDay(d).getTime());
   const step = (n: number) => {
@@ -130,6 +135,7 @@ export function CalendarView({
         onToday={() => setAnchorMs(null)}
         filtersOpen={filtersOpen}
         onToggleFilters={() => setFiltersOpen(o => !o)}
+        onClearFilters={clearFilters}
         filterActive={filterActive}
       />
       {filtersOpen && (
