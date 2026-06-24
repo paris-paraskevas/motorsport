@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.93.3 — 2026-06-24
+
+**Find your account on desktop.** Signed-in users now get a clear "Account" link in the header on larger screens, not just the avatar menu.
+
 ## 0.93.2 — 2026-06-24
 
 **Landing knows you're signed in.** If you're already signed in, the landing page no longer shows "Sign in" / "Create account" — it points you to your account instead.
