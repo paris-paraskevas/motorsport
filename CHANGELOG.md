@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.73.0 — 2026-06-24
+
+Changed: **Home customisation reworked — fixed the rollback + un-customised flash, moved the controls into Account with a live preview, and Just missed now folds by default.**
+
+### Fixed
+- **Reorder/hide "rolled back" (signed-in).** `useHomeLayout` re-fetched the layout from KV after every change (a change-event listener → re-`hydrate()`); the fire-and-forget PUT lost the race to that GET, so a move/hide visibly reverted. The KV read is now a ONE-SHOT cross-device reconcile that runs only when auth resolves, dirty-guarded so it can never clobber an optimistic edit.
+- **Un-customised flash on load.** The page waited on the KV round-trip before it knew the layout, sitting in a skeleton that hardcodes the DEFAULT arrangement, then snapping to the user's order. The layout now seeds SYNCHRONOUSLY from localStorage (written on every persist, signed-in included), so the first non-skeleton paint is already in the user's order. `/app` stays statically generated (no server cookie read — the seed is client-side).
+
+### Added
+- **Customise lives in Account.** A "Customise your home" banner on `/settings` (`components/HomeCustomizeBanner.tsx`) with a **live schematic preview** of the home beside the per-block controls (reorder, fold/expand, show/hide, reset). Works signed-out (localStorage) and signed-in (KV, cross-device).
+- **Per-block collapse.** `HomeLayoutPrefs` gains a `collapsed` dimension (`HOME_LAYOUT_VERSION` → 2; reconcile maps an absent field → `['just-missed']`, so existing users inherit it). **Just missed is collapsed by default** — its home header folds/expands inline (persisted). Chyron + Schedule are show-or-hide only (`collapsible: false`).
+- **Lighter when hidden.** A hidden Just-missed block skips the `/api/just-missed` fetch (and its WEC podium fan-out) entirely.
+
+### Changed
+- The on-home "Customise" button + inline bar are gone (`components/HomeCustomizeBar.tsx` removed); `HomeContent` now only READS the layout (+ an inline collapse toggle on Just missed). All controls moved to the Account banner.
+
+### Notes
+- tsc clean; **476 tests** (added 3 for the `collapsed` reconcile); `next build` clean (`/app` stays `○`). The rewrite also fixes the legacy `react-hooks/set-state-in-effect` lint error in `useHomeLayout` (repo error count 6 → 5; remaining 5 are pre-existing in unrelated components). **Not browser-verified locally** — `clerkMiddleware` 500s without a Clerk publishable key in this environment; operator to eyeball the Vercel preview (signed-in home order/flash + the Account banner).
+
 ## 0.72.3 — 2026-06-24
 
 Changed: **App-wide KV read-through caching on the hot betting display reads (open markets + per-league leaderboards).**

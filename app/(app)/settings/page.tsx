@@ -6,6 +6,7 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
 import { AccountIdentity } from '@/components/AccountIdentity';
 import { AccountStats } from '@/components/AccountStats';
+import { HomeCustomizeBanner } from '@/components/HomeCustomizeBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,8 @@ export default async function AccountPage() {
 
       <AccountIdentity />
       {stats && <AccountStats stats={stats} />}
+
+      <HomeCustomizeBanner />
 
       <nav className="border-t border-border">
         <Link
