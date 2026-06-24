@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.87.1 — 2026-06-24
+
+*Internal: documentation housekeeping (session close-out). No user-facing change.*
+
 ## 0.87.0 — 2026-06-24
 
 **Threads, by series.** When you start a thread you can now tag it to a series — and a series' page links straight to its discussion when there's something to read (the "Threads" link only shows when that series has a thread).

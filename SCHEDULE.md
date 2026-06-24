@@ -842,6 +842,21 @@ After the operator restarted local Supabase + handed the PAT, plus more UI feedb
 
 Active: _(no `[+Nm]` prefixes captured — very long autonomous session)_
 
+### 2026-06-24 (cont.) — parallel-subagent batch (4 PRs #229–#232 → 0.87.0)
+
+Operator multi-prompt batch, run as a **file-disjoint parallel-subagent workflow**: 6 worktree coding agents + 2 hand-driven lanes → one integration build (tsc + lint + 490 tests + `next build`) → 4 grouped version-bumped PRs.
+
+- → done: **F1 resilience (0.84.0, #229)** — root-caused "F1 standings/results broken" to a **Jolpica HTTP 521 outage** (not our code); KV last-good (`lib/f1-cache.ts`) so it never blanks + self-heals. Can't seed while Jolpica's down.
+- → done: **UX (0.85.0, #230)** — home lazy-loads Just-missed only when shown+expanded; customise moved to its own page `/settings/customize` + widget-discovery gallery; Social umbrella (Play folded into Social nav, Community row, Threads surfaced on Blog).
+- → done: **betting/social (0.86.0, #231)** — bet reminders + results-in push notifs (new `betting` pref), richer league leaderboard (net credits/streak/form/honours), landing PredictionGame marketing; fixed the notif Sound toggle never persisting.
+- → done: **threads per-series tags (0.87.0, #232)** — composer series picker + conditional series-page Threads link; migration `20260624170000` applied to prod via the Management API.
+- → docs close-out **0.87.1**.
+- → owed (operator): authed prod eyeballs (all signed-in surfaces above); confirm the betting-notif cron fires; forecast + exact_position go-live (= the "can't multi-select podium/points" ask); rotate the PAT; threads admin role; real-odds adapter parked (keep last).
+
+Won't touch: real-odds adapter (operator deferred); anything needing authed browser-verify (operator preview); the untracked litter.
+
+Active: _(no `[+Nm]` prefixes captured — long autonomous session)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

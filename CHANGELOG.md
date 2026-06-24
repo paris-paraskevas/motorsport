@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.87.1 — 2026-06-24
+
+Changed: **Session close-out — handoff / ideas / schedule for the 0.84.0→0.87.0 parallel batch (4 PRs #229–#232).**
+
+### Changed
+- `docs/HANDOFF.md`: new authoritative top block (F1 outage-resilience, home perf, customise page, Social umbrella, betting notifications + richer leaderboard + landing marketing, threads per-series tags) + migration-drift repair list `+= 20260624170000` + operator-owed (authed eyeballs, betting-notif cron check, forecast/exact_position go-live, PAT rotation, threads admin role). `IDEAS.md` + `SCHEDULE.md` updated. No code change.
+
 ## 0.87.0 — 2026-06-24
 
 Added: **Per-series thread tags + a conditional Threads link on series pages.**
