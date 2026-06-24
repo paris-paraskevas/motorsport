@@ -11,13 +11,13 @@ describe('homeLayout.reconcile', () => {
     const r = reconcileHomeLayout({ order: ['schedule'] });
     expect(r.order[0]).toBe('schedule');
     // the other two are appended in registry order
-    expect(new Set(r.order)).toEqual(new Set(['chyron', 'just-missed', 'schedule']));
-    expect(r.order).toHaveLength(3);
+    expect(new Set(r.order)).toEqual(new Set(['chyron', 'just-missed', 'schedule', 'news']));
+    expect(r.order).toHaveLength(4);
   });
 
   it('drops unknown ids and de-dupes', () => {
     const r = reconcileHomeLayout({ order: ['nope', 'chyron', 'chyron', 'schedule'] as never });
-    expect(r.order).toHaveLength(3);
+    expect(r.order).toHaveLength(4);
     expect(r.order.filter(x => x === 'chyron')).toHaveLength(1);
     expect(r.order).not.toContain('nope' as never);
   });
@@ -48,8 +48,12 @@ describe('homeLayout.collapsed', () => {
     expect(reconcileHomeLayout({ collapsed: [] }).collapsed).toEqual([]);
   });
 
-  it('drops ids that are not collapsible (chyron / schedule)', () => {
-    expect(reconcileHomeLayout({ collapsed: ['chyron', 'schedule'] as never }).collapsed).toEqual([]);
-    expect(reconcileHomeLayout({ collapsed: ['just-missed', 'chyron'] as never }).collapsed).toEqual(['just-missed']);
+  it('drops ids that are not collapsible (only the chyron)', () => {
+    // schedule + news are collapsible now; the chyron is show/hide only.
+    expect(reconcileHomeLayout({ collapsed: ['chyron'] as never }).collapsed).toEqual([]);
+    expect(reconcileHomeLayout({ collapsed: ['schedule', 'news', 'chyron'] as never }).collapsed).toEqual([
+      'schedule',
+      'news',
+    ]);
   });
 });

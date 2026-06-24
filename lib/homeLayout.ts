@@ -6,9 +6,9 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 2;
+export const HOME_LAYOUT_VERSION = 3;
 
-export type HomeElementId = 'chyron' | 'just-missed' | 'schedule';
+export type HomeElementId = 'chyron' | 'just-missed' | 'schedule' | 'news';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -20,11 +20,13 @@ export interface HomeElementMeta {
 }
 
 // Single source of element ids + default order + labels. Adding an element later
-// is a one-line change here; reconcile() lights it up for existing users.
+// is a one-line change here; reconcile() lights it up for existing users (their
+// stored order gets the new id appended).
 export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'chyron', label: 'Live / up next', hint: 'The broadcast strip — live session or the next countdown.', collapsible: false },
   { id: 'just-missed', label: 'Just missed', hint: 'The latest results from your series.', collapsible: true },
-  { id: 'schedule', label: 'Schedule & news', hint: 'This week’s sessions and the Paddock wire.', collapsible: false },
+  { id: 'schedule', label: 'This week', hint: 'This week’s sessions across your series.', collapsible: true },
+  { id: 'news', label: 'News', hint: 'The Paddock wire — latest motorsport.com headlines.', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);

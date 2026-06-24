@@ -28,6 +28,7 @@ import {
 export function useHomeLayout(): {
   layout: HomeLayoutPrefs;
   move: (id: HomeElementId, dir: -1 | 1) => void;
+  reorder: (order: HomeElementId[]) => void;
   toggleHidden: (id: HomeElementId) => void;
   toggleCollapsed: (id: HomeElementId) => void;
   reset: () => void;
@@ -94,6 +95,9 @@ export function useHomeLayout(): {
     persist({ ...layout, order });
   };
 
+  // Persist an arbitrary new order (drag-and-drop in the customise banner).
+  const reorder = (order: HomeElementId[]) => persist({ ...layout, order });
+
   const toggleHidden = (id: HomeElementId) => {
     const hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
     persist({ ...layout, hidden });
@@ -108,5 +112,5 @@ export function useHomeLayout(): {
 
   const reset = () => persist(DEFAULT_HOME_LAYOUT);
 
-  return { layout, move, toggleHidden, toggleCollapsed, reset };
+  return { layout, move, reorder, toggleHidden, toggleCollapsed, reset };
 }

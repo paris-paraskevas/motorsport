@@ -1,6 +1,17 @@
 'use client';
 
-import { ArrowUp, ArrowDown, ChevronDown, ChevronRight, Eye, EyeOff, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { useState } from 'react';
+import {
+  ArrowUp,
+  ArrowDown,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  GripVertical,
+  RotateCcw,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { HOME_ELEMENTS, type HomeLayoutPrefs } from '@/lib/homeLayout';
 import { useHomeLayout } from '@/lib/useHomeLayout';
 
@@ -45,11 +56,25 @@ function HomePreview({ layout }: { layout: HomeLayoutPrefs }) {
 }
 
 // "Customise your home" banner for the Account page: a live preview next to the
-// per-block controls (reorder, fold/expand the collapsible blocks, show/hide,
-// reset). Works signed-out (localStorage) and signed-in (KV, cross-device) via
-// useHomeLayout. Dependency-light (up/down, no drag) — three blocks.
+// per-block controls. Reorder by dragging the ≡ handle (or the up/down arrows —
+// touch + keyboard friendly), fold/expand the collapsible blocks, show/hide, reset.
+// Works signed-out (localStorage) and signed-in (KV, cross-device) via useHomeLayout.
 export function HomeCustomizeBanner() {
-  const { layout, move, toggleHidden, toggleCollapsed, reset } = useHomeLayout();
+  const { layout, move, reorder, toggleHidden, toggleCollapsed, reset } = useHomeLayout();
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+
+  const onDrop = (to: number) => {
+    if (dragIndex === null || dragIndex === to) {
+      setDragIndex(null);
+      return;
+    }
+    const next = [...layout.order];
+    const [moved] = next.splice(dragIndex, 1);
+    next.splice(to, 0, moved);
+    reorder(next);
+    setDragIndex(null);
+  };
+
   return (
     <section className="mb-6 border border-border bg-surface/60 p-4">
       <div className="mb-1.5 flex items-center gap-2">
@@ -57,7 +82,7 @@ export function HomeCustomizeBanner() {
         <h2 className="font-display text-sm font-bold uppercase tracking-wide text-text">Customise your home</h2>
       </div>
       <p className="mb-4 font-mono text-[11px] leading-relaxed text-text-faint">
-        Reorder, fold or hide the blocks on your home screen. Changes save instantly.
+        Drag the handle to reorder (or use the arrows). Fold or hide any block. Changes save instantly.
       </p>
       <div className="grid gap-5 sm:grid-cols-2 sm:items-start">
         <div>
@@ -71,7 +96,25 @@ export function HomeCustomizeBanner() {
               const collapsed = layout.collapsed.includes(id);
               const meta = META.get(id);
               return (
-                <li key={id} className="flex items-center gap-1.5 py-2.5">
+                <li
+                  key={id}
+                  draggable
+                  onDragStart={e => {
+                    setDragIndex(i);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', String(i)); // Firefox needs data to start a drag
+                  }}
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={() => onDrop(i)}
+                  onDragEnd={() => setDragIndex(null)}
+                  className={`flex items-center gap-1.5 py-2.5 ${dragIndex === i ? 'opacity-50' : ''}`}
+                >
+                  <span
+                    className="shrink-0 cursor-grab text-text-faint active:cursor-grabbing"
+                    aria-hidden="true"
+                  >
+                    <GripVertical size={15} />
+                  </span>
                   <span className="min-w-0 flex-1">
                     <span className={`block text-sm ${hidden ? 'text-text-faint line-through' : 'text-text'}`}>
                       {meta?.label ?? id}
