@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { loadAllSeries } from '@/lib/series';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { SectionHead } from '@/components/SectionHead';
+import { Accordion } from '@/components/Accordion';
 import type { Session } from '@/lib/types';
 
 export const revalidate = 300;
@@ -45,16 +46,15 @@ export default async function SeriesHubPage() {
       <h1 className="sr-only">All championships on Paddock Tracker</h1>
       <SectionHead title="Series" sub={`${all.length} championships`} />
 
-      <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+      <div className="border-t border-border">
         {groups.map(group => (
-          <section key={group.category.id} className="mb-7" aria-label={group.category.label}>
-            <div className="mb-1 font-display text-sm font-extrabold uppercase tracking-wide text-text">
-              {group.category.label}
-              <span className="ml-2 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
-                {group.series.length}
-              </span>
-            </div>
-            <div className="border-y border-border divide-y divide-border">
+          <Accordion
+            key={group.category.id}
+            title={group.category.label}
+            titleClassName="font-display uppercase tracking-wide"
+            count={`${group.series.length}`}
+          >
+            <div className="divide-y divide-border">
               {group.series.map(s => {
                 const next = nextBySlug.get(s.slug);
                 return (
@@ -86,7 +86,7 @@ export default async function SeriesHubPage() {
                 );
               })}
             </div>
-          </section>
+          </Accordion>
         ))}
       </div>
     </div>
