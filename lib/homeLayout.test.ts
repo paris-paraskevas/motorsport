@@ -32,6 +32,24 @@ describe('homeLayout.reconcile', () => {
     expect(parseHomeLayout('x')).toBeNull();
     expect(parseHomeLayout({ order: 'nope' })).toBeNull();
     expect(parseHomeLayout({ hidden: 5 })).toBeNull();
+    expect(parseHomeLayout({ collapsed: 5 })).toBeNull();
     expect(parseHomeLayout({ order: ['schedule'], hidden: ['chyron'] })?.order[0]).toBe('schedule');
+  });
+});
+
+describe('homeLayout.collapsed', () => {
+  it('defaults to just-missed collapsed when absent (pre-v2 prefs inherit it)', () => {
+    expect(reconcileHomeLayout(null).collapsed).toEqual(['just-missed']);
+    expect(reconcileHomeLayout({}).collapsed).toEqual(['just-missed']);
+    expect(reconcileHomeLayout({ order: ['schedule'] }).collapsed).toEqual(['just-missed']);
+  });
+
+  it('honours an explicit empty collapsed (the user expanded it)', () => {
+    expect(reconcileHomeLayout({ collapsed: [] }).collapsed).toEqual([]);
+  });
+
+  it('drops ids that are not collapsible (chyron / schedule)', () => {
+    expect(reconcileHomeLayout({ collapsed: ['chyron', 'schedule'] as never }).collapsed).toEqual([]);
+    expect(reconcileHomeLayout({ collapsed: ['just-missed', 'chyron'] as never }).collapsed).toEqual(['just-missed']);
   });
 });

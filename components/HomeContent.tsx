@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ExternalLink, MapPin, Play, SlidersHorizontal, Tv } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ExternalLink, MapPin, Play, Tv } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -13,7 +13,6 @@ import { SectionHead } from './SectionHead';
 import type { JustMissedItem } from '@/lib/home-results';
 import { useHomeLayout } from '@/lib/useHomeLayout';
 import type { HomeElementId } from '@/lib/homeLayout';
-import { HomeCustomizeBar } from './HomeCustomizeBar';
 
 interface HomeItem {
   session: Session;
@@ -157,8 +156,9 @@ export function HomeContent({
       : `/series/${item.seriesSlug}?tab=calendar`;
   };
   const { followed, hydrated } = useFollowedSeries();
-  const { layout, hydrated: layoutHydrated, move, toggleHidden, reset } = useHomeLayout();
-  const [customizing, setCustomizing] = useState(false);
+  // Layout is read here; the customise CONTROLS live in Account (a banner with a
+  // preview). The home keeps an inline collapse toggle on its collapsible blocks.
+  const { layout, toggleCollapsed } = useHomeLayout();
   const [newsFilter, setNewsFilter] = useState<string | null>(null);
   // JUST MISSED is fetched as cacheable Ajax (/api/just-missed) rather than
   // server-rendered, so /app itself stays statically generated / edge-cached
@@ -166,7 +166,11 @@ export function HomeContent({
   // whole route dynamic). Post-loads below the chyron — fine for a
   // retrospective block.
   const [justMissed, setJustMissed] = useState<JustMissedItem[] | null>(null);
+  // Lighter when hidden: a hidden Just-missed block skips the /api/just-missed
+  // fetch entirely (the WEC podium fan-out behind it isn't free).
+  const justMissedHidden = layout.hidden.includes('just-missed');
   useEffect(() => {
+    if (justMissedHidden) return;
     let alive = true;
     fetch('/api/just-missed')
       .then(r => (r.ok ? r.json() : []))
@@ -179,7 +183,7 @@ export function HomeContent({
     return () => {
       alive = false;
     };
-  }, []);
+  }, [justMissedHidden]);
 
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
@@ -188,7 +192,7 @@ export function HomeContent({
   // the non-followed ones away — the personalization flash. Skeleton → your
   // paddock, never other-series data. Guests resolve from localStorage in ~1
   // frame; signed-in returns from the local mirror (see useFollowedSeries).
-  if (!hydrated || !layoutHydrated) return <HomeSkeleton />;
+  if (!hydrated) return <HomeSkeleton />;
 
   const filteredSessions =
     followed !== null
@@ -296,6 +300,7 @@ export function HomeContent({
     return i < 0 ? 99 : i;
   };
   const isHidden = (id: HomeElementId): boolean => layout.hidden.includes(id);
+  const isCollapsed = (id: HomeElementId): boolean => layout.collapsed.includes(id);
 
   return (
     <>
@@ -303,26 +308,6 @@ export function HomeContent({
         Paddock Tracker — live motorsport schedule and news across F1, MotoGP, WEC,
         Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
       </h1>
-
-      <div className="mb-4 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setCustomizing(c => !c)}
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
-        >
-          <SlidersHorizontal size={13} />
-          {customizing ? 'Done customising' : 'Customise'}
-        </button>
-      </div>
-      {customizing && (
-        <HomeCustomizeBar
-          layout={layout}
-          move={move}
-          toggleHidden={toggleHidden}
-          reset={reset}
-          onDone={() => setCustomizing(false)}
-        />
-      )}
 
       <div className="flex flex-col">
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next
@@ -486,7 +471,14 @@ export function HomeContent({
              (Slice 3 pairs this side-by-side with UP NEXT on desktop.) ── */}
       {jmHero && !isHidden('just-missed') && (
         <section aria-label="Just missed" className="mb-8" style={{ order: orderOf('just-missed') }}>
-          <SectionHead title="Just missed" sub="latest results" />
+          <CollapsibleSectionHead
+            title="Just missed"
+            sub="latest results"
+            collapsed={isCollapsed('just-missed')}
+            onToggle={() => toggleCollapsed('just-missed')}
+          />
+          {!isCollapsed('just-missed') && (
+          <>
           <div className="border-y border-border py-4">
             <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
               <span className="inline-flex items-center gap-1.5">
@@ -609,6 +601,8 @@ export function HomeContent({
                 </a>
               ))}
             </div>
+          )}
+          </>
           )}
         </section>
       )}
@@ -881,6 +875,41 @@ export function HomeContent({
         ]}
       />
     </>
+  );
+}
+
+// SectionHead variant that toggles its block's collapsed state (persisted). Used
+// for the home's collapsible blocks (Just missed) — tap the header to fold/expand.
+function CollapsibleSectionHead({
+  title,
+  sub,
+  collapsed,
+  onToggle,
+}: {
+  title: string;
+  sub?: string;
+  collapsed: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={!collapsed}
+      className="mb-3 flex w-full items-baseline justify-between gap-3 border-b border-border pb-2 text-left"
+    >
+      <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text">
+        {title}
+        <span className="text-brand">.</span>
+      </span>
+      <span className="inline-flex items-center gap-2">
+        {sub && <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{sub}</span>}
+        <ChevronDown
+          size={15}
+          className={`shrink-0 text-text-faint transition-transform duration-(--duration-fast) ${collapsed ? '-rotate-90' : ''}`}
+        />
+      </span>
+    </button>
   );
 }
 

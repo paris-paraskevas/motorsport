@@ -1,78 +1,76 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import {
   DEFAULT_HOME_LAYOUT,
   getLocalHomeLayout,
   setLocalHomeLayout,
+  reconcileHomeLayout,
   type HomeLayoutPrefs,
   type HomeElementId,
 } from './homeLayout';
 
-const CHANGED_EVENT = 'paddock:home-layout-changed';
-
-function emitChange() {
-  if (typeof window !== 'undefined') window.dispatchEvent(new Event(CHANGED_EVENT));
-}
-
 /**
- * Auth-aware home-layout state. Signed in → Vercel KV via /api/user/home-layout
- * (cross-device); signed out → localStorage. On first sign-in, an empty KV with
- * local prefs migrates local → KV. Mirrors useFollowedSeries.
+ * Auth-aware home-layout state.
+ *
+ * The layout is seeded SYNCHRONOUSLY from localStorage on first client render
+ * (every persist writes localStorage, signed-in included), so the home paints in
+ * the user's saved order/visibility immediately — no waiting on a KV round-trip.
+ * That wait is what used to leave the page in its DEFAULT arrangement until the
+ * fetch resolved (the "loads un-customised, then snaps" flash).
+ *
+ * Signed-in users additionally reconcile against Vercel KV (cross-device) ONCE
+ * when auth resolves. That one-shot read is dirty-guarded so it can never clobber
+ * an edit the user just made — the previous version re-fetched on every change
+ * (via a change event) and the slower PUT lost the race to the GET, which is why
+ * a move/hide visibly "rolled back". Mirrors useFollowedSeries.
  */
 export function useHomeLayout(): {
   layout: HomeLayoutPrefs;
-  hydrated: boolean;
   move: (id: HomeElementId, dir: -1 | 1) => void;
   toggleHidden: (id: HomeElementId) => void;
+  toggleCollapsed: (id: HomeElementId) => void;
   reset: () => void;
 } {
   const { isLoaded, isSignedIn } = useAuth();
-  const [layout, setLayout] = useState<HomeLayoutPrefs>(DEFAULT_HOME_LAYOUT);
-  const [hydrated, setHydrated] = useState(false);
+  const [layout, setLayout] = useState<HomeLayoutPrefs>(() => getLocalHomeLayout() ?? DEFAULT_HOME_LAYOUT);
+  const dirty = useRef(false); // touched only in callbacks/effects, never during render
 
-  const hydrate = useCallback(async () => {
-    if (!isLoaded) return;
-    if (isSignedIn) {
-      try {
-        const res = await fetch('/api/user/home-layout');
-        if (res.ok) {
-          const data = (await res.json()) as { layout: HomeLayoutPrefs | null };
-          if (data.layout === null) {
-            const local = getLocalHomeLayout();
-            if (local) {
-              await fetch('/api/user/home-layout', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(local),
-              });
-              setLayout(local);
-              setHydrated(true);
-              return;
-            }
-          }
-          setLayout(data.layout ?? DEFAULT_HOME_LAYOUT);
-          setHydrated(true);
-          return;
-        }
-      } catch {
-        /* fall through to local */
-      }
-    }
-    setLayout(getLocalHomeLayout() ?? DEFAULT_HOME_LAYOUT);
-    setHydrated(true);
-  }, [isLoaded, isSignedIn]);
-
+  // One-shot cross-device reconcile for signed-in users. Runs only when auth
+  // resolves (NOT on every edit), and the setState lives in the async `.then`
+  // continuation — never synchronously in the effect body — so it neither
+  // clobbers optimistic edits nor trips react-hooks/set-state-in-effect.
   useEffect(() => {
-    hydrate();
-    const onChange = () => hydrate();
-    window.addEventListener(CHANGED_EVENT, onChange);
-    return () => window.removeEventListener(CHANGED_EVENT, onChange);
-  }, [hydrate]);
+    if (!isLoaded || !isSignedIn) return; // signed out → the localStorage seed is authoritative
+    let cancelled = false;
+    fetch('/api/user/home-layout')
+      .then(res => (res.ok ? res.json() : null))
+      .then((data: { layout: HomeLayoutPrefs | null } | null) => {
+        if (cancelled || dirty.current || !data) return;
+        if (data.layout) {
+          const reconciled = reconcileHomeLayout(data.layout);
+          setLayout(reconciled);
+          setLocalHomeLayout(reconciled); // refresh the local seed for next load
+        } else {
+          // first sign-in with local prefs → migrate them (the localStorage seed) up to KV
+          fetch('/api/user/home-layout', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(getLocalHomeLayout() ?? DEFAULT_HOME_LAYOUT),
+          }).catch(() => {});
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoaded, isSignedIn]);
 
   const persist = useCallback(
     (next: HomeLayoutPrefs) => {
+      dirty.current = true;
       setLayout(next);
+      setLocalHomeLayout(next); // synchronous local copy → instant correct paint next load
       if (isSignedIn) {
         fetch('/api/user/home-layout', {
           method: 'PUT',
@@ -81,14 +79,12 @@ export function useHomeLayout(): {
         }).catch(() => {
           /* best-effort; UI already updated */
         });
-      } else {
-        setLocalHomeLayout(next);
       }
-      emitChange();
     },
     [isSignedIn],
   );
 
+  // Handlers are recreated each render, so they close over the current `layout`.
   const move = (id: HomeElementId, dir: -1 | 1) => {
     const order = [...layout.order];
     const i = order.indexOf(id);
@@ -99,13 +95,18 @@ export function useHomeLayout(): {
   };
 
   const toggleHidden = (id: HomeElementId) => {
-    const hidden = layout.hidden.includes(id)
-      ? layout.hidden.filter(x => x !== id)
-      : [...layout.hidden, id];
+    const hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
     persist({ ...layout, hidden });
+  };
+
+  const toggleCollapsed = (id: HomeElementId) => {
+    const collapsed = layout.collapsed.includes(id)
+      ? layout.collapsed.filter(x => x !== id)
+      : [...layout.collapsed, id];
+    persist({ ...layout, collapsed });
   };
 
   const reset = () => persist(DEFAULT_HOME_LAYOUT);
 
-  return { layout, hydrated, move, toggleHidden, reset };
+  return { layout, move, toggleHidden, toggleCollapsed, reset };
 }

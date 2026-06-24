@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.73.0 — 2026-06-24
+
+**Home, your way — now in Account.** Customising your home screen has moved into Account, with a live preview as you reorder, fold or hide blocks. Two long-standing annoyances are gone: your changes no longer snap back after you make them, and the page no longer flashes its default layout before showing yours. "Just missed" now starts folded — tap its heading on the home screen to open it.
+
 ## 0.72.3 — 2026-06-24
 
 **Snappier Play & leagues.** Upcoming markets and your league standings are now cached for a short window, so opening Play, a weekend's bets, or your leagues page is noticeably quicker — your bets and odds stay exactly as fresh as before.
