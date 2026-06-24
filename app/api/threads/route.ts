@@ -1,0 +1,55 @@
+import { NextResponse } from 'next/server';
+import { after } from 'next/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { isBettingConfigured } from '@/lib/betting/client';
+import { ensureAppUser } from '@/lib/betting/credits';
+import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
+import { createThread, listThreads } from '@/lib/threads';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+// GET = the public approved feed (empty when betting/Supabase isn't provisioned).
+export async function GET() {
+  if (!isBettingConfigured()) return NextResponse.json({ threads: [] });
+  try {
+    return NextResponse.json({ threads: await listThreads('approved') });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
+  }
+}
+
+// POST = submit a thread (signed-in). Lands `pending` until a moderator approves.
+export async function POST(req: Request) {
+  if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+
+  let body: { title?: unknown; body?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'invalid body' }, { status: 400 });
+  }
+  const title = typeof body.title === 'string' ? body.title : '';
+  const text = typeof body.body === 'string' ? body.body : '';
+
+  try {
+    await ensureAppUser(userId);
+    const id = await createThread(userId, title, text);
+    // Name backfill off the critical path (currentUser can fail on a fresh
+    // sign-in handshake) so the author shows a name, not "Racer ####".
+    after(async () => {
+      try {
+        await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+      } catch {
+        /* best-effort */
+      }
+    });
+    return NextResponse.json({ ok: true, id });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'could not post';
+    const domain = /title must|body must/i.test(message);
+    return NextResponse.json({ ok: false, error: message }, { status: domain ? 422 : 500 });
+  }
+}

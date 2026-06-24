@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.83.0 — 2026-06-24
+
+Added: **Community threads (UGC, admin-moderated) + a two-column footer.**
+
+### Added
+- **`/threads`** — signed-in users start a thread (title + body); it's **public only after an admin approves** (status pending → approved/rejected). `/threads` shows approved threads + the submit form + (admins) a pending-review queue with Approve/Reject; `/threads/[id]` shows a thread (a pending/rejected one only to its author + admins). Admin = Clerk `publicMetadata.role === 'admin'` (no Organizations product) — the operator sets their own role; until then the queue is inert.
+- `thread` table (migration `20260624150000`, RLS-on / service-role-only); `lib/threads.ts` (createThread / listThreads / getThread / decideThread — decide is **pending-only** so a double-click can't flip an already-decided thread or clobber its audit trail); `POST /api/threads` (submit) + `POST /api/threads/[id]` (admin decide). Plain-text body (React-escaped, `whitespace-pre-wrap`). Design note in `docs/research/threads-design.md`. `scripts/verify-threads.mts` green vs local. Linked from the footer.
+
+### Changed
+- **Footer → two columns** (Site | Legal side by side), replacing the cramped one-line (0.77.3) / two-row (0.82.1) versions. Compact — no tall brand strip.
+
+### Notes
+- Adversarially audited — approve-before-public / detail-page leak / admin gate / submission integrity / XSS+injection / dormant-safe: PASS; the one LOW note (re-decide overwriting the audit trail) is fixed (decide scoped to `pending`). Applied to **prod via the Management API** (`thread` table verified — 8 cols) — NOT `db push`. **Drift repair list += `20260624150000`.** tsc clean; 476 tests; `next build` clean (`/threads*` = ƒ). Replies / markdown / submit-rate-limit deferred (design note).
+
 ## 0.82.1 — 2026-06-24
 
 Changed: **Footer — two organised rows (Site / Legal).**
