@@ -14,6 +14,7 @@ export function CalendarToolbar({
   onToday,
   filtersOpen,
   onToggleFilters,
+  onClearFilters,
   filterActive,
 }: {
   view: CalendarViewMode;
@@ -24,6 +25,7 @@ export function CalendarToolbar({
   onToday: () => void;
   filtersOpen: boolean;
   onToggleFilters: () => void;
+  onClearFilters: () => void;
   filterActive: boolean;
 }) {
   return (
@@ -83,6 +85,15 @@ export function CalendarToolbar({
           Filters
           {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="active" />}
         </button>
+        {filterActive && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+          >
+            Clear
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.75.0 — 2026-06-24
+
+**Simpler calendar filters.** Filters are now plain checkboxes instead of coloured chips, and there's a Clear button to reset them in one tap.
+
 ## 0.74.0 — 2026-06-24
 
 **Cleaner navigation.** Friends and Leagues now sit side by side on one Social page instead of behind separate tabs. We also removed the little description lines under the Account, Social and Play titles, and the duplicate Leagues/Friends shortcuts on Play — less clutter, same features.
