@@ -167,3 +167,24 @@ export function exactPositionMultipliers(drivers: DriverForm[], margin = HOUSE_M
   }
   return out;
 }
+
+/**
+ * Combined multiplier for a `forecast` bet (≥2 legs): the PRODUCT of each leg's
+ * stored per-pair multiplier (the exact-position odds, keyed `driver@position`),
+ * clamped to MAX_MULTIPLIER. Returns 0 for <2 legs or any leg whose pair isn't
+ * priced (never bettable). Mirrors `least(product, 500)` in settle_market's
+ * forecast branch — the no-900× guarantee on combined longshots.
+ */
+export function forecastMultiplier(
+  odds: Record<string, number>,
+  legs: { driver: string; position: number }[],
+): number {
+  if (legs.length < 2) return 0;
+  let prod = 1;
+  for (const l of legs) {
+    const m = odds[`${l.driver}@${l.position}`];
+    if (m == null) return 0;
+    prod *= m;
+  }
+  return Math.min(Math.round(prod * 100) / 100, MAX_MULTIPLIER);
+}

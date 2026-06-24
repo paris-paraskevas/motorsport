@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.82.0 — 2026-06-24
+
+Added: **Forecast market — pick ≥2 drivers + their exact finishing positions, all-or-nothing (built, dormant).**
+
+### Added
+- New `forecast` market type. Selection = `{legs:[{driver,position}, …]}` (≥2 legs, no dup driver/position). Odds reuse the per-pair `exactPositionMultipliers` (`driver@position`); the combined price = the **product of the picked legs' odds, clamped to `MAX_MULTIPLIER` (500)** — `forecastMultiplier` (`pricing.ts`) for display, `least(product, 500)` in the SQL `settle_market` forecast branch (the no-900× guarantee). All-or-nothing: every leg's driver must finish in its exact position. League pari-mutuel mirror in `settlement.ts` `betWon` (win check only; the pool pays).
+- `ForecastBetCard` (multi-leg picker, dedup-disables used drivers/positions, shows the combined clamped multiplier); `WeekendBetting` renders it for forecast markets; the place route + `selectionForMarket` accept `legs` with full guards (≥2, no dups, every pair priced). `MARKET_TYPE_META.forecast`.
+- Migrations `20260624130000_forecast_enum.sql` (enum value, own migration) + `20260624140000_forecast_settlement.sql` (settle branch, hardened so an unpriced leg can never win). `scripts/verify-forecast.mts` green vs local (all-correct paid the clamped product; a wrong leg lost).
+
+### Notes
+- **Ships DORMANT** — `forecast` is NOT in `MARKET_BUILDERS`, so no forecast market auto-opens. Go-live (operator): interaction-verify the picker signed-in on prod, then add `createForecastMarket` to `MARKET_BUILDERS`. Adversarially audited — clamp / all-or-nothing / selection guards / dormancy / other types unbroken: PASS.
+- Applied to **prod via the Management API** (enum + function; `market_type` now includes `forecast`) — NOT `db push`. **Drift repair list += `20260624130000`, `20260624140000`** before any future `db push`. `.gitignore` now ignores `.supabase-pat`. tsc clean; 476 tests; `next build` clean.
+
 ## 0.81.0 — 2026-06-24
 
 Added: **Per-league bet limit — an owner-set max stake per bet.**

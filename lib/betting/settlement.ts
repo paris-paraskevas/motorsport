@@ -50,6 +50,13 @@ export async function settleLeagueMarket(
     if (mtype === 'top10') return typeof sel.driver === 'string' && (result.top10 ?? []).includes(sel.driver);
     if (mtype === 'exact_position')
       return typeof sel.driver === 'string' && (result.positions ?? {})[sel.driver] === Number(sel.position);
+    if (mtype === 'forecast') {
+      const legs = Array.isArray(sel.legs) ? (sel.legs as { driver: string; position: number }[]) : [];
+      // All-or-nothing: every leg's driver in its exact position. The pari-mutuel
+      // pool split (not the multiplier) pays in a league, so only the win matters here.
+      if (legs.length < 2) return false;
+      return legs.every(l => (result.positions ?? {})[l.driver] === Number(l.position));
+    }
     return false;
   };
 

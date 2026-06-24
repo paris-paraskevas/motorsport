@@ -19,9 +19,10 @@ export const MARKET_TYPE_META: Record<string, MarketTypeMeta> = {
   podium: { label: 'Podium — top 3', blurb: 'Back a driver to finish in the top three.', cta: 'back a podium finisher', selectionKey: 'driver' },
   top10: { label: 'Top 10 finish', blurb: 'Back a driver to finish in the points — top ten.', cta: 'back a top-10 finish', selectionKey: 'driver' },
   exact_position: { label: 'Exact finish', blurb: 'Pick a driver and their exact finishing position.', cta: 'call an exact finish', selectionKey: 'driver' },
+  forecast: { label: 'Forecast', blurb: 'Pick two or more drivers and their exact finishing positions — all or nothing.', cta: 'call a forecast', selectionKey: 'legs' },
 };
 // Display order for a round's markets (unknown types fall to the end).
-export const MARKET_TYPE_ORDER = ['winner', 'podium', 'top10', 'exact_position'];
+export const MARKET_TYPE_ORDER = ['winner', 'podium', 'top10', 'exact_position', 'forecast'];
 
 /** Split an exact-position odds map (keyed `driver@position`, as written by
  *  exactPositionMultipliers) into its drivers (favourite-first by win odds) and

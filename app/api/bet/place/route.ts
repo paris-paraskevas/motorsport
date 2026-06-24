@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
-  let body: { marketId?: unknown; pick?: unknown; position?: unknown; stake?: unknown; leagueId?: unknown };
+  let body: { marketId?: unknown; pick?: unknown; position?: unknown; legs?: unknown; stake?: unknown; leagueId?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -28,9 +28,16 @@ export async function POST(req: Request) {
 
   const marketId = typeof body.marketId === 'string' ? body.marketId : '';
   const pick = typeof body.pick === 'string' ? body.pick.trim() : '';
+  // Forecast bets send `legs: [{driver, position}, …]` instead of a single pick.
+  const legs = Array.isArray(body.legs)
+    ? body.legs.map(l => ({
+        driver: typeof (l as { driver?: unknown }).driver === 'string' ? (l as { driver: string }).driver : '',
+        position: Number((l as { position?: unknown }).position),
+      }))
+    : undefined;
   const stake = Number(body.stake);
-  if (!marketId || !pick) {
-    return NextResponse.json({ error: 'marketId and pick are required' }, { status: 400 });
+  if (!marketId || (!pick && !legs)) {
+    return NextResponse.json({ error: 'marketId and a pick (or legs) are required' }, { status: 400 });
   }
   if (!Number.isInteger(stake) || stake <= 0 || stake > 1_000_000) {
     return NextResponse.json({ error: 'stake must be a positive integer' }, { status: 400 });
@@ -43,7 +50,7 @@ export async function POST(req: Request) {
     await ensureBettingUser(userId);
     // The server keys the selection by market type (winner→{winner}, podium/top10→
     // {driver}, exact_position→{driver,position}) so it always matches settlement.
-    const selection = await selectionForMarket(marketId, pick, position);
+    const selection = await selectionForMarket(marketId, pick, position, legs);
     const betId = await placeBet(userId, marketId, selection, stake, leagueId);
     return NextResponse.json({ ok: true, betId });
   } catch (err) {

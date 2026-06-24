@@ -17,7 +17,7 @@ interface CreateMarketOpts {
 // Shared market insert — winner/podium/top10 differ only in `type` and how the
 // field is priced into the {selection -> multiplier} odds snapshot on the row.
 async function createMarket(
-  type: 'winner' | 'podium' | 'top10' | 'exact_position',
+  type: 'winner' | 'podium' | 'top10' | 'exact_position' | 'forecast',
   odds: Record<string, number>,
   opts: CreateMarketOpts,
 ): Promise<string> {
@@ -58,6 +58,14 @@ export function createTop10Market(opts: CreateMarketOpts): Promise<string> {
  *  Odds are keyed `driver@position`; a bet's selection is `{driver, position}`. */
 export function createExactPositionMarket(opts: CreateMarketOpts): Promise<string> {
   return createMarket('exact_position', exactPositionMultipliers(opts.field), opts);
+}
+
+/** Create a 'forecast' market — pick ≥2 drivers + their exact finishing positions,
+ *  all-or-nothing. Reuses the per-pair exact-position odds (`driver@position`); the
+ *  combined price is the clamped product of the picked legs (see forecastMultiplier
+ *  + settle_market's `least(product, 500)`). Returns market id. */
+export function createForecastMarket(opts: CreateMarketOpts): Promise<string> {
+  return createMarket('forecast', exactPositionMultipliers(opts.field), opts);
 }
 
 export interface SettlementSummary {
@@ -133,10 +141,29 @@ export async function selectionForMarket(
   marketId: string,
   pick: string,
   position?: number,
-): Promise<Record<string, string | number>> {
-  const { data, error } = await betDb().from('market').select('type').eq('id', marketId).single();
+  legs?: { driver: string; position: number }[],
+): Promise<Record<string, unknown>> {
+  const { data, error } = await betDb().from('market').select('type, odds_json').eq('id', marketId).single();
   if (error || !data) throw new Error('market not found');
   const type = (data as { type: string }).type;
+  if (type === 'forecast') {
+    const ls = legs ?? [];
+    if (ls.length < 2) throw new Error('a forecast needs at least 2 legs');
+    const odds = ((data as { odds_json: Record<string, number> | null }).odds_json) ?? {};
+    const seenDriver = new Set<string>();
+    const seenPos = new Set<number>();
+    for (const l of ls) {
+      if (typeof l.driver !== 'string' || !Number.isInteger(l.position) || l.position < 1) {
+        throw new Error('invalid forecast leg');
+      }
+      if (seenDriver.has(l.driver)) throw new Error('a driver can appear only once in a forecast');
+      if (seenPos.has(l.position)) throw new Error('a position can appear only once in a forecast');
+      if (odds[`${l.driver}@${l.position}`] == null) throw new Error('invalid forecast leg');
+      seenDriver.add(l.driver);
+      seenPos.add(l.position);
+    }
+    return { legs: ls.map(l => ({ driver: l.driver, position: l.position })) };
+  }
   if (type === 'exact_position') {
     if (!Number.isInteger(position) || (position as number) < 1) throw new Error('position required');
     return { driver: pick, position: position as number };
