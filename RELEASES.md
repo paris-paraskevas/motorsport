@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.67.0 — 2026-06-23
+
+**Filter the calendar.** A new Filters button lets you narrow the calendar by session type (Practice / Qualifying / Race, in any mix) and by series — on top of the Month / Week / Day views.
+
 ## 0.66.2 — 2026-06-23
 
 **Faster leagues.** Your leagues page now loads everyone's standings in a couple of database reads instead of one per league — noticeably quicker when you're in several.
