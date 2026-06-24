@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LandingMenu } from './LandingMenu';
+import { SignedInOnly, SignedOutOnly } from './LandingAuth';
 
 const ANCHORS = [
   { href: '#inside', label: "What's inside" },
@@ -31,12 +32,22 @@ export function LandingNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-4">
-          <Link
-            href="/sign-in"
-            className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text sm:block"
-          >
-            Sign in
-          </Link>
+          <SignedOutOnly>
+            <Link
+              href="/sign-in"
+              className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text sm:block"
+            >
+              Sign in
+            </Link>
+          </SignedOutOnly>
+          <SignedInOnly>
+            <Link
+              href="/settings"
+              className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text sm:block"
+            >
+              Account
+            </Link>
+          </SignedInOnly>
           <Link
             href="/app"
             className="rounded-full bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"

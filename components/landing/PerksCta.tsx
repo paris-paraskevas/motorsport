@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SignedOutOnly } from './LandingAuth';
 
 const PERKS = [
   {
@@ -57,12 +58,14 @@ export function PerksCta() {
           >
             Open the paddock&ensp;→
           </Link>
-          <Link
-            href="/sign-up"
-            className="rounded-full border border-border-strong px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-text transition-colors duration-(--duration-fast) hover:border-brand hover:text-brand"
-          >
-            Create free account
-          </Link>
+          <SignedOutOnly>
+            <Link
+              href="/sign-up"
+              className="rounded-full border border-border-strong px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-text transition-colors duration-(--duration-fast) hover:border-brand hover:text-brand"
+            >
+              Create free account
+            </Link>
+          </SignedOutOnly>
         </div>
       </div>
     </section>
