@@ -4,6 +4,29 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.92.0 — 2026-06-24
+
+Added: **Blog pipeline — DB-backed posts with admin moderation, scheduled release, and dual push notifications.**
+
+### Added
+- **`post` table** (migration `20260624190000`): `id, slug (unique), title, summary, body (markdown), series_slug (nullable), status ('draft'|'approved'|'published'|'rejected'), author_id (FK app_user), publish_at, approved_by, approved_at, published_at, hero_image, created_at, updated_at`; indexes on `(status, created_at desc)` / `(status, publish_at)` / `(status, series_slug)`. RLS-on / no-policies / service-role-only (mirrors `thread` / `source_snapshot`). **Applied to prod via the Management API** (verified: 15 cols, RLS on, 5 indexes) + local.
+- **`lib/blog.ts`** — service-role data layer mirroring `lib/threads.ts`: `createDraft` (kebab-slug + length validation, unique slug), `listPosts`, `getPostBySlug`/`getPostById`, `decidePost` (approve requires a `publish_at`; status-guarded to `draft`), `publishDuePosts` (the cron worker — status-guarded flip with an exact count, returns only the rows it actually published → idempotent across overlapping ticks), `publishedPosts`.
+- **Flow** = threads moderation + a scheduled-release state + two push audiences: draft → admin-only "Draft ready to review" push → admin approves with a `publish_at` (may approve early) → post stays hidden until then → `/api/cron/publish-posts` (every 15 min) flips `approved`→`published` at `publish_at`, fires the all-users "New post" push, and `revalidatePath`s `/blog` + the slug.
+- **`lib/blog-notify.ts`** — `adminUserIds()` (Clerk `getUserList` filtered by `publicMetadata.role==='admin'`, fail-soft to empty set) + `notifyAdminsDraftReady` (mark-before-send, honours `sound`). The all-users fan-out lives in the cron, reusing betting-notify's per-user prefs cache; gated on a new `blog` notif pref; a series-tagged post is followed-filtered (like news), an untagged post is site-wide.
+- **`/api/blog`** (admin GET review queues + admin POST create-draft → fires the admin push via `after()`) and **`/api/blog/[id]`** (admin POST `{action:'approve'|'reject', publishAt?}`), mirroring the threads routes.
+- **`components/blog/PostModeration.tsx`** — admin-only review queue on `/blog` (self-hides for non-admins via the GET's 401/403): approve-with-`datetime-local` (converted to UTC) / reject, plus a scheduled list.
+- **`blog` notification preference** (default on) — `lib/userPrefs.ts` + the notif-prefs PUT + an Account → Notifications row.
+- **`scripts/draft-post.mts`** (headless authoring: JSON → `createDraft` + admin push) and **`scripts/verify-blog.mts`** (full state-machine verify: draft hidden → approve schedules → cron publishes once + idempotent → reject hides → guards).
+- `.github/workflows/publish-posts.yml` — the `*/15` cron pinging `/api/cron/publish-posts` (cron-auth, accepts 200/503).
+
+### Changed
+- **`/blog` renders DB posts + MDX posts together** — the list merges `publishedPosts()` with `loadAllPosts()` (DB wins on a slug collision, newest-first); the detail is DB-first (renders the markdown `body` via a new `renderMarkdown` string helper extracted from `lib/content.ts`) with an MDX fallback, plus an admin-only scheduled-preview of `approved`-but-unpublished posts. `/blog` stays ISR; `/blog/[slug]` stays `force-dynamic`.
+- `lib/notify-ledger.ts`: `NotifyKind += 'blog-draft' (48h) | 'blog-publish' (30d)`.
+
+### Notes
+- tsc + `next build` clean (`/blog` ○ Static, `/blog/[slug]` ƒ Dynamic); 490 tests pass; the blog files are lint-clean (the 5 pre-existing `set-state-in-effect` errors are untouched — 0 new). `verify-blog.mts` green vs local Supabase. **Migration-drift repair list += `20260624190000`.**
+- Held as follow-ons (not in this PR): the scheduled-authoring trigger (drafts written on a timer), the F1-radio→CC0 notification-sound swap, and the Wikimedia hero-image curation (the `hero_image` column ships now).
+
 ## 0.91.2 — 2026-06-24
 
 Changed: **Handoff — sequenced exact_position go-live as next-session task 2 (after the blog pipeline).**

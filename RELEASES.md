@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.92.0 — 2026-06-24
+
+**A proper blog, with notifications.** Paddock can now publish original posts — previews and recaps — on a schedule, and you can get a push the moment a new one goes live. Toggle "Blog posts" under Account → Notifications (on by default; when a post is tagged to a series, you'll only be alerted for series you follow). First posts are on the way.
+
 ## 0.91.2 — 2026-06-24
 
 *Internal: documentation (next-session planning). No user-facing change.*

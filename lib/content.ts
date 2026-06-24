@@ -16,6 +16,14 @@ function normaliseFootnoteIds(html: string): string {
   return html.replace(/id="user-content-user-content-/g, 'id="user-content-');
 }
 
+/** Render a markdown STRING to HTML (GFM + the footnote-id fix). The shared core,
+ *  used for both file-backed content (below) and DB-backed content (blog posts). */
+export async function renderMarkdown(content: string): Promise<string> {
+  if (!content.trim()) return '';
+  const processed = await remark().use(remarkGfm).use(remarkHtml).process(content);
+  return normaliseFootnoteIds(processed.toString());
+}
+
 export async function loadMarkdownAsHtml(filePath: string): Promise<string> {
   let raw: string;
   try {
@@ -24,12 +32,7 @@ export async function loadMarkdownAsHtml(filePath: string): Promise<string> {
     return '';
   }
   const { content } = matter(raw);
-  if (!content.trim()) return '';
-  const processed = await remark()
-    .use(remarkGfm)
-    .use(remarkHtml)
-    .process(content);
-  return normaliseFootnoteIds(processed.toString());
+  return renderMarkdown(content);
 }
 
 export interface MarkdownDocument {
@@ -47,10 +50,5 @@ export async function loadMarkdownWithFrontmatter(
     return { html: '', frontmatter: {} };
   }
   const { content, data } = matter(raw);
-  if (!content.trim()) return { html: '', frontmatter: data };
-  const processed = await remark()
-    .use(remarkGfm)
-    .use(remarkHtml)
-    .process(content);
-  return { html: normaliseFootnoteIds(processed.toString()), frontmatter: data };
+  return { html: await renderMarkdown(content), frontmatter: data };
 }
