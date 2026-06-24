@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.74.0 — 2026-06-24
+
+Changed: **Tidier navigation — Social is one two-column page; the redundant subheader strips + Play's social cards are gone.**
+
+### Changed
+- **Social is one page** (`/social`, new index): **Friends on the left, Leagues on the right** (two columns on desktop, stacked on mobile), each streaming behind its own Suspense boundary. The `Friends | Leagues` sub-nav is gone. `/social` previously had **no page** — the header + bottom-bar "Social" links 404'd — so this also fixes that dead link. `/social/friends` + `/social/leagues` now redirect to `/social`; league detail (`/social/leagues/[id]`), join (`/social/leagues/join/[token]`) and friend-add (`/social/friends/add/[id]`) keep their own routes.
+- **Dropped the descriptive subheader strips** under the page titles on Account (`Profile · credits · notifications · series`), Social (`Friends · leagues · bragging rights`) and Play (`Paddock credits · bet the grid · …`) — they only restated the page.
+- **Play slimmed** — removed the Leagues/Friends call-to-action cards (Social is its own nav destination). Play is now purely balance + markets + your bets.
+
+### Notes
+- tsc clean; 476 tests; `next build` clean (`/social` = ƒ; the two redirect stubs prerender as ○). No schema/data change. `ensureBettingUser` runs once per request (in the Friends column); the Leagues column only reads memberships.
+
 ## 0.73.0 — 2026-06-24
 
 Changed: **Home customisation reworked — fixed the rollback + un-customised flash, moved the controls into Account with a live preview, and Just missed now folds by default.**
