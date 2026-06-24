@@ -857,6 +857,22 @@ Won't touch: real-odds adapter (operator deferred); anything needing authed brow
 
 Active: _(no `[+Nm]` prefixes captured — long autonomous session)_
 
+### 2026-06-24 (cont.) — forecast live · signed-in browser verification · a/b/c (#234–#237 → 0.91.0)
+
+Continuation: forecast go-live; operator handed Clerk **dev** keys → a full signed-in browser-verification pass (Playwright); then build a→b→c per operator order; then this handoff.
+
+- → done: **forecast LIVE (0.88.0, #234)** — `MARKET_BUILDERS` + `settleDueMarkets` routing; demo award + seed scripts removed.
+- → done: **signed-in browser verification** (Clerk dev keys in `.env.local`; test user created via the Backend API since Turnstile blocks Playwright sign-up). Confirmed: nav (no Play), home Just-missed **lazy-load** (fetch only on expand), `/settings/customize`, `/social` hub, threads composer + series-picker + conditional series link (both ways), the **forecast multi-leg picker**.
+- → done: **a — wide-screen layout (0.89.0, #235)** — `3xl` ≥1700 → `max-w-[2000px]` + 2-col home; mobile/laptop byte-identical (measured 390/1440/2560).
+- → done: **b — leagues own page (0.90.0, #236)** — `/social/leagues` real page; the card links there; leagues removed from `/social`.
+- → done: **c — durable source_snapshot (0.91.0, #237)** — DB last-good + health; news wired; `/api/cron/health` gains `sources`.
+- → docs close-out **0.91.1** (this handoff — blog pipeline is the first next-session task).
+- → owed: rotate PAT; exact_position go-live; extend `source_snapshot` to F1/scrapes + a warm cron; **the blog pipeline build (next session)**.
+
+Won't touch: the blog pipeline build (next session, operator order); real-odds adapter (parked); the F1-radio sound + imagery licensing (captured to IDEAS).
+
+Active: _(no `[+Nm]` prefixes captured — very long autonomous session)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

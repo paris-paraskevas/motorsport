@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.91.1 — 2026-06-24
+
+Changed: **Session close-out — handoff / ideas / schedule for the 0.88.0→0.91.0 continuation (forecast live · signed-in browser verification · wide-screen · leagues page · source_snapshot).**
+
+### Changed
+- `docs/HANDOFF.md`: new authoritative top block — forecast LIVE, the Clerk-dev-keys signed-in verification pass, wide-screen layout, leagues page, durable source_snapshot, local-dev state, migration-drift `+= 20260624170000 / 180000`, and **the blog pipeline as the first next-session task** (DB `post` + admin-approval + scheduled-publish + dual notifications; Wikimedia images + series logos; drop the copyrighted F1-radio notification sound). `IDEAS.md` + `SCHEDULE.md` updated. No code change.
+
 ## 0.91.0 — 2026-06-24
 
 Added: **Durable DB cache + health for upstream feeds (`source_snapshot`).**
