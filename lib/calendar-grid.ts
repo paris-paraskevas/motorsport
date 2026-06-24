@@ -121,3 +121,18 @@ export function weekLabel(anchor: Date): string {
 export function dayLabel(d: Date): string {
   return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d);
 }
+
+export type SessionKind = 'practice' | 'qualifying' | 'race' | 'other';
+
+/** Coarse session type for the calendar's event filter. Client-safe (no server
+ *  imports). Order matters: practice + qualifying are tested before race so a
+ *  "Sprint Qualifying" reads as qualifying (not race) and a warm-up reads as
+ *  practice. Anything unrecognised is 'other' (shown only when no type filter
+ *  is applied). */
+export function classifySession(title: string): SessionKind {
+  const t = title.toLowerCase();
+  if (/\b(practice|free practice|fp\d|warm[- ]?up|shakedown|test session|testing)\b/.test(t)) return 'practice';
+  if (/\b(qualifying|qualification|hyperpole|shootout|super ?pole|pole position)\b/.test(t)) return 'qualifying';
+  if (/\b(race|grand prix|gp|sprint|feature|moto2|moto3|motogp|500|400|24\s?hours?|rally|heat|final|e-?prix)\b/.test(t)) return 'race';
+  return 'other';
+}

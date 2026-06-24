@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.67.0 — 2026-06-23
+
+Added: **Calendar filters — by session type and series.**
+
+### Added
+- A **Filters** toggle (default collapsed) on `/calendar` reveals multi-select chips: **Type** (Practice / Qualifying / Race — any combination; all selected also shows other sessions) and **Series** (one chip per series present). Layers on top of the followed-series set; a brand dot marks the toggle when a filter is active.
+- New client-safe `classifySession(title)` in `lib/calendar-grid.ts` (3 unit tests), ordered so "Sprint Qualifying" reads as qualifying and "Sprint" as race.
+
+### Notes
+- Filtering is client-only — `/calendar` stays `○` static. tsc clean; 473 tests; `next build` clean.
+
 ## 0.66.2 — 2026-06-23
 
 Changed: **/social/leagues loads in 2 DB round-trips instead of 2× per league.**

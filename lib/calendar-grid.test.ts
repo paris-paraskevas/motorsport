@@ -9,6 +9,7 @@ import {
   addMonths,
   dayKeyOf,
   utcDayKeyOf,
+  classifySession,
 } from './calendar-grid';
 
 function session(partial: Partial<Session> & { start: Date }): Session {
@@ -66,5 +67,26 @@ describe('calendar-grid', () => {
     const m = bucketByDay([a, b, c]);
     expect(m.get('2026-06-05')).toHaveLength(2);
     expect(m.get('2026-06-06')).toHaveLength(1);
+  });
+});
+
+describe('classifySession', () => {
+  it('classifies the main session types', () => {
+    expect(classifySession('Practice 1')).toBe('practice');
+    expect(classifySession('FP2')).toBe('practice');
+    expect(classifySession('Qualifying')).toBe('qualifying');
+    expect(classifySession('Hyperpole')).toBe('qualifying');
+    expect(classifySession('Race')).toBe('race');
+    expect(classifySession('Grand Prix')).toBe('race');
+  });
+
+  it('reads "Sprint Qualifying" as qualifying but "Sprint" as race', () => {
+    expect(classifySession('Sprint Qualifying')).toBe('qualifying');
+    expect(classifySession('Sprint')).toBe('race');
+    expect(classifySession('Sprint Race')).toBe('race');
+  });
+
+  it('falls back to other for unrecognised titles', () => {
+    expect(classifySession('Driver Parade')).toBe('other');
   });
 });
