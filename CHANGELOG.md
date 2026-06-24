@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.76.0 — 2026-06-24
+
+Added: **Cross-user profiles with friends-only league visibility.**
+
+### Added
+- New `/social/users/[id]` profile page (id = the user's opaque id, same as friend links): display name, join date, friend + league counts. **Friends (and you) see the user's leagues; everyone else doesn't** — the relationship gate. The **balance is never exposed**. Signed-out viewers get a sign-in prompt; non-friends get an Add-friend / Accept control (`ProfileActions`) keyed off the live friend state. Viewing your own id redirects to Account.
+- `getUserProfile(targetId, viewerId)` (`lib/betting/account.ts`) — one batched read wave (name/joined + friend count + league count + friend state via `friendStates`); leagues fetched only when the viewer is a friend/self.
+- Friend names in the Social friends list + search results now link to the profile.
+
+### Notes
+- tsc clean; 476 tests; `next build` clean (`/social/users/[id]` = ƒ). Reuses the existing `/api/friends` actions; no schema change. A league link from a profile still hits the invite-only gate on the league page for non-members.
+
 ## 0.75.0 — 2026-06-24
 
 Changed: **Calendar filters are plain checkboxes now, with a Clear button.**
