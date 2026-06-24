@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { PostComposer } from './PostComposer';
 
-// Admin-only blog review queue, rendered on /blog. Self-hides for signed-out /
-// non-admin users (GET /api/blog 401/403s them). Approve schedules a draft with
-// a publish_at; the publish-posts cron makes it live. Mirrors ThreadModeration.
+// Admin blog console on /blog: compose a draft, then work the review queue
+// (approve with a publish_at / reject) and see what's scheduled. Self-hides for
+// signed-out / non-admin users (GET /api/blog 401/403s them). Visible to admins
+// even when the queue is empty, so the pipeline is actually discoverable.
 
 interface PostRow {
   id: string;
@@ -20,7 +22,7 @@ interface PostRow {
 }
 
 // Default publish time ≈ now + 1h, formatted as LOCAL wall-clock for the
-// <input type="datetime-local"> (which is local-time; we convert to UTC on POST).
+// <input type="datetime-local"> (which is local-time; converted to UTC on POST).
 function defaultLocalDateTime(): string {
   const d = new Date(Date.now() + 60 * 60 * 1000);
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -37,7 +39,7 @@ function fmt(iso: string | null): string {
     : d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
-export function PostModeration() {
+export function PostModeration({ series }: { series: { slug: string; name: string }[] }) {
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [data, setData] = useState<{ drafts: PostRow[]; scheduled: PostRow[] } | null>(null);
@@ -46,18 +48,40 @@ export function PostModeration() {
   const [error, setError] = useState<string | null>(null);
   const [when, setWhen] = useState<Record<string, string>>({});
 
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch('/api/blog');
+      if (res.status === 401 || res.status === 403) {
+        setHidden(true);
+        return;
+      }
+      if (!res.ok) {
+        setError(`load failed (${res.status})`);
+        return;
+      }
+      const d = (await res.json()) as { drafts?: PostRow[]; scheduled?: PostRow[] };
+      setData({ drafts: d.drafts ?? [], scheduled: d.scheduled ?? [] });
+    } catch {
+      setError('load failed');
+    }
+  }, []);
+
+  // Initial load on mount — inline async IIFE (not a direct load() call) so the
+  // setState lands asynchronously: the codebase's lint-clean fetch-in-effect
+  // pattern (cf. NotifPrefsSection). load() is reused for handler refetches.
   useEffect(() => {
     if (!isSignedIn) return;
     let cancelled = false;
     (async () => {
       try {
         const res = await fetch('/api/blog');
+        if (cancelled) return;
         if (res.status === 401 || res.status === 403) {
-          if (!cancelled) setHidden(true);
+          setHidden(true);
           return;
         }
         if (!res.ok) {
-          if (!cancelled) setError(`load failed (${res.status})`);
+          setError(`load failed (${res.status})`);
           return;
         }
         const d = (await res.json()) as { drafts?: PostRow[]; scheduled?: PostRow[] };
@@ -77,8 +101,7 @@ export function PostModeration() {
     try {
       const body: { action: string; publishAt?: string } = { action };
       if (action === 'approve') {
-        const local = when[id] || defaultLocalDateTime();
-        const d = new Date(local);
+        const d = new Date(when[id] || defaultLocalDateTime());
         if (Number.isNaN(d.getTime())) {
           setError('Pick a valid publish time.');
           return;
@@ -95,13 +118,7 @@ export function PostModeration() {
         setError(d.error ?? 'Failed.');
         return;
       }
-      // Drop the row locally so the queue updates instantly; refresh the page's
-      // server data too (the public feed may have changed).
-      setData(prev =>
-        prev
-          ? { drafts: prev.drafts.filter(p => p.id !== id), scheduled: prev.scheduled.filter(p => p.id !== id) }
-          : prev,
-      );
+      await load();
       router.refresh();
     } catch {
       setError('Network error — try again.');
@@ -111,16 +128,19 @@ export function PostModeration() {
   }
 
   if (!isLoaded || !isSignedIn || hidden || !data) return null;
-  if (data.drafts.length === 0 && data.scheduled.length === 0) return null;
+
+  const empty = data.drafts.length === 0 && data.scheduled.length === 0;
 
   return (
     <section className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
       <h2 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400">
-        Editor · review queue
+        Editor · blog
       </h2>
 
+      <PostComposer series={series} onCreated={load} />
+
       {data.drafts.length > 0 && (
-        <ul className="space-y-3">
+        <ul className="mt-4 space-y-3">
           {data.drafts.map(p => (
             <li key={p.id} className="rounded-lg border border-border bg-surface/60 p-3">
               <div className="font-semibold text-text">{p.title}</div>
@@ -175,6 +195,13 @@ export function PostModeration() {
             ))}
           </ul>
         </div>
+      )}
+
+      {empty && (
+        <p className="mt-3 font-mono text-xs text-text-faint">
+          No drafts yet — write one above. It lands here as a draft to approve + schedule; the publish cron makes it
+          live at the time you pick.
+        </p>
       )}
 
       {error && <p className="mt-2 font-mono text-xs text-red-400">{error}</p>}

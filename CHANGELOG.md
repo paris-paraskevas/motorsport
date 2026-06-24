@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.94.0 — 2026-06-24
+
+Added: **Blog admin console — in-app draft composer + always-visible review queue.**
+
+### Added
+- `components/blog/PostComposer.tsx`: an admin **"New post"** form on `/blog` (title, auto-kebab slug, summary, markdown body, optional series tag, optional hero image) → `POST /api/blog` → the draft lands in the review queue. The headless `scripts/draft-post.mts` path still exists; this is the in-app way to author one.
+
+### Changed
+- `components/blog/PostModeration.tsx`: now renders for ANY admin (was hidden whenever the queue was empty), so the pipeline is **discoverable** — an empty state explains the flow. Refetches after compose / approve / reject. `app/(app)/blog/page.tsx` passes the series list for the composer's tag picker.
+
+### Notes
+- Fixes the operator report that the blog pipeline "looked unchanged as admin": with no drafts and no in-app compose, the admin had no visible surface. Browser-verified signed-in as admin (panel + composer render; a POST creates a draft that appears in the queue). tsc + `next build` clean; 0 new lint.
+
 ## 0.93.3 — 2026-06-24
 
 Added: **Discoverable Account link in the desktop header.**
