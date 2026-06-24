@@ -829,6 +829,19 @@ Won't touch: anything needing the PAT/local Supabase (above); authed browser-ver
 
 Active: _(no `[+Nm]` prefixes captured — long autonomous batch)_
 
+### 2026-06-24 (cont.) — polish + the gated betting trio (10 PRs → 0.83.0)
+
+After the operator restarted local Supabase + handed the PAT, plus more UI feedback. Shipped **0.77.2 → 0.83.0** (#219–#227).
+
+- → done: **/social redirect-loop fix (0.77.2, #219)** — removed the leftover `next.config.ts` `/social`→`/social/leagues` rule that fought the new page redirect (infinite 307 — the page wouldn't load).
+- → done: **footer (0.77.3 → 0.82.1 → 0.83.0)** — compacted, then **two columns (Site | Legal)** after operator feedback.
+- → done: **calendar month nav (0.78.0, #221)**; **account flatten (0.79.0, #222)** — accordions/subheaders gone, Replay-the-tour its own row; **home split (0.80.0, #223)** — Schedule/News distinct + all collapsible + drag-reorder.
+- → done: **the PAT-gated trio** — **bet limits (0.81.0, #224)**, **forecast market (0.82.0, #225, DORMANT)**, **threads/UGC (0.83.0, #227)**. Migrations applied to prod via the Management API; verify scripts green; forecast + threads adversarially audited (PASS).
+- → this docs close-out ships as **0.83.1**.
+- → owed (operator): rotate the PAT; forecast go-live (interaction-verify signed-in + add to `MARKET_BUILDERS`); set a Clerk admin role for threads moderation; authed browser-verify; the full migration-drift repair list (HANDOFF).
+
+Active: _(no `[+Nm]` prefixes captured — very long autonomous session)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
