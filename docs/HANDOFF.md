@@ -6,6 +6,43 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-24 (main = 0.83.0) — mega-session: 16 PRs (#212–#227), betting gated work LANDED
+
+One very long autonomous session across ~6 operator prompts. Shipped **0.72.3 → 0.83.0** (PRs #212–#227); per-version detail in `CHANGELOG.md`. The block below (main=0.77.0) is the same-day mid-point — kept for the #212–#217 detail; THIS block is the authoritative end-of-day state.
+
+### Shipped (all merged)
+- **Perf — caching `0.72.3` (#212).** KV read-through on `getOpenMarkets` (shared) + per-league leaderboards (`lib/betting/cache.ts`), bust-on-write. The perf lever (region permanently off — not on Pro).
+- **Home — `0.73.0` (#213) + `0.80.0` (#223).** Customise **moved off home into an Account banner with a live preview**; fixed the reorder/hide **rollback** + the **un-customised flash** (synchronous localStorage seed). Then **Schedule + News split into distinct blocks**, all content blocks collapsible (Just-missed folds by default), **drag-to-reorder** (≡) in the banner. `HOME_LAYOUT_VERSION`→3.
+- **IA — `0.74.0` (#214) + `0.77.2` (#219).** Social is one page (Friends left / Leagues right); dropped the Account/Social/Play subheader strips; slimmed Play. Fixed a **`/social` redirect loop** (a leftover `next.config.ts` `/social`→`/social/leagues` rule fought the new page-level redirect → infinite 307; removed it).
+- **Calendar — `0.75.0` (#215) + `0.78.0` (#221).** Filters are **checkboxes** (not colour chips) + a **Clear** button; toolbar is a **full-width month nav with a month-picker dropdown** (no more "Today").
+- **Account — `0.76.0` (#216) + `0.79.0` (#222).** **Cross-user profiles** (`/social/users/[id]`, friends-only league visibility, balance never exposed). Flattened Notifications + Championships (no accordions), dropped their subheaders, **Replay-the-tour is its own Account row**.
+- **Footer — `0.77.3`→`0.82.1`→`0.83.0`.** Iterated to **two columns** (Site | Legal) after operator feedback; links `/threads`.
+- **Betting — the PAT-gated trio, all LANDED this session:**
+  - **Per-league bet limit `0.81.0` (#224)** — owner-set max stake per bet (`league.bet_limit`), enforced in `placeBet`. Migration applied to prod.
+  - **Forecast market `0.82.0` (#225)** — pick ≥2 drivers + exact positions, all-or-nothing; payout = `least(product of per-pair odds, 500)` (the no-900× clamp). **Ships DORMANT** (NOT in `MARKET_BUILDERS`). Migrations (enum + settle fn) applied to prod; `verify-forecast.mts` green; adversarial audit PASS.
+  - **Threads / UGC `0.83.0` (#227)** — `/threads`, signed-in submit → **admin-approve-before-public** (admin = Clerk `publicMetadata.role==='admin'`). `thread` table applied to prod; `verify-threads.mts` green; security audit PASS. Design note `docs/research/threads-design.md`.
+
+### ⚠️ Migration drift — FULL Management-API-applied list (NOT in prod `supabase_migrations`)
+Everything from `20260622120000` on was applied via the Management API (PAT + raw SQL), never `supabase db push`. **Before any future `db push`, repair ALL of:**
+`supabase migration repair --status applied 20260622120000 20260622130000 20260622140000 20260622150000 20260622160000 20260622170000 20260622180000 20260624120000 20260624130000 20260624140000 20260624150000`
+(the last four are this session: bet_limit, forecast-enum, forecast-settle, threads). Or keep applying new migrations via the Management API (the established pattern).
+
+### Owed (operator)
+- **Rotate the Supabase PAT** `sbp_22f9…` — it was pasted into chat + lives in `.supabase-pat` (now gitignored). Used this session for 5 prod migrations. Rotate now.
+- **Forecast go-live:** interaction-verify the multi-leg picker signed-in on prod, then add `{ type:'forecast', create: createForecastMarket }` to `MARKET_BUILDERS` (`lib/betting/automation.ts`). Built + dormant until then.
+- **Threads go-live:** set your own Clerk user's `publicMetadata.role = 'admin'` (Clerk dashboard) to access the moderation queue. Until then no one is admin (queue inert). Threads reachable from the footer.
+- **Authed eyeballs (no Clerk key this side — nothing signed-in was browser-verified):** home block order/fold/drag + Account customise banner; `/social` two columns + cross-user profile (friend vs stranger); calendar month dropdown; league "Invite friends" + bet-limit; forecast picker; threads submit + (as admin) approve/reject.
+- **Legacy lint:** 5 pre-existing `react-hooks/set-state-in-effect` errors remain (OnboardingWizard ×2, FriendsPanel, CalendarView, +1) — IDEAS Inbox.
+- Carried: demo `'2026-06'` award delete (~Jul 1).
+
+### State
+- **Local Supabase is UP** (operator started it this session) with all migrations applied; `.env.local` → local. `.supabase-pat` holds the PAT (gitignored). Verify scripts green: `verify-bet-limit`, `verify-forecast`, `verify-threads` (+ the pre-existing ones).
+- Infra verdicts (operator asked, NOT executed): Supabase Dublin→Frankfurt = counterproductive while compute is `iad1`; Cloudflare D1 = not lighter from iad1 + can't host the atomic ledger. (IDEAS Parked.)
+
+_Authoritative end-of-day state (main = **0.83.1**, 2026-06-24). Blocks below are same-day mid-points / prior-session history._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-24 (main = 0.77.0) — operator 3-prompt batch (6 feature PRs) + what's PAT-gated
 
 Three operator prompts in one autonomous session (priority list → home/calendar feedback → IA/filters/customise-relocation). Shipped **0.72.3 → 0.77.0** (PRs #212–#217) + a docs close-out **0.77.1**. Per-version detail in `CHANGELOG.md`.

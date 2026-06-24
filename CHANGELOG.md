@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.83.1 — 2026-06-24
+
+Changed: **Session close-out — handoff / ideas / schedule for the 0.72.3→0.83.0 mega-session (16 PRs).**
+
+### Changed
+- `docs/HANDOFF.md`: new authoritative top block (PRs #212–#227 — caching, home rework, IA tidy, calendar, cross-user profiles, league invite + per-league bet-limits, forecast market (dormant), threads/UGC) + the **full Management-API migration-drift repair list** (`20260622120000`…`180000` + `20260624120000`/`130000`/`140000`/`150000`) + operator-owed (rotate the PAT, forecast go-live, threads admin role, authed eyeballs).
+- `IDEAS.md`: forecast (Now §1e) + threads (W7) annotated shipped. `SCHEDULE.md`: 2026-06-24 continuation entry. No code change.
+
 ## 0.83.0 — 2026-06-24
 
 Added: **Community threads (UGC, admin-moderated) + a two-column footer.**
