@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { auth } from '@clerk/nextjs/server';
 import { allowRequest, clientIp } from '@/lib/rate-limit';
+import { sendEmail } from '@/lib/email';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,35 +32,14 @@ async function sendViaResend(
   category: Category,
   userId: string | null,
 ): Promise<{ ok: boolean; error?: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const toAddress = process.env.CONTACT_TO_EMAIL;
-  if (!apiKey || !toAddress) return { ok: false, error: 'resend not configured' };
-
   const categoryLabel = CATEGORY_LABEL[category];
-
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Paddock Tracker Contact <contact@paddock-tracker.com>',
-        to: toAddress,
-        reply_to: fromEmail,
-        subject: `[${categoryLabel}] Paddock Tracker contact from ${fromEmail}`,
-        text: `Category: ${categoryLabel}\nFrom: ${fromEmail}${userId ? ` (clerk user: ${userId})` : ''}\n\n${message}`,
-      }),
-    });
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      return { ok: false, error: `resend ${res.status}: ${body.slice(0, 200)}` };
-    }
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'resend failed' };
-  }
+  // Keep the contact-specific From so replies thread under the visitor's email.
+  return sendEmail({
+    from: 'Paddock Tracker Contact <contact@paddock-tracker.com>',
+    replyTo: fromEmail,
+    subject: `[${categoryLabel}] Paddock Tracker contact from ${fromEmail}`,
+    text: `Category: ${categoryLabel}\nFrom: ${fromEmail}${userId ? ` (clerk user: ${userId})` : ''}\n\n${message}`,
+  });
 }
 
 export async function POST(req: Request) {

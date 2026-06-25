@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Compass, SlidersHorizontal, Trophy } from 'lucide-react';
-import { auth } from '@clerk/nextjs/server';
+import { ArrowUpRight, Bell, Compass, MessageSquare, SlidersHorizontal, Trophy } from 'lucide-react';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
+import { isStaff } from '@/lib/threads';
 import { getAccountStats } from '@/lib/betting/account';
 import { AccountIdentity } from '@/components/AccountIdentity';
 import { AccountStats } from '@/components/AccountStats';
@@ -20,6 +21,17 @@ export const metadata: Metadata = {
 export default async function AccountPage() {
   const { userId } = await auth();
   const stats = userId && isBettingConfigured() ? await getAccountStats(userId).catch(() => null) : null;
+
+  // Staff (admin/moderator) get a link into the private feedback board here — the
+  // mobile path, since the header Feedback link is lg+ only. currentUser() can
+  // hiccup on a fresh sign-in handshake (the 0.61.2 Safari landmine), so a failure
+  // just hides the row rather than 500-ing the page.
+  let staff = false;
+  try {
+    staff = isStaff(await currentUser());
+  } catch {
+    staff = false;
+  }
 
   return (
     <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
@@ -78,6 +90,19 @@ export default async function AccountPage() {
           </span>
           <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
         </Link>
+        {staff && (
+          <Link
+            href="/feedback"
+            className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+          >
+            <MessageSquare size={18} className="shrink-0 text-text-muted" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-text text-base font-semibold">Feedback</span>
+              <span className="block text-text-faint text-xs">Triage bugs, ideas and comments (staff)</span>
+            </span>
+            <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+          </Link>
+        )}
       </nav>
     </div>
   );

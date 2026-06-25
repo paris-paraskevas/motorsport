@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.99.0 — 2026-06-25
+
+*Staff: the feedback board now emails the team whenever someone posts, and it's reachable from the Account screen on mobile (not just the desktop header). No change for regular visitors.*
+
 ## 0.98.0 — 2026-06-25
 
 **Friends, front and centre.** Friends now has its own page — opened from a new card on the Social hub — where you can search for people, accept requests and manage your list in one place. Sharing your invite link now opens your phone's share sheet, so it can go straight to WhatsApp, Messenger or wherever your friends are (and still copies to the clipboard on desktop).
