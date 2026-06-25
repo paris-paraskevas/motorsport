@@ -37,8 +37,25 @@ export function CalendarView({
   const { followed, hydrated } = useFollowedSeries();
   const { now, clock } = useNow(serverNow);
   const [view, setView] = useState<CalendarViewMode>('month');
-  // null = follow `now`; otherwise the ms of a chosen local-midnight day.
-  const [anchorMs, setAnchorMs] = useState<number | null>(null);
+  // null = follow `now`; otherwise the ms of a chosen local-midnight day. Seeded
+  // lazily from the header's Calendar deep-link (/calendar?m=YYYY-MM) on the
+  // first client render — guarded for SSR (window absent → null). Read here, not
+  // via useSearchParams, so /calendar stays static. Same value shape the in-page
+  // month <select> uses (monthStart(...).getTime()).
+  const [anchorMs, setAnchorMs] = useState<number | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const m = new URLSearchParams(window.location.search).get('m');
+      const match = m ? /^(\d{4})-(\d{2})$/.exec(m) : null;
+      if (match) {
+        const month = Number(match[2]);
+        if (month >= 1 && month <= 12) return new Date(Number(match[1]), month - 1, 1).getTime();
+      }
+    } catch {
+      /* ignore a malformed ?m= param */
+    }
+    return null;
+  });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [types, setTypes] = useState<Set<SessionKind>>(() => new Set(['practice', 'qualifying', 'race']));
   const [seriesSel, setSeriesSel] = useState<Set<string> | null>(null); // null = all present
