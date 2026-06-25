@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.96.0 — 2026-06-24
+
+Added: **Staff feedback board (`/feedback`) + a `moderator` role.**
+
+### Added
+- `lib/threads.ts` `isStaff()` — admin OR moderator (Clerk `publicMetadata.role`); `isAdmin` unchanged for admin-only actions.
+- **`feedback` table** (migration `20260624200000`): `id, author_id (FK app_user), kind ('bug'|'feature'|'comment'), title, body, status ('open'|'considered'|'done'|'closed'), created_at, updated_at`. RLS-on / no-policies / service-role.
+- `lib/feedback.ts` (`createFeedback`, `listFeedback`, `setFeedbackStatus`); `app/api/feedback` (GET list + POST create, **staff-gated**) + `app/api/feedback/[id]` (POST status, **admin-gated**); `app/(app)/feedback/page.tsx` — **staff-only** (everyday users / signed-out get `notFound()`; `robots: noindex`) rendering `components/feedback/FeedbackBoard.tsx` (compose bug/feature/comment + the list; admins move status).
+- **Roles:** set a friend's Clerk `publicMetadata.role = 'moderator'` to grant the board (post + read); the admin also triages status. Everyday users can't reach the page or its API.
+
+### Notes
+- Browser-verified signed-in as staff (board renders; post → appears in the list; staff-gating mirrors the verified blog/threads admin check). tsc + `next build` clean; 0 new lint. **Prod migration `20260624200000` is operator-gated (apply before the board works on prod; add to the drift-repair list).**
+
 ## 0.95.2 — 2026-06-24
 
 Fixed: **Weekend Schedule no longer lists sessions twice.**
