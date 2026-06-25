@@ -30,6 +30,9 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 
 ## Inbox (unfiltered, append-only)
 
+- Friends as its own card/page (operator 2026-06-25): on `/social`, make the add-friends + friends content a CARD like Play-with-friends / Play-solo / Read-&-discuss, labelled "Friends", linking to a dedicated page to manage friends + send/accept requests + copy the invite link; stretch — the invite "copy link" opens a native share sheet (`navigator.share`) to WhatsApp/IG/Messenger/Discord etc. (the friends graph + `/social/friends` already exist; this is an IA/card surface + a share-sheet polish).
+- Desktop nav redesign — B1/B2/B4 (operator 2026-06-24, deferred for a focused pass): hover mega-menus in AppShell (lg+) — Series→categories (reuse `lib/categories` `groupSeriesByCategory`)+clickable series; Community→Blog/Threads/News; Social→Leagues/Friends/Play; Calendar→month hover-jump (reuse CalendarToolbar's month select + CalendarView `anchorMs`). Primary nav = high blast radius; verify hover/keyboard/responsive, mobile byte-identical.
+
 - Onboarding tour overlay (operator 2026-06-11): spotlight tutorial, ≤5 stops, auto-show once, "don't show again" in localStorage (no account needed), replay from Account. RESEARCHED — rules/verdict/build plan in docs/research/onboarding-tour-2026-06.md (verdict: hand-roll ~200 lines; Shepherd/Intro.js are AGPL-blocked). One-PR build, ready to schedule.
 - Driver headshots (operator 2026-06-11): driver pages have no images. Licensing-led problem, not code: Wikimedia-sourced portraits with per-image attribution (the landing circuit-photos pattern — license+artist per file, credits rendered) — F1's 22 first, then marquee series; 600-driver full coverage is a long-tail curation program. Pairs with the deferred 0.15.0 enrichment ambition.
 

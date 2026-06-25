@@ -6,6 +6,39 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-25 (main = 0.96.1) — marathon: blog pipeline + exact_position + /feedback + Dublin (0.92.0→0.96.1, #240–#251)
+
+Long rolling-batch session. Shipped **0.92.0 → 0.96.1** (per-version detail in `CHANGELOG.md`). THIS is the authoritative end-of-day state.
+
+### ▶ NEXT SESSION — START HERE
+1. **Desktop nav redesign (B1/B2/B4)** — the one remaining build from the operator's batch, deliberately deferred for a focused pass (primary nav = highest blast radius; needs hover + keyboard + responsive verification, mobile byte-identical). Hover mega-menus in `components/AppShell.tsx` desktop `<nav>` (lg+): **Series**→categories (reuse `groupSeriesByCategory` in `lib/categories.ts` — already powers the onboarding grouping) + clickable series; **Community**→Blog/Threads/News; **Social**→Leagues/Friends/Play. Plus **Calendar** nav hover→month-picker→jump (reuse CalendarToolbar's month `<select>`; CalendarView takes `anchorMs`). HeaderUtils already has Account + staff Feedback links (lg+) — fold a staff entry into the new nav if it fits.
+2. **Friends as its own card/page (operator 2026-06-25)** — see IDEAS Inbox top: on `/social`, make add-friends/friends a card like Play-with-friends/Play-solo/Read-&-discuss, labelled **Friends** → a page to manage friends + requests + copy invite link; stretch = native share sheet (`navigator.share`). Friends graph + `/social/friends` already exist → IA/card + share polish.
+
+### Shipped this session (#240–#251)
+- **Blog pipeline 0.92.0 (#240)** — `post` table + `lib/blog` + admin moderation + `*/15` publish cron (`/api/cron/publish-posts`) + dual push (`lib/blog-notify`) + `blog` notif pref + DB/MDX `/blog` coexistence + `scripts/{draft-post,verify-blog}`. **Admin composer 0.94.0 (#246)** — in-app `/blog` "New post" + always-visible review queue.
+- **Calendar filters 0.93.0/0.93.1 (#242/#243)** — Save/Reset + Select-all (sessions+series), draft-then-apply. **Landing auth-CTA 0.93.2 (#244)** — `__client_uat` cookie read (no Clerk SDK; `/` stays static). **Account link 0.93.3 (#245)** + **staff Feedback link 0.96.1 (#251)** in HeaderUtils.
+- **exact_position LIVE 0.95.0 (#247)** — `MARKET_BUILDERS` flip (picker browser-verified). **Bets collapse + form links 0.95.1 (#248)**. **Weekend sessions de-dup 0.95.2 (#249)** — schedule rows link sessions; removed the dup list.
+- **Staff feedback board 0.96.0 (#250)** — `/feedback` (bug/feature/comment), `moderator` role + `isStaff` (`lib/threads`), `feedback` table, staff-gated; admin triages status.
+- Docs close-outs 0.92.1 (#241) + 0.96.1 (#251).
+
+### ⚠️ Vercel compute moved to DUBLIN (operator) — co-located with Supabase `eu-west-1`; the iad1→EU latency lever is realised, cutover verified health-green from Dublin, **Jolpica/F1 recovered** (0.84.0 landmine resolved). IDEAS Parked "Frankfurt move" + "Cloudflare D1" verdicts now stale (annotated).
+
+### Migration drift — repair list `+= 20260624190000 (post), 20260624200000 (feedback)`
+Both applied to prod via the Management API (verified), NOT `db push`. Add before any future `db push`.
+
+### Owed (operator)
+- **Rotate the Supabase PAT** (`.supabase-pat`; used for both migrations) AND **rotate the prod Clerk `sk_live_…` + delete `.clerk-prod`** (it landed in the chat transcript today).
+- **Email branding is blocked** — custom Clerk email templates + logo are a **PAID Clerk feature** (every template write returned `402`); nothing was changed. Upgrade Clerk to brand emails.
+- **Prod eyeballs (no prod Clerk session this side):** set moderator friends' Clerk `publicMetadata.role='moderator'` + check `/feedback` + the header Feedback/Account links; exact_position picker on a live F1 weekend; blog admin composer.
+- Blog follow-ons (separate): scheduled-authoring trigger; F1-radio→CC0 sound; Wikimedia imagery.
+
+### Local dev
+`.env.local` unchanged (local Supabase + Clerk dev keys + CRON_SECRET); local Supabase UP with all migrations incl. `post` + `feedback`. The local Clerk **dev** test user was set `role=admin` for verification. Dev server may still be running.
+
+_Authoritative end-of-day state (main = **0.96.1**, 2026-06-25). Blocks below are prior-session history._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-24 (main = 0.92.0) — BLOG PIPELINE LIVE + Vercel compute moved to DUBLIN
 
 Shipped the DB-backed blog pipeline (#240); the operator moved Vercel compute `iad1` → **Dublin** (now co-located with Supabase `eu-west-1`) and the cutover was verified green. THIS is the authoritative end-of-day state.
