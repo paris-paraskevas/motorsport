@@ -1,5 +1,7 @@
 import { betDb, isBettingConfigured } from './betting/client';
 import { displayNames } from './betting/friends';
+import { sendEmail } from './email';
+import { SITE_URL } from './site';
 
 // Server-only. Staff-only feedback board (bugs / feature requests / comments),
 // posted + read by staff (admin + moderator); everyday users can't reach the
@@ -73,6 +75,30 @@ export async function listFeedback(): Promise<FeedbackItem[]> {
   } catch {
     return [];
   }
+}
+
+/**
+ * Best-effort email to the operator's inbox (CONTACT_TO_EMAIL) when a new
+ * feedback item is posted, so staff reports don't sit unseen. No-ops when Resend
+ * isn't configured; callers run it inside after() + try/catch so it never blocks
+ * or fails the post.
+ */
+export async function notifyNewFeedback(item: {
+  kind: FeedbackKind;
+  title: string;
+  body: string;
+  authorName: string | null;
+  authorId: string;
+}): Promise<void> {
+  const who = item.authorName ? `${item.authorName} (${item.authorId})` : item.authorId;
+  await sendEmail({
+    subject: `[Feedback: ${item.kind}] ${item.title}`,
+    text:
+      `New ${item.kind} on the Paddock feedback board.\n` +
+      `From: ${who}\n\n` +
+      `${item.title}\n\n${item.body}\n\n` +
+      `— Triage at ${SITE_URL}/feedback`,
+  });
 }
 
 /** Move an item's status (admin only — the caller must be verified admin). */

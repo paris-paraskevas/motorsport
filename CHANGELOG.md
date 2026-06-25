@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.99.0 — 2026-06-25
+
+Added: **Feedback email alerts** + a **mobile path to the staff board**.
+
+### Added
+- `lib/email.ts` — `sendEmail()`, a thin Resend wrapper (the site's single transactional-email path, plain `fetch`, no SDK). No-ops (returns `{ ok: false }`) when `RESEND_API_KEY` / `CONTACT_TO_EMAIL` are unset, so callers treat email as best-effort.
+- `lib/feedback.ts` `notifyNewFeedback()` — composes the staff-feedback alert (kind, author, title, body, a `/feedback` triage link) → `CONTACT_TO_EMAIL`. Wired into the feedback `POST` `after()` (fire-and-forget, try/caught — never blocks or fails the post).
+- `app/(app)/settings/page.tsx` — a **staff-only "Feedback" row** (admin/moderator via `isStaff(currentUser())`) → `/feedback`. The **mobile path**: the header Feedback link is lg+ only, and Account is the mobile bottom-bar tab. `currentUser()` is try/caught so a fresh-sign-in Clerk hiccup hides the row rather than 500-ing the page (the 0.61.2 Safari landmine).
+
+### Changed
+- `app/api/contact/route.ts` — its inline Resend `fetch` now goes through `lib/email.ts` `sendEmail()` (its 2nd consumer); behaviour identical (same From, reply-to, subject, body, response shape).
+
+### Notes
+- Email only sends where Resend is configured (prod) — **operator prod-verify:** post on `/feedback` → an alert lands in `CONTACT_TO_EMAIL`. tsc + `next build` green; 0 new lint. Staff row browser-verified signed-in (admin). Observed a rare pre-existing flake in the scrape/standings test suite (~2 in 15 runs) — unrelated to this change (no test covers the changed code).
+
 ## 0.98.0 — 2026-06-25
 
 Added: **Friends as its own page** + a native share sheet for invites.

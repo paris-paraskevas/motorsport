@@ -4,7 +4,7 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { isStaff } from '@/lib/threads';
-import { createFeedback, listFeedback, type FeedbackKind } from '@/lib/feedback';
+import { createFeedback, listFeedback, notifyNewFeedback, type FeedbackKind } from '@/lib/feedback';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -44,8 +44,15 @@ export async function POST(req: Request) {
     await ensureAppUser(userId);
     const id = await createFeedback(userId, kind, title, text);
     after(async () => {
+      const u = await currentUser().catch(() => null);
       try {
-        await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+        await setDisplayNameIfMissing(userId, clerkDisplayName(u));
+      } catch {
+        /* best-effort */
+      }
+      try {
+        // Notify the operator's inbox — best-effort, must never affect the post.
+        await notifyNewFeedback({ kind, title, body: text, authorName: clerkDisplayName(u), authorId: userId });
       } catch {
         /* best-effort */
       }
