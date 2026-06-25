@@ -1,4 +1,4 @@
-What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
+What's new in Paddock Tracker. Newest first.
 
 ## 0.96.1 — 2026-06-25
 
