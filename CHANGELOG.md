@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.96.1 — 2026-06-25
+
+Added: **Staff Feedback header link** + session close-out.
+
+### Added
+- `components/HeaderUtils.tsx`: a desktop **Feedback** link (→ `/feedback`, lg+) shown only to staff (admin/moderator, via `useUser` `publicMetadata.role`) — so moderators can find the private board without a URL. Mirrors the `lib/threads` `isStaff` check.
+
+### Changed
+- Docs close-out: `docs/HANDOFF.md` new top block for the 0.92.0→0.96.1 session (blog pipeline + composer, calendar filters, landing auth-CTA, Account/Feedback links, exact_position live, bets collapse, sessions de-dup, /feedback board, Dublin compute, email-blocked); `IDEAS.md` captures the Friends-card idea + the desktop-nav redesign (B1/B2/B4) as the next build. Migration-drift list `+= 20260624190000, 20260624200000`.
+
 ## 0.96.0 — 2026-06-24
 
 Added: **Staff feedback board (`/feedback`) + a `moderator` role.**

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { Coffee, LogIn, Mail, Settings } from 'lucide-react';
-import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
+import { Coffee, LogIn, Mail, MessageSquare, Settings } from 'lucide-react';
+import { SignInButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { openContactModal } from './ContactModal';
 import { SettingsClient } from './SettingsClient';
@@ -16,6 +16,11 @@ export function HeaderUtils({
   seriesList: SeriesMeta[];
 }) {
   const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  // Staff = admin or moderator (Clerk publicMetadata.role) — mirrors lib/threads
+  // isStaff; gates the private feedback board link.
+  const role = user?.publicMetadata?.role;
+  const isStaff = role === 'admin' || role === 'moderator';
 
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
@@ -39,6 +44,16 @@ export function HeaderUtils({
         <span className="hidden sm:inline">Buy me a coffee</span>
         <span className="sm:hidden">Coffee</span>
       </a>
+      {/* Staff-only feedback board (admin + moderator); everyday users never see it. */}
+      {isLoaded && isSignedIn && isStaff && (
+        <Link
+          href="/feedback"
+          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+        >
+          <MessageSquare size={13} />
+          <span>Feedback</span>
+        </Link>
+      )}
       {/* Discoverable account access on desktop — the Clerk avatar alone hides
           Paddock's own Account + Customize behind its "Preferences" submenu, so
           PC users couldn't find it (operator-reported). Mobile keeps the bottom

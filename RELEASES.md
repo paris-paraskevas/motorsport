@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first. For per-commit engineering detail, see `CHANGELOG.md` in the repo.
 
+## 0.96.1 — 2026-06-25
+
+*Internal: staff feedback-board link + documentation housekeeping. No change for regular users.*
+
 ## 0.96.0 — 2026-06-24
 
 *Internal: a staff-only feedback board for triaging bugs and feature ideas. No change for regular users.*
