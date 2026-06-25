@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.98.0 — 2026-06-25
+
+Added: **Friends as its own page** + a native share sheet for invites.
+
+### Added
+- `app/(app)/social/friends/page.tsx` — promoted from a redirect-to-`/social` to a real page (mirrors `/social/leagues`): a back link, a "Friends." header, and the existing `FriendsPanel` (search/add, incoming/sent requests, friends list, invite link). Loads friends + requests server-side (`force-dynamic`, `noindex`); name backfill via `after()`. The FriendsData loader moved here from `/social`.
+
+### Changed
+- `app/(app)/social/page.tsx` — the inline friends panel is replaced by a **Friends** launcher card (peer to Play solo / Play with friends / Blog / Threads) → `/social/friends`. The hub no longer loads per-user friend data; it's now a pure card grid.
+- `components/betting/FriendsPanel.tsx` — the invite control now opens the **native share sheet** (`navigator.share`, gated by `navigator.canShare`) so the link can go straight to WhatsApp / Messenger / etc.; falls back to clipboard copy (and shows the link) where share is unavailable or the sheet is dismissed (`AbortError`). Button: "Share invite link" → "Link copied — share again".
+
+### Notes
+- Browser-verified signed-in: `/social` shows the Friends card; `/social/friends` renders the panel; the share button calls `navigator.share` with the correct `/social/friends/add/<id>` URL, and the clipboard fallback shows the copied link. tsc + 490 tests pass; **0 new lint** (FriendsPanel's lone `set-state-in-effect` is the pre-existing legacy one). `/social/friends` is now `ƒ` (loads server data) where it was a static redirect.
+
 ## 0.97.0 — 2026-06-25
 
 Added: **Desktop nav mega-menus** — hover/focus disclosure menus on lg+.
