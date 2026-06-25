@@ -6,6 +6,29 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-25 (working state 0.98.0; main still 0.96.1 until merge) — desktop nav mega-menus + Friends page
+
+Short focused session off the two START-HERE items from the 0.96.1 block below. Shipped as **two stacked feature PRs + a docs PR** (operator merges). No migrations, no new env, no new deps — pure client/IA work.
+
+### ▶ NEXT SESSION — START HERE
+1. **Merge the stack, then prod-eyeball.** Merge **#252** (nav, 0.97.0) → then **#253** (Friends, 0.98.0 — retarget its base from `feat/desktop-nav-megamenus` to `main` after #252 lands) → **#254** (docs, off main). Then signed-in **prod** check (previews 401 anonymous): the desktop hover menus (Series/Community/Social/Calendar) open on hover + keyboard; the Calendar `?m=` month-jump; `/social` Friends card → `/social/friends`; the invite **share sheet** on a real phone (`navigator.share` → WhatsApp/Messenger).
+2. **Still owed (carried):** exact_position go-live (interaction-verify the picker signed-in on a live F1 weekend → add to `MARKET_BUILDERS`); the blog signed-in push-walkthrough + scheduled-authoring trigger; set moderator friends' Clerk `publicMetadata.role='moderator'` + check `/feedback` + the header links; **rotate the Supabase PAT + the prod Clerk `sk_live`**.
+
+### Shipped this session (PRs OPEN, not merged)
+- **Desktop nav mega-menus 0.97.0 (#252).** New `components/HeaderNavMenu.tsx` — a disclosure-nav primitive (opens on hover OR keyboard focus; closes on Escape/outside-click/focus-out/route-change; trigger is a `<Link>` for hub pages so it still navigates, or a `<button>` for menu-only). `AppShell` lg+ nav: **Series**→category grid (reuses `groupSeriesByCategory`), **Community** (NEW menu-only item — replaces the standalone Blog link)→Blog/Threads, **Social**→Play/Leagues/Friends, **Calendar**→rolling-12-month jump (`/calendar?m=YYYY-MM`). `CalendarView` seeds its anchor from `?m=` via a **window-read lazy `useState` initializer (NOT `useSearchParams`)** — keeps `/calendar` `○` static (the repo convention, per WeekendTabs/Tour); safe from hydration mismatch via the skeleton gate. All menus inside `hidden lg:flex` → **BottomBar + every < lg viewport byte-identical** (verified 1440/1024/390). Hand-rolled over Base UI `Menu`/`NavigationMenu` (their click-to-toggle would break click-to-navigate on the hubs).
+- **Friends as its own page 0.98.0 (#253, stacked on #252).** `/social/friends` promoted from a redirect to a real page (mirrors `/social/leagues`: back link + "Friends." header + `FriendsPanel`); `/social` is now a pure card grid with a **Friends** launcher card (the inline `FriendsData` moved to the friends page); `FriendsPanel` invite uses **`navigator.share`** (canShare-gated) → clipboard fallback. `/social/friends` is now `ƒ` (loads server data) where it was a static redirect.
+- **Docs close-out (#254).** This block + IDEAS (both Inbox items marked SHIPPED; `/news` page captured) + SCHEDULE 2026-06-25.
+
+### Notes / landmines
+- **"News" dropped from Community** — no `/news` route exists (only a home block + `/api/weekend/news` + `/api/cron/news`). Captured to IDEAS as "build a /news page".
+- **Lint unchanged:** still the 5 legacy `set-state-in-effect` errors; added **0 new** (both nav effects were rewritten to render-time / lazy-init, and `?m=` to a lazy initializer, to dodge the rule).
+- Verified locally signed-in (Clerk **dev** keys + local Supabase + the admin test user); `next build` clean with `/calendar`, `/app`, `/blog`, `/series` all still `○ Static`.
+- The pre-existing untracked litter (`fe-champ.html`, `prod-weekend8.md`, `skills-lock.json`, `docs/research/agent-salvage-2026-06-10/`) + modified `.gitignore`/`public/sw.js` were left untouched (not mine).
+
+_Working state **0.98.0** across #252/#253; **main stays 0.96.1 until they merge**. The 0.96.1 marathon block below is prior history (still the authoritative record for that work)._
+
+---
+
 ## ⚡ Next session pickup — 2026-06-25 (main = 0.96.1) — marathon: blog pipeline + exact_position + /feedback + Dublin (0.92.0→0.96.1, #240–#251)
 
 Long rolling-batch session. Shipped **0.92.0 → 0.96.1** (per-version detail in `CHANGELOG.md`). THIS is the authoritative end-of-day state.

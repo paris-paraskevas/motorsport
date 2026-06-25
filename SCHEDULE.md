@@ -886,6 +886,21 @@ Won't touch (held): exact_position go-live (next-session task 2); the scheduled-
 
 Active: _(no `[+Nm]` prefixes captured)_
 
+### Thu 2026-06-25 — desktop nav mega-menus + Friends page (0.97.0–0.98.0, #252–#253)
+
+_(The day-log skipped the 0.93.0→0.96.1 marathon — see `docs/HANDOFF.md` for that detail; resuming here.)_
+
+Operator: do both START-HERE items, audit before each PR. ESPA'd a plan; `AskUserQuestion` locked: both tasks, drop News, include the Calendar month-jump.
+
+- → done: **desktop nav mega-menus (0.97.0, #252)** — new `HeaderNavMenu` disclosure primitive (hover+focus open; Escape/outside-click/route-change close); Series→category grid, Community (new, replaces standalone Blog)→Blog/Threads, Social→Play/Leagues/Friends, Calendar→rolling-12-month jump (`/calendar?m=YYYY-MM`, window-seeded so /calendar stays `○` static). All inside `hidden lg:flex` → mobile byte-identical. Browser-verified 1440/1024/390 (hover + keyboard + Escape + deep-link jump + mobile-hidden). tsc + 490 tests + `next build` green; 0 new lint.
+- → done: **Friends page + share (0.98.0, #253)** — `/social/friends` promoted from a redirect to a real page (mirrors `/social/leagues`); `/social` gains a Friends launcher card (inline panel removed); `FriendsPanel` invite → native `navigator.share` (canShare-gated) with clipboard fallback. Browser-verified signed-in (card → page → share payload + fallback). 0 new lint.
+- → done: this docs close-out (HANDOFF / IDEAS / SCHEDULE), PR #254.
+- PRs **stacked**: #253 bases on #252 → merge #252 first, then #253 (retarget to main); #254 (docs) is independent off main.
+
+Won't touch: a real `/news` page (captured to IDEAS); the same-page Calendar header re-jump (the in-page picker covers it — matches the WeekendTabs `?tab=` pattern); exact_position go-live + other operator-gated items.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
