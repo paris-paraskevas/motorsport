@@ -28,8 +28,21 @@ export function FriendsPanel({
   const [searching, setSearching] = useState(false);
   const [linkCopied, setLinkCopied] = useState<string | null>(null);
 
-  async function copyFriendLink() {
+  async function shareFriendLink() {
     const link = `${window.location.origin}/social/friends/add/${myUserId}`;
+    // Native share sheet where available (mobile / some desktops) — opens
+    // WhatsApp / Messenger / etc. directly. Fall back to clipboard otherwise
+    // (and on a dismissed sheet we just stop — no clipboard write needed).
+    const shareData = { title: 'Add me on Paddock', text: 'Be my friend on Paddock Tracker', url: link };
+    if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        // User dismissed the sheet — don't fall through to a copy they didn't ask for.
+        if (err instanceof Error && err.name === 'AbortError') return;
+      }
+    }
     try {
       await navigator.clipboard.writeText(link);
     } catch {
@@ -145,10 +158,10 @@ export function FriendsPanel({
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">Or share your link</span>
           <button
             type="button"
-            onClick={copyFriendLink}
+            onClick={shareFriendLink}
             className="rounded border border-white/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint"
           >
-            {linkCopied ? 'Copied — copy again' : 'Copy friend link'}
+            {linkCopied ? 'Link copied — share again' : 'Share invite link'}
           </button>
           {linkCopied && (
             <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-text-muted">{linkCopied}</span>

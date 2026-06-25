@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.98.0 — 2026-06-25
+
+**Friends, front and centre.** Friends now has its own page — opened from a new card on the Social hub — where you can search for people, accept requests and manage your list in one place. Sharing your invite link now opens your phone's share sheet, so it can go straight to WhatsApp, Messenger or wherever your friends are (and still copies to the clipboard on desktop).
+
 ## 0.97.0 — 2026-06-25
 
 **A roomier desktop menu.** On wider screens the top navigation now opens quick menus on hover or keyboard focus: browse every series by category, find Blog and Threads under "Community", reach Play, Leagues and Friends under "Social", and jump straight to any month from "Calendar". Phones and the bottom bar are unchanged.
