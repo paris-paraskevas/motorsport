@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.97.0 — 2026-06-25
+
+**A roomier desktop menu.** On wider screens the top navigation now opens quick menus on hover or keyboard focus: browse every series by category, find Blog and Threads under "Community", reach Play, Leagues and Friends under "Social", and jump straight to any month from "Calendar". Phones and the bottom bar are unchanged.
+
 ## 0.96.1 — 2026-06-25
 
 *Internal: staff feedback-board link + documentation housekeeping. No change for regular users.*

@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.97.0 — 2026-06-25
+
+Added: **Desktop nav mega-menus** — hover/focus disclosure menus on lg+.
+
+### Added
+- `components/HeaderNavMenu.tsx` — a reusable disclosure-nav menu (W3C disclosure pattern): a top-level nav item that reveals a panel on **hover OR keyboard focus** and closes on mouse-leave / Escape (restoring focus to the trigger) / focus-out / route change. Trigger renders as a `<Link>` for hub pages (so it still navigates on click) or a `<button>` for menu-only items. Chosen over Base UI `Menu`/`NavigationMenu` because those toggle the panel on trigger *click*, which would break click-to-navigate on Series/Calendar/Social.
+
+### Changed
+- `components/AppShell.tsx` desktop `<nav>` (lg+ only): **Series** → a category grid (reuses `groupSeriesByCategory`) of all 15 series; **Community** (new menu-only item — replaces the standalone Blog link) → Blog + Threads; **Social** → Play / Leagues / Friends; **Calendar** → a rolling-12-month jump list (`/calendar?m=YYYY-MM`). Home stays a plain link. All menus live inside `hidden lg:flex`, so `BottomBar` and every `< lg` viewport are byte-identical. `MenuLinkList` / `SeriesMegaMenu` / `CalendarMonthMenu` are local presentational helpers.
+- `components/calendar/CalendarView.tsx`: seeds the month anchor from `?m=YYYY-MM` via a guarded lazy `useState` initializer (reads `window`, **not** `useSearchParams`, so `/calendar` stays statically rendered — the repo convention; safe from hydration mismatch because the view renders a skeleton until `hydrated && clock`). Invalid / out-of-range params fall back to the current month. The header menu is the cross-page entry; the in-page month picker still drives same-page changes (matches the WeekendTabs `?tab=` pattern).
+
+### Notes
+- Browser-verified at 1440 / 1024 / 390: every menu opens on hover and keyboard focus, Escape closes + restores focus, the Calendar deep-link jumps (Dec 2026 seeded), an out-of-range `?m=` falls back, and `< lg` keeps the desktop nav hidden with the bottom bar unchanged (`/app · /calendar · /series · /social · /settings`). tsc + 490 tests pass; **0 new lint** (the lone `CalendarView` `set-state-in-effect` is the pre-existing legacy one). "News" was intentionally omitted from Community — no `/news` route exists yet (captured to IDEAS).
+
 ## 0.96.1 — 2026-06-25
 
 Added: **Staff Feedback header link** + session close-out.
