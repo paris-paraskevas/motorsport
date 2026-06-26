@@ -6,9 +6,9 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 3;
+export const HOME_LAYOUT_VERSION = 4;
 
-export type HomeElementId = 'chyron' | 'just-missed' | 'schedule' | 'news';
+export type HomeElementId = 'chyron' | 'just-missed' | 'schedule' | 'news' | 'from-the-blog';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -27,6 +27,7 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'just-missed', label: 'Just missed', hint: 'The latest results from your series.', collapsible: true },
   { id: 'schedule', label: 'This week', hint: 'This week’s sessions across your series.', collapsible: true },
   { id: 'news', label: 'News', hint: 'The Paddock wire — latest motorsport.com headlines.', collapsible: true },
+  { id: 'from-the-blog', label: 'From the blog', hint: 'The latest Paddock long-reads and explainers.', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
@@ -88,13 +89,6 @@ export const AVAILABLE_WIDGETS: AvailableWidget[] = [
     icon: 'Crown',
     status: 'coming-soon',
   },
-  {
-    id: 'from-the-blog',
-    label: 'From the blog',
-    blurb: 'The latest Paddock long-reads and explainers, surfaced on your home.',
-    icon: 'Newspaper',
-    status: 'coming-soon',
-  },
 ];
 
 export interface HomeLayoutPrefs {
@@ -109,10 +103,17 @@ export interface HomeLayoutPrefs {
 // stored `collapsed` field inherit this via reconcile().
 export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 
+// Widgets that graduate from the gallery start HIDDEN — they're opt-in, not
+// forced onto an existing home (the home is deliberately lean). reconcile()
+// default-hides each of these the first time a user's stored prefs meet it (the
+// id isn't yet in their `order`); once it's there, their show/hide choice wins.
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog'];
+const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
+
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
   version: HOME_LAYOUT_VERSION,
   order: [...ALL_IDS],
-  hidden: [],
+  hidden: [...DEFAULT_HIDDEN],
   collapsed: [...DEFAULT_COLLAPSED],
 };
 
@@ -142,10 +143,16 @@ function dedupe(ids: HomeElementId[]): HomeElementId[] {
 export function reconcileHomeLayout(stored: Partial<HomeLayoutPrefs> | null | undefined): HomeLayoutPrefs {
   const storedOrder = Array.isArray(stored?.order) ? stored!.order.filter(isHomeElementId) : [];
   const order = dedupe(storedOrder);
-  for (const id of ALL_IDS) {
-    if (!order.includes(id)) order.push(id);
-  }
   const hidden = Array.isArray(stored?.hidden) ? dedupe(stored!.hidden.filter(isHomeElementId)) : [];
+  for (const id of ALL_IDS) {
+    if (!order.includes(id)) {
+      order.push(id);
+      // An opt-in widget the user has never seen (absent from their stored
+      // order) starts hidden, so a newly-shipped block never barges onto an
+      // existing home. Their later show/hide sticks (the id is then in order).
+      if (DEFAULT_HIDDEN_SET.has(id) && !hidden.includes(id)) hidden.push(id);
+    }
+  }
   // Absent `collapsed` (pre-v2 prefs) inherits the default-collapsed set; a present
   // array is honoured as-is, filtered to ids that are actually collapsible.
   const collapsed = Array.isArray(stored?.collapsed)

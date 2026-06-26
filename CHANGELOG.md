@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.102.0 — 2026-06-26
+
+Added: **"From the blog" home widget** — the latest Paddock posts, opt-in from the customise gallery.
+
+### Added
+- `components/HomeContent.tsx`: a new collapsible "From the blog" home block — the latest published posts (title + summary + relative date → `/blog/<slug>`, with an "All posts" footer). Defer-fetched only when shown + expanded (mirrors the just-missed Ajax), so `/app` stays statically generated and a home that never enables it pays nothing.
+- `app/(app)/api/home/from-the-blog/route.ts` (new): the latest 4 published posts as edge-cached JSON (`publishedPosts()`, fail-soft to `[]`; `s-maxage=300, stale-while-revalidate=600`).
+- `lib/homeLayout.ts`: graduated `from-the-blog` from the `AVAILABLE_WIDGETS` "coming soon" gallery into `HOME_ELEMENTS`, and added an **opt-in** mechanism (`DEFAULT_HIDDEN`): a graduated widget starts hidden and never barges onto an existing home. `reconcileHomeLayout` default-hides each such id the first time a user's stored prefs meet it (absent from their `order`) and respects their show/hide choice thereafter. `HOME_LAYOUT_VERSION`→4 (reconcile migrates existing users in place — no reset). Reconcile tests updated (+3 for the opt-in path; 11 pass).
+
+### Notes
+- Browser-verified on a local prod build: default home unchanged (widget hidden); `/settings/customize` lists "From the blog" as a real block (no longer "coming soon") with a Show toggle; enabling it renders the block on `/app` with the published post. `next build` clean with `/app` still `○ Static`; tsc clean; 0 new lint errors. The other two gallery widgets (championship-leader, standings-snapshot) stay "coming soon" — they're a follow-up (per-series customisation + a multi-series standings fan-out).
+
 ## 0.101.0 — 2026-06-26
 
 Added: **"Order by" on the calendar day view** — sort a day's sessions by time or by series.
