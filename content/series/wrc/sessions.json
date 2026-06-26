@@ -72,6 +72,30 @@
         { "title": "WRC - SS19 Himos-Jämsä 1 (Finland)", "start": "2026-08-02T06:35:00Z", "end": "2026-08-02T07:15:00Z", "location": "Himos, Jämsä, Finland" },
         { "title": "WRC - SS20 Himos-Jämsä 2 - Wolf Power Stage (Finland)", "start": "2026-08-02T09:15:00Z", "end": "2026-08-02T09:55:00Z", "location": "Himos, Jämsä, Finland" }
       ]
+    },
+    {
+      "matchDate": "2026-06-26",
+      "round": 8,
+      "sessions": [
+        { "title": "WRC - Shakedown (Greece)", "start": "2026-06-25T06:01:00Z", "end": "2026-06-25T09:01:00Z", "location": "Loutraki, Greece" },
+        { "title": "WRC - SS1 EKO Super Special Stage (Greece)", "start": "2026-06-25T16:05:00Z", "end": "2026-06-25T16:20:00Z", "location": "The Ellinikon, Athens, Greece" },
+        { "title": "WRC - SS2 Bauxites (Greece)", "start": "2026-06-26T05:48:00Z", "end": "2026-06-26T06:23:00Z", "location": "Itea, Greece" },
+        { "title": "WRC - SS3 Parnassos Mt (Greece)", "start": "2026-06-26T06:51:00Z", "end": "2026-06-26T07:26:00Z", "location": "Parnassos, Greece" },
+        { "title": "WRC - SS4 Stiri 1 (Greece)", "start": "2026-06-26T08:14:00Z", "end": "2026-06-26T08:49:00Z", "location": "Stiri, Greece" },
+        { "title": "WRC - SS5 Elikon Mt (Greece)", "start": "2026-06-26T10:35:00Z", "end": "2026-06-26T11:10:00Z", "location": "Elikon, Greece" },
+        { "title": "WRC - SS6 Stiri 2 (Greece)", "start": "2026-06-26T11:46:00Z", "end": "2026-06-26T12:21:00Z", "location": "Stiri, Greece" },
+        { "title": "WRC - SS7 Thiva (Greece)", "start": "2026-06-26T13:56:00Z", "end": "2026-06-26T14:31:00Z", "location": "Thiva, Greece" },
+        { "title": "WRC - SS8 Ghymno 1 (Greece)", "start": "2026-06-27T04:54:00Z", "end": "2026-06-27T05:29:00Z", "location": "Ghymno, Greece" },
+        { "title": "WRC - SS9 Kolines (Greece)", "start": "2026-06-27T06:19:00Z", "end": "2026-06-27T06:54:00Z", "location": "Kollines, Arcadia, Greece" },
+        { "title": "WRC - SS10 Menalo Mt 1 (Greece)", "start": "2026-06-27T08:05:00Z", "end": "2026-06-27T08:40:00Z", "location": "Menalo, Arcadia, Greece" },
+        { "title": "WRC - SS11 Kefalari (Greece)", "start": "2026-06-27T09:58:00Z", "end": "2026-06-27T10:33:00Z", "location": "Kefalari, Greece" },
+        { "title": "WRC - SS12 Ghymno 2 (Greece)", "start": "2026-06-27T13:39:00Z", "end": "2026-06-27T14:14:00Z", "location": "Ghymno, Greece" },
+        { "title": "WRC - SS13 Menalo Mt 2 (Greece)", "start": "2026-06-27T16:05:00Z", "end": "2026-06-27T16:40:00Z", "location": "Menalo, Arcadia, Greece" },
+        { "title": "WRC - SS14 Aghii Theodori 1 (Greece)", "start": "2026-06-28T05:28:00Z", "end": "2026-06-28T06:03:00Z", "location": "Aghii Theodori, Greece" },
+        { "title": "WRC - SS15 Loutraki 1 (Greece)", "start": "2026-06-28T06:35:00Z", "end": "2026-06-28T07:10:00Z", "location": "Loutraki, Greece" },
+        { "title": "WRC - SS16 Aghii Theodori 2 (Greece)", "start": "2026-06-28T09:10:00Z", "end": "2026-06-28T09:45:00Z", "location": "Aghii Theodori, Greece" },
+        { "title": "WRC - SS17 Loutraki 2 - Wolf Power Stage (Greece)", "start": "2026-06-28T11:15:00Z", "end": "2026-06-28T11:50:00Z", "location": "Loutraki, Greece" }
+      ]
     }
   ]
 }
