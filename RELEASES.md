@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.101.0 — 2026-06-26
+
+**Order a day's sessions your way.** Open any day on the calendar and you'll find an "Order by" switch — keep the chronological **Time** view, or group everything **by series** (all the F1 together, all the MotoGP together, and so on). Especially handy on busy days when several championships run at once.
+
 ## 0.100.1 — 2026-06-26
 
 **Calendar month jump fixed.** Choosing a month from the Calendar menu in the top navigation now moves the calendar to that month every time — previously it could do nothing if you were already on the Calendar page.

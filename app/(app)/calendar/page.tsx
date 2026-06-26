@@ -35,6 +35,7 @@ export default async function CalendarPage() {
         session,
         color: s.meta.color,
         seriesSlug: s.meta.slug,
+        seriesName: s.meta.name,
       })),
     )
     .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());

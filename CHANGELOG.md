@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.101.0 — 2026-06-26
+
+Added: **"Order by" on the calendar day view** — sort a day's sessions by time or by series.
+
+### Added
+- `components/calendar/DayView.tsx`: an "Order by" **Time | Series** toggle (local state, default Time). **Time** is the existing flat chronological list; **Series** groups the day's sessions by series — each group with a small header (series colour dot + name), groups ordered alphabetically by series name, sessions time-sorted within each. The toggle is always shown when the day has sessions (even single-series, where "Series" just adds the one header) so the control is reliably present on the day screen — the operator's example day (27 Jun) is single-series, and a "≥2 series only" gate would have hidden it there.
+- `components/calendar/types.ts`: `CalendarEntry` gains `seriesName` (the series display name) to label the groups; set from `s.meta.name` in the one builder (`app/(app)/calendar/page.tsx`). Month/week views ignore it.
+
+### Notes
+- Browser-verified on a local prod build (`next start`): single-series day → toggle present, "Series" adds the series header; busy day (26 Jun 2026 — WRC, F1, F2, F3, MotoGP) → "Time" interleaves chronologically while "Series" regroups into five headed, time-sorted sections. `next build` clean with `/calendar` still `○ Static`; tsc clean; 0 new lint errors. No persistence — the order resets per visit (can add a sticky pref later if wanted). Scope: day view only (not week/month).
+
 ## 0.100.1 — 2026-06-26
 
 Fixed: **the header Calendar menu's month jump did nothing while you were already on `/calendar`.**
