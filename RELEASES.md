@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.100.0 — 2026-06-26
+
+**Better-looking emails.** Messages from Paddock — like the confirmation you get when you write in through the contact form — now arrive in a clean, branded design instead of plain text. New sign-ups will also get a short welcome email to help you get started.
+
 ## 0.99.3 — 2026-06-26
 
 **Acropolis Rally, live on the calendar.** The EKO Acropolis Rally Greece — this weekend's WRC round — now shows its full stage-by-stage schedule (shakedown, all 17 special stages and Sunday's Power Stage) with real start times in your local zone, instead of "to be confirmed".

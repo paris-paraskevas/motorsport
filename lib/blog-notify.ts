@@ -3,6 +3,8 @@ import { listSubscriptions, deleteSubscription } from './push-store';
 import { sendPushTo, type PushPayload } from './push';
 import { getUserNotifPrefs } from './userPrefs';
 import { wasNotified, markNotified } from './notify-ledger';
+import { sendEmail, renderBrandedEmail } from './email';
+import { SITE_URL } from './site';
 
 // Server-only. The admin-only half of the blog pipeline's push fan-out: tell the
 // admins a draft is waiting. (The all-users "new post" push lives in the
@@ -37,11 +39,27 @@ export async function adminUserIds(): Promise<Set<string>> {
  *  no subscribers / no KV. */
 export async function notifyAdminsDraftReady(post: { id: string; title: string }): Promise<void> {
   if (await wasNotified('blog-draft', post.id)) return;
+
+  // Mark before any send: a crash mid-notify costs one missed alert, not a
+  // doubled one (the API route's after() and the draft script can both call us).
+  await markNotified('blog-draft', post.id);
+
+  // Email the operator's inbox — the reliable channel, independent of whether
+  // any admin has a push subscription yet. Best-effort (no-ops unconfigured).
+  const { html, text } = renderBrandedEmail({
+    preheader: 'A blog draft is waiting for review.',
+    heading: 'Draft ready to review',
+    intro: post.title,
+    paragraphs: [
+      'A new blog post draft is waiting in the review queue. Approve it (optionally with a future publish time) to schedule it live.',
+    ],
+    cta: { label: 'Review the draft', href: `${SITE_URL}/blog?review=1` },
+  });
+  await sendEmail({ subject: `[Blog] Draft ready: ${post.title}`, text, html });
+
+  // Admin push fan-out (on top of the email; needs subscribers + admins).
   const [subs, admins] = await Promise.all([listSubscriptions(), adminUserIds()]);
   if (subs.length === 0 || admins.size === 0) return;
-
-  // Mark before sending: a crash mid-fanout costs one missed ping, not a doubled one.
-  await markNotified('blog-draft', post.id);
   const payload: PushPayload = {
     title: 'Draft ready to review',
     body: post.title,

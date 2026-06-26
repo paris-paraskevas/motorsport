@@ -1,6 +1,6 @@
 import { betDb, isBettingConfigured } from './betting/client';
 import { displayNames } from './betting/friends';
-import { sendEmail } from './email';
+import { sendEmail, renderBrandedEmail } from './email';
 import { SITE_URL } from './site';
 
 // Server-only. Staff-only feedback board (bugs / feature requests / comments),
@@ -91,13 +91,17 @@ export async function notifyNewFeedback(item: {
   authorId: string;
 }): Promise<void> {
   const who = item.authorName ? `${item.authorName} (${item.authorId})` : item.authorId;
+  const { html, text } = renderBrandedEmail({
+    preheader: `New ${item.kind} on the feedback board`,
+    heading: item.title,
+    intro: `New ${item.kind} · from ${who}`,
+    paragraphs: [item.body],
+    cta: { label: 'Triage on the board', href: `${SITE_URL}/feedback` },
+  });
   await sendEmail({
     subject: `[Feedback: ${item.kind}] ${item.title}`,
-    text:
-      `New ${item.kind} on the Paddock feedback board.\n` +
-      `From: ${who}\n\n` +
-      `${item.title}\n\n${item.body}\n\n` +
-      `— Triage at ${SITE_URL}/feedback`,
+    text,
+    html,
   });
 }
 

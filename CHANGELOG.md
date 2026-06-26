@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.100.0 — 2026-06-26
+
+Added: **branded HTML transactional emails** + a **welcome email on sign-up**. Transactional mail was plain text; it now renders an on-brand HTML layout, the contact form acknowledges the sender, and new accounts get a welcome.
+
+### Added
+- `lib/email.ts`: `sendEmail` gains an optional `html` field — when set, Resend sends a multipart message and the existing `text` stays as the plaintext / deliverability fallback. New co-located `renderBrandedEmail({ preheader, heading, intro?, paragraphs, cta?, footerNote? }) → { html, text }`: a 600px `<table>` layout, **inline styles only** (clients strip `<style>` and ignore flex/grid), dark Paddock brand (wordmark + red accent bar), HTML-escaped interpolation, `\n`→`<br>` inside paragraphs. No new dependency (no React Email / MJML).
+- `app/api/webhooks/clerk/route.ts` (new): a Clerk webhook receiver. `verifyWebhook` (`@clerk/nextjs/webhooks`, reads `CLERK_WEBHOOK_SIGNING_SECRET`) checks the Svix signature; on `user.created` it sends a one-time branded welcome email via `sendEmail`. KV-deduped per Clerk user id (`paddock:welcome:<id>`, 1-year TTL) so Svix retries / dashboard replays can't re-welcome. Returns 200 for handled + unhandled events, 400 only on a bad signature (a send failure never triggers a retry storm). Public by design — it's guarded by the signature, not by `proxy.ts` (its `isProtected` matcher doesn't list it).
+
+### Changed
+- `lib/feedback.ts` `notifyNewFeedback` and `app/api/contact/route.ts` (the operator notification) now build `{ html, text }` via `renderBrandedEmail` and send both parts. Otherwise identical — still operator-facing, still best-effort, still no-op when Resend is unconfigured.
+- `app/api/contact/route.ts`: the contact form now also sends a **branded acknowledgement to the visitor** (best-effort, after the operator notify; never changes the `{ ok, stored, emailed }` contract). It deliberately does **not** echo the submitted message — the ack goes to a visitor-supplied address, so echoing attacker-controlled text would turn the form into a relay for arbitrary content under our sender reputation. The operator copy still echoes the message (it lands in the operator's own inbox).
+- `lib/blog-notify.ts` `notifyAdminsDraftReady`: alongside the existing admin push, it now emails `CONTACT_TO_EMAIL` a branded "Draft ready to review" with a `/blog?review=1` link — the reliable channel, independent of whether any admin has a push subscription yet. The `markNotified('blog-draft', …)` dedupe moved to the top of the function so the email + push fire at most once per draft (both create paths share the guard).
+
+### Operator actions — welcome-email go-live
+- Add `CLERK_WEBHOOK_SIGNING_SECRET` to Vercel (Production).
+- In the Clerk dashboard → Webhooks, add an endpoint `https://paddock-tracker.com/api/webhooks/clerk`, subscribe it to `user.created`, and paste its signing secret into the env above.
+- Until configured the route verifies-and-no-ops. The welcome email can't be exercised locally (`RESEND_API_KEY` absent → `sendEmail` no-ops) or on a preview (401 anonymous + Clerk fires at prod) — verify on a live prod sign-up.
+
+### Notes
+- Branded HTML eyeballed in Chromium across all five templates (welcome, contact ack, contact notify, feedback, blog draft): multi-line bodies render, and the no-echo ack is confirmed. tsc clean; lint adds **0** new errors (the 5 legacy `set-state-in-effect` errors are untouched); `next build` clean and the webhook route compiles. **Caveat:** Gmail/Outlook may render the dark theme or rounded corners differently from Chromium — the table + inline-style markup is built for that and every message carries the plaintext part, but a full email-client matrix needs a real send (Resend is prod-only here).
+
 ## 0.99.3 — 2026-06-26
 
 Added: **EKO Acropolis Rally Greece (WRC round 8) schedule** — curated.
