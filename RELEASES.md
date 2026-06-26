@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.99.2 — 2026-06-26
+
+**Session times now follow your clock.** Across the calendar, series pages and weekend schedules, times show in your device's own timezone (with its label) — no more converting from Athens time in your head. The home page already did this; now everywhere does.
+
 ## 0.99.1 — 2026-06-26
 
 **Faster Account and league pages.** Your Account screen and individual league pages no longer wait on a slow identity lookup before they render — they load noticeably quicker, especially right after signing in.

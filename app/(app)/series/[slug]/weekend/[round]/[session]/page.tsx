@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import type { Weekend } from '@/lib/types';
-import { formatLocal } from '@/lib/date';
+import { LocalTime } from '@/components/LocalTime';
 import {
   sessionBySlug,
   sessionSlug,
@@ -612,7 +612,7 @@ export default async function SessionPage({
               dateTime={session.start.toISOString()}
               className="text-lg md:text-xl font-semibold text-text tnum font-mono"
             >
-              {formatLocal(session.start)}
+              <LocalTime instant={session.start.getTime()} />
             </time>
           )}
           {session.location && (

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Session, Weekend } from '@/lib/types';
-import { formatLocal } from '@/lib/date';
+import { LocalTime } from '@/components/LocalTime';
 import { weekendLabel } from '@/lib/weekend';
 
 function formatShortRange(startISO: string, endISO: string): string {
@@ -117,7 +117,7 @@ export function WeekendBlock({
                 dateTime={s.start.toISOString()}
                 className="text-text-faint font-medium tabular-nums font-mono whitespace-nowrap"
               >
-                {formatLocal(s.start)}
+                <LocalTime instant={s.start.getTime()} />
               </time>
             )}
           </li>

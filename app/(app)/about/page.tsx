@@ -52,7 +52,7 @@ export default async function About() {
       <section>
         <h2 className="text-xs uppercase tracking-wider text-text-faint mb-2 font-semibold">Notes</h2>
         <p className="text-sm text-text-muted">
-          Personal-use PWA. Data fetched at build with 6-hour revalidation. All times rendered in Europe/Athens.
+          Personal-use PWA. Data fetched at build with 6-hour revalidation. Session times are shown in your device&apos;s local timezone.
         </p>
       </section>
     </div>
