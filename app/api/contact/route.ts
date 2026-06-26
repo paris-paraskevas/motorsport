@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { auth } from '@clerk/nextjs/server';
 import { allowRequest, clientIp } from '@/lib/rate-limit';
-import { sendEmail } from '@/lib/email';
+import { sendEmail, renderBrandedEmail } from '@/lib/email';
+import { SITE_URL, SITE_TITLE } from '@/lib/site';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -33,13 +34,42 @@ async function sendViaResend(
   userId: string | null,
 ): Promise<{ ok: boolean; error?: string }> {
   const categoryLabel = CATEGORY_LABEL[category];
+  // Operator-facing notification (goes to CONTACT_TO_EMAIL). Safe to echo the
+  // visitor's message here — it lands in the operator's own inbox.
+  const { html, text } = renderBrandedEmail({
+    preheader: `New ${categoryLabel.toLowerCase()} from ${fromEmail}`,
+    heading: categoryLabel,
+    intro: `From ${fromEmail}${userId ? ` · signed in (${userId})` : ''}`,
+    paragraphs: [message],
+    footerNote: 'Reply to this email to respond to the sender.',
+  });
   // Keep the contact-specific From so replies thread under the visitor's email.
   return sendEmail({
     from: 'Paddock Tracker Contact <contact@paddock-tracker.com>',
     replyTo: fromEmail,
     subject: `[${categoryLabel}] Paddock Tracker contact from ${fromEmail}`,
-    text: `Category: ${categoryLabel}\nFrom: ${fromEmail}${userId ? ` (clerk user: ${userId})` : ''}\n\n${message}`,
+    text,
+    html,
   });
+}
+
+// Best-effort branded acknowledgement to the visitor. Deliberately does NOT
+// echo the submitted message: this email goes to a visitor-supplied address,
+// so echoing attacker-controlled text would turn the form into a relay for
+// arbitrary content sent under our sender reputation. Receipt confirmation only.
+async function sendAckToVisitor(toEmail: string, category: Category): Promise<void> {
+  const categoryLabel = CATEGORY_LABEL[category];
+  const { html, text } = renderBrandedEmail({
+    preheader: 'Thanks — we’ve got your message.',
+    heading: 'Thanks — we’ve got your message',
+    paragraphs: [
+      `Thanks for reaching out to ${SITE_TITLE}. We’ve received your ${categoryLabel.toLowerCase()} and will take a look.`,
+      'We read everything that comes in. If your message needs a reply, we’ll get back to you at this address.',
+    ],
+    cta: { label: 'Open Paddock', href: `${SITE_URL}/app` },
+    footerNote: `You’re receiving this because you contacted us through ${SITE_URL.replace(/^https?:\/\//, '')}.`,
+  });
+  await sendEmail({ to: toEmail, subject: `We’ve got your message — ${SITE_TITLE}`, text, html });
 }
 
 export async function POST(req: Request) {
@@ -109,6 +139,9 @@ export async function POST(req: Request) {
   }
 
   const sent = await sendViaResend(email, message, category, userId);
+
+  // Acknowledge the visitor (best-effort; never changes the response contract).
+  await sendAckToVisitor(email, category);
 
   return NextResponse.json({
     ok: true,
