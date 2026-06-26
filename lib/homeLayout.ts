@@ -6,9 +6,16 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 4;
+export const HOME_LAYOUT_VERSION = 5;
 
-export type HomeElementId = 'chyron' | 'just-missed' | 'schedule' | 'news' | 'from-the-blog';
+export type HomeElementId =
+  | 'chyron'
+  | 'just-missed'
+  | 'schedule'
+  | 'news'
+  | 'from-the-blog'
+  | 'championship-leader'
+  | 'standings-snapshot';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -28,6 +35,8 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'schedule', label: 'This week', hint: 'This week’s sessions across your series.', collapsible: true },
   { id: 'news', label: 'News', hint: 'The Paddock wire — latest motorsport.com headlines.', collapsible: true },
   { id: 'from-the-blog', label: 'From the blog', hint: 'The latest Paddock long-reads and explainers.', collapsible: true },
+  { id: 'championship-leader', label: 'Championship leader', hint: 'Who’s leading each series you follow, and by how much.', collapsible: true },
+  { id: 'standings-snapshot', label: 'Standings snapshot', hint: 'The top of the table for one series, refreshed each round.', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
@@ -75,27 +84,22 @@ export const AVAILABLE_WIDGETS: AvailableWidget[] = [
     icon: 'MapPin',
     status: 'coming-soon',
   },
-  {
-    id: 'standings-snapshot',
-    label: 'Standings snapshot',
-    blurb: 'A compact top-of-table view for your series, refreshed each round.',
-    icon: 'ChartBar',
-    status: 'coming-soon',
-  },
-  {
-    id: 'championship-leader',
-    label: 'Championship leader',
-    blurb: 'Who’s leading right now, and by how much, across your series.',
-    icon: 'Crown',
-    status: 'coming-soon',
-  },
 ];
+
+/** Per-widget settings (distinct from order/hidden/collapsed). Only the
+ *  standings-snapshot widget uses it for now — which series' top-5 to show. */
+export interface HomeWidgetConfig {
+  /** Series slug for the standings-snapshot widget. Absent → the client falls
+   *  back to the user's first followed eligible series. */
+  snapshotSeries?: string;
+}
 
 export interface HomeLayoutPrefs {
   version: number;
   order: HomeElementId[];
   hidden: HomeElementId[];
   collapsed: HomeElementId[];
+  config: HomeWidgetConfig;
 }
 
 // "Just missed" is collapsed by default (operator: home is busy — lead with
@@ -107,7 +111,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
@@ -115,6 +119,7 @@ export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
   order: [...ALL_IDS],
   hidden: [...DEFAULT_HIDDEN],
   collapsed: [...DEFAULT_COLLAPSED],
+  config: {},
 };
 
 function isHomeElementId(x: unknown): x is HomeElementId {
@@ -158,7 +163,13 @@ export function reconcileHomeLayout(stored: Partial<HomeLayoutPrefs> | null | un
   const collapsed = Array.isArray(stored?.collapsed)
     ? dedupe(stored!.collapsed.filter(isHomeElementId)).filter(id => COLLAPSIBLE_IDS.includes(id))
     : [...DEFAULT_COLLAPSED];
-  return { version: HOME_LAYOUT_VERSION, order, hidden, collapsed };
+  // Per-widget config — carry a valid snapshotSeries (a string), else default empty.
+  const storedConfig = (stored?.config ?? undefined) as HomeWidgetConfig | undefined;
+  const config: HomeWidgetConfig =
+    typeof storedConfig?.snapshotSeries === 'string'
+      ? { snapshotSeries: storedConfig.snapshotSeries }
+      : {};
+  return { version: HOME_LAYOUT_VERSION, order, hidden, collapsed, config };
 }
 
 /** Validate + normalize an API payload; null when the shape is wrong. */
@@ -168,6 +179,7 @@ export function parseHomeLayout(body: unknown): HomeLayoutPrefs | null {
   if (b.order !== undefined && !Array.isArray(b.order)) return null;
   if (b.hidden !== undefined && !Array.isArray(b.hidden)) return null;
   if (b.collapsed !== undefined && !Array.isArray(b.collapsed)) return null;
+  if (b.config !== undefined && (typeof b.config !== 'object' || Array.isArray(b.config))) return null;
   return reconcileHomeLayout(b as Partial<HomeLayoutPrefs>);
 }
 

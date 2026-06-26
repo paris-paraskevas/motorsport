@@ -39,6 +39,15 @@ interface HomeBlogItem {
   publishedAt: string | null;
 }
 
+interface HomeStandingsItem {
+  slug: string;
+  name: string;
+  color: string;
+  leader: { name: string; points: number };
+  gapToSecond: number | null;
+  top: { position: number; name: string; points: number }[];
+}
+
 const WEEK_MS = HOME_WEEK_MS;
 const NEWS_LIMIT = 10;
 
@@ -216,6 +225,33 @@ export function HomeContent({
       alive = false;
     };
   }, [blogHidden, blogCollapsed]);
+
+  // STANDINGS WIDGETS (championship-leader + standings-snapshot) — ONE fetch for
+  // both, defer-loaded only when at least one is shown + expanded. The route
+  // returns briefs only for eligible series that have data, so its response
+  // defines what renders (no client-side eligibility list). `all` = follow-all.
+  const [standings, setStandings] = useState<HomeStandingsItem[] | null>(null);
+  const leaderShown =
+    !layout.hidden.includes('championship-leader') && !layout.collapsed.includes('championship-leader');
+  const snapshotShown =
+    !layout.hidden.includes('standings-snapshot') && !layout.collapsed.includes('standings-snapshot');
+  const needStandings = leaderShown || snapshotShown;
+  const standingsParam = followed === null ? 'all' : followed.join(',');
+  useEffect(() => {
+    if (!needStandings || !standingsParam) return;
+    let alive = true;
+    fetch(`/api/home/standings?series=${encodeURIComponent(standingsParam)}`)
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => {
+        if (alive) setStandings(d as HomeStandingsItem[]);
+      })
+      .catch(() => {
+        if (alive) setStandings([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [needStandings, standingsParam]);
 
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
@@ -973,6 +1009,115 @@ export function HomeContent({
           </Link>
           </>
           )}
+        </section>
+      )}
+
+      {/* ── CHAMPIONSHIP LEADER — opt-in. Who leads each series you follow. ── */}
+      {!isHidden('championship-leader') && (
+        <section aria-label="Championship leader" className="mb-8" style={{ order: orderOf('championship-leader') }}>
+          <CollapsibleSectionHead
+            title="Championship leader"
+            sub="who's on top"
+            collapsed={isCollapsed('championship-leader')}
+            onToggle={() => toggleCollapsed('championship-leader')}
+          />
+          {!isCollapsed('championship-leader') &&
+            (standings === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface" />
+                <div className="h-4 w-1/2 animate-pulse bg-surface/60" />
+              </div>
+            ) : standings.length === 0 ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                Standings unavailable right now.
+              </p>
+            ) : (
+              <div className="border-y border-border divide-y divide-border">
+                {standings.map(s => (
+                  <Link
+                    key={s.slug}
+                    href={`/series/${s.slug}/standings`}
+                    className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  >
+                    <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
+                    <span
+                      className="w-20 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
+                      style={{ color: s.color }}
+                    >
+                      {s.name}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight text-text">
+                      {s.leader.name}
+                    </span>
+                    <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">{s.leader.points}</span>
+                    {s.gapToSecond != null && s.gapToSecond > 0 && (
+                      <span className="w-10 shrink-0 text-right font-mono text-[11px] tnum text-text-faint">
+                        +{s.gapToSecond}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            ))}
+        </section>
+      )}
+
+      {/* ── STANDINGS SNAPSHOT — opt-in. Top 5 of one chosen series (picked in
+             Customise; defaults to the first one with data). ── */}
+      {!isHidden('standings-snapshot') && (
+        <section aria-label="Standings snapshot" className="mb-8" style={{ order: orderOf('standings-snapshot') }}>
+          {(() => {
+            const brief =
+              standings && standings.length > 0
+                ? standings.find(s => s.slug === layout.config.snapshotSeries) ?? standings[0]
+                : null;
+            return (
+              <>
+                <CollapsibleSectionHead
+                  title="Standings snapshot"
+                  sub={brief ? brief.name : 'top of the table'}
+                  collapsed={isCollapsed('standings-snapshot')}
+                  onToggle={() => toggleCollapsed('standings-snapshot')}
+                />
+                {!isCollapsed('standings-snapshot') &&
+                  (standings === null ? (
+                    <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                      <div className="h-4 w-1/3 animate-pulse bg-surface" />
+                      <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                    </div>
+                  ) : !brief ? (
+                    <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                      Pick a series in Customise to see its table.
+                    </p>
+                  ) : (
+                    <>
+                      <ol className="border-y border-border divide-y divide-border">
+                        {brief.top.map(row => (
+                          <li key={row.position} className="flex items-baseline gap-3 py-2 px-2 -mx-2">
+                            <span
+                              className={`w-5 shrink-0 text-right font-mono text-sm tnum ${
+                                row.position === 1 ? 'font-bold text-brand' : 'text-text-faint'
+                              }`}
+                            >
+                              {row.position}
+                            </span>
+                            <span className="min-w-0 flex-1 truncate text-sm font-medium text-text">{row.name}</span>
+                            <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">{row.points}</span>
+                          </li>
+                        ))}
+                      </ol>
+                      <Link
+                        href={`/series/${brief.slug}/standings`}
+                        className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+                      >
+                        Full standings
+                        <ArrowUpRight size={13} />
+                      </Link>
+                    </>
+                  ))}
+              </>
+            );
+          })()}
         </section>
       )}
       </div>

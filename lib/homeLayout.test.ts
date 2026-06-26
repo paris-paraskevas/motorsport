@@ -11,21 +11,23 @@ describe('homeLayout.reconcile', () => {
     const r = reconcileHomeLayout({ order: ['schedule'] });
     expect(r.order[0]).toBe('schedule');
     // the rest are appended in registry order
-    expect(new Set(r.order)).toEqual(new Set(['chyron', 'just-missed', 'schedule', 'news', 'from-the-blog']));
-    expect(r.order).toHaveLength(5);
+    expect(new Set(r.order)).toEqual(
+      new Set(['chyron', 'just-missed', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot']),
+    );
+    expect(r.order).toHaveLength(7);
   });
 
   it('drops unknown ids and de-dupes', () => {
     const r = reconcileHomeLayout({ order: ['nope', 'chyron', 'chyron', 'schedule'] as never });
-    expect(r.order).toHaveLength(5);
+    expect(r.order).toHaveLength(7);
     expect(r.order.filter(x => x === 'chyron')).toHaveLength(1);
     expect(r.order).not.toContain('nope' as never);
   });
 
   it('filters hidden to known ids (and default-hides a newly-seen opt-in widget)', () => {
-    // No stored order → from-the-blog is "newly seen" and joins hidden.
+    // No stored order → all opt-in widgets are "newly seen" and join hidden.
     const r = reconcileHomeLayout({ hidden: ['just-missed', 'bogus'] as never });
-    expect(r.hidden).toEqual(['just-missed', 'from-the-blog']);
+    expect(r.hidden).toEqual(['just-missed', 'from-the-blog', 'championship-leader', 'standings-snapshot']);
   });
 
   it('parseHomeLayout rejects non-object / non-array fields, accepts valid', () => {
@@ -65,18 +67,36 @@ describe('homeLayout.defaultHidden (opt-in widgets)', () => {
     expect(DEFAULT_HOME_LAYOUT.hidden).toContain('from-the-blog');
   });
 
-  it('default-hides from-the-blog for an existing user who has never seen it', () => {
-    // pre-v4 prefs: a full order WITHOUT from-the-blog, empty hidden.
+  it('default-hides newly-seen opt-in widgets for an existing user who has never seen them', () => {
+    // pre-v5 prefs: a full order WITHOUT the opt-in widgets, empty hidden.
     const r = reconcileHomeLayout({ order: ['chyron', 'just-missed', 'schedule', 'news'], hidden: [] });
     expect(r.order).toContain('from-the-blog');
-    expect(r.hidden).toEqual(['from-the-blog']);
+    expect(r.hidden).toEqual(['from-the-blog', 'championship-leader', 'standings-snapshot']);
   });
 
   it('respects the user choice once the widget is already in their stored order', () => {
-    const full = ['chyron', 'just-missed', 'schedule', 'news', 'from-the-blog'] as const;
-    // shown (not in hidden) → stays shown
+    const full = [
+      'chyron', 'just-missed', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot',
+    ] as const;
+    // all opt-in widgets present + not hidden → stay shown
     expect(reconcileHomeLayout({ order: [...full], hidden: [] }).hidden).toEqual([]);
     // hidden explicitly → stays hidden
     expect(reconcileHomeLayout({ order: [...full], hidden: ['from-the-blog'] }).hidden).toEqual(['from-the-blog']);
+  });
+});
+
+describe('homeLayout.config', () => {
+  it('defaults to an empty config and carries a valid snapshotSeries', () => {
+    expect(reconcileHomeLayout(null).config).toEqual({});
+    expect(reconcileHomeLayout({ config: { snapshotSeries: 'motogp' } }).config).toEqual({ snapshotSeries: 'motogp' });
+    // junk snapshotSeries / config → empty
+    expect(reconcileHomeLayout({ config: { snapshotSeries: 5 } as never }).config).toEqual({});
+    expect(reconcileHomeLayout({ config: null as never }).config).toEqual({});
+  });
+
+  it('parseHomeLayout rejects a non-object config, accepts a valid one', () => {
+    expect(parseHomeLayout({ config: 'nope' })).toBeNull();
+    expect(parseHomeLayout({ config: [] })).toBeNull();
+    expect(parseHomeLayout({ config: { snapshotSeries: 'f1' } })?.config).toEqual({ snapshotSeries: 'f1' });
   });
 });

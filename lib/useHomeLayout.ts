@@ -31,6 +31,7 @@ export function useHomeLayout(): {
   reorder: (order: HomeElementId[]) => void;
   toggleHidden: (id: HomeElementId) => void;
   toggleCollapsed: (id: HomeElementId) => void;
+  setSnapshotSeries: (slug: string) => void;
   reset: () => void;
 } {
   const { isLoaded, isSignedIn } = useAuth();
@@ -110,7 +111,11 @@ export function useHomeLayout(): {
     persist({ ...layout, collapsed });
   };
 
+  // Which series the standings-snapshot widget shows (per-widget config).
+  const setSnapshotSeries = (slug: string) =>
+    persist({ ...layout, config: { ...layout.config, snapshotSeries: slug } });
+
   const reset = () => persist(DEFAULT_HOME_LAYOUT);
 
-  return { layout, move, reorder, toggleHidden, toggleCollapsed, reset };
+  return { layout, move, reorder, toggleHidden, toggleCollapsed, setSnapshotSeries, reset };
 }

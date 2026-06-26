@@ -88,8 +88,8 @@ function HomePreview({ layout }: { layout: HomeLayoutPrefs }) {
 // — touch + keyboard friendly), fold/expand collapsible blocks, show/hide, reset.
 // Shared by the inline banner and the dedicated /settings/customize page so both
 // stay byte-identical in behaviour.
-function BlockControls() {
-  const { layout, move, reorder, toggleHidden, toggleCollapsed, reset } = useHomeLayout();
+function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: string; name: string }[] }) {
+  const { layout, move, reorder, toggleHidden, toggleCollapsed, setSnapshotSeries, reset } = useHomeLayout();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const onDrop = (to: number) => {
@@ -182,6 +182,33 @@ function BlockControls() {
             );
           })}
         </ul>
+        {/* Per-widget config: which series the standings-snapshot widget shows.
+            Only relevant when that widget is present + visible. */}
+        {eligibleSeries.length > 0 &&
+          layout.order.includes('standings-snapshot') &&
+          !layout.hidden.includes('standings-snapshot') && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+              <label
+                htmlFor="snapshot-series"
+                className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint"
+              >
+                Standings snapshot — series
+              </label>
+              <select
+                id="snapshot-series"
+                value={layout.config.snapshotSeries ?? ''}
+                onChange={e => setSnapshotSeries(e.target.value)}
+                className="border border-border bg-bg px-2 py-1 text-xs text-text"
+              >
+                <option value="">First series you follow</option>
+                {eligibleSeries.map(s => (
+                  <option key={s.slug} value={s.slug}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         <button
           type="button"
           onClick={reset}
@@ -263,7 +290,11 @@ export function HomeCustomizeBanner() {
 // Full customise surface for the dedicated /settings/customize page: the live
 // preview + per-block controls, then the widget-discovery gallery. Same hook,
 // same persistence as the banner — just the richer, standalone presentation.
-export function HomeCustomizePanel() {
+export function HomeCustomizePanel({
+  eligibleSeries = [],
+}: {
+  eligibleSeries?: { slug: string; name: string }[];
+}) {
   return (
     <div>
       <section>
@@ -274,7 +305,7 @@ export function HomeCustomizePanel() {
         <p className="mb-4 font-mono text-[11px] leading-relaxed text-text-faint">
           Drag the handle to reorder (or use the arrows). Fold or hide any block. Changes save instantly.
         </p>
-        <BlockControls />
+        <BlockControls eligibleSeries={eligibleSeries} />
       </section>
       <WidgetGallery />
     </div>
