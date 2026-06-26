@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.104.0 — 2026-06-26
+
+Added: **the last two home widgets — championship-leader + standings-snapshot** — completing the customise-gallery trio (from-the-blog shipped in 0.102.0).
+
+### Added
+- `lib/standings/brief.ts` (new): `fetchStandingsBrief(slug, season)` dispatches to the per-series current-standings fetcher (the same the Standings tab uses), normalized to `{ leader, gapToSecond, top: top-5 }`, KV-cached per series (1h). Eligible = the 10 single-driver-championship series; the 3 multi-class ones (WEC / IMSA / GT-World — no single leader) are excluded. Exports `ELIGIBLE_STANDINGS_SLUGS` + `isEligibleStandingsSeries`.
+- `app/(app)/api/home/standings/route.ts` (new): `?series=f1,motogp,…` (or `all`) → a parallel, fail-soft fan-out enriched with series name + colour, edge-cached. Shared by both widgets.
+- `components/HomeContent.tsx`: two new opt-in (default-hidden) sections — **championship-leader** (one leader line per followed series: name + points + gap → that series' standings) and **standings-snapshot** (top-5 of one chosen series). Both fed by ONE defer-fetch of `/api/home/standings` (its response defines eligibility, so no client-side eligibility list); fires only when a widget is shown + expanded, so `/app` stays static.
+- `lib/homeLayout.ts`: graduated both from `AVAILABLE_WIDGETS` into `HOME_ELEMENTS` (default-hidden via `DEFAULT_HIDDEN`); `HOME_LAYOUT_VERSION`→5. New `config: HomeWidgetConfig` on `HomeLayoutPrefs` (just `snapshotSeries` for now) + reconcile/parse handling + tests (13 pass).
+- Customise: `useHomeLayout` gains `setSnapshotSeries`; `HomeCustomizeBanner` renders a single-series picker for standings-snapshot (the eligible series, threaded from `/settings/customize`). championship-leader is automatic (all followed eligible) — no picker.
+
+### Notes
+- Browser-verified on a local prod build: both widgets default hidden; `/settings/customize` lists them as real blocks (gallery down to 3 coming-soon) with the snapshot series-picker (10 series); enabling them renders championship-leader (F1/MotoGP/F2/WRC leaders) + standings-snapshot (the picked MotoGP top-5) on `/app`, links going to the path-based `/series/<slug>/standings`. tsc clean; `next build` clean (`/app` `○`); 0 new lint.
+- **Standings data rendered locally here, but scrape reliability is datacenter-IP-dependent — re-confirm on the Vercel preview** (the landmine). The fan-out is per-series KV-cached (1h); a warm cron is the follow-up if cold-load latency shows.
+
 ## 0.103.0 — 2026-06-26
 
 Changed: **series pages are now statically ISR-cacheable** — query-param tabs (`/series/[slug]?tab=X`) became path-based routes (`/series/[slug]/[tab]`). The `searchParams.tab` read was the one thing forcing `/series/[slug]` to render dynamically on every request (prod: a ~1.4 s cold MISS, never edge-cached).

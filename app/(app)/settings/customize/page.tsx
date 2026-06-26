@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { HomeCustomizePanel } from '@/components/HomeCustomizeBanner';
+import { loadAllSeriesMeta } from '@/lib/series';
+import { ELIGIBLE_STANDINGS_SLUGS } from '@/lib/standings/brief';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +16,14 @@ export const metadata: Metadata = {
 // live preview + per-block controls, plus a widget-discovery gallery advertising
 // what's coming. URL: /settings/customize. Behaviour/persistence unchanged — the
 // panel reuses the same useHomeLayout hook as the former inline banner.
-export default function CustomizePage() {
+export default async function CustomizePage() {
+  // The standings-snapshot widget shows one series — offer the eligible
+  // (single-championship) ones, by name, for its picker.
+  const eligible = new Set<string>(ELIGIBLE_STANDINGS_SLUGS);
+  const eligibleSeries = (await loadAllSeriesMeta())
+    .filter(m => eligible.has(m.slug))
+    .map(m => ({ slug: m.slug, name: m.name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
   return (
     <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <Link
@@ -29,7 +38,7 @@ export default function CustomizePage() {
           Customise<span className="text-brand">.</span>
         </h1>
       </header>
-      <HomeCustomizePanel />
+      <HomeCustomizePanel eligibleSeries={eligibleSeries} />
     </div>
   );
 }

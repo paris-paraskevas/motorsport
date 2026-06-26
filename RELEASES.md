@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.104.0 — 2026-06-26
+
+**Two more home widgets: Championship leader & Standings snapshot.** Add them from Customise (Account → Customise): "Championship leader" shows who's on top of every series you follow, and "Standings snapshot" shows the top five of one series you pick. Like the other blocks, they're yours to show, hide, fold and reorder.
+
 ## 0.103.0 — 2026-06-26
 
 **Faster series pages.** Each series section — Standings, Results, Drivers and the rest — now has its own clean address (e.g. paddock-tracker.com/series/f1/standings) and is cached at the edge, so series pages open noticeably quicker. Older `?tab=` links redirect automatically, so nothing you've bookmarked or shared breaks.
