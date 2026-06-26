@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.106.0 — 2026-06-26
+
+**Two new home widgets — and a fix.** Add **Series countdowns** (a live countdown to each series' next session) or **Series results** (the latest result for each series, split out into its own row) from Customise (Account → Customise), and choose how many series each shows — like every block, they're yours to show, hide, fold and reorder. We also fixed the comfortable/compact spacing toggle on the "Live / up next" block, which previously had no effect.
+
 ## 0.105.0 — 2026-06-26
 
 **Fine-tune every home widget.** Each block on your home now has its own settings — open Customise (Account → Customise) and tap the gear on any block. Choose how many results, headlines, posts or standings rows it shows; switch any block between comfortable and compact spacing; pick which series the Standings snapshot follows; or narrow Championship leader to just the series you care about. As always, your choices are saved on your device and travel with you when you sign in.

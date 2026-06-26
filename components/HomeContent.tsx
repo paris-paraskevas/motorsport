@@ -185,10 +185,16 @@ export function HomeContent({
   // fan-out — not free) is deferred until the block is both shown and expanded.
   // Just-missed is collapsed by default, so a fresh /app pays nothing for it
   // until the user opens it; the effect re-runs when the collapse state flips.
-  const justMissedHidden = layout.hidden.includes('just-missed');
-  const justMissedCollapsed = layout.collapsed.includes('just-missed');
+  // Both the combined Just missed block and the per-series Series results block
+  // render from /api/just-missed — ONE shared fetch, fired when EITHER is shown +
+  // expanded (mirrors the championship-leader + standings-snapshot fan-out).
+  const justMissedShown =
+    !layout.hidden.includes('just-missed') && !layout.collapsed.includes('just-missed');
+  const seriesResultsShown =
+    !layout.hidden.includes('series-just-missed') && !layout.collapsed.includes('series-just-missed');
+  const needJustMissed = justMissedShown || seriesResultsShown;
   useEffect(() => {
-    if (justMissedHidden || justMissedCollapsed) return;
+    if (!needJustMissed) return;
     let alive = true;
     fetch('/api/just-missed')
       .then(r => (r.ok ? r.json() : []))
@@ -201,7 +207,7 @@ export function HomeContent({
     return () => {
       alive = false;
     };
-  }, [justMissedHidden, justMissedCollapsed]);
+  }, [needJustMissed]);
 
   // FROM THE BLOG — same defer-fetch shape as just-missed: the latest published
   // posts load only when the (opt-in, default-hidden) block is both shown and
@@ -281,6 +287,12 @@ export function HomeContent({
   const leaderSet = cfg('championship-leader').seriesSet;
   const snapSeries = cfg('standings-snapshot').series;
   const snapRows = cfg('standings-snapshot').rows ?? 5;
+  const sjmCount = Math.min(Math.max(cfg('series-just-missed').count ?? 5, 1), 10);
+  const cdCount = Math.min(Math.max(cfg('series-countdowns').count ?? 5, 1), 10);
+  // Density on the chyron tightens its vertical padding (it's a single strip, not
+  // a row list — so the [&_a]/[&_li] descendant variants the other blocks use
+  // don't apply here).
+  const chyronPad = dense('chyron') ? 'py-2.5' : 'py-4';
 
   // JUST MISSED — filter to followed, capped to the widget's `count` (hero +
   // rest). Rank cards that
@@ -406,7 +418,7 @@ export function HomeContent({
         {liveItems.length > 0 ? (
           <div className="divide-y divide-border">
             {liveItems.map(item => (
-              <div key={`${item.seriesSlug}-${item.session.uid}`} className="py-4">
+              <div key={`${item.seriesSlug}-${item.session.uid}`} className={chyronPad}>
               <Link
                 href={hrefFor(item)}
                 className="group flex flex-wrap items-center gap-x-4 gap-y-1"
@@ -453,7 +465,7 @@ export function HomeContent({
             ))}
           </div>
         ) : next ? (
-          <div className="py-4">
+          <div className={chyronPad}>
           <Link
             href={hrefFor(next)}
             className="group flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6"
@@ -1132,6 +1144,122 @@ export function HomeContent({
           })()}
         </section>
       )}
+      {/* ── SERIES COUNTDOWNS — opt-in. Each followed series' next session with
+             its own live countdown (optionally a chosen subset of series). Reads
+             `items` (which carries each series' next), so no fetch. ── */}
+      {!isHidden('series-countdowns') && (() => {
+        const seen = new Set<string>();
+        const rows = upcomingItems
+          .filter(i => {
+            if (seen.has(i.seriesSlug)) return false;
+            seen.add(i.seriesSlug);
+            return true;
+          })
+          .slice(0, cdCount);
+        return (
+          <section aria-label="Series countdowns" className="mb-8" style={{ order: orderOf('series-countdowns') }}>
+            <CollapsibleSectionHead
+              title="Series countdowns"
+              sub={`${rows.length} series`}
+              collapsed={isCollapsed('series-countdowns')}
+              onToggle={() => toggleCollapsed('series-countdowns')}
+            />
+            {!isCollapsed('series-countdowns') &&
+              (rows.length === 0 ? (
+                <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                  No upcoming sessions in your followed series.
+                </p>
+              ) : (
+                <div className={`border-y border-border divide-y divide-border${dense('series-countdowns') ? ' [&_a]:py-1.5' : ''}`}>
+                  {rows.map(item => (
+                    <Link
+                      key={item.seriesSlug}
+                      href={hrefFor(item)}
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    >
+                      <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: item.color }} />
+                      <span
+                        className="w-20 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
+                        style={{ color: item.color }}
+                      >
+                        {item.seriesName}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight text-text">
+                        {item.session.title}
+                      </span>
+                      <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">
+                        {item.session.dateOnly ? 'TBC' : <Countdown to={item.session.start} initialNow={now} />}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              ))}
+          </section>
+        );
+      })()}
+
+      {/* ── SERIES RESULTS — opt-in. The latest result for each followed series,
+             one row each (vs the combined Just missed block); shares the
+             /api/just-missed fetch, recency-sorted, capped to `count`. ── */}
+      {!isHidden('series-just-missed') && (() => {
+        const rows = (justMissed ?? [])
+          .filter(j => !(hydrated && followed !== null) || followed.includes(j.seriesSlug))
+          .slice()
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, sjmCount);
+        return (
+          <section aria-label="Series results" className="mb-8" style={{ order: orderOf('series-just-missed') }}>
+            <CollapsibleSectionHead
+              title="Series results"
+              sub="latest per series"
+              collapsed={isCollapsed('series-just-missed')}
+              onToggle={() => toggleCollapsed('series-just-missed')}
+            />
+            {!isCollapsed('series-just-missed') &&
+              (justMissed === null ? (
+                <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                  <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface" />
+                  <div className="h-4 w-1/2 animate-pulse bg-surface/60" />
+                </div>
+              ) : rows.length === 0 ? (
+                <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                  Nothing wrapped up recently.
+                </p>
+              ) : (
+                <div className={`border-y border-border divide-y divide-border${dense('series-just-missed') ? ' [&_a]:py-1.5' : ''}`}>
+                  {rows.map(j => (
+                    <a
+                      key={j.seriesSlug}
+                      href={j.resultsHref}
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    >
+                      <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: j.color }} />
+                      <span className="flex-1 min-w-0">
+                        <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
+                          {j.raceName}
+                        </span>
+                        <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
+                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: j.color }}>
+                            {j.seriesName}
+                          </span>
+                          {j.podium?.[0] && (
+                            <>
+                              <span>·</span>
+                              <span className="truncate">{j.podium[0].name}</span>
+                            </>
+                          )}
+                        </span>
+                      </span>
+                      <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
+                        {relativeAgo(new Date(j.date), now)}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              ))}
+          </section>
+        );
+      })()}
       </div>
       <Tour
         stops={[

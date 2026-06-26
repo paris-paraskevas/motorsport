@@ -101,6 +101,8 @@ const NUMERIC_SETTING: Partial<
   'from-the-blog': { field: 'count', label: 'Posts', values: [2, 4, 6], def: 4 },
   schedule: { field: 'days', label: 'Days', values: [3, 7], def: 7 },
   'standings-snapshot': { field: 'rows', label: 'Rows', values: [3, 5, 10], def: 5 },
+  'series-just-missed': { field: 'count', label: 'Series', values: [3, 5, 10], def: 5 },
+  'series-countdowns': { field: 'count', label: 'Series', values: [3, 5, 10], def: 5 },
 };
 
 function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: string; name: string }[] }) {
