@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.103.0 — 2026-06-26
+
+**Faster series pages.** Each series section — Standings, Results, Drivers and the rest — now has its own clean address (e.g. paddock-tracker.com/series/f1/standings) and is cached at the edge, so series pages open noticeably quicker. Older `?tab=` links redirect automatically, so nothing you've bookmarked or shared breaks.
+
 ## 0.102.0 — 2026-06-26
 
 **New home widget: From the blog.** You can now add a "From the blog" block to your home that surfaces Paddock's latest posts. Switch it on from Customise (Account → Customise) — like every home block, it's yours to show, hide, fold and reorder.

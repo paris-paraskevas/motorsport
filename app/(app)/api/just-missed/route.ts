@@ -50,7 +50,7 @@ export async function GET() {
         round: latest.round,
         podium: latest.podium,
         highlight: highlightForRound(await loadMedia(slug), latest.round),
-        resultsHref: `/series/${slug}?tab=results`,
+        resultsHref: `/series/${slug}/results`,
       });
     }),
   );

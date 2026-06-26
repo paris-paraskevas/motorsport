@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { TabKey, tabsFor } from '@/lib/tabs';
 
@@ -9,14 +8,18 @@ import { TabKey, tabsFor } from '@/lib/tabs';
 // scrollable, sticks under the fixed app header (top-14) — which works
 // because html/body use overflow-x: clip, not hidden. Active tab carries the
 // series color via the page's --tint scope.
+//
+// Path-based tabs (B11): each tab links to /series/[slug]/[tab] (calendar to the
+// bare /series/[slug]); the active tab comes from the route params, not searchParams.
 export function SeriesTabs({
+  slug,
   activeTab,
   singleEvent,
 }: {
+  slug: string;
   activeTab: TabKey;
   singleEvent?: boolean;
 }) {
-  const pathname = usePathname();
   const tabs = tabsFor(singleEvent);
   const activeRef = useRef<HTMLAnchorElement | null>(null);
   const prevTabRef = useRef<TabKey | null>(null);
@@ -32,7 +35,7 @@ export function SeriesTabs({
       window.scrollTo(0, 0);
     }
     prevTabRef.current = activeTab;
-    // Keep the active tab in view when landing deep (e.g. ?tab=champions).
+    // Keep the active tab in view when landing deep (e.g. /series/f1/champions).
     activeRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
   }, [activeTab]);
 
@@ -44,11 +47,12 @@ export function SeriesTabs({
       <div className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5">
         {tabs.map(tab => {
           const isActive = tab.key === activeTab;
+          const href = tab.key === 'calendar' ? `/series/${slug}` : `/series/${slug}/${tab.key}`;
           return (
             <Link
               key={tab.key}
               ref={isActive ? activeRef : undefined}
-              href={`${pathname}?tab=${tab.key}`}
+              href={href}
               scroll={false}
               aria-current={isActive ? 'page' : undefined}
               className={`shrink-0 inline-flex items-center h-11 border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${

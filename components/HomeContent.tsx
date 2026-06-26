@@ -160,7 +160,7 @@ export function HomeContent({
     const round = roundFor(item.seriesSlug, item.session.uid);
     return round
       ? `/series/${item.seriesSlug}/weekend/${round}`
-      : `/series/${item.seriesSlug}?tab=calendar`;
+      : `/series/${item.seriesSlug}`;
   };
   const { followed, hydrated } = useFollowedSeries();
   // Layout is read here; the customise CONTROLS live in Account (a banner with a
