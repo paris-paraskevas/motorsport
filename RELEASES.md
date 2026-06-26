@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.100.1 — 2026-06-26
+
+**Calendar month jump fixed.** Choosing a month from the Calendar menu in the top navigation now moves the calendar to that month every time — previously it could do nothing if you were already on the Calendar page.
+
 ## 0.100.0 — 2026-06-26
 
 **Better-looking emails.** Messages from Paddock — like the confirmation you get when you write in through the contact form — now arrive in a clean, branded design instead of plain text. New sign-ups will also get a short welcome email to help you get started.

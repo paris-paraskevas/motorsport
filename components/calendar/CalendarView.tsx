@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { useNow } from '@/lib/use-now';
 import {
@@ -22,40 +23,58 @@ import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
 
-// Root calendar (replaces the month-list FilteredSessions for /calendar). Owns
-// the device clock, the followed-series filter, and the view + anchor state. All
-// interactivity is client-side so the server route stays static/ISR.
-export function CalendarView({
-  items,
-  roundByKey,
-  serverNow,
-}: {
+// Parse a /calendar?m=YYYY-MM deep-link into the anchor's ms (local-midnight,
+// the 1st of that month) — or null (follow `now`) when absent or malformed.
+function parseMonthParam(m: string | null): number | null {
+  const match = m ? /^(\d{4})-(\d{2})$/.exec(m) : null;
+  if (match) {
+    const month = Number(match[2]);
+    if (month >= 1 && month <= 12) return new Date(Number(match[1]), month - 1, 1).getTime();
+  }
+  return null;
+}
+
+type CalendarViewProps = {
   items: CalendarEntry[];
   roundByKey?: Record<string, number>;
   serverNow: string;
-}) {
+};
+
+// Root calendar (replaces the month-list FilteredSessions for /calendar). Owns
+// the device clock, the followed-series filter, and the view + anchor state. All
+// interactivity is client-side so the server route stays static/ISR.
+//
+// CalendarInner reads ?m= via useSearchParams; on a prerendered route that hook
+// must sit under a Suspense boundary or the production build fails, so the
+// public CalendarView wraps it. The skeleton is both the Suspense fallback and
+// the inner pre-hydration state — no extra flash, and /calendar stays ○ Static.
+export function CalendarView(props: CalendarViewProps) {
+  return (
+    <Suspense fallback={<CalendarSkeleton />}>
+      <CalendarInner {...props} />
+    </Suspense>
+  );
+}
+
+function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
   const { followed, hydrated } = useFollowedSeries();
   const { now, clock } = useNow(serverNow);
   const [view, setView] = useState<CalendarViewMode>('month');
-  // null = follow `now`; otherwise the ms of a chosen local-midnight day. Seeded
-  // lazily from the header's Calendar deep-link (/calendar?m=YYYY-MM) on the
-  // first client render — guarded for SSR (window absent → null). Read here, not
-  // via useSearchParams, so /calendar stays static. Same value shape the in-page
-  // month <select> uses (monthStart(...).getTime()).
-  const [anchorMs, setAnchorMs] = useState<number | null>(() => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const m = new URLSearchParams(window.location.search).get('m');
-      const match = m ? /^(\d{4})-(\d{2})$/.exec(m) : null;
-      if (match) {
-        const month = Number(match[2]);
-        if (month >= 1 && month <= 12) return new Date(Number(match[1]), month - 1, 1).getTime();
-      }
-    } catch {
-      /* ignore a malformed ?m= param */
-    }
-    return null;
-  });
+  // null = follow `now`; otherwise the ms of a chosen local-midnight day (same
+  // shape the in-page month <select> uses). The header's Calendar menu
+  // deep-links to /calendar?m=YYYY-MM; reading it via useSearchParams (not a
+  // one-time window read) re-seeds the anchor on EVERY navigation — clicking a
+  // month while already on /calendar used to be a no-op because the old lazy
+  // initializer never re-ran on a query-only soft nav.
+  const monthParam = useSearchParams().get('m');
+  const [anchorMs, setAnchorMs] = useState<number | null>(() => parseMonthParam(monthParam));
+  // Re-seed when ?m= changes. Adjusting state during render (React's documented
+  // pattern, as in HeaderNavMenu) — not an effect, so no cascading-render lint.
+  const [lastMonthParam, setLastMonthParam] = useState(monthParam);
+  if (monthParam !== lastMonthParam) {
+    setLastMonthParam(monthParam);
+    setAnchorMs(parseMonthParam(monthParam));
+  }
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [types, setTypes] = useState<Set<SessionKind>>(() => new Set(['practice', 'qualifying', 'race']));
   const [seriesSel, setSeriesSel] = useState<Set<string> | null>(null); // null = all present
