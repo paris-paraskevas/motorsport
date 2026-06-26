@@ -1,5 +1,6 @@
 import { Suspense, type ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { after } from 'next/server';
 import Link from 'next/link';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
@@ -47,16 +48,22 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
   );
 }
 
-// Onboarding + detail in one parallel wave (was a sequential currentUser →
-// ensureBettingUser → name-backfill → getLeagueDetail chain). getLeagueDetail's
-// reads don't need the app_user row, so they race ensureBettingUser safely.
+// Onboarding + detail in one parallel wave; getLeagueDetail's reads don't need
+// the app_user row, so they race ensureBettingUser safely. The name backfill —
+// and its slow currentUser() Clerk hop — is deferred to after() so it never
+// blocks the league render (mirrors /social + the feedback route).
 async function LeagueData({ id, userId }: { id: string; userId: string }) {
-  const [, user, league] = await Promise.all([
+  const [, league] = await Promise.all([
     ensureBettingUser(userId),
-    currentUser(),
     getLeagueDetail(id, userId),
   ]);
-  await setDisplayNameIfMissing(userId, clerkDisplayName(user));
+  after(async () => {
+    try {
+      await setDisplayNameIfMissing(userId, clerkDisplayName(await currentUser()));
+    } catch {
+      /* best-effort */
+    }
+  });
   if (!league || !league.isMember) {
     return (
       <p className="font-mono text-sm text-text-muted">

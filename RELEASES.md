@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.99.1 — 2026-06-26
+
+**Faster Account and league pages.** Your Account screen and individual league pages no longer wait on a slow identity lookup before they render — they load noticeably quicker, especially right after signing in.
+
 ## 0.99.0 — 2026-06-25
 
 *Staff: the feedback board now emails the team whenever someone posts, and it's reachable from the Account screen on mobile (not just the desktop header). No change for regular visitors.*

@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.99.1 — 2026-06-26
+
+Fixed: **/settings and /social/leagues/[id] no longer block on a Clerk `currentUser()` hop** (perf).
+
+### Changed
+- New `components/AccountStaffLinks.tsx` + `app/(app)/settings/page.tsx`: the staff-only Feedback row is now resolved **client-side** (`useUser`, mirroring HeaderUtils), so the Account page's server render no longer pays a `currentUser()` Clerk backend hop (~100–500ms) on the critical path — a regression introduced in 0.99.0. Same row, same admin/moderator gate.
+- `app/(app)/social/leagues/[id]/page.tsx`: the display-name backfill (and its `currentUser()` hop) moved into `after()`, so the league page renders from `ensureBettingUser` + `getLeagueDetail` alone — matching the /play, /social/friends and league-join pattern. After this, **no route page blocks render on `currentUser()`**.
+
+### Notes
+- Verified: tsc + `next build` clean; the staff Feedback row still renders for admins/moderators (client-side). **Deferred, documented:** `ensureBettingUser`'s three sequential ledger round-trips can NOT be parallelised safely (the monthly-grant FKs the app_user row, and the balance must be read *after* the grant) — the real fix is a single combined SQL RPC, which needs a migration; separately, pages that discard the balance could use a lighter onboarding call. Both queued for a follow-up perf pass.
+
 ## 0.99.0 — 2026-06-25
 
 Added: **Feedback email alerts** + a **mobile path to the staff board**.
