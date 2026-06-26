@@ -6,11 +6,15 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-06-26 (main = 0.104.0) — marathon: emails+welcome, calendar fixes, home-widget trio, B11 series-ISR (#260–#265 all MERGED) + ONE unmerged WIP
+## ⚡ Next session pickup — 2026-06-26 (main = 0.104.0) — marathon: emails+welcome, calendar fixes, home-widget trio, B11 series-ISR (#260–#265 all MERGED) + deep-customise WIP → PR #266 (0.105.0, verified, awaiting merge)
 
-Very long autonomous session, ~8 features. **#260–#265 are merged to main (0.104.0).** ONE feature is **in progress on a branch, unverified, NOT merged** — resume there.
+Very long autonomous session, ~8 features. **#260–#265 are merged to main (0.104.0).** The 8th feature (deep per-widget customisation) is now **verified + shipped as PR #266 (0.105.0), awaiting your squash-merge.**
 
-### ▶ START HERE — finish the WIP: deep per-widget customisation
+### ✅ DONE 2026-06-26 — deep per-widget customisation shipped as PR #266 (0.105.0); verified, awaiting your squash-merge + the Vercel-preview scrape re-check
+
+_Verified the full tail on a local prod build (guest / localStorage): tsc / lint / `next build` clean; browser-verified the per-widget gear disclosure controls, persist + merge into `config` at layout v6, `/app` reflecting the settings with real data (F1 top-3, compact), the pre-v6 flat `snapshotSeries` → `config['standings-snapshot'].series` migration (surfaced MotoGP on a real load), and the v3→v6 reconcile on the real pre-existing v3 prefs. Two fixes folded in: removed a dead `WEEK_MS`; **scoped the standings-snapshot Series picker to followed series** (it offered all eligible, but `/app` only fetches followed → a silent fall-back). Re-committed clean (`606b750`, non-WIP) + force-pushed + opened **PR #266**. **Owed (you):** squash-merge after a preview pass, and **re-confirm the standings-widget scrapes on the Vercel preview** (datacenter-IP landmine). Minor follow-up captured in IDEAS: championship-leader with all series deselected renders an empty block. Original plan detail kept below for the record._
+
+### ▶ (HISTORICAL — now done, see above) the WIP plan: deep per-widget customisation
 - **Branch `feat/widget-deep-customise`** (pushed, off the 0.104.0 main). **Spec:** `docs/superpowers/specs/2026-06-26-widget-customisation-design.md` (approved via brainstorming). The commit there is **WIP / UNVERIFIED — do NOT merge until verified.**
 - **What it does:** every home widget gets per-widget **content settings + a density toggle**, edited via an in-row **settings disclosure** (gear) on `/settings/customize`. Settings: just-missed `count` 1–5 · schedule `days` 3/7 · news `count` 5/10/20 · from-the-blog `count` 2/4/6 · championship-leader `seriesSet` (subset of followed) · standings-snapshot `series` + `rows` 3/5/10 · **density** (comfortable/compact) on all.
 - **What's DONE (code written):** `lib/homeLayout.ts` — `WidgetSettings` + `HomeWidgetConfig` now `Partial<Record<HomeElementId, WidgetSettings>>`, `reconcileConfig` **migrates** pre-v6 flat `snapshotSeries` → `config['standings-snapshot'].series`, `HOME_LAYOUT_VERSION`→6, tests updated (+ config describe). `useHomeLayout` — `setSnapshotSeries` → generic `setWidgetSetting(id, patch)`. `HomeCustomizeBanner` — per-widget gear disclosure (density pills + content control + leader series multiselect; needs `eligibleSeries` + `useFollowedSeries`). `HomeContent` — all widgets read `cfg(id)`: counts/days/seriesSet/series/rows wired + **density** via `[&_a]:py-1.5` / `[&_li]:py-1.5` on the 6 row containers. `from-the-blog` route `LIMIT`→6; `lib/standings/brief.ts` `top`→10 (headroom for max counts/rows).
