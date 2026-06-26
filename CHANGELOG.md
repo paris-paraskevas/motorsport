@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.100.1 — 2026-06-26
+
+Fixed: **the header Calendar menu's month jump did nothing while you were already on `/calendar`.**
+
+### Fixed
+- `components/calendar/CalendarView.tsx`: the month anchor was seeded by a one-time `useState` lazy initializer that read `window.location.search` only at mount. The header `CalendarMonthMenu` links to `/calendar?m=YYYY-MM`; from another page that worked (a fresh mount re-read the param), but a query-only **soft navigation while already on `/calendar`** never re-ran the initializer — so clicking a month was a no-op. The month is now read via `useSearchParams()` and re-seeded whenever `?m=` changes (adjust-state-during-render, the same pattern `HeaderNavMenu` uses — no effect, no new lint). `CalendarView` is split into a thin `<Suspense>` wrapper + `CalendarInner` so the `useSearchParams` call sits under a boundary; `/calendar` stays `○ Static` (the skeleton doubles as the prerender fallback). The in-page month `<select>` set state directly and was unaffected.
+
+### Notes
+- Browser-verified on a local prod build (`next start`): from `/calendar`, the Calendar menu → Aug 2026 moves the grid + toolbar to August (`?m=2026-08`); a second click → Oct 2026 re-seeds to October — repeated soft-navs work, not just the first. `next build` clean with `/calendar` still `○`; tsc clean; 0 new lint errors.
+
 ## 0.100.0 — 2026-06-26
 
 Added: **branded HTML transactional emails** + a **welcome email on sign-up**. Transactional mail was plain text; it now renders an on-brand HTML layout, the contact form acknowledges the sender, and new accounts get a welcome.
