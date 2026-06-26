@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.102.0 — 2026-06-26
+
+**New home widget: From the blog.** You can now add a "From the blog" block to your home that surfaces Paddock's latest posts. Switch it on from Customise (Account → Customise) — like every home block, it's yours to show, hide, fold and reorder.
+
 ## 0.101.0 — 2026-06-26
 
 **Order a day's sessions your way.** Open any day on the calendar and you'll find an "Order by" switch — keep the chronological **Time** view, or group everything **by series** (all the F1 together, all the MotoGP together, and so on). Especially handy on busy days when several championships run at once.

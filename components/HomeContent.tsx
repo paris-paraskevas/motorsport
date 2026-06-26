@@ -31,6 +31,14 @@ interface NewsItemSerialized {
   seriesColor: string;
 }
 
+interface HomeBlogItem {
+  slug: string;
+  title: string;
+  summary: string;
+  seriesSlug: string | null;
+  publishedAt: string | null;
+}
+
 const WEEK_MS = HOME_WEEK_MS;
 const NEWS_LIMIT = 10;
 
@@ -186,6 +194,28 @@ export function HomeContent({
       alive = false;
     };
   }, [justMissedHidden, justMissedCollapsed]);
+
+  // FROM THE BLOG — same defer-fetch shape as just-missed: the latest published
+  // posts load only when the (opt-in, default-hidden) block is both shown and
+  // expanded, so a home that never enables it pays nothing for it.
+  const [blogPosts, setBlogPosts] = useState<HomeBlogItem[] | null>(null);
+  const blogHidden = layout.hidden.includes('from-the-blog');
+  const blogCollapsed = layout.collapsed.includes('from-the-blog');
+  useEffect(() => {
+    if (blogHidden || blogCollapsed) return;
+    let alive = true;
+    fetch('/api/home/from-the-blog')
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => {
+        if (alive) setBlogPosts(d as HomeBlogItem[]);
+      })
+      .catch(() => {
+        if (alive) setBlogPosts([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [blogHidden, blogCollapsed]);
 
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
@@ -877,6 +907,70 @@ export function HomeContent({
           <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
             Source: motorsport.com
           </div>
+          </>
+          )}
+        </section>
+      )}
+
+      {/* ── FROM THE BLOG — opt-in widget (default hidden; enabled from the
+             customise gallery). The latest published posts, defer-fetched when
+             the block is shown + expanded. ── */}
+      {!isHidden('from-the-blog') && (
+        <section aria-label="From the blog" className="mb-8" style={{ order: orderOf('from-the-blog') }}>
+          <CollapsibleSectionHead
+            title="From the blog"
+            sub="long-reads"
+            collapsed={isCollapsed('from-the-blog')}
+            onToggle={() => toggleCollapsed('from-the-blog')}
+          />
+          {!isCollapsed('from-the-blog') && (
+          <>
+          {blogPosts === null ? (
+            <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+              <div className="h-4 w-40 animate-pulse bg-surface" />
+              <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface/60" />
+            </div>
+          ) : blogPosts.length === 0 ? (
+            <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+              No posts published yet.
+            </p>
+          ) : (
+            <div className="border-y border-border divide-y divide-border">
+              {blogPosts.map(p => (
+                <Link
+                  key={p.slug}
+                  href={`/blog/${p.slug}`}
+                  className="group block py-3 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                >
+                  <div className="mb-1 flex items-center gap-2 min-w-0">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-brand shrink-0">
+                      Paddock
+                    </span>
+                    {p.publishedAt && (
+                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0">
+                        · {relativeAgo(new Date(p.publishedAt), now)}
+                      </span>
+                    )}
+                    <ArrowUpRight
+                      size={12}
+                      className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
+                    />
+                  </div>
+                  <h3 className="text-sm font-semibold leading-snug tracking-tight text-text">{p.title}</h3>
+                  {p.summary && (
+                    <p className="mt-0.5 text-sm leading-snug text-text-muted line-clamp-2">{p.summary}</p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
+          <Link
+            href="/blog"
+            className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+          >
+            All posts
+            <ArrowUpRight size={13} />
+          </Link>
           </>
           )}
         </section>
