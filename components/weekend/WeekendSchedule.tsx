@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import type { Weekend, Session } from '@/lib/types';
 import { groupByDay } from '@/lib/group';
-import { formatLocal } from '@/lib/date';
+import { LocalTime } from '@/components/LocalTime';
 import { sessionSlug } from '@/lib/weekend';
 
 export function WeekendSchedule({
@@ -87,7 +87,7 @@ export function WeekendSchedule({
                         dateTime={s.start.toISOString()}
                         className="text-text-muted text-sm font-medium tabular-nums font-mono whitespace-nowrap"
                       >
-                        {formatLocal(s.start)}
+                        <LocalTime instant={s.start.getTime()} />
                       </time>
                     )}
                   </li>

@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.99.2 — 2026-06-26
+
+Fixed: **session times now render in the viewer's local timezone**, not a fixed Europe/Athens.
+
+### Added
+- `components/LocalTime.tsx` — a hydration-safe client component: it renders the fixed-Athens `formatLocal` value during SSR + the hydration render (so server and the first client render agree), then swaps to the viewer's **device timezone** immediately after, via `useSyncExternalStore` (no effect, no hydration mismatch, no lint disable). Mirrors HomeContent's GMT→local upgrade but self-contained — no `serverNow` plumbing.
+
+### Changed
+- Routed the four fixed-Athens `formatLocal` surfaces through `LocalTime`: `components/SessionCard.tsx` (calendar / series Calendar tab), `components/WeekendBlock.tsx` (series season view), `components/weekend/WeekendSchedule.tsx` (weekend schedule), and the weekend session page. Every visitor now sees session times in their own zone (with its label, e.g. "Sat 14:00 GMT"), matching the home page.
+- `app/(app)/about/page.tsx`: dropped the now-false "All times rendered in Europe/Athens" note.
+
+### Notes
+- `formatLocal` and its test are unchanged — still the deterministic Athens value used for the pre-hydration render. tsc + `next build` clean; date tests green; browser-confirmed the device zone renders post-hydration. **Deferred:** the cron *push* notifications still send an Athens-labelled time — localising those needs each user's stored timezone (the server has no device clock); queued separately.
+
 ## 0.99.1 — 2026-06-26
 
 Fixed: **/settings and /social/leagues/[id] no longer block on a Clerk `currentUser()` hop** (perf).

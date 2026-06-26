@@ -3,7 +3,8 @@ import { MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
-import { formatLocal, formatLocalDay, formatRelative } from '@/lib/date';
+import { formatLocalDay, formatRelative } from '@/lib/date';
+import { LocalTime } from '@/components/LocalTime';
 
 export function SessionCard({
   session,
@@ -73,7 +74,7 @@ export function SessionCard({
                 : session.start.toISOString()
             }
           >
-            {session.dateOnly ? formatLocalDay(session.start) : formatLocal(session.start)}
+            {session.dateOnly ? formatLocalDay(session.start) : <LocalTime instant={session.start.getTime()} />}
           </time>
           {session.location && (
             <>
