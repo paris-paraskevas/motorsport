@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.103.0 — 2026-06-26
+
+Changed: **series pages are now statically ISR-cacheable** — query-param tabs (`/series/[slug]?tab=X`) became path-based routes (`/series/[slug]/[tab]`). The `searchParams.tab` read was the one thing forcing `/series/[slug]` to render dynamically on every request (prod: a ~1.4 s cold MISS, never edge-cached).
+
+### Changed / performance
+- `app/(app)/series/[slug]/page.tsx`: dropped `force-dynamic` → `revalidate=300`. It's now the **calendar** (default) landing, rendered via a new shared `components/SeriesPageView.tsx` (the extracted shell + `renderTab` + a `seriesTabMetadata` helper). Build flips it `ƒ → ●` (SSG/ISR).
+- `app/(app)/series/[slug]/[tab]/page.tsx` (new): the seven non-calendar tabs as ISR-prerendered routes — `generateStaticParams` = slug × non-calendar tabs (single-event-aware). The `calendar` tab 301s to the bare path; an unknown tab `notFound()`s; a valid-key-but-not-for-this-series tab (e.g. single-event `standings`) also `notFound()`s.
+- `components/SeriesTabs.tsx`: path-based hrefs (`/series/[slug]/[tab]`, calendar → bare), new `slug` prop, `usePathname` dropped; the scroll-to-top-on-switch behaviour is preserved (verified `scrollY === 0` after a switch).
+
+### SEO / redirects
+- `proxy.ts`: a 308 for legacy `/series/[slug]?tab=X` → the path form, **stripping the query** so there's no stray param and no redirect loop (calendar + unknown tabs collapse to the bare path). Serves indexed / externally-shared `?tab=` URLs.
+- Per-tab canonicals flip `?tab=X` → `/series/[slug]/[tab]` (calendar stays the bare path); `lib/sitemap-data.ts` now emits the per-tab paths (single-event-aware).
+- Repointed the 8 internal `?tab=` series-tab link sites (HomeContent, SessionCard, calendar/SessionPill, weekend/WeekendBetting ×3, api/cron/notify, api/just-missed ×2, the weekend session page) to the path form. **Left untouched:** the weekend page's own `?tab=bets` (WeekendTabs — a different route, client-state) and `/threads?series=`.
+
+### Notes
+- Verified on a local prod build: `/series/[slug]` builds `●` (was `ƒ`); `?tab=standings/results/calendar/garbage` → 308 → clean path (calendar/garbage → bare, no loop); path pages 200; `/series/f1/garbage` + single-event `/series/adac-ravenol-24h/standings` → 404; in-browser tab nav updates URL + active tab + per-tab `<title>` + scrolls to top, standings chart renders. tsc clean; `next build` clean; 0 new lint.
+- Only `/series/[slug]` was actually `force-dynamic` — weekend/drivers/teams are already ISR (the earlier audit grep matched the word in comments). Session + blog pages stay dynamic for unrelated reasons (live fetch / comments).
+
 ## 0.102.0 — 2026-06-26
 
 Added: **"From the blog" home widget** — the latest Paddock posts, opt-in from the customise gallery.

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
+import { tabsFor } from './tabs';
 import { SITE_URL } from './site';
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
@@ -33,9 +34,15 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/impressum` },
   ];
 
-  const seriesUrls: MetadataRoute.Sitemap = sortedMeta.map((m) => ({
-    url: `${SITE_URL}/series/${m.slug}`,
-  }));
+  // The bare series URL (the calendar landing) plus each non-calendar tab as
+  // its own path (B11 path-based tabs — each is a distinct, indexable page).
+  // Single-event series carry a reduced tab set, so respect tabsFor.
+  const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m) => [
+    { url: `${SITE_URL}/series/${m.slug}` },
+    ...tabsFor(m.singleEvent)
+      .filter((t) => t.key !== 'calendar')
+      .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),
+  ]);
 
   // Weekend URLs come from the SAME resolution the pages use (groupByWeekend
   // + round assignment), not from rounds.json directly. The raw-rounds.json

@@ -95,11 +95,11 @@ export function WeekendBetting({
           and driver pages (last-5 etc.) for this series. */}
       <div className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
         <span className="text-text-faint">Form</span>
-        <Link href={`/series/${seriesSlug}?tab=standings`} className="text-text-muted hover:text-brand">Standings</Link>
+        <Link href={`/series/${seriesSlug}/standings`} className="text-text-muted hover:text-brand">Standings</Link>
         <span className="text-text-faint">·</span>
-        <Link href={`/series/${seriesSlug}?tab=results`} className="text-text-muted hover:text-brand">Results</Link>
+        <Link href={`/series/${seriesSlug}/results`} className="text-text-muted hover:text-brand">Results</Link>
         <span className="text-text-faint">·</span>
-        <Link href={`/series/${seriesSlug}?tab=drivers`} className="text-text-muted hover:text-brand">Drivers</Link>
+        <Link href={`/series/${seriesSlug}/drivers`} className="text-text-muted hover:text-brand">Drivers</Link>
       </div>
 
       {markets.length === 0 ? (

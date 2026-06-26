@@ -13,7 +13,7 @@ function timeLabel(session: CalendarEntry['session']): string {
 // pill click doesn't also trigger the day cell's "open day view".
 export function SessionPill({ entry, round }: { entry: CalendarEntry; round?: number }) {
   const { session, color, seriesSlug } = entry;
-  const href = round ? `/series/${seriesSlug}/weekend/${round}` : `/series/${seriesSlug}?tab=calendar`;
+  const href = round ? `/series/${seriesSlug}/weekend/${round}` : `/series/${seriesSlug}`;
   return (
     <Link
       href={href}

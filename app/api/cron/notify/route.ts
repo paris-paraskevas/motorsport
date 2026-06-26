@@ -75,7 +75,7 @@ function resultsPayload(session: CandidateSession): PushPayload {
   return {
     title: `${session.seriesName} · Results are in`,
     body: `${session.title} — full classification is up`,
-    url: `/series/${session.seriesSlug}?tab=results`,
+    url: `/series/${session.seriesSlug}/results`,
     tag: `paddock-res-${session.uid}`,
     color: session.seriesColor,
     actions: [

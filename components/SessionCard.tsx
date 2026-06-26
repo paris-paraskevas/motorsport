@@ -27,7 +27,7 @@ export function SessionCard({
   const isPast = !isLive && session.end < now;
   const href = round
     ? `/series/${session.seriesSlug}/weekend/${round}`
-    : `/series/${session.seriesSlug}?tab=calendar`;
+    : `/series/${session.seriesSlug}`;
   const w = weather ? weatherLabel(weather.weatherCode) : null;
 
   return (

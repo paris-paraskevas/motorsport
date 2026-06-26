@@ -645,7 +645,7 @@ export default async function SessionPage({
                 : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
           </p>
           <Link
-            href={`/series/${slug}?tab=results`}
+            href={`/series/${slug}/results`}
             className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
           >
             Season results →
