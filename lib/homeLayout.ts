@@ -15,7 +15,9 @@ export type HomeElementId =
   | 'news'
   | 'from-the-blog'
   | 'championship-leader'
-  | 'standings-snapshot';
+  | 'standings-snapshot'
+  | 'series-countdowns'
+  | 'series-just-missed';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -37,6 +39,8 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'from-the-blog', label: 'From the blog', hint: 'The latest Paddock long-reads and explainers.', collapsible: true },
   { id: 'championship-leader', label: 'Championship leader', hint: 'Who’s leading each series you follow, and by how much.', collapsible: true },
   { id: 'standings-snapshot', label: 'Standings snapshot', hint: 'The top of the table for one series, refreshed each round.', collapsible: true },
+  { id: 'series-countdowns', label: 'Series countdowns', hint: 'A separate next-session countdown for each series you follow.', collapsible: true },
+  { id: 'series-just-missed', label: 'Series results', hint: 'The latest result for each series you follow, split out by series.', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
@@ -64,20 +68,6 @@ export interface AvailableWidget {
 
 export const AVAILABLE_WIDGETS: AvailableWidget[] = [
   {
-    id: 'series-countdowns',
-    label: 'Per-series countdowns',
-    blurb: 'A distinct next-session countdown for each championship you follow.',
-    icon: 'Timer',
-    status: 'coming-soon',
-  },
-  {
-    id: 'series-just-missed',
-    label: 'Per-series “just missed”',
-    blurb: 'Split the latest results out by series instead of one combined block.',
-    icon: 'FlagTriangleRight',
-    status: 'coming-soon',
-  },
-  {
     id: 'track-layout',
     label: 'Upcoming track layout',
     blurb: 'The circuit map for the next round, with corner and DRS detail.',
@@ -92,7 +82,7 @@ export const AVAILABLE_WIDGETS: AvailableWidget[] = [
 export interface WidgetSettings {
   /** Row spacing — applies to any widget. */
   density?: 'comfortable' | 'compact';
-  /** Item count — just-missed / news / from-the-blog. */
+  /** Item count — just-missed / news / from-the-blog / series-just-missed / series-countdowns. */
   count?: number;
   /** Days shown — schedule (this week). */
   days?: number;
@@ -129,7 +119,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {

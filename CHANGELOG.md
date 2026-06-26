@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.106.0 — 2026-06-26
+
+Added: **two per-series home widgets** (countdowns + results) graduated from the gallery, plus a **chyron density fix**.
+
+### Added
+- `lib/homeLayout.ts`: `series-countdowns` + `series-just-missed` added to `HOME_ELEMENTS` (collapsible) + `DEFAULT_HIDDEN` (opt-in); removed from `AVAILABLE_WIDGETS` (only `track-layout` remains in the gallery). No `HOME_LAYOUT_VERSION` bump — reconcile appends + default-hides new ids by presence, not version.
+- `components/HomeContent.tsx`:
+  - **Series countdowns** — one row per followed series (its next session + a live `Countdown`), deduped by series from `upcomingItems` (which already carries each series' next), capped to the widget's `count` (3/5/10, default 5), soonest first. No fetch.
+  - **Series results** — the latest result per followed series as its own row (vs the combined Just missed block), recency-sorted, capped to `count`. Shares the `/api/just-missed` fetch — now fired when EITHER Just missed or Series results is shown + expanded.
+- `components/HomeCustomizeBanner.tsx`: `NUMERIC_SETTING` entries for both (`count`, label "Series", values 3/5/10). Density is automatic for every widget.
+
+### Fixed
+- **Chyron density was a no-op.** `compact` was only wired into the six row-list blocks (`[&_a]` / `[&_li]` descendant variants); the "Live / up next" chyron is a single strip, so toggling its density did nothing. Now `compact` tightens the chyron's vertical padding (`py-4` → `py-2.5`) — most visible on mobile, where it was reported.
+
+### Notes
+- Browser-verified on a local prod build: chyron compact → `py-2.5`; Series countdowns renders one row per series with ticking countdowns, capped to `count`; Series results renders one latest-result row per series, capped to `count`; the gallery is down to the single track-layout card; both new widgets appear in the customise list. tsc clean; `next build` clean; 0 new lint; 15 homeLayout tests pass (updated for 9 elements / 5 default-hidden).
+- Track-layout stays "coming soon" — it needs per-circuit schematic maps (corner/DRS), an asset-sourcing/licensing program, not a code-only task.
+
 ## 0.105.0 — 2026-06-26
 
 Added: **deep per-widget customisation** — every home block gets content settings + a density toggle, edited via an in-row settings disclosure (gear) on `/settings/customize`. Builds on the 0.104.0 widget trio.
