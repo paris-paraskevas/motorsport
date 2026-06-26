@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.99.3 — 2026-06-26
+
+Added: **EKO Acropolis Rally Greece (WRC round 8) schedule** — curated.
+
+### Added
+- `content/series/wrc/sessions.json`: the full 2026 Acropolis Rally itinerary (round 8, 25–28 June, based in Loutraki) — shakedown + SS1–SS17 with their scheduled stage times: the Ellinikon (Athens) super special, Friday's Itea/Parnassos leg, Saturday's Peloponnese/Arcadia leg, and Sunday's Loutraki Wolf Power Stage. Stage times curated from the official itinerary, converted EEST → UTC. Replaces the bare date-only ICS entry that rendered "TBC".
+- `content/series/wrc/rounds.json`: round 8 (EKO Acropolis Rally Greece, 25–28 June).
+
+### Notes
+- Browser-verified: `/series/wrc/weekend/8` renders 17 stages + shakedown + Power Stage, **0 "TBC"**, times matching the official schedule (shakedown 09:01, super special 19:05 EEST) and rendered device-local. Sources: WRC.com + the 2026 Acropolis Rally Wikipedia itinerary (triple-checked per the drafts/data rule). Live results + standings keep refreshing from the existing WRC scrapers as the rally runs.
+
 ## 0.99.2 — 2026-06-26
 
 Fixed: **session times now render in the viewer's local timezone**, not a fixed Europe/Athens.

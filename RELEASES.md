@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.99.3 — 2026-06-26
+
+**Acropolis Rally, live on the calendar.** The EKO Acropolis Rally Greece — this weekend's WRC round — now shows its full stage-by-stage schedule (shakedown, all 17 special stages and Sunday's Power Stage) with real start times in your local zone, instead of "to be confirmed".
+
 ## 0.99.2 — 2026-06-26
 
 **Session times now follow your clock.** Across the calendar, series pages and weekend schedules, times show in your device's own timezone (with its label) — no more converting from Athens time in your head. The home page already did this; now everywhere does.

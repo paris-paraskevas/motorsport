@@ -5,6 +5,7 @@
     { "round": 4, "startDate": "2026-04-09", "endDate": "2026-04-12", "name": "Croatia Rally" },
     { "round": 6, "startDate": "2026-05-07", "endDate": "2026-05-10", "name": "Vodafone Rally de Portugal" },
     { "round": 7, "startDate": "2026-05-28", "endDate": "2026-05-31", "name": "FORUM8 Rally Japan" },
+    { "round": 8, "startDate": "2026-06-25", "endDate": "2026-06-28", "name": "EKO Acropolis Rally Greece" },
     { "round": 10, "startDate": "2026-07-30", "endDate": "2026-08-02", "name": "Secto Rally Finland" }
   ]
 }
