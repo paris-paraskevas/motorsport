@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.105.0 — 2026-06-26
+
+**Fine-tune every home widget.** Each block on your home now has its own settings — open Customise (Account → Customise) and tap the gear on any block. Choose how many results, headlines, posts or standings rows it shows; switch any block between comfortable and compact spacing; pick which series the Standings snapshot follows; or narrow Championship leader to just the series you care about. As always, your choices are saved on your device and travel with you when you sign in.
+
 ## 0.104.0 — 2026-06-26
 
 **Two more home widgets: Championship leader & Standings snapshot.** Add them from Customise (Account → Customise): "Championship leader" shows who's on top of every series you follow, and "Standings snapshot" shows the top five of one series you pick. Like the other blocks, they're yours to show, hide, fold and reorder.

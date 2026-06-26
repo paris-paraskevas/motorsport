@@ -111,7 +111,8 @@ export async function fetchStandingsBrief(slug: string, season: number): Promise
     slug,
     leader: { name: leader.driverName, points: leader.points },
     gapToSecond: second ? leader.points - second.points : null,
-    top: sorted.slice(0, 5).map(d => ({ position: d.position, name: d.driverName, points: d.points })),
+    // Up to 10 so the snapshot widget's `rows` setting (max 10) has data; the client slices down.
+    top: sorted.slice(0, 10).map(d => ({ position: d.position, name: d.driverName, points: d.points })),
   };
 
   if (kvConfigured()) {
