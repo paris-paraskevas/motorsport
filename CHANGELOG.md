@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.105.0 — 2026-06-26
+
+Added: **deep per-widget customisation** — every home block gets content settings + a density toggle, edited via an in-row settings disclosure (gear) on `/settings/customize`. Builds on the 0.104.0 widget trio.
+
+### Added
+- `lib/homeLayout.ts`: `WidgetSettings` (`density` · `count` · `days` · `series` · `rows` · `seriesSet`) + `HomeWidgetConfig` generalised from the single-`snapshotSeries` shape to `Partial<Record<HomeElementId, WidgetSettings>>`. `sanitizeSettings` validates/clamps each field to broad bounds (per-widget read-time clamps narrow further); `widgetSettings(config, id)` reader. `HOME_LAYOUT_VERSION`→6.
+- `components/HomeCustomizeBanner.tsx`: a per-block settings disclosure (gear) — density pills (comfortable/compact) on every widget plus a content control per widget: just-missed `count` (1–5), this-week `days` (3/7), news `count` (5/10/20), from-the-blog `count` (2/4/6), standings-snapshot `series` + `rows` (3/5/10), championship-leader `seriesSet` (multi-select subset of followed). The gear is disabled while a block is hidden.
+- `lib/useHomeLayout.ts`: `setSnapshotSeries` → generic `setWidgetSetting(id, patch)` (merges a partial into one widget's settings; same localStorage + KV persistence).
+- `components/HomeContent.tsx`: each widget reads its settings via `cfg(id)` — count/days/series/rows/seriesSet wired with read-time clamps; `density` applied via descendant spacing variants (`[&_a]:py-1.5` / `[&_li]:py-1.5`) on the six row containers.
+
+### Changed
+- `lib/homeLayout.ts` `reconcileConfig`: **migrates** the pre-v6 flat `config.snapshotSeries` → `config['standings-snapshot'].series` (clobber-guarded — an explicit new-shape value wins), so an existing user's snapshot pick survives the schema change.
+- The standings-snapshot Series picker is scoped to the series the user follows (matching the championship-leader picker), so every pickable series is one `/app` actually fetches — no silent fall-back to a different series.
+- `app/(app)/api/home/from-the-blog/route.ts` `LIMIT` 4→6 and `lib/standings/brief.ts` `top` 5→10 — headroom for the new max count / rows.
+- `components/HomeContent.tsx`: removed a dead `WEEK_MS` const (the week window now derives from the schedule widget's `days`).
+
+### Notes
+- Browser-verified on a local prod build (signed-out / localStorage): the gear discloses the right controls per widget; changing density/rows/series persists + merges into `config` at v6; `/app` reflects them (F1 top-3, compact spacing); the **v6 migration** surfaces a pre-v6 `snapshotSeries` pick (MotoGP) on a real load; the v3→v6 reconcile appends + default-hides the opt-in widgets; the snapshot picker narrows to a followed subset. tsc clean; `next build` clean; 0 new lint.
+- `lib/homeLayout.test.ts` updated (15 pass) incl. the snapshotSeries migration + config-sanitise cases.
+- **Standings scrape reliability is still datacenter-IP-dependent — re-confirm the widgets on the Vercel preview** (the carried landmine).
+
 ## 0.104.0 — 2026-06-26
 
 Added: **the last two home widgets — championship-leader + standings-snapshot** — completing the customise-gallery trio (from-the-blog shipped in 0.102.0).

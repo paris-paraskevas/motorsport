@@ -85,18 +85,42 @@ describe('homeLayout.defaultHidden (opt-in widgets)', () => {
   });
 });
 
-describe('homeLayout.config', () => {
-  it('defaults to an empty config and carries a valid snapshotSeries', () => {
+describe('homeLayout.config (per-widget settings)', () => {
+  it('defaults to an empty config', () => {
     expect(reconcileHomeLayout(null).config).toEqual({});
-    expect(reconcileHomeLayout({ config: { snapshotSeries: 'motogp' } }).config).toEqual({ snapshotSeries: 'motogp' });
-    // junk snapshotSeries / config → empty
-    expect(reconcileHomeLayout({ config: { snapshotSeries: 5 } as never }).config).toEqual({});
     expect(reconcileHomeLayout({ config: null as never }).config).toEqual({});
   });
 
-  it('parseHomeLayout rejects a non-object config, accepts a valid one', () => {
+  it('keeps valid per-widget settings and drops junk fields', () => {
+    expect(
+      reconcileHomeLayout({ config: { 'just-missed': { count: 5, density: 'compact' } } as never }).config,
+    ).toEqual({ 'just-missed': { count: 5, density: 'compact' } });
+    // bad enum + out-of-range number → dropped; a widget left with no valid field is omitted
+    expect(reconcileHomeLayout({ config: { news: { density: 'huge', count: 999 } } as never }).config).toEqual({});
+    expect(
+      reconcileHomeLayout({ config: { 'standings-snapshot': { series: 'f1', rows: 3 } } as never }).config,
+    ).toEqual({ 'standings-snapshot': { series: 'f1', rows: 3 } });
+  });
+
+  it('migrates the pre-v6 flat snapshotSeries into standings-snapshot.series', () => {
+    expect(reconcileHomeLayout({ config: { snapshotSeries: 'motogp' } as never }).config).toEqual({
+      'standings-snapshot': { series: 'motogp' },
+    });
+    // an explicit new series wins over the legacy field
+    expect(
+      reconcileHomeLayout({
+        config: { 'standings-snapshot': { series: 'f1' }, snapshotSeries: 'motogp' } as never,
+      }).config,
+    ).toEqual({ 'standings-snapshot': { series: 'f1' } });
+    // junk legacy → empty
+    expect(reconcileHomeLayout({ config: { snapshotSeries: 5 } as never }).config).toEqual({});
+  });
+
+  it('parseHomeLayout rejects a non-object config, accepts + migrates a valid one', () => {
     expect(parseHomeLayout({ config: 'nope' })).toBeNull();
     expect(parseHomeLayout({ config: [] })).toBeNull();
-    expect(parseHomeLayout({ config: { snapshotSeries: 'f1' } })?.config).toEqual({ snapshotSeries: 'f1' });
+    expect(parseHomeLayout({ config: { snapshotSeries: 'f1' } })?.config).toEqual({
+      'standings-snapshot': { series: 'f1' },
+    });
   });
 });

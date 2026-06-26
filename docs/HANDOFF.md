@@ -6,6 +6,47 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-26 (main = 0.104.0) — marathon: emails+welcome, calendar fixes, home-widget trio, B11 series-ISR (#260–#265 all MERGED) + deep-customise WIP → PR #266 (0.105.0, verified, awaiting merge)
+
+Very long autonomous session, ~8 features. **#260–#265 are merged to main (0.104.0).** The 8th feature (deep per-widget customisation) is now **verified + shipped as PR #266 (0.105.0), awaiting your squash-merge.**
+
+### ✅ DONE 2026-06-26 — deep per-widget customisation shipped as PR #266 (0.105.0); verified, awaiting your squash-merge + the Vercel-preview scrape re-check
+
+_Verified the full tail on a local prod build (guest / localStorage): tsc / lint / `next build` clean; browser-verified the per-widget gear disclosure controls, persist + merge into `config` at layout v6, `/app` reflecting the settings with real data (F1 top-3, compact), the pre-v6 flat `snapshotSeries` → `config['standings-snapshot'].series` migration (surfaced MotoGP on a real load), and the v3→v6 reconcile on the real pre-existing v3 prefs. Two fixes folded in: removed a dead `WEEK_MS`; **scoped the standings-snapshot Series picker to followed series** (it offered all eligible, but `/app` only fetches followed → a silent fall-back). Re-committed clean (`606b750`, non-WIP) + force-pushed + opened **PR #266**. **Owed (you):** squash-merge after a preview pass, and **re-confirm the standings-widget scrapes on the Vercel preview** (datacenter-IP landmine). Minor follow-up captured in IDEAS: championship-leader with all series deselected renders an empty block. Original plan detail kept below for the record._
+
+### ▶ (HISTORICAL — now done, see above) the WIP plan: deep per-widget customisation
+- **Branch `feat/widget-deep-customise`** (pushed, off the 0.104.0 main). **Spec:** `docs/superpowers/specs/2026-06-26-widget-customisation-design.md` (approved via brainstorming). The commit there is **WIP / UNVERIFIED — do NOT merge until verified.**
+- **What it does:** every home widget gets per-widget **content settings + a density toggle**, edited via an in-row **settings disclosure** (gear) on `/settings/customize`. Settings: just-missed `count` 1–5 · schedule `days` 3/7 · news `count` 5/10/20 · from-the-blog `count` 2/4/6 · championship-leader `seriesSet` (subset of followed) · standings-snapshot `series` + `rows` 3/5/10 · **density** (comfortable/compact) on all.
+- **What's DONE (code written):** `lib/homeLayout.ts` — `WidgetSettings` + `HomeWidgetConfig` now `Partial<Record<HomeElementId, WidgetSettings>>`, `reconcileConfig` **migrates** pre-v6 flat `snapshotSeries` → `config['standings-snapshot'].series`, `HOME_LAYOUT_VERSION`→6, tests updated (+ config describe). `useHomeLayout` — `setSnapshotSeries` → generic `setWidgetSetting(id, patch)`. `HomeCustomizeBanner` — per-widget gear disclosure (density pills + content control + leader series multiselect; needs `eligibleSeries` + `useFollowedSeries`). `HomeContent` — all widgets read `cfg(id)`: counts/days/seriesSet/series/rows wired + **density** via `[&_a]:py-1.5` / `[&_li]:py-1.5` on the 6 row containers. `from-the-blog` route `LIMIT`→6; `lib/standings/brief.ts` `top`→10 (headroom for max counts/rows).
+- **What's LEFT (the verify+ship tail — NONE done):** ⚠️ **`npx tsc --noEmit` + `npm run lint` + `npm run build` were NOT run after the last edits** — run them first; expect possible type fixups. Run `npx vitest run lib/homeLayout.test.ts`. Then **browser-verify** on a local prod build (open `/settings/customize`, expand a widget's gear, change count/days/series/rows/density, confirm `/app` reflects it + persists; confirm the **snapshotSeries migration** for an existing user). Then **release notes** (bump **0.105.0**, CHANGELOG + RELEASES), re-commit (non-WIP, conventional, **no Claude attribution**), open PR.
+
+### Shipped this session (all MERGED → main 0.104.0)
+- **0.100.0 (#260)** — branded HTML transactional emails (`lib/email.ts` `html` + `renderBrandedEmail`) routed through feedback alert + contact notify + **a new visitor contact-ack** (no message-echo: anti-relay) + a blog draft-ready email; **Clerk `user.created` welcome webhook** (`app/api/webhooks/clerk/route.ts`, `verifyWebhook`, KV-deduped). **Welcome verified LIVE on a real prod signup** (operator added `CLERK_WEBHOOK_SIGNING_SECRET` + the Clerk dashboard endpoint).
+- **0.100.1 (#261)** — calendar header-menu month jump fixed (was a no-op while already on `/calendar`): `CalendarView` reads `?m=` via `useSearchParams` + render-time re-seed, under a `<Suspense>` so `/calendar` stays `○`.
+- **0.101.0 (#262)** — calendar **day-view "Order by" Time | Series** toggle (always shown; series = grouped headers). `CalendarEntry` gained `seriesName`.
+- **0.102.0 (#263)** — **From-the-blog** home widget (opt-in). Introduced the graduate-from-gallery + `DEFAULT_HIDDEN` opt-in pattern + `HomeLayoutPrefs.config`.
+- **0.103.0 (#264) — B11: series pages are path-based + ISR.** `/series/[slug]?tab=X` → `/series/[slug]/[tab]` (bare = calendar); `force-dynamic`→`revalidate` (`ƒ`→`●`). Shared `components/SeriesPageView.tsx`. `proxy.ts` 308-redirects legacy `?tab=` (query stripped, loop-proof). Canonicals + sitemap follow the path form; 8 internal links repointed.
+- **0.104.0 (#265)** — **championship-leader + standings-snapshot** home widgets (opt-in). `lib/standings/brief.ts` (KV-cached per-series brief, 10 eligible single-championship series) + `/api/home/standings` fan-out (`?series=…|all`) + the snapshot series picker.
+
+### Owed (operator)
+- **Rotate the Supabase PAT (`.supabase-pat`) + prod Clerk `sk_live` (`.clerk-prod`)** — still present.
+- **Prod eyeballs:** the **standings-widget scrape reliability on the Vercel preview** (datacenter-IP landmine — it rendered live data on local/residential IP, not yet confirmed on prod); moderator roles → `/feedback`; the welcome email already confirmed.
+- **exact_position go-live** (built + held; verify the signed-in picker → add to `MARKET_BUILDERS`).
+- After the WIP ships: resubmit the sitemap (B11 added per-tab `/series/*/<tab>` URLs) in GSC/Bing.
+
+### Perf audit (2026-06-26, lab/curl) — record a `docs/perf-baselines.md` row next perf session
+The May offenders are fixed: `/`, `/app`, `/calendar` ~0.3s TTFB, edge-cached. **B11 (#264)** made `/series/*` ISR (was a 1.4s MISS). Remaining levers: **Clerk JS diet** (~225 KiB eager unused; UserButton not lazy) · **gate AdSense until approved** (~226 KiB unused — quick win, monetization call). Lever code-state: AdSense/GTM/GA already `lazyOnload`, clerk preconnect done, recharts lazy.
+
+### IDEAS Inbox (captured, not triaged): remaster the existing home widgets (chyron/just-missed/this-week/news visual refresh); beautify/batch the `/changelog` page (weekly/monthly groups). Calendar day-view order-by → SHIPPED 0.101.0.
+
+### Landmines (this session)
+- **`npx next start` backgrounded inline (`&`) dies on shell teardown** (exit 127) — start the verify server with the Bash `run_in_background: true` flag, not `&`.
+- **Standings-brief scrapes are datacenter-IP-dependent** — verify on a Vercel preview, not just local.
+- Parallel PRs that touch CHANGELOG/RELEASES/package.json **version-collide** — merge in order or resolve the small version-file conflict (saw it on #264's rebase).
+- Playwright MCP **blocks `file://`** (serve over a local http server) and times out on element screenshots when a skeleton keeps the page "unstable" (use full-page).
+
+_Authoritative end-of-day state (main = **0.104.0**, 2026-06-26) + one unmerged WIP branch. Blocks below are prior-session history._
+
 ## ⚡ Next session pickup — 2026-06-26 (main = 0.99.3) — perf + local-time + WRC Acropolis (#256–#258); first blog post LIVE; #1 data-accuracy rule
 
 Long multi-prompt session. Shipped **0.96.1 → 0.99.3** across 7 merged PRs (#252–#258), published + then corrected a live blog post, set up scheduled blog drafting, and saved the operator's #1 data rule. THIS is the authoritative end-of-day state. (The 2026-06-25 block below described #252–#255 as "PRs open" — they are now MERGED.)

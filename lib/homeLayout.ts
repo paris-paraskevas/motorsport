@@ -6,7 +6,7 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 5;
+export const HOME_LAYOUT_VERSION = 6;
 
 export type HomeElementId =
   | 'chyron'
@@ -86,12 +86,30 @@ export const AVAILABLE_WIDGETS: AvailableWidget[] = [
   },
 ];
 
-/** Per-widget settings (distinct from order/hidden/collapsed). Only the
- *  standings-snapshot widget uses it for now — which series' top-5 to show. */
-export interface HomeWidgetConfig {
-  /** Series slug for the standings-snapshot widget. Absent → the client falls
-   *  back to the user's first followed eligible series. */
-  snapshotSeries?: string;
+/** Per-widget settings (distinct from order/hidden/collapsed). Each widget reads
+ *  only the fields that apply to it and clamps numeric values to its own range,
+ *  so reconcile validates types + broad sane bounds only. */
+export interface WidgetSettings {
+  /** Row spacing — applies to any widget. */
+  density?: 'comfortable' | 'compact';
+  /** Item count — just-missed / news / from-the-blog. */
+  count?: number;
+  /** Days shown — schedule (this week). */
+  days?: number;
+  /** Chosen series slug — standings-snapshot. */
+  series?: string;
+  /** Top-N rows — standings-snapshot. */
+  rows?: number;
+  /** Series subset (slugs) — championship-leader. Absent = all followed. */
+  seriesSet?: string[];
+}
+
+/** Per-widget settings keyed by widget id. */
+export type HomeWidgetConfig = Partial<Record<HomeElementId, WidgetSettings>>;
+
+/** Read one widget's settings (never null). */
+export function widgetSettings(config: HomeWidgetConfig, id: HomeElementId): WidgetSettings {
+  return config[id] ?? {};
 }
 
 export interface HomeLayoutPrefs {
@@ -138,6 +156,40 @@ function dedupe(ids: HomeElementId[]): HomeElementId[] {
   return out;
 }
 
+// Per-widget settings: keep valid-typed fields within broad sane bounds (each
+// widget clamps to its own range on read). Drops junk.
+function sanitizeSettings(raw: unknown): WidgetSettings {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const r = raw as Record<string, unknown>;
+  const s: WidgetSettings = {};
+  if (r.density === 'compact' || r.density === 'comfortable') s.density = r.density;
+  if (typeof r.count === 'number' && r.count >= 1 && r.count <= 50) s.count = Math.round(r.count);
+  if (typeof r.days === 'number' && r.days >= 1 && r.days <= 14) s.days = Math.round(r.days);
+  if (typeof r.rows === 'number' && r.rows >= 1 && r.rows <= 30) s.rows = Math.round(r.rows);
+  if (typeof r.series === 'string') s.series = r.series;
+  if (Array.isArray(r.seriesSet) && r.seriesSet.every(x => typeof x === 'string')) {
+    s.seriesSet = r.seriesSet as string[];
+  }
+  return s;
+}
+
+// Build the per-widget config map, and MIGRATE the pre-v6 flat `snapshotSeries`
+// field into config['standings-snapshot'].series so existing users don't lose
+// their snapshot pick across the schema change.
+function reconcileConfig(stored: unknown): HomeWidgetConfig {
+  const c = stored && typeof stored === 'object' && !Array.isArray(stored) ? (stored as Record<string, unknown>) : {};
+  const out: HomeWidgetConfig = {};
+  for (const id of ALL_IDS) {
+    const s = sanitizeSettings(c[id]);
+    if (Object.keys(s).length > 0) out[id] = s;
+  }
+  const legacySnapshot = typeof c.snapshotSeries === 'string' ? c.snapshotSeries : undefined;
+  if (legacySnapshot && !out['standings-snapshot']?.series) {
+    out['standings-snapshot'] = { ...(out['standings-snapshot'] ?? {}), series: legacySnapshot };
+  }
+  return out;
+}
+
 /**
  * Reconcile stored prefs against the live registry: keep known ids in their
  * stored order, append any registry ids missing from `order` (so a newly shipped
@@ -163,12 +215,7 @@ export function reconcileHomeLayout(stored: Partial<HomeLayoutPrefs> | null | un
   const collapsed = Array.isArray(stored?.collapsed)
     ? dedupe(stored!.collapsed.filter(isHomeElementId)).filter(id => COLLAPSIBLE_IDS.includes(id))
     : [...DEFAULT_COLLAPSED];
-  // Per-widget config — carry a valid snapshotSeries (a string), else default empty.
-  const storedConfig = (stored?.config ?? undefined) as HomeWidgetConfig | undefined;
-  const config: HomeWidgetConfig =
-    typeof storedConfig?.snapshotSeries === 'string'
-      ? { snapshotSeries: storedConfig.snapshotSeries }
-      : {};
+  const config = reconcileConfig(stored?.config);
   return { version: HOME_LAYOUT_VERSION, order, hidden, collapsed, config };
 }
 

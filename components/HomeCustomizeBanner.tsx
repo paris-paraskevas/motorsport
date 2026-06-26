@@ -18,6 +18,7 @@ import {
   MapPin,
   Newspaper,
   RotateCcw,
+  Settings2,
   SlidersHorizontal,
   Sparkles,
   Timer,
@@ -26,9 +27,11 @@ import {
   AVAILABLE_WIDGETS,
   HOME_ELEMENTS,
   type AvailableWidget,
+  type HomeElementId,
   type HomeLayoutPrefs,
 } from '@/lib/homeLayout';
 import { useHomeLayout } from '@/lib/useHomeLayout';
+import { useFollowedSeries } from '@/lib/useFollowedSeries';
 
 const META = new Map(HOME_ELEMENTS.map(e => [e.id, e]));
 
@@ -88,9 +91,23 @@ function HomePreview({ layout }: { layout: HomeLayoutPrefs }) {
 // — touch + keyboard friendly), fold/expand collapsible blocks, show/hide, reset.
 // Shared by the inline banner and the dedicated /settings/customize page so both
 // stay byte-identical in behaviour.
+// Per-widget numeric content control: which settings field, its label, and the
+// allowed values. Widgets absent here have no numeric content setting.
+const NUMERIC_SETTING: Partial<
+  Record<HomeElementId, { field: 'count' | 'days' | 'rows'; label: string; values: number[]; def: number }>
+> = {
+  'just-missed': { field: 'count', label: 'Results', values: [1, 2, 3, 4, 5], def: 3 },
+  news: { field: 'count', label: 'Headlines', values: [5, 10, 20], def: 10 },
+  'from-the-blog': { field: 'count', label: 'Posts', values: [2, 4, 6], def: 4 },
+  schedule: { field: 'days', label: 'Days', values: [3, 7], def: 7 },
+  'standings-snapshot': { field: 'rows', label: 'Rows', values: [3, 5, 10], def: 5 },
+};
+
 function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: string; name: string }[] }) {
-  const { layout, move, reorder, toggleHidden, toggleCollapsed, setSnapshotSeries, reset } = useHomeLayout();
+  const { layout, move, reorder, toggleHidden, toggleCollapsed, setWidgetSetting, reset } = useHomeLayout();
+  const { followed } = useFollowedSeries();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [openId, setOpenId] = useState<HomeElementId | null>(null);
 
   const onDrop = (to: number) => {
     if (dragIndex === null || dragIndex === to) {
@@ -102,6 +119,105 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
     next.splice(to, 0, moved);
     reorder(next);
     setDragIndex(null);
+  };
+
+  // Eligible series the user actually follows (championship-leader subset picker).
+  const followedEligible = eligibleSeries.filter(s => followed === null || followed.includes(s.slug));
+
+  const pillClass = (active: boolean) =>
+    `border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors ${
+      active ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
+    }`;
+
+  // Inline per-widget settings panel: density (every widget) + its content control.
+  const renderSettings = (id: HomeElementId) => {
+    const s = layout.config[id] ?? {};
+    const num = NUMERIC_SETTING[id];
+    const leaderSet = id === 'championship-leader' ? s.seriesSet ?? null : null;
+    return (
+      <div className="mt-2 space-y-2 border-t border-border/60 pl-7 pt-2">
+        <div className="flex items-center gap-2">
+          <span className="w-16 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Spacing</span>
+          {(['comfortable', 'compact'] as const).map(d => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setWidgetSetting(id, { density: d })}
+              aria-pressed={(s.density ?? 'comfortable') === d}
+              className={pillClass((s.density ?? 'comfortable') === d)}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+
+        {num && (
+          <label className="flex items-center gap-2">
+            <span className="w-16 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{num.label}</span>
+            <select
+              value={(s[num.field] as number | undefined) ?? num.def}
+              onChange={e => setWidgetSetting(id, { [num.field]: Number(e.target.value) })}
+              className="border border-border bg-bg px-2 py-1 text-xs text-text"
+            >
+              {num.values.map(v => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {id === 'standings-snapshot' && followedEligible.length > 0 && (
+          <label className="flex items-center gap-2">
+            <span className="w-16 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Series</span>
+            <select
+              value={s.series ?? ''}
+              onChange={e => setWidgetSetting(id, { series: e.target.value })}
+              className="border border-border bg-bg px-2 py-1 text-xs text-text"
+            >
+              <option value="">First you follow</option>
+              {followedEligible.map(o => (
+                <option key={o.slug} value={o.slug}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {id === 'championship-leader' && followedEligible.length > 0 && (
+          <div>
+            <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              Series <span className="text-text-faint/70">(default: all)</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {followedEligible.map(o => {
+                const on = leaderSet === null || leaderSet.includes(o.slug);
+                return (
+                  <button
+                    key={o.slug}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => {
+                      const base = leaderSet ?? followedEligible.map(x => x.slug);
+                      const next = on ? base.filter(x => x !== o.slug) : [...base, o.slug];
+                      // all selected → clear (means "all"); else store the subset
+                      setWidgetSetting(id, {
+                        seriesSet: next.length === followedEligible.length ? undefined : next,
+                      });
+                    }}
+                    className={pillClass(on)}
+                  >
+                    {o.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -116,6 +232,7 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
             const hidden = layout.hidden.includes(id);
             const collapsed = layout.collapsed.includes(id);
             const meta = META.get(id);
+            const open = openId === id;
             return (
               <li
                 key={id}
@@ -128,87 +245,70 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
                 onDragOver={e => e.preventDefault()}
                 onDrop={() => onDrop(i)}
                 onDragEnd={() => setDragIndex(null)}
-                className={`flex items-center gap-1.5 py-2.5 ${dragIndex === i ? 'opacity-50' : ''}`}
+                className={`py-2.5 ${dragIndex === i ? 'opacity-50' : ''}`}
               >
-                <span
-                  className="shrink-0 cursor-grab text-text-faint active:cursor-grabbing"
-                  aria-hidden="true"
-                >
-                  <GripVertical size={15} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className={`block text-sm ${hidden ? 'text-text-faint line-through' : 'text-text'}`}>
-                    {meta?.label ?? id}
+                <div className="flex items-center gap-1.5">
+                  <span className="shrink-0 cursor-grab text-text-faint active:cursor-grabbing" aria-hidden="true">
+                    <GripVertical size={15} />
                   </span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => move(id, -1)}
-                  disabled={i === 0}
-                  aria-label={`Move ${meta?.label ?? id} up`}
-                  className="p-1 text-text-muted hover:text-text disabled:opacity-30"
-                >
-                  <ArrowUp size={15} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(id, 1)}
-                  disabled={i === layout.order.length - 1}
-                  aria-label={`Move ${meta?.label ?? id} down`}
-                  className="p-1 text-text-muted hover:text-text disabled:opacity-30"
-                >
-                  <ArrowDown size={15} />
-                </button>
-                {meta?.collapsible && (
+                  <span className="min-w-0 flex-1">
+                    <span className={`block text-sm ${hidden ? 'text-text-faint line-through' : 'text-text'}`}>
+                      {meta?.label ?? id}
+                    </span>
+                  </span>
                   <button
                     type="button"
-                    onClick={() => toggleCollapsed(id)}
-                    disabled={hidden}
-                    aria-label={collapsed ? `Expand ${meta?.label ?? id}` : `Fold ${meta?.label ?? id}`}
+                    onClick={() => move(id, -1)}
+                    disabled={i === 0}
+                    aria-label={`Move ${meta?.label ?? id} up`}
                     className="p-1 text-text-muted hover:text-text disabled:opacity-30"
                   >
-                    {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
+                    <ArrowUp size={15} />
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => toggleHidden(id)}
-                  aria-label={hidden ? `Show ${meta?.label ?? id}` : `Hide ${meta?.label ?? id}`}
-                  className="p-1 text-text-muted hover:text-text"
-                >
-                  {hidden ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => move(id, 1)}
+                    disabled={i === layout.order.length - 1}
+                    aria-label={`Move ${meta?.label ?? id} down`}
+                    className="p-1 text-text-muted hover:text-text disabled:opacity-30"
+                  >
+                    <ArrowDown size={15} />
+                  </button>
+                  {meta?.collapsible && (
+                    <button
+                      type="button"
+                      onClick={() => toggleCollapsed(id)}
+                      disabled={hidden}
+                      aria-label={collapsed ? `Expand ${meta?.label ?? id}` : `Fold ${meta?.label ?? id}`}
+                      className="p-1 text-text-muted hover:text-text disabled:opacity-30"
+                    >
+                      {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setOpenId(open ? null : id)}
+                    disabled={hidden}
+                    aria-label={`Settings for ${meta?.label ?? id}`}
+                    aria-expanded={open}
+                    className={`p-1 hover:text-text disabled:opacity-30 ${open ? 'text-text' : 'text-text-muted'}`}
+                  >
+                    <Settings2 size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleHidden(id)}
+                    aria-label={hidden ? `Show ${meta?.label ?? id}` : `Hide ${meta?.label ?? id}`}
+                    className="p-1 text-text-muted hover:text-text"
+                  >
+                    {hidden ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                {open && !hidden && renderSettings(id)}
               </li>
             );
           })}
         </ul>
-        {/* Per-widget config: which series the standings-snapshot widget shows.
-            Only relevant when that widget is present + visible. */}
-        {eligibleSeries.length > 0 &&
-          layout.order.includes('standings-snapshot') &&
-          !layout.hidden.includes('standings-snapshot') && (
-            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
-              <label
-                htmlFor="snapshot-series"
-                className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint"
-              >
-                Standings snapshot — series
-              </label>
-              <select
-                id="snapshot-series"
-                value={layout.config.snapshotSeries ?? ''}
-                onChange={e => setSnapshotSeries(e.target.value)}
-                className="border border-border bg-bg px-2 py-1 text-xs text-text"
-              >
-                <option value="">First series you follow</option>
-                {eligibleSeries.map(s => (
-                  <option key={s.slug} value={s.slug}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         <button
           type="button"
           onClick={reset}

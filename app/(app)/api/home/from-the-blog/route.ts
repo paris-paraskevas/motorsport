@@ -8,7 +8,8 @@ import { publishedPosts } from '@/lib/blog';
 // errors), so this never throws.
 export const dynamic = 'force-dynamic';
 
-const LIMIT = 4;
+// Up to the max the widget's `count` setting allows (the client slices down).
+const LIMIT = 6;
 
 export interface HomeBlogItem {
   slug: string;

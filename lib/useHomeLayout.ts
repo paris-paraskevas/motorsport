@@ -8,6 +8,7 @@ import {
   reconcileHomeLayout,
   type HomeLayoutPrefs,
   type HomeElementId,
+  type WidgetSettings,
 } from './homeLayout';
 
 /**
@@ -31,7 +32,7 @@ export function useHomeLayout(): {
   reorder: (order: HomeElementId[]) => void;
   toggleHidden: (id: HomeElementId) => void;
   toggleCollapsed: (id: HomeElementId) => void;
-  setSnapshotSeries: (slug: string) => void;
+  setWidgetSetting: (id: HomeElementId, patch: Partial<WidgetSettings>) => void;
   reset: () => void;
 } {
   const { isLoaded, isSignedIn } = useAuth();
@@ -111,11 +112,11 @@ export function useHomeLayout(): {
     persist({ ...layout, collapsed });
   };
 
-  // Which series the standings-snapshot widget shows (per-widget config).
-  const setSnapshotSeries = (slug: string) =>
-    persist({ ...layout, config: { ...layout.config, snapshotSeries: slug } });
+  // Merge a partial into one widget's settings (per-widget config).
+  const setWidgetSetting = (id: HomeElementId, patch: Partial<WidgetSettings>) =>
+    persist({ ...layout, config: { ...layout.config, [id]: { ...(layout.config[id] ?? {}), ...patch } } });
 
   const reset = () => persist(DEFAULT_HOME_LAYOUT);
 
-  return { layout, move, reorder, toggleHidden, toggleCollapsed, setSnapshotSeries, reset };
+  return { layout, move, reorder, toggleHidden, toggleCollapsed, setWidgetSetting, reset };
 }

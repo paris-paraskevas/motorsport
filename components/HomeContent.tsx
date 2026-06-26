@@ -8,10 +8,10 @@ import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { groupByDay } from '@/lib/group';
-import { formatRelative, HOME_WEEK_MS } from '@/lib/date';
+import { formatRelative } from '@/lib/date';
 import type { JustMissedItem } from '@/lib/home-results';
 import { useHomeLayout } from '@/lib/useHomeLayout';
-import type { HomeElementId } from '@/lib/homeLayout';
+import type { HomeElementId, WidgetSettings } from '@/lib/homeLayout';
 
 interface HomeItem {
   session: Session;
@@ -48,7 +48,6 @@ interface HomeStandingsItem {
   top: { position: number; name: string; points: number }[];
 }
 
-const WEEK_MS = HOME_WEEK_MS;
 const NEWS_LIMIT = 10;
 
 /* ── Hydration-safe time engine ─────────────────────────────────────────
@@ -271,7 +270,20 @@ export function HomeContent({
       ? news.filter(n => followed.includes(n.seriesSlug))
       : news;
 
-  // JUST MISSED — filter to followed, cap 3 (hero + 2 rows). Rank cards that
+  // Per-widget settings (content + density). Each derived value clamps to its
+  // widget's allowed range; the customise page persists them to layout.config.
+  const cfg = (id: HomeElementId): WidgetSettings => layout.config[id] ?? {};
+  const dense = (id: HomeElementId): boolean => (cfg(id).density ?? 'comfortable') === 'compact';
+  const jmCount = Math.min(Math.max(cfg('just-missed').count ?? 3, 1), 5);
+  const schedDays = cfg('schedule').days === 3 ? 3 : 7;
+  const newsCount = cfg('news').count ?? NEWS_LIMIT;
+  const blogCount = cfg('from-the-blog').count ?? 4;
+  const leaderSet = cfg('championship-leader').seriesSet;
+  const snapSeries = cfg('standings-snapshot').series;
+  const snapRows = cfg('standings-snapshot').rows ?? 5;
+
+  // JUST MISSED — filter to followed, capped to the widget's `count` (hero +
+  // rest). Rank cards that
   // carry an actual podium ahead of link-out-only series, then by recency: the
   // block's whole point is "who won", so a result we can show beats a more
   // recent race we can only link out to (NASCAR/WSBK/F2 etc.).
@@ -287,7 +299,7 @@ export function HomeContent({
       if (pa !== pb) return pb - pa;
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     })
-    .slice(0, 3);
+    .slice(0, jmCount);
   const jmHero = justMissedItems[0];
   const jmRest = justMissedItems.slice(1);
   // Hero "article" — the latest news item for the hero's series. Honest
@@ -306,7 +318,7 @@ export function HomeContent({
   const next = upcomingItems[0];
 
   const weekItems = upcomingItems.filter(
-    i => i.session.start.getTime() - now.getTime() <= WEEK_MS,
+    i => i.session.start.getTime() - now.getTime() <= schedDays * 86_400_000,
   );
   // "+N ahead": total remaining sessions for the followed set minus the week
   // actually rendered above it. The per-series counts come from the page
@@ -352,7 +364,7 @@ export function HomeContent({
   const seenLinks = new Set<string>();
   const topNews = newsForView
     .filter(n => (seenLinks.has(n.link) ? false : seenLinks.add(n.link)))
-    .slice(0, NEWS_LIMIT);
+    .slice(0, newsCount);
 
   const isEmptyFromFilter =
     hydrated && followed !== null && followed.length < items.length;
@@ -648,7 +660,7 @@ export function HomeContent({
             )}
           </div>
           {jmRest.length > 0 && (
-            <div className="border-b border-border divide-y divide-border">
+            <div className={`border-b border-border divide-y divide-border${dense('just-missed') ? ' [&_a]:py-1.5' : ''}`}>
               {jmRest.map(j => (
                 <a
                   key={j.seriesSlug}
@@ -768,7 +780,7 @@ export function HomeContent({
                       </span>
                     </span>
                   </summary>
-                  <div className="border-y border-border divide-y divide-border">
+                  <div className={`border-y border-border divide-y divide-border${dense('schedule') ? ' [&_a]:py-1.5' : ''}`}>
                     {day.sessions.map(s => {
                       const item = itemByUid.get(s.uid);
                       if (!item) return null;
@@ -902,7 +914,7 @@ export function HomeContent({
                 : 'Latest stories unavailable right now.'}
             </div>
           ) : (
-            <div className="border-y border-border divide-y divide-border">
+            <div className={`border-y border-border divide-y divide-border${dense('news') ? ' [&_a]:py-1.5' : ''}`}>
               {topNews.map(item => {
                 const pubDate = new Date(item.pubDate);
                 return (
@@ -971,8 +983,8 @@ export function HomeContent({
               No posts published yet.
             </p>
           ) : (
-            <div className="border-y border-border divide-y divide-border">
-              {blogPosts.map(p => (
+            <div className={`border-y border-border divide-y divide-border${dense('from-the-blog') ? ' [&_a]:py-1.5' : ''}`}>
+              {blogPosts.slice(0, blogCount).map(p => (
                 <Link
                   key={p.slug}
                   href={`/blog/${p.slug}`}
@@ -1032,8 +1044,8 @@ export function HomeContent({
                 Standings unavailable right now.
               </p>
             ) : (
-              <div className="border-y border-border divide-y divide-border">
-                {standings.map(s => (
+              <div className={`border-y border-border divide-y divide-border${dense('championship-leader') ? ' [&_a]:py-1.5' : ''}`}>
+                {standings.filter(s => !leaderSet || leaderSet.includes(s.slug)).map(s => (
                   <Link
                     key={s.slug}
                     href={`/series/${s.slug}/standings`}
@@ -1069,7 +1081,7 @@ export function HomeContent({
           {(() => {
             const brief =
               standings && standings.length > 0
-                ? standings.find(s => s.slug === layout.config.snapshotSeries) ?? standings[0]
+                ? standings.find(s => s.slug === snapSeries) ?? standings[0]
                 : null;
             return (
               <>
@@ -1091,8 +1103,8 @@ export function HomeContent({
                     </p>
                   ) : (
                     <>
-                      <ol className="border-y border-border divide-y divide-border">
-                        {brief.top.map(row => (
+                      <ol className={`border-y border-border divide-y divide-border${dense('standings-snapshot') ? ' [&_li]:py-1.5' : ''}`}>
+                        {brief.top.slice(0, snapRows).map(row => (
                           <li key={row.position} className="flex items-baseline gap-3 py-2 px-2 -mx-2">
                             <span
                               className={`w-5 shrink-0 text-right font-mono text-sm tnum ${

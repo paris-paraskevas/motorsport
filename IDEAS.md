@@ -168,6 +168,8 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Remaster the existing home widgets (operator 2026-06-26): visual/design refresh of the current home blocks (chyron / just-missed / this-week / news) — raise them to the polish bar of the new gallery widgets; pairs with the information-density pass.
 - Beautify the release-notes / changelog page (operator 2026-06-26): redesign `/changelog` (rendered from RELEASES.md) — batch releases into weekly or monthly groups with a nicer visual treatment, instead of the current flat newest-first list.
 
+- Deep per-widget customisation SHIPPED 0.105.0 (PR #266): per-widget content settings + density via a gear disclosure on /settings/customize; HomeLayoutPrefs.config generalised to a per-widget settings map (v6) with the pre-v6 snapshotSeries migration; snapshot Series picker scoped to followed. Minor follow-up: championship-leader with ALL series deselected renders an empty block (no "pick a series" message) — treat an empty seriesSet as "all", or add an empty-state line.
+
 ## Parked (might do, with a revisit trigger)
 
 - **GitHub Actions CI workflow (typecheck + vitest on PRs).** Why parked: prior CI attempts on other repos always failed on the first PR. The shape is ~20 lines and unambiguous, but the user has zero tolerance for noisy red checks. Revisit when we can pair-debug a known-green workflow on a throwaway branch first, *then* merge it. Likely root causes when we get to it: action-version drift, `npm ci` vs `npm install` on lockfile mismatch, GITHUB_TOKEN scope, or branch-trigger mismatches.
