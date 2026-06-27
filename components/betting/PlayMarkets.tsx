@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { OpenMarket } from '@/lib/betting/markets';
 import type { UserBet } from '@/lib/betting/bets';
-import { MARKET_TYPE_META } from '@/lib/betting/constants';
+import { MARKET_TYPE_META, formatBetSelection } from '@/lib/betting/constants';
 import { Accordion } from '@/components/Accordion';
 
 // Betting hub view (the /play page): balance, your bets, and a pointer to each
@@ -85,7 +85,7 @@ export function PlayMarkets({
         ) : (
           <ul className="divide-y divide-white/10">
             {bets.map(b => {
-              const sel = typeof b.selection.winner === 'string' ? b.selection.winner : JSON.stringify(b.selection);
+              const sel = formatBetSelection(b.type, b.selection);
               const tone =
                 b.outcome === 'won'
                   ? 'text-emerald-400'
