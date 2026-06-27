@@ -1,19 +1,15 @@
 'use client';
 import Link from 'next/link';
 import { Coffee, LogIn, Mail, MessageSquare, Settings } from 'lucide-react';
-import { SignInButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
-import type { SeriesMeta } from '@/lib/types';
+import { SignInButton, useAuth, useUser } from '@clerk/nextjs';
 import { openContactModal } from './ContactModal';
-import { SettingsClient } from './SettingsClient';
 
 const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
 export function HeaderUtils({
   className = '',
-  seriesList,
 }: {
   className?: string;
-  seriesList: SeriesMeta[];
 }) {
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
@@ -66,28 +62,6 @@ export function HeaderUtils({
           <Settings size={13} />
           <span>Account</span>
         </Link>
-      )}
-      {isLoaded && isSignedIn && (
-        <UserButton
-          appearance={{ elements: { avatarBox: 'w-8 h-8' } }}
-        >
-          <UserButton.MenuItems>
-            <UserButton.Action
-              label="Preferences"
-              labelIcon={<Settings size={14} />}
-              open="preferences"
-            />
-          </UserButton.MenuItems>
-          <UserButton.UserProfilePage
-            label="Preferences"
-            url="preferences"
-            labelIcon={<Settings size={14} />}
-          >
-            <div className="paddock-prefs">
-              <SettingsClient seriesList={seriesList} />
-            </div>
-          </UserButton.UserProfilePage>
-        </UserButton>
       )}
       {isLoaded && !isSignedIn && (
         <SignInButton mode="modal">
