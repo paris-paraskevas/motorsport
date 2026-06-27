@@ -1,0 +1,36 @@
+name: warm results
+
+on:
+  schedule:
+    # Every 30 minutes — force-refreshes the home "just missed" podium KV so the
+    # /api/just-missed request path never serves a cold (~14s) fan-out. Well
+    # inside the 3h results-cache TTL, so the cache stays perpetually warm. Tune
+    # gentler (e.g. hourly) if upstream load (WEC's CMS) becomes a concern.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read CRON_SECRET from repo secrets.
+permissions:
+  contents: read
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/warm-results
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/warm.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/warm-results)
+          echo "Status: $STATUS"
+          cat /tmp/warm.json
+          echo ""
+          test "$STATUS" = "200"

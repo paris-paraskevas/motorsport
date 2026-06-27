@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.108.0 — 2026-06-27
+
+**Faster "Just missed."** The latest-results block on your home now loads instantly — its data is kept warmed in the background instead of fetched on demand, so it no longer occasionally stalls while catching up.
+
 ## 0.107.2 — 2026-06-27
 
 **Fixed: bets showing as code.** Some picks (exact-finish and forecast) were showing as raw data in your bets list instead of a readable summary — they now read cleanly, e.g. "Verstappen P1, Norris P2".

@@ -67,6 +67,10 @@ const FLAT_SOURCES: Record<string, () => Promise<RaceResult[]>> = {
   motogp: () => fetchMotoGPSeasonResults(new Date().getUTCFullYear()),
 };
 
+/** Every series the home "just missed" block can show a result for — the warm
+ *  cron (app/api/cron/warm-results) loops this to pre-populate each one's KV. */
+export const HOME_RESULTS_SLUGS: string[] = [...Object.keys(FLAT_SOURCES), 'wec'];
+
 export function homeResultsSupported(slug: string): boolean {
   return slug in FLAT_SOURCES || slug === 'wec';
 }
@@ -121,11 +125,18 @@ async function fetchWecLatest(nowMs: number): Promise<LatestRace | null> {
 
 /** Latest finished race + podium for a covered series, KV-cached + fail-soft.
  *  Returns null for unsupported series or on any fetch/parse failure. */
-export async function fetchLatestPodium(slug: string): Promise<LatestRace | null> {
+export async function fetchLatestPodium(
+  slug: string,
+  opts: { force?: boolean } = {},
+): Promise<LatestRace | null> {
   if (!homeResultsSupported(slug)) return null;
   const key = `paddock:home:podium:${slug}:${new Date().getUTCFullYear()}`;
-  const cached = await readResultsCache<LatestRace>(key);
-  if (cached) return cached;
+  // The warm cron passes `force` to bypass the read-through and refresh the KV
+  // on a timer (so the /api/just-missed request path never hits upstream cold).
+  if (!opts.force) {
+    const cached = await readResultsCache<LatestRace>(key);
+    if (cached) return cached;
+  }
   try {
     const result =
       slug === 'wec'

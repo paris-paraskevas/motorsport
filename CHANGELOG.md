@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.108.0 — 2026-06-27
+
+Added: **a warm-results cron** — the home "Just missed" block no longer pays a cold upstream fan-out.
+
+### Added / performance
+- `app/api/cron/warm-results/route.ts` (new, cron-auth'd, fail-closed): force-refreshes every home-supported series' latest-podium KV (`paddock:home:podium:*`). Loops `HOME_RESULTS_SLUGS` (f1 / f3 / formula-e / indycar / motogp / wec), calling `fetchLatestPodium(slug, { force: true })`; best-effort + fail-soft (reports `warmed` / `empty`, never fatal).
+- `.github/workflows/warm-results.yml` (new): pings the endpoint every 30 min (well inside the 3h results-cache TTL), so the cache stays perpetually warm.
+- `lib/home-results.ts`: `fetchLatestPodium` gains a `{ force }` opt (bypasses the read-through so the cron can refresh on a timer); new `HOME_RESULTS_SLUGS` export. The `/api/just-missed` request path is unchanged — it reads the now-always-warm KV.
+
+### Why
+`/api/just-missed` (the home Just-missed fan-out) could take ~14s when both the edge and KV caches were cold — it fired all six season parsers at once (WEC's slow CMS chain the worst). Pre-warming the KV on a timer means a visitor always reads warm cache. (Audit 2026-06-27, results-loading §3.)
+
+### Notes
+- No new env (reuses `CRON_SECRET`). Cadence is tunable — go hourly if WEC's CMS load becomes a concern.
+- Verified: tsc / lint / `next build` clean. Live confirm post-deploy: trigger the workflow (`workflow_dispatch`) and watch `/api/just-missed` TTFB on a cold edge.
+
 ## 0.107.2 — 2026-06-27
 
 Fixed: **bets rendered as raw JSON in the "Your bets" lists.** Composite selections (exact-position, forecast multi-leg) — plus podium/top-10 — fell through to `JSON.stringify(selection)`; only the plain `winner` case formatted. Reachable via `/social` → "Play solo · Back the grid" → `/play`.
