@@ -902,6 +902,25 @@ Won't touch: a real `/news` page (captured to IDEAS); the same-page Calendar hea
 
 Active: _(no `[+Nm]` prefixes captured)_
 
+### Fri 2026-06-26 — home-widget deep customisation + per-series widgets + track-layout scope (0.105.0–0.106.0, #266–#268)
+
+Resumed the unverified deep-customise WIP, then built out the rest of the home gallery. ESPA + `AskUserQuestion` at each fork.
+
+- → done: **deep per-widget customisation 0.105.0 (#266)** — verified the WIP (tsc/lint/build + browser: gear disclosure, persist+merge at config v6, `/app` reflection, the `snapshotSeries`→config migration, v3→v6 reconcile). Two fixes: dead `WEEK_MS` removed; snapshot Series picker scoped to followed. Re-committed clean + merged.
+- → done: **per-series widgets 0.106.0 (#267)** — Series countdowns + Series results (opt-in, per-widget `count`, shared just-missed fetch) + **chyron density no-op fix** (operator-reported). Browser-verified.
+- → done: **track-layout scoped (#268)** — researched asset sources (f1db / bacinger / track-atlas / Wikimedia), decided Approach A (F1-first f1db SVGs), reframed the card (DRS is F1-only). Doc: `docs/research/2026-06-26-track-layout-scope.md`.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+### Sat 2026-06-27 — Circuit map widget (0.107.0, #269) + session wrap
+
+- → done: **Circuit map widget 0.107.0 (#269)** — 21 F1 2026-calendar circuit SVGs from f1db (CC BY 4.0); `lib/circuit-layout.ts` + `matchCircuitEntry`; page resolves `circuitLayoutByUid`; HomeContent renders the next followed round's map + credit. `track-layout` graduated → gallery now empty. Browser-verified (Red Bull Ring renders white-on-dark). All four PRs merged → main **0.107.0**.
+- → done: session wrap — HANDOFF refresh + IDEAS triage + this SCHEDULE log.
+
+Won't touch: circuit-map Phase 1b (corner/DRS) + Phase 2 (multi-series); the operator-owed items (PAT/`sk_live` rotation, preview scrape verify, exact_position, sitemap).
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

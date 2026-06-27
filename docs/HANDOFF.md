@@ -6,6 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-27 (main = 0.107.0) — home-widget gallery COMPLETED (deep-customise → per-series → circuit-map; #266–#269 merged)
+
+The home customise gallery is fully built out — every "coming soon" card shipped, and `AVAILABLE_WIDGETS` is **empty by design** (the "More widgets" gallery renders nothing). No in-flight work; pick from Owed / Follow-ups below.
+
+### Shipped this session (all MERGED)
+- **0.105.0 (#266) — deep per-widget customisation.** `HomeLayoutPrefs.config` → a per-widget `WidgetSettings` map (density/count/days/series/rows/seriesSet); `HOME_LAYOUT_VERSION`→6 with a pre-v6 `snapshotSeries`→`config['standings-snapshot'].series` migration; per-widget gear disclosure on `/settings/customize`; snapshot Series picker scoped to followed.
+- **0.106.0 (#267) — per-series widgets + chyron density fix.** "Series countdowns" (one live countdown per followed series) + "Series results" (latest result per series), opt-in, per-widget `count`, shared `/api/just-missed` fetch. **Fixed:** chyron density was a no-op (single strip, not a row list) → `compact` now tightens its padding.
+- **#268 — track-layout scope doc** (`docs/research/2026-06-26-track-layout-scope.md`): asset-source research + the Approach-A decision.
+- **0.107.0 (#269) — Circuit map widget.** 21 F1 2026-calendar circuit SVGs from **f1db (CC BY 4.0)** in `public/circuits/` + `content/circuits-layout.json`; `lib/circuit-layout.ts` + `matchCircuitEntry` (slug-returning); page resolves `circuitLayoutByUid` (mirrors `weatherByUid`); HomeContent renders the next followed round's map + credit. `track-layout` graduated → gallery emptied.
+
+### Owed (operator) — carried, still open
+- **Rotate the Supabase PAT (`.supabase-pat`) + prod Clerk `sk_live` (`.clerk-prod`).**
+- **Vercel-preview eyeballs (datacenter-IP landmine):** re-confirm the **standings-fed widgets** (championship-leader / standings-snapshot / series-results) AND the **circuit-map** widget on a real preview — only confirmed on local/residential IP. Also moderator roles → `/feedback`.
+- **exact_position go-live** (built + held; verify the signed-in picker → add to `MARKET_BUILDERS`).
+- **Resubmit the sitemap** (B11 per-tab `/series/*/<tab>` URLs) in GSC/Bing.
+
+### Follow-ups (home widgets)
+- **Circuit map Phase 1b:** curated F1 corner-number + DRS overlay (DRS is F1-only, from FIA docs). **Phase 2:** multi-series outlines via tobi/track-atlas (ODbL) / Wikimedia fallback — no DRS. Scope doc has the plan.
+- **Circuit map nuance:** for a follow-all user it labels whichever series has the soonest session at a mapped circuit (saw "F3 · Red Bull Ring" — same physical layout); preferring the headline series is a possible polish.
+- **championship-leader empty-seriesSet:** deselecting all series renders an empty block (no message) — treat empty as "all" or add an empty-state line.
+- Untriaged ideas: **remaster the existing home widgets** (chyron/just-missed/this-week/news visual refresh) + **beautify `/changelog`** (weekly/monthly groups).
+
+### Perf levers (unchanged from the 2026-06-26 audit)
+`/`, `/app`, `/calendar`, `/series/*` all fast + edge-cached. Remaining: **Clerk JS diet** (~225 KiB) · **gate AdSense until approved** (~226 KiB). Record a `docs/perf-baselines.md` row next perf session.
+
+### Landmines
+- `npx next start` backgrounded inline (`&`) dies on shell teardown (exit 127) — use the Bash `run_in_background` flag.
+- Standings-brief scrapes are datacenter-IP-dependent — verify on a Vercel preview, not just local.
+- A `git checkout` resets the Edit tool's per-file read-state — re-Read a file before editing it after switching branches.
+
+_Authoritative end-of-day state (main = **0.107.0**, 2026-06-27). The 2026-06-26 block below is prior history — its deep-customise WIP shipped as #266._
+
 ## ⚡ Next session pickup — 2026-06-26 (main = 0.104.0) — marathon: emails+welcome, calendar fixes, home-widget trio, B11 series-ISR (#260–#265 all MERGED) + deep-customise WIP → PR #266 (0.105.0, verified, awaiting merge)
 
 Very long autonomous session, ~8 features. **#260–#265 are merged to main (0.104.0).** The 8th feature (deep per-widget customisation) is now **verified + shipped as PR #266 (0.105.0), awaiting your squash-merge.**
