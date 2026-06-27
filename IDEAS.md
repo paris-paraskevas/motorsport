@@ -169,6 +169,8 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Beautify the release-notes / changelog page (operator 2026-06-26): redesign `/changelog` (rendered from RELEASES.md) — batch releases into weekly or monthly groups with a nicer visual treatment, instead of the current flat newest-first list.
 
 - Deep per-widget customisation SHIPPED 0.105.0 (PR #266): per-widget content settings + density via a gear disclosure on /settings/customize; HomeLayoutPrefs.config generalised to a per-widget settings map (v6) with the pre-v6 snapshotSeries migration; snapshot Series picker scoped to followed. Minor follow-up: championship-leader with ALL series deselected renders an empty block (no "pick a series" message) — treat an empty seriesSet as "all", or add an empty-state line.
+- Per-series home widgets SHIPPED 0.106.0 (PR #267): "Series countdowns" (one live countdown per followed series) + "Series results" (latest result per series), both opt-in with a per-widget count; also fixed chyron density being a no-op (compact now tightens its padding).
+- Track-layout home widget SCOPED + decided (operator 2026-06-26): Approach A — F1-first static f1db circuit SVGs (CC BY 4.0); reframe the card from "corner and DRS detail" (DRS is F1-only + in no dataset) to "the circuit map for the next round". Sources + data model + build plan in `docs/research/2026-06-26-track-layout-scope.md`. v1 = outline-first; Phase 1b = curated F1 corner/DRS overlay; Phase 2 = multi-series outlines via track-atlas. Build unblocked (main 0.106.0).
 
 ## Parked (might do, with a revisit trigger)
 
