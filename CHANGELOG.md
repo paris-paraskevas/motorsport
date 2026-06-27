@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.109.0 — 2026-06-27
+
+Added: **circuit maps on race-weekend pages** + **collapsed past weekends** on the series calendar.
+
+### Added
+- `components/weekend/WeekendHero.tsx`: the weekend hero now shows the **circuit layout** (the f1db SVG from #269) — resolved server-side in `app/(app)/series/[slug]/weekend/[round]/page.tsx` via `circuitLayoutFor(location, title)` and passed in, with the CC-BY-4.0 credit. F1 rounds render it; others gracefully render none. ISR-safe (fs reads).
+
+### Changed
+- `components/WeekendBlock.tsx`: **passed weekends collapse** to a compact, clickable date + name row (no session timetable / tags / footer) on the series calendar tab — so the upcoming weekend stands out and old rounds stay one tap away. The next/upcoming weekend keeps the full sessions + times + NEXT + ROUND.
+
+### Notes
+- Browser-verified on a local prod build: `/series/f1/weekend/8` hero shows the Red Bull Ring map + credit; `/series/f1` calendar shows rounds 6/7 (Monaco/Barcelona) collapsed + round 8 (Austrian) full. tsc / lint / build clean.
+- Scope: the global `/calendar` month-grid is unchanged (separate view).
+
 ## 0.108.0 — 2026-06-27
 
 Added: **a warm-results cron** — the home "Just missed" block no longer pays a cold upstream fan-out.

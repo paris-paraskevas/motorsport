@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
+import { circuitLayoutFor } from '@/lib/circuit-layout';
 import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendTabs } from '@/components/weekend/WeekendTabs';
@@ -123,6 +124,14 @@ export default async function WeekendPage({
     ? `/series/${slug}/weekend/${round}`
     : undefined;
 
+  // Circuit-layout schematic for the hero (F1 2026 calendar in v1, from f1db) —
+  // resolved by the round's venue/name via the shared circuit matcher. ISR-safe
+  // (fs reads); gracefully null for circuits we haven't curated a map for.
+  const circuitLayout = await circuitLayoutFor(
+    weekend.sessions.find(s => s.location)?.location,
+    weekendTitleLabel,
+  );
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -165,6 +174,7 @@ export default async function WeekendPage({
         seriesSlug={series.meta.slug}
         seriesName={series.meta.name}
         color={color}
+        circuitLayout={circuitLayout}
       />
 
       {(raceHighlight || watch) && (
