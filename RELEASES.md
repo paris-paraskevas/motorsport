@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.107.1 — 2026-06-27
+
+**Tidier top bar.** The account avatar is gone from the top navigation — manage your profile and sign out from the Account page instead (the Account link, or the Account tab in the bottom bar on mobile). Signing in is unchanged.
+
 ## 0.107.0 — 2026-06-27
 
 **New home widget: Circuit map.** Add it from Customise (Account → Customise) to see the track layout for your next race weekend — the full circuit outline, right on your home. It covers the Formula 1 calendar to start, with more series and finer detail (corners, DRS) to follow. Like every block, it's yours to show, hide, fold and reorder.

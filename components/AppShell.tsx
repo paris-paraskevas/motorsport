@@ -142,7 +142,7 @@ export function AppShell({
             )}
           </nav>
 
-          <div className="ml-auto" data-tour="account"><HeaderUtils seriesList={seriesList} /></div>
+          <div className="ml-auto" data-tour="account"><HeaderUtils /></div>
         </div>
       </header>
 

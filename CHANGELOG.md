@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.107.1 — 2026-06-27
+
+Changed: **the Clerk account avatar is removed from the top nav** — account management + sign-out now live only on the Account page.
+
+### Changed
+- `components/HeaderUtils.tsx`: removed the Clerk `UserButton` (avatar / "face icon") from the header — it rendered on every viewport (desktop + mobile PWA). Dropped its embedded "Preferences" `SettingsClient` panel + the now-unused `seriesList` prop / `SeriesMeta` import; `components/AppShell.tsx` no longer passes `seriesList` to `HeaderUtils`. The signed-out "Sign in" button stays in the nav; the signed-in desktop "Account" link (→ `/settings`) stays.
+- Account management + sign-out now come solely from the Account page (`/settings`), where `AccountIdentity` already renders the Clerk `UserButton` (signed-in: avatar + manage + sign out; signed-out: a "Sign in" CTA). `SettingsClient` is unchanged + still used by `/settings/series`.
+
+### Notes
+- Browser-verified signed-out on a local prod build: the header shows Contact / Coffee / Sign in with **no avatar**; `/settings` still offers Clerk sign-in. The signed-in avatar removal is a pure deletion of the nav's only `UserButton` (grep-confirmed there was no other; tsc/lint/build clean) — confirm on the preview where you're signed in. No URL rename — the Account page stays `/settings`.
+
 ## 0.107.0 — 2026-06-27
 
 Added: **the Circuit map home widget** — the last gallery card ships. Shows the track layout for the next round you follow that we have a map for (F1 2026 calendar in v1). Decision/sources in `docs/research/2026-06-26-track-layout-scope.md`.
