@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.107.0 — 2026-06-27
+
+Added: **the Circuit map home widget** — the last gallery card ships. Shows the track layout for the next round you follow that we have a map for (F1 2026 calendar in v1). Decision/sources in `docs/research/2026-06-26-track-layout-scope.md`.
+
+### Added
+- `public/circuits/<slug>.svg` (21): F1 2026-calendar circuit schematics from **f1db (CC BY 4.0**, `white-outline`), current layout per circuit (f1db is F1-only, so per-circuit layouts are F1-race layouts → the latest is current).
+- `content/circuits-layout.json`: per-circuit `{ svg, source, license, sourceUrl }` (the `content/landing/circuits.json` attribution pattern).
+- `lib/circuit-layout.ts`: `circuitLayoutFor(...candidates)` resolves a session's circuit (via `matchCircuitEntry`) → its curated layout + attribution. Server-only (fs).
+- `lib/circuits.ts`: new `matchCircuitEntry` (returns `{ slug, circuit }`); `matchCircuit` is now a thin wrapper over it.
+- `app/(app)/app/page.tsx`: resolves `circuitLayoutByUid` for the shipped sessions (mirrors `weatherByUid` — server resolves, client filters by followed) → passed to HomeContent.
+- `components/HomeContent.tsx`: the **Circuit map** section — the next followed upcoming session that has a layout → its SVG (`<img>`, lazy) + series/location + open-weekend link + the CC BY 4.0 credit; density tightens padding/height; static asset, no fetch.
+- `lib/homeLayout.ts`: `track-layout` graduated to `HOME_ELEMENTS` + `DEFAULT_HIDDEN`; `AVAILABLE_WIDGETS` is now **empty** → `WidgetGallery` renders nothing (the "More widgets" gallery disappears, all widgets having shipped).
+
+### Notes
+- Browser-verified on a local prod build: the widget resolved the next round (Red Bull Ring, Austrian GP weekend), the white-outline SVG renders on the dark theme (500×500, `stroke:#fff`), the credit links to f1db; the customise gallery is gone and Circuit map is in the 10-widget block list. tsc/lint/build clean; 15 homeLayout tests pass (updated for 10 elements / 6 default-hidden).
+- v1 = F1 outline only. The card's "corner/DRS detail" was reframed — DRS is F1-only and in no dataset (**Phase 1b** = a curated F1 corner/DRS overlay; **Phase 2** = multi-series outlines via track-atlas). The widget shows whichever followed series has the soonest session at a mapped circuit (e.g. F3 / MotoGP at a shared F1 circuit — same physical layout), so a follow-all user may see a support series labelled on the map.
+
 ## 0.106.0 — 2026-06-26
 
 Added: **two per-series home widgets** (countdowns + results) graduated from the gallery, plus a **chyron density fix**.

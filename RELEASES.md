@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.107.0 — 2026-06-27
+
+**New home widget: Circuit map.** Add it from Customise (Account → Customise) to see the track layout for your next race weekend — the full circuit outline, right on your home. It covers the Formula 1 calendar to start, with more series and finer detail (corners, DRS) to follow. Like every block, it's yours to show, hide, fold and reorder.
+
 ## 0.106.0 — 2026-06-26
 
 **Two new home widgets — and a fix.** Add **Series countdowns** (a live countdown to each series' next session) or **Series results** (the latest result for each series, split out into its own row) from Customise (Account → Customise), and choose how many series each shows — like every block, they're yours to show, hide, fold and reorder. We also fixed the comfortable/compact spacing toggle on the "Live / up next" block, which previously had no effect.
