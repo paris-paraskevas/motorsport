@@ -5,6 +5,7 @@ import { HOME_WEEK_MS } from '@/lib/date';
 import { fetchAggregatedNews } from '@/lib/news';
 import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
+import { circuitLayoutFor, type CircuitLayout } from '@/lib/circuit-layout';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 
 export const revalidate = 300;
@@ -37,6 +38,20 @@ async function weatherForSessions(
     if (!forecast) continue;
     const daily = forecastFor(forecast, item.session.start);
     if (daily) result[item.session.uid] = daily;
+  }
+  return result;
+}
+
+async function layoutsForSessions(
+  candidates: Array<{ session: { uid: string; location?: string; title: string } }>,
+): Promise<Record<string, CircuitLayout>> {
+  // Resolve each shipped session's circuit to its curated track-layout schematic
+  // (F1 2026 calendar in v1). The client (HomeContent) picks the next followed
+  // round that has one — mirrors weatherByUid (server resolves, client filters).
+  const result: Record<string, CircuitLayout> = {};
+  for (const item of candidates) {
+    const layout = await circuitLayoutFor(item.session.location, item.session.title);
+    if (layout) result[item.session.uid] = layout;
   }
   return result;
 }
@@ -105,6 +120,7 @@ export default async function Home() {
   });
 
   const weatherByUid = await weatherForSessions(homeItems);
+  const circuitLayoutByUid = await layoutsForSessions(homeItems);
 
   // Round lookup only for sessions actually shipped to the client.
   const roundLookup = buildRoundLookupAcrossSeries(all, now);
@@ -125,6 +141,7 @@ export default async function Home() {
         items={homeItems}
         news={news}
         weatherByUid={weatherByUid}
+        circuitLayoutByUid={circuitLayoutByUid}
         roundByKey={roundByKey}
         serverNow={now.toISOString()}
         upcomingCountBySeries={upcomingCountBySeries}

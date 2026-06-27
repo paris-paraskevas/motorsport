@@ -352,6 +352,9 @@ function WidgetCard({ widget }: { widget: AvailableWidget }) {
 // add to their home. Sourced from AVAILABLE_WIDGETS (UI-only descriptors); every
 // card is "coming soon" until its widget ships into HomeContent + the pref shape.
 function WidgetGallery() {
+  // Every advertised widget has shipped — nothing to gallery. Adding entries to
+  // AVAILABLE_WIDGETS re-lights this section automatically.
+  if (AVAILABLE_WIDGETS.length === 0) return null;
   return (
     <section className="mt-8">
       <div className="mb-1.5 flex items-center gap-2">

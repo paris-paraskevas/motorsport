@@ -1,0 +1,26 @@
+{
+  "_note": "Per-circuit track-layout schematics for the home track-layout widget. SVGs live in public/circuits/<slug>.svg. All from f1db (CC BY 4.0) — keep source/license/sourceUrl accurate; they render as a visible credit. Slugs match content/circuits.json. F1 2026 calendar; expand per docs/research/2026-06-26-track-layout-scope.md.",
+  "layouts": {
+    "albert-park":   { "svg": "/circuits/albert-park.svg",   "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "shanghai":      { "svg": "/circuits/shanghai.svg",      "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "suzuka":        { "svg": "/circuits/suzuka.svg",        "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "miami":         { "svg": "/circuits/miami.svg",         "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "montreal":      { "svg": "/circuits/montreal.svg",      "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "monaco":        { "svg": "/circuits/monaco.svg",        "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "barcelona":     { "svg": "/circuits/barcelona.svg",     "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "red-bull-ring": { "svg": "/circuits/red-bull-ring.svg", "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "silverstone":   { "svg": "/circuits/silverstone.svg",   "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "spa":           { "svg": "/circuits/spa.svg",           "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "hungaroring":   { "svg": "/circuits/hungaroring.svg",   "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "zandvoort":     { "svg": "/circuits/zandvoort.svg",     "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "monza":         { "svg": "/circuits/monza.svg",         "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "baku":          { "svg": "/circuits/baku.svg",          "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "marina-bay":    { "svg": "/circuits/marina-bay.svg",    "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "cota":          { "svg": "/circuits/cota.svg",          "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "mexico-city":   { "svg": "/circuits/mexico-city.svg",   "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "interlagos":    { "svg": "/circuits/interlagos.svg",    "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "las-vegas":     { "svg": "/circuits/las-vegas.svg",     "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "lusail":        { "svg": "/circuits/lusail.svg",        "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" },
+    "yas-marina":    { "svg": "/circuits/yas-marina.svg",    "source": "f1db", "license": "CC BY 4.0", "sourceUrl": "https://github.com/f1db/f1db" }
+  }
+}

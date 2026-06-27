@@ -12,6 +12,7 @@ import { formatRelative } from '@/lib/date';
 import type { JustMissedItem } from '@/lib/home-results';
 import { useHomeLayout } from '@/lib/useHomeLayout';
 import type { HomeElementId, WidgetSettings } from '@/lib/homeLayout';
+import type { CircuitLayout } from '@/lib/circuit-layout';
 
 interface HomeItem {
   session: Session;
@@ -145,6 +146,7 @@ export function HomeContent({
   items,
   news,
   weatherByUid,
+  circuitLayoutByUid,
   roundByKey,
   serverNow,
   upcomingCountBySeries,
@@ -154,6 +156,7 @@ export function HomeContent({
   items: HomeItem[];
   news: NewsItemSerialized[];
   weatherByUid?: Record<string, DailyWeather>;
+  circuitLayoutByUid?: Record<string, CircuitLayout>;
   roundByKey?: Record<string, number>;
   serverNow: string;
   // Per-series count of ALL remaining upcoming sessions (same predicate as
@@ -1255,6 +1258,73 @@ export function HomeContent({
                       </span>
                     </a>
                   ))}
+                </div>
+              ))}
+          </section>
+        );
+      })()}
+      {/* ── CIRCUIT MAP — opt-in. The track layout for the next followed round
+             we have a map for (F1 2026 calendar in v1). Static SVG, no fetch. ── */}
+      {!isHidden('track-layout') && (() => {
+        const item = upcomingItems.find(i => circuitLayoutByUid?.[i.session.uid]);
+        const layout = item ? circuitLayoutByUid?.[item.session.uid] : undefined;
+        return (
+          <section aria-label="Circuit map" className="mb-8" style={{ order: orderOf('track-layout') }}>
+            <CollapsibleSectionHead
+              title="Circuit map"
+              sub={layout ? layout.name : 'next round'}
+              collapsed={isCollapsed('track-layout')}
+              onToggle={() => toggleCollapsed('track-layout')}
+            />
+            {!isCollapsed('track-layout') &&
+              (!item || !layout ? (
+                <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                  No circuit map for your next round yet.
+                </p>
+              ) : (
+                <div className={`border-y border-border ${dense('track-layout') ? 'py-3' : 'py-5'}`}>
+                  <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      <span className="font-semibold" style={{ color: item.color }}>{item.seriesName}</span>
+                    </span>
+                    {item.session.location && (
+                      <span className="inline-flex items-center gap-1 text-text-faint">
+                        <MapPin size={11} />
+                        {item.session.location.split(',')[0].trim()}
+                      </span>
+                    )}
+                  </div>
+                  <Link href={hrefFor(item)} className="group block">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={layout.svg}
+                      alt={`${layout.name} circuit layout`}
+                      loading="lazy"
+                      className={`mx-auto w-full object-contain ${dense('track-layout') ? 'max-h-44' : 'max-h-64'}`}
+                    />
+                    <div className="mt-2 flex items-center justify-between gap-2">
+                      <span className="font-display text-lg font-bold uppercase tracking-wide text-text truncate">
+                        {layout.name}
+                      </span>
+                      <span className="shrink-0 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
+                        {roundFor(item.seriesSlug, item.session.uid) ? 'Open weekend' : 'Open series'}
+                        <ArrowUpRight size={12} />
+                      </span>
+                    </div>
+                  </Link>
+                  <div className="pt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                    Circuit map ·{' '}
+                    <a
+                      href={layout.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 hover:text-text-muted"
+                    >
+                      {layout.source}
+                    </a>{' '}
+                    ({layout.license})
+                  </div>
                 </div>
               ))}
           </section>

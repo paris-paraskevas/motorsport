@@ -17,7 +17,8 @@ export type HomeElementId =
   | 'championship-leader'
   | 'standings-snapshot'
   | 'series-countdowns'
-  | 'series-just-missed';
+  | 'series-just-missed'
+  | 'track-layout';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -41,6 +42,7 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'standings-snapshot', label: 'Standings snapshot', hint: 'The top of the table for one series, refreshed each round.', collapsible: true },
   { id: 'series-countdowns', label: 'Series countdowns', hint: 'A separate next-session countdown for each series you follow.', collapsible: true },
   { id: 'series-just-missed', label: 'Series results', hint: 'The latest result for each series you follow, split out by series.', collapsible: true },
+  { id: 'track-layout', label: 'Circuit map', hint: 'The track layout for the next round you follow (F1 for now).', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
@@ -66,15 +68,10 @@ export interface AvailableWidget {
   status: WidgetStatus;
 }
 
-export const AVAILABLE_WIDGETS: AvailableWidget[] = [
-  {
-    id: 'track-layout',
-    label: 'Upcoming track layout',
-    blurb: 'The circuit map for the next round, with corner and DRS detail.',
-    icon: 'MapPin',
-    status: 'coming-soon',
-  },
-];
+// Empty for now — every advertised widget has shipped into HOME_ELEMENTS. New
+// "coming soon" descriptors go here to re-light the gallery; WidgetGallery
+// renders nothing while this is empty.
+export const AVAILABLE_WIDGETS: AvailableWidget[] = [];
 
 /** Per-widget settings (distinct from order/hidden/collapsed). Each widget reads
  *  only the fields that apply to it and clamps numeric values to its own range,
@@ -119,7 +116,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed', 'track-layout'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
