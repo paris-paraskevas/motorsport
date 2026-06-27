@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.107.2 — 2026-06-27
+
+Fixed: **bets rendered as raw JSON in the "Your bets" lists.** Composite selections (exact-position, forecast multi-leg) — plus podium/top-10 — fell through to `JSON.stringify(selection)`; only the plain `winner` case formatted. Reachable via `/social` → "Play solo · Back the grid" → `/play`.
+
+### Fixed
+- `lib/betting/constants.ts`: new `formatBetSelection(type, selection)` — readable text per market type (winner/podium/top10 → driver name; exact_position → `<driver> P<n>`; forecast → legs joined `<driver> P<n>, …`), and **never** raw JSON (unknown/missing → `—`).
+- `components/betting/PlayMarkets.tsx` (the `/play` cross-type "Your bets" list) + `components/betting/MarketBetCard.tsx` now use `formatBetSelection(b.type, b.selection)` instead of the `JSON.stringify` fallback. (The dedicated forecast/exact-position cards already formatted correctly.)
+- `lib/betting/constants.test.ts` (new, 4 cases) locks it — every market type → readable, never JSON.
+
 ## 0.107.1 — 2026-06-27
 
 Changed: **the Clerk account avatar is removed from the top nav** — account management + sign-out now live only on the Account page.

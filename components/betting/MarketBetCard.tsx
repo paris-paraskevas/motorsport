@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { STANDARD_STAKE, MARKET_TYPE_META } from '@/lib/betting/constants';
+import { STANDARD_STAKE, MARKET_TYPE_META, formatBetSelection } from '@/lib/betting/constants';
 import type { OpenMarket } from '@/lib/betting/markets';
 import type { UserBet } from '@/lib/betting/bets';
 import type { UserLeague } from '@/lib/betting/leagues';
@@ -134,8 +134,7 @@ export function MarketBetCard({
       {bets.length > 0 && (
         <ul className="divide-y divide-border border-t border-border pt-1">
           {bets.map(b => {
-            const selVal = b.selection[meta.selectionKey];
-            const sel = typeof selVal === 'string' ? selVal : JSON.stringify(b.selection);
+            const sel = formatBetSelection(b.type, b.selection);
             const tone =
               b.outcome === 'won' ? 'text-emerald-400' : b.outcome === 'pending' ? 'text-brand' : 'text-text-muted';
             return (

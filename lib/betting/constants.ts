@@ -42,3 +42,24 @@ export function parseExactPositionOdds(odds: Record<string, number>): { drivers:
     positions: [...positions].sort((a, b) => a - b),
   };
 }
+
+/** Human-readable summary of a bet's selection — NEVER raw JSON. Selection shapes
+ *  (see lib/betting/markets selectionForMarket): winner→{winner}, podium/top10→
+ *  {driver}, exact_position→{driver,position}, forecast→{legs:[{driver,position}]}. */
+export function formatBetSelection(type: string, selection: Record<string, unknown>): string {
+  const name = selection.winner ?? selection.driver;
+  const driver = typeof name === 'string' ? name : undefined;
+  if (type === 'forecast' && Array.isArray(selection.legs)) {
+    const parts = (selection.legs as unknown[]).flatMap(leg => {
+      const l = (leg ?? {}) as Record<string, unknown>;
+      const d = l.driver ?? l.winner;
+      if (typeof d !== 'string') return [];
+      return [typeof l.position === 'number' ? `${d} P${l.position}` : d];
+    });
+    if (parts.length) return parts.join(', ');
+  }
+  if (type === 'exact_position' && driver && typeof selection.position === 'number') {
+    return `${driver} P${selection.position}`;
+  }
+  return driver ?? '—';
+}

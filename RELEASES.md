@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.107.2 — 2026-06-27
+
+**Fixed: bets showing as code.** Some picks (exact-finish and forecast) were showing as raw data in your bets list instead of a readable summary — they now read cleanly, e.g. "Verstappen P1, Norris P2".
+
 ## 0.107.1 — 2026-06-27
 
 **Tidier top bar.** The account avatar is gone from the top navigation — manage your profile and sign out from the Account page instead (the Account link, or the Account tab in the bottom bar on mobile). Signing in is unchanged.
