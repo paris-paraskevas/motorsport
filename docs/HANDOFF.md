@@ -6,6 +6,28 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-27 (late, main = 0.109.0) — weekend features shipped; lazy-Clerk (c) IN PROGRESS, nothing committed
+
+main = **0.109.0**, **no open PRs**. Since the 0.108.0 block below: **#277 (0.109.0)** shipped — circuit map on the weekend hero + collapsed past weekends on the series calendar. AdSense gate **DROPPED** (operator: "no. merged. forget adsense" — do not gate or touch AdSense).
+
+### ▶ RESUME HERE — (c) lazy-load Clerk for anonymous visitors
+- **Branch `feat/lazy-clerk-anon`** (off 0.109.0). **NOTHING committed** — investigation only. (This handoff lives on `docs/handoff-c-wip`; rebase/restart c on a fresh branch off main if simpler.)
+- **CORRECTION — Clerk is v7, not v6.** `@clerk/nextjs` is `^7.3.3` = **current SDK**, NOT Core 2 (v5–v6). My mid-session skill query said "6.x" — wrong. Use **current-SDK** Clerk-Next patterns (`clerk-nextjs-patterns`). Re-confirm load behaviour against v7 before relying on any v6-era assumption.
+- **Problem (confirmed):** clerk-js (~224 KiB) downloads for ALL visitors incl. anonymous on static routes — the "Clerk loaded with development keys" warning fires on signed-out pages. Audit (`docs/audits/2026-06-27-audit.md`) ranks this the #2 perf lever.
+- **What loads it:** `<ClerkProvider>` wraps the whole `(app)` layout (`app/(app)/layout.tsx` ~L76-91, + a clerk preconnect `<link>`). `useAuth`/`useUser` consumers (`HeaderUtils`, `OnboardingWizard`, both mounted by the all-`'use client'` `AppShell`) + the anon `<SignInButton mode="modal">` force the SDK on every route. **AdSense `<Script>` is also in this layout — do NOT touch it.**
+- **The lever:** the landing already detects signed-in **SDK-free** via the readable `__client_uat` cookie — `components/landing/LandingAuth.tsx` `useSignedIn()` (`useSyncExternalStore` reading `/(?:^|;\s*)__client_uat=(\d+)/`, >0 = signed in; server snapshot = signed-out).
+- **CRUX to resolve FIRST:** does v7 `ClerkProvider` download clerk-js on MOUNT regardless, or only when a hook/Clerk-component actually needs it? If hook-triggered → the gate below works + is low-risk. If mount-triggered → must conditionally render the provider (higher risk, bigger blast radius). Resolve via `clerk-nextjs-patterns` (current SDK) **or** empirically: implement the gate, then check the anon network tab for clerk-js.
+- **Likely-safe approach:** gate the Clerk-hook-consumers behind `useSignedIn()` so ANON renders a Clerk-free UI (plain `/sign-in` LINK, no modal; OnboardingWizard no-ops for anon) and the hooks/SDK engage only when the cookie says signed-in. **Verify the anon path locally** (clerk-js absent from network on a static route). **Signed-in path rides to the Vercel preview** — the local Clerk-signed-in path is BLOCKED (can't create a test user; the Backend-API create was auto-mode-denied). Sign-in/up pages must keep working.
+- **Version when shipped:** 0.109.1 (patch / internal perf) or 0.110.0. Then CHANGELOG + RELEASES + PR (no Claude attribution).
+
+### Shipped since the 0.108.0 block
+- **0.109.0 (#277)** — circuit map on the weekend hero (`WeekendHero` `circuitLayout` prop + `<figure>` w/ CC-BY-4.0 credit; resolved server-side in the weekend page via `circuitLayoutFor`, reusing #269's f1db SVGs); passed weekends collapse to a compact clickable date+name row on the series calendar tab (`WeekendBlock` early-return when `weekend.isPast`), next weekend keeps the full timetable.
+- **(#276)** — the prior handoff refresh (the 0.108.0 block below).
+
+_(Everything else — audit follow-ups, blog drafts, betting-asks, owed items, landmines — is unchanged from the 0.108.0 block that follows.)_
+
+---
+
 ## ⚡ Next session pickup — 2026-06-27 (cont., main = 0.108.0) — nav cleanup + blog plan + audit + bet-JSON fix + warm-results cron; weekend/perf queue IN FLIGHT
 
 Continuation after the 0.107.0 wrap. Five more PRs merged (#271–#275); main = **0.108.0**; **no open PRs**. An operator-prioritised build queue is in flight — see ▶ DO NEXT.
