@@ -36,6 +36,42 @@ export function WeekendBlock({
   const isChampionshipRound = round >= 1;
   const Wrapper: React.ElementType = isChampionshipRound ? Link : 'div';
 
+  // Passed weekends collapse to a compact, clickable date + name row (no session
+  // timetable, tags or footer) so the upcoming weekend stands out and the old
+  // ones stay one tap away. The next/upcoming weekend keeps the full block below.
+  if (weekend.isPast) {
+    return (
+      <Wrapper
+        {...(isChampionshipRound ? { href: `/series/${seriesSlug}/weekend/${round}` } : {})}
+        className={`relative block border-y border-border py-2.5 pl-5 pr-4 transition-colors duration-(--duration-fast) ${
+          isChampionshipRound ? 'hover:bg-surface' : ''
+        }`}
+      >
+        <span
+          aria-hidden="true"
+          className="absolute left-0 top-0 bottom-0 w-[3px]"
+          style={{ backgroundColor: color, opacity: 0.5 }}
+        />
+        <div className="flex items-baseline gap-3 min-w-0">
+          <time
+            dateTime={weekendStartISO}
+            className="shrink-0 text-[11px] uppercase tracking-wider text-text-faint font-medium font-mono tnum"
+          >
+            {weekend.dateRangeLabel}
+          </time>
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-muted">
+            {hasNamedTitle ? title : `Round ${round}`}
+          </span>
+          {isChampionshipRound && (
+            <span aria-hidden className="shrink-0 text-text-faint">
+              →
+            </span>
+          )}
+        </div>
+      </Wrapper>
+    );
+  }
+
   return (
     <Wrapper
       {...(isChampionshipRound

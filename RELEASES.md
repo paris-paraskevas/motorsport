@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.109.0 — 2026-06-27
+
+**Circuit maps + a cleaner calendar.** Every race-weekend page now shows the circuit layout up top (Formula 1 to start). And on a series' calendar, weekends that have already run collapse to a tidy, tappable date + name — so the next race weekend stands out and past ones stay easy to reach.
+
 ## 0.108.0 — 2026-06-27
 
 **Faster "Just missed."** The latest-results block on your home now loads instantly — its data is kept warmed in the background instead of fetched on demand, so it no longer occasionally stalls while catching up.

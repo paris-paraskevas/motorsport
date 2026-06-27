@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react';
 import type { Weekend } from '@/lib/types';
 import { formatRelative } from '@/lib/date';
 import { weekendIsLive, weekendLabel, weekendStartEnd } from '@/lib/weekend';
+import type { CircuitLayout } from '@/lib/circuit-layout';
 
 function formatShortRange(startISO: string, endISO: string): string {
   const start = new Date(startISO + 'T00:00:00Z');
@@ -27,12 +28,14 @@ export function WeekendHero({
   seriesSlug,
   seriesName,
   color,
+  circuitLayout,
 }: {
   weekend: Weekend;
   round: number;
   seriesSlug: string;
   seriesName: string;
   color: string;
+  circuitLayout?: CircuitLayout | null;
 }) {
   const now = new Date();
   const { start, end } = weekendStartEnd(weekend);
@@ -114,6 +117,30 @@ export function WeekendHero({
           <MapPin size={13} className="text-text-faint" />
           <span>{location}</span>
         </div>
+      )}
+
+      {circuitLayout && (
+        <figure className="mt-5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={circuitLayout.svg}
+            alt={`${circuitLayout.name} circuit layout`}
+            loading="lazy"
+            className="w-full max-w-md object-contain max-h-52"
+          />
+          <figcaption className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            Circuit map ·{' '}
+            <a
+              href={circuitLayout.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-text-muted"
+            >
+              {circuitLayout.source}
+            </a>{' '}
+            ({circuitLayout.license})
+          </figcaption>
+        </figure>
       )}
 
       {weekend.previousStartDate && weekend.previousEndDate && (
