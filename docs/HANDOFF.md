@@ -6,6 +6,50 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-27 (cont., main = 0.108.0) — nav cleanup + blog plan + audit + bet-JSON fix + warm-results cron; weekend/perf queue IN FLIGHT
+
+Continuation after the 0.107.0 wrap. Five more PRs merged (#271–#275); main = **0.108.0**; **no open PRs**. An operator-prioritised build queue is in flight — see ▶ DO NEXT.
+
+### ▶ DO NEXT (operator-prioritised 2026-06-27)
+1. **Circuit map on the weekend hero** — `/series/[slug]/weekend/[round]` `WeekendHero`: resolve the round's circuit via `circuitLayoutFor` (`lib/circuit-layout`) + render the layout SVG + CC-BY-4.0 credit, **reusing the 21 F1 SVGs from #269**. F1 rounds get it; others render none.
+2. **Collapse passed weekends on the series calendar** — `components/WeekendBlock.tsx`: when `weekend.isPast`, render compact (date + name, clickable to the weekend page; drop the session list + "Round N →" footer + tags; readable, not the current 50%-dim). The next/upcoming weekend keeps full sessions+times+NEXT+ROUND. (Series calendar tab via `MonthScopedWeekends`; the global `/calendar` month-grid is out of scope unless asked.)
+3. **(c) Lazy-load Clerk for anonymous visitors** — ~224 KiB unused JS off static/public routes; `AppShell`/`HeaderUtils`/`OnboardingWizard` eagerly mount Clerk hook-consumers + the anon SignInButton. Audit perf lever #2.
+- **ALSO PENDING (high-ROI, unscheduled):** **gate AdSense** behind an env flag — the audit's **#1 free perf win** (~226 KiB; zero ad slots exist; site not approved), `app/(app)/layout.tsx`. Slot it in.
+
+### Shipped since the 0.107.0 wrap (all MERGED)
+- **0.107.1 (#271)** — removed the Clerk avatar (face icon) from the top nav (desktop+mobile); account mgmt/sign-out now live only on `/settings` (`AccountIdentity`). Kept the signed-out nav "Sign in".
+- **(#272)** — **blog editorial rollout plan** spec (`docs/superpowers/specs/2026-06-27-blog-rollout-plan-design.md`): SEO-first→engagement; F1 preview/recap spine + round-themed evergreen.
+- **(#273)** — **audit** (`docs/audits/2026-06-27-audit.md`): perf / coverage / results-loading / widgets + a PWA-widgets feasibility appendix.
+- **0.107.2 (#274)** — fixed bets rendering as **raw JSON** in the `/play` "Your bets" list (composite selections fell to `JSON.stringify`); new `formatBetSelection` + test.
+- **0.108.0 (#275)** — **warm-results cron** (`app/api/cron/warm-results` + `.github/workflows/warm-results.yml`): force-refreshes the home podium KV every 30 min → kills the ~14s `/api/just-missed` cold path. `fetchLatestPodium` gained `{force}`.
+
+### Blog (plan shipped #272; first drafts in progress)
+- **Rules-explainer draft written:** `docs/content-authoring/drafts/f1-2026-rules-explained.md` — **uncommitted working draft**, web-sourced (F1.com/FIA), flagged for the operator's triple-check (the figures + a paraphrased Verstappen quote) before publish. NOT live.
+- **Austrian GP recap + British GP preview: HELD until post-race** (Austrian GP was Sun 2026-06-28). Revisit Sun eve / Mon → draft the recap (real result, web-searched) + the British preview (R9, 7/3–5) + the Silverstone circuit guide.
+
+### Audit follow-ups (PR #273 — beyond ▶ DO NEXT)
+- **Coverage gaps:** ADAC-24h + NLS blank (no parser → PlaceholderTab); WEC/IMSA/GT-World + IndyCar/NASCAR per-session is race-only (no quali/points — the class feed's already fetched, so cheap to extend); Formula E results winners-only; WRC/DTM no per-session (by design / no source).
+- **Results-loading (post warm-cron):** MotoGP parser-level KV cache (S); a normalized `paddock:home:latest-all` snapshot read in one KV get (M); extend `withSourceSnapshot` last-good to the slow scrapers — WEC/FE/WRC/NASCAR (M).
+- **New widget ideas:** next-race weather · where-to-watch · latest-session-result · your-bets+credits · mini-league-standings · standings-movers · driver/team spotlight.
+
+### Betting/social asks (investigate before building — likely partly exist)
+- **"Pool betting via league"** — `MarketBetCard` already has a **Solo / League context selector** (league = pari-mutuel pool). Likely a discoverability/surfacing gap, not a new engine.
+- **"Play solo"** — `/play` is already solo-vs-house. Investigate the actual gap (flow/discoverability) before building.
+
+### Owed (operator)
+- Rotate the Supabase PAT (`.supabase-pat`) + prod Clerk `sk_live` (`.clerk-prod`).
+- **Vercel-preview confirms (datacenter-IP landmine):** the standings-fed widgets + the new **circuit-map** widget + the **warm-results cron** (workflow_dispatch it, watch `/api/just-missed` cold TTFB) + the **nav avatar removal** (signed-in).
+- exact_position go-live; resubmit the sitemap (B11 per-tab URLs).
+- Blog: triple-check + publish the rules draft; revisit the Austrian recap + British preview post-race.
+
+### Landmines (carried)
+- `npx next start` backgrounded inline (`&`) dies on shell teardown — use the Bash `run_in_background` flag.
+- Standings/results scrapes are datacenter-IP-dependent — verify on a Vercel preview, not just local.
+- A `git checkout` resets the Edit tool's per-file read-state — re-Read before editing after switching branches.
+- Parallel PRs touching `package.json` version-collide — merge in order / resolve the 1-line conflict.
+
+_Authoritative end-of-day state (main = **0.108.0**, 2026-06-27). The 0.107.0 block below is prior history._
+
 ## ⚡ Next session pickup — 2026-06-27 (main = 0.107.0) — home-widget gallery COMPLETED (deep-customise → per-series → circuit-map; #266–#269 merged)
 
 The home customise gallery is fully built out — every "coming soon" card shipped, and `AVAILABLE_WIDGETS` is **empty by design** (the "More widgets" gallery renders nothing). No in-flight work; pick from Owed / Follow-ups below.
