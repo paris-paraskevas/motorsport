@@ -14,11 +14,21 @@ import type {
   OF1TeamRadio,
 } from './types';
 import type { DriverStints, RaceStoryData } from './racestory';
+import {
+  OPENF1_DATASET_TTL_SECONDS,
+  openf1DatasetKey,
+  readResultsCache,
+  writeResultsCache,
+} from '@/lib/results-cache';
 
 export async function buildRaceStory(
   sessionKey: number,
   slug = 'f1',
 ): Promise<RaceStoryData> {
+  const cacheKey = openf1DatasetKey('race-story', sessionKey);
+  const cached = await readResultsCache<RaceStoryData>(cacheKey);
+  if (cached) return cached;
+
   const revalidate = OF1_REVALIDATE.immutable;
   const [{ list: drivers }, stints, raceControl, overtakes, pit, radio] =
     await Promise.all([
@@ -52,11 +62,16 @@ export async function buildRaceStory(
     (a, b) => a.driverNumber - b.driverNumber,
   );
 
-  return {
+  const result: RaceStoryData = {
     sessionKey,
     drivers,
     totalLaps,
     stints: driverStints,
     moments: buildMoments({ raceControl, overtakes, pit, radio }),
   };
+  // Persist only when there's something to show.
+  if (result.stints.length > 0 || result.moments.length > 0) {
+    await writeResultsCache(cacheKey, result, OPENF1_DATASET_TTL_SECONDS);
+  }
+  return result;
 }
