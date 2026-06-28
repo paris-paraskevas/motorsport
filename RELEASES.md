@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.110.1 — 2026-06-28
+
+**Fixed: home standings widget out of sync.** The championship widgets on your home could show a slightly different table than a series' Standings page. They now read the same source, so the two always agree.
+
 ## 0.110.0 — 2026-06-28
 
 **F1 telemetry is here.** Every Formula 1 qualifying page now has a **Qualifying Decoder** — compare any two drivers' fastest laps side by side: a ghost-car replay on the circuit, the speed and time-gain trace that shows exactly where the lap was won, a track "dominance" map, and sector-by-sector deltas. And every race page gets a **Race Story** — the tyre-strategy grid plus a timeline of the key moments: flags, safety cars, penalties, pit stops and team radio. It covers F1 from the 2023 season on. Data comes from OpenF1, an unofficial community source — not affiliated with Formula 1.

@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.110.1 — 2026-06-28
+
+Fixed: the home **standings-snapshot / championship-leader widgets** could show a different table than the series Standings tab.
+
+### Fixed
+- `lib/standings/brief.ts`: dropped the per-brief `paddock:home:standings-brief:{slug}` KV snapshot (1h TTL). It refreshed on its own cycle, independent of the `fetchF1Standings` fetch cache the Standings tab reads, so the two could drift out of sync by up to ~1h. The brief now derives directly from the same cached fetcher the tab uses. The `/api/home/standings` route's existing `s-maxage=600` edge cache already bounds the scrape fan-out, so the per-brief KV layer added drift without meaningful perf.
+
+### Notes
+- KV-only: local dev was never affected (KV absent there already bypassed the cache), so the drift can't be reproduced locally — verify on a Vercel preview. The fix is structural (widget + tab now read one source).
+- Latent, not triggered today: the brief still doesn't apply `standings-overrides.json` the way the tab does, but no series ships one. Follow-up: share the tab's `applyDriverOverrides` so the widget matches if an override is ever added.
+
 ## 0.110.0 — 2026-06-28
 
 Added: **F1 telemetry — the Qualifying Decoder + the Race Story**, powered by OpenF1 (free historical data). The headline of the OpenF1 integration plan.
