@@ -6,6 +6,35 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-28 — OpenF1 TELEMETRY SUITE SHIPPED (main = 0.113.0, 5 PRs merged)
+
+Big autonomous session (operator-approved self-merge). main = **0.113.0**, **no open PRs**. Merged #279–#283:
+- **#279 (0.110.0)** — OpenF1 **Qualifying Decoder** (ghost-lap replay, delta-t trace, minisector dominance map, sector bars) + **Race Story** (tyre-strategy bands + unified Moments timeline + inline team-radio player), on F1 past session pages (`/series/f1/weekend/[round]/[session]`). `lib/openf1/*` foundation (client w/ token-bucket pacing, types, driver enrichment, self-drawn track from `location`, Moments model). Browser-verified Monaco 2026.
+- **#280 (0.110.1)** — fixed home **standings-snapshot drift**: removed the brief's own `paddock:home:standings-brief` KV cache (drifted on its own cycle); it now derives from the same `fetchF1Standings` the Standings tab reads.
+- **#281 (0.111.0)** — **durable KV caching** of the assembled telemetry datasets (`openf1DatasetKey`, 7d) so warm renders skip the OpenF1 fan-out (the force-dynamic perf headline) + per-session **OG share-cards**.
+- **#282 (0.112.0)** — 3 opt-in home widgets (**Threads**, **Your bets & credits**, **Latest Decoded**) + **widget override-hardening** (extracted pure `applyDriverOverrides`/`applyResultsOverrides` to `lib/`, applied in the home brief + podium loaders) + perf (Moments trimmed server-side, CLS dims on circuit imgs).
+- **#283 (0.113.0)** — **F1 Analysis Hub** at `/f1/analysis` (past rounds → Decoder/Race Story; SEO + re-engagement) + post-session **"analysis ready" push** (new `'analysis'` NotifyKind on the existing 15-min notify cron).
+
+### ⚠️ Owed prod verification (KV/auth/cron-dependent — NOT reproducible locally)
+All built on proven patterns + tsc/lint clean, but verify live: standings parity (#280), telemetry durable cache warm-path (#281), the **bets widget signed-in** state + populated **threads** (#282), the **analysis-ready push** delivery (#283). Datacenter-IP for OpenF1 is already proven (#279 is live in prod). Also: **/f1/analysis isn't linked from nav yet** (URL-reachable only).
+
+### 🔴 OpenF1 LIVE tab — what the OPERATOR must do (Phase 2, deferred — the user asked)
+The live tab + a live home-widget need OpenF1 **live in-session data = the paid Sponsor tier** (the free tier returns nothing during a session). Operator steps:
+1. Subscribe to OpenF1 **Sponsor (€9.90/mo)** at openf1.org (Stripe).
+2. Obtain an **OAuth token** — POST credentials to `https://api.openf1.org/token` (1-hour expiry → refresh server-side; never client-exposed).
+3. Add the credential(s) as **Vercel env vars** (server-only).
+Then the build (Vercel-native, no persistent worker): client polls a Paddock route every ~5s → a **KV snapshot (3–5s TTL) refreshed from OpenF1's paid REST** (one upstream call serves all users, inside the 6 req/s budget) → renders the live Moments stream (positions/intervals/flags/SC/radio). Degrades to a countdown / latest Race Story when idle. (MQTT/WebSocket would need an off-Vercel worker — REST polling is the chosen path.)
+
+### Backlog — more free OpenF1 / app widgets (brainstormed, buildable now)
+Speed-trap leaderboard, pit-stop league, overtakes-of-the-race, tyre-strategy widget, driver spotlight, standings-movers, where-to-watch — all free OpenF1 or existing-app, S/M effort. NB: OpenF1 widgets are F1-only — balance the home so it doesn't skew all-F1.
+
+### 3D quali ghost cars ("quali-comparison-3d" — teed up, deliberately NOT rushed)
+The one big-dependency item; scoped for a focused pass (new heavy dep + the JS-diet perf landmine + WebGL verification — not safe to rush at the tail of a marathon). Plan: `npm i three @react-three/fiber @types/three`; extend the Decoder trace to expose normalized x/y/**z** (`buildTrackPath` currently discards z); build a **lazy `dynamic({ssr:false})`, route-split** `GhostLap3D` as an opt-in view in `QualifyingDecoder` (2D↔3D toggle), falling back to the existing 2D replay; must stay off the home/static path; browser-verify WebGL.
+
+### Reminder: lazy-Clerk-anon (pre-OpenF1 item) is still open — see the v7 note in the block below.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-27 (late, main = 0.109.0) — weekend features shipped; lazy-Clerk (c) IN PROGRESS, nothing committed
 
 main = **0.109.0**, **no open PRs**. Since the 0.108.0 block below: **#277 (0.109.0)** shipped — circuit map on the weekend hero + collapsed past weekends on the series calendar. AdSense gate **DROPPED** (operator: "no. merged. forget adsense" — do not gate or touch AdSense).
