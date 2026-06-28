@@ -33,7 +33,7 @@ export async function GET(req: Request) {
 
   const metas = await loadAllSeriesMeta();
   const metaBySlug = new Map(metas.map(m => [m.slug, m]));
-  const year = new Date().getFullYear();
+  const year = new Date().getUTCFullYear();
 
   const items = (
     await Promise.all(

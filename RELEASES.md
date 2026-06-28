@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.112.0 — 2026-06-28
+
+**Three new home widgets.** Add them from Customise: **Threads** (the latest paddock chatter), **Your bets** (open bets, credit balance and the next market closing), and **Latest Decoded** (jump straight to the most recent F1 qualifying breakdown or race story). Plus behind-the-scenes accuracy and speed tidy-ups across the home widgets.
+
 ## 0.111.0 — 2026-06-28
 
 **Shareable F1 telemetry + faster analysis pages.** Sharing a Qualifying Decoder or Race Story now shows a proper branded preview card, and those pages load quicker on repeat visits.

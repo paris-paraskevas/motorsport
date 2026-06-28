@@ -4,7 +4,6 @@ import type {
   DriverStanding,
   ConstructorStanding,
   RaceResult,
-  StandingsOverridesFile,
 } from '@/lib/types';
 import { fetchF1Standings } from '@/lib/standings/f1';
 import { fetchF2Standings } from '@/lib/standings/f2';
@@ -36,7 +35,11 @@ import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
-import { applyResultsOverrides } from '@/components/tabs/ResultsTab';
+import { applyResultsOverrides } from '@/lib/results/overrides';
+import {
+  applyDriverOverrides,
+  applyConstructorOverrides,
+} from '@/lib/standings/overrides';
 import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
 import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
@@ -45,42 +48,6 @@ const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
 const FORMULA_E_SOURCE_URL =
   'https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship';
 const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series';
-
-function applyDriverOverrides(
-  drivers: DriverStanding[],
-  overrides: StandingsOverridesFile['drivers'],
-): DriverStanding[] {
-  if (!overrides || overrides.length === 0) return drivers;
-  const patched = drivers.map(d => {
-    const o = overrides.find(x => x.driverName === d.driverName);
-    if (!o) return d;
-    return {
-      ...d,
-      position: o.position ?? d.position,
-      points: o.points ?? d.points,
-      wins: o.wins ?? d.wins,
-    };
-  });
-  return patched.sort((a, b) => a.position - b.position);
-}
-
-function applyConstructorOverrides(
-  constructors: ConstructorStanding[],
-  overrides: StandingsOverridesFile['constructors'],
-): ConstructorStanding[] {
-  if (!overrides || overrides.length === 0) return constructors;
-  const patched = constructors.map(c => {
-    const o = overrides.find(x => x.name === c.name);
-    if (!o) return c;
-    return {
-      ...c,
-      position: o.position ?? c.position,
-      points: o.points ?? c.points,
-      wins: o.wins ?? c.wins,
-    };
-  });
-  return patched.sort((a, b) => a.position - b.position);
-}
 
 function officialSiteLabel(url: string): string {
   try {

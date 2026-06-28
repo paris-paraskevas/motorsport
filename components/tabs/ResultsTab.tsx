@@ -4,7 +4,6 @@ import type {
   Series,
   RaceResult,
   RaceResultEntry,
-  ResultsOverridesFile,
 } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
@@ -31,6 +30,7 @@ import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { fetchDTMSeasonResults } from '@/lib/results/dtm';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
+import { applyResultsOverrides } from '@/lib/results/overrides';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
@@ -40,30 +40,11 @@ const NASCAR_SOURCE_URL = 'https://en.wikipedia.org/wiki/2026_NASCAR_Cup_Series'
 const GT_WORLD_SOURCE_URL =
   'https://www.gt-world-challenge-europe.com/results/2026';
 
-// Exported for StandingsTab, which builds the season-trend chart from the
-// same override-patched results the accordion renders (0.26.0 chart move).
-export function applyResultsOverrides(
-  races: RaceResult[],
-  overrides: ResultsOverridesFile | null,
-): RaceResult[] {
-  if (!overrides) return races;
-  return races.map(race => {
-    const patches = overrides[String(race.round)];
-    if (!patches || patches.length === 0) return race;
-    const patched: RaceResultEntry[] = race.results.map(entry => {
-      const o = patches.find(p => p.driverName === entry.driverName);
-      if (!o) return entry;
-      return {
-        ...entry,
-        position: o.position ?? entry.position,
-        points: o.points ?? entry.points,
-        status: o.status ?? entry.status,
-        time: o.time ?? entry.time,
-      };
-    });
-    return { ...race, results: patched.sort((a, b) => a.position - b.position) };
-  });
-}
+// Override application now lives in lib/results/overrides.ts (pure, no React
+// imports — safe in the home podium loader + cron paths). Imported above for
+// this file's own use and re-exported here so existing importers
+// (WeekendStandingsSnapshot) keep working unchanged.
+export { applyResultsOverrides };
 
 function hostnameOf(url: string): string {
   try {

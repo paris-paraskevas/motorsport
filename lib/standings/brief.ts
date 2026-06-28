@@ -1,4 +1,6 @@
 import type { DriverStanding } from '@/lib/types';
+import { loadStandingsOverrides } from '@/lib/series-content';
+import { applyDriverOverrides } from './overrides';
 import { fetchF1Standings } from './f1';
 import { fetchF2Standings } from './f2';
 import { fetchF3Standings } from './f3';
@@ -94,7 +96,15 @@ export async function fetchStandingsBrief(slug: string, season: number): Promise
   }
   if (!drivers || drivers.length === 0) return null;
 
-  const sorted = [...drivers].sort((a, b) => a.position - b.position);
+  // Apply the SAME curated overrides the Standings tab does, so the home
+  // championship-leader + standings-snapshot widgets can't drift from the tab if
+  // a `standings-overrides.json` is ever added (no-op for every series today).
+  // applyDriverOverrides re-sorts by position; the explicit sort below stays for
+  // the no-override path.
+  const overrides = await loadStandingsOverrides(slug).catch(() => null);
+  const patched = applyDriverOverrides(drivers, overrides?.drivers);
+
+  const sorted = [...patched].sort((a, b) => a.position - b.position);
   const leader = sorted[0];
   const second = sorted[1];
   return {

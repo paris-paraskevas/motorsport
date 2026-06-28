@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ChevronDown, ExternalLink, MapPin, Play, Tv } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Tv } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -13,6 +13,8 @@ import type { JustMissedItem } from '@/lib/home-results';
 import { useHomeLayout } from '@/lib/useHomeLayout';
 import type { HomeElementId, WidgetSettings } from '@/lib/homeLayout';
 import type { CircuitLayout } from '@/lib/circuit-layout';
+import { formatBetSelection } from '@/lib/betting/constants';
+import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
 
 interface HomeItem {
   session: Session;
@@ -47,6 +49,49 @@ interface HomeStandingsItem {
   leader: { name: string; points: number };
   gapToSecond: number | null;
   top: { position: number; name: string; points: number }[];
+}
+
+// ── New opt-in widget payloads (mirror the /api/home/* route exports) ──
+interface HomeThreadItem {
+  id: string;
+  title: string;
+  seriesSlug: string | null;
+  seriesName: string | null;
+  seriesColor: string | null;
+  createdAt: string;
+}
+
+interface HomeBetLine {
+  id: string;
+  type: string;
+  selection: Record<string, unknown>;
+  seriesSlug: string;
+  seriesName: string | null;
+  round: number;
+  stake: number;
+}
+
+interface HomeNextMarket {
+  seriesSlug: string;
+  seriesName: string | null;
+  round: number;
+  type: string;
+  locksAt: string;
+}
+
+interface HomeBetsData {
+  signedIn: boolean;
+  balance: number;
+  openCount: number;
+  openBets: HomeBetLine[];
+  nextMarket: HomeNextMarket | null;
+}
+
+interface HomeDecodedData {
+  round: number;
+  gp: string;
+  qualifying: { href: string; pole: string | null; p2: string | null } | null;
+  race: { href: string } | null;
 }
 
 const NEWS_LIMIT = 10;
@@ -261,6 +306,72 @@ export function HomeContent({
     };
   }, [needStandings, standingsParam]);
 
+  // THREADS ("paddock chatter") — opt-in, default-hidden; same defer-fetch shape
+  // as from-the-blog. The newest approved threads load only when the block is
+  // shown + expanded, so a home that never enables it pays nothing.
+  const [threads, setThreads] = useState<HomeThreadItem[] | null>(null);
+  const threadsHidden = layout.hidden.includes('threads');
+  const threadsCollapsed = layout.collapsed.includes('threads');
+  useEffect(() => {
+    if (threadsHidden || threadsCollapsed) return;
+    let alive = true;
+    fetch('/api/home/threads')
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => {
+        if (alive) setThreads(d as HomeThreadItem[]);
+      })
+      .catch(() => {
+        if (alive) setThreads([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [threadsHidden, threadsCollapsed]);
+
+  // YOUR BETS & CREDITS — opt-in, default-hidden, signed-in only. Same defer
+  // shape; the route returns { signedIn:false } for anon (the widget then shows a
+  // subtle sign-in nudge). Per-user, so the route is no-store (not edge-cached).
+  const [bets, setBets] = useState<HomeBetsData | null>(null);
+  const betsHidden = layout.hidden.includes('bets');
+  const betsCollapsed = layout.collapsed.includes('bets');
+  useEffect(() => {
+    if (betsHidden || betsCollapsed) return;
+    let alive = true;
+    fetch('/api/home/bets')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (alive) setBets(d as HomeBetsData | null);
+      })
+      .catch(() => {
+        if (alive) setBets(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [betsHidden, betsCollapsed]);
+
+  // LATEST DECODED (F1) — opt-in, default-hidden. The most recent past F1 round's
+  // qualifying + race, deep-linked to the Decoder / Race Story. Defer-fetched;
+  // null when there's no finished round yet or OpenF1 has nothing.
+  const [decoded, setDecoded] = useState<HomeDecodedData | null | undefined>(undefined);
+  const decodedHidden = layout.hidden.includes('latest-decoded');
+  const decodedCollapsed = layout.collapsed.includes('latest-decoded');
+  useEffect(() => {
+    if (decodedHidden || decodedCollapsed) return;
+    let alive = true;
+    fetch('/api/home/latest-decoded')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (alive) setDecoded(d as HomeDecodedData | null);
+      })
+      .catch(() => {
+        if (alive) setDecoded(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [decodedHidden, decodedCollapsed]);
+
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
   // HTML can't know the user's series; without this gate it paints EVERY series
@@ -292,6 +403,7 @@ export function HomeContent({
   const snapRows = cfg('standings-snapshot').rows ?? 5;
   const sjmCount = Math.min(Math.max(cfg('series-just-missed').count ?? 5, 1), 10);
   const cdCount = Math.min(Math.max(cfg('series-countdowns').count ?? 5, 1), 10);
+  const threadsCount = Math.min(Math.max(cfg('threads').count ?? 5, 1), 5);
   // Density on the chyron tightens its vertical padding (it's a single strip, not
   // a row list — so the [&_a]/[&_li] descendant variants the other blocks use
   // don't apply here).
@@ -1296,13 +1408,21 @@ export function HomeContent({
                     )}
                   </div>
                   <Link href={hrefFor(item)} className="group block">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={layout.svg}
-                      alt={`${layout.name} circuit layout`}
-                      loading="lazy"
-                      className={`mx-auto w-full object-contain ${dense('track-layout') ? 'max-h-44' : 'max-h-64'}`}
-                    />
+                    {/* aspect-square wrapper reserves the box before the SVG loads
+                        (the schematics are square-ish) — kills the CLS the bare
+                        <img> caused. The height cap stays on the wrapper; the img
+                        fills it with object-contain so the artwork is unchanged. */}
+                    <div
+                      className={`relative mx-auto aspect-square w-full ${dense('track-layout') ? 'max-h-44' : 'max-h-64'}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={layout.svg}
+                        alt={`${layout.name} circuit layout`}
+                        loading="lazy"
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
                     <div className="mt-2 flex items-center justify-between gap-2">
                       <span className="font-display text-lg font-bold uppercase tracking-wide text-text truncate">
                         {layout.name}
@@ -1330,6 +1450,227 @@ export function HomeContent({
           </section>
         );
       })()}
+
+      {/* ── PADDOCK CHATTER (threads) — opt-in. The newest approved community
+             threads, defer-fetched when shown + expanded. Links into /threads. ── */}
+      {!isHidden('threads') && (
+        <section aria-label="Paddock chatter" className="mb-8" style={{ order: orderOf('threads') }}>
+          <CollapsibleSectionHead
+            title="Paddock chatter"
+            sub="latest threads"
+            collapsed={isCollapsed('threads')}
+            onToggle={() => toggleCollapsed('threads')}
+          />
+          {!isCollapsed('threads') &&
+            (threads === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-40 animate-pulse bg-surface" />
+                <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface/60" />
+              </div>
+            ) : threads.length === 0 ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                No threads yet — start the conversation.
+              </p>
+            ) : (
+              <>
+                <div className={`border-y border-border divide-y divide-border${dense('threads') ? ' [&_a]:py-1.5' : ''}`}>
+                  {threads.slice(0, threadsCount).map(t => (
+                    <Link
+                      key={t.id}
+                      href={`/threads/${t.id}`}
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    >
+                      <MessageSquare size={14} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                      <span className="flex-1 min-w-0">
+                        <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
+                          {t.title}
+                        </span>
+                        <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
+                          {t.seriesName && (
+                            <>
+                              <span
+                                className="font-semibold whitespace-nowrap shrink-0"
+                                style={{ color: t.seriesColor ?? undefined }}
+                              >
+                                {t.seriesName}
+                              </span>
+                              <span>·</span>
+                            </>
+                          )}
+                          <span className="tnum">{relativeAgo(new Date(t.createdAt), now)}</span>
+                        </span>
+                      </span>
+                      <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  href="/threads"
+                  className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+                >
+                  All threads
+                  <ArrowUpRight size={13} />
+                </Link>
+              </>
+            ))}
+        </section>
+      )}
+
+      {/* ── YOUR BETS & CREDITS — opt-in, signed-in only. Open bets + balance +
+             next market closing, CTA to /play. Anon → a subtle sign-in nudge. ── */}
+      {!isHidden('bets') && (
+        <section aria-label="Your bets and credits" className="mb-8" style={{ order: orderOf('bets') }}>
+          <CollapsibleSectionHead
+            title="Your bets & credits"
+            sub={bets?.signedIn ? `${bets.balance.toLocaleString()} cr` : 'play money'}
+            collapsed={isCollapsed('bets')}
+            onToggle={() => toggleCollapsed('bets')}
+          />
+          {!isCollapsed('bets') &&
+            (bets === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-1/3 animate-pulse bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+              </div>
+            ) : !bets.signedIn ? (
+              <p className="border-y border-border py-4 text-sm text-text-faint">
+                <Link href="/play" className="text-text-muted underline underline-offset-2 hover:text-text">
+                  Sign in to play
+                </Link>{' '}
+                — free credits, predict each race, climb the table.
+              </p>
+            ) : (
+              <div className="border-y border-border py-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+                    <Coins size={13} className="text-brand" />
+                    Balance
+                  </span>
+                  <span className="font-display text-2xl font-extrabold tracking-wide text-text tnum">
+                    {bets.balance.toLocaleString()}
+                    <span className="ml-1 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">cr</span>
+                  </span>
+                </div>
+
+                {bets.openBets.length > 0 ? (
+                  <ul className={`mt-3 divide-y divide-border border-y border-border${dense('bets') ? ' [&_li]:py-1.5' : ''}`}>
+                    {bets.openBets.map(b => (
+                      <li key={b.id} className="flex items-center gap-3 py-2 px-2 -mx-2 min-w-0">
+                        <span className="flex-1 min-w-0">
+                          <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
+                            {formatBetSelection(b.type, b.selection)}
+                          </span>
+                          <span className="mt-0.5 block truncate font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                            {b.seriesName ?? b.seriesSlug} · R{b.round}
+                          </span>
+                        </span>
+                        <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">{b.stake}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-3 border-y border-border py-3 font-mono text-sm text-text-faint">
+                    No open bets right now.
+                  </p>
+                )}
+
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                    {bets.openCount === 1 ? '1 open bet' : `${bets.openCount} open bets`}
+                    {bets.nextMarket && (
+                      <>
+                        {' · next closes '}
+                        <span className="tnum text-text-muted">
+                          {new Date(bets.nextMarket.locksAt).toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                            timeZone: 'UTC',
+                          })}
+                        </span>
+                      </>
+                    )}
+                  </span>
+                  <Link
+                    href="/play"
+                    className="group inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+                  >
+                    {bets.nextMarket ? 'Place a bet' : 'Open Play'}
+                    <ArrowUpRight size={13} />
+                  </Link>
+                </div>
+              </div>
+            ))}
+        </section>
+      )}
+
+      {/* ── LATEST DECODED (F1) — opt-in. The most recent past F1 round's
+             qualifying (→ Decoder, pole + P2 codes) and race (→ Race Story). ── */}
+      {!isHidden('latest-decoded') && (
+        <section aria-label="Latest Decoded" className="mb-8" style={{ order: orderOf('latest-decoded') }}>
+          <CollapsibleSectionHead
+            title="Latest Decoded"
+            sub={decoded ? decoded.gp : 'F1 analysis'}
+            collapsed={isCollapsed('latest-decoded')}
+            onToggle={() => toggleCollapsed('latest-decoded')}
+          />
+          {!isCollapsed('latest-decoded') &&
+            (decoded === undefined ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-1/2 animate-pulse bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+              </div>
+            ) : decoded === null ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                No decoded F1 session yet.
+              </p>
+            ) : (
+              <div className="border-y border-border py-4">
+                <div className="space-y-2">
+                  {decoded.qualifying && (
+                    <Link href={decoded.qualifying.href} className="group block min-w-0">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                        Pole lap decoded · {decoded.gp}
+                      </span>
+                      <span className="mt-0.5 flex items-center gap-2 min-w-0">
+                        <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text leading-none">
+                          Qualifying Decoder
+                        </span>
+                        <ArrowUpRight size={14} className="shrink-0 text-text-faint group-hover:text-text transition-colors duration-(--duration-fast)" />
+                      </span>
+                      {(decoded.qualifying.pole || decoded.qualifying.p2) && (
+                        <span className="mt-1 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                          {decoded.qualifying.pole && (
+                            <span>
+                              <span className="text-text-faint">POLE</span>{' '}
+                              <span className="font-semibold text-text">{decoded.qualifying.pole}</span>
+                            </span>
+                          )}
+                          {decoded.qualifying.p2 && (
+                            <span>
+                              <span className="text-text-faint">P2</span>{' '}
+                              <span className="font-semibold text-text">{decoded.qualifying.p2}</span>
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </Link>
+                  )}
+                  {decoded.race && (
+                    <Link
+                      href={decoded.race.href}
+                      className="group flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+                    >
+                      <Play size={12} />
+                      Race Story · {decoded.gp}
+                      <ArrowUpRight size={12} className="opacity-60" />
+                    </Link>
+                  )}
+                </div>
+                <OpenF1Attribution className="pt-3" />
+              </div>
+            ))}
+        </section>
+      )}
       </div>
       <Tour
         stops={[

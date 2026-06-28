@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.112.0 — 2026-06-28
+
+Added: **three new home widgets** (threads, your bets, latest decoded) + widget-hardening + perf.
+
+### Added
+- **Home widgets** (opt-in from the gallery): **Threads** (recent approved threads + series chip), **Your bets & credits** (open bets + balance + next market closing, signed-in only; subtle sign-in nudge for anon), **Latest Decoded** (the most recent past F1 quali → Qualifying Decoder + race → Race Story, with pole/P2 codes). `lib/homeLayout.ts` (layout version 6→7, all three in `DEFAULT_HIDDEN`), defer-fetched cached `app/(app)/api/home/{threads,bets,latest-decoded}` routes, render blocks in `HomeContent.tsx`. Routes verified 200 + correct anon degradation.
+
+### Fixed
+- **Widget override parity (hardening, latent):** extracted the pure override helpers into `lib/standings/overrides.ts` + `lib/results/overrides.ts` (no React imports — safe in server/cron paths) and applied them in `fetchStandingsBrief` + `fetchLatestPodium`, so the home standings/podium widgets stay in lockstep with the Standings/Results tabs if an override file is ever added. No series ships one today — pre-emptive, the same class as the standings-snapshot drift fixed in 0.110.1.
+
+### Changed
+- **Perf:** `lib/openf1/racestory-loader.ts` trims the Moments stream server-side (keeps all alert/notice + most-recent ~60 routine info; ~120 cap vs 500+ raw) so the RSC payload matches the ≤80 rendered. CLS: the circuit `<img>` on the home circuit-map widget + the weekend hero now reserve dimensions. `getUTCFullYear()` consistency in `/api/home/standings`.
+
 ## 0.111.0 — 2026-06-28
 
 Added: **shareable telemetry cards** + durable caching for the F1 Decoder / Race Story.
