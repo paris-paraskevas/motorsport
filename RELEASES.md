@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.113.0 — 2026-06-28
+
+**F1 Analysis hub + "analysis ready" alerts.** A new **/f1/analysis** page collects every past Grand Prix's qualifying breakdown and race story in one place. And if you follow F1 with notifications on, you'll get a nudge once a session's analysis is ready to explore.
+
 ## 0.112.0 — 2026-06-28
 
 **Three new home widgets.** Add them from Customise: **Threads** (the latest paddock chatter), **Your bets** (open bets, credit balance and the next market closing), and **Latest Decoded** (jump straight to the most recent F1 qualifying breakdown or race story). Plus behind-the-scenes accuracy and speed tidy-ups across the home widgets.

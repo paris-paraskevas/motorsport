@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.113.0 — 2026-06-28
+
+Added: the **F1 Analysis Hub** + a post-session **"analysis ready" push**.
+
+### Added
+- `app/(app)/f1/analysis/page.tsx`: a hub at **/f1/analysis** listing every past F1 round with links to its Qualifying Decoder + Race Story — surfaces the telemetry (previously only reachable by drilling into a past session) as an SEO landing + re-engagement page. ISR (`revalidate = 3600`), OpenF1 attribution. (Not yet linked from nav — follow-up.)
+- `app/api/cron/notify/route.ts` + `lib/notify-ledger.ts`: a free post-session re-engagement push — when an F1 quali/race ended 30–90 min ago (analysis reliably available), F1-following subscribers get an "Analysis ready" nudge deep-linking to the Decoder/Race Story (URL slug derived via `sessionSlug`, so it always resolves). New `'analysis'` `NotifyKind` (7-day dedup). Reuses the existing notify cron (every 15 min) + the followed/muted/sessions-enabled prefs filtering — no new workflow.
+
+### Notes
+- Push is verifiable only with subscriptions + the live cron (prod) — built on the proven notify stack.
+
 ## 0.112.0 — 2026-06-28
 
 Added: **three new home widgets** (threads, your bets, latest decoded) + widget-hardening + perf.

@@ -11,6 +11,7 @@ export type NotifyKind =
   | 't30'
   | 't10'
   | 'res'
+  | 'analysis'
   | 'bet-lock'
   | 'bet-settled'
   | 'blog-draft'
@@ -27,6 +28,10 @@ const TTL_SECONDS: Record<NotifyKind, number> = {
   t30: 48 * 3600,
   t10: 48 * 3600,
   res: 7 * 24 * 3600,
+  // F1 "analysis ready" (Qualifying Decoder / Race Story): one-shot per session,
+  // immutable once sent. 7d (like results) outlives the 30-90min send window and
+  // any cron-retry horizon so an overlapping tick can't re-nudge the same session.
+  analysis: 7 * 24 * 3600,
   'bet-lock': 48 * 3600,
   'bet-settled': 30 * 24 * 3600,
   // Blog: the draft-ready ping is one-shot (48h covers any retry horizon); the
