@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.111.0 — 2026-06-28
+
+**Shareable F1 telemetry + faster analysis pages.** Sharing a Qualifying Decoder or Race Story now shows a proper branded preview card, and those pages load quicker on repeat visits.
+
 ## 0.110.1 — 2026-06-28
 
 **Fixed: home standings widget out of sync.** The championship widgets on your home could show a slightly different table than a series' Standings page. They now read the same source, so the two always agree.

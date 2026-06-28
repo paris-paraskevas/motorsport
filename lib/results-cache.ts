@@ -116,3 +116,17 @@ export function sessionClassCacheKey(
 ): string {
   return `paddock:session-class:${slug}:${season}:${round}:${sessionSlug}`;
 }
+
+/**
+ * Cache key for an assembled OpenF1 dataset (Decoder summary/traces, Race
+ * Story). Keyed by `kind` + the OpenF1 `session_key` (globally unique) + an
+ * optional discriminator (e.g. the sorted driver pair for traces). Immutable
+ * once the session is historical — lets a warm render skip the OpenF1 fan-out
+ * (and its rate-limit cost) entirely.
+ */
+export function openf1DatasetKey(kind: string, sessionKey: number, extra = ''): string {
+  return `paddock:openf1:${kind}:${sessionKey}${extra ? `:${extra}` : ''}`;
+}
+
+/** TTL for assembled OpenF1 datasets — historical sessions never change. */
+export const OPENF1_DATASET_TTL_SECONDS = 7 * 24 * 60 * 60;

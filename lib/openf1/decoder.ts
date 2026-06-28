@@ -7,6 +7,9 @@
 //     bars). One drivers + laps fetch.
 //   - DecoderTraces: telemetry + self-drawn track for a chosen pair (heavier;
 //     fetched on demand). car_data + location windowed to each fastest lap.
+// Both are wrapped in a durable KV read-through (immutable historical data), so
+// a warm render skips the OpenF1 fan-out and its rate-limit cost. The cache
+// fails open: with KV absent (local dev) it assembles fresh every time.
 
 import { getSessionDrivers, type EnrichedDriver } from './drivers';
 import {
@@ -18,6 +21,12 @@ import {
 } from './laps';
 import { buildTrackPath } from './track';
 import type { DecoderSummary, DecoderTraces, DistSample, DriverTrace } from './delta';
+import {
+  OPENF1_DATASET_TTL_SECONDS,
+  openf1DatasetKey,
+  readResultsCache,
+  writeResultsCache,
+} from '@/lib/results-cache';
 
 export { computeDelta } from './delta';
 export type {
@@ -34,6 +43,10 @@ export async function buildDecoderSummary(
   sessionKey: number,
   slug = 'f1',
 ): Promise<DecoderSummary> {
+  const cacheKey = openf1DatasetKey('decoder-summary', sessionKey);
+  const cached = await readResultsCache<DecoderSummary>(cacheKey);
+  if (cached) return cached;
+
   const [{ list: drivers }, laps] = await Promise.all([
     getSessionDrivers(sessionKey, slug),
     fetchLaps(sessionKey),
@@ -46,7 +59,14 @@ export async function buildDecoderSummary(
       sectors: b.sectors,
     }))
     .sort((a, b) => a.lapTime - b.lapTime);
-  return { sessionKey, drivers, laps: laps_ };
+
+  const result: DecoderSummary = { sessionKey, drivers, laps: laps_ };
+  // Persist only a non-empty result — never freeze an empty miss (a transient
+  // upstream throttle) for the whole TTL.
+  if (result.laps.length > 0) {
+    await writeResultsCache(cacheKey, result, OPENF1_DATASET_TTL_SECONDS);
+  }
+  return result;
 }
 
 /** Integrate speed (km/h) over time to get cumulative distance per sample. */
@@ -69,6 +89,14 @@ export async function buildDecoderTraces(
   driverNumbers: number[],
   slug = 'f1',
 ): Promise<DecoderTraces> {
+  const cacheKey = openf1DatasetKey(
+    'decoder-traces',
+    sessionKey,
+    [...driverNumbers].sort((a, b) => a - b).join('-'),
+  );
+  const cached = await readResultsCache<DecoderTraces>(cacheKey);
+  if (cached) return cached;
+
   const [{ byNumber }, laps] = await Promise.all([
     getSessionDrivers(sessionKey, slug),
     fetchLaps(sessionKey),
@@ -98,5 +126,10 @@ export async function buildDecoderTraces(
   const drivers = driverNumbers
     .map(n => byNumber.get(n))
     .filter((d): d is EnrichedDriver => Boolean(d));
-  return { sessionKey, drivers, traces };
+
+  const result: DecoderTraces = { sessionKey, drivers, traces };
+  if (result.traces.length > 0) {
+    await writeResultsCache(cacheKey, result, OPENF1_DATASET_TTL_SECONDS);
+  }
+  return result;
 }
