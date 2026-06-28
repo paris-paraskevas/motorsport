@@ -38,6 +38,11 @@ import {
   writeResultsCache,
   sessionClassCacheKey,
 } from '@/lib/results-cache';
+import { buildDecoderSummary, type DecoderSummary } from '@/lib/openf1/decoder';
+import { QualifyingDecoder } from '@/components/f1/QualifyingDecoder';
+import { buildRaceStory } from '@/lib/openf1/racestory-loader';
+import type { RaceStoryData } from '@/lib/openf1/racestory';
+import { RaceStory } from '@/components/f1/RaceStory';
 
 export const dynamic = 'force-dynamic';
 
@@ -549,6 +554,30 @@ export default async function SessionPage({
     }
   }
 
+  // F1 telemetry surfaces (past sessions, free historical OpenF1): qualifying →
+  // the Decoder (lap comparison), race/sprint → the Race Story (strategy +
+  // moments). Resolve this session's OpenF1 key once; the Decoder summary +
+  // Race Story data are server-rendered (SEO-visible), the Decoder traces fetch
+  // client-side per pair.
+  let decoderSummary: DecoderSummary | null = null;
+  let raceStory: RaceStoryData | null = null;
+  if (slug === 'f1' && isPast && !session.dateOnly) {
+    const isQualifyingSession = /qualifying|superpole|shootout/i.test(sessionName);
+    const isRaceSession = isRaceLikeTitle(session.title);
+    if (isQualifyingSession || isRaceSession) {
+      const { start, end } = weekendStartEnd(weekend);
+      const candidates = await fetchOpenF1WeekendSessions(start, end);
+      const match = matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
+      if (match && isQualifyingSession) {
+        const summary = await buildDecoderSummary(match.session_key, 'f1');
+        if (summary.laps.length > 0) decoderSummary = summary;
+      } else if (match) {
+        const story = await buildRaceStory(match.session_key, 'f1');
+        if (story.stints.length > 0 || story.moments.length > 0) raceStory = story;
+      }
+    }
+  }
+
   const nav = weekendSessionNav(weekend, slug, round, session.uid);
 
   // Embedded highlights for this session, where curated (any series). The race
@@ -656,6 +685,24 @@ export default async function SessionPage({
           <p className="text-text-muted text-sm">
             Classification appears here once the session has run.
           </p>
+        </section>
+      )}
+
+      {decoderSummary && (
+        <section className="mt-10">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
+            Qualifying Decoder
+          </h2>
+          <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
+        </section>
+      )}
+
+      {raceStory && (
+        <section className="mt-10">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
+            Race Story
+          </h2>
+          <RaceStory data={raceStory} seriesColor={color} />
         </section>
       )}
 
