@@ -1,5 +1,7 @@
 import type { RaceResult } from '@/lib/types';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
+import { loadResultsOverrides } from '@/lib/series-content';
+import { applyResultsOverrides } from '@/lib/results/overrides';
 import { fetchF1SeasonResults } from '@/lib/results/f1';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchFormulaESeasonResults } from '@/lib/results/formula-e';
@@ -138,10 +140,21 @@ export async function fetchLatestPodium(
     if (cached) return cached;
   }
   try {
-    const result =
-      slug === 'wec'
-        ? await fetchWecLatest(Date.now())
-        : latestRaceFromFlat(await FLAT_SOURCES[slug](), Date.now());
+    let result: LatestRace | null;
+    if (slug === 'wec') {
+      // WEC uses a per-class rounds shape (not RaceResult[]) and the canonical
+      // Results tab applies no overrides to it, so none are applied here either.
+      result = await fetchWecLatest(Date.now());
+    } else {
+      // Apply the SAME curated results overrides the Results tab does before
+      // extracting the podium, so the home "just missed" card can't drift from
+      // the tab if a `results-overrides.json` is ever added (no-op for every
+      // series today). KV-cached downstream — baking the override in before the
+      // write is correct.
+      const overrides = await loadResultsOverrides(slug).catch(() => null);
+      const races = applyResultsOverrides(await FLAT_SOURCES[slug](), overrides);
+      result = latestRaceFromFlat(races, Date.now());
+    }
     if (result) await writeResultsCache(key, result);
     return result;
   } catch {

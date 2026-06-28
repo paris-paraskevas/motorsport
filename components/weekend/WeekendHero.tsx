@@ -121,13 +121,22 @@ export function WeekendHero({
 
       {circuitLayout && (
         <figure className="mt-5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={circuitLayout.svg}
-            alt={`${circuitLayout.name} circuit layout`}
-            loading="lazy"
-            className="w-full max-w-md object-contain max-h-52"
-          />
+          {/* Square aspect-ratio box reserves the layout's footprint before the
+              SVG loads — the circuit schematics share a 500×500 (square) viewBox,
+              so the prior `max-h-52` + object-contain rendered a ~208px square.
+              Fixing the box at that size eliminates the lazy-load layout shift
+              (CLS) while keeping the contain fit + responsive max-width. */}
+          <div className="aspect-square w-full max-w-52">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={circuitLayout.svg}
+              alt={`${circuitLayout.name} circuit layout`}
+              loading="lazy"
+              width={208}
+              height={208}
+              className="h-full w-full object-contain"
+            />
+          </div>
           <figcaption className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
             Circuit map ·{' '}
             <a

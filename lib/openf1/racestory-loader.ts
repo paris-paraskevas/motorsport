@@ -5,7 +5,7 @@
 
 import { fetchOpenF1, OF1_REVALIDATE } from './client';
 import { getSessionDrivers } from './drivers';
-import { buildMoments } from './moments';
+import { buildMoments, type Moment } from './moments';
 import type {
   OF1Overtake,
   OF1Pit,
@@ -20,6 +20,29 @@ import {
   readResultsCache,
   writeResultsCache,
 } from '@/lib/results-cache';
+
+// The RaceStory component renders at most MAX_VISIBLE (80) moments and its
+// default "Key" filter hides routine info (overtake/pit/drs/green) entirely. A
+// busy race emits 500+ moments, so shipping them all bloats the RSC payload for
+// rows that can never render. Trim server-side BEFORE returning: keep EVERY
+// high-value moment (severity 'alert' + 'notice' — flags, safety cars,
+// penalties, investigations, team radio) so the "Key"/"Radio" filters are
+// untouched, and cap the routine 'info' stream to the most recent ROUTINE_CAP so
+// the "All" filter still shows recent overtakes/pit stops without the long tail.
+// buildMoments returns chronological order; we preserve it in the output.
+const ROUTINE_CAP = 60;
+
+export function trimMoments(moments: Moment[]): Moment[] {
+  const routine = moments.filter(m => m.severity === 'info');
+  if (routine.length <= ROUTINE_CAP) return moments;
+  // Keep the most recent ROUTINE_CAP routine moments. `moments` is already
+  // chronological, so the cutoff is the start `at` of the kept window; drop any
+  // earlier routine moment, keep every high-value one regardless of age.
+  const cutoff = new Date(routine[routine.length - ROUTINE_CAP].at).getTime();
+  return moments.filter(
+    m => m.severity !== 'info' || new Date(m.at).getTime() >= cutoff,
+  );
+}
 
 export async function buildRaceStory(
   sessionKey: number,
@@ -67,7 +90,7 @@ export async function buildRaceStory(
     drivers,
     totalLaps,
     stints: driverStints,
-    moments: buildMoments({ raceControl, overtakes, pit, radio }),
+    moments: trimMoments(buildMoments({ raceControl, overtakes, pit, radio })),
   };
   // Persist only when there's something to show.
   if (result.stints.length > 0 || result.moments.length > 0) {

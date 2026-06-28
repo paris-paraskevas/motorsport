@@ -6,7 +6,7 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 6;
+export const HOME_LAYOUT_VERSION = 7;
 
 export type HomeElementId =
   | 'chyron'
@@ -18,7 +18,10 @@ export type HomeElementId =
   | 'standings-snapshot'
   | 'series-countdowns'
   | 'series-just-missed'
-  | 'track-layout';
+  | 'track-layout'
+  | 'threads'
+  | 'bets'
+  | 'latest-decoded';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -43,6 +46,9 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'series-countdowns', label: 'Series countdowns', hint: 'A separate next-session countdown for each series you follow.', collapsible: true },
   { id: 'series-just-missed', label: 'Series results', hint: 'The latest result for each series you follow, split out by series.', collapsible: true },
   { id: 'track-layout', label: 'Circuit map', hint: 'The track layout for the next round you follow (F1 for now).', collapsible: true },
+  { id: 'threads', label: 'Paddock chatter', hint: 'The newest approved community threads — tap in to read or reply.', collapsible: true },
+  { id: 'bets', label: 'Your bets & credits', hint: 'Your open bets, credit balance and the next market closing. Signed-in only.', collapsible: true },
+  { id: 'latest-decoded', label: 'Latest Decoded', hint: 'The most recent F1 qualifying + race, deep-linked to the Decoder and Race Story.', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
@@ -116,7 +122,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed', 'track-layout'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'latest-decoded'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
