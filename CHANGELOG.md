@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.111.0 — 2026-06-28
+
+Added: **shareable telemetry cards** + durable caching for the F1 Decoder / Race Story.
+
+### Added
+- `app/(app)/series/[slug]/weekend/[round]/[session]/opengraph-image.tsx`: a branded, session-aware OG share-card — series + GP + session, with a "Qualifying Decoder" / "Race Story" badge on F1 quali/race. Makes the telemetry pages proper social objects. Renders a 1200×630 PNG.
+
+### Changed
+- `lib/openf1/{decoder,racestory-loader}.ts` + `lib/results-cache.ts`: wrap the assembled Decoder/Race-Story datasets in a durable KV read-through (`openf1DatasetKey`, 7-day TTL). The `[session]` page is `force-dynamic`, so a warm render now skips the OpenF1 fan-out (and its 3 req/s rate-limit cost) — one KV read instead of 2–6 upstream calls + reassembly. Fails open (KV absent → assembles fresh); persists only non-empty results. Resolves the perf review's headline item.
+
+### Notes
+- KV-dependent — verify the warm path on a Vercel preview.
+
 ## 0.110.1 — 2026-06-28
 
 Fixed: the home **standings-snapshot / championship-leader widgets** could show a different table than the series Standings tab.
