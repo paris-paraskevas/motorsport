@@ -40,6 +40,54 @@ export function op(field: string, operator: OpenF1FilterOp, value: string | numb
   return `${field}${operator}${encodeURIComponent(String(value))}`;
 }
 
+// --- Rate limiting -------------------------------------------------------
+// OpenF1's free tier allows ~3 req/s. A single server render can fan out 6+
+// calls (the Race Story pulls stints/race_control/overtakes/pit/radio at once),
+// and in production every Vercel function shares one datacenter egress IP — so
+// an unpaced burst reliably trips HTTP 429 and blanks the feature. A per-
+// instance token bucket paces outbound calls; a short backoff retry rides out a
+// throttle that slips through (cross-render / cross-instance contention). The
+// durable dataset caches layered above this client keep warm renders off the
+// network entirely, so this pacing only bites cold fetches.
+const RATE_PER_SEC = 3;
+const BUCKET_CAP = 3;
+let tokens = BUCKET_CAP;
+let lastRefill = Date.now();
+
+async function takeToken(): Promise<void> {
+  for (;;) {
+    const now = Date.now();
+    tokens = Math.min(BUCKET_CAP, tokens + ((now - lastRefill) / 1000) * RATE_PER_SEC);
+    lastRefill = now;
+    if (tokens >= 1) {
+      tokens -= 1;
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, Math.ceil(1000 / RATE_PER_SEC)));
+  }
+}
+
+/** Fetch with token-bucket pacing + short backoff retry on 429/503 throttling. */
+async function pacedFetch(
+  url: string,
+  revalidate: number,
+  attempts = 3,
+): Promise<Response | null> {
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    await takeToken();
+    try {
+      const res = await fetch(url, { next: { revalidate } });
+      if (res.status !== 429 && res.status !== 503) return res;
+    } catch {
+      // network error — fall through to backoff + retry
+    }
+    if (attempt < attempts - 1) {
+      await new Promise(resolve => setTimeout(resolve, 350 * (attempt + 1)));
+    }
+  }
+  return null;
+}
+
 /**
  * Typed GET against an OpenF1 endpoint.
  *
@@ -47,7 +95,7 @@ export function op(field: string, operator: OpenF1FilterOp, value: string | numb
  * @param query     equality params (`driver_number=1&session_key=9999`)
  * @param filters   raw operator clauses from `op()` (date ranges etc.)
  * @param revalidate  Next data-cache horizon (default `OF1_REVALIDATE.short`)
- * @returns the rows, or `[]` on non-2xx / network / parse error
+ * @returns the rows, or `[]` on exhausted-retry / non-2xx / network / parse error
  */
 export async function fetchOpenF1<T>(
   endpoint: string,
@@ -67,8 +115,8 @@ export async function fetchOpenF1<T>(
   const qs = parts.length ? `?${parts.join('&')}` : '';
 
   try {
-    const res = await fetch(`${BASE}/${endpoint}${qs}`, { next: { revalidate } });
-    if (!res.ok) return [];
+    const res = await pacedFetch(`${BASE}/${endpoint}${qs}`, revalidate);
+    if (!res || !res.ok) return [];
     const data = await res.json();
     return Array.isArray(data) ? (data as T[]) : [];
   } catch {
