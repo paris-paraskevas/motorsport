@@ -38,6 +38,8 @@ import {
   writeResultsCache,
   sessionClassCacheKey,
 } from '@/lib/results-cache';
+import { buildDecoderSummary, type DecoderSummary } from '@/lib/openf1/decoder';
+import { QualifyingDecoder } from '@/components/f1/QualifyingDecoder';
 
 export const dynamic = 'force-dynamic';
 
@@ -549,6 +551,22 @@ export default async function SessionPage({
     }
   }
 
+  // Qualifying Decoder (F1, past qualifying sessions): a broadcast-grade
+  // comparison of drivers' fastest laps from OpenF1 telemetry. Resolve this
+  // session's OpenF1 key and build the light summary server-side (it ships in
+  // the HTML, so it's SEO-visible); the client island fetches per-pair traces
+  // on demand. Qualifying only — race sessions get the Race Story (later).
+  let decoderSummary: DecoderSummary | null = null;
+  if (slug === 'f1' && isPast && !session.dateOnly && /qualifying|superpole|shootout/i.test(sessionName)) {
+    const { start, end } = weekendStartEnd(weekend);
+    const candidates = await fetchOpenF1WeekendSessions(start, end);
+    const match = matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
+    if (match) {
+      const summary = await buildDecoderSummary(match.session_key, 'f1');
+      if (summary.laps.length > 0) decoderSummary = summary;
+    }
+  }
+
   const nav = weekendSessionNav(weekend, slug, round, session.uid);
 
   // Embedded highlights for this session, where curated (any series). The race
@@ -656,6 +674,15 @@ export default async function SessionPage({
           <p className="text-text-muted text-sm">
             Classification appears here once the session has run.
           </p>
+        </section>
+      )}
+
+      {decoderSummary && (
+        <section className="mt-10">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
+            Qualifying Decoder
+          </h2>
+          <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
         </section>
       )}
 
