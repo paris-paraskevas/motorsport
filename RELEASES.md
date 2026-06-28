@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.110.0 — 2026-06-28
+
+**F1 telemetry is here.** Every Formula 1 qualifying page now has a **Qualifying Decoder** — compare any two drivers' fastest laps side by side: a ghost-car replay on the circuit, the speed and time-gain trace that shows exactly where the lap was won, a track "dominance" map, and sector-by-sector deltas. And every race page gets a **Race Story** — the tyre-strategy grid plus a timeline of the key moments: flags, safety cars, penalties, pit stops and team radio. It covers F1 from the 2023 season on. Data comes from OpenF1, an unofficial community source — not affiliated with Formula 1.
+
 ## 0.109.0 — 2026-06-27
 
 **Circuit maps + a cleaner calendar.** Every race-weekend page now shows the circuit layout up top (Formula 1 to start). And on a series' calendar, weekends that have already run collapse to a tidy, tappable date + name — so the next race weekend stands out and past ones stay easy to reach.

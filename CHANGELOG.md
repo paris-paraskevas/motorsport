@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.110.0 — 2026-06-28
+
+Added: **F1 telemetry — the Qualifying Decoder + the Race Story**, powered by OpenF1 (free historical data). The headline of the OpenF1 integration plan.
+
+### Added
+- `lib/openf1/*`: server-only OpenF1 client (`client.ts` — typed `fetchOpenF1`, operator filters, **token-bucket pacing ≤3 req/s + 429/503 retry** so a multi-call render can't trip the free-tier limit), endpoint `types.ts`, driver enrichment (`drivers.ts` — OpenF1 `/drivers` headshot/acronym/team_colour over the curated `drivers.json`), **self-drawn circuit geometry from `/location`** (`track.ts`, no SVG calibration), a unified `moments.ts` event model (race_control/overtakes/pit/radio), the Decoder assembler + distance-aligned `computeDelta` (`decoder.ts` + client-safe `delta.ts`), the Race Story assembler (`racestory-loader.ts` + client-safe `racestory.ts`). Unit-tested.
+- `components/f1/*`: `QualifyingDecoder` (pole-vs-P2 default, any pair) with `SectorBars`, `DeltaTrace` (lazy recharts — speed traces + cumulative delta), `GhostLapReplay` (rAF on the self-drawn track), `MinisectorMap` (dominance); `RaceStory` (tyre-strategy bands + a capped, scrollable "Key" Moments timeline) + `TeamRadioPlayer` (native audio); `OpenF1Attribution`.
+- `app/api/f1/{decoder,decoder/trace,racestory}`: cached route handlers over the assemblers (immutable historical → long `s-maxage`).
+- `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`: F1 past sessions resolve their OpenF1 session once — qualifying → Decoder, race/sprint → Race Story — server-rendered (SEO) with Decoder traces fetched client-side per pair.
+
+### Notes
+- OpenF1 is **CC BY-NC-SA 4.0 (non-commercial) + unofficial**; attribution + the not-affiliated-with-F1 disclaimer render on every panel. Live data is a paid tier — Phase 1 is historical/free only.
+- Browser-verified on Monaco 2026 qualifying + race (real OpenF1): all views render, the self-drawn track is recognisably Monaco, **0 console errors**. Found + fixed via browser-verify: an `fs`-into-client-bundle leak (server/client module split), the rate-limit blanking (the pacer above), and a lucide icon resolving to `undefined`.
+- **Still to verify on a Vercel preview:** server-side OpenF1 fetches from datacenter IPs (standing rule; localhost runs on a residential IP).
+- Fast-follow (Phase 1 remainder): durable KV caching of assembled datasets, OG share-cards, the post-session "analysis ready" push.
+
 ## 0.109.0 — 2026-06-27
 
 Added: **circuit maps on race-weekend pages** + **collapsed past weekends** on the series calendar.
