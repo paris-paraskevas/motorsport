@@ -31,13 +31,25 @@ export function buildWeekend(sessions: Session[], now: Date): Weekend {
   const significance = pickBestSignificance(sessions);
   const startDate = sessions[0].start;
   const endDate = sessions[sessions.length - 1].start;
+  // A weekend is "past" once its last session has actually ENDED. Use the real
+  // session end (not its start) with no day-grace: a finished short race (F1)
+  // advances to the next weekend the moment the race ends, while a long
+  // endurance race stays current until its true ~24h end, and nothing flips
+  // mid-race. (The old `lastSessionStart − 1 day` kept a finished GP reading as
+  // the *next* weekend for ~24h after the race STARTED — e.g. the Austrian GP
+  // still showing as next the morning after.) `endDate` above stays the last
+  // start for the displayed date-range label only.
+  const lastEndMs = sessions.reduce((max, s) => {
+    const t = (s.end ?? s.start).getTime();
+    return Number.isNaN(t) ? max : Math.max(max, t);
+  }, startDate.getTime());
   return {
     key: dateKey(startDate),
     label: significance?.weekend,
     dateRangeLabel: dateRangeLabel(startDate, endDate),
     sessions,
     significance,
-    isPast: endDate.getTime() < now.getTime() - DAY_MS,
+    isPast: lastEndMs < now.getTime(),
     round: 0,
   };
 }
