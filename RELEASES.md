@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.129.1 — 2026-06-29
+
+**Onboard polish: cars use the track, ground follows the hills.** The cars now run off-centre through corners — toward the apex and kerbs — instead of down the middle, and the grass beside the track rises and falls with the circuit's real elevation instead of the track floating over a flat plane.
+
 ## 0.129.0 — 2026-06-29
 
 **The onboard track is now reconstructed from real GPS.** Instead of drawing each car down the middle of its own line, the onboard view rebuilds the actual track from where the whole field drove, then places each car on it by its true coordinates — so you see them run wide, clip apexes and ride the kerbs through the corners, on a proper full-width circuit.

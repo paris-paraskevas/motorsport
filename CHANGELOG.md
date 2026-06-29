@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.129.1 — 2026-06-29
+
+Onboard follow-ups (operator): cars still sat centred on 0.129; the flat ground didn't follow the track's elevation ("we're flying").
+
+### Fixed / Changed (`lib/openf1/track.ts`, `lib/openf1/decoder.ts`, `components/f1/GhostLap3D.tsx`)
+- **Cars off the centre.** 0.129's reconstruction measured the *spread between drivers* (tiny — everyone bunches on the racing line) so the followed = pole lap stayed centred. `reconstructCircuit` now estimates the geometric centreline by pushing the racing line OUTWARD through corners (by its own curvature, smoothed) at a fixed realistic width — so the racing line sits at the inside/apex and the cars run off-centre through corners, back to centre on straights. Verified at the Red Bull Ring T1 complex (left/outside on entry → centre on the next straight).
+- **Ground follows the track.** Replaced the flat grass plane (which the elevated track flew over) with a grass apron built from the track centreline at its own elevation — the ground now climbs + falls with the circuit.
+- The reconstruction now only needs the session's fastest lap (the centreline) + the pair, not the fastest dozen — fewer location fetches. Cache key → `decoder-traces-v3` (centred v2 circuits invalidated).
+
+### Notes
+- The geometric centre is an *estimate* — cars bunch on the racing line, so the unused tarmac isn't directly observable from GPS; this places the racing line on the apex/kerbs plausibly, it isn't surveyed track-edge data.
+- Browser-verified on localhost (Austria R8 quali): car off-centre through the corner, centred on the straight, grass follows elevation, 0 console errors.
+
 ## 0.129.0 — 2026-06-29
 
 Reconstruct the F1 onboard track from the field's GPS (operator: cars sat mid-track, never on kerbs — "reconstruct the track and place the cars on it").

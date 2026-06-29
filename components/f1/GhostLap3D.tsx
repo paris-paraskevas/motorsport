@@ -349,11 +349,14 @@ const WHITE_W = 0.014; // white track-limit line, inset at each asphalt edge
 const KERB_BAND = 5; // centreline points per alternating red/white band
 const KERB_RED = [0.74, 0.12, 0.12];
 const KERB_WHITE = [0.9, 0.9, 0.92];
+const GRASS_HALF = 1.6; // grass apron half-width (world units) — follows track elevation
+const GRASS_DROP = 0.012; // grass sits just below the asphalt
 
 function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   asphalt: THREE.BufferGeometry;
   kerbs: THREE.BufferGeometry;
   whiteLines: THREE.BufferGeometry;
+  grass: THREE.BufferGeometry;
   left: THREE.Vector3[];
   right: THREE.Vector3[];
 } {
@@ -473,21 +476,39 @@ function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   whiteLines.computeVertexNormals();
   whiteLines.translate(0, 0.0015, 0); // sit just above the asphalt
 
-  return { asphalt, kerbs, whiteLines, left, right };
+  // Grass apron: a wide strip following the SAME centreline + elevation, just
+  // below the asphalt, so the ground rises + falls with the track (no flying).
+  const gPos: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    const lA = pts[i].clone().addScaledVector(sides[i], GRASS_HALF);
+    const rA = pts[i].clone().addScaledVector(sides[i], -GRASS_HALF);
+    const lB = pts[i + 1].clone().addScaledVector(sides[i + 1], GRASS_HALF);
+    const rB = pts[i + 1].clone().addScaledVector(sides[i + 1], -GRASS_HALF);
+    for (const v of [lA, rA, lB, rA, rB, lB]) gPos.push(v.x, v.y - GRASS_DROP, v.z);
+  }
+  const grass = new THREE.BufferGeometry();
+  grass.setAttribute('position', new THREE.Float32BufferAttribute(gPos, 3));
+  grass.computeVertexNormals();
+
+  return { asphalt, kerbs, whiteLines, grass, left, right };
 }
 
 function TrackRibbon({ pts, halfL, halfR }: { pts: THREE.Vector3[]; halfL: number[]; halfR: number[] }) {
-  const { asphalt, kerbs, whiteLines } = useMemo(() => buildRibbon(pts, halfL, halfR), [pts, halfL, halfR]);
+  const { asphalt, kerbs, whiteLines, grass } = useMemo(() => buildRibbon(pts, halfL, halfR), [pts, halfL, halfR]);
   useEffect(
     () => () => {
       asphalt.dispose();
       kerbs.dispose();
       whiteLines.dispose();
+      grass.dispose();
     },
-    [asphalt, kerbs, whiteLines],
+    [asphalt, kerbs, whiteLines, grass],
   );
   return (
     <group>
+      <mesh geometry={grass}>
+        <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} side={THREE.DoubleSide} />
+      </mesh>
       <mesh geometry={asphalt}>
         <meshStandardMaterial color="#2b2b33" roughness={0.95} metalness={0} side={THREE.DoubleSide} />
       </mesh>
@@ -533,11 +554,8 @@ function Scene({
       <ambientLight intensity={0.85} />
       <directionalLight position={[6, 10, 4]} intensity={1.2} />
       <hemisphereLight args={['#cdddee', '#2c3a20', 0.55]} />
-      {/* grass groundscape under sky + fog — gives the track a place, not a void */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
-        <planeGeometry args={[140, 140]} />
-        <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} />
-      </mesh>
+      {/* The grass apron now lives inside TrackRibbon so it follows the track's
+          own elevation (climbs + falls with it) instead of a flat plane. */}
       <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
       {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} />}
       {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} />}
