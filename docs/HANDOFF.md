@@ -6,6 +6,37 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-29 (FINAL) — `/feedback` board worked (≈14 PRs → 0.124.0); 6 items OPEN, teed up for PARALLEL next session
+
+main = **0.124.0**, **no open PRs**. Authoritative end-of-session state (the "(later)" block below is the mid-session record — the first 5 PRs). The operator then handed over the **`/feedback` board** (12 items) + mid-stream asks; worked as an autonomous self-merge run with folder-disjoint worktree subagents. The **Austria recap is approved + scheduled to publish 3pm** (all-users push). Prod was serving 0.123.0 at wrap (the Vercel queue is flowing toward 0.124.0).
+
+### Shipped this session (≈14 PRs, #287–#300, 0.114.1 → 0.124.0)
+nav→/f1/analysis (0.114.1) · home-widgets pack where-to-watch/weather/spotlight (0.115.0) · F1 telemetry leaderboards speed-trap/pit-league/overtakes (0.116.0) · blog author bylines + full-draft preview (0.117.0) · F1 driver headshots via OpenF1 (0.118.0) · blog byline name+avatar from Clerk (0.119.0) · collapsible F1 session sections (0.120.0) · **next-race fix** (0.121.1 — a finished GP no longer reads as "next"; `lib/rounds.ts` now uses the last session END, not start−1d) · **notifications remodel pt1** backend retry-on-total-failure + deep-link URLs + sent-history store (0.121.0) + **pt2 notification center** bell (0.122.0) · **UX fixes** 3D-quali NaN guard + landing-hero mobile width + account profile-pic (0.122.1) · **friends/leagues home widget** (0.123.0) · **practice telemetry** FP1/2/3 (0.124.0).
+
+### `/feedback` board — DONE (close these on the board)
+Write Austria article (queued 3pm) · "still says Austria is next" (#296) · 3D quali (#300 — **verified live on prod: 0 console errors, canvas renders**; the NaN was pre-`z` cached traces) · landing hero too wide (#300) · profile pic on account icon *(mid-stream ask)* (#300) · notifications unreliable/deep-link/"what arrives" *(remodel)* (#295+#297) · friends/leagues widget (#298) · practice telemetry (#299).
+
+### ▶ NEXT SESSION — 6 OPEN items, grouped into PARALLEL lanes (dispatch-ready; folder-disjoint)
+- **Lane A — UI bugs (BROWSER + operator-clarification gated).** Playwright reconnected + works.
+  - **`/series` "too wide"**: diagnosed — the **calendar tab has NO page overflow** at 375px (`docW==vw`); the only wide elements are the *by-design horizontally-scrollable tab rail*. So it's likely a **specific tab** (run the overflow detector on `/series/f1/standings` + `/results` — wide tables) or a proportion nit. NEEDS: which tab / what looks too wide. Files: `components/SeriesPageView.tsx`, `components/tabs/*`, `components/WeekendBlock.tsx`.
+  - **`/social` "weird cards"**: `/social` is auth-gated → couldn't inspect anon. NEEDS: a signed-in screenshot (or verify with the local Clerk dev test-user). File: `app/(app)/social/page.tsx` (`cardClass` grid).
+- **Lane B — F1 feature: 3D track comparison + throttle/brake** ("see if Russell lifted"). UNBLOCKED now the 3D works. Show both drivers' on-track positions over time + a throttle/brake trace strip below (lift detection). Check whether throttle/brake are in the OpenF1 `car_data` fetch + the Decoder traces (`lib/openf1/delta.ts` `DriverTrace.telemetry`). Scope M–L. Files: `lib/openf1/*`, `components/f1/GhostLap3D.tsx` + the Decoder.
+- **Lane C — Betting UX: "better bet handling"** ("awards, leagues, screens, info, data"). Broad — **scope first** (AskUserQuestion: awards/honours screen? richer league screens? more market info on bet cards?), then build. Files: `app/(app)/play`, `app/(app)/social/leagues`, `components/*BetCard*`, `lib/betting/*`.
+- **Lane D — Curation: race-weekend highlights → official accounts only.** Audit `content/series/<slug>/media.json` clips; replace unofficial/geo-locked uploads with official-channel ones (per the search-official-source rule). Low code. (Existing IDEAS item.)
+- **Loutris's PWA won't open**: BLOCKED on info — need device (iOS/Android), browser, and what happens (blank / error / won't launch). Then check the manifest `start_url`/scope + `StandaloneRedirect`.
+
+### ⚠️ OWED — signed-in preview/prod verification pass (browser was locked most of the session)
+As 0.124.0 deploys, verify on prod: the **home widgets enabled** (social #298 + where-to-watch/weather/spotlight #289, via Customise); **practice telemetry** #299 on a real past FP session (confirm OpenF1 has `/laps`+`/stints` for practice); the **notification bell** populating + **deep-links** (#295/#297); the **account avatars** #300; the carry-over standings-parity/bets/3D-WebGL; and the **recap's 3pm publish + push**.
+
+### Carry-overs / landmines
+- **Headshots copyright** (#291): F1 official media (`media.formula1.com`) via OpenF1 — swap to a Wikimedia/own-licensed source when time allows (isolated to `lib/openf1/headshots.ts`).
+- **3D elevation self-heals**: pre-0.114.0 cached decoder traces lack `z` → the guarded 3D renders flat until they refresh (7d) or you bump the `decoder-traces` cache key in `lib/openf1/decoder.ts`.
+- **Legacy lint**: 8 errors / 4–5 warnings, all pre-existing in untouched files — chore PR.
+- **Parallel-PR version collisions**: PRs off the same base collide on package.json/CHANGELOG/RELEASES — `git merge origin/main` into each branch + stack the version sections, merge in order (done 4× this session). `gh pr merge` can falsely report "conflicts" right after a push — recheck `mergeStateStatus` + retry.
+- OpenF1 LIVE tab (paid Sponsor tier) + lazy-Clerk-anon remain open (older blocks).
+
+---
+
 ## ⚡ Next session pickup — 2026-06-29 (later) — FEATURE REPORTS worked: 5 PRs (#287–#291 → 0.118.0) + Austria recap QUEUED; ⚠️ prod deploy stuck on 0.116.0
 
 main = **0.118.0**, **no open PRs**. Worked the feature reports (audit + free-OpenF1/app widget backlog) as an operator-steered autonomous run (self-merge + folder-disjoint worktree subagents). **Triage: no real bugs** — audit #1 (gate AdSense) is off-limits (dropped); #2 (warm-cron) already shipped; `prod-weekend8.md` = a stale page snapshot (v0.46.0 footer); `agent-salvage-2026-06-10` = stale content notes (one moot IMSA-Detroit line). So the session was all feature-building.
