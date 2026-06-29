@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.116.0 — 2026-06-29
+
+Added: **three F1 telemetry leaderboards** from the free OpenF1 historical tier — speed trap, pit-stop league, overtakes of the race.
+
+### Added
+- `lib/openf1/speed-traps.ts`: `buildSpeedTrapLeaderboard(sessionKey, slug)` → top speed per driver, ranked desc. Reuses `fetchLaps` (one `/laps` pull) and takes `max(i1_speed, i2_speed, st_speed)` across each driver's laps via the pure, unit-tested `topSpeedByDriver`. KV-cached under `openf1DatasetKey('speed-trap', sessionKey)` (7-day immutable TTL). Shown on **qualifying + race**.
+- `lib/openf1/pit-league.ts`: `buildPitStopLeague(sessionKey, slug)` → fastest stationary stop + stop count per driver, ranked asc. One `/pit` pull; `pitStopsByDriver` prefers `stop_duration`, falls back to the deprecated `pit_duration`, skips rows with no stationary time. KV key `openf1DatasetKey('pit-league', sessionKey)`. **Race only.**
+- `lib/openf1/overtakes.ts`: `buildOvertakesBoard(sessionKey, slug)` → overtakes per overtaking driver (ranked desc) + total race overtakes. One `/overtakes` pull; `overtakesByDriver` tallies `overtaking_driver_number` frequency. KV key `openf1DatasetKey('overtakes', sessionKey)`. **Race only.**
+- `components/f1/SpeedTrapLeaderboard.tsx`, `PitStopLeague.tsx`, `OvertakesBoard.tsx`: pure presentational shells (team-colour bars / rows, OpenF1 attribution). Each returns `null` when its dataset is empty — the page also gates on a non-empty result, so a session with no data simply shows nothing. No client fetch; the page passes server-assembled, KV-cached data as props.
+- Wired into the F1 session page (`app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`) directly below the existing Decoder / Race Story sections. The three builders share the single `matchOpenF1Session` key already resolved for the Decoder/Race Story and run in one `Promise.all` (speed trap always; pit-league + overtakes only for race-like sessions); the client's token bucket paces the underlying OpenF1 calls.
+- Tests: `lib/openf1/{speed-traps,pit-league,overtakes}.test.ts` cover the pure reducers (mirrors `laps.test.ts`).
+
+### Notes
+- Free historical tier only — no new upstream fan-out beyond the existing cached `fetchOpenF1` client; the paid live in-session window stays out of scope. tsc + lint (no new problems) + `vitest run lib/openf1` (17 pass) + `next build` all clean. **Browser/Vercel-preview verification of real `/pit` + `/overtakes` coverage is still owed** — OpenF1 documents both as potentially incomplete, and KV is absent in this worktree so every render assembled fresh.
+
 ## 0.114.0 — 2026-06-29
 
 Added: **3D ghost-lap view** in the Qualifying Decoder (the named "quali-comparison-3D").

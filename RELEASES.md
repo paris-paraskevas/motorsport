@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.116.0 — 2026-06-29
+
+**Three new F1 telemetry leaderboards.** Once a Grand Prix weekend has run, qualifying and race pages now show a **Speed Trap** board ranking every driver by their top speed. Race pages add two more: a **Pit-Stop League** ranking teams by their fastest stop, and **Overtakes of the Race** counting who made the most passes — with the race's overtake total. Built from the same free, unofficial timing data as the rest of the F1 analysis.
+
 ## 0.114.0 — 2026-06-29
 
 **3D qualifying ghost cars.** In a Qualifying Decoder, flip the ghost-lap replay to 3D and watch both drivers' fastest laps race around the circuit in three dimensions — with the track's real elevation. It loads only when you open it, so it never slows the rest of the app.
