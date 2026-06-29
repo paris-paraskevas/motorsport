@@ -6,6 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-29 (later) — FEATURE REPORTS worked: 5 PRs (#287–#291 → 0.118.0) + Austria recap QUEUED; ⚠️ prod deploy stuck on 0.116.0
+
+main = **0.118.0**, **no open PRs**. Worked the feature reports (audit + free-OpenF1/app widget backlog) as an operator-steered autonomous run (self-merge + folder-disjoint worktree subagents). **Triage: no real bugs** — audit #1 (gate AdSense) is off-limits (dropped); #2 (warm-cron) already shipped; `prod-weekend8.md` = a stale page snapshot (v0.46.0 footer); `agent-salvage-2026-06-10` = stale content notes (one moot IMSA-Detroit line). So the session was all feature-building.
+
+### Shipped (#287–#291, all self-squash-merged)
+- **#287 (0.114.1)** — nav link to `/f1/analysis` (the owed quick win): featured link leading the desktop **Series mega-menu** (`AppShell` `SeriesMegaMenu`) + an F1-only link on `/series/f1` (`SeriesPageView`, `slug==='f1'`) — mobile bottom bar has no 6th-tab room.
+- **#289 (0.115.0)** — **home-widgets pack** (opt-in, multi-series, default-hidden): `where-to-watch` (`SeriesMeta.watch` on the existing `items` prop) + `next-weather` (existing `weatherByUid` prop) + `driver-spotlight` (new `/api/home/spotlight`, `loadAllDrivers` rotating sample, no images). `homeLayout` v7→8.
+- **#288 (0.116.0)** — **F1 telemetry leaderboards** (free OpenF1, on F1 session pages, deliberately NOT home → avoids F1-skew): speed-trap (`/laps`), pit-stop league (`/pit`), overtakes (`/overtakes`). New `lib/openf1/{speed-traps,pit-league,overtakes}.ts` + `components/f1/*`; one `Promise.all` on the session page, each KV-cached 7d.
+- **#290 (0.117.0)** — **blog author bylines + full draft preview**: `/blog/[slug]` renders "By {authorName}" under the title (from `author_id` — applies to all posts incl. the live preview) + admin preview now covers **draft** status (was approved-only); `PostModeration` links each queued draft to its full rendered preview ↗ (read the whole draft before approving).
+- **#291 (0.118.0)** — **F1 driver headshots** on `/drivers/[slug]` (F1-only): `lib/openf1/headshots.ts` (`f1HeadshotsByNumber` — latest-session resolve → number→url map, KV 7d, fail-soft) → plain `<img>` + "Photo: Formula 1 via OpenF1". ⚠️ **COPYRIGHT:** images are F1 official media (`media.formula1.com`); OpenF1's CC data licence does NOT license the images. Operator chose this *informed* (flagged 3×); isolated to the one swappable function — **swap to Wikimedia/own-licensed when ready**. DriversTab avatars intentionally skipped.
+
+### 🔴 Austria GP recap — QUEUED as a draft, awaiting operator approval + the deploy
+- Data-driven (OpenF1 stints/pit/laps + ≥3-source web), in the published preview's voice, **TRIPLE-AUDITED** (an independent fact-check pass caught + fixed a real error — "11 cars on M-H-H" → "15 of 18 two-stopped" — and softened 2 model-estimates). Inserted to prod `post` as **`status='draft'`, slug `austrian-gp-2026-recap`, id `fa7cb781`** via the Management API (`.supabase-pat`, project ref `dzelqrtajnauunzmxfic`, author `user_3Dj7VJ9…`). Draft/voice/factsheet + the insert script live in the session scratchpad.
+- **Operator TODO:** once 0.117.0 is live, open it from the `/blog` queue (the new ↗ link), read it in full, approve with a `publish_at` → the publish cron flips it live + fires the all-users push. Re-verify the facts on the rendered page (the #1 rule). NB the Hamilton angle = Ferrari's **used-soft call in ~50°C**, NOT a missed VSC (he banked the cheap VSC stop — timestamps confirmed it).
+
+### ⚠️ PROD DEPLOY STUCK — check Vercel FIRST next session
+Prod `/changelog` still read **0.116.0** ~30 min after #290/#291 merged, while a local `next build` of main (0.118.0) is **clean** → a Vercel-side queue/failure, not the code. **Until it deploys these are NOT live: the recap draft-preview, the blog bylines (#290), the driver headshots (#291).** Check the Vercel dashboard for a stuck/failed/cancelled deploy and redeploy.
+
+### Owed verifications (the MCP Playwright browser was LOCKED all session — couldn't drive it, so all visual/WebGL/auth/cron checks are owed a preview pass)
+- **Verified GREEN via WebFetch/curl (public):** standings parity #280 (home brief `171/131/125` == standings tab), telemetry warm-path #281 (Austria quali Decoder renders real data), Analysis Hub #283 (8 rounds linked), threads #282 (1 approved thread).
+- **Still operator-owed:** 3D WebGL scene #285; analysis-ready push #283 + signed-in bets #282 (cron/auth); #289 widgets *enabled* (default-hidden → Customise); #288 real `/pit`+`/overtakes` coverage on a race page; #291 headshot render on an F1 driver page (+ a non-F1 page unchanged); #290 byline on the live preview.
+
+### Deferred / open
+- **E — collapsible regions on the F1 race session page** (operator 2026-06-29): the race page now stacks **7 sections** (Classification → Race Story → Tyre strategy → Moments → Speed Trap → Pit-Stop League → Overtakes). Justified + ready (reuse `CollapsibleSectionHead`), but the collapse interaction needs a browser to verify — DEFERRED to a preview pass / unlocked browser. In IDEAS.
+- **H follow-ups:** swap F1 headshots to a clean licensed source; the broader driver/team imagery + **team-logos** program (OpenF1 has no logos — Wikimedia + per-image attribution).
+- **Legacy lint** is now **8 errors / 5 warnings** (drifted from the handoff's "5"; all pre-existing in untouched legacy files) — chore PR or fix-on-touch.
+- Dev note: killed the stray :3000 dev server + `rm -rf .next` for the clean build. `npm run dev` for a fresh one.
+
+(OpenF1 LIVE tab + lazy-Clerk-anon remain open — see the blocks below.)
+
+---
+
 ## ⚡ Next session pickup — 2026-06-29 — 3D quali shipped; NEXT = work the FEATURE REPORTS (bugs + ideas)
 
 main = **0.114.0**, **no open PRs**. Continued the autonomous OpenF1 run (operator-approved self-merge — **7 PRs total, #279–#285**). Since the 0.113.0 block below:

@@ -923,6 +923,27 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+## Week of 2026-06-29
+
+### Mon 2026-06-29 — feature reports: owed verifications + nav link + home widgets + F1 telemetry boards
+
+Plan: work the FEATURE REPORTS (bugs + ideas). First confirm the owed prod verifications, add the missing `/f1/analysis` nav link, then build from the audit + the free-OpenF1/app widget backlog.
+
+- **Triage:** no real bugs. Audit #1 (AdSense) off-limits; #2 (warm-cron) shipped; `prod-weekend8.md` = stale page snapshot (v0.46.0 footer); `agent-salvage` = stale content notes (one moot IMSA Detroit line). Session = all feature-building.
+- **Owed verifications (public smoke via WebFetch/curl):** standings parity #280 ✅ (home brief `171/131/125` == standings-tab final cumulative — the WebFetch "1715" was a chart-data misread, disproven); telemetry warm-path #281 ✅ functionally (Austria quali Decoder renders real telemetry); Analysis Hub #283 ✅ (8 rounds linked); threads #282 ✅ thin (1 approved thread). Operator-owed (auth/cron/WebGL, MCP browser locked): analysis-ready push #283, bets widget signed-in #282, 3D WebGL scene #285.
+- → done: **A — nav link 0.114.1 (#287)** — featured `/f1/analysis` link in the desktop Series mega-menu + an F1-only link on `/series/f1` (mobile + desktop). tsc clean; no new lint.
+- → done: **B — home-widgets pack 0.115.0 (#289)** (where-to-watch, next-race weather, driver-spotlight; opt-in, multi-series) + **C — F1 telemetry leaderboards 0.116.0 (#288)** (speed-trap, pit-stop league, overtakes; free OpenF1, on F1 session pages). Built via folder-disjoint parallel worktree subagents, reviewed + merged in order (version-file conflicts resolved).
+- → done (operator mid-session asks): **F+G — blog author bylines + full draft preview 0.117.0 (#290)**; **H — F1 driver headshots 0.118.0 (#291)** via OpenF1 (F1-only; ⚠️ F1-copyright media, isolated/swappable — operator chose informed).
+- → done: **Austria GP race recap** — researched (OpenF1 + ≥3-source web), drafted in the published preview's voice, **triple-audited** (an independent pass caught + fixed a real error), inserted as a `draft` to prod (`austrian-gp-2026-recap`, id `fa7cb781`) via the Management API. Awaits the operator's in-queue approval + the deploy.
+- → deferred: **E — collapsible race-page sections** (justified: 7 stacked sections now — but the collapse needs a browser to verify; MCP browser was locked all session).
+- ⚠️ **Prod deploy stuck on 0.116.0** ~30 min after #290/#291 merged (a local build of 0.118.0 is clean → Vercel-side, not the code). Until it deploys, the recap draft-preview + bylines + headshots aren't live. Check Vercel next session.
+
+Won't touch (held): OpenF1 LIVE tab (paid Sponsor tier — operator action), AdSense, lazy-Clerk-anon, standings-movers (round-over-round infra), ADAC/NLS parsers. Legacy lint drifted 5→8 (pre-existing; cleanup item).
+
+→ done: **5 PRs #287–#291 (0.114.1 → 0.118.0)** + the Austria recap queued. Active: _(no `[+Nm]` prefixes captured)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
