@@ -107,20 +107,23 @@ export default async function PostPage({
 
   let post: Post | null = null;
   let bodyHtml: string | null = null; // set for DB posts (rendered markdown)
-  let scheduledAt: string | null = null; // admin preview of a not-yet-published post
+  let scheduledAt: string | null = null; // admin preview of a scheduled (approved) post
+  let draftPreview = false; // admin preview of a still-draft post (not yet scheduled)
 
   const db = await getPostBySlug(slug);
   if (db) {
     if (db.status === 'published') {
       post = dbToPost(db);
       bodyHtml = await renderMarkdown(db.body);
-    } else if (db.status === 'approved' && isAdmin(await currentUser())) {
-      // Scheduled but not yet live — only admins may preview it.
+    } else if ((db.status === 'approved' || db.status === 'draft') && isAdmin(await currentUser())) {
+      // Not yet live (scheduled, or still a draft) — only admins may preview it,
+      // so an editor can read the whole piece in full before approving it.
       post = dbToPost(db);
       bodyHtml = await renderMarkdown(db.body);
-      scheduledAt = db.publishAt;
+      scheduledAt = db.status === 'approved' ? db.publishAt : null;
+      draftPreview = db.status === 'draft';
     } else {
-      notFound(); // draft / rejected / approved-but-not-admin → hidden; slug is taken
+      notFound(); // rejected / (draft|approved)-but-not-admin → hidden; slug is taken
     }
   } else {
     post = await loadPost(slug); // MDX fallback
@@ -148,6 +151,11 @@ export default async function PostPage({
         Back to blog
       </Link>
 
+      {draftPreview && (
+        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
+          Draft preview · not yet scheduled · only admins can see this
+        </div>
+      )}
       {scheduledAt && (
         <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
           Scheduled preview · publishes {formatDateTime(scheduledAt)} UTC · only admins can see this
@@ -171,6 +179,9 @@ export default async function PostPage({
         <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
           {post.frontmatter.title}
         </h1>
+        {db?.authorName && (
+          <p className="mt-3 text-sm font-medium text-text-muted">By {db.authorName}</p>
+        )}
         <p className="mt-4 text-base text-text-muted leading-relaxed">
           {post.frontmatter.summary}
         </p>
