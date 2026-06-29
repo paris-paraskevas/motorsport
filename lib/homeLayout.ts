@@ -21,6 +21,7 @@ export type HomeElementId =
   | 'track-layout'
   | 'threads'
   | 'bets'
+  | 'social'
   | 'latest-decoded'
   | 'where-to-watch'
   | 'next-weather'
@@ -51,6 +52,7 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'track-layout', label: 'Circuit map', hint: 'The track layout for the next round you follow (F1 for now).', collapsible: true },
   { id: 'threads', label: 'Paddock chatter', hint: 'The newest approved community threads — tap in to read or reply.', collapsible: true },
   { id: 'bets', label: 'Your bets & credits', hint: 'Your open bets, credit balance and the next market closing. Signed-in only.', collapsible: true },
+  { id: 'social', label: 'Your leagues & friends', hint: 'Your prediction leagues (with your rank) and a friends summary. Signed-in only.', collapsible: true },
   { id: 'latest-decoded', label: 'Latest Decoded', hint: 'The most recent F1 qualifying + race, deep-linked to the Decoder and Race Story.', collapsible: true },
   { id: 'where-to-watch', label: 'Where to watch', hint: 'Broadcast links for your next few upcoming sessions.', collapsible: true },
   { id: 'next-weather', label: 'Next-race weather', hint: 'The forecast for your next followed round.', collapsible: true },
@@ -128,7 +130,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {

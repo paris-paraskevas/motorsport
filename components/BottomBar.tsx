@@ -2,6 +2,7 @@
 import { CalendarDays, CircleUser, Flag, House, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth, useUser } from '@clerk/nextjs';
 
 // Mobile bottom navigation (PR 2a, docs/redesign-2026-06.md): thumb-reach
 // nav for phones and the installed PWA. Every tab is a real destination —
@@ -10,6 +11,11 @@ import { usePathname } from 'next/navigation';
 // over. Play appears only when betting is provisioned (bettingEnabled).
 export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
   const pathname = usePathname();
+  // Show the signed-in user's profile picture on the Account tab (falls back to
+  // the generic icon when signed-out or no image). Clerk is already mounted by
+  // the (app) layout, so this adds no new SDK cost.
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
 
   return (
     <nav
@@ -45,6 +51,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
           active={pathname === '/settings'}
           label="Account"
           Icon={CircleUser}
+          avatarUrl={isSignedIn ? user?.imageUrl : undefined}
           dataTour="account"
         />
       </div>
@@ -57,12 +64,14 @@ function BarLink({
   active,
   label,
   Icon,
+  avatarUrl,
   dataTour,
 }: {
   href: string;
   active: boolean;
   label: string;
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  avatarUrl?: string;
   dataTour?: string;
 }) {
   return (
@@ -79,7 +88,18 @@ function BarLink({
       {active && (
         <span aria-hidden="true" className="absolute top-0 inset-x-3 h-0.5 bg-brand" />
       )}
-      <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+      {avatarUrl ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={avatarUrl}
+            alt=""
+            className={`h-[22px] w-[22px] rounded-full object-cover ${active ? 'ring-2 ring-brand' : ''}`}
+          />
+        </>
+      ) : (
+        <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+      )}
       <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em]">
         {label}
       </span>

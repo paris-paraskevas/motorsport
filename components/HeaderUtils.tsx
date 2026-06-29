@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Coffee, LogIn, Mail, MessageSquare, Settings } from 'lucide-react';
 import { SignInButton, useAuth, useUser } from '@clerk/nextjs';
 import { openContactModal } from './ContactModal';
+import { NotificationBell } from './NotificationBell';
 
 const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
@@ -40,6 +41,10 @@ export function HeaderUtils({
         <span className="hidden sm:inline">Buy me a coffee</span>
         <span className="sm:hidden">Coffee</span>
       </a>
+      {/* Notification center — sent-push history, signed-in only, all viewports
+          (NotificationBell self-gates on Clerk auth and renders nothing when
+          signed out). */}
+      {isLoaded && isSignedIn && <NotificationBell />}
       {/* Staff-only feedback board (admin + moderator); everyday users never see it. */}
       {isLoaded && isSignedIn && isStaff && (
         <Link
@@ -57,9 +62,16 @@ export function HeaderUtils({
       {isLoaded && isSignedIn && (
         <Link
           href="/settings"
-          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full pl-1 pr-3 py-1 transition-colors duration-(--duration-fast)"
         >
-          <Settings size={13} />
+          {user?.imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={user.imageUrl} alt="" className="h-5 w-5 rounded-full object-cover" />
+            </>
+          ) : (
+            <Settings size={13} className="ml-1.5" />
+          )}
           <span>Account</span>
         </Link>
       )}

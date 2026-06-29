@@ -17,6 +17,39 @@ Practice telemetry for F1 FP1/FP2/FP3. Practice pages previously got only the sp
 
 ### Notes
 - **Owed on a deploy:** live OpenF1 practice-data coverage (does OpenF1 carry `/laps` + `/stints` for FP1/FP2/FP3 across the season?) and the visual render were not verifiable in this environment (no browser, and OpenF1 server-side calls behave differently on Vercel datacenter egress than localhost — see the preview-verify landmine). Practice uses the same OpenF1 timing pipeline that already feeds the quali Decoder and race Race Story, so laps/stints are expected to be present, but coverage should be confirmed on a real past practice session on the Vercel preview before this is called "shipped".
+## 0.123.0 — 2026-06-29
+
+Added: an opt-in **"Leagues & friends"** home widget surfacing the signed-in user's prediction leagues (with their rank) and a friends summary.
+
+### Added
+- `app/(app)/api/home/social/route.ts` (NEW) — per-user, signed-in-only home-widget data. `dynamic = 'force-dynamic'` + `Cache-Control: private, no-store` (mirrors `/api/home/bets` — NOT edge-cacheable, unlike the cacheable `/api/home/*` routes). Clerk `auth()`; anon or betting-unconfigured → `{ signedIn:false, leagues:[], friends:{count:0,pending:0} }`. Shape `HomeSocialData = { signedIn, leagues: HomeSocialLeague[], friends: { count, pending } }`, `HomeSocialLeague = { id, name, memberCount, myRank: number | null }`. Data: `getUserLeagues(userId)` (membership + `memberCount`) + `getLeaderboardsForLeagues(ids, 0)` for rank (the viewer's 1-based index in each league's win-rate leaderboard; `minPlaced=0` so every member ranks, matching the `/social/leagues` page) + `listFriends` / `listIncomingRequests` (friends count + pending incoming). Capped to the first 5 leagues server-side. Does NOT call `ensureBettingUser` (a passive read shouldn't grant the monthly allowance — same reasoning as the bets route). Fail-soft `try/catch` → signed-in-but-empty.
+- `lib/homeLayout.ts`: registered `social` in `HomeElementId`, `HOME_ELEMENTS` (label "Your leagues & friends", `collapsible: true`), and `DEFAULT_HIDDEN` (opt-in — default-hidden like the other graduated widgets). Inserted after `bets`.
+- `components/HomeContent.tsx`: the `social` render block, with the same shown+collapsed defer-fetch gate as `bets` (fetches `/api/home/social` only when the block is shown + expanded). States: skeleton (null) / signed-out nudge ("Sign in to play with friends") / data (up to `count` leagues, each `Trophy · name · P{myRank}/{memberCount}` → `/social/leagues/{id}`, plus a friends row "{count} friends · {pending} requests" → `/social/friends`) / empty leagues ("Join or create a league" → `/social/leagues`). `myRank` falls back to a member-count label when null (render-safe). Count clamped 1–5.
+- `components/HomeCustomizeBanner.tsx`: `NUMERIC_SETTING.social` ({ field: `count`, label "Leagues", values [2, 3, 5], def 3 }).
+- `lib/homeLayout.test.ts`: registry-count assertions 16 → 17; `social` added to the expected order / default-hidden / full-order fixtures.
+## 0.122.1 — 2026-06-29
+
+Fixed the 3D qualifying view + the mobile landing hero; added the user's profile picture to the Account control.
+
+### Fixed
+- `components/f1/GhostLap3D.tsx` (`mapPoint`): the 3D ghost-lap view rendered nothing ("doesn't work at all") for any session whose decoder traces were KV-cached BEFORE the 3D view added a `z` coordinate (0.114.0) — those cached `track.points` have no `z`, so `p.z / SCENE_SCALE` was `NaN`, giving drei's `<Line>` a NaN bounding sphere and breaking the whole scene. Now coerces any non-finite x/y/z to a safe value, so a stale/partial point sits flat instead of breaking the geometry; elevation self-heals as caches refresh.
+- `components/landing/Hero.tsx`: the hero ran too wide on mobile — the grid's single mobile column sized to its content's intrinsic min-width (~516px, driven by the circuit slideshow) and overflowed the viewport, clipping the copy + buttons. Added `grid-cols-1` (a `minmax(0,1fr)` track) + `min-w-0` on both columns so they shrink to the viewport and the copy wraps.
+
+### Added
+- `components/HeaderUtils.tsx` + `components/BottomBar.tsx`: the Account control now shows the signed-in user's Clerk profile picture (→ `/settings`), on both the desktop header and the mobile bottom bar; falls back to the icon when signed-out / no image. No new Clerk SDK cost — already mounted by the (app) layout.
+
+## 0.122.0 — 2026-06-29
+
+Notifications remodel, part 2 (frontend): a **notification center** in the header that surfaces the sent-push history recorded by 0.121.0, so signed-in users can see what arrived and re-open its deep-link.
+
+### Added
+- `app/(app)/api/push/history/route.ts` (NEW) — `GET` returning the signed-in caller's sent-notification history. Resolves the user via `auth()` (`@clerk/nextjs/server`); no `userId` → `[]` (200, signed-out shows empty, no error), else `listHistory(userId, 30)` (newest first). `Cache-Control: private, no-store` + `dynamic = 'force-dynamic'` (per-user, not edge-cacheable — mirrors `api/home/bets`). Fail-soft: any auth/KV throw is caught → `[]`.
+- `components/NotificationBell.tsx` (NEW, `'use client'`) — lucide `Bell` button + click-toggled popover listing history rows (title semibold, body clamped to 2 lines, past-relative timestamp e.g. "2h ago"). Each row is a `next/link` to `item.url` (falls back to `/app` if empty) and closes the panel on navigate. States: loading skeleton (idle+loading), empty ("No notifications yet."), list. Lazy-fetches `/api/push/history` on first open only. Signed-in-gated via Clerk `useAuth` (renders `null` when loading or signed out — no bell flash for anonymous visitors; the SDK is already loaded for the header, so no new client dep). Closes on outside-`pointerdown`, Escape (restores focus to the trigger), and route change (state-during-render, same pattern as `HeaderNavMenu`). Fixed + right-aligned + `max-w-[calc(100vw-1.5rem)]` so it stays on-screen on phones (HeaderUtils renders on all viewports). No unread badge in v1 (read-state is a follow-up). Inlines its own past-direction `timeAgo` (lib/date's `formatRelative` is forward-looking "in 2h"; HomeContent's equivalent is private to a client module — a few local lines beat a cross-scope shared helper).
+- `components/HeaderUtils.tsx`: mounts `<NotificationBell />` for signed-in users (between the Coffee button and the staff/account cluster), gated on the same `isLoaded && isSignedIn` as the surrounding controls. No `hidden lg:` wrapper — the bell is intended for all viewports, unlike the desktop-only Account link.
+
+### Notes
+- History starts EMPTY (the backend only began recording in 0.121.0) and fills as pushes go out — the empty state is worded as intentional.
+- Does NOT modify `lib/push-history.ts`, the service worker, or any sender — it only reads the existing store.
 
 ## 0.121.1 — 2026-06-29
 
