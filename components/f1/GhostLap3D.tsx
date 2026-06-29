@@ -37,7 +37,7 @@ const SCENE_SCALE = 90;
 const CAM_BACK = 0.17; // distance behind the car
 const CAM_UP = 0.085; // height above the car
 const CAM_LOOKAHEAD = 0.55; // how far ahead the camera aims
-const CAM_LERP = 0.3; // position smoothing per frame (higher = tighter centring in corners)
+const CAM_LERP = 0.85; // near-rigid follow: the Hermite motion is smooth, so a tight camera kills the scene rubber-band (ghost surge/recoil) without adding jitter
 
 // The single-seater is modelled ~1.3 long in local units, scaled so it spans
 // ~40% of the asphalt width — a ~2 m car on our near-real ~5 m-wide track.
@@ -349,14 +349,14 @@ const WHITE_W = 0.014; // white track-limit line, inset at each asphalt edge
 const KERB_BAND = 5; // centreline points per alternating red/white band
 const KERB_RED = [0.74, 0.12, 0.12];
 const KERB_WHITE = [0.9, 0.9, 0.92];
-const GRASS_HALF = 1.6; // grass apron half-width (world units) — follows track elevation
-const GRASS_DROP = 0.012; // grass sits just below the asphalt
+const TERRAIN_GRID = 64; // ground heightfield resolution (per axis)
+const TERRAIN_DROP = 0.02; // terrain sits just below the asphalt
 
 function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   asphalt: THREE.BufferGeometry;
   kerbs: THREE.BufferGeometry;
   whiteLines: THREE.BufferGeometry;
-  grass: THREE.BufferGeometry;
+  terrain: THREE.BufferGeometry;
   left: THREE.Vector3[];
   right: THREE.Vector3[];
 } {
@@ -476,37 +476,109 @@ function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   whiteLines.computeVertexNormals();
   whiteLines.translate(0, 0.0015, 0); // sit just above the asphalt
 
-  // Grass apron: a wide strip following the SAME centreline + elevation, just
-  // below the asphalt, so the ground rises + falls with the track (no flying).
-  const gPos: number[] = [];
-  for (let i = 0; i < n - 1; i++) {
-    const lA = pts[i].clone().addScaledVector(sides[i], GRASS_HALF);
-    const rA = pts[i].clone().addScaledVector(sides[i], -GRASS_HALF);
-    const lB = pts[i + 1].clone().addScaledVector(sides[i + 1], GRASS_HALF);
-    const rB = pts[i + 1].clone().addScaledVector(sides[i + 1], -GRASS_HALF);
-    for (const v of [lA, rA, lB, rA, rB, lB]) gPos.push(v.x, v.y - GRASS_DROP, v.z);
+  // Terrain: ONE heightfield grid draped over the track's elevation — each grid
+  // vertex takes the height of the nearest centreline point — so the ground is a
+  // single surface that climbs + falls with the circuit. No folding, nothing
+  // running over/under the track (the old wide grass apron self-overlapped).
+  let tMinX = Infinity;
+  let tMaxX = -Infinity;
+  let tMinZ = Infinity;
+  let tMaxZ = -Infinity;
+  for (const p of pts) {
+    if (p.x < tMinX) tMinX = p.x;
+    if (p.x > tMaxX) tMaxX = p.x;
+    if (p.z < tMinZ) tMinZ = p.z;
+    if (p.z > tMaxZ) tMaxZ = p.z;
   }
-  const grass = new THREE.BufferGeometry();
-  grass.setAttribute('position', new THREE.Float32BufferAttribute(gPos, 3));
-  grass.computeVertexNormals();
+  const margin = (Math.max(tMaxX - tMinX, tMaxZ - tMinZ) || 1) * 0.3 + 2;
+  tMinX -= margin;
+  tMaxX += margin;
+  tMinZ -= margin;
+  tMaxZ += margin;
+  const G = TERRAIN_GRID;
+  const gx = (ix: number) => tMinX + ((tMaxX - tMinX) * ix) / (G - 1);
+  const gz = (iz: number) => tMinZ + ((tMaxZ - tMinZ) * iz) / (G - 1);
+  const height = new Array<number>(G * G);
+  for (let iz = 0; iz < G; iz++) {
+    for (let ix = 0; ix < G; ix++) {
+      const x = gx(ix);
+      const z = gz(iz);
+      let by = 0;
+      let bd = Infinity;
+      for (const p of pts) {
+        const dx = x - p.x;
+        const dz = z - p.z;
+        const d = dx * dx + dz * dz;
+        if (d < bd) {
+          bd = d;
+          by = p.y;
+        }
+      }
+      height[iz * G + ix] = by;
+    }
+  }
+  // Box-blur the heightfield so it reads as smooth terrain, not Voronoi steps.
+  for (let pass = 0; pass < 2; pass++) {
+    const src = height.slice();
+    for (let iz = 0; iz < G; iz++) {
+      for (let ix = 0; ix < G; ix++) {
+        let s = 0;
+        let c = 0;
+        for (let dz = -1; dz <= 1; dz++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const jx = ix + dx;
+            const jz = iz + dz;
+            if (jx >= 0 && jx < G && jz >= 0 && jz < G) {
+              s += src[jz * G + jx];
+              c += 1;
+            }
+          }
+        }
+        height[iz * G + ix] = s / c;
+      }
+    }
+  }
+  const tPos = new Float32Array(G * G * 3);
+  for (let iz = 0; iz < G; iz++) {
+    for (let ix = 0; ix < G; ix++) {
+      const o = (iz * G + ix) * 3;
+      tPos[o] = gx(ix);
+      tPos[o + 1] = height[iz * G + ix] - TERRAIN_DROP;
+      tPos[o + 2] = gz(iz);
+    }
+  }
+  const tIdx: number[] = [];
+  for (let iz = 0; iz < G - 1; iz++) {
+    for (let ix = 0; ix < G - 1; ix++) {
+      const a = iz * G + ix;
+      const b = a + 1;
+      const c2 = a + G;
+      const d = c2 + 1;
+      tIdx.push(a, c2, b, b, c2, d);
+    }
+  }
+  const terrain = new THREE.BufferGeometry();
+  terrain.setAttribute('position', new THREE.BufferAttribute(tPos, 3));
+  terrain.setIndex(tIdx);
+  terrain.computeVertexNormals();
 
-  return { asphalt, kerbs, whiteLines, grass, left, right };
+  return { asphalt, kerbs, whiteLines, terrain, left, right };
 }
 
 function TrackRibbon({ pts, halfL, halfR }: { pts: THREE.Vector3[]; halfL: number[]; halfR: number[] }) {
-  const { asphalt, kerbs, whiteLines, grass } = useMemo(() => buildRibbon(pts, halfL, halfR), [pts, halfL, halfR]);
+  const { asphalt, kerbs, whiteLines, terrain } = useMemo(() => buildRibbon(pts, halfL, halfR), [pts, halfL, halfR]);
   useEffect(
     () => () => {
       asphalt.dispose();
       kerbs.dispose();
       whiteLines.dispose();
-      grass.dispose();
+      terrain.dispose();
     },
-    [asphalt, kerbs, whiteLines, grass],
+    [asphalt, kerbs, whiteLines, terrain],
   );
   return (
     <group>
-      <mesh geometry={grass}>
+      <mesh geometry={terrain}>
         <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} side={THREE.DoubleSide} />
       </mesh>
       <mesh geometry={asphalt}>

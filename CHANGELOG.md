@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.129.2 — 2026-06-29
+
+Onboard fixes (operator): the grass apron folded over/under the track; the ghost car still jumped.
+
+### Fixed (`components/f1/GhostLap3D.tsx`)
+- **Ground is now terrain.** Replaced the wide grass ribbon (it self-overlapped at corners → grass running over + under the track) with a single heightfield grid draped over the track's elevation — each grid vertex takes the nearest centreline point's height, box-blurred. One coherent surface that climbs + falls with the circuit; no folding, nothing over/under; the track sits on it.
+- **Ghost no longer surges/recoils.** The chase camera kept a heavy position-lerp (CAM_LERP 0.3) left over from the old jittery motion; now the motion is the smooth time-correct Hermite, that lag rubber-banded the whole scene — so the ghost (rendered relative to the lagging camera) jumped forward/back as the lead car accelerated. Tightened the follow to 0.85 (near-rigid) so the camera tracks the lead car exactly and the ghost shows only its real, smooth gap. (The ghost was always positioned from its own data, never a delta.)
+- Grandstands at real positions aren't feasible (no track-furniture coordinates aligned to OpenF1) — kept road + terrain only, per "if not feasible keep only road".
+
+### Notes
+- Browser-verified on localhost (Austria R8 quali): terrain undulates with the track (no flying, no folding/over-under), car off-centre through corners, 0 console errors.
+
 ## 0.129.1 — 2026-06-29
 
 Onboard follow-ups (operator): cars still sat centred on 0.129; the flat ground didn't follow the track's elevation ("we're flying").
