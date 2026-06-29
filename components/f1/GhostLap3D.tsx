@@ -38,7 +38,6 @@ const CAM_BACK = 0.17; // distance behind the car
 const CAM_UP = 0.085; // height above the car
 const CAM_LOOKAHEAD = 0.55; // how far ahead the camera aims
 const CAM_LERP = 0.3; // position smoothing per frame (higher = tighter centring in corners)
-const HEADING_DT = 0.22; // seconds ahead used to estimate travel direction
 
 // The single-seater is modelled ~1.3 long in local units, scaled so it spans
 // ~40% of the asphalt width — a ~2 m car on our near-real ~5 m-wide track.
@@ -67,39 +66,51 @@ function mapTrack(track: TrackPath): Mapped {
   return { pts, cx, cy };
 }
 
-// Linear-interpolate an (x, y, z) position along time-ordered track points at lap
-// time t, then map to scene space. Clamps to the endpoints outside the recorded span.
-function scenePosAtTime(points: TrackPoint[], t: number, cx: number, cy: number): THREE.Vector3 | null {
-  if (points.length === 0) return null;
-  if (t <= points[0].t) return mapPoint(points[0], cx, cy);
-  for (let i = 1; i < points.length; i++) {
-    if (points[i].t >= t) {
-      const p0 = points[i - 1];
-      const p1 = points[i];
-      const f = (t - p0.t) / (p1.t - p0.t || 1);
-      return mapPoint(
-        { x: p0.x + (p1.x - p0.x) * f, y: p0.y + (p1.y - p0.y) * f, z: p0.z + (p1.z - p0.z) * f },
-        cx,
-        cy,
-      );
-    }
-  }
-  return mapPoint(points[points.length - 1], cx, cy);
+// A car's lap as a SMOOTH motion: a centripetal Catmull-Rom spline through its
+// scene-space location points + the matching lap-time stamps. Sampling the spline
+// (instead of linearly interpolating the ~3.7 Hz points) gives smooth position
+// AND heading — no per-sample facet jerk, which is what made the cars "jump".
+// Centripetal avoids the overshoot a uniform Catmull-Rom gets at hairpins.
+interface Motion {
+  curve: THREE.CatmullRomCurve3;
+  times: number[]; // lap-time (s) of each control point, ascending
 }
 
-// Travel direction (XZ plane, Y zeroed) from the point at t to the point a beat
-// ahead — the car's heading + the camera's aim. Falls back to +Z when degenerate
-// (e.g. clamped at the lap end), so orientation freezes rather than flipping.
-function headingDir(points: TrackPoint[], t: number, cx: number, cy: number): THREE.Vector3 {
-  const p0 = scenePosAtTime(points, t, cx, cy);
-  const p1 = scenePosAtTime(points, t + HEADING_DT, cx, cy);
-  const v = new THREE.Vector3(0, 0, 1);
-  if (p0 && p1) {
-    const d = p1.clone().sub(p0);
-    d.y = 0;
-    if (d.lengthSq() > 1e-7) v.copy(d.normalize());
+function buildMotion(points: TrackPoint[], cx: number, cy: number): Motion | null {
+  const vecs: THREE.Vector3[] = [];
+  const times: number[] = [];
+  for (const p of points) {
+    const v = mapPoint(p, cx, cy);
+    const last = vecs[vecs.length - 1];
+    if (last && last.distanceToSquared(v) < 1e-10) continue; // drop dupes (centripetal NaN guard)
+    vecs.push(v);
+    times.push(p.t);
   }
-  return v;
+  if (vecs.length < 2) return null;
+  return { curve: new THREE.CatmullRomCurve3(vecs, false, 'centripetal'), times };
+}
+
+// Smooth position + forward tangent (XZ, y-zeroed) at lap time t. Time → curve
+// parameter is piecewise-linear per segment; the spline smooths the path between.
+// Clamps to the endpoints outside the recorded span (car holds at start/finish).
+function sampleMotion(m: Motion, t: number): { pos: THREE.Vector3; tan: THREE.Vector3 } {
+  const { times } = m;
+  const n = times.length;
+  let u: number;
+  if (t <= times[0]) u = 0;
+  else if (t >= times[n - 1]) u = 1;
+  else {
+    let i = 1;
+    while (i < n && times[i] < t) i++;
+    const f = (t - times[i - 1]) / (times[i] - times[i - 1] || 1);
+    u = (i - 1 + f) / (n - 1);
+  }
+  const pos = m.curve.getPoint(u);
+  const tan = m.curve.getTangent(u);
+  tan.y = 0;
+  if (tan.lengthSq() < 1e-7) tan.set(0, 0, 1);
+  else tan.normalize();
+  return { pos, tan };
 }
 
 // Distance reached along a trace at lap time t (for the gap readout + strip playhead).
@@ -244,16 +255,12 @@ function F1Car({ colour, ghost }: { colour: string; ghost: boolean }) {
 
 // Positions + orients a car each frame from the live `t` in a ref (no re-render).
 function CarRig({
-  points,
-  cx,
-  cy,
+  motion,
   colour,
   ghost,
   tRef,
 }: {
-  points: TrackPoint[];
-  cx: number;
-  cy: number;
+  motion: Motion;
   colour: string;
   ghost: boolean;
   tRef: React.RefObject<number>;
@@ -262,12 +269,9 @@ function CarRig({
   useFrame(() => {
     const g = ref.current;
     if (!g) return;
-    const t = tRef.current ?? 0;
-    const pos = scenePosAtTime(points, t, cx, cy);
-    if (!pos) return;
+    const { pos, tan } = sampleMotion(motion, tRef.current ?? 0);
     g.position.copy(pos);
-    const dir = headingDir(points, t, cx, cy);
-    g.rotation.y = Math.atan2(dir.x, dir.z); // align local +Z to travel direction
+    g.rotation.y = Math.atan2(tan.x, tan.z); // align local +Z to travel direction
   });
   return (
     <group ref={ref}>
@@ -284,25 +288,12 @@ function CarRig({
 }
 
 // Drives the default camera to chase the followed car from behind + above.
-function FollowCam({
-  points,
-  cx,
-  cy,
-  tRef,
-}: {
-  points: TrackPoint[];
-  cx: number;
-  cy: number;
-  tRef: React.RefObject<number>;
-}) {
+function FollowCam({ motion, tRef }: { motion: Motion; tRef: React.RefObject<number> }) {
   const camera = useThree(s => s.camera);
   const inited = useRef(false);
   useFrame(() => {
-    const t = tRef.current ?? 0;
-    const pos = scenePosAtTime(points, t, cx, cy);
-    if (!pos) return;
-    const dir = headingDir(points, t, cx, cy);
-    const target = pos.clone().addScaledVector(dir, -CAM_BACK);
+    const { pos, tan } = sampleMotion(motion, tRef.current ?? 0);
+    const target = pos.clone().addScaledVector(tan, -CAM_BACK);
     target.y += CAM_UP;
     if (!inited.current) {
       camera.position.copy(target);
@@ -310,7 +301,7 @@ function FollowCam({
     } else {
       camera.position.lerp(target, CAM_LERP);
     }
-    const look = pos.clone().addScaledVector(dir, CAM_LOOKAHEAD);
+    const look = pos.clone().addScaledVector(tan, CAM_LOOKAHEAD);
     look.y += 0.02;
     camera.lookAt(look);
   });
@@ -495,6 +486,14 @@ function Scene({
   otherColour: string;
   tRef: React.RefObject<number>;
 }) {
+  const followMotion = useMemo(
+    () => buildMotion(followPts, outline.cx, outline.cy),
+    [followPts, outline.cx, outline.cy],
+  );
+  const otherMotion = useMemo(
+    () => (otherPts ? buildMotion(otherPts, outline.cx, outline.cy) : null),
+    [otherPts, outline.cx, outline.cy],
+  );
   return (
     <>
       <color attach="background" args={['#8fa6bb']} />
@@ -508,11 +507,9 @@ function Scene({
         <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} />
       </mesh>
       <TrackRibbon pts={outline.pts} />
-      <CarRig points={followPts} cx={outline.cx} cy={outline.cy} colour={followColour} ghost={false} tRef={tRef} />
-      {otherPts && (
-        <CarRig points={otherPts} cx={outline.cx} cy={outline.cy} colour={otherColour} ghost tRef={tRef} />
-      )}
-      <FollowCam points={followPts} cx={outline.cx} cy={outline.cy} tRef={tRef} />
+      {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} />}
+      {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} />}
+      {followMotion && <FollowCam motion={followMotion} tRef={tRef} />}
     </>
   );
 }
@@ -554,7 +551,44 @@ function brakeSegments(tel: DistSample[], maxD: number, yTop: number, colour: st
   return segs;
 }
 
-function StateChip({ driver, state }: { driver: EnrichedDriver; state: InputState }) {
+// Position (track x/y) at lap time t — linear interp, clamped. Used to derive the
+// exact turn (yaw) the car makes from its real GPS path.
+function posXYAt(points: TrackPoint[], t: number): { x: number; y: number } {
+  if (points.length === 0) return { x: 0, y: 0 };
+  if (t <= points[0].t) return { x: points[0].x, y: points[0].y };
+  for (let i = 1; i < points.length; i++) {
+    if (points[i].t >= t) {
+      const p0 = points[i - 1];
+      const p1 = points[i];
+      const f = (t - p0.t) / (p1.t - p0.t || 1);
+      return { x: p0.x + (p1.x - p0.x) * f, y: p0.y + (p1.y - p0.y) * f };
+    }
+  }
+  const last = points[points.length - 1];
+  return { x: last.x, y: last.y };
+}
+
+// Heading in degrees (atan2(dx, dy) — same convention as the 3D car rotation, so
+// left/right agree with the scene) from the path direction at lap time t.
+function headingDeg(points: TrackPoint[], t: number): number {
+  const a = posXYAt(points, t - 0.15);
+  const b = posXYAt(points, t + 0.15);
+  return (Math.atan2(b.x - a.x, b.y - a.y) * 180) / Math.PI;
+}
+
+// Signed turn rate in °/s at lap time t (− = right, + = left, in TrackPoint's
+// south-positive frame), central-differenced from the heading — the exact yaw the
+// GPS path makes (no steering feed). The caller maps the sign to ◀/▶ arrows.
+function turnRateAt(points: TrackPoint[], t: number): number {
+  const dt = 0.3;
+  let d = headingDeg(points, t + dt / 2) - headingDeg(points, t - dt / 2);
+  while (d > 180) d -= 360;
+  while (d < -180) d += 360;
+  return d / dt;
+}
+
+function StateChip({ driver, state, turn }: { driver: EnrichedDriver; state: InputState; turn: number }) {
+  const turning = Math.abs(turn) >= 4; // °/s threshold for "in a corner"
   return (
     <span className="inline-flex items-center gap-1.5 font-mono text-[11px]">
       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: driver.teamColour }} />
@@ -569,6 +603,9 @@ function StateChip({ driver, state }: { driver: EnrichedDriver; state: InputStat
         }
       >
         {STATE_LABEL[state]}
+      </span>
+      <span className="tabular-nums text-text-faint">
+        {turning ? `${turn > 0 ? '◀' : '▶'} ${Math.round(Math.abs(turn))}°/s` : '▲'}
       </span>
     </span>
   );
@@ -608,14 +645,16 @@ function TelemetryStrip({
   const sB = sampleTel(telB, t);
   const stateA = inputState(sA.throttle, sA.brake);
   const stateB = inputState(sB.throttle, sB.brake);
+  const turnA = traceA.track ? turnRateAt(traceA.track.points, t) : 0;
+  const turnB = traceB.track ? turnRateAt(traceB.track.points, t) : 0;
 
   return (
     <div className="space-y-1.5">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">Throttle / brake</span>
         <div className="flex items-center gap-3">
-          <StateChip driver={driverA} state={stateA} />
-          <StateChip driver={driverB} state={stateB} />
+          <StateChip driver={driverA} state={stateA} turn={turnA} />
+          <StateChip driver={driverB} state={stateB} turn={turnB} />
         </div>
       </div>
       <svg
