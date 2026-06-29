@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.126.1 — 2026-06-29
+
+**Fixed a race-highlights video.** The Barcelona Grand Prix highlights now play from Formula 1's official channel, instead of a regional upload that was blocked for many viewers.
+
 ## 0.126.0 — 2026-06-29
 
 **The qualifying onboard view got a proper makeover.** The camera now sits right above and behind the cockpit (instead of hovering far away), the car is an actual Formula 1 car — open wheels, wings and airbox — sized correctly to the track, and the track is now a real 3D circuit set in a landscape with grass, a sky and a hazy horizon rather than a bare line. Same comparison as before (your car vs the rival ghost, plus the throttle/brake strip) — it just looks the part now.
