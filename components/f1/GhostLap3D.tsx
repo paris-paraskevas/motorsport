@@ -1,7 +1,6 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
 import { Pause, Play } from 'lucide-react';
 import * as THREE from 'three';
 import { computeDelta, type DriverTrace, type DistSample } from '@/lib/openf1/delta';
@@ -32,17 +31,18 @@ import type { TrackPath, TrackPoint } from '@/lib/openf1/track';
 // left/right read true. S keeps the ~1000-wide track at ~11 world units.
 const SCENE_SCALE = 90;
 
-// Chase-camera rig (world units; the car proxy is ~0.34 long).
-// Onboard chase: close + low, just behind / above the cockpit (T-cam feel).
-const CAM_BACK = 0.55; // distance behind the car
-const CAM_UP = 0.42; // height above the car
-const CAM_LOOKAHEAD = 1.4; // how far ahead the camera aims
+// Chase-camera rig (world units). Close + low — just behind / above the cockpit
+// (T-cam). Distances are small because the track + car are scaled near to real
+// proportions (see TRACK_HALF_W) so the ribbon never folds through hairpins.
+const CAM_BACK = 0.17; // distance behind the car
+const CAM_UP = 0.085; // height above the car
+const CAM_LOOKAHEAD = 0.55; // how far ahead the camera aims
 const CAM_LERP = 0.3; // position smoothing per frame (higher = tighter centring in corners)
 const HEADING_DT = 0.22; // seconds ahead used to estimate travel direction
 
-// The single-seater is modelled at ~1.3 long in local units, then scaled down so
-// it reads ~1/5 of the (stylised) track width — an F1 car is ~2 m on a ~12 m track.
-const CAR_SCALE = 0.26;
+// The single-seater is modelled ~1.3 long in local units, scaled so it spans
+// ~40% of the asphalt width — a ~2 m car on our near-real ~5 m-wide track.
+const CAR_SCALE = 0.06;
 
 interface Mapped {
   pts: THREE.Vector3[]; // ground-plane track polyline (with elevation)
@@ -272,7 +272,12 @@ function CarRig({
   return (
     <group ref={ref}>
       <group scale={CAR_SCALE}>
-        <F1Car colour={colour} ghost={ghost} />
+        {/* Re-centre: the model's bounding box sits ~0.13 ahead of the local
+            origin (the front wing reaches further than the rear), so shift it
+            back — the GPS point then sits at the car's centre, wheels on track. */}
+        <group position={[0, 0, -0.13]}>
+          <F1Car colour={colour} ghost={ghost} />
+        </group>
       </group>
     </group>
   );
@@ -306,22 +311,28 @@ function FollowCam({
       camera.position.lerp(target, CAM_LERP);
     }
     const look = pos.clone().addScaledVector(dir, CAM_LOOKAHEAD);
-    look.y += 0.18;
+    look.y += 0.02;
     camera.lookAt(look);
   });
   return null;
 }
 
-// Build a drivable track-surface ribbon from the centreline points: at each
-// point offset ±halfWidth along the ground-plane perpendicular (tangent × up),
-// then triangulate between consecutive cross-sections into a flat asphalt strip
-// that carries the real x/y/z (so it climbs + falls with elevation). Width is
-// STYLISED (~3 car-widths) so the car reads proportionally on the chase cam — a
-// geometrically-true 12 m track would be a thread on a circuit-sized scene.
-const TRACK_HALF_W = 0.5;
+// Build the track surface from the centreline points: offset ±halfWidth along the
+// ground-plane perpendicular (tangent × up) and triangulate between cross-sections
+// into an asphalt strip carrying the real x/y/z (climbs + falls with elevation),
+// inset with a thin white track-limit line and flanked by red/white kerbs. Width
+// is near real proportions (small vs the circuit) so it never folds at hairpins.
+const TRACK_HALF_W = 0.1;
+const KERB_W = 0.03; // kerb strip width just outside each asphalt edge
+const WHITE_W = 0.014; // white track-limit line, inset at each asphalt edge
+const KERB_BAND = 5; // centreline points per alternating red/white band
+const KERB_RED = [0.74, 0.12, 0.12];
+const KERB_WHITE = [0.9, 0.9, 0.92];
 
 function buildRibbon(pts: THREE.Vector3[]): {
-  geometry: THREE.BufferGeometry;
+  asphalt: THREE.BufferGeometry;
+  kerbs: THREE.BufferGeometry;
+  whiteLines: THREE.BufferGeometry;
   left: THREE.Vector3[];
   right: THREE.Vector3[];
 } {
@@ -329,6 +340,7 @@ function buildRibbon(pts: THREE.Vector3[]): {
   const positions = new Float32Array(n * 2 * 3);
   const left: THREE.Vector3[] = [];
   const right: THREE.Vector3[] = [];
+  const sides: THREE.Vector3[] = [];
   const up = new THREE.Vector3(0, 1, 0);
   const tangent = new THREE.Vector3();
   const side = new THREE.Vector3();
@@ -340,6 +352,7 @@ function buildRibbon(pts: THREE.Vector3[]): {
     if (tangent.lengthSq() < 1e-9) tangent.set(0, 0, 1);
     else tangent.normalize();
     side.crossVectors(tangent, up).normalize();
+    sides.push(side.clone());
     const L = pts[i].clone().addScaledVector(side, TRACK_HALF_W);
     const R = pts[i].clone().addScaledVector(side, -TRACK_HALF_W);
     left.push(L);
@@ -359,24 +372,110 @@ function buildRibbon(pts: THREE.Vector3[]): {
     const d = (i + 1) * 2 + 1;
     indices.push(a, b, c, b, d, c);
   }
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setIndex(indices);
-  geometry.computeVertexNormals();
-  return { geometry, left, right };
+  const asphalt = new THREE.BufferGeometry();
+  asphalt.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  asphalt.setIndex(indices);
+  asphalt.computeVertexNormals();
+
+  // Kerbs: a non-indexed, vertex-coloured strip just outside each edge, the
+  // colour alternating in bands for the classic red/white look.
+  const kPos: number[] = [];
+  const kCol: number[] = [];
+  const pushVert = (v: THREE.Vector3, c: number[]) => {
+    kPos.push(v.x, v.y, v.z);
+    kCol.push(c[0], c[1], c[2]);
+  };
+  const addQuad = (
+    p0: THREE.Vector3,
+    p1: THREE.Vector3,
+    p2: THREE.Vector3,
+    p3: THREE.Vector3,
+    c: number[],
+  ) => {
+    pushVert(p0, c);
+    pushVert(p1, c);
+    pushVert(p2, c);
+    pushVert(p1, c);
+    pushVert(p3, c);
+    pushVert(p2, c);
+  };
+  for (let i = 0; i < n - 1; i++) {
+    const c = Math.floor(i / KERB_BAND) % 2 === 0 ? KERB_RED : KERB_WHITE;
+    addQuad(
+      left[i],
+      left[i].clone().addScaledVector(sides[i], KERB_W),
+      left[i + 1],
+      left[i + 1].clone().addScaledVector(sides[i + 1], KERB_W),
+      c,
+    );
+    addQuad(
+      right[i],
+      right[i].clone().addScaledVector(sides[i], -KERB_W),
+      right[i + 1],
+      right[i + 1].clone().addScaledVector(sides[i + 1], -KERB_W),
+      c,
+    );
+  }
+  const kerbs = new THREE.BufferGeometry();
+  kerbs.setAttribute('position', new THREE.Float32BufferAttribute(kPos, 3));
+  kerbs.setAttribute('color', new THREE.Float32BufferAttribute(kCol, 3));
+  kerbs.computeVertexNormals();
+  kerbs.translate(0, 0.001, 0); // lift off the asphalt plane to avoid z-fighting
+
+  // White track-limit line: a thin solid strip inset just inside each asphalt edge.
+  const wPos: number[] = [];
+  const pushW = (v: THREE.Vector3) => wPos.push(v.x, v.y, v.z);
+  const addW = (p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, p3: THREE.Vector3) => {
+    pushW(p0);
+    pushW(p1);
+    pushW(p2);
+    pushW(p1);
+    pushW(p3);
+    pushW(p2);
+  };
+  for (let i = 0; i < n - 1; i++) {
+    addW(
+      left[i],
+      left[i].clone().addScaledVector(sides[i], -WHITE_W),
+      left[i + 1],
+      left[i + 1].clone().addScaledVector(sides[i + 1], -WHITE_W),
+    );
+    addW(
+      right[i],
+      right[i].clone().addScaledVector(sides[i], WHITE_W),
+      right[i + 1],
+      right[i + 1].clone().addScaledVector(sides[i + 1], WHITE_W),
+    );
+  }
+  const whiteLines = new THREE.BufferGeometry();
+  whiteLines.setAttribute('position', new THREE.Float32BufferAttribute(wPos, 3));
+  whiteLines.computeVertexNormals();
+  whiteLines.translate(0, 0.0015, 0); // sit just above the asphalt
+
+  return { asphalt, kerbs, whiteLines, left, right };
 }
 
 function TrackRibbon({ pts }: { pts: THREE.Vector3[] }) {
-  const { geometry, left, right } = useMemo(() => buildRibbon(pts), [pts]);
-  useEffect(() => () => geometry.dispose(), [geometry]);
+  const { asphalt, kerbs, whiteLines } = useMemo(() => buildRibbon(pts), [pts]);
+  useEffect(
+    () => () => {
+      asphalt.dispose();
+      kerbs.dispose();
+      whiteLines.dispose();
+    },
+    [asphalt, kerbs, whiteLines],
+  );
   return (
     <group>
-      <mesh geometry={geometry}>
+      <mesh geometry={asphalt}>
         <meshStandardMaterial color="#2b2b33" roughness={0.95} metalness={0} side={THREE.DoubleSide} />
       </mesh>
-      {/* white track-limit lines down each edge */}
-      <Line points={left} color="#e6e6ec" lineWidth={1.5} />
-      <Line points={right} color="#e6e6ec" lineWidth={1.5} />
+      <mesh geometry={whiteLines}>
+        <meshStandardMaterial color="#eef0f4" roughness={0.6} metalness={0} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh geometry={kerbs}>
+        <meshStandardMaterial vertexColors roughness={0.7} metalness={0} side={THREE.DoubleSide} />
+      </mesh>
     </group>
   );
 }
@@ -399,7 +498,7 @@ function Scene({
   return (
     <>
       <color attach="background" args={['#8fa6bb']} />
-      <fog attach="fog" args={['#8fa6bb', 4, 26]} />
+      <fog attach="fog" args={['#8fa6bb', 0.4, 5]} />
       <ambientLight intensity={0.85} />
       <directionalLight position={[6, 10, 4]} intensity={1.2} />
       <hemisphereLight args={['#cdddee', '#2c3a20', 0.55]} />
@@ -629,6 +728,7 @@ export function GhostLap3D({
   const tRef = useRef(0);
   const [t, setT] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
   const rafRef = useRef<number | null>(null);
   const lastTsRef = useRef<number | null>(null);
 
@@ -648,7 +748,7 @@ export function GhostLap3D({
       if (lastTsRef.current == null) lastTsRef.current = ts;
       const dt = (ts - lastTsRef.current) / 1000;
       lastTsRef.current = ts;
-      const next = tRef.current + dt;
+      const next = tRef.current + dt * speed;
       const wrapped = next >= duration ? 0 : next; // loop
       tRef.current = wrapped;
       setT(wrapped);
@@ -660,7 +760,7 @@ export function GhostLap3D({
       rafRef.current = null;
       lastTsRef.current = null;
     };
-  }, [playing, duration]);
+  }, [playing, duration, speed]);
 
   const toggle = useCallback(() => {
     if (reduced) return; // scrub-only in reduced motion
@@ -708,7 +808,7 @@ export function GhostLap3D({
       </div>
 
       <div className="h-80 overflow-hidden rounded-md border border-border bg-surface md:h-[28rem]">
-        <Canvas camera={{ position: [3, 2, 5], fov: 55 }} dpr={[1, 2]}>
+        <Canvas camera={{ position: [0.3, 0.2, 0.5], fov: 60, near: 0.02, far: 60 }} dpr={[1, 2]}>
           <Scene
             outline={mapped}
             followPts={followedTrace.track!.points}
@@ -745,6 +845,23 @@ export function GhostLap3D({
         <span className="w-14 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted">
           {t.toFixed(2)}s
         </span>
+        <div className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Playback speed">
+          {([0.5, 1, 2, 4] as const).map(s => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSpeed(s)}
+              aria-pressed={speed === s}
+              className={`border px-1.5 py-0.5 font-mono text-[10px] tabular-nums transition-colors duration-(--duration-fast) ${
+                speed === s
+                  ? 'border-border-strong bg-surface text-text'
+                  : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
+              }`}
+            >
+              {s}×
+            </button>
+          ))}
+        </div>
       </div>
 
       {reduced && (
