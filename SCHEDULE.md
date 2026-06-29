@@ -942,6 +942,8 @@ Won't touch (held): OpenF1 LIVE tab (paid Sponsor tier — operator action), AdS
 
 → done: **5 PRs #287–#291 (0.114.1 → 0.118.0)** + the Austria recap queued. Active: _(no `[+Nm]` prefixes captured)_
 
+**Continued (afternoon) — `/feedback` board + mid-stream asks → 9 more PRs to 0.124.0:** next-race fix (#296), notifications remodel backend+center (#295/#297), 3D-quali NaN + landing-hero mobile width + account avatars (#300), friends/leagues widget (#298), practice telemetry (#299). 3D verified live on prod. **6 `/feedback` items OPEN, grouped into PARALLEL lanes for next session** — see the `docs/HANDOFF.md` top block (FINAL). → done: **~14 PRs this session, 0.114.1 → 0.124.0.**
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
