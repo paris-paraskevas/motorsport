@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.128.2 — 2026-06-29
+
+**Fixed jumpy onboard motion.** The cars no longer surge ahead and then drop back during the onboard replay — they move at a true, even speed along the lap.
+
 ## 0.128.1 — 2026-06-29
 
 **Fixes.** Desktop navigation menus no longer disappear before you can click into them — you can move from a menu heading down into its options. And the notifications list no longer shows the same alert twice if you're signed in on more than one device.
