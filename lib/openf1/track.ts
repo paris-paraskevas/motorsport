@@ -152,73 +152,70 @@ export function buildTrackPath(
 // Cap a measured half-width (viewBox units) so a car running deep into a runoff
 // / pit entry can't blow the ribbon out to absurd width. ~3% of the circuit's
 // width is a generous F1 track + kerbs + a little verge.
-const MAX_HALF_W = 30;
+// Track half-width + the most we push the centreline outward through corners, in
+// viewBox units. Every car bunches on the racing line, so the unused tarmac isn't
+// observable; instead we ESTIMATE the geometric centre by shifting the racing line
+// OUTWARD where it curves (away from the turn), so the racing line then sits at
+// the inside/apex of a fixed-width track — cars clip apexes + ride the kerbs.
+const TRACK_HALF_VB = 13; // half track width (viewBox units)
+const MAX_SHIFT_VB = 9; // most the centreline shifts outward, at the sharpest corners
+const TURN_REF = 0.5; // heading change (rad over the window) that reaches the max shift
+const CURV_WIN = 4; // stations either side, for the heading/curvature estimate
 
 /**
- * Reconstruct the drivable surface from many drivers' laps (all built with the
- * SAME frame). The fastest lap is the centreline; for every other point, the
- * signed perpendicular offset onto the nearest centreline station gives how far
- * left/right cars ran there — the measured track edges. Smoothed + capped.
+ * Reconstruct a drivable track from the fastest lap (the racing line). Because
+ * every car bunches on the racing line, the unused width isn't measurable — so we
+ * estimate the geometric centreline by pushing the racing line OUTWARD through
+ * corners (by its own curvature). The racing line then clips the inside/apex of a
+ * fixed-width track, and each car (plotted by its own coords) rides the kerbs.
  */
 export function reconstructCircuit(laps: TrackPath[]): Circuit | null {
-  const usable = laps.filter(l => l.points.length >= 3);
+  const usable = laps.filter(l => l.points.length >= 5);
   if (usable.length === 0) return null;
   const center = usable[0].points;
   const n = center.length;
 
-  // Unit left-normal at each centreline station (2D, x/y).
-  const nx: number[] = new Array(n);
-  const ny: number[] = new Array(n);
+  // Signed outward shift (viewBox units) at each station, from the local turn.
+  const rawShift = new Array<number>(n).fill(0);
   for (let i = 0; i < n; i++) {
+    const a = center[Math.max(0, i - CURV_WIN)];
+    const b = center[Math.min(n - 1, i + CURV_WIN)];
+    const inx = center[i].x - a.x;
+    const iny = center[i].y - a.y;
+    const outx = b.x - center[i].x;
+    const outy = b.y - center[i].y;
+    const inLen = Math.hypot(inx, iny) || 1;
+    const outLen = Math.hypot(outx, outy) || 1;
+    const cross = (inx / inLen) * (outy / outLen) - (iny / inLen) * (outx / outLen);
+    const dot = (inx / inLen) * (outx / outLen) + (iny / inLen) * (outy / outLen);
+    const turn = Math.atan2(cross, dot); // + = left turn, − = right turn
+    const mag = Math.min(1, Math.abs(turn) / TURN_REF) * MAX_SHIFT_VB;
+    rawShift[i] = -Math.sign(turn) * mag; // outward = away from the turn centre
+  }
+  // Smooth the shift so the centreline glides rather than kinks.
+  const shift = rawShift.map((_, i) => {
+    let acc = 0;
+    let c = 0;
+    for (let k = -3; k <= 3; k++) {
+      const j = i + k;
+      if (j >= 0 && j < n) {
+        acc += rawShift[j];
+        c += 1;
+      }
+    }
+    return acc / c;
+  });
+
+  // Apply the shift along each station's left-normal → the estimated geometric centre.
+  const points: TrackPoint[] = center.map((p, i) => {
     const a = center[Math.max(0, i - 1)];
     const b = center[Math.min(n - 1, i + 1)];
     const tx = b.x - a.x;
     const ty = b.y - a.y;
     const len = Math.hypot(tx, ty) || 1;
-    nx[i] = -ty / len; // left normal = perpendicular to the tangent
-    ny[i] = tx / len;
-  }
+    return { x: p.x + (-ty / len) * shift[i], y: p.y + (tx / len) * shift[i], z: p.z, t: p.t };
+  });
 
-  const left = new Array(n).fill(0);
-  const right = new Array(n).fill(0);
-  for (const lap of usable) {
-    let hint = 0; // points are ordered along the track → nearest station advances
-    for (const p of lap.points) {
-      let bi = hint;
-      let bd = Infinity;
-      for (let k = -20; k <= 20; k++) {
-        const i = hint + k;
-        if (i < 0 || i >= n) continue;
-        const dx = p.x - center[i].x;
-        const dy = p.y - center[i].y;
-        const d = dx * dx + dy * dy;
-        if (d < bd) {
-          bd = d;
-          bi = i;
-        }
-      }
-      hint = bi;
-      const off = (p.x - center[bi].x) * nx[bi] + (p.y - center[bi].y) * ny[bi];
-      if (off > left[bi]) left[bi] = Math.min(off, MAX_HALF_W);
-      else if (-off > right[bi]) right[bi] = Math.min(-off, MAX_HALF_W);
-    }
-  }
-
-  // Smooth over stations (the per-station max is spiky) + keep a small floor so
-  // the ribbon never collapses to a thread where coverage was sparse.
-  const smooth = (arr: number[]): number[] =>
-    arr.map((_, i) => {
-      let s = 0;
-      let c = 0;
-      for (let k = -4; k <= 4; k++) {
-        const j = i + k;
-        if (j >= 0 && j < n) {
-          s += arr[j];
-          c += 1;
-        }
-      }
-      return Math.max(6, s / c); // floor ≈ a minimum half-track so it reads as a road
-    });
-
-  return { points: center, halfLeft: smooth(left), halfRight: smooth(right) };
+  const half = new Array<number>(n).fill(TRACK_HALF_VB);
+  return { points, halfLeft: half, halfRight: half };
 }

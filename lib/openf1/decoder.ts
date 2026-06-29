@@ -84,10 +84,6 @@ function withDistance(samples: TelemetrySample[]): DistSample[] {
   return out;
 }
 
-// How many drivers' laps reconstruct the track surface. The fastest dozen span
-// the width well (apex-clippers + wider lines) at a bounded fetch cost.
-const RECON_DRIVERS = 12;
-
 /** Telemetry + track trace for the chosen pair, plus a track surface
  *  reconstructed from the session's fastest ~dozen laps (so the cars sit on a
  *  real, measured-width track rather than each on its own centred line). */
@@ -97,8 +93,9 @@ export async function buildDecoderTraces(
   slug = 'f1',
 ): Promise<DecoderTraces> {
   const cacheKey = openf1DatasetKey(
-    // v2: traces share one frame + carry a reconstructed circuit (shape change).
-    'decoder-traces-v2',
+    // v3: reconstructed circuit is now a curvature-shifted centreline (so cars
+    // sit off-centre / on kerbs) — invalidate the v2 (centred) circuits.
+    'decoder-traces-v3',
     sessionKey,
     [...driverNumbers].sort((a, b) => a - b).join('-'),
   );
@@ -112,9 +109,10 @@ export async function buildDecoderTraces(
   const best = fastestLapsByDriver(laps);
   const ranked = [...best.values()].sort((a, b) => a.lapDuration - b.lapDuration);
 
-  // Reconstruction set = fastest dozen ∪ the requested pair.
-  const reconNumbers = new Set<number>(ranked.slice(0, RECON_DRIVERS).map(b => b.driverNumber));
-  for (const n of driverNumbers) reconNumbers.add(n);
+  // Reconstruction needs the session's fastest lap (the racing line → the
+  // centreline) plus the requested pair (for their own traces).
+  const reconNumbers = new Set<number>(driverNumbers);
+  if (ranked[0]) reconNumbers.add(ranked[0].driverNumber);
 
   // One location fetch per recon driver (token-bucket paced + cached), by number.
   const locByNumber = new Map<number, OF1Location[]>();
