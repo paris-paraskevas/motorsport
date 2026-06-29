@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.115.0 — 2026-06-29
+
+Added: **three opt-in home widgets** — Where to watch, Next-race weather, Driver spotlight.
+
+### Added
+- **Home widgets** (opt-in from Customise; all default-hidden, multi-series so they don't skew the all-F1 home):
+  - **Where to watch** (`where-to-watch`): broadcast links for the next few upcoming followed sessions whose series has a `SeriesMeta.watch` (`{ service, url }`). Renders from the existing `items` prop (each `HomeItem` already carries `watch` from `app/(app)/app/page.tsx`'s flatMap) — **no new API route**, no fetch. Count control (2/4/6/8, default 4) in `NUMERIC_SETTING`.
+  - **Next-race weather** (`next-weather`): the forecast for the next followed session with one — emoji + label + max/min + rain%, deep-linked to the weekend. Renders from the existing `weatherByUid` prop (server-resolved in `weatherForSessions`, client picks the next upcoming item with an entry, mirroring the chyron/circuit-map pattern) — **no new API route**. No count control (single forecast).
+  - **Driver spotlight** (`driver-spotlight`): a rotating sample of drivers (+ their team) from the curated lineups, each linking to `/drivers/{slug}` and `/teams/{teamSlug}`. New edge-cached route `app/(app)/api/home/spotlight/route.ts` — `loadAllDrivers()` → time-rotated Fisher–Yates sample of 6 (`Math.random` is fine in an app route handler), `Cache-Control: public, s-maxage=900, stale-while-revalidate=3600`, fail-soft to `[]`. Defer-fetched in `HomeContent` with the same shown+expanded pattern as threads/blog. Count control (1/3/6, default 3).
+- `lib/homeLayout.ts`: layout version **7 → 8**; the three ids added to `HomeElementId`, `HOME_ELEMENTS`, and `DEFAULT_HIDDEN` — `reconcileHomeLayout` auto-appends them for existing users (started hidden, so the home never changes for anyone who doesn't opt in). No images anywhere in the spotlight (curated data has none).
+- `lib/homeLayout.test.ts`: updated the registry-count + opt-in-hidden assertions (10 → 16 ids) and added cases pinning the three new widgets' opt-in default-hidden behaviour. 17 tests pass.
+
+### Notes
+- tsc clean; `npx vitest run lib/homeLayout.test.ts` 17/17; lint introduces no new problems (12 pre-existing, all in untouched legacy files); `npm run build` clean — `/api/home/spotlight` registers and `/app` stays statically prerendered.
+- No `/drivers` or `/teams` *index* route exists (only `/drivers/[slug]` + `/teams/[slug]`), so the spotlight links to driver/team **detail** pages directly and intentionally omits an "all drivers" footer link (would 404).
+
 ## 0.114.1 — 2026-06-29
 
 Fixed: the **F1 Analysis Hub** (`/f1/analysis`, shipped 0.113.0) was URL-reachable only — now surfaced in nav.

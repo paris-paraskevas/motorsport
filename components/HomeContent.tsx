@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Tv } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Tv, Users } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -92,6 +92,19 @@ interface HomeDecodedData {
   gp: string;
   qualifying: { href: string; pole: string | null; p2: string | null } | null;
   race: { href: string } | null;
+}
+
+// Mirrors the /api/home/spotlight route export.
+interface HomeSpotlightDriver {
+  slug: string;
+  name: string;
+  code: string | null;
+  team: string;
+  teamSlug: string;
+  teamColor: string | null;
+  seriesSlug: string;
+  seriesName: string;
+  seriesColor: string;
 }
 
 const NEWS_LIMIT = 10;
@@ -372,6 +385,29 @@ export function HomeContent({
     };
   }, [decodedHidden, decodedCollapsed]);
 
+  // DRIVER SPOTLIGHT — opt-in, default-hidden. A rotating sample of drivers (+
+  // their team) from the curated lineups, deep-linked into /drivers and /teams.
+  // Same defer-fetch shape; the route is edge-cached + time-rotated, so a home
+  // that never enables it pays nothing and the sample turns over per window.
+  const [spotlight, setSpotlight] = useState<HomeSpotlightDriver[] | null>(null);
+  const spotlightHidden = layout.hidden.includes('driver-spotlight');
+  const spotlightCollapsed = layout.collapsed.includes('driver-spotlight');
+  useEffect(() => {
+    if (spotlightHidden || spotlightCollapsed) return;
+    let alive = true;
+    fetch('/api/home/spotlight')
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => {
+        if (alive) setSpotlight(d as HomeSpotlightDriver[]);
+      })
+      .catch(() => {
+        if (alive) setSpotlight([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [spotlightHidden, spotlightCollapsed]);
+
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
   // HTML can't know the user's series; without this gate it paints EVERY series
@@ -404,6 +440,8 @@ export function HomeContent({
   const sjmCount = Math.min(Math.max(cfg('series-just-missed').count ?? 5, 1), 10);
   const cdCount = Math.min(Math.max(cfg('series-countdowns').count ?? 5, 1), 10);
   const threadsCount = Math.min(Math.max(cfg('threads').count ?? 5, 1), 5);
+  const wtwCount = Math.min(Math.max(cfg('where-to-watch').count ?? 4, 1), 8);
+  const spotlightCount = Math.min(Math.max(cfg('driver-spotlight').count ?? 3, 1), 6);
   // Density on the chyron tightens its vertical padding (it's a single strip, not
   // a row list — so the [&_a]/[&_li] descendant variants the other blocks use
   // don't apply here).
@@ -1667,6 +1705,179 @@ export function HomeContent({
                   )}
                 </div>
                 <OpenF1Attribution className="pt-3" />
+              </div>
+            ))}
+        </section>
+      )}
+
+      {/* ── WHERE TO WATCH — opt-in. Broadcast links for the next few upcoming
+             followed sessions whose series has a `watch` link. Reads `items`
+             (which already carries each session's watch link), so no fetch. ── */}
+      {!isHidden('where-to-watch') && (() => {
+        const rows = upcomingItems.filter(i => i.watch).slice(0, wtwCount);
+        return (
+          <section aria-label="Where to watch" className="mb-8" style={{ order: orderOf('where-to-watch') }}>
+            <CollapsibleSectionHead
+              title="Where to watch"
+              sub={`${rows.length} session${rows.length === 1 ? '' : 's'}`}
+              collapsed={isCollapsed('where-to-watch')}
+              onToggle={() => toggleCollapsed('where-to-watch')}
+            />
+            {!isCollapsed('where-to-watch') &&
+              (rows.length === 0 ? (
+                <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                  No broadcast links for your upcoming sessions.
+                </p>
+              ) : (
+                <div className={`border-y border-border divide-y divide-border${dense('where-to-watch') ? ' [&_a]:py-1.5' : ''}`}>
+                  {rows.map(item => (
+                    <a
+                      key={`${item.seriesSlug}-${item.session.uid}`}
+                      href={item.watch!.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    >
+                      <Tv size={14} className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
+                      <span className="flex-1 min-w-0">
+                        <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
+                          {item.session.title}
+                        </span>
+                        <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
+                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: item.color }}>
+                            {item.seriesName}
+                          </span>
+                          <span>·</span>
+                          <span className="truncate">Watch on {item.watch!.service}</span>
+                        </span>
+                      </span>
+                      <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
+                        {item.session.dateOnly ? 'TBC' : formatRelative(item.session.start, now)}
+                      </span>
+                      <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                    </a>
+                  ))}
+                </div>
+              ))}
+          </section>
+        );
+      })()}
+
+      {/* ── NEXT-RACE WEATHER — opt-in. The forecast for the next followed
+             session that has one (server resolves weatherByUid; client picks the
+             next upcoming item with an entry). No fetch. ── */}
+      {!isHidden('next-weather') && (() => {
+        const item = upcomingItems.find(i => weatherByUid?.[i.session.uid]);
+        const w = item ? weatherByUid?.[item.session.uid] : undefined;
+        const wl = w ? weatherLabel(w.weatherCode) : null;
+        return (
+          <section aria-label="Next-race weather" className="mb-8" style={{ order: orderOf('next-weather') }}>
+            <CollapsibleSectionHead
+              title="Next-race weather"
+              sub={item ? item.seriesName : 'next round'}
+              collapsed={isCollapsed('next-weather')}
+              onToggle={() => toggleCollapsed('next-weather')}
+            />
+            {!isCollapsed('next-weather') &&
+              (!item || !w || !wl ? (
+                <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                  No forecast for your next round yet.
+                </p>
+              ) : (
+                <Link
+                  href={hrefFor(item)}
+                  className={`group block border-y border-border ${dense('next-weather') ? 'py-3' : 'py-4'}`}
+                >
+                  <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      <span className="font-semibold" style={{ color: item.color }}>{item.seriesName}</span>
+                    </span>
+                    {item.session.location && (
+                      <span className="inline-flex items-center gap-1 text-text-faint">
+                        <MapPin size={11} />
+                        {item.session.location.split(',')[0].trim()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-3xl leading-none" aria-hidden="true">{wl.emoji}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-display text-lg font-bold uppercase tracking-wide text-text">
+                        {item.session.title}
+                      </span>
+                      <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
+                        <span>{wl.label}</span>
+                        <span>·</span>
+                        <span>{Math.round(w.maxC)}° / {Math.round(w.minC)}°</span>
+                        {w.precipProb >= 30 && (
+                          <>
+                            <span>·</span>
+                            <span>{Math.round(w.precipProb)}% rain</span>
+                          </>
+                        )}
+                      </span>
+                    </span>
+                    <ArrowUpRight size={13} className="shrink-0 self-start text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                  </div>
+                </Link>
+              ))}
+          </section>
+        );
+      })()}
+
+      {/* ── DRIVER SPOTLIGHT — opt-in, default-hidden. A rotating sample of
+             drivers from the curated lineups, deep-linked into /drivers and
+             /teams. Defer-fetched (edge-cached + time-rotated route). ── */}
+      {!isHidden('driver-spotlight') && (
+        <section aria-label="Driver spotlight" className="mb-8" style={{ order: orderOf('driver-spotlight') }}>
+          <CollapsibleSectionHead
+            title="Driver spotlight"
+            sub="from your series"
+            collapsed={isCollapsed('driver-spotlight')}
+            onToggle={() => toggleCollapsed('driver-spotlight')}
+          />
+          {!isCollapsed('driver-spotlight') &&
+            (spotlight === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-40 animate-pulse bg-surface" />
+                <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface/60" />
+              </div>
+            ) : spotlight.length === 0 ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                No drivers to spotlight right now.
+              </p>
+            ) : (
+              <div className={`border-y border-border divide-y divide-border${dense('driver-spotlight') ? ' [&_a]:py-1.5' : ''}`}>
+                {spotlight.slice(0, spotlightCount).map(d => (
+                  <div
+                    key={`${d.seriesSlug}-${d.slug}`}
+                    className="flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0"
+                  >
+                    <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: d.teamColor ?? d.seriesColor }} />
+                    <Users size={14} className="shrink-0 text-text-faint" />
+                    <span className="flex-1 min-w-0">
+                      <Link href={`/drivers/${d.slug}`} className="group inline-flex items-center gap-1.5 min-w-0">
+                        <span className="truncate text-[15px] font-semibold text-text tracking-tight group-hover:text-brand transition-colors duration-(--duration-fast)">
+                          {d.name}
+                        </span>
+                        {d.code && (
+                          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{d.code}</span>
+                        )}
+                        <ArrowUpRight size={12} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                      </Link>
+                      <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
+                        <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: d.seriesColor }}>
+                          {d.seriesName}
+                        </span>
+                        <span>·</span>
+                        <Link href={`/teams/${d.teamSlug}`} className="truncate hover:text-text-muted transition-colors duration-(--duration-fast)">
+                          {d.team}
+                        </Link>
+                      </span>
+                    </span>
+                  </div>
+                ))}
               </div>
             ))}
         </section>

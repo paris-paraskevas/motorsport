@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.115.0 — 2026-06-29
+
+**Three more home widgets.** Add any of them from Customise: **Where to watch** (broadcast links for your next few sessions), **Next-race weather** (the forecast for your next round at a glance), and **Driver spotlight** (a rotating driver from the series you follow, with quick links into their profile and team). They're off by default — turn on just the ones you want.
+
 ## 0.114.1 — 2026-06-29
 
 **Easier to find F1 analysis.** The F1 Telemetry & Analysis hub now has a spot in the Series menu and on the Formula 1 page — so you can reach every round's Qualifying Decoder and Race Story without needing the direct link.
