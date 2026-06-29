@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.125.0 — 2026-06-29
+
+Reworked the F1 Qualifying Decoder's 3D ghost view into an **onboard comparison**: a chase camera rides behind the lead car down a real 3D track ribbon while the rival runs as a time-aligned translucent ghost, with a throttle/brake strip below for the "did he lift?" read. Replaces the old top-down two-spheres scene (which also rendered mirrored). Conceptually the data-driven equivalent of F1's broadcast "Ghost Car" tool, built entirely from telemetry we already cache.
+
+### Changed
+- `components/f1/GhostLap3D.tsx` — full rewrite from a top-down orbit scene to an onboard chase cam. The Decoder toggle is now **2D ↔ Onboard** (`QualifyingDecoder.tsx`: label `3D`→`Onboard`).
+  - **Track is now a 3D surface, not a 1px polyline.** New `buildRibbon()` extrudes the centreline points ±`TRACK_HALF_W` along the ground-plane perpendicular (tangent × up) into a triangulated asphalt ribbon carrying real x/y/z (so it climbs/falls with elevation), with white track-limit edge `Line`s + a dark ground plane for depth/motion reference. Width is **stylised** (~3 car-widths) so the car reads proportionally on the chase cam — a geometrically-true ~12 m track is a thread at circuit scale.
+  - **Coordinate handedness fixed.** The old mapping double-negated the already-SVG-flipped Y (`worldZ = -(y-cy)`), which read mirrored; now `worldZ = (y-cy)`, matching the accepted 2D map, so left/right read true.
+  - **Chase camera** (`FollowCam`): each frame positions the default camera `CAM_BACK` behind + `CAM_UP` above the followed car along the path tangent (`headingDir`), lerped (`CAM_LERP`) for smoothness, looking `CAM_LOOKAHEAD` up the road. `OrbitControls` removed (the follow cam owns the camera).
+  - **Cars** are team-coloured single-seater proxies (`CarBody`: body + nose + rear wing) yawed to the travel direction; the followed car solid, the rival a translucent **ghost** at its time-aligned position (both launch at the line at t=0, so the ghost pulls ahead/back as the gap moves). A **Follow A/B** toggle swaps which car the camera rides (disabled for a car with no `/location` trace).
+  - **Throttle/brake strip** (`TelemetryStrip`): both drivers' throttle traces vs lap distance (followed solid, rival dashed) + per-driver brake on/off bars + a playhead at the current time + live **flat out / lifting / braking** state chips. Throttle-led because OpenF1 `brake` is `0/100` (force-based, no trail-brake modulation) — the throttle trace is the reliable lift signal. All read from the already-cached `DriverTrace.telemetry` (`throttle`/`brake` were already fetched) — **no new OpenF1 fetch, no cache-key bump**.
+  - `usePrefersReducedMotion` migrated from setState-in-effect → `useSyncExternalStore` (repo idiom — LandingAuth/LocalTime; clears the legacy lint error on this file). The NaN-coord guards for pre-`z` cached traces are retained.
+
+### Notes
+- Browser-verified on localhost against the Austria (round 8) qualifying Decoder, RUS vs LEC: WebGL canvas renders with **0 console errors**, the asphalt ribbon + white edges + elevation read correctly (the old mirror is gone), the LEC ghost tracks the live −0.1xx s gap, the chase cam stays framed across the lap, and the strip's lift/brake state chips update in real time. Absolute left/right orientation is best confirmed by eye against a real onboard — flag if any corner reads reversed.
+- First pass on the onboard view; camera distance/height, ribbon width, car model and ghost opacity are all easy follow-up tuning.
+
 ## 0.124.0 — 2026-06-29
 
 Practice telemetry for F1 FP1/FP2/FP3. Practice pages previously got only the speed trap; everything else (Decoder, Race Story, pit/overtake boards) is quali/race-shaped, so a practice page said almost nothing about the session it described. This adds the two things a practice session actually answers — one-lap pace and long-run (race-sim) pace — from the free OpenF1 historical tier.
