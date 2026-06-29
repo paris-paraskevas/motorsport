@@ -183,30 +183,43 @@ function MenuLinkList({ items }: { items: { href: string; label: string; desc: s
 }
 
 // Category-grouped series grid (reuses groupSeriesByCategory — the same grouping
-// the /series hub and onboarding use).
+// the /series hub and onboarding use). Leads with the F1 Telemetry & Analysis
+// hub (0.114.1) — the one cross-round destination that isn't a series tab.
 function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
   return (
-    <div className="grid grid-cols-3 gap-x-6 gap-y-4">
-      {groups.map(g => (
-        <div key={g.category.id}>
-          <div className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
-            {g.category.label}
+    <div className="flex flex-col gap-4">
+      <Link
+        href="/f1/analysis"
+        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+      >
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
+        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+          Decoder &amp; Race Story →
+        </span>
+      </Link>
+      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+        {groups.map(g => (
+          <div key={g.category.id}>
+            <div className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+              {g.category.label}
+            </div>
+            <ul className="flex flex-col">
+              {g.series.map(s => (
+                <li key={s.slug}>
+                  <Link
+                    href={`/series/${s.slug}`}
+                    className="flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  >
+                    <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
+                    <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="flex flex-col">
-            {g.series.map(s => (
-              <li key={s.slug}>
-                <Link
-                  href={`/series/${s.slug}`}
-                  className="flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
-                >
-                  <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
-                  <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

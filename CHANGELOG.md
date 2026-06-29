@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.114.1 — 2026-06-29
+
+Fixed: the **F1 Analysis Hub** (`/f1/analysis`, shipped 0.113.0) was URL-reachable only — now surfaced in nav.
+
+### Added
+- `components/AppShell.tsx` (`SeriesMegaMenu`): a featured "F1 Telemetry & Analysis" link leading the desktop Series mega-menu → `/f1/analysis`, above the category grid.
+- `components/SeriesPageView.tsx`: an F1-only "F1 Telemetry & Analysis" link in the series-page header (rendered when `slug === 'f1'`), beside the existing per-series threads link — gives mobile + desktop a path to the hub (the bottom bar's 5-col grid has no room for a 6th tab, so a bar tab was deliberately avoided).
+
 ## 0.114.0 — 2026-06-29
 
 Added: **3D ghost-lap view** in the Qualifying Decoder (the named "quali-comparison-3D").

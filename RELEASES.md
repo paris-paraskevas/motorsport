@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.114.1 — 2026-06-29
+
+**Easier to find F1 analysis.** The F1 Telemetry & Analysis hub now has a spot in the Series menu and on the Formula 1 page — so you can reach every round's Qualifying Decoder and Race Story without needing the direct link.
+
 ## 0.114.0 — 2026-06-29
 
 **3D qualifying ghost cars.** In a Qualifying Decoder, flip the ghost-lap replay to 3D and watch both drivers' fastest laps race around the circuit in three dimensions — with the track's real elevation. It loads only when you open it, so it never slows the rest of the app.
