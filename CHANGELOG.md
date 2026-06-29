@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.129.3 — 2026-06-29
+
+The onboard ghost still jumped forward/back (operator).
+
+### Fixed (`components/f1/GhostLap3D.tsx`)
+- **Reject GPS spikes.** OpenF1's `location` feed occasionally emits an out-and-back glitch sample (the car reported far off the line, then back). The time-spline overshot through it — shooting the car forward then snapping back, i.e. the ghost "jumping forward and backward". `buildMotion` now drops such spikes (a point whose detour from its neighbours is > 2.2× the direct path) before splining, for both cars. The ghost is positioned purely from its own (now de-spiked) data — never a delta to the lead car.
+- **Rigid camera.** `CAM_LERP` 0.85 → 1.0: with the motion smooth (time-correct + de-spiked), any camera position lag rubber-bands the whole scene and amplifies the ghost's apparent jump; a rigid follow tracks the lead car exactly.
+
+### Notes
+- tsc + lint clean. Motion smoothness only shows in playback (a still can't), so it needs an on-lap confirm once deployed. If the ghost still jumps, next lever is a stronger smoothing of the position before splining.
+
 ## 0.129.2 — 2026-06-29
 
 Onboard fixes (operator): the grass apron folded over/under the track; the ghost car still jumped.

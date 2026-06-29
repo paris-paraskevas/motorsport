@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.129.3 — 2026-06-29
+
+**Fixed the onboard ghost jumping.** The rival "ghost" car no longer darts forward and back — occasional GPS glitches in the position feed were making the replay overshoot, and those are now filtered out, so the ghost drives smoothly at its own real pace.
+
 ## 0.129.2 — 2026-06-29
 
 **Onboard fixes: proper terrain + steadier ghost.** The ground beside the track is now a single rolling terrain that follows the circuit's elevation (no more grass clipping through the track), and the rival "ghost" car drives smoothly at its own pace instead of jumping forward and back.

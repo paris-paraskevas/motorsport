@@ -37,7 +37,7 @@ const SCENE_SCALE = 90;
 const CAM_BACK = 0.17; // distance behind the car
 const CAM_UP = 0.085; // height above the car
 const CAM_LOOKAHEAD = 0.55; // how far ahead the camera aims
-const CAM_LERP = 0.85; // near-rigid follow: the Hermite motion is smooth, so a tight camera kills the scene rubber-band (ghost surge/recoil) without adding jitter
+const CAM_LERP = 1; // rigid follow: the (spike-cleaned, time-correct) motion is smooth, so the camera tracks the lead car exactly — any lag rubber-bands the scene + makes the ghost surge/recoil
 
 // The single-seater is modelled ~1.3 long in local units, scaled so it spans
 // ~40% of the asphalt width — a ~2 m car on our near-real ~5 m-wide track.
@@ -79,17 +79,39 @@ interface Motion {
 }
 
 function buildMotion(points: TrackPoint[], cx: number, cy: number): Motion | null {
-  const pts: THREE.Vector3[] = [];
-  const times: number[] = [];
+  // Pass 1: map to scene space, keep strictly-ascending, non-duplicate points.
+  const raw: THREE.Vector3[] = [];
+  const rawT: number[] = [];
   for (const p of points) {
     const v = mapPoint(p, cx, cy);
-    const lastT = times[times.length - 1];
-    const lastV = pts[pts.length - 1];
+    const lastT = rawT[rawT.length - 1];
+    const lastV = raw[raw.length - 1];
     if (lastT !== undefined && p.t <= lastT) continue; // strictly ascending time
     if (lastV && lastV.distanceToSquared(v) < 1e-10) continue; // no zero-length segment
-    pts.push(v);
-    times.push(p.t);
+    raw.push(v);
+    rawT.push(p.t);
   }
+  if (raw.length < 2) return null;
+
+  // Pass 2: drop out-and-back SPIKES (OpenF1 GPS glitches — a sample that juts
+  // far off the line and back). The time-spline would otherwise OVERSHOOT through
+  // such a point, shooting the car forward then snapping it back — the ghost
+  // "jumping forward and backward". A point is a spike when the detour via it is
+  // far longer than going straight from its neighbour to the next point.
+  const pts: THREE.Vector3[] = [raw[0]];
+  const times: number[] = [rawT[0]];
+  for (let i = 1; i < raw.length - 1; i++) {
+    const prev = pts[pts.length - 1];
+    const cur = raw[i];
+    const next = raw[i + 1];
+    const detour = prev.distanceTo(cur) + cur.distanceTo(next);
+    const direct = prev.distanceTo(next);
+    if (detour > 2.2 * direct + 1e-6) continue; // spike → drop it
+    pts.push(cur);
+    times.push(rawT[i]);
+  }
+  pts.push(raw[raw.length - 1]);
+  times.push(rawT[raw.length - 1]);
   if (pts.length < 2) return null;
   return { pts, times };
 }
