@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.122.0 — 2026-06-29
+
+Notifications remodel, part 2 (frontend): a **notification center** in the header that surfaces the sent-push history recorded by 0.121.0, so signed-in users can see what arrived and re-open its deep-link.
+
+### Added
+- `app/(app)/api/push/history/route.ts` (NEW) — `GET` returning the signed-in caller's sent-notification history. Resolves the user via `auth()` (`@clerk/nextjs/server`); no `userId` → `[]` (200, signed-out shows empty, no error), else `listHistory(userId, 30)` (newest first). `Cache-Control: private, no-store` + `dynamic = 'force-dynamic'` (per-user, not edge-cacheable — mirrors `api/home/bets`). Fail-soft: any auth/KV throw is caught → `[]`.
+- `components/NotificationBell.tsx` (NEW, `'use client'`) — lucide `Bell` button + click-toggled popover listing history rows (title semibold, body clamped to 2 lines, past-relative timestamp e.g. "2h ago"). Each row is a `next/link` to `item.url` (falls back to `/app` if empty) and closes the panel on navigate. States: loading skeleton (idle+loading), empty ("No notifications yet."), list. Lazy-fetches `/api/push/history` on first open only. Signed-in-gated via Clerk `useAuth` (renders `null` when loading or signed out — no bell flash for anonymous visitors; the SDK is already loaded for the header, so no new client dep). Closes on outside-`pointerdown`, Escape (restores focus to the trigger), and route change (state-during-render, same pattern as `HeaderNavMenu`). Fixed + right-aligned + `max-w-[calc(100vw-1.5rem)]` so it stays on-screen on phones (HeaderUtils renders on all viewports). No unread badge in v1 (read-state is a follow-up). Inlines its own past-direction `timeAgo` (lib/date's `formatRelative` is forward-looking "in 2h"; HomeContent's equivalent is private to a client module — a few local lines beat a cross-scope shared helper).
+- `components/HeaderUtils.tsx`: mounts `<NotificationBell />` for signed-in users (between the Coffee button and the staff/account cluster), gated on the same `isLoaded && isSignedIn` as the surrounding controls. No `hidden lg:` wrapper — the bell is intended for all viewports, unlike the desktop-only Account link.
+
+### Notes
+- History starts EMPTY (the backend only began recording in 0.121.0) and fills as pushes go out — the empty state is worded as intentional.
+- Does NOT modify `lib/push-history.ts`, the service worker, or any sender — it only reads the existing store.
+
 ## 0.121.1 — 2026-06-29
 
 Fixed: a finished race weekend kept showing as the **next/upcoming** weekend for ~a day.
