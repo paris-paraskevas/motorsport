@@ -62,9 +62,16 @@ export function HeaderUtils({
       {isLoaded && isSignedIn && (
         <Link
           href="/settings"
-          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full pl-1 pr-3 py-1 transition-colors duration-(--duration-fast)"
         >
-          <Settings size={13} />
+          {user?.imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={user.imageUrl} alt="" className="h-5 w-5 rounded-full object-cover" />
+            </>
+          ) : (
+            <Settings size={13} className="ml-1.5" />
+          )}
           <span>Account</span>
         </Link>
       )}
