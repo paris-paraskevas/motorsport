@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.120.0 — 2026-06-29
+
+**Tidier F1 session pages.** On a past Grand Prix session, the major sections can now be folded away with a tap on their heading. Classification, the Qualifying Decoder and the Race Story open by default; the Speed Trap, Pit-Stop League and Overtakes boards start collapsed — so a long race page is easier to scan, and you expand only what you want. It all works instantly, even with JavaScript off.
+
 ## 0.119.0 — 2026-06-29
 
 **Author photo + name on blog posts.** Posts now show the author's name and profile picture (from their account) under the title.

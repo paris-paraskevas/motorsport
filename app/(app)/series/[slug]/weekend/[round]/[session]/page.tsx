@@ -52,6 +52,7 @@ import { buildPitStopLeague, type PitStopLeague as PitStopData } from '@/lib/ope
 import { PitStopLeague } from '@/components/f1/PitStopLeague';
 import { buildOvertakesBoard, type OvertakesBoard as OvertakesData } from '@/lib/openf1/overtakes';
 import { OvertakesBoard } from '@/components/f1/OvertakesBoard';
+import { CollapsibleSection } from '@/components/CollapsibleSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -439,16 +440,23 @@ function SessionPager({
 function ClassificationTable({
   data,
   heading = 'Classification',
+  showHeading = true,
 }: {
   data: SessionClassification;
   // Multi-class series render one table per class ("Hypercar", "LMGT3").
   heading?: string;
+  // The single-classification case sits inside a CollapsibleSection whose
+  // summary already reads "Classification"; suppress the inner heading there
+  // to avoid duplicating it. Multi-class tables keep their per-class headings.
+  showHeading?: boolean;
 }) {
   return (
     <section className="border-y border-border py-4">
-      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-        {heading}
-      </h2>
+      {showHeading ? (
+        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+          {heading}
+        </h2>
+      ) : null}
       <ul className="divide-y divide-border/60">
         {data.entries.map(e => (
           <li key={`${e.position}-${e.driverName}`} className="flex items-baseline gap-3 py-2">
@@ -682,81 +690,68 @@ export default async function SessionPage({
         <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />
       )}
 
-      {classification ? (
-        <ClassificationTable data={classification} />
-      ) : classClassifications.length > 0 ? (
-        <div className="space-y-4">
-          {classClassifications.map(({ cls, data }) => (
-            <ClassificationTable key={cls} data={data} heading={cls} />
-          ))}
-        </div>
-      ) : isPast ? (
-        <section className="border-y border-border py-5 text-center">
-          <p className="text-text-muted text-sm">
-            {slug === 'f1'
-              ? 'Classification not available for this session yet.'
-              : isRaceLikeTitle(session.title)
-                ? 'Classification not available for this race yet — season results live on the series page.'
-                : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
-          </p>
-          <Link
-            href={`/series/${slug}/results`}
-            className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-          >
-            Season results →
-          </Link>
-        </section>
-      ) : (
-        <section className="border-y border-border py-5 text-center">
-          <p className="text-text-muted text-sm">
-            Classification appears here once the session has run.
-          </p>
-        </section>
-      )}
+      <CollapsibleSection title="Classification" defaultOpen>
+        {classification ? (
+          <ClassificationTable data={classification} showHeading={false} />
+        ) : classClassifications.length > 0 ? (
+          <div className="space-y-4">
+            {classClassifications.map(({ cls, data }) => (
+              <ClassificationTable key={cls} data={data} heading={cls} />
+            ))}
+          </div>
+        ) : isPast ? (
+          <section className="border-y border-border py-5 text-center">
+            <p className="text-text-muted text-sm">
+              {slug === 'f1'
+                ? 'Classification not available for this session yet.'
+                : isRaceLikeTitle(session.title)
+                  ? 'Classification not available for this race yet — season results live on the series page.'
+                  : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
+            </p>
+            <Link
+              href={`/series/${slug}/results`}
+              className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+            >
+              Season results →
+            </Link>
+          </section>
+        ) : (
+          <section className="border-y border-border py-5 text-center">
+            <p className="text-text-muted text-sm">
+              Classification appears here once the session has run.
+            </p>
+          </section>
+        )}
+      </CollapsibleSection>
 
       {decoderSummary && (
-        <section className="mt-10">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
-            Qualifying Decoder
-          </h2>
+        <CollapsibleSection title="Qualifying Decoder" defaultOpen>
           <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
-        </section>
+        </CollapsibleSection>
       )}
 
       {raceStory && (
-        <section className="mt-10">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
-            Race Story
-          </h2>
+        <CollapsibleSection title="Race Story" defaultOpen>
           <RaceStory data={raceStory} seriesColor={color} />
-        </section>
+        </CollapsibleSection>
       )}
 
       {speedTrap && (
-        <section className="mt-10">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
-            Speed Trap
-          </h2>
+        <CollapsibleSection title="Speed Trap" defaultOpen={false}>
           <SpeedTrapLeaderboard data={speedTrap} seriesColor={color} />
-        </section>
+        </CollapsibleSection>
       )}
 
       {pitLeague && (
-        <section className="mt-10">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
-            Pit-Stop League
-          </h2>
+        <CollapsibleSection title="Pit-Stop League" defaultOpen={false}>
           <PitStopLeague data={pitLeague} seriesColor={color} />
-        </section>
+        </CollapsibleSection>
       )}
 
       {overtakes && (
-        <section className="mt-10">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
-            Overtakes of the Race
-          </h2>
+        <CollapsibleSection title="Overtakes of the Race" defaultOpen={false}>
           <OvertakesBoard data={overtakes} seriesColor={color} />
-        </section>
+        </CollapsibleSection>
       )}
 
       <SessionPager prev={nav.prev} next={nav.next} />

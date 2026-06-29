@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.120.0 — 2026-06-29
+
+Changed: the **F1 past-session page's major sections are now collapsible** via native `<details>`/`<summary>` — zero client JS, SSR-friendly, accessible, and functional without JavaScript. Tames the long stack of telemetry surfaces on race/qualifying pages.
+
+### Added
+- `components/CollapsibleSection.tsx`: a new **server component** (no `'use client'`) wrapping a native `<details open={defaultOpen} className="group mt-10">` disclosure. The `<summary>` is the section's `<h2>` (matching the page heading style: `font-display text-sm font-extrabold uppercase tracking-wide text-text`) with a `ChevronRight` (lucide-react) that rotates 90° on open via `group-open:rotate-90`. Default marker hidden (`list-none [&::-webkit-details-marker]:hidden`). Props: `{ title, defaultOpen?, children }`. The browser owns the toggle — no React state, no `onToggle`, no client bundle cost; content stays in the DOM (SEO-visible) and works with JS disabled. `defaultOpen` maps to the `open` attribute (rendered when true, omitted when false).
+
+### Changed
+- `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`: wrapped the six major sections in `CollapsibleSection`, dropping their old `<section className="mt-10">` + `<h2>` wrappers (the component supplies both). Default-open: **Classification**, **Qualifying Decoder**, **Race Story**. Default-collapsed: **Speed Trap**, **Pit-Stop League**, **Overtakes of the Race**. Existing conditional gating (`{speedTrap && …}`, etc.) is preserved — only the wrapper changed, never the section content.
+- The Classification block is the multi-branch one (single `ClassificationTable`, per-class tables for WEC/IMSA/GT-World, or an empty-state). The whole conditional now lives inside one `<CollapsibleSection title="Classification" defaultOpen>`. To avoid a duplicate heading, `ClassificationTable` gained a `showHeading?: boolean` prop (default `true`); the single-classification render passes `showHeading={false}` (the summary already reads "Classification"), while the per-class tables keep their class-name headings ("Hypercar", "LMGT3") as sub-headings under the summary. Empty-state branches have no `<h2>`, so they sit inside cleanly. Classification gains a `mt-10` top margin from the component (previously none), consistent with the other sections.
+
+### Notes
+- tsc clean; `next build` clean; lint unchanged (the 8 pre-existing errors + 4 warnings in `OnboardingWizard.tsx` / `FriendsPanel.tsx` / `NextRaceCountdown.tsx` are untouched — no new problems in either changed file).
+- Verified the disclosure output via an isolated `renderToStaticMarkup` of `CollapsibleSection`: `defaultOpen` → `<details open="" class="group mt-10">`, `defaultOpen={false}` → `<details class="group mt-10">` (no `open`), summary renders the title as `<h2>` with the chevron SVG, children present. A live curl of `/series/f1/weekend/8/race` 500'd **only** because this env-less worktree has no Clerk `publishableKey` (the `proxy.ts` middleware throws before any page renders) — not a code fault; browser verification on a deploy with auth env is OWED.
+
 ## 0.119.0 — 2026-06-29
 
 Changed: the blog **author byline now resolves the author's name + avatar from Clerk** (the account they edit), replacing the stale `app_user.display_name`.
