@@ -67,6 +67,8 @@ export async function notifyAdminsDraftReady(post: { id: string; title: string }
     url: '/blog?review=1',
     tag: `paddock-blog-draft-${post.id}`,
   };
+  // One history row per admin, even with several push subscriptions.
+  const recorded = new Set<string>();
   for (const { subscription, userId } of subs) {
     if (!userId || !admins.has(userId)) continue;
     try {
@@ -74,17 +76,20 @@ export async function notifyAdminsDraftReady(post: { id: string; title: string }
       const silent = prefs.sound === false;
       const res = await sendPushTo(subscription, silent ? { ...payload, silent: true } : payload);
       if (res.ok) {
-        // Record to the admin's sent-history (fail-soft). No retry-unmark here:
-        // the operator email above is the reliable channel, this is a one-shot
-        // (no cron tick re-drives it), and unmarking would only re-open the
-        // double-fire window the 'blog-draft' mark deliberately closes.
-        await recordSent(userId, {
-          kind: 'blog-draft',
-          title: payload.title,
-          body: payload.body,
-          url: payload.url ?? '/app',
-          ts: Date.now(),
-        });
+        // Record to the admin's sent-history once (fail-soft). No retry-unmark
+        // here: the operator email above is the reliable channel, this is a
+        // one-shot (no cron tick re-drives it), and unmarking would only re-open
+        // the double-fire window the 'blog-draft' mark deliberately closes.
+        if (!recorded.has(userId)) {
+          recorded.add(userId);
+          await recordSent(userId, {
+            kind: 'blog-draft',
+            title: payload.title,
+            body: payload.body,
+            url: payload.url ?? '/app',
+            ts: Date.now(),
+          });
+        }
       } else if (res.gone) {
         await deleteSubscription(subscription.endpoint);
       }

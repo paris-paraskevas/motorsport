@@ -308,6 +308,8 @@ export async function GET(req: Request) {
       let evicted = 0;
       let skipped = 0;
       let errored = 0;
+      // One history row per user, even with several push subscriptions.
+      const recorded = new Set<string>();
       for (const { subscription, userId } of subsList) {
         let silent = false;
         if (userId) {
@@ -334,7 +336,8 @@ export async function GET(req: Request) {
           sent++;
           // Record to the signed-in user's sent-history (fail-soft, once per
           // user per notification — anon subs have no owner to scope to).
-          if (userId) {
+          if (userId && !recorded.has(userId)) {
+            recorded.add(userId);
             await recordSent(userId, {
               kind,
               title: payload.title,

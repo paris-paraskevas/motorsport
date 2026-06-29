@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.128.1 — 2026-06-29
+
+**Fixes.** Desktop navigation menus no longer disappear before you can click into them — you can move from a menu heading down into its options. And the notifications list no longer shows the same alert twice if you're signed in on more than one device.
+
 ## 0.128.0 — 2026-06-29
 
 **Smoother onboard motion + a turn readout.** The cars and camera now glide along a smooth racing line instead of stepping between data points, so the replay looks natural rather than jumpy. There's also a live turn indicator showing how hard each car is turning — in degrees per second, with a left/right arrow — derived from the car's real path.

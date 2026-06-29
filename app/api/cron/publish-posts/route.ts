@@ -92,6 +92,10 @@ export async function GET(req: Request) {
       let evicted = 0;
       let skipped = 0;
       let errored = 0;
+      // One history row per user, even with several push subscriptions (multiple
+      // devices/registrations): the push still reaches every device, but the
+      // notification centre must not list the same post twice.
+      const recorded = new Set<string>();
       for (const { subscription, userId } of subs) {
         try {
           let silent = false;
@@ -117,7 +121,8 @@ export async function GET(req: Request) {
           const res = await sendPushTo(subscription, silent ? { ...payload, silent: true } : payload);
           if (res.ok) {
             sent++;
-            if (userId) {
+            if (userId && !recorded.has(userId)) {
+              recorded.add(userId);
               await recordSent(userId, {
                 kind: 'blog-publish',
                 title: payload.title,
