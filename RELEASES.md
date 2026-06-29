@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.129.2 — 2026-06-29
+
+**Onboard fixes: proper terrain + steadier ghost.** The ground beside the track is now a single rolling terrain that follows the circuit's elevation (no more grass clipping through the track), and the rival "ghost" car drives smoothly at its own pace instead of jumping forward and back.
+
 ## 0.129.1 — 2026-06-29
 
 **Onboard polish: cars use the track, ground follows the hills.** The cars now run off-centre through corners — toward the apex and kerbs — instead of down the middle, and the grass beside the track rises and falls with the circuit's real elevation instead of the track floating over a flat plane.
