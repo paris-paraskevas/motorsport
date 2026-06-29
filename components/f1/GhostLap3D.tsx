@@ -37,7 +37,16 @@ interface Mapped {
 }
 
 function mapPoint(p: { x: number; y: number; z: number }, cx: number, cy: number): THREE.Vector3 {
-  return new THREE.Vector3((p.x - cx) / SCENE_SCALE, p.z / SCENE_SCALE, -(p.y - cy) / SCENE_SCALE);
+  // Guard every axis against non-finite values. A trace whose track.points were
+  // KV-cached BEFORE the 3D view added `z` (0.114.0) has no `z` key, so `p.z` is
+  // undefined → `undefined / SCENE_SCALE` = NaN → drei's <Line> geometry gets a
+  // NaN bounding sphere and the whole scene fails to render (the "3D doesn't work
+  // at all" bug). Coerce any non-finite coord so a stale/partial point sits flat
+  // instead of breaking the geometry; elevation self-heals as caches refresh.
+  const x = Number.isFinite(p.x) ? p.x : cx;
+  const y = Number.isFinite(p.y) ? p.y : cy;
+  const z = Number.isFinite(p.z) ? p.z : 0;
+  return new THREE.Vector3((x - cx) / SCENE_SCALE, z / SCENE_SCALE, -(y - cy) / SCENE_SCALE);
 }
 
 function mapTrack(track: TrackPath): Mapped {

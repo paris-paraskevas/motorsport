@@ -35,8 +35,8 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
         }}
       />
 
-      <div className="relative mx-auto grid max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl gap-10 px-4 pb-12 pt-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:pt-20">
-        <div className="p2-fade-up">
+      <div className="relative mx-auto grid grid-cols-1 max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl gap-10 px-4 pb-12 pt-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:pt-20">
+        <div className="min-w-0 p2-fade-up">
           <p className="mb-5 flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
             <span className="live-pulse h-2 w-2 rounded-full bg-live" aria-hidden="true" />
             Live · the 2026 motorsport season
@@ -74,7 +74,7 @@ export function Hero({ sessions, now }: { sessions: HeroSession[]; now: Date }) 
 
         {/* Right column: circuit photography slideshow (the mockup's hero
             photo card) + the live next-sessions widget below it. */}
-        <div className="p2-fade-up space-y-4">
+        <div className="min-w-0 p2-fade-up space-y-4">
           <CircuitSlideshow />
           <div className="rounded-2xl border border-border bg-surface p-5">
           <p className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-text-faint">

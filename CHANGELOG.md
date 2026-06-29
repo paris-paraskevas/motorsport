@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.122.1 — 2026-06-29
+
+Fixed the 3D qualifying view + the mobile landing hero; added the user's profile picture to the Account control.
+
+### Fixed
+- `components/f1/GhostLap3D.tsx` (`mapPoint`): the 3D ghost-lap view rendered nothing ("doesn't work at all") for any session whose decoder traces were KV-cached BEFORE the 3D view added a `z` coordinate (0.114.0) — those cached `track.points` have no `z`, so `p.z / SCENE_SCALE` was `NaN`, giving drei's `<Line>` a NaN bounding sphere and breaking the whole scene. Now coerces any non-finite x/y/z to a safe value, so a stale/partial point sits flat instead of breaking the geometry; elevation self-heals as caches refresh.
+- `components/landing/Hero.tsx`: the hero ran too wide on mobile — the grid's single mobile column sized to its content's intrinsic min-width (~516px, driven by the circuit slideshow) and overflowed the viewport, clipping the copy + buttons. Added `grid-cols-1` (a `minmax(0,1fr)` track) + `min-w-0` on both columns so they shrink to the viewport and the copy wraps.
+
+### Added
+- `components/HeaderUtils.tsx` + `components/BottomBar.tsx`: the Account control now shows the signed-in user's Clerk profile picture (→ `/settings`), on both the desktop header and the mobile bottom bar; falls back to the icon when signed-out / no image. No new Clerk SDK cost — already mounted by the (app) layout.
+
 ## 0.122.0 — 2026-06-29
 
 Notifications remodel, part 2 (frontend): a **notification center** in the header that surfaces the sent-push history recorded by 0.121.0, so signed-in users can see what arrived and re-open its deep-link.

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.122.1 — 2026-06-29
+
+**Fixes + your profile picture.** The 3D qualifying view renders again, the landing page no longer runs too wide on phones, and your profile picture now shows on the Account button — on both desktop and mobile.
+
 ## 0.122.0 — 2026-06-29
 
 **A notifications inbox.** A new bell in the header opens your recent alerts — session reminders, results-are-in pings and more — so you can be sure what we sent you and tap any of them to jump straight to the right page. It starts empty and fills up as new notifications go out.
