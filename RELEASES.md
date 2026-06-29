@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.124.0 — 2026-06-29
+
+**Practice sessions now have telemetry.** Open a past F1 practice session (FP1, FP2 or FP3) and you'll find a new Practice Analysis section: a fastest-laps board ranking every driver's best lap with the gap to the quickest, and a long-run pace table showing each driver's race-simulation pace — their representative stint's tyre compound, how many clean laps it ran, and the average lap time once the in-laps, out-laps and traffic-spoiled laps are filtered out. It's the clearest read on who actually looked quick over a race stint, not just over one flying lap. The section starts collapsed; tap the heading to open it.
+
 ## 0.121.1 — 2026-06-29
 
 **Fixed: the "next race" not advancing.** A finished Grand Prix could still show as the upcoming weekend for about a day after it ended — it now advances to the next race as soon as the chequered flag drops.

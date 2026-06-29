@@ -52,6 +52,8 @@ import { buildPitStopLeague, type PitStopLeague as PitStopData } from '@/lib/ope
 import { PitStopLeague } from '@/components/f1/PitStopLeague';
 import { buildOvertakesBoard, type OvertakesBoard as OvertakesData } from '@/lib/openf1/overtakes';
 import { OvertakesBoard } from '@/components/f1/OvertakesBoard';
+import { buildPracticeAnalysis, type PracticeAnalysis as PracticeData } from '@/lib/openf1/practice';
+import { PracticeAnalysis } from '@/components/f1/PracticeAnalysis';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
 
 export const dynamic = 'force-dynamic';
@@ -573,41 +575,51 @@ export default async function SessionPage({
 
   // F1 telemetry surfaces (past sessions, free historical OpenF1): qualifying →
   // the Decoder (lap comparison), race/sprint → the Race Story (strategy +
-  // moments). Three additional leaderboards sit below those: the speed trap
-  // (quali + race), and the pit-stop league + overtakes board (race only). All
-  // are server-rendered (SEO-visible) and KV-cached per session, so a warm
-  // render skips the OpenF1 fan-out; the Decoder traces fetch client-side per
-  // pair. Resolve this session's OpenF1 key once and reuse it for every board.
+  // moments), practice → the Practice Analysis (fastest laps + long-run pace).
+  // Boards sit below those: the speed trap (every session), the pit-stop league
+  // + overtakes board (race only). All are server-rendered (SEO-visible) and
+  // KV-cached per session, so a warm render skips the OpenF1 fan-out; the
+  // Decoder traces fetch client-side per pair. Resolve this session's OpenF1 key
+  // once and reuse it for every board.
   let decoderSummary: DecoderSummary | null = null;
   let raceStory: RaceStoryData | null = null;
   let speedTrap: SpeedTrapData | null = null;
   let pitLeague: PitStopData | null = null;
   let overtakes: OvertakesData | null = null;
+  let practice: PracticeData | null = null;
   if (slug === 'f1' && isPast && !session.dateOnly) {
     const isQualifyingSession = /qualifying|superpole|shootout/i.test(sessionName);
     const isRaceSession = isRaceLikeTitle(session.title);
-    if (isQualifyingSession || isRaceSession) {
+    // Practice = the FP1/FP2/FP3 sessions (and any "Practice N"); a sprint
+    // weekend's single practice counts too. Quali/race titles are matched
+    // first above, so this only catches the genuine practice sessions.
+    const isPracticeSession =
+      !isQualifyingSession && !isRaceSession && /practice|^fp\s*\d/i.test(sessionName);
+    if (isQualifyingSession || isRaceSession || isPracticeSession) {
       const { start, end } = weekendStartEnd(weekend);
       const candidates = await fetchOpenF1WeekendSessions(start, end);
       const match = matchOpenF1Session(candidates, sessionSlug(session.title), session.start);
       if (match) {
         const sk = match.session_key;
-        // Speed trap applies to qualifying and race; the pit-stop league +
-        // overtakes board are race-only. Assemble the right set in parallel —
-        // each builder is independently KV-cached and degrades to empty, and
-        // the client's token bucket paces the underlying OpenF1 calls.
-        const [decoder, story, traps, pit, ot] = await Promise.all([
+        // Speed trap applies to every session type; the pit-stop league +
+        // overtakes board are race-only; the practice analysis is practice-only.
+        // Assemble the right set in parallel — each builder is independently
+        // KV-cached and degrades to empty, and the client's token bucket paces
+        // the underlying OpenF1 calls.
+        const [decoder, story, traps, pit, ot, prac] = await Promise.all([
           isQualifyingSession ? buildDecoderSummary(sk, 'f1') : Promise.resolve(null),
           isRaceSession ? buildRaceStory(sk, 'f1') : Promise.resolve(null),
           buildSpeedTrapLeaderboard(sk, 'f1'),
           isRaceSession ? buildPitStopLeague(sk, 'f1') : Promise.resolve(null),
           isRaceSession ? buildOvertakesBoard(sk, 'f1') : Promise.resolve(null),
+          isPracticeSession ? buildPracticeAnalysis(sk, 'f1') : Promise.resolve(null),
         ]);
         if (decoder && decoder.laps.length > 0) decoderSummary = decoder;
         if (story && (story.stints.length > 0 || story.moments.length > 0)) raceStory = story;
         if (traps.entries.length > 0) speedTrap = traps;
         if (pit && pit.entries.length > 0) pitLeague = pit;
         if (ot && ot.entries.length > 0) overtakes = ot;
+        if (prac && (prac.fastest.length > 0 || prac.longRuns.length > 0)) practice = prac;
       }
     }
   }
@@ -733,6 +745,12 @@ export default async function SessionPage({
       {raceStory && (
         <CollapsibleSection title="Race Story" defaultOpen>
           <RaceStory data={raceStory} seriesColor={color} />
+        </CollapsibleSection>
+      )}
+
+      {practice && (
+        <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
+          <PracticeAnalysis data={practice} seriesColor={color} />
         </CollapsibleSection>
       )}
 
