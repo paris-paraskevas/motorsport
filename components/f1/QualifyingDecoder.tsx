@@ -174,7 +174,7 @@ export function QualifyingDecoder({
                     Ghost lap
                   </span>
                   <div className="flex gap-1">
-                    {([['2D', false], ['3D', true]] as const).map(([label, is3d]) => (
+                    {([['2D', false], ['Onboard', true]] as const).map(([label, is3d]) => (
                       <button
                         key={label}
                         type="button"

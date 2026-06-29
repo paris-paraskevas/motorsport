@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.125.0 — 2026-06-29
+
+**A new onboard comparison for qualifying.** On a past F1 qualifying session, open the Qualifying Decoder and switch the ghost lap to "Onboard": you ride a chase camera behind one driver's car along a proper 3D track — climbs, dips and corners and all — while their rival runs alongside as a see-through "ghost", so you can watch exactly where one gains or loses through every corner. Below it, a throttle-and-brake strip for both drivers shows who lifted and who stayed flat out. Choose which car the camera follows, scrub or play the lap, and read the live gap. (This replaces the older top-down 3D view.)
+
 ## 0.124.0 — 2026-06-29
 
 **Practice sessions now have telemetry.** Open a past F1 practice session (FP1, FP2 or FP3) and you'll find a new Practice Analysis section: a fastest-laps board ranking every driver's best lap with the gap to the quickest, and a long-run pace table showing each driver's race-simulation pace — their representative stint's tyre compound, how many clean laps it ran, and the average lap time once the in-laps, out-laps and traffic-spoiled laps are filtered out. It's the clearest read on who actually looked quick over a race stint, not just over one flying lap. The section starts collapsed; tap the heading to open it.
