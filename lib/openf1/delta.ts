@@ -7,7 +7,7 @@
 
 import type { EnrichedDriver } from './drivers';
 import type { TelemetrySample } from './laps';
-import type { TrackPath } from './track';
+import type { TrackPath, Circuit } from './track';
 
 export interface LapSummary {
   driverNumber: number;
@@ -39,6 +39,10 @@ export interface DecoderTraces {
   sessionKey: number;
   drivers: EnrichedDriver[]; // the requested pair, enriched
   traces: DriverTrace[]; // fastest first
+  // Track surface reconstructed from many drivers' laps (centreline + measured
+  // width). Null when location coverage was too thin. The pair's traces are
+  // normalised into the SAME frame as this, so they sit on it at true positions.
+  circuit?: Circuit | null;
 }
 
 /** A point on the cumulative-delta curve: `delta` = t_b − t_a at distance `d`. */

@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.129.0 — 2026-06-29
+
+Reconstruct the F1 onboard track from the field's GPS (operator: cars sat mid-track, never on kerbs — "reconstruct the track and place the cars on it").
+
+### Added / Changed
+- **Track reconstructed from the driver point-cloud.** OpenF1 has no track-geometry endpoint, but every car's position is in one coordinate frame, so the track IS where the cars drove. `buildDecoderTraces` now fetches the fastest ~12 drivers' laps (cached per session) and `reconstructCircuit` (`lib/openf1/track.ts`) derives a centreline (the fastest lap) + the measured left/right width at each station (the perpendicular spread of every driver's points, smoothed + capped). All laps + the selected pair normalise into ONE shared `TrackFrame` (new) so they align in the same coordinate space.
+- **Cars sit at their true positions.** The onboard ribbon (`components/f1/GhostLap3D.tsx`) is now drawn at the reconstructed per-point width (variable, with kerbs + white lines), and the two cars are plotted by their own coordinates in the shared frame — so they run wide, clip apexes and use the kerbs as they really did, instead of being pinned to the centre of their own line. Falls back to the followed car's line at a uniform width when reconstruction data is thin.
+- `DecoderTraces` gains `circuit` (centreline + per-point half-widths); `buildTrackPath` takes an optional shared `frame`; the decoder-traces cache key bumped to `-v2` (shape change).
+
+### Notes
+- Browser-verified on localhost (Austria R8 quali, RUS vs LEC): a wide measured-width track with kerbs renders; the car sits off-centre through corners (outside on entry, toward the apex) and centred on straights; 0 console errors. First load per session is heavier (~12 location fetches) then cached 7 days.
+- The reconstructed width is as wide as cars actually drove — it captures the racing surface + kerb usage, not necessarily the full unused tarmac. (Decorative environment — gravel traps, grandstands — remains an optional follow-up.)
+
 ## 0.128.2 — 2026-06-29
 
 Fixed the onboard cars surging forward then dropping back (operator).
