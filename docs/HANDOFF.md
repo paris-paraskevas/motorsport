@@ -6,6 +6,29 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-29 — 3D quali shipped; NEXT = work the FEATURE REPORTS (bugs + ideas)
+
+main = **0.114.0**, **no open PRs**. Continued the autonomous OpenF1 run (operator-approved self-merge — **7 PRs total, #279–#285**). Since the 0.113.0 block below:
+- **#284** — the handoff doc below (OpenF1 suite, owed prod verifications, **OpenF1 live-tab operator steps**, widget backlog).
+- **#285 (0.114.0)** — **3D qualifying ghost cars**: a 2D↔3D toggle on the Decoder's Ghost Lap Replay (`components/f1/GhostLap3D` + `LazyGhostLap3D`), react-three-fiber + drei, real elevation from `location` z; **lazy + route-split** (three.js loads only when the 3D view opens — off the critical path). 2D SVG replay stays default. `track.ts` now carries normalised `z`.
+
+### ▶ NEXT SESSION — work the FEATURE REPORTS (bugs + ideas)
+Operator has feature reports with **bugs + feature ideas** to triage + build — start there:
+- **`docs/audits/2026-06-27-audit.md`** (the audit: coverage gaps, findings) + any newer report (`prod-weekend8.md`, `docs/research/agent-salvage-2026-06-10/`).
+- The **free-OpenF1 / app widget backlog** in the 0.113.0 block below: speed-trap leaderboard, pit-stop league, overtakes-of-the-race, tyre-strategy, driver spotlight, standings-movers, where-to-watch.
+- Triage each: bug → fix + PR; idea → scope + build (free-OpenF1 / existing-app first; flag paid-live or new-dep ones).
+
+### ⚠️ STILL owed — verify on prod/preview (built right; KV/auth/cron/WebGL-dependent, not locally reproducible)
+- Standings parity (#280), telemetry durable-cache warm-path (#281), **bets widget signed-in** + populated **threads** (#282), the **analysis-ready push** delivery (#283), and the **3D WebGL scene** (#285). The 2D Decoder + the 3D toggle ARE verified; datacenter-IP for OpenF1 is proven (live since #279).
+- **Nav link to `/f1/analysis`** not added yet (URL-reachable only) — quick win.
+- Dev note: a stale-`APP_VERSION` hydration mismatch appeared in dev this session (many dev-server restarts across version bumps) — cosmetic/dev-only; a clean prod build is consistent. If it recurs: `rm -rf .next` + ONE fresh `npm run dev` (and kill stray dev servers).
+
+### 🔴 OpenF1 LIVE tab — still deferred, OPERATOR action needed: the steps are in the 0.113.0 block below (paid Sponsor tier €9.90/mo → token → Vercel env, then the client-poll + KV-snapshot REST build). The live tab is the one feature explicitly NOT built.
+
+(Lazy-Clerk-anon remains open — see the 2026-06-27 block further below.)
+
+---
+
 ## ⚡ Next session pickup — 2026-06-28 — OpenF1 TELEMETRY SUITE SHIPPED (main = 0.113.0, 5 PRs merged)
 
 Big autonomous session (operator-approved self-merge). main = **0.113.0**, **no open PRs**. Merged #279–#283:
