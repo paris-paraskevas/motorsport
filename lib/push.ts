@@ -53,6 +53,14 @@ export async function sendPushTo(
     const e = err as { statusCode?: number };
     // 404 or 410 = endpoint dead, caller should evict.
     const gone = e?.statusCode === 404 || e?.statusCode === 410;
+    // Surface real (non-gone) failures in the cron logs — a push-service 5xx or
+    // network blip is invisible otherwise, since we stay fail-soft. Compact: the
+    // status plus the endpoint tail (enough to spot a provider-wide outage vs a
+    // one-off). `gone` evictions are routine churn, so they stay quiet.
+    if (!gone) {
+      const tail = subscription.endpoint.slice(-12);
+      console.error(`push send failed status=${e?.statusCode ?? 'unknown'} endpoint=…${tail}`);
+    }
     return { ok: false, gone, status: e?.statusCode };
   }
 }
@@ -61,4 +69,18 @@ export function publicKey(): string {
   const k = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   if (!k) throw new Error('Missing NEXT_PUBLIC_VAPID_PUBLIC_KEY');
   return k;
+}
+
+/**
+ * True when all three VAPID env vars are present. Crons check this up front so
+ * a missing key returns a clear `{ ok:false, reason }` instead of throwing from
+ * `configure()` deep inside the send loop (which the route would surface as a
+ * generic 500, masking the real cause).
+ */
+export function isPushConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY &&
+      process.env.VAPID_PRIVATE_KEY &&
+      process.env.VAPID_SUBJECT,
+  );
 }

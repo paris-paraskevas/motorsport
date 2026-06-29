@@ -1,6 +1,7 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { listSubscriptions, deleteSubscription } from './push-store';
 import { sendPushTo, type PushPayload } from './push';
+import { recordSent } from './push-history';
 import { getUserNotifPrefs } from './userPrefs';
 import { wasNotified, markNotified } from './notify-ledger';
 import { sendEmail, renderBrandedEmail } from './email';
@@ -72,7 +73,21 @@ export async function notifyAdminsDraftReady(post: { id: string; title: string }
       const prefs = await getUserNotifPrefs(userId);
       const silent = prefs.sound === false;
       const res = await sendPushTo(subscription, silent ? { ...payload, silent: true } : payload);
-      if (!res.ok && res.gone) await deleteSubscription(subscription.endpoint);
+      if (res.ok) {
+        // Record to the admin's sent-history (fail-soft). No retry-unmark here:
+        // the operator email above is the reliable channel, this is a one-shot
+        // (no cron tick re-drives it), and unmarking would only re-open the
+        // double-fire window the 'blog-draft' mark deliberately closes.
+        await recordSent(userId, {
+          kind: 'blog-draft',
+          title: payload.title,
+          body: payload.body,
+          url: payload.url ?? '/app',
+          ts: Date.now(),
+        });
+      } else if (res.gone) {
+        await deleteSubscription(subscription.endpoint);
+      }
     } catch {
       // a single gone/erroring sub must not abort the fan-out
     }

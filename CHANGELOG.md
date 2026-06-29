@@ -4,6 +4,36 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.121.0 — 2026-06-29
+
+Notifications backend remodel, part 1 (delivery + deep-linking + sent-history). No UI yet — a notification-center frontend follows in a separate PR that consumes the new history store.
+
+### Added
+- `lib/push-history.ts` (NEW) — per-user **sent-notification history**. `PushHistoryItem { kind; title; body; url; ts; seriesSlug? }`; `recordSent(userId, item)` LPUSHes to a capped per-user KV list (`paddock:push-history:${userId}`, `LTRIM 0..49` keeps the newest 50) and `listHistory(userId, limit=30)` LRANGEs newest-first. Fail-soft (swallows KV errors, never breaks a send) and no-ops when KV is unconfigured, mirroring `lib/push-store` + `lib/results-cache`. Consumed by the forthcoming notification-center UI.
+- `lib/notify-ledger.ts`: `unmarkNotified(kind, uid)` (KV `del` of the ledger key; no-op unconfigured) + `shouldRetryAfterTotalFailure({ sent, errored })` — a pure (KV-free, unit-tested) policy: `true` iff `sent === 0 && errored > 0`.
+- `lib/push.ts`: `isPushConfigured()` — true when all three VAPID env vars are present. Crons check it up front and return a clear `{ ok:false, reason:'push not configured' }` (503) instead of throwing from `configure()` deep inside the send loop (which the route would surface as a generic 500).
+- Tests: `lib/notify-ledger.test.ts` + `lib/push-history.test.ts` (NEW; in-memory KV mock like `results-cache.test.ts`). Cover the mark/unmark round-trip, the retry-decision truth table, history record/cap-at-50/newest-first/limit, per-user scoping, and fail-soft. 537 tests green.
+
+### Changed (reliability — retry on transient total failure)
+- The send-fan-out in all three notify crons (`app/api/cron/notify`, `betting-notify`, `publish-posts`) now tracks a per-notification `errored` count (real, non-`gone` `sendPushTo` failures) alongside `sent`/`evicted`/`skipped`. **Mark-before-send is kept** (it prevents duplicate fan-outs across ticks), but after a *completed* subscriber loop, if `shouldRetryAfterTotalFailure` holds (zero delivered AND ≥1 real send error — a transient push-service/network blip, not dead-sub evictions / pref-skips / "no subscribers"), the cron calls `unmarkNotified(...)` so the **next tick retries**. Fixes the prior bug where a fully-failed send permanently suppressed a notification.
+  - Duplicate-safety: unmark runs *only after* a completed loop with zero successes, so anyone already notified keeps the mark — a mid-loop crash still can't double-send. Cost is at most one missed notification on a true mid-loop crash; benefit is recovery from a transient total outage.
+  - `publish-posts` nuance: `publishDuePosts` returns only freshly-flipped (`approved`→`published`) posts, so the status flip — not the ledger key — is the real once-ever guard. The `unmarkNotified('blog-publish', id)` there keeps the ledger *truthful* (we did NOT announce) but does not by itself re-drive the announce (the post won't recur). Documented inline.
+- `lib/push.ts` `sendPushTo`: on a non-`gone` error, `console.error`s a compact line (`push send failed status=… endpoint=…<tail>`) so a provider-wide outage is visible in cron logs. Return shape unchanged; still fail-soft. `gone` evictions stay quiet (routine churn).
+- Graceful config: each cron returns a clear non-200 / `{ ok:false }` when push isn't configured rather than crashing or falsely reporting success. `publish-posts` still **publishes + revalidates** first (the primary job), then reports `pushed:false` if VAPID is absent — it never undoes a publish. `cron-auth` fail-closed behaviour is untouched.
+
+### Changed (sent-history wiring)
+- Each sender records to `push-history` after a **successful** `sendPushTo` for a **signed-in** user (anon `userId === null` skipped), once per user per notification (not per dead-sub retry), built from the same payload (`kind`, `title`, `body`, `url`, `seriesSlug`). Wired in `notify` (`t30`/`t10`/`res`/`analysis`), `betting-notify` (`bet-lock`/`bet-settled`), `publish-posts` (`blog-publish`), and `lib/blog-notify` (`blog-draft`, admin push). Fail-soft throughout. `blog-notify` records history but deliberately keeps its existing mark logic (no retry-unmark): the operator email is its reliable channel, it's a one-shot (no tick re-drives it), and unmarking would re-open the double-fire window the `blog-draft` key closes.
+
+### Changed (deep-linking — specific URLs in the senders)
+- The service worker (`app/sw.ts`) already opens `data.url` (← `payload.url`); only the **senders** changed to point at the most specific page. `notify` now builds a per-series round lookup (`buildRoundLookup`, was F1-only) for every series:
+  - **Session reminders** (`t30`/`t10`): `/series/{slug}` → `/series/{slug}/weekend/{round}/{sessionSlug}` when the round resolves (mirrors the `analysis` deep link), else falls back to `/series/{slug}`.
+  - **Results** (`res`): `/series/{slug}/results` → `/series/{slug}/weekend/{round}/{raceSessionSlug}` when resolvable, else the results tab.
+  - **betting** (`/play`), **blog** (`/blog/{slug}`), **analysis** (already a weekend/session deep link) — unchanged.
+
+### Notes
+- tsc clean; `next build` clean; lint unchanged (12 problems — 8 errors / 4 warnings — all pre-existing in untouched legacy files; **0 new**). `npx vitest run` 537/537 green.
+- Backend-only: no service-worker change (the `data.url` open path was already correct), no UI/component change. Browser/cron verification of live delivery is owed on a deploy with VAPID + KV env (not reproducible in this env-less worktree).
+
 ## 0.120.0 — 2026-06-29
 
 Changed: the **F1 past-session page's major sections are now collapsible** via native `<details>`/`<summary>` — zero client JS, SSR-friendly, accessible, and functional without JavaScript. Tames the long stack of telemetry surfaces on race/qualifying pages.

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.121.0 — 2026-06-29
+
+**Notifications open the right page now.** Tapping a session reminder takes you straight to that session's page, and a "results are in" alert opens that round's results — instead of the series landing page. We also made delivery sturdier: if a push fails to reach anyone because of a temporary hiccup, it's automatically retried on the next pass rather than being silently dropped. (Internal: we now keep a record of the notifications sent to you, ready for a notifications inbox arriving in a later update.)
+
 ## 0.120.0 — 2026-06-29
 
 **Tidier F1 session pages.** On a past Grand Prix session, the major sections can now be folded away with a tap on their heading. Classification, the Qualifying Decoder and the Race Story open by default; the Speed Trap, Pit-Stop League and Overtakes boards start collapsed — so a long race page is easier to scan, and you expand only what you want. It all works instantly, even with JavaScript off.

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { listSubscriptions, deleteSubscription, type StoredSubscription } from '@/lib/push-store';
-import { sendPushTo, type PushPayload } from '@/lib/push';
+import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
+import { recordSent } from '@/lib/push-history';
 import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
-import { wasNotified, markNotified } from '@/lib/notify-ledger';
+import { wasNotified, markNotified, unmarkNotified, shouldRetryAfterTotalFailure } from '@/lib/notify-ledger';
 import { isBettingConfigured, betDb } from '@/lib/betting/client';
 import { loadAllSeriesMeta } from '@/lib/series';
 
@@ -59,6 +60,12 @@ export async function GET(req: Request) {
   // workflow's 200-check passes rather than erroring.
   if (!isBettingConfigured()) {
     return NextResponse.json({ ok: true, message: 'betting not configured' });
+  }
+
+  // Fail clearly when push isn't configured rather than throwing from inside the
+  // send loop. Does not touch the fail-closed cron-auth above.
+  if (!isPushConfigured()) {
+    return NextResponse.json({ ok: false, reason: 'push not configured' }, { status: 503 });
   }
 
   try {
@@ -181,10 +188,16 @@ export async function GET(req: Request) {
       return state;
     };
 
-    const sendToAll = async (payload: PushPayload, slug: string, subsList: StoredSubscription[]) => {
+    const sendToAll = async (
+      kind: RoundNotification['kind'],
+      payload: PushPayload,
+      slug: string,
+      subsList: StoredSubscription[],
+    ) => {
       let sent = 0;
       let evicted = 0;
       let skipped = 0;
+      let errored = 0;
       for (const { subscription, userId } of subsList) {
         try {
           let silent = false;
@@ -210,15 +223,30 @@ export async function GET(req: Request) {
           );
           if (result.ok) {
             sent++;
+            if (userId) {
+              await recordSent(userId, {
+                kind,
+                title: payload.title,
+                body: payload.body,
+                url: payload.url ?? '/app',
+                ts: Date.now(),
+                seriesSlug: slug,
+              });
+            }
           } else if (result.gone) {
             await deleteSubscription(subscription.endpoint);
             evicted++;
+          } else {
+            // Real (non-gone) send error — a transient blip.
+            errored++;
           }
         } catch {
-          // A gone/erroring sub must not abort the fan-out.
+          // A gone/erroring sub must not abort the fan-out. Count it as a real
+          // error so a total failure still triggers a retry.
+          errored++;
         }
       }
-      return { sent, evicted, skipped };
+      return { sent, evicted, skipped, errored };
     };
 
     let sent = 0;
@@ -228,11 +256,17 @@ export async function GET(req: Request) {
       // Mark BEFORE sending: a crash mid-fanout must not re-spam every
       // subscriber on the next tick. Worst case is one missed notification,
       // which beats a doubled one.
-      await markNotified(item.kind, `${item.seriesSlug}:${item.round}`);
-      const r = await sendToAll(item.payload, item.seriesSlug, subs);
+      const dedupId = `${item.seriesSlug}:${item.round}`;
+      await markNotified(item.kind, dedupId);
+      const r = await sendToAll(item.kind, item.payload, item.seriesSlug, subs);
       sent += r.sent;
       evicted += r.evicted;
       skipped += r.skipped;
+      // Transient total failure → undo the mark so the next hourly tick retries.
+      // Only after a completed loop with zero successes (no duplicate risk).
+      if (shouldRetryAfterTotalFailure(r)) {
+        await unmarkNotified(item.kind, dedupId);
+      }
     }
 
     return NextResponse.json({
