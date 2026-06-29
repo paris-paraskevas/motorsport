@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft } from 'lucide-react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentUser, clerkClient } from '@clerk/nextjs/server';
 import { listPostSlugs, loadPost } from '@/lib/posts';
 import { getPostBySlug, type BlogPost } from '@/lib/blog';
 import { isAdmin } from '@/lib/threads';
@@ -11,6 +11,7 @@ import { renderMarkdown } from '@/lib/content';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
+import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
 import { SITE_URL } from '@/lib/site';
 import type { Post } from '@/lib/types';
 
@@ -98,6 +99,32 @@ function formatDateTime(iso: string): string {
   });
 }
 
+// Byline identity — name + avatar resolved from CLERK (the source the author
+// edits in their account), KV-cached 1h, fail-soft to the stored display name
+// (no avatar) if Clerk is unreachable / the user can't be resolved. Clerk is
+// authoritative here, which is why the byline can differ from app_user.display_name.
+async function resolveBlogAuthor(
+  authorId: string,
+  fallbackName: string | null,
+): Promise<{ name: string | null; image: string | null }> {
+  const key = `paddock:blog-author:${authorId}`;
+  const cached = await readResultsCache<{ name: string | null; image: string | null }>(key);
+  if (cached) return cached;
+  try {
+    const u = await (await clerkClient()).users.getUser(authorId);
+    const name =
+      u.fullName ||
+      [u.firstName, u.lastName].filter(Boolean).join(' ').trim() ||
+      u.username ||
+      fallbackName;
+    const result = { name: name ?? null, image: u.imageUrl || null };
+    await writeResultsCache(key, result, 60 * 60);
+    return result;
+  } catch {
+    return { name: fallbackName, image: null };
+  }
+}
+
 export default async function PostPage({
   params,
 }: {
@@ -130,6 +157,10 @@ export default async function PostPage({
     if (!post) notFound();
   }
   if (!post) notFound();
+
+  // Byline author (name + avatar) from Clerk — DB posts only (MDX posts have no
+  // author_id). Helper is fail-soft, so a Clerk hiccup just drops the avatar.
+  const author = db ? await resolveBlogAuthor(db.authorId, db.authorName) : { name: null, image: null };
 
   const postUrl = `${SITE_URL}/blog/${slug}`;
 
@@ -179,8 +210,23 @@ export default async function PostPage({
         <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
           {post.frontmatter.title}
         </h1>
-        {db?.authorName && (
-          <p className="mt-3 text-sm font-medium text-text-muted">By {db.authorName}</p>
+        {author.name && (
+          <div className="mt-3 flex items-center gap-2">
+            {author.image && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={author.image}
+                  alt={author.name}
+                  width={28}
+                  height={28}
+                  loading="lazy"
+                  className="h-7 w-7 rounded-full object-cover border border-border bg-surface"
+                />
+              </>
+            )}
+            <span className="text-sm font-medium text-text-muted">By {author.name}</span>
+          </div>
         )}
         <p className="mt-4 text-base text-text-muted leading-relaxed">
           {post.frontmatter.summary}

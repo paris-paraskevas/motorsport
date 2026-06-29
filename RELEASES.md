@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.119.0 — 2026-06-29
+
+**Author photo + name on blog posts.** Posts now show the author's name and profile picture (from their account) under the title.
+
 ## 0.118.0 — 2026-06-29
 
 **Driver headshots.** Formula 1 driver profile pages now show the driver's photo alongside their name, team and number. (Photos are F1's official media, credited on the page.)
