@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.117.0 — 2026-06-29
+
+Added: author bylines on blog posts + full-draft preview from the review queue.
+
+### Added
+- `app/(app)/blog/[slug]/page.tsx`: an author byline ("By {name}") under the post title, from the post's resolved `authorName`. Admin preview now also covers **draft** posts (was `approved`/scheduled only), so an editor can read the whole piece at its `/blog/<slug>` URL before approving — under a "Draft preview" banner.
+- `components/blog/PostModeration.tsx`: each queued draft's title links to its full rendered preview (new tab) — the entire article is readable in draft form, not just its summary.
+
+### Notes
+- The byline renders from `author_id` (no migration) and applies to existing posts automatically. tsc + lint clean (no new problems).
+
 ## 0.116.0 — 2026-06-29
 
 Added: **three F1 telemetry leaderboards** from the free OpenF1 historical tier — speed trap, pit-stop league, overtakes of the race.

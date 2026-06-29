@@ -1,8 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.117.0 — 2026-06-29
+
+**Author bylines.** Blog posts now credit their author under the title. (Internal: editors can open and read a full draft from the review queue before approving it.)
+
 ## 0.116.0 — 2026-06-29
 
 **Three new F1 telemetry leaderboards.** Once a Grand Prix weekend has run, qualifying and race pages now show a **Speed Trap** board ranking every driver by their top speed. Race pages add two more: a **Pit-Stop League** ranking teams by their fastest stop, and **Overtakes of the Race** counting who made the most passes — with the race's overtake total. Built from the same free, unofficial timing data as the rest of the F1 analysis.
+
 ## 0.115.0 — 2026-06-29
 
 **Three more home widgets.** Add any of them from Customise: **Where to watch** (broadcast links for your next few sessions), **Next-race weather** (the forecast for your next round at a glance), and **Driver spotlight** (a rotating driver from the series you follow, with quick links into their profile and team). They're off by default — turn on just the ones you want.

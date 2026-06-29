@@ -143,7 +143,14 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
         <ul className="mt-4 space-y-3">
           {data.drafts.map(p => (
             <li key={p.id} className="rounded-lg border border-border bg-surface/60 p-3">
-              <div className="font-semibold text-text">{p.title}</div>
+              <Link
+                href={`/blog/${p.slug}`}
+                target="_blank"
+                className="font-semibold text-text underline-offset-2 hover:text-brand hover:underline"
+              >
+                {p.title} <span aria-hidden="true">↗</span>
+                <span className="sr-only"> (opens full draft in a new tab)</span>
+              </Link>
               <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
                 {p.slug}
                 {p.seriesSlug ? ` · ${p.seriesSlug}` : ' · site-wide'}
