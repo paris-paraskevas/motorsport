@@ -33,15 +33,16 @@ import type { TrackPath, TrackPoint } from '@/lib/openf1/track';
 const SCENE_SCALE = 90;
 
 // Chase-camera rig (world units; the car proxy is ~0.34 long).
-const CAM_BACK = 1.3; // distance behind the car
-const CAM_UP = 0.8; // height above the car
-const CAM_LOOKAHEAD = 2.6; // how far ahead the camera aims
-const CAM_LERP = 0.28; // position smoothing per frame (higher = tighter centring in corners)
+// Onboard chase: close + low, just behind / above the cockpit (T-cam feel).
+const CAM_BACK = 0.55; // distance behind the car
+const CAM_UP = 0.42; // height above the car
+const CAM_LOOKAHEAD = 1.4; // how far ahead the camera aims
+const CAM_LERP = 0.3; // position smoothing per frame (higher = tighter centring in corners)
 const HEADING_DT = 0.22; // seconds ahead used to estimate travel direction
 
-const CAR_LEN = 0.34;
-const CAR_W = 0.17;
-const CAR_H = 0.07;
+// The single-seater is modelled at ~1.3 long in local units, then scaled down so
+// it reads ~1/5 of the (stylised) track width — an F1 car is ~2 m on a ~12 m track.
+const CAR_SCALE = 0.26;
 
 interface Mapped {
   pts: THREE.Vector3[]; // ground-plane track polyline (with elevation)
@@ -166,30 +167,77 @@ function fmtGap(delta: number): string {
 
 // --- 3D scene -----------------------------------------------------------
 
-// A simple single-seater proxy (body + nose + rear wing), local +Z = forward.
-function CarBody({ colour, ghost }: { colour: string; ghost: boolean }) {
-  const mat = {
+// A stylised but readable open-wheel single-seater (local +Z = forward, sits on
+// y=0): survival cell + nose + front/rear wings + sidepods + airbox + 4 open
+// wheels. Team colour on bodywork, dark tyres. Scaled by the parent (CAR_SCALE).
+function F1Car({ colour, ghost }: { colour: string; ghost: boolean }) {
+  const op = ghost ? 0.42 : 1;
+  const body = {
     color: colour,
     emissive: colour,
-    emissiveIntensity: ghost ? 0.55 : 0.28,
-    roughness: 0.45,
+    emissiveIntensity: ghost ? 0.5 : 0.22,
+    roughness: 0.4,
+    metalness: 0.15,
     transparent: ghost,
-    opacity: ghost ? 0.42 : 1,
+    opacity: op,
   };
+  const tyre = { color: '#141418', roughness: 0.85, metalness: 0.05, transparent: ghost, opacity: op };
   return (
     <group>
-      <mesh position={[0, 0.035, 0]}>
-        <boxGeometry args={[CAR_W, CAR_H, CAR_LEN]} />
-        <meshStandardMaterial {...mat} />
+      {/* survival cell / floor */}
+      <mesh position={[0, 0.11, -0.02]}>
+        <boxGeometry args={[0.22, 0.09, 0.84]} />
+        <meshStandardMaterial {...body} />
       </mesh>
-      <mesh position={[0, 0.025, CAR_LEN * 0.55]}>
-        <boxGeometry args={[CAR_W * 0.5, CAR_H * 0.6, CAR_LEN * 0.5]} />
-        <meshStandardMaterial {...mat} />
+      {/* nose */}
+      <mesh position={[0, 0.1, 0.55]}>
+        <boxGeometry args={[0.12, 0.07, 0.34]} />
+        <meshStandardMaterial {...body} />
       </mesh>
-      <mesh position={[0, 0.085, -CAR_LEN * 0.5]}>
-        <boxGeometry args={[CAR_W * 1.15, CAR_H * 0.85, CAR_LEN * 0.08]} />
-        <meshStandardMaterial {...mat} />
+      {/* front wing */}
+      <mesh position={[0, 0.05, 0.74]}>
+        <boxGeometry args={[0.5, 0.03, 0.1]} />
+        <meshStandardMaterial {...body} />
       </mesh>
+      {/* sidepods */}
+      <mesh position={[0.17, 0.1, -0.05]}>
+        <boxGeometry args={[0.1, 0.1, 0.34]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      <mesh position={[-0.17, 0.1, -0.05]}>
+        <boxGeometry args={[0.1, 0.1, 0.34]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      {/* airbox / engine cover */}
+      <mesh position={[0, 0.22, -0.14]}>
+        <boxGeometry args={[0.1, 0.14, 0.34]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      {/* cockpit hump */}
+      <mesh position={[0, 0.17, 0.08]}>
+        <boxGeometry args={[0.13, 0.06, 0.2]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      {/* rear wing + endplates */}
+      <mesh position={[0, 0.28, -0.46]}>
+        <boxGeometry args={[0.46, 0.1, 0.04]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      <mesh position={[0.23, 0.22, -0.46]}>
+        <boxGeometry args={[0.02, 0.2, 0.12]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      <mesh position={[-0.23, 0.22, -0.46]}>
+        <boxGeometry args={[0.02, 0.2, 0.12]} />
+        <meshStandardMaterial {...body} />
+      </mesh>
+      {/* open wheels — cylinders with the axle along X */}
+      {([[0.27, 0.47], [-0.27, 0.47], [0.27, -0.4], [-0.27, -0.4]] as const).map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.13, z]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.13, 0.13, 0.15, 18]} />
+          <meshStandardMaterial {...tyre} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -223,7 +271,9 @@ function CarRig({
   });
   return (
     <group ref={ref}>
-      <CarBody colour={colour} ghost={ghost} />
+      <group scale={CAR_SCALE}>
+        <F1Car colour={colour} ghost={ghost} />
+      </group>
     </group>
   );
 }
@@ -268,7 +318,7 @@ function FollowCam({
 // that carries the real x/y/z (so it climbs + falls with elevation). Width is
 // STYLISED (~3 car-widths) so the car reads proportionally on the chase cam — a
 // geometrically-true 12 m track would be a thread on a circuit-sized scene.
-const TRACK_HALF_W = 0.34;
+const TRACK_HALF_W = 0.5;
 
 function buildRibbon(pts: THREE.Vector3[]): {
   geometry: THREE.BufferGeometry;
@@ -348,12 +398,15 @@ function Scene({
 }) {
   return (
     <>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[6, 10, 4]} intensity={1.15} />
-      {/* dark ground for depth + motion reference, just below the lowest track point */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.04, 0]}>
-        <planeGeometry args={[80, 80]} />
-        <meshStandardMaterial color="#141418" roughness={1} metalness={0} />
+      <color attach="background" args={['#8fa6bb']} />
+      <fog attach="fog" args={['#8fa6bb', 4, 26]} />
+      <ambientLight intensity={0.85} />
+      <directionalLight position={[6, 10, 4]} intensity={1.2} />
+      <hemisphereLight args={['#cdddee', '#2c3a20', 0.55]} />
+      {/* grass groundscape under sky + fog — gives the track a place, not a void */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
+        <planeGeometry args={[140, 140]} />
+        <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} />
       </mesh>
       <TrackRibbon pts={outline.pts} />
       <CarRig points={followPts} cx={outline.cx} cy={outline.cy} colour={followColour} ghost={false} tRef={tRef} />

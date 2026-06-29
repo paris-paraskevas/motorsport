@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.126.0 — 2026-06-29
+
+**The qualifying onboard view got a proper makeover.** The camera now sits right above and behind the cockpit (instead of hovering far away), the car is an actual Formula 1 car — open wheels, wings and airbox — sized correctly to the track, and the track is now a real 3D circuit set in a landscape with grass, a sky and a hazy horizon rather than a bare line. Same comparison as before (your car vs the rival ghost, plus the throttle/brake strip) — it just looks the part now.
+
 ## 0.125.0 — 2026-06-29
 
 **A new onboard comparison for qualifying.** On a past F1 qualifying session, open the Qualifying Decoder and switch the ghost lap to "Onboard": you ride a chase camera behind one driver's car along a proper 3D track — climbs, dips and corners and all — while their rival runs alongside as a see-through "ghost", so you can watch exactly where one gains or loses through every corner. Below it, a throttle-and-brake strip for both drivers shows who lifted and who stayed flat out. Choose which car the camera follows, scrub or play the lap, and read the live gap. (This replaces the older top-down 3D view.)

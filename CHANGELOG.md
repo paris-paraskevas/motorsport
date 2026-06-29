@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.126.0 — 2026-06-29
+
+Visual overhaul of the onboard comparison shipped in 0.125.0 (operator feedback: scaling off, camera too far away, the car was a box, the track a bare line). The onboard view now reads like a real circuit.
+
+### Changed (`components/f1/GhostLap3D.tsx`)
+- **Real F1 car.** Replaced the box proxy with `F1Car` — a stylised open-wheel single-seater built from primitives (survival cell, nose, front + rear wings with endplates, sidepods, airbox/engine cover, cockpit hump, four open wheels as X-axle cylinders); team-coloured bodywork + dark tyres. The rival is the same model rendered translucent (ghost).
+- **Right scale.** Car authored at ~1.3 long in local units, then `scale={CAR_SCALE}` (0.26) so it reads ~1/5 of the track width — realistic (≈2 m car on a stylised ~12 m track). Track widened (`TRACK_HALF_W` 0.34 → 0.5) to suit.
+- **Camera in close (T-cam).** `CAM_BACK` 1.3 → 0.55, `CAM_UP` → 0.42, `CAM_LOOKAHEAD` 2.6 → 1.4 — just behind + above the cockpit, looking down the road with the car in the lower third (was a distant chase).
+- **Environment, not a void.** Added a sky-coloured scene `background` + matching `fog` (depth/haze), a `hemisphereLight` (sky/ground bounce), and a large grass ground plane under the track, so the asphalt ribbon + white track-limit edges sit in a landscape with a horizon.
+
+### Notes
+- Browser-verified on localhost (Austria R8 quali, RUS vs LEC): 0 console errors; the car reads as an F1 car at the right size; sky/grass/horizon + fog render; gap + throttle/brake strip update live. Camera distance/height, car detail, and the sky/grass palette are all easy follow-up tuning.
+
 ## 0.125.0 — 2026-06-29
 
 Reworked the F1 Qualifying Decoder's 3D ghost view into an **onboard comparison**: a chase camera rides behind the lead car down a real 3D track ribbon while the rival runs as a time-aligned translucent ghost, with a throttle/brake strip below for the "did he lift?" read. Replaces the old top-down two-spheres scene (which also rendered mirrored). Conceptually the data-driven equivalent of F1's broadcast "Ghost Car" tool, built entirely from telemetry we already cache.
