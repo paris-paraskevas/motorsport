@@ -165,6 +165,22 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
             </Link>
           </div>
         )}
+        {/* F1-only: the Telemetry & Analysis hub (Decoder + Race Story per round)
+            isn't a series tab, so surface it here for mobile + desktop (0.114.1). */}
+        {slug === 'f1' && (
+          <div className="mt-3">
+            <Link
+              href="/f1/analysis"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-1.5 transition-colors hover:bg-surface"
+            >
+              <span aria-hidden="true" className="inline-block h-3.5 w-[3px] shrink-0 bg-tint" />
+              <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                Decoder &amp; Race Story →
+              </span>
+            </Link>
+          </div>
+        )}
       </header>
 
       <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />
