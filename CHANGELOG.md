@@ -18,6 +18,29 @@ Added: **three F1 telemetry leaderboards** from the free OpenF1 historical tier 
 
 ### Notes
 - Free historical tier only — no new upstream fan-out beyond the existing cached `fetchOpenF1` client; the paid live in-session window stays out of scope. tsc + lint (no new problems) + `vitest run lib/openf1` (17 pass) + `next build` all clean. **Browser/Vercel-preview verification of real `/pit` + `/overtakes` coverage is still owed** — OpenF1 documents both as potentially incomplete, and KV is absent in this worktree so every render assembled fresh.
+## 0.115.0 — 2026-06-29
+
+Added: **three opt-in home widgets** — Where to watch, Next-race weather, Driver spotlight.
+
+### Added
+- **Home widgets** (opt-in from Customise; all default-hidden, multi-series so they don't skew the all-F1 home):
+  - **Where to watch** (`where-to-watch`): broadcast links for the next few upcoming followed sessions whose series has a `SeriesMeta.watch` (`{ service, url }`). Renders from the existing `items` prop (each `HomeItem` already carries `watch` from `app/(app)/app/page.tsx`'s flatMap) — **no new API route**, no fetch. Count control (2/4/6/8, default 4) in `NUMERIC_SETTING`.
+  - **Next-race weather** (`next-weather`): the forecast for the next followed session with one — emoji + label + max/min + rain%, deep-linked to the weekend. Renders from the existing `weatherByUid` prop (server-resolved in `weatherForSessions`, client picks the next upcoming item with an entry, mirroring the chyron/circuit-map pattern) — **no new API route**. No count control (single forecast).
+  - **Driver spotlight** (`driver-spotlight`): a rotating sample of drivers (+ their team) from the curated lineups, each linking to `/drivers/{slug}` and `/teams/{teamSlug}`. New edge-cached route `app/(app)/api/home/spotlight/route.ts` — `loadAllDrivers()` → time-rotated Fisher–Yates sample of 6 (`Math.random` is fine in an app route handler), `Cache-Control: public, s-maxage=900, stale-while-revalidate=3600`, fail-soft to `[]`. Defer-fetched in `HomeContent` with the same shown+expanded pattern as threads/blog. Count control (1/3/6, default 3).
+- `lib/homeLayout.ts`: layout version **7 → 8**; the three ids added to `HomeElementId`, `HOME_ELEMENTS`, and `DEFAULT_HIDDEN` — `reconcileHomeLayout` auto-appends them for existing users (started hidden, so the home never changes for anyone who doesn't opt in). No images anywhere in the spotlight (curated data has none).
+- `lib/homeLayout.test.ts`: updated the registry-count + opt-in-hidden assertions (10 → 16 ids) and added cases pinning the three new widgets' opt-in default-hidden behaviour. 17 tests pass.
+
+### Notes
+- tsc clean; `npx vitest run lib/homeLayout.test.ts` 17/17; lint introduces no new problems (12 pre-existing, all in untouched legacy files); `npm run build` clean — `/api/home/spotlight` registers and `/app` stays statically prerendered.
+- No `/drivers` or `/teams` *index* route exists (only `/drivers/[slug]` + `/teams/[slug]`), so the spotlight links to driver/team **detail** pages directly and intentionally omits an "all drivers" footer link (would 404).
+
+## 0.114.1 — 2026-06-29
+
+Fixed: the **F1 Analysis Hub** (`/f1/analysis`, shipped 0.113.0) was URL-reachable only — now surfaced in nav.
+
+### Added
+- `components/AppShell.tsx` (`SeriesMegaMenu`): a featured "F1 Telemetry & Analysis" link leading the desktop Series mega-menu → `/f1/analysis`, above the category grid.
+- `components/SeriesPageView.tsx`: an F1-only "F1 Telemetry & Analysis" link in the series-page header (rendered when `slug === 'f1'`), beside the existing per-series threads link — gives mobile + desktop a path to the hub (the bottom bar's 5-col grid has no room for a 6th tab, so a bar tab was deliberately avoided).
 
 ## 0.114.0 — 2026-06-29
 
