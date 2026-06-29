@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
 import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription, type StoredSubscription } from '@/lib/push-store';
-import { sendPushTo, type PushPayload } from '@/lib/push';
+import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
+import { recordSent } from '@/lib/push-history';
 import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
-import { wasNotified, markNotified, type NotifyKind } from '@/lib/notify-ledger';
+import {
+  wasNotified,
+  markNotified,
+  unmarkNotified,
+  shouldRetryAfterTotalFailure,
+  type NotifyKind,
+} from '@/lib/notify-ledger';
 import {
   looksLikeRaceSession,
   resultsRenderedFor,
@@ -79,11 +86,23 @@ function gpName(series: Series, round: number, sessionTitle: string): string {
   return curated || deriveTitleHint(sessionTitle) || `Round ${round}`;
 }
 
-function preSessionPayload(session: CandidateSession, minsLeft: number): PushPayload {
+// Deep-link a pre-session reminder straight to that session's weekend page when
+// we can resolve its round (the slug is derived the same way the session page
+// resolves by — see analysisPayload). Falls back to the series landing when the
+// round isn't resolvable, so the link is never broken.
+function preSessionPayload(
+  session: CandidateSession,
+  minsLeft: number,
+  round: number | undefined,
+): PushPayload {
+  const url =
+    round !== undefined
+      ? `/series/${session.seriesSlug}/weekend/${round}/${sessionSlug(session.title)}`
+      : `/series/${session.seriesSlug}`;
   return {
     title: `${session.seriesName} · ${session.title}`,
     body: `Starts in ${minsLeft} min · ${fmtTime(session.start)} Athens`,
-    url: `/series/${session.seriesSlug}`,
+    url,
     tag: `paddock-${session.uid}`,
     color: session.seriesColor,
     actions: [
@@ -94,11 +113,19 @@ function preSessionPayload(session: CandidateSession, minsLeft: number): PushPay
   };
 }
 
-function resultsPayload(session: CandidateSession): PushPayload {
+// Deep-link "results are in" to that round's race-session page when resolvable,
+// else the series results tab. The race session's slug comes from its own title
+// (the same `s.title` that matched looksLikeRaceSession), matching how the
+// weekend page resolves a session by slug.
+function resultsPayload(session: CandidateSession, round: number | undefined): PushPayload {
+  const url =
+    round !== undefined
+      ? `/series/${session.seriesSlug}/weekend/${round}/${sessionSlug(session.title)}`
+      : `/series/${session.seriesSlug}/results`;
   return {
     title: `${session.seriesName} · Results are in`,
     body: `${session.title} — full classification is up`,
-    url: `/series/${session.seriesSlug}/results`,
+    url,
     tag: `paddock-res-${session.uid}`,
     color: session.seriesColor,
     actions: [
@@ -136,6 +163,13 @@ export async function GET(req: Request) {
   const auth = authorizeCronRequest(req);
   if (auth !== 'ok') return cronAuthFailureResponse(auth);
 
+  // Fail clearly when push isn't configured rather than throwing from deep
+  // inside the send loop (configure() would, and the route would mask it as a
+  // generic 500). Does not touch the fail-closed cron-auth above.
+  if (!isPushConfigured()) {
+    return NextResponse.json({ ok: false, reason: 'push not configured' }, { status: 503 });
+  }
+
   try {
     const subs = await listSubscriptions();
     if (subs.length === 0) {
@@ -148,11 +182,12 @@ export async function GET(req: Request) {
     const queue: QueuedNotification[] = [];
 
     for (const series of all) {
-      // Round lookup is only needed to build F1 analysis deep links; computing
-      // it (groupByWeekend) for every series would be wasted work, so it's lazy
-      // and F1-only. Built once per series, reused across that series' sessions.
+      // Round lookup powers every deep link (session reminders, results, and the
+      // F1 analysis nudge). groupByWeekend over one series is cheap and the cron
+      // touches every series for pre-session reminders anyway, so build it once
+      // per series here and reuse across that series' sessions.
       const isAnalysisSeries = series.meta.slug === ANALYSIS_SERIES_SLUG;
-      const roundLookup = isAnalysisSeries ? buildRoundLookup(series, now) : null;
+      const roundLookup = buildRoundLookup(series, now);
 
       for (const s of series.sessions) {
         // Never notify for date-only events — we don't know the real start time.
@@ -167,13 +202,14 @@ export async function GET(req: Request) {
           seriesColor: series.meta.color,
         };
         const mins = minutesUntil(s.start, now);
+        const round = roundFor(roundLookup, series.meta.slug, s.uid);
 
         if (mins > T30_MIN_MIN && mins <= T30_MAX_MIN) {
           if (!(await wasNotified('t30', s.uid))) {
             queue.push({
               kind: 't30',
               session: candidate,
-              payload: preSessionPayload(candidate, Math.round(mins)),
+              payload: preSessionPayload(candidate, Math.round(mins), round),
             });
           }
         } else if (mins > T10_MIN_MIN && mins <= T10_MAX_MIN) {
@@ -181,7 +217,7 @@ export async function GET(req: Request) {
             queue.push({
               kind: 't10',
               session: candidate,
-              payload: preSessionPayload(candidate, Math.round(mins)),
+              payload: preSessionPayload(candidate, Math.round(mins), round),
             });
           }
         }
@@ -201,7 +237,7 @@ export async function GET(req: Request) {
               queue.push({
                 kind: 'res',
                 session: candidate,
-                payload: resultsPayload(candidate),
+                payload: resultsPayload(candidate, round),
               });
             }
           }
@@ -221,9 +257,8 @@ export async function GET(req: Request) {
           const isQuali = !isSprint && ANALYSIS_QUALI_RE.test(s.title);
           const isRace = !isSprint && ANALYSIS_RACE_RE.test(s.title);
           if (isQuali || isRace) {
-            const round = roundLookup ? roundFor(roundLookup, series.meta.slug, s.uid) : undefined;
             // Without a round we can't build a valid deep link — skip rather than
-            // ship a broken URL.
+            // ship a broken URL. (`round` resolved once above from roundLookup.)
             if (round !== undefined && !(await wasNotified('analysis', s.uid))) {
               const gp = gpName(series, round, s.title);
               queue.push({
@@ -263,10 +298,16 @@ export async function GET(req: Request) {
       return state;
     };
 
-    const sendToAll = async (payload: PushPayload, seriesSlug: string, subsList: StoredSubscription[]) => {
+    const sendToAll = async (
+      kind: NotifyKind,
+      payload: PushPayload,
+      seriesSlug: string,
+      subsList: StoredSubscription[],
+    ) => {
       let sent = 0;
       let evicted = 0;
       let skipped = 0;
+      let errored = 0;
       for (const { subscription, userId } of subsList) {
         let silent = false;
         if (userId) {
@@ -291,12 +332,27 @@ export async function GET(req: Request) {
         );
         if (result.ok) {
           sent++;
+          // Record to the signed-in user's sent-history (fail-soft, once per
+          // user per notification — anon subs have no owner to scope to).
+          if (userId) {
+            await recordSent(userId, {
+              kind,
+              title: payload.title,
+              body: payload.body,
+              url: payload.url ?? '/app',
+              ts: Date.now(),
+              seriesSlug,
+            });
+          }
         } else if (result.gone) {
           await deleteSubscription(subscription.endpoint);
           evicted++;
+        } else {
+          // Real (non-gone) send error — a transient push-service/network blip.
+          errored++;
         }
       }
-      return { sent, evicted, skipped };
+      return { sent, evicted, skipped, errored };
     };
 
     let sent = 0;
@@ -307,10 +363,18 @@ export async function GET(req: Request) {
       // subscriber on the next tick. Worst case is one missed notification,
       // which beats a doubled one.
       await markNotified(item.kind, item.session.uid);
-      const r = await sendToAll(item.payload, item.session.seriesSlug, subs);
+      const r = await sendToAll(item.kind, item.payload, item.session.seriesSlug, subs);
       sent += r.sent;
       evicted += r.evicted;
       skipped += r.skipped;
+      // Transient TOTAL failure (zero delivered, ≥1 real error): undo the mark
+      // so the next tick retries. Safe against duplicates — this runs only after
+      // a completed loop with zero successes, so anyone already notified keeps
+      // the mark. Terminal outcomes (some sent, only gone-evictions, or simply
+      // no eligible subscribers) stay marked.
+      if (shouldRetryAfterTotalFailure(r)) {
+        await unmarkNotified(item.kind, item.session.uid);
+      }
     }
 
     return NextResponse.json({

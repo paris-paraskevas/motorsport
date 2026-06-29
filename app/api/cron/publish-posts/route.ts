@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
-import { sendPushTo, type PushPayload } from '@/lib/push';
+import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
+import { recordSent } from '@/lib/push-history';
 import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
-import { markNotified } from '@/lib/notify-ledger';
+import { markNotified, unmarkNotified, shouldRetryAfterTotalFailure } from '@/lib/notify-ledger';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { publishDuePosts, type BlogPost } from '@/lib/blog';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -40,6 +41,19 @@ export async function GET(req: Request) {
     // not after the 5-min revalidate window.
     revalidatePath('/blog');
     for (const p of published) revalidatePath(`/blog/${p.slug}`);
+
+    // Publishing is the primary job and already happened above. The push is
+    // secondary — if VAPID isn't configured, report it clearly rather than
+    // throwing from the send loop, but DON'T undo the publish.
+    if (!isPushConfigured()) {
+      return NextResponse.json({
+        ok: true,
+        published: published.length,
+        slugs: published.map(p => p.slug),
+        pushed: false,
+        reason: 'push not configured',
+      });
+    }
 
     const subs = await listSubscriptions();
     const metas = await loadAllSeriesMeta();
@@ -77,6 +91,7 @@ export async function GET(req: Request) {
       let sent = 0;
       let evicted = 0;
       let skipped = 0;
+      let errored = 0;
       for (const { subscription, userId } of subs) {
         try {
           let silent = false;
@@ -102,15 +117,30 @@ export async function GET(req: Request) {
           const res = await sendPushTo(subscription, silent ? { ...payload, silent: true } : payload);
           if (res.ok) {
             sent++;
+            if (userId) {
+              await recordSent(userId, {
+                kind: 'blog-publish',
+                title: payload.title,
+                body: payload.body,
+                url: payload.url ?? '/app',
+                ts: Date.now(),
+                seriesSlug: post.seriesSlug ?? undefined,
+              });
+            }
           } else if (res.gone) {
             await deleteSubscription(subscription.endpoint);
             evicted++;
+          } else {
+            // Real (non-gone) send error — a transient blip.
+            errored++;
           }
         } catch {
-          // a single gone/erroring sub must not abort the fan-out
+          // a single gone/erroring sub must not abort the fan-out; count it as a
+          // real error so a total failure is reflected in the ledger.
+          errored++;
         }
       }
-      return { sent, evicted, skipped };
+      return { sent, evicted, skipped, errored };
     };
 
     let sent = 0;
@@ -123,6 +153,15 @@ export async function GET(req: Request) {
       sent += r.sent;
       evicted += r.evicted;
       skipped += r.skipped;
+      // Transient total failure → undo the mark to keep the ledger truthful (we
+      // did NOT announce this post). NB: unlike the session/betting crons this
+      // doesn't by itself re-drive the announce — publishDuePosts only returns
+      // freshly-flipped posts, and this one is already 'published', so it won't
+      // recur. The status flip is the real once-ever guard; the ledger key is a
+      // secondary dedup, and we don't want it falsely claiming a failed send.
+      if (shouldRetryAfterTotalFailure(r)) {
+        await unmarkNotified('blog-publish', post.id);
+      }
     }
 
     return NextResponse.json({

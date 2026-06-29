@@ -59,3 +59,44 @@ export async function markNotified(kind: NotifyKind, uid: string): Promise<void>
   if (!isKvConfigured()) return;
   await kv.set(key(kind, uid), Date.now(), { ex: TTL_SECONDS[kind] });
 }
+
+/**
+ * Delete the ledger key so the NEXT cron tick re-evaluates this notification.
+ * Used only for transient-total-failure recovery: a notification is marked
+ * BEFORE its send fan-out (so a mid-loop crash can't double-spam), but if a
+ * completed loop reached ZERO subscribers because every send threw a real
+ * (non-gone) error, the mark is undone here so the next tick retries.
+ * No-op when KV is unconfigured.
+ */
+export async function unmarkNotified(kind: NotifyKind, uid: string): Promise<void> {
+  if (!isKvConfigured()) return;
+  await kv.del(key(kind, uid));
+}
+
+/**
+ * Decide whether a just-marked notification should be UN-marked so the next
+ * cron tick retries it. Pure (KV-free) so the policy is unit-testable.
+ *
+ * Retry only on a *transient total failure*: the fan-out completed, reached
+ * zero subscribers successfully (`sent === 0`), AND at least one send failed
+ * with a real, non-gone error (`errored > 0`) — i.e. a push-service 5xx /
+ * network blip that a later tick may recover from.
+ *
+ * We deliberately DON'T retry when the only non-sends were dead-subscription
+ * evictions (`gone` → already removed; resending is pointless) or pref/mute
+ * skips or simply "no subscribers" (`errored === 0`): those are terminal, not
+ * transient, so leaving the mark in place is correct and avoids an endless
+ * re-fanout of a notification nobody can receive.
+ *
+ * Trade-off: because unmark runs only AFTER a completed loop with zero
+ * successes, a crash partway through the loop still leaves the mark set — so
+ * the next tick can never re-spam the subscribers who already got it. The cost
+ * is at most one missed notification on a true mid-loop crash; the benefit is
+ * recovery from a transient total outage.
+ */
+export function shouldRetryAfterTotalFailure(counts: {
+  sent: number;
+  errored: number;
+}): boolean {
+  return counts.sent === 0 && counts.errored > 0;
+}
