@@ -105,6 +105,7 @@ const NUMERIC_SETTING: Partial<
   'series-countdowns': { field: 'count', label: 'Series', values: [3, 5, 10], def: 5 },
   'where-to-watch': { field: 'count', label: 'Sessions', values: [2, 4, 6, 8], def: 4 },
   'driver-spotlight': { field: 'count', label: 'Drivers', values: [1, 3, 6], def: 3 },
+  social: { field: 'count', label: 'Leagues', values: [2, 3, 5], def: 3 },
 };
 
 function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: string; name: string }[] }) {

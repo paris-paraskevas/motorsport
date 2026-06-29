@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.123.0 — 2026-06-29
+
+Added: an opt-in **"Leagues & friends"** home widget surfacing the signed-in user's prediction leagues (with their rank) and a friends summary.
+
+### Added
+- `app/(app)/api/home/social/route.ts` (NEW) — per-user, signed-in-only home-widget data. `dynamic = 'force-dynamic'` + `Cache-Control: private, no-store` (mirrors `/api/home/bets` — NOT edge-cacheable, unlike the cacheable `/api/home/*` routes). Clerk `auth()`; anon or betting-unconfigured → `{ signedIn:false, leagues:[], friends:{count:0,pending:0} }`. Shape `HomeSocialData = { signedIn, leagues: HomeSocialLeague[], friends: { count, pending } }`, `HomeSocialLeague = { id, name, memberCount, myRank: number | null }`. Data: `getUserLeagues(userId)` (membership + `memberCount`) + `getLeaderboardsForLeagues(ids, 0)` for rank (the viewer's 1-based index in each league's win-rate leaderboard; `minPlaced=0` so every member ranks, matching the `/social/leagues` page) + `listFriends` / `listIncomingRequests` (friends count + pending incoming). Capped to the first 5 leagues server-side. Does NOT call `ensureBettingUser` (a passive read shouldn't grant the monthly allowance — same reasoning as the bets route). Fail-soft `try/catch` → signed-in-but-empty.
+- `lib/homeLayout.ts`: registered `social` in `HomeElementId`, `HOME_ELEMENTS` (label "Your leagues & friends", `collapsible: true`), and `DEFAULT_HIDDEN` (opt-in — default-hidden like the other graduated widgets). Inserted after `bets`.
+- `components/HomeContent.tsx`: the `social` render block, with the same shown+collapsed defer-fetch gate as `bets` (fetches `/api/home/social` only when the block is shown + expanded). States: skeleton (null) / signed-out nudge ("Sign in to play with friends") / data (up to `count` leagues, each `Trophy · name · P{myRank}/{memberCount}` → `/social/leagues/{id}`, plus a friends row "{count} friends · {pending} requests" → `/social/friends`) / empty leagues ("Join or create a league" → `/social/leagues`). `myRank` falls back to a member-count label when null (render-safe). Count clamped 1–5.
+- `components/HomeCustomizeBanner.tsx`: `NUMERIC_SETTING.social` ({ field: `count`, label "Leagues", values [2, 3, 5], def 3 }).
+- `lib/homeLayout.test.ts`: registry-count assertions 16 → 17; `social` added to the expected order / default-hidden / full-order fixtures.
 ## 0.122.1 — 2026-06-29
 
 Fixed the 3D qualifying view + the mobile landing hero; added the user's profile picture to the Account control.

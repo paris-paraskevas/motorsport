@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.123.0 — 2026-06-29
+
+**New home widget: your leagues & friends.** Add the "Leagues & friends" block to your home to see your prediction leagues at a glance — each with your current rank and how many players are in it — plus a quick friends summary showing your friend count and any pending requests. Tap through to a league's leaderboard or your friends list. It's opt-in: turn it on (and choose how many leagues to show) from Customise. Signed-in only.
 ## 0.122.1 — 2026-06-29
 
 **Fixes + your profile picture.** The 3D qualifying view renders again, the landing page no longer runs too wide on phones, and your profile picture now shows on the Account button — on both desktop and mobile.
