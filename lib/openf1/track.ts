@@ -1,13 +1,16 @@
 // Self-drawn circuit geometry from /location samples. Plotting one lap's worth
 // of (x, y) points traces the track outline to scale — no per-circuit SVG
-// calibration. Y is flipped (track coords are y-up; SVG is y-down). Pure +
-// synchronous so it can be unit-tested and run server-side without a fetch.
+// calibration. Y is flipped (track coords are y-up; SVG is y-down). `z` (real
+// elevation) is normalised to the same scale and carried on each point for the
+// 3D ghost view; the 2D path string ignores it. Pure + synchronous so it can be
+// unit-tested and run server-side without a fetch.
 
 import type { OF1Location } from './types';
 
 export interface TrackPoint {
   x: number; // viewBox space
   y: number;
+  z: number; // elevation, same scale as x/y (0 when no z data); for the 3D view
   t: number; // seconds from the first sample (for time-based animation)
 }
 
@@ -18,6 +21,8 @@ export interface TrackPath {
   viewBox: string; // "0 0 W H"
   points: TrackPoint[];
 }
+
+type LocationSample = Pick<OF1Location, 'x' | 'y' | 'date'> & { z?: number };
 
 const DEFAULT_WIDTH = 1000;
 const DEFAULT_PADDING = 40;
@@ -30,18 +35,24 @@ function round2(n: number): number {
 /**
  * Build a normalised SVG path from location samples (one lap, ideally). Drops
  * non-finite and (0,0) dropout samples, sorts by time, downsamples if very
- * dense, and scales to fit `width` preserving aspect ratio. Returns null when
+ * dense, and scales to fit `width` preserving aspect ratio. Each point also
+ * carries `z` (elevation) on the same scale for the 3D view. Returns null when
  * there aren't enough usable points to draw a line.
  */
 export function buildTrackPath(
-  samples: Pick<OF1Location, 'x' | 'y' | 'date'>[],
+  samples: LocationSample[],
   opts: { width?: number; padding?: number } = {},
 ): TrackPath | null {
   const width = opts.width ?? DEFAULT_WIDTH;
   const padding = opts.padding ?? DEFAULT_PADDING;
 
   const clean = samples
-    .map(s => ({ x: s.x, y: s.y, ms: new Date(s.date).getTime() }))
+    .map(s => ({
+      x: s.x,
+      y: s.y,
+      z: typeof s.z === 'number' && Number.isFinite(s.z) ? s.z : null,
+      ms: new Date(s.date).getTime(),
+    }))
     .filter(
       s =>
         Number.isFinite(s.x) &&
@@ -59,11 +70,13 @@ export function buildTrackPath(
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
+  let minZ = Infinity;
   for (const p of pts) {
     if (p.x < minX) minX = p.x;
     if (p.x > maxX) maxX = p.x;
     if (p.y < minY) minY = p.y;
     if (p.y > maxY) maxY = p.y;
+    if (p.z != null && p.z < minZ) minZ = p.z;
   }
 
   const spanX = maxX - minX || 1;
@@ -71,11 +84,13 @@ export function buildTrackPath(
   const scale = (width - 2 * padding) / spanX;
   const height = Math.round(spanY * scale + 2 * padding);
   const t0 = pts[0].ms;
+  const zBase = Number.isFinite(minZ) ? minZ : 0;
 
   const points: TrackPoint[] = pts.map(p => ({
     x: round2(padding + (p.x - minX) * scale),
     // flip Y so the map is north-up rather than mirrored
     y: round2(height - padding - (p.y - minY) * scale),
+    z: p.z != null ? round2((p.z - zBase) * scale) : 0,
     t: round2((p.ms - t0) / 1000),
   }));
 

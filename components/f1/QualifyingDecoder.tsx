@@ -5,6 +5,7 @@ import { SectorBars } from '@/components/f1/SectorBars';
 import { LazyDeltaTrace } from '@/components/f1/LazyDeltaTrace';
 import { MinisectorMap } from '@/components/f1/MinisectorMap';
 import { GhostLapReplay } from '@/components/f1/GhostLapReplay';
+import { LazyGhostLap3D } from '@/components/f1/LazyGhostLap3D';
 import type { DecoderSummary, DecoderTraces, DriverTrace, LapSummary } from '@/lib/openf1/decoder';
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
 
@@ -46,6 +47,7 @@ export function QualifyingDecoder({
 
   const [traces, setTraces] = useState<DecoderTraces | null>(null);
   const [loading, setLoading] = useState(false);
+  const [ghost3d, setGhost3d] = useState(false);
 
   // Fetch only — returns the payload, never sets state, matching WeekendBetting
   // so the effect body stays setState-free.
@@ -166,7 +168,35 @@ export function QualifyingDecoder({
           ) : tracesReady && driverA && driverB && traceA && traceB ? (
             <>
               <LazyDeltaTrace driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
-              <GhostLapReplay driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                    Ghost lap
+                  </span>
+                  <div className="flex gap-1">
+                    {([['2D', false], ['3D', true]] as const).map(([label, is3d]) => (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => setGhost3d(is3d)}
+                        aria-pressed={ghost3d === is3d}
+                        className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+                          ghost3d === is3d
+                            ? 'border-border-strong bg-surface text-text'
+                            : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {ghost3d ? (
+                  <LazyGhostLap3D driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
+                ) : (
+                  <GhostLapReplay driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
+                )}
+              </div>
               <MinisectorMap
                 driverA={driverA}
                 driverB={driverB}

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.114.0 — 2026-06-29
+
+**3D qualifying ghost cars.** In a Qualifying Decoder, flip the ghost-lap replay to 3D and watch both drivers' fastest laps race around the circuit in three dimensions — with the track's real elevation. It loads only when you open it, so it never slows the rest of the app.
+
 ## 0.113.0 — 2026-06-28
 
 **F1 Analysis hub + "analysis ready" alerts.** A new **/f1/analysis** page collects every past Grand Prix's qualifying breakdown and race story in one place. And if you follow F1 with notifications on, you'll get a nudge once a session's analysis is ready to explore.
