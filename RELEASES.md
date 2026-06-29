@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.127.0 — 2026-06-29
+
+**Onboard view: kerbs, a cleaner track + playback speeds.** The qualifying onboard now has the classic red-and-white kerbs and crisp white track-limit lines, the track no longer distorts through tight corners, the car sits properly centred and sized on the circuit, and you can speed the replay up or slow it down (0.5× to 4×).
+
 ## 0.126.1 — 2026-06-29
 
 **Fixed a race-highlights video.** The Barcelona Grand Prix highlights now play from Formula 1's official channel, instead of a regional upload that was blocked for many viewers.

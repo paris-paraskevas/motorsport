@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.127.0 — 2026-06-29
+
+Onboard view polish pass (operator: track folded at hairpins / scaling off; the track-limit lines looked bad; wants playback speeds; check find-vs-make for tracks/cars). Researched: **no free embeddable 3D-onboard API exists** (OpenF1 is data-only — which we already use; MultiViewer needs paid F1 TV); OpenF1 `location` is ~decimetres; a 2026 CC-BY car model exists (Nimaxo) but we keep the licence-clean primitive. So: generated track, made near-real-proportioned + dressed.
+
+### Changed (`components/f1/GhostLap3D.tsx`)
+- **No more hairpin folding.** The stylised track half-width (0.5) exceeded a hairpin's radius, so the perpendicular-offset ribbon self-intersected through tight corners (the "dreadful" scaling). Brought track + car + camera down to near-real proportions (`TRACK_HALF_W` 0.5 → 0.1, `CAR_SCALE` 0.26 → 0.06, close T-cam `CAM_BACK` 0.55 → 0.17, `CAM_UP` 0.085, `CAM_LOOKAHEAD` 0.55) so the ribbon can't fold. Canvas `near` 0.02 for the close scale; fog tightened (0.4–5).
+- **Proper track-limit lines.** Replaced the drei `<Line>` edges (constant screen-space width — read as fat floating lines) with a thin white strip baked into the geometry just inside each asphalt edge (perspective-correct, lifted to avoid z-fighting). Dropped the `@react-three/drei` `Line` import.
+- **Red/white kerbs** — vertex-coloured strips just outside each edge, alternating in bands (`KERB_BAND`).
+- **Car re-centred on its model centre** — the bounding box sat ~0.13 ahead of the local origin; shifted back so the GPS coordinate maps to the car's centre, wheels on the surface (exact placement + symmetric framing).
+- **Playback speed** — a 0.5× / 1× / 2× / 4× selector in the transport, wired into the rAF loop (`dt * speed`).
+
+### Notes
+- Browser-verified on localhost (Austria R8 quali, RUS vs LEC) including the T3 hairpin: no folding, clean white limits + red/white kerbs, the car reads as an open-wheel F1 car at the right size + centred, the speed buttons work, 0 console errors.
+- The track width is a fixed small value safe for Red Bull Ring's tightest corner; a fully circuit-agnostic no-fold guarantee would derive width from real per-circuit metres (carry `scale` out of `track.ts`) — noted as a follow-up if a tighter circuit ever folds.
+
 ## 0.126.1 — 2026-06-29
 
 Fixed: the 2026 Barcelona-Catalunya GP race-highlights clip pointed at a beIN SPORTS Asia upload (a regional rights-holder, geo-restricted outside Asia-Pacific) instead of the official FORMULA 1 channel.
