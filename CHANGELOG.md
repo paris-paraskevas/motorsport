@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.114.0 — 2026-06-29
+
+Added: **3D ghost-lap view** in the Qualifying Decoder (the named "quali-comparison-3D").
+
+### Added
+- `components/f1/GhostLap3D.tsx` + `LazyGhostLap3D.tsx`: a 3D ghost-car replay — both drivers' fastest laps animated on the self-drawn circuit in 3D with real **elevation** (from `location` z), via react-three-fiber + drei (`<Line>` + `<OrbitControls>`). A 2D↔3D toggle on the Ghost Lap Replay in `QualifyingDecoder`; the 2D SVG replay stays the default. **Lazy (`dynamic`, `ssr:false`, route-split)** — three.js/r3f load ONLY when the 3D view opens, never on the home/static path (respects the JS-diet perf landmine).
+- `lib/openf1/track.ts`: `TrackPoint` now carries normalised `z` (elevation) on the same scale as x/y; the 2D path string still ignores it.
+- Deps: `three`, `@react-three/fiber`, `@react-three/drei`, `@types/three` (lazy-loaded only).
+
+### Notes
+- tsc + tests clean; the toggle + the 2D Decoder browser-verified. **Confirm the WebGL 3D scene on a Vercel preview** — a local dev version-cache instability this session (stale `APP_VERSION` across many dev-server restarts → hydration re-renders) made interactive 3D screenshotting unreliable. Dev-only; a single prod `next build` bakes one consistent version.
+
 ## 0.113.0 — 2026-06-28
 
 Added: the **F1 Analysis Hub** + a post-session **"analysis ready" push**.
