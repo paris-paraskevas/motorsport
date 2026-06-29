@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.121.1 — 2026-06-29
+
+Fixed: a finished race weekend kept showing as the **next/upcoming** weekend for ~a day.
+
+### Fixed
+- `lib/rounds.ts` `buildWeekend`: `isPast` was computed from the last session's **start** minus a 1-day grace, so a finished Grand Prix read as the *next* weekend for ~24h after the race began (e.g. the Austrian GP still showing as next the morning after). Now uses the last session's real **end** time with no grace — short races (F1) advance the moment the race ends, endurance races stay current until their true ~24h end, and nothing flips mid-race. (`endDate` stays the last start for the displayed date-range label only.)
+
 ## 0.121.0 — 2026-06-29
 
 Notifications backend remodel, part 1 (delivery + deep-linking + sent-history). No UI yet — a notification-center frontend follows in a separate PR that consumes the new history store.

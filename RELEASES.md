@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.121.1 — 2026-06-29
+
+**Fixed: the "next race" not advancing.** A finished Grand Prix could still show as the upcoming weekend for about a day after it ended — it now advances to the next race as soon as the chequered flag drops.
+
 ## 0.121.0 — 2026-06-29
 
 **Notifications open the right page now.** Tapping a session reminder takes you straight to that session's page, and a "results are in" alert opens that round's results — instead of the series landing page. We also made delivery sturdier: if a push fails to reach anyone because of a temporary hiccup, it's automatically retried on the next pass rather than being silently dropped. (Internal: we now keep a record of the notifications sent to you, ready for a notifications inbox arriving in a later update.)
