@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.129.0 — 2026-06-29
+
+**The onboard track is now reconstructed from real GPS.** Instead of drawing each car down the middle of its own line, the onboard view rebuilds the actual track from where the whole field drove, then places each car on it by its true coordinates — so you see them run wide, clip apexes and ride the kerbs through the corners, on a proper full-width circuit.
+
 ## 0.128.2 — 2026-06-29
 
 **Fixed jumpy onboard motion.** The cars no longer surge ahead and then drop back during the onboard replay — they move at a true, even speed along the lap.

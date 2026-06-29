@@ -192,7 +192,7 @@ export function QualifyingDecoder({
                   </div>
                 </div>
                 {ghost3d ? (
-                  <LazyGhostLap3D driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
+                  <LazyGhostLap3D driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} circuit={traces?.circuit} />
                 ) : (
                   <GhostLapReplay driverA={driverA} driverB={driverB} traceA={traceA} traceB={traceB} />
                 )}

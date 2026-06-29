@@ -2,6 +2,7 @@
 import dynamic from 'next/dynamic';
 import type { DriverTrace } from '@/lib/openf1/delta';
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
+import type { Circuit } from '@/lib/openf1/track';
 
 // Defers three.js + @react-three/fiber + @react-three/drei (hundreds of KB
 // parsed) off the critical path, same wrapper pattern as LazyDeltaTrace.
@@ -17,6 +18,7 @@ export function LazyGhostLap3D(props: {
   driverB: EnrichedDriver;
   traceA: DriverTrace;
   traceB: DriverTrace;
+  circuit?: Circuit | null;
 }) {
   return <View {...props} />;
 }

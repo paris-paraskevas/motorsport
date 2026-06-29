@@ -5,7 +5,7 @@ import { Pause, Play } from 'lucide-react';
 import * as THREE from 'three';
 import { computeDelta, type DriverTrace, type DistSample } from '@/lib/openf1/delta';
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
-import type { TrackPath, TrackPoint } from '@/lib/openf1/track';
+import type { Circuit, TrackPath, TrackPoint } from '@/lib/openf1/track';
 
 // The onboard comparison view: a TV-style "ghost car" replay. A chase camera
 // rides just behind + above the followed driver's car (a team-coloured proxy),
@@ -350,7 +350,7 @@ const KERB_BAND = 5; // centreline points per alternating red/white band
 const KERB_RED = [0.74, 0.12, 0.12];
 const KERB_WHITE = [0.9, 0.9, 0.92];
 
-function buildRibbon(pts: THREE.Vector3[]): {
+function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   asphalt: THREE.BufferGeometry;
   kerbs: THREE.BufferGeometry;
   whiteLines: THREE.BufferGeometry;
@@ -374,8 +374,8 @@ function buildRibbon(pts: THREE.Vector3[]): {
     else tangent.normalize();
     side.crossVectors(tangent, up).normalize();
     sides.push(side.clone());
-    const L = pts[i].clone().addScaledVector(side, TRACK_HALF_W);
-    const R = pts[i].clone().addScaledVector(side, -TRACK_HALF_W);
+    const L = pts[i].clone().addScaledVector(side, halfL[i] ?? TRACK_HALF_W);
+    const R = pts[i].clone().addScaledVector(side, -(halfR[i] ?? TRACK_HALF_W));
     left.push(L);
     right.push(R);
     positions[i * 6] = L.x;
@@ -476,8 +476,8 @@ function buildRibbon(pts: THREE.Vector3[]): {
   return { asphalt, kerbs, whiteLines, left, right };
 }
 
-function TrackRibbon({ pts }: { pts: THREE.Vector3[] }) {
-  const { asphalt, kerbs, whiteLines } = useMemo(() => buildRibbon(pts), [pts]);
+function TrackRibbon({ pts, halfL, halfR }: { pts: THREE.Vector3[]; halfL: number[]; halfR: number[] }) {
+  const { asphalt, kerbs, whiteLines } = useMemo(() => buildRibbon(pts, halfL, halfR), [pts, halfL, halfR]);
   useEffect(
     () => () => {
       asphalt.dispose();
@@ -503,6 +503,7 @@ function TrackRibbon({ pts }: { pts: THREE.Vector3[] }) {
 
 function Scene({
   outline,
+  ribbon,
   followPts,
   followColour,
   otherPts,
@@ -510,6 +511,7 @@ function Scene({
   tRef,
 }: {
   outline: Mapped;
+  ribbon: { pts: THREE.Vector3[]; halfL: number[]; halfR: number[] };
   followPts: TrackPoint[];
   followColour: string;
   otherPts: TrackPoint[] | null;
@@ -536,7 +538,7 @@ function Scene({
         <planeGeometry args={[140, 140]} />
         <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} />
       </mesh>
-      <TrackRibbon pts={outline.pts} />
+      <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
       {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} />}
       {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} />}
       {followMotion && <FollowCam motion={followMotion} tRef={tRef} />}
@@ -738,11 +740,13 @@ export function GhostLap3D({
   driverB,
   traceA,
   traceB,
+  circuit,
 }: {
   driverA: EnrichedDriver;
   driverB: EnrichedDriver;
   traceA: DriverTrace;
   traceB: DriverTrace;
+  circuit?: Circuit | null;
 }) {
   const reduced = usePrefersReducedMotion();
 
@@ -764,6 +768,23 @@ export function GhostLap3D({
     () => (followedTrace.track ? mapTrack(followedTrace.track) : null),
     [followedTrace.track],
   );
+
+  // Ribbon = the reconstructed circuit (centreline + measured per-point width, so
+  // the cars sit on a real-width track at their true positions) when available,
+  // else the followed car's own line at a uniform width.
+  const ribbon = useMemo(() => {
+    if (!mapped) return null;
+    const { cx, cy } = mapped;
+    if (circuit && circuit.points.length > 2) {
+      return {
+        pts: circuit.points.map(p => mapPoint(p, cx, cy)),
+        halfL: circuit.halfLeft.map(w => w / SCENE_SCALE),
+        halfR: circuit.halfRight.map(w => w / SCENE_SCALE),
+      };
+    }
+    const uniform = mapped.pts.map(() => TRACK_HALF_W);
+    return { pts: mapped.pts, halfL: uniform, halfR: uniform };
+  }, [circuit, mapped]);
 
   // Playback runs over the slower lap so both cars stay on track the whole time.
   const duration = useMemo(
@@ -880,6 +901,7 @@ export function GhostLap3D({
         <Canvas camera={{ position: [0.3, 0.2, 0.5], fov: 60, near: 0.02, far: 60 }} dpr={[1, 2]}>
           <Scene
             outline={mapped}
+            ribbon={ribbon!}
             followPts={followedTrace.track!.points}
             followColour={followColour}
             otherPts={otherTrace.track ? otherTrace.track.points : null}
