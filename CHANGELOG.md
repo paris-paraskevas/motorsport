@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.118.0 — 2026-06-29
+
+Added: **F1 driver headshots** on driver profile pages, from the free OpenF1 historical tier (F1-only — OpenF1 has no team logos, and no headshots for other series).
+
+### Added
+- `lib/openf1/headshots.ts`: `f1HeadshotsByNumber(): Promise<Map<number, string>>` — resolves the latest already-started F1 session of the current year (`fetchOpenF1<OF1Session>('sessions', { year })`, newest `date_start <= now`; headshots are season-stable so any recent session's `/drivers` serves the whole grid), then reuses the existing `getSessionDrivers(sessionKey, 'f1')` enrichment (which already exposes `headshotUrl`) to build a number→url Map. KV-cached under `paddock:openf1:f1-headshots:<year>` for 7 days (`OPENF1_DATASET_TTL_SECONDS`) as a plain `Record<string,string>`, rebuilt to a Map on read. Fully fail-soft: any error (including an empty upstream) yields an empty Map and is not persisted, so the page never breaks and a transient blip isn't pinned for a week.
+- `app/(app)/drivers/[slug]/page.tsx` (ISR, `revalidate=3600`): for `seriesSlug === 'f1'` drivers with a car number, looks up the headshot by number and renders it in the header as a plain lazy `<img>` (~176px, rounded, `object-cover`) beside the name, with a muted "Photo: Formula 1 via OpenF1" caption. The header is now a flex row that degrades to the prior single-column layout when there's no image (non-F1 series, or any miss). The headshot fetch is gated to F1 so the ~600 non-F1 driver pages pay nothing.
+- Plain `<img>` (not `next/image`) per the repo convention for remote F1-CDN media — `next.config.ts` deliberately configures no `images.remotePatterns`. Mirrors the existing avatar in `components/f1/QualifyingDecoder.tsx`.
+
+### Notes
+- **Copyright caveat — read before reuse.** Headshots are F1 official media via OpenF1 (the OpenF1 *data* is CC BY-NC-SA 4.0, but the images themselves are F1's copyright); attribution credits the source but does **not** license them — swap to a Wikimedia / own-licensed source if this becomes a concern. `lib/openf1/headshots.ts` is intentionally the single, swappable producer of the map: only its body needs changing to move sources; call sites just consume the Map.
+- `DriversTab` avatars were considered and **skipped** — the curated drivers list is multi-series and baseline-aligned, and per-row avatars would disrupt that layout for marginal value. The profile-page headshot is the high-value surface.
+- tsc + lint (no new problems) + `next build` clean. KV is absent in this worktree, so every render assembles fresh through the OpenF1 client (token-bucket paced). **Interactive/visual browser verification is OWED** (the MCP browser is locked) — confirmed only that an F1-CDN headshot URL appears in the built driver-page HTML.
+
 ## 0.117.0 — 2026-06-29
 
 Added: author bylines on blog posts + full-draft preview from the review queue.

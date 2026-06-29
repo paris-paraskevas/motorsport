@@ -5,6 +5,7 @@ import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
+import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
 import { withSocialMeta } from '@/lib/seo';
 
 // ISR: profile pages edge-cache (was force-dynamic). Season form comes from
@@ -113,6 +114,15 @@ export default async function DriverPage({
     form = null;
   }
 
+  // F1-only headshot (official F1 media via OpenF1 — see lib/openf1/headshots).
+  // KV-cached + fail-soft; absent for non-F1 series or any lookup miss, in which
+  // case the header renders exactly as before (no image).
+  let headshotUrl: string | null = null;
+  if (driver.seriesSlug === 'f1' && driver.number != null) {
+    const headshots = await f1HeadshotsByNumber();
+    headshotUrl = headshots.get(driver.number) ?? null;
+  }
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -129,38 +139,63 @@ export default async function DriverPage({
       />
 
       <header className="mb-8 border-y border-border py-5 md:py-6">
-        <div className="flex items-center gap-2.5 mb-3 flex-wrap font-mono text-[11px] uppercase tracking-[0.18em] font-semibold">
-          <Link
-            href={`/series/${driver.seriesSlug}`}
-            className="text-tint hover:underline underline-offset-4"
-          >
-            {driver.seriesName}
-          </Link>
-          <span className="text-border-strong">·</span>
-          <Link
-            href={`/teams/${driver.teamSlug}`}
-            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-          >
-            {driver.team}
-          </Link>
-        </div>
-
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
-          {driver.name}
-          <span style={{ color: driver.seriesColor }}>.</span>
-        </h1>
-
-        <div className="mt-4 flex items-baseline gap-3 flex-wrap">
-          {driver.number != null && (
-            <span className="text-2xl font-mono tabular-nums text-text-muted">
-              #{driver.number}
-            </span>
+        <div className="flex items-start gap-5 md:gap-6">
+          {headshotUrl && (
+            <figure className="shrink-0">
+              {/* Plain <img>, not next/image: OpenF1 headshots are remote F1-CDN
+                  hosts and next.config deliberately configures no
+                  images.remotePatterns, so next/image would throw. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={headshotUrl}
+                alt={driver.name}
+                width={176}
+                height={176}
+                loading="lazy"
+                decoding="async"
+                className="h-32 w-32 md:h-44 md:w-44 rounded-2xl object-cover bg-surface border border-border"
+              />
+              <figcaption className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                Photo: Formula 1 via OpenF1
+              </figcaption>
+            </figure>
           )}
-          {driver.code && (
-            <span className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted border border-border px-2 py-1">
-              {driver.code}
-            </span>
-          )}
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5 mb-3 flex-wrap font-mono text-[11px] uppercase tracking-[0.18em] font-semibold">
+              <Link
+                href={`/series/${driver.seriesSlug}`}
+                className="text-tint hover:underline underline-offset-4"
+              >
+                {driver.seriesName}
+              </Link>
+              <span className="text-border-strong">·</span>
+              <Link
+                href={`/teams/${driver.teamSlug}`}
+                className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+              >
+                {driver.team}
+              </Link>
+            </div>
+
+            <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
+              {driver.name}
+              <span style={{ color: driver.seriesColor }}>.</span>
+            </h1>
+
+            <div className="mt-4 flex items-baseline gap-3 flex-wrap">
+              {driver.number != null && (
+                <span className="text-2xl font-mono tabular-nums text-text-muted">
+                  #{driver.number}
+                </span>
+              )}
+              {driver.code && (
+                <span className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted border border-border px-2 py-1">
+                  {driver.code}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </header>
 

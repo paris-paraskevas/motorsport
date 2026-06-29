@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.118.0 — 2026-06-29
+
+**Driver headshots.** Formula 1 driver profile pages now show the driver's photo alongside their name, team and number. (Photos are F1's official media, credited on the page.)
+
 ## 0.117.0 — 2026-06-29
 
 **Author bylines.** Blog posts now credit their author under the title. (Internal: editors can open and read a full draft from the review queue before approving it.)
