@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.126.1 — 2026-06-29
+
+Fixed: the 2026 Barcelona-Catalunya GP race-highlights clip pointed at a beIN SPORTS Asia upload (a regional rights-holder, geo-restricted outside Asia-Pacific) instead of the official FORMULA 1 channel.
+
+### Fixed
+- `content/series/f1/media.json`: round 7 `highlight` `AYlc_HwTGi8` (beIN SPORTS Asia) → `Ey8j_BlLvFM` (official FORMULA 1 channel, "Race Highlights | 2026 Barcelona-Catalunya Grand Prix"). Replacement channel verified via YouTube oEmbed. The four practice/qualifying session clips for that round were audited and were already on the official F1 channel (unchanged); no other series has curated media yet.
+
 ## 0.126.0 — 2026-06-29
 
 Visual overhaul of the onboard comparison shipped in 0.125.0 (operator feedback: scaling off, camera too far away, the car was a box, the track a bare line). The onboard view now reads like a real circuit.
