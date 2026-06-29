@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.124.0 — 2026-06-29
+
+**Practice sessions now have telemetry.** Open a past F1 practice session (FP1, FP2 or FP3) and you'll find a new Practice Analysis section: a fastest-laps board ranking every driver's best lap with the gap to the quickest, and a long-run pace table showing each driver's race-simulation pace — their representative stint's tyre compound, how many clean laps it ran, and the average lap time once the in-laps, out-laps and traffic-spoiled laps are filtered out. It's the clearest read on who actually looked quick over a race stint, not just over one flying lap. The section starts collapsed; tap the heading to open it.
 ## 0.123.0 — 2026-06-29
 
 **New home widget: your leagues & friends.** Add the "Leagues & friends" block to your home to see your prediction leagues at a glance — each with your current rank and how many players are in it — plus a quick friends summary showing your friend count and any pending requests. Tap through to a league's leaderboard or your friends list. It's opt-in: turn it on (and choose how many leagues to show) from Customise. Signed-in only.
