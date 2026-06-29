@@ -178,6 +178,8 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 - Blog author bylines + full draft preview SHIPPED 0.117.0 (#290): "By {author}" under the title (from author_id, all posts); admins can read a whole draft from the /blog queue (↗ to the full rendered preview) before approving.
 - F1 driver headshots SHIPPED 0.118.0 (#291) via OpenF1 on /drivers/[slug] (F1-only). ⚠️ COPYRIGHT: images are F1 official media (media.formula1.com) — OpenF1's CC data licence doesn't license them; isolated to one swappable fn (`f1HeadshotsByNumber`). FOLLOW-UPS: swap to a Wikimedia/own-licensed source; team logos + non-F1 driver photos still need the licensing-led imagery program.
 - Austria GP recap QUEUED 2026-06-29 as a draft (slug `austrian-gp-2026-recap`, id `fa7cb781`) — data-driven off OpenF1, triple-audited; operator approves it in the /blog review queue (once 0.117.0 deploys) to publish + push.
+- Blog byline now resolves name + avatar from CLERK (0.119.0) — fixes the byline reading the stale `app_user.display_name` + adds the author's profile photo next to "By {name}" (the #290 byline read `app_user.display_name`, which diverged from the user's Clerk account).
+- Let select (non-admin) users write blogs (operator 2026-06-29): a role-gated "author" — vetted users submit drafts → admin approve → publish (reuses the existing draft→approve→cron flow + the new full-draft queue preview). Builds on W7's Clerk-role pattern (threads). Needs a role + a submission UI.
 
 ## Parked (might do, with a revisit trigger)
 

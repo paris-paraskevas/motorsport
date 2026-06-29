@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.119.0 — 2026-06-29
+
+Changed: the blog **author byline now resolves the author's name + avatar from Clerk** (the account they edit), replacing the stale `app_user.display_name`.
+
+### Changed
+- `app/(app)/blog/[slug]/page.tsx`: new `resolveBlogAuthor(authorId, fallbackName)` resolves the byline identity from **Clerk** (`(await clerkClient()).users.getUser` → `fullName`/name parts/username + `imageUrl`), KV-cached 1h (`paddock:blog-author:<id>`), fail-soft to the stored `authorName` (no avatar) on any error. The byline now renders a rounded avatar (plain `<img>`, Clerk CDN — no `next/image`) next to "By {name}". Fixes the byline showing a stale `app_user.display_name` (which diverged from the user's actual Clerk account name) and resolves the prior byline-vs-JSON-LD name mismatch.
+
+### Notes
+- Resolves on prod (prod Clerk users); locally with dev Clerk keys an unknown prod user id falls back to the stored name + no avatar. tsc + build clean. Visual verify owed on a prod blog post.
+
 ## 0.118.0 — 2026-06-29
 
 Added: **F1 driver headshots** on driver profile pages, from the free OpenF1 historical tier (F1-only — OpenF1 has no team logos, and no headshots for other series).
