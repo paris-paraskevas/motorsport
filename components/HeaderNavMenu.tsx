@@ -38,6 +38,23 @@ export function HeaderNavMenu({
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
   const panelId = useId();
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+  };
+  const openNow = () => {
+    cancelClose();
+    setOpen(true);
+  };
+  // Close after a short grace period so the pointer can travel from the trigger
+  // across to the panel (and over any sub-pixel gap) without the menu vanishing.
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpen(false), 160);
+  };
+  useEffect(() => () => cancelClose(), []);
 
   // Client nav keeps this mounted in the layout — close when the route changes.
   // Adjusting state during render (the documented React pattern) rather than in
@@ -81,9 +98,9 @@ export function HeaderNavMenu({
   return (
     <div
       className="relative flex items-stretch"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
+      onMouseEnter={openNow}
+      onMouseLeave={scheduleClose}
+      onFocus={openNow}
       onBlur={e => {
         // Stay open while focus moves between the trigger and panel children.
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
@@ -126,7 +143,7 @@ export function HeaderNavMenu({
           id={panelId}
           aria-label={panelLabel ?? label}
           className={cn(
-            'absolute left-0 top-full z-40 mt-px min-w-48 rounded-b-lg border border-t-0 border-border bg-surface-elevated/95 p-2 shadow-xl backdrop-blur-xl',
+            'absolute left-0 top-full z-40 min-w-48 rounded-b-lg border border-t-0 border-border bg-surface-elevated/95 p-2 shadow-xl backdrop-blur-xl',
             'motion-safe:transition motion-safe:duration-(--duration-fast) motion-safe:starting:-translate-y-1 motion-safe:starting:opacity-0',
             panelClassName,
           )}

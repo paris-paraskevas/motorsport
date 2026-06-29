@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.128.1 — 2026-06-29
+
+Two operator-reported bugs.
+
+### Fixed
+- **Desktop nav menus vanished before you could click them.** `components/HeaderNavMenu.tsx` closed the hover panel the instant the pointer left the trigger, and a 1px gap (`mt-px`) sat between trigger and panel — so moving the mouse toward the panel closed it. Added a short close grace period (cancelled on re-enter) + removed the gap. Verified: the panel survives the trigger→panel move and its links are reachable.
+- **Notification centre listed a push twice for multi-device users.** The blog-publish (+ admin draft / betting / session) fan-outs called `recordSent` once per push *subscription*, so a user with two subscriptions (two devices/registrations) got two identical history rows. Now recorded once per user per notification (a `Set` guard in each fan-out) — the push still reaches every device, the centre lists it once. Files: `app/api/cron/{publish-posts,betting-notify,notify}/route.ts`, `lib/blog-notify.ts`.
+
+### Notes
+- The notification dedup is forward-looking (stops new duplicates); rows already doubled in a user's history aren't retro-removed.
+
 ## 0.128.0 — 2026-06-29
 
 Onboard motion accuracy + a turn readout (operator: the cars "jumped" / weren't linear; wanted exact degrees of turn).
