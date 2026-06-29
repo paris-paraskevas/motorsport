@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.122.0 — 2026-06-29
+
+**A notifications inbox.** A new bell in the header opens your recent alerts — session reminders, results-are-in pings and more — so you can be sure what we sent you and tap any of them to jump straight to the right page. It starts empty and fills up as new notifications go out.
+
 ## 0.121.1 — 2026-06-29
 
 **Fixed: the "next race" not advancing.** A finished Grand Prix could still show as the upcoming weekend for about a day after it ended — it now advances to the next race as soon as the chequered flag drops.
