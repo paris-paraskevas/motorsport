@@ -66,50 +66,80 @@ function mapTrack(track: TrackPath): Mapped {
   return { pts, cx, cy };
 }
 
-// A car's lap as a SMOOTH motion: a centripetal Catmull-Rom spline through its
-// scene-space location points + the matching lap-time stamps. Sampling the spline
-// (instead of linearly interpolating the ~3.7 Hz points) gives smooth position
-// AND heading — no per-sample facet jerk, which is what made the cars "jump".
-// Centripetal avoids the overshoot a uniform Catmull-Rom gets at hairpins.
+// A car's lap as a SMOOTH, TIME-CORRECT motion: cleaned scene-space location
+// points + their lap-time stamps. sampleMotion interpolates with a non-uniform
+// Catmull-Rom (Hermite) parameterised by TIME — so the car passes through each
+// sample at its real time AND moves at the right speed everywhere. (three.js's
+// CatmullRomCurve3 is parameterised by point INDEX, not time, so sampling it
+// advanced the car at uneven speed — surge/slow ~4×/s — which the lagging chase
+// camera amplified into "jump forward then fall behind". This removes that.)
 interface Motion {
-  curve: THREE.CatmullRomCurve3;
-  times: number[]; // lap-time (s) of each control point, ascending
+  pts: THREE.Vector3[]; // cleaned scene-space points
+  times: number[]; // lap-time (s) per point, strictly ascending
 }
 
 function buildMotion(points: TrackPoint[], cx: number, cy: number): Motion | null {
-  const vecs: THREE.Vector3[] = [];
+  const pts: THREE.Vector3[] = [];
   const times: number[] = [];
   for (const p of points) {
     const v = mapPoint(p, cx, cy);
-    const last = vecs[vecs.length - 1];
-    if (last && last.distanceToSquared(v) < 1e-10) continue; // drop dupes (centripetal NaN guard)
-    vecs.push(v);
+    const lastT = times[times.length - 1];
+    const lastV = pts[pts.length - 1];
+    if (lastT !== undefined && p.t <= lastT) continue; // strictly ascending time
+    if (lastV && lastV.distanceToSquared(v) < 1e-10) continue; // no zero-length segment
+    pts.push(v);
     times.push(p.t);
   }
-  if (vecs.length < 2) return null;
-  return { curve: new THREE.CatmullRomCurve3(vecs, false, 'centripetal'), times };
+  if (pts.length < 2) return null;
+  return { pts, times };
 }
 
-// Smooth position + forward tangent (XZ, y-zeroed) at lap time t. Time → curve
-// parameter is piecewise-linear per segment; the spline smooths the path between.
-// Clamps to the endpoints outside the recorded span (car holds at start/finish).
+// Position + forward tangent (XZ, y-zeroed) at lap time t via a non-uniform
+// Catmull-Rom Hermite in the TIME domain: passes through each sample at its time,
+// C1-smooth, and moves at the real speed (no index-parameter wobble). The Hermite
+// derivative gives a smooth heading — no getTangent noise. Clamps at the ends.
 function sampleMotion(m: Motion, t: number): { pos: THREE.Vector3; tan: THREE.Vector3 } {
-  const { times } = m;
-  const n = times.length;
-  let u: number;
-  if (t <= times[0]) u = 0;
-  else if (t >= times[n - 1]) u = 1;
-  else {
-    let i = 1;
-    while (i < n && times[i] < t) i++;
-    const f = (t - times[i - 1]) / (times[i] - times[i - 1] || 1);
-    u = (i - 1 + f) / (n - 1);
-  }
-  const pos = m.curve.getPoint(u);
-  const tan = m.curve.getTangent(u);
-  tan.y = 0;
-  if (tan.lengthSq() < 1e-7) tan.set(0, 0, 1);
-  else tan.normalize();
+  const { pts, times } = m;
+  const n = pts.length;
+  const headingFrom = (a: THREE.Vector3, b: THREE.Vector3): THREE.Vector3 => {
+    const d = b.clone().sub(a);
+    d.y = 0;
+    return d.lengthSq() > 1e-9 ? d.normalize() : new THREE.Vector3(0, 0, 1);
+  };
+  if (t <= times[0]) return { pos: pts[0].clone(), tan: headingFrom(pts[0], pts[1]) };
+  if (t >= times[n - 1]) return { pos: pts[n - 1].clone(), tan: headingFrom(pts[n - 2], pts[n - 1]) };
+
+  let i = 0;
+  while (i < n - 1 && times[i + 1] <= t) i++; // segment [i, i+1] with times[i] <= t < times[i+1]
+  const p1 = pts[i];
+  const p2 = pts[i + 1];
+  const t1 = times[i];
+  const t2 = times[i + 1];
+  const p0 = pts[i - 1] ?? p1;
+  const p3 = pts[i + 2] ?? p2;
+  const t0 = times[i - 1] ?? t1;
+  const t3 = times[i + 2] ?? t2;
+  // Non-uniform Catmull-Rom tangents = central finite differences in time (the
+  // real velocity around each endpoint), so speed matches reality.
+  const m1 = p2.clone().sub(p0).divideScalar((t2 - t0) || 1);
+  const m2 = p3.clone().sub(p1).divideScalar((t3 - t1) || 1);
+  const h = t2 - t1 || 1;
+  const s = (t - t1) / h;
+  const s2 = s * s;
+  const s3 = s2 * s;
+  // Hermite basis (position) + its derivative (velocity → heading).
+  const pos = new THREE.Vector3()
+    .addScaledVector(p1, 2 * s3 - 3 * s2 + 1)
+    .addScaledVector(m1, (s3 - 2 * s2 + s) * h)
+    .addScaledVector(p2, -2 * s3 + 3 * s2)
+    .addScaledVector(m2, (s3 - s2) * h);
+  const vel = new THREE.Vector3()
+    .addScaledVector(p1, 6 * s2 - 6 * s)
+    .addScaledVector(m1, (3 * s2 - 4 * s + 1) * h)
+    .addScaledVector(p2, -6 * s2 + 6 * s)
+    .addScaledVector(m2, (3 * s2 - 2 * s) * h);
+  vel.y = 0;
+  const tan = vel.lengthSq() > 1e-9 ? vel.normalize() : headingFrom(p1, p2);
   return { pos, tan };
 }
 

@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.128.2 — 2026-06-29
+
+Fixed the onboard cars surging forward then dropping back (operator).
+
+### Fixed
+- `components/f1/GhostLap3D.tsx`: the 0.128.0 smoothing used three.js `CatmullRomCurve3`, which is parameterised by point **index**, not time — so sampling it advanced a car at uneven speed (surge/slow ~4×/s as it crossed the ~3.7 Hz samples), which the lagging chase camera amplified into a visible "jump forward then fall behind". Replaced with a **non-uniform Catmull-Rom (Hermite) parameterised by TIME**: the car passes through each location sample at its real timestamp and moves at the real speed everywhere, with a smooth analytic heading (no `getTangent` noise). Added strictly-ascending-time + zero-length-segment guards on the input.
+
 ## 0.128.1 — 2026-06-29
 
 Two operator-reported bugs.
