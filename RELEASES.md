@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.123.0 — 2026-06-29
+
+**New home widget: your leagues & friends.** Add the "Leagues & friends" block to your home to see your prediction leagues at a glance — each with your current rank and how many players are in it — plus a quick friends summary showing your friend count and any pending requests. Tap through to a league's leaderboard or your friends list. It's opt-in: turn it on (and choose how many leagues to show) from Customise. Signed-in only.
+
 ## 0.121.1 — 2026-06-29
 
 **Fixed: the "next race" not advancing.** A finished Grand Prix could still show as the upcoming weekend for about a day after it ended — it now advances to the next race as soon as the chequered flag drops.

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Tv, Users } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Trophy, Tv, Users, UserPlus } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -92,6 +92,19 @@ interface HomeDecodedData {
   gp: string;
   qualifying: { href: string; pole: string | null; p2: string | null } | null;
   race: { href: string } | null;
+}
+
+interface HomeSocialLeague {
+  id: string;
+  name: string;
+  memberCount: number;
+  myRank: number | null;
+}
+
+interface HomeSocialData {
+  signedIn: boolean;
+  leagues: HomeSocialLeague[];
+  friends: { count: number; pending: number };
 }
 
 // Mirrors the /api/home/spotlight route export.
@@ -363,6 +376,28 @@ export function HomeContent({
     };
   }, [betsHidden, betsCollapsed]);
 
+  // YOUR LEAGUES & FRIENDS — opt-in, default-hidden, signed-in only. Same defer
+  // shape as bets; the route returns { signedIn:false } for anon (the widget then
+  // shows a join-a-league nudge). Per-user, so the route is no-store.
+  const [social, setSocial] = useState<HomeSocialData | null>(null);
+  const socialHidden = layout.hidden.includes('social');
+  const socialCollapsed = layout.collapsed.includes('social');
+  useEffect(() => {
+    if (socialHidden || socialCollapsed) return;
+    let alive = true;
+    fetch('/api/home/social')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (alive) setSocial(d as HomeSocialData | null);
+      })
+      .catch(() => {
+        if (alive) setSocial(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [socialHidden, socialCollapsed]);
+
   // LATEST DECODED (F1) — opt-in, default-hidden. The most recent past F1 round's
   // qualifying + race, deep-linked to the Decoder / Race Story. Defer-fetched;
   // null when there's no finished round yet or OpenF1 has nothing.
@@ -440,6 +475,7 @@ export function HomeContent({
   const sjmCount = Math.min(Math.max(cfg('series-just-missed').count ?? 5, 1), 10);
   const cdCount = Math.min(Math.max(cfg('series-countdowns').count ?? 5, 1), 10);
   const threadsCount = Math.min(Math.max(cfg('threads').count ?? 5, 1), 5);
+  const socialCount = Math.min(Math.max(cfg('social').count ?? 3, 1), 5);
   const wtwCount = Math.min(Math.max(cfg('where-to-watch').count ?? 4, 1), 8);
   const spotlightCount = Math.min(Math.max(cfg('driver-spotlight').count ?? 3, 1), 6);
   // Density on the chyron tightens its vertical padding (it's a single strip, not
@@ -1636,6 +1672,81 @@ export function HomeContent({
                     <ArrowUpRight size={13} />
                   </Link>
                 </div>
+              </div>
+            ))}
+        </section>
+      )}
+
+      {/* ── YOUR LEAGUES & FRIENDS — opt-in, signed-in only. The user's leagues
+             (with their rank) + a friends summary, linking into /social. Anon →
+             a subtle sign-in nudge. Empty → a join-a-league CTA. ── */}
+      {!isHidden('social') && (
+        <section aria-label="Your leagues and friends" className="mb-8" style={{ order: orderOf('social') }}>
+          <CollapsibleSectionHead
+            title="Leagues & friends"
+            sub={social?.signedIn ? `${social.friends.count} friend${social.friends.count === 1 ? '' : 's'}` : 'play money'}
+            collapsed={isCollapsed('social')}
+            onToggle={() => toggleCollapsed('social')}
+          />
+          {!isCollapsed('social') &&
+            (social === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-1/3 animate-pulse bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+              </div>
+            ) : !social.signedIn ? (
+              <p className="border-y border-border py-4 text-sm text-text-faint">
+                <Link href="/social/leagues" className="text-text-muted underline underline-offset-2 hover:text-text">
+                  Sign in to play with friends
+                </Link>{' '}
+                — join a private league and climb the table.
+              </p>
+            ) : (
+              <div className="border-y border-border py-4">
+                {social.leagues.length > 0 ? (
+                  <ul className={`divide-y divide-border${dense('social') ? ' [&_a]:py-1.5' : ''}`}>
+                    {social.leagues.slice(0, socialCount).map(l => (
+                      <li key={l.id}>
+                        <Link
+                          href={`/social/leagues/${l.id}`}
+                          className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                        >
+                          <Trophy size={14} className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
+                          <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-text tracking-tight">
+                            {l.name}
+                          </span>
+                          <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
+                            {l.myRank ? `P${l.myRank}/${l.memberCount}` : `${l.memberCount} member${l.memberCount === 1 ? '' : 's'}`}
+                          </span>
+                          <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="font-mono text-sm text-text-faint">
+                    <Link href="/social/leagues" className="text-text-muted underline underline-offset-2 hover:text-text">
+                      Join or create a league
+                    </Link>{' '}
+                    — predict races against friends.
+                  </p>
+                )}
+
+                <Link
+                  href="/social/friends"
+                  className="group mt-3 flex items-center gap-3 border-t border-border pt-3 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                >
+                  <UserPlus size={14} className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
+                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-text tracking-tight">
+                    {social.friends.count} friend{social.friends.count === 1 ? '' : 's'}
+                    {social.friends.pending > 0 && (
+                      <span className="ml-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-brand tnum">
+                        · {social.friends.pending} request{social.friends.pending === 1 ? '' : 's'}
+                      </span>
+                    )}
+                  </span>
+                  <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                </Link>
               </div>
             ))}
         </section>
