@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.128.0 — 2026-06-29
+
+Onboard motion accuracy + a turn readout (operator: the cars "jumped" / weren't linear; wanted exact degrees of turn).
+
+### Changed (`components/f1/GhostLap3D.tsx`)
+- **Smooth motion via spline.** Both cars + the chase camera were positioned by *linear* interpolation between the ~3.7 Hz OpenF1 location samples, so position + heading changed direction in steps every ~270 ms — the jerky "jumping" / non-linear feel. Replaced with a per-car **centripetal Catmull-Rom spline** (`buildMotion` / `sampleMotion`) sampled by lap time: smooth position AND tangent, so the car heading + camera glide. Centripetal avoids the corner overshoot a uniform spline gets at hairpins; duplicate points are dropped to dodge the centripetal NaN. Removed the old linear `scenePosAtTime` / `headingDir` helpers.
+- **Exact degrees of turn.** OpenF1 has no steering channel, but the car's actual yaw is exact from the GPS path — added a live per-driver turn readout (°/s + ◀/▶) to the telemetry row, central-differenced from the same heading the 3D scene uses. Left/right sign verified against a known Red Bull Ring right-hander.
+
+### Notes
+- Browser-verified on localhost (Austria R8 quali): renders with 0 console errors; the turn readout behaves sensibly through the lap (straights ▲, corners ~10–65 °/s) with correct left/right. Motion smoothness is best judged in playback — static frames can't show it.
+
 ## 0.127.0 — 2026-06-29
 
 Onboard view polish pass (operator: track folded at hairpins / scaling off; the track-limit lines looked bad; wants playback speeds; check find-vs-make for tracks/cars). Researched: **no free embeddable 3D-onboard API exists** (OpenF1 is data-only — which we already use; MultiViewer needs paid F1 TV); OpenF1 `location` is ~decimetres; a 2026 CC-BY car model exists (Nimaxo) but we keep the licence-clean primitive. So: generated track, made near-real-proportioned + dressed.
