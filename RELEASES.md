@@ -1,8 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
-## 0.131.0 — 2026-06-30
+## 0.131.1 — 2026-06-30
 
-**A real 3D onboard.** The qualifying onboard replay now shows a proper race-car model on a dressed circuit — trackside barriers, grandstands at the corners, greenery and banners — on every track, and it scales itself down on phones to stay smooth. (The simple 2D replay is still available for now.)
+Reverted yesterday's experimental 3D onboard scene — it wasn't right (walls everywhere, misplaced scenery, an odd-looking car). The onboard is back to the clean version while we rebuild the realistic scene properly.
 
 ## 0.130.6 — 2026-06-30
 
