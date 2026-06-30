@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { PerspectiveCamera } from '@react-three/drei';
 import { Pause, Play } from 'lucide-react';
 import * as THREE from 'three';
 import { computeDelta, type DriverTrace, type DistSample } from '@/lib/openf1/delta';
@@ -46,6 +47,20 @@ const CAM_BACK = 0.35; // distance behind the car
 const CAM_UP = 0.14; // height above the car
 const CAM_LOOKAHEAD = 0.6; // how far ahead the camera aims
 const CAM_LERP = 1; // rigid follow: position is smooth AND the heading is finite-difference-smoothed (see sampleHeading), so the camera tracks the car exactly without swimming — raw per-frame Hermite velocity used to spike the aim to ~600°/s at GPS gaps
+
+// Cockpit / onboard T-cam rig: bolted just above + behind the driver's head on the
+// followed car, looking forward over the nose (the offsets are tiny — the car model
+// is only ~0.08 world units long at CAR_SCALE). Wider FOV than the chase for the
+// immersive POV. NB under time-sync the rival is 15-40 m away = usually around the
+// next corner / behind you, so in the onboard frustum it's a glimpse on the
+// straights, not a constant presence (the chase view is the one for comparing). The
+// depth-fade still guards the rare near/behind-camera pass.
+type CameraMode = 'chase' | 'cockpit';
+const COCKPIT_UP = 0.02; // above the GPS point (≈ above the head)
+const COCKPIT_BACK = 0.012; // just behind the head, T-cam style
+const COCKPIT_LOOKAHEAD = 0.5; // aim down the track ahead
+const CHASE_FOV = 60; // the Canvas default (chase)
+const COCKPIT_FOV = 82; // wide onboard view
 
 // Translucent rival overlay + a depth-fade: a rival that drifts behind the camera
 // (a badly mismatched pair) dissolves smoothly instead of exploding through the
@@ -386,22 +401,37 @@ function CarRig({
   );
 }
 
-// Drives the default camera to chase the followed car from behind + above.
-function FollowCam({ motion, tRef }: { motion: Motion; tRef: React.RefObject<number> }) {
+// Drives the default camera: a CHASE cam behind + above the car, or a COCKPIT
+// (onboard T-cam) bolted on the car just above the driver's head, looking forward
+// over the nose. Both rigid (the heading is FD-smoothed, so no lag is needed) —
+// switching mode jumps cleanly (CAM_LERP = 1).
+function FollowCam({
+  motion,
+  tRef,
+  mode,
+}: {
+  motion: Motion;
+  tRef: React.RefObject<number>;
+  mode: CameraMode;
+}) {
   const camera = useThree(s => s.camera);
   const inited = useRef(false);
+  // FOV is set declaratively by the <PerspectiveCamera> in Scene (mutating the
+  // hook-returned camera trips react-hooks/immutability); here we only drive its
+  // position + aim, via method calls, which is allowed.
   useFrame(() => {
     const { pos, tan } = sampleMotion(motion, tRef.current ?? 0);
-    const target = pos.clone().addScaledVector(tan, -CAM_BACK);
-    target.y += CAM_UP;
+    const cockpit = mode === 'cockpit';
+    const target = pos.clone().addScaledVector(tan, cockpit ? -COCKPIT_BACK : -CAM_BACK);
+    target.y += cockpit ? COCKPIT_UP : CAM_UP;
     if (!inited.current) {
       camera.position.copy(target);
       inited.current = true;
     } else {
       camera.position.lerp(target, CAM_LERP);
     }
-    const look = pos.clone().addScaledVector(tan, CAM_LOOKAHEAD);
-    look.y += 0.02;
+    const look = pos.clone().addScaledVector(tan, cockpit ? COCKPIT_LOOKAHEAD : CAM_LOOKAHEAD);
+    look.y += cockpit ? COCKPIT_UP * 0.5 : 0.02;
     camera.lookAt(look);
   });
   return null;
@@ -671,6 +701,7 @@ function Scene({
   otherPts,
   otherColour,
   tRef,
+  cameraMode,
 }: {
   outline: Mapped;
   ribbon: { pts: THREE.Vector3[]; halfL: number[]; halfR: number[] };
@@ -679,6 +710,7 @@ function Scene({
   otherPts: TrackPoint[] | null;
   otherColour: string;
   tRef: React.RefObject<number>;
+  cameraMode: CameraMode;
 }) {
   const followMotion = useMemo(
     () => buildMotion(followPts, outline.cx, outline.cy),
@@ -690,6 +722,14 @@ function Scene({
   );
   return (
     <>
+      {/* Default camera — FOV declarative (wider for the cockpit); FollowCam drives
+          its position + aim each frame. */}
+      <PerspectiveCamera
+        makeDefault
+        fov={cameraMode === 'cockpit' ? COCKPIT_FOV : CHASE_FOV}
+        near={0.02}
+        far={60}
+      />
       <color attach="background" args={['#8fa6bb']} />
       <fog attach="fog" args={['#8fa6bb', 0.4, 5]} />
       <ambientLight intensity={0.85} />
@@ -700,7 +740,7 @@ function Scene({
       <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
       {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} />}
       {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} />}
-      {followMotion && <FollowCam motion={followMotion} tRef={tRef} />}
+      {followMotion && <FollowCam motion={followMotion} tRef={tRef} mode={cameraMode} />}
     </>
   );
 }
@@ -980,6 +1020,9 @@ export function GhostLap3D({
   const [t, setT] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
+  // Camera view: Chase (default — frames both cars for the comparison) or Cockpit
+  // (onboard T-cam on the followed car, above the head; immersive POV).
+  const [cameraMode, setCameraMode] = useState<CameraMode>('chase');
   const rafRef = useRef<number | null>(null);
   const lastTsRef = useRef<number | null>(null);
 
@@ -1068,6 +1111,7 @@ export function GhostLap3D({
             otherPts={otherTrace.track ? otherTrace.track.points : null}
             otherColour={otherColour}
             tRef={tRef}
+            cameraMode={cameraMode}
           />
         </Canvas>
       </div>
@@ -1127,29 +1171,51 @@ export function GhostLap3D({
           <LegendDot colour={followColour} label={`${followingA ? driverA.code : driverB.code} (you)`} />
           <LegendDot colour={otherColour} label={`${followingA ? driverB.code : driverA.code} (ghost)`} />
         </div>
-        {/* Follow toggle — which car the camera rides. Disabled for a car with no trace. */}
-        <div className="flex items-center gap-1">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Follow</span>
-          {([[driverA.code, true, aHasTrack], [driverB.code, false, bHasTrack]] as const).map(
-            ([label, isA, enabled]) => (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          {/* Camera view — Chase (best for comparing) or Cockpit (immersive onboard
+              T-cam above the head; the time-synced rival is a glimpse on straights). */}
+          <div className="flex items-center gap-1">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">View</span>
+            {([['Chase', 'chase'], ['Cockpit', 'cockpit']] as const).map(([label, m]) => (
               <button
-                key={label}
+                key={m}
                 type="button"
-                disabled={!enabled}
-                onClick={() => setFollowAState(isA)}
-                aria-pressed={followingA === isA}
+                onClick={() => setCameraMode(m)}
+                aria-pressed={cameraMode === m}
                 className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
-                  followingA === isA
+                  cameraMode === m
                     ? 'border-border-strong bg-surface text-text'
-                    : enabled
-                      ? 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
-                      : 'cursor-not-allowed border-border text-text-faint/40'
+                    : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
                 }`}
               >
                 {label}
               </button>
-            ),
-          )}
+            ))}
+          </div>
+          {/* Follow toggle — which car the camera rides. Disabled for a car with no trace. */}
+          <div className="flex items-center gap-1">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Follow</span>
+            {([[driverA.code, true, aHasTrack], [driverB.code, false, bHasTrack]] as const).map(
+              ([label, isA, enabled]) => (
+                <button
+                  key={label}
+                  type="button"
+                  disabled={!enabled}
+                  onClick={() => setFollowAState(isA)}
+                  aria-pressed={followingA === isA}
+                  className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
+                    followingA === isA
+                      ? 'border-border-strong bg-surface text-text'
+                      : enabled
+                        ? 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
+                        : 'cursor-not-allowed border-border text-text-faint/40'
+                  }`}
+                >
+                  {label}
+                </button>
+              ),
+            )}
+          </div>
         </div>
       </div>
 
