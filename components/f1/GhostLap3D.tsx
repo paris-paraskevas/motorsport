@@ -143,7 +143,49 @@ function buildMotion(points: TrackPoint[], cx: number, cy: number): Motion | nul
   pts.push(raw[raw.length - 1]);
   times.push(rawT[raw.length - 1]);
   if (pts.length < 2) return null;
-  return { pts, times };
+
+  // De-jitter the TIMING. OpenF1's location timestamps jitter badly — a real ~0.25 s
+  // of travel is often stamped ~0.10 s (and the next interval over-long), so a
+  // time-domain spline makes the car ZOOM then CRAWL even though the PATH is smooth.
+  // Between two cars that reads as the ghost "falling back then teleporting in front"
+  // (relative surges hit ~170 m/s on real data — 2× a car's top speed). The fix:
+  // re-derive each point's time from a speed low-passed over ±REHELP_TAU (so genuine
+  // braking/accel, which is slower than that, survives) then rescale to the true lap
+  // duration — same path, same finish time, physically smooth pacing. Kills the
+  // recurring mid-lap surge (217 → 0 frames in the audit).
+  const REHELP_TAU = 0.5;
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i - 1].distanceTo(pts[i]));
+  const rawV = pts.map((_, i) => {
+    const a = Math.max(0, i - 1);
+    const b = Math.min(pts.length - 1, i + 1);
+    return (cum[b] - cum[a]) / ((times[b] - times[a]) || 1e-6);
+  });
+  const smoothV = rawV.map((_, i) => {
+    let acc = 0;
+    let w = 0;
+    for (let j = 0; j < rawV.length; j++) {
+      const d = (times[j] - times[i]) / REHELP_TAU;
+      if (Math.abs(d) > 3) continue; // ±3σ window
+      const wj = Math.exp(-d * d);
+      acc += rawV[j] * wj;
+      w += wj;
+    }
+    return w > 0 ? acc / w : rawV[i];
+  });
+  const retimed = [times[0]];
+  for (let i = 1; i < pts.length; i++) {
+    const ds = cum[i] - cum[i - 1];
+    const vm = (smoothV[i] + smoothV[i - 1]) / 2 || 1e-6;
+    retimed.push(retimed[i - 1] + ds / vm);
+  }
+  // Rescale to the original [first, last] sample-time span so overall time-sync holds.
+  const span = times[times.length - 1] - times[0];
+  const newSpan = retimed[retimed.length - 1] - retimed[0];
+  const k = newSpan > 1e-6 ? span / newSpan : 1;
+  const finalTimes = retimed.map(tt => times[0] + (tt - times[0]) * k);
+
+  return { pts, times: finalTimes };
 }
 
 // Position at lap time t via a non-uniform Catmull-Rom Hermite in the TIME domain:

@@ -6,11 +6,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 ## 0.130.0 — 2026-06-30
 
-Onboard cockpit camera for the ghost replay (operator: "do the above the head").
+Onboard cockpit camera, plus a fix for the ghost "teleporting" relative to the followed car (operator: "do the above the head"; then: "the ghost car falls back behind the main car then teleports in front").
 
 ### Added (`components/f1/GhostLap3D.tsx`)
 - **Cockpit (onboard T-cam) view** + a `Chase ⟷ Cockpit` toggle on the onboard replay. Cockpit mounts the camera on the followed car just above + behind the driver's head (`COCKPIT_UP`/`COCKPIT_BACK`), looking forward over the nose, at a wider FOV (`COCKPIT_FOV` 82° vs the chase's 60°) for the POV feel. **Chase stays the default** — it frames both cars for the comparison.
 - The default camera is now a declarative drei `<PerspectiveCamera makeDefault>` so the FOV can switch per mode WITHOUT mutating the hook-returned camera (which trips `react-hooks/immutability`); `FollowCam` drives its position + aim per mode via method calls.
+
+### Fixed — ghost surging / "teleporting" relative to the followed car (`buildMotion`)
+- DISTINCT from the 0.129.4 dart (that was the chase camera's near plane). After that fix, with the cars near each other the ghost still "fell back then teleported in front" every so often. Root cause, audited on the real Austria traces: OpenF1's **location TIMESTAMPS jitter** — a real ~0.25 s of travel is often stamped ~0.10 s (next interval over-long) — so the time-domain spline makes each car ZOOM then CRAWL even though the PATH is smooth; between two cars that's a relative surge hitting **~170 m/s** (2× a car's top speed). 16–19 segments/lap implied impossible speeds (110–190 m/s) while the median was a healthy 64 m/s. Ruled out: not interpolation overshoot (PCHIP identical), not isolated outliers (velocity-clean dropped 0), not the out-and-back spike filter.
+- **Fix:** `buildMotion` now RE-TIMES each trace — re-derives point times from a speed low-passed over ±0.5 s (so genuine braking/accel, which is slower, survives), rescaled to the true lap duration so overall time-sync is preserved. Same path, same finish, physically smooth pacing. On the real pair: peak own-speed 198 → ~95 m/s, recurring mid-lap relative surge **217 frames → 0** (residual is a one-off at the start-line launch).
 
 ### Notes
 - Under time-sync (where the cars were at the same elapsed time — the operator's model), the rival is 15–40 m away — usually around the next corner or behind you — so in the narrow cockpit frustum it's a glimpse on the straights, not a constant presence. **Chase remains the view for comparing the two laps; Cockpit is the immersion view.** The existing ghost depth-fade still guards the rare near/behind-camera pass.
