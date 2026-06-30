@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.130.2 — 2026-06-30
+
+**The onboard ghost really stops surging now.** The motion-smoothing mentioned around the last onboard update didn't quite make it into the live build — this lands it, so the rival's translucent "ghost" holds its true, even pace through the lap instead of occasionally darting ahead and dropping back.
+
 ## 0.130.1 — 2026-06-30
 
 Internal: documentation and build housekeeping. No changes to the app itself.
