@@ -56,8 +56,11 @@ export async function POST(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown error';
     // place_bet raises domain errors (market not open / insufficient balance /
-    // already bet) — surface those as 422, anything else as 500.
+    // already bet) — surface those as 422. Anything else is unexpected: log it
+    // server-side and return a generic 500 so we never leak DB/internal details.
     const domain = /not open|insufficient|already|not a member|market not found|stake must|positive|position required|bet limit/i.test(message);
-    return NextResponse.json({ ok: false, error: message }, { status: domain ? 422 : 500 });
+    if (domain) return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    console.error('bet/place failed', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

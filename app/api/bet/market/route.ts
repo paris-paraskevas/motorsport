@@ -45,7 +45,8 @@ export async function GET(req: Request) {
     const bets = allBets.filter(b => ids.has(b.marketId));
     return NextResponse.json({ available: true, signedIn: true, markets, balance, bets, leagues });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ available: true, error: message }, { status: 500 });
+    // Log server-side for diagnosis; never surface raw DB/internal errors to the client.
+    console.error('bet/market failed', err);
+    return NextResponse.json({ available: true, error: 'internal error' }, { status: 500 });
   }
 }
