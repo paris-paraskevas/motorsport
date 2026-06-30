@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.129.4 — 2026-06-29
+
+The onboard ghost "darting forward then snapping back" — root-caused properly and fixed. Five prior attempts (spike rejection, rigid camera, time-correct Hermite, terrain) treated symptoms; an audit against the REAL Austria R8 quali traces, run through the exact production math, showed the real cause.
+
+### Root cause — the chase camera, not the spline/timing/heading
+`CAM_BACK` (0.17) sat *closer* to the followed car than the time-synced gap to the rival (up to ~0.19 scene-units behind it). So when you followed the faster car, the slower ghost fell BEHIND the camera's near plane, where the perspective projection explodes — the ghost leapt >a full screen width in one frame, then clipped out. Confirmed on real data (session 11311, RUS vs LEC): at CAM_BACK 0.17, 284 single-frame screen darts, ghost 19 frames behind the camera + 36 off-screen, and **every dart was at depth < 0.2 (the near-plane zone); none with the ghost in clear view.** Ruled OUT on the same real traces: position-spline overshoot (0 backtracking segments → PCHIP would change nothing), the per-car timing-anchor skew (only 43 ms → re-anchoring changed nothing), spike rejection (0 points dropped), and heading jitter (real at 587°/s, but finite-difference-smoothing it left the on-screen dart unchanged).
+
+### Fixed / Changed (`components/f1/GhostLap3D.tsx`)
+- **Pulled the chase camera back:** `CAM_BACK` 0.17 → 0.35 (`CAM_UP` 0.085 → 0.14, `CAM_LOOKAHEAD` 0.55 → 0.6). The time-synced rival now stays IN FRONT of the camera. Real Austria pair: 0 darts, ghost depth never below 0.11 (5× off the near plane), 100% on-screen, both follow directions.
+- **Kept time-sync** (operator's call — "we care where the cars were at the same elapsed time"): both cars + the strip chips read at the same elapsed `t`; playback runs over the slower lap. Reverted an interim distance-sync experiment.
+- **Finite-difference heading:** `sampleHeading` derives the camera/car heading from the smooth position spline over ±0.3 s (`HEAD_DT`), not the raw per-frame Hermite velocity — whose DIRECTION spiked to ~600°/s at OpenF1's irregular (≤1.16 s) GPS gaps and swam the rigid camera. Caps yaw near ~90°/s (real-corner rate). Split `samplePos`/`sampleHeading`/`sampleMotion`.
+- **Ghost depth-fade:** a rival from a badly-mismatched pair (gap larger than the pull-back) fades out as it passes behind the camera (`GHOST_FADE_LO/HI` on its camera-depth) instead of exploding through the near plane.
+
+### Verified
+- Real-data audit (Austria R8 quali) through the exact ported production chain + the chase-camera projection. tsc + lint clean. Browser-verified on localhost: onboard renders, 0 console errors, clean framing following both the faster car (slower ghost correctly behind / out of the forward view) and the slower car (faster ghost ahead); playback, follow-toggle and gap readout all work.
+- Entirely client-side — no trace-data shape change, so no `decoder-traces` cache-key bump.
+
+### Notes
+- A true "above the driver's head" onboard cam was evaluated and dropped: with time-sync the rival is 15–40 m away — around the next corner or behind you — so it sits in a narrow onboard frustum only ~1% of the lap. Parked in IDEAS as a possible immersion toggle.
+
 ## 0.129.3 — 2026-06-29
 
 The onboard ghost still jumped forward/back (operator).
