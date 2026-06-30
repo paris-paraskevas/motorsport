@@ -59,11 +59,11 @@ const CAM_LERP = 1; // rigid follow: position is smooth AND the heading is finit
 // straights, not a constant presence (the chase view is the one for comparing). The
 // depth-fade still guards the rare near/behind-camera pass.
 type CameraMode = 'chase' | 'cockpit';
-const COCKPIT_UP = 0.02; // above the GPS point (≈ above the head)
-const COCKPIT_BACK = 0.012; // just behind the head, T-cam style
+const COCKPIT_UP = 0.05; // clear of the car's structures (roll hoop/halo), looking down over them
+const COCKPIT_BACK = 0; // dead centre over the head
 const COCKPIT_LOOKAHEAD = 0.5; // aim down the track ahead
 const CHASE_FOV = 60; // the Canvas default (chase)
-const COCKPIT_FOV = 82; // wide onboard view
+const COCKPIT_FOV = 90; // wide onboard view
 
 // Translucent rival overlay + a depth-fade: a rival that drifts behind the camera
 // (a badly mismatched pair) dissolves smoothly instead of exploding through the
@@ -691,11 +691,12 @@ function Scene({
         near={0.02}
         far={60}
       />
-      <color attach="background" args={['#8fa6bb']} />
-      <fog attach="fog" args={['#8fa6bb', 0.4, 5]} />
-      <ambientLight intensity={0.85} />
-      <directionalLight position={[6, 10, 4]} intensity={1.2} />
-      <hemisphereLight args={['#cdddee', '#2c3a20', 0.55]} />
+      <color attach="background" args={['#aecbe6']} />
+      <fog attach="fog" args={['#aecbe6', 0.6, 6]} />
+      <ambientLight intensity={1.4} />
+      {/* the "sun" — overhead directional key light */}
+      <directionalLight position={[6, 12, 4]} intensity={3} />
+      <hemisphereLight args={['#dfeaf6', '#3a4a28', 0.9]} />
       {/* The grass apron now lives inside TrackRibbon so it follows the track's
           own elevation (climbs + falls with it) instead of a flat plane. */}
       <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
