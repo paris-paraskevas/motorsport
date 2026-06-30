@@ -157,48 +157,63 @@ Reuses the existing `CarRig` (`GhostLap3D.tsx` ~L392) which already positions/or
 
 - [ ] **Step 1: Implement CarModel**
 
+The committed model is glTF 2.0, **untextured**, with generic mesh names `Object_0…` and 28 flat-colour materials `Material.000–.027` — so the original recolour-by-node-name (`BODY_NODE='Body'`) does not apply. Recolour is by **material luminance** instead; scale + recentre are **bbox-derived** (bbox ≈ 1.78(w) × 1.08(h) × 4.46(l) m, origin off-centre in X).
+
 ```tsx
 'use client';
 import { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Path served from /public. Draco decoder is drei's default CDN; if offline,
-// set useGLTF.setDecoderPath to a self-hosted /draco/ — verify at the gate.
 const MODEL_URL = '/models/f1-2022/car.glb';
 useGLTF.preload(MODEL_URL);
 
-// CAR_SCALE chosen so the model spans ~40% of the asphalt width, matching the
-// old box car. Tune against the screenshot gate using the bounding-box length
-// recorded in Task 1 Step 3.
-const CAR_SCALE = 0.06;
-const BODY_NODE = 'Body'; // <-- replace with the real bodywork node name from Task 1 Step 3
+// Model bbox ≈ 1.78(w)×1.08(h)×4.46(l) m, origin off-centre. We recentre to the
+// bbox centre and scale so its longest axis ≈ TARGET_LENGTH world units (the old
+// proxy spanned ~0.2 on the ~0.2-wide asphalt). Tune at the prototype gate.
+const TARGET_LENGTH = 0.2;
+// Tyres/dark trim stay dark; lighter "bodywork" materials take the team tint.
+const TINT_LUMA_MIN = 0.18;
+const relum = (c: THREE.Color) => 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
 
 export function CarModel({ colour, ghost }: { colour: string; ghost: boolean }) {
   const { scene } = useGLTF(MODEL_URL);
-  // Clone so the two cars (followed + ghost) don't share one material instance.
-  const root = useMemo(() => {
-    const clone = scene.clone(true);
-    clone.traverse((o) => {
+  const node = useMemo(() => {
+    const root = scene.clone(true);
+    const team = new THREE.Color(colour);
+    root.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (!mesh.isMesh) return;
-      const base = (mesh.material as THREE.MeshStandardMaterial).clone();
-      if (mesh.name.includes(BODY_NODE)) base.color = new THREE.Color(colour);
-      base.transparent = ghost;
-      base.opacity = ghost ? 0.42 : 1; // mirrors GHOST_OPACITY
-      base.emissive = new THREE.Color(colour);
-      base.emissiveIntensity = ghost ? 0.4 : 0.15;
-      mesh.material = base;
+      const m = (mesh.material as THREE.MeshStandardMaterial).clone();
+      if (relum(m.color) >= TINT_LUMA_MIN) m.color = team.clone();
+      m.transparent = ghost;
+      m.opacity = ghost ? 0.42 : 1;
+      m.emissive = team.clone();
+      m.emissiveIntensity = ghost ? 0.4 : 0.12;
+      mesh.material = m;
     });
-    return clone;
+    const box = new THREE.Box3().setFromObject(root);
+    const size = new THREE.Vector3();
+    const centre = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(centre);
+    root.position.sub(centre);
+    const longest = Math.max(size.x, size.y, size.z) || 1;
+    const wrap = new THREE.Group();
+    wrap.add(root);
+    wrap.scale.setScalar(TARGET_LENGTH / longest);
+    return wrap;
   }, [scene, colour, ghost]);
-  return <primitive object={root} scale={CAR_SCALE} rotation={[0, Math.PI, 0]} />;
+  // rotation aligns the model's forward axis to local +Z (travel); flip at the gate if reversed.
+  return <primitive object={node} rotation={[0, Math.PI, 0]} />;
 }
 ```
 
+> Recolour is by material luminance (model has generic `Object_N` meshes + flat materials, no textures); scale/recentre is bbox-derived; knobs to tune at the gate = `TARGET_LENGTH`, `TINT_LUMA_MIN`, rotation.
+
 - [ ] **Step 2: Swap the mesh inside CarRig**
 
-In `components/f1/GhostLap3D.tsx`, inside `CarRig`'s returned group (the inner `<group scale={CAR_SCALE}>...<F1Car/>` block, ~L433-441), replace `<F1Car colour={colour} ghost={ghost} />` with `<CarModel colour={colour} ghost={ghost} />` and remove the now-redundant inner `scale`/re-centre wrapper (CarModel owns its own scale). Add `import { CarModel } from '@/components/f1/onboard/CarModel';` at the top. Leave the depth-fade logic in `CarRig.useFrame` as-is (it traverses materials by `transparent`).
+In `components/f1/GhostLap3D.tsx`, inside `CarRig`'s returned group (the inner `<group scale={CAR_SCALE}><group position={[0,0,-0.13]}><F1Car/></group></group>` block, ~L433-441), replace that whole nested-group block with a single `<CarModel colour={colour} ghost={ghost} />` (CarModel owns its own recentre + scale, so the `CAR_SCALE`/`position` wrappers are dropped). Add `import { CarModel } from '@/components/f1/onboard/CarModel';` at the top. Leave the depth-fade logic in `CarRig.useFrame` as-is (it traverses materials by `transparent`). `F1Car` + `CAR_SCALE` are left in place for now (unused, no tsc error — `noUnusedLocals` is off; a later task removes them).
 
 - [ ] **Step 3: Typecheck**
 
@@ -212,7 +227,7 @@ git add components/f1/onboard/CarModel.tsx components/f1/GhostLap3D.tsx
 git commit -m "feat(onboard): real glTF car model in CarRig"
 ```
 
-> Visual correctness (scale, orientation, body colour landing on the right mesh) is verified at the Task 7 gate; `BODY_NODE`/`CAR_SCALE`/rotation are the knobs to tune there.
+> Visual correctness (scale, orientation, which materials take the team tint) is verified at the Task 7 gate; `TARGET_LENGTH`/`TINT_LUMA_MIN`/rotation are the knobs to tune there.
 
 ---
 

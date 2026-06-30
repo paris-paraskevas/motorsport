@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { computeDelta, type DriverTrace, type DistSample } from '@/lib/openf1/delta';
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
 import type { Circuit, TrackPath, TrackPoint } from '@/lib/openf1/track';
+import { CarModel } from '@/components/f1/onboard/CarModel';
 
 // The onboard comparison view: a TV-style "ghost car" replay. A chase camera
 // rides behind + above the followed driver's car (a team-coloured proxy), while
@@ -431,14 +432,7 @@ function CarRig({
   });
   return (
     <group ref={ref}>
-      <group scale={CAR_SCALE}>
-        {/* Re-centre: the model's bounding box sits ~0.13 ahead of the local
-            origin (the front wing reaches further than the rear), so shift it
-            back — the GPS point then sits at the car's centre, wheels on track. */}
-        <group position={[0, 0, -0.13]}>
-          <F1Car colour={colour} ghost={ghost} />
-        </group>
-      </group>
+      <CarModel colour={colour} ghost={ghost} />
     </group>
   );
 }
