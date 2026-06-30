@@ -1,5 +1,6 @@
 import * as ical from 'node-ical';
 import { Session } from './types';
+import { fetchUpstream } from './fetch-upstream';
 
 // node-ical attaches `dateOnly: true` (non-enumerable) on the Date instance
 // produced from DTSTART;VALUE=DATE entries. We can't trust the Date alone
@@ -54,7 +55,7 @@ export function parseIcs(text: string, seriesSlug: string): Session[] {
 }
 
 export async function fetchIcsText(url: string): Promise<string> {
-  const res = await fetch(url, { next: { revalidate: 21600 } } as RequestInit);
+  const res = await fetchUpstream(url, { next: { revalidate: 21600 } });
   if (!res.ok) throw new Error(`ICS fetch failed: ${res.status} ${res.statusText}`);
   return res.text();
 }

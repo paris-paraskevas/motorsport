@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import manifest from '@/content/series/wec/fiawec-races.json';
 import rounds from '@/content/series/wec/rounds.json';
 import {
@@ -252,7 +253,7 @@ async function livePost(
     data: JSON.stringify({ props, updated }),
   });
   try {
-    const res = await fetch(COMPONENT_URL, {
+    const res = await fetchUpstream(COMPONENT_URL, {
       method: 'POST',
       headers: {
         ...FETCH_HEADERS,
@@ -278,7 +279,7 @@ async function livePost(
 
 async function fetchBootstrapPage(): Promise<string | null> {
   try {
-    const res = await fetch(PAGE_URL, {
+    const res = await fetchUpstream(PAGE_URL, {
       headers: { ...FETCH_HEADERS, Accept: 'text/html' },
       next: { revalidate: 3600 },
     });

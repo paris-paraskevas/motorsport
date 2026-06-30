@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
@@ -243,7 +244,7 @@ export async function fetchNascarCupStandings(): Promise<{
 } | null> {
   let html: string;
   try {
-    const res = await fetch(SEASON_PAGE_URL, {
+    const res = await fetchUpstream(SEASON_PAGE_URL, {
       headers: {
         // Wikipedia honors anonymous fetches but a clear UA helps logs +
         // avoids future anti-bot tightening. No API token required.
@@ -255,7 +256,7 @@ export async function fetchNascarCupStandings(): Promise<{
       // updated within hours of each race ending. One hour is fine for the
       // standings tab.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     html = await res.text();
   } catch {

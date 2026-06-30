@@ -1,4 +1,5 @@
 import type { DriverStanding } from '@/lib/types';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 export type { DriverStanding };
 
@@ -61,10 +62,10 @@ interface PulseliveStandingsResponse {
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: { Accept: 'application/json', 'User-Agent': UA },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import { fetchDTMStandings } from '@/lib/standings/dtm';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import {
   readResultsCache,
   writeResultsCache,
@@ -199,14 +200,14 @@ function parseDateRange(text: string): { start: Date | null; end: Date | null } 
 
 async function fetchEventHtml(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         'User-Agent': BROWSER_UA,
         Accept: 'text/html',
         'Accept-Encoding': 'gzip, deflate, br',
       },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {
@@ -220,10 +221,10 @@ async function fetchLanding(
   season: number,
 ): Promise<{ html: string; finalUrl: string } | null> {
   try {
-    const res = await fetch(`${RESULTS_BASE}/${season}/`, {
+    const res = await fetchUpstream(`${RESULTS_BASE}/${season}/`, {
       headers: { 'User-Agent': BROWSER_UA, Accept: 'text/html' },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return { html: await res.text(), finalUrl: res.url };
   } catch {

@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv';
 import type { RaceResult } from '@/lib/types';
+import { logSourceError } from '@/lib/fetch-upstream';
 
 /**
  * KV cache layer for the F2 / F3 season-results fan-out.
@@ -68,7 +69,10 @@ export async function readResultsCache<T>(key: string): Promise<T | null> {
     const raw = await kv.get<T>(key);
     if (raw == null) return null;
     return reviveDates(raw);
-  } catch {
+  } catch (err) {
+    // Fail-soft: a KV outage must not break the results tab. Log so the
+    // outage is visible instead of silently degrading to cold fetches.
+    logSourceError(`results-cache:read:${key}`, err);
     return null;
   }
 }
@@ -87,8 +91,10 @@ export async function writeResultsCache<T>(
   if (!isKvConfigured()) return;
   try {
     await kv.set(key, payload, { ex: ttlSeconds });
-  } catch {
-    // Swallow — KV write failure should not affect the page render.
+  } catch (err) {
+    // Fail-soft — KV write failure must not affect the page render; the caller
+    // already has fresh data in hand. Log so persistent write failures surface.
+    logSourceError(`results-cache:write:${key}`, err);
   }
 }
 

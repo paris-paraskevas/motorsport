@@ -1,5 +1,6 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import { withF1LastGood } from '@/lib/f1-cache';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -31,7 +32,7 @@ async function fetchAllPages(baseUrl: string): Promise<RawRace[]> {
   const all: RawRace[] = [];
   let offset = 0;
   for (let page = 0; page < MAX_PAGES; page++) {
-    const res = await fetch(`${baseUrl}?limit=${PAGE_SIZE}&offset=${offset}`, {
+    const res = await fetchUpstream(`${baseUrl}?limit=${PAGE_SIZE}&offset=${offset}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) break;
@@ -154,7 +155,7 @@ function parseRace(
 
 async function fetchF1LastRaceLive(): Promise<RaceResult | null> {
   try {
-    const res = await fetch(LAST_RACE_URL, { next: { revalidate: 3600 } });
+    const res = await fetchUpstream(LAST_RACE_URL, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     const json = (await res.json()) as RacePayload;
     const races = json?.MRData?.RaceTable?.Races;

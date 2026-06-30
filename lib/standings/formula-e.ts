@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { AnyNode, Element } from 'domhandler';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
@@ -346,7 +347,7 @@ export async function fetchFormulaEStandings(): Promise<{
 } | null> {
   let html: string;
   try {
-    const res = await fetch(`${WIKI_BASE}/${SEASON_PAGE}`, {
+    const res = await fetchUpstream(`${WIKI_BASE}/${SEASON_PAGE}`, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
@@ -355,7 +356,7 @@ export async function fetchFormulaEStandings(): Promise<{
       // Hourly revalidate — Wikipedia editors tend to update the standings
       // tables within a few hours of each E-Prix finish.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     html = await res.text();
   } catch {

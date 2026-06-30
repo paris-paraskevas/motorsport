@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import type { AnyNode } from 'domhandler';
 import type { Champion } from './types';
+import { fetchUpstream } from './fetch-upstream';
 
 const REST_BASE = 'https://en.wikipedia.org/api/rest_v1/page/html';
 // Most championships have <100 seasons; we keep a high ceiling rather
@@ -95,10 +96,10 @@ async function fetchChampionsFromPage(pageTitle: string): Promise<Champion[]> {
   const url = `${REST_BASE}/${encodeURIComponent(pageTitle)}`;
   let html: string;
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: { Accept: 'text/html' },
       next: { revalidate: 86400 },
-    } as RequestInit);
+    });
     if (!res.ok) return [];
     html = await res.text();
   } catch {
