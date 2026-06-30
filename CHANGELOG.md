@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.130.5 — 2026-06-30
+
+Security hardening (audit remediation, track C).
+
+### Added
+- `lib/content.ts` `renderMarkdown` now sanitizes — pipeline switched to remark → remark-rehype(allowDangerousHtml) → rehype-raw → rehype-sanitize → rehype-stringify (new deps rehype-raw/rehype-sanitize/rehype-stringify/remark-rehype). Strips `<script>`/event-handler/`javascript:` from rendered markdown (blog + file-backed legal/About/History) before it reaches `dangerouslySetInnerHTML`. `normaliseFootnoteIds` kept — confirmed load-bearing (rehype-sanitize re-applies the clobber prefix). New `lib/content.test.ts` pins XSS-stripping + footnote anchor alignment.
+- `next.config.ts` — `Content-Security-Policy-Report-Only` header (self/Clerk/Vercel/AdSense+GA/three.js blob workers); first-pass observe-before-enforce.
+
+### Fixed
+- `lib/rate-limit.ts` `clientIp` now reads the trusted hop (`x-vercel-forwarded-for`, else the rightmost `x-forwarded-for`) instead of the attacker-controllable leftmost; fail-open posture preserved (`rate-limit.test.ts` updated to assert the fix).
+- Generic 500s (stop raw `err.message` leakage) across threads, threads/[id], feedback(+[id]), friends, push subscribe/unsubscribe, all `user/*`, all `cron/*` — log server-side, return `{ error: 'internal error' }`; curated 4xx domain messages preserved.
+
 ## 0.130.4 — 2026-06-30
 
 Betting hardening (audit remediation, track G).
