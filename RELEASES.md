@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.130.6 — 2026-06-30
+
+Internal: removed an unused UI library and other dead code to slim the app down. No visible change.
+
 ## 0.130.5 — 2026-06-30
 
 Security hardening: all rendered article and page content is now sanitized to block malicious HTML, a content-security policy was added (in monitoring mode first), rate-limiting was tightened, and error responses no longer expose internal details. No visible change for normal use.
