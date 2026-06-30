@@ -8,6 +8,8 @@ import { computeDelta, type DriverTrace, type DistSample } from '@/lib/openf1/de
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
 import type { Circuit, TrackPath, TrackPoint } from '@/lib/openf1/track';
 import { CarModel } from '@/components/f1/onboard/CarModel';
+import { useQualityTier, type QualityTier } from '@/lib/onboard/useQualityTier';
+import { TrackEnvironment } from '@/components/f1/onboard/TrackEnvironment';
 
 // The onboard comparison view: a TV-style "ghost car" replay. A chase camera
 // rides behind + above the followed driver's car (a team-coloured proxy), while
@@ -69,10 +71,6 @@ const COCKPIT_FOV = 82; // wide onboard view
 const GHOST_OPACITY = 0.42;
 const GHOST_FADE_LO = 0.03; // fully hidden at/under this depth
 const GHOST_FADE_HI = 0.09; // fully opaque beyond this depth
-
-// The single-seater is modelled ~1.3 long in local units, scaled so it spans
-// ~40% of the asphalt width — a ~2 m car on our near-real ~5 m-wide track.
-const CAR_SCALE = 0.06;
 
 interface Mapped {
   pts: THREE.Vector3[]; // ground-plane track polyline (with elevation)
@@ -309,81 +307,6 @@ function fmtGap(delta: number): string {
 }
 
 // --- 3D scene -----------------------------------------------------------
-
-// A stylised but readable open-wheel single-seater (local +Z = forward, sits on
-// y=0): survival cell + nose + front/rear wings + sidepods + airbox + 4 open
-// wheels. Team colour on bodywork, dark tyres. Scaled by the parent (CAR_SCALE).
-function F1Car({ colour, ghost }: { colour: string; ghost: boolean }) {
-  const op = ghost ? GHOST_OPACITY : 1;
-  const body = {
-    color: colour,
-    emissive: colour,
-    emissiveIntensity: ghost ? 0.5 : 0.22,
-    roughness: 0.4,
-    metalness: 0.15,
-    transparent: ghost,
-    opacity: op,
-  };
-  const tyre = { color: '#141418', roughness: 0.85, metalness: 0.05, transparent: ghost, opacity: op };
-  return (
-    <group>
-      {/* survival cell / floor */}
-      <mesh position={[0, 0.11, -0.02]}>
-        <boxGeometry args={[0.22, 0.09, 0.84]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* nose */}
-      <mesh position={[0, 0.1, 0.55]}>
-        <boxGeometry args={[0.12, 0.07, 0.34]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* front wing */}
-      <mesh position={[0, 0.05, 0.74]}>
-        <boxGeometry args={[0.5, 0.03, 0.1]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* sidepods */}
-      <mesh position={[0.17, 0.1, -0.05]}>
-        <boxGeometry args={[0.1, 0.1, 0.34]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      <mesh position={[-0.17, 0.1, -0.05]}>
-        <boxGeometry args={[0.1, 0.1, 0.34]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* airbox / engine cover */}
-      <mesh position={[0, 0.22, -0.14]}>
-        <boxGeometry args={[0.1, 0.14, 0.34]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* cockpit hump */}
-      <mesh position={[0, 0.17, 0.08]}>
-        <boxGeometry args={[0.13, 0.06, 0.2]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* rear wing + endplates */}
-      <mesh position={[0, 0.28, -0.46]}>
-        <boxGeometry args={[0.46, 0.1, 0.04]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      <mesh position={[0.23, 0.22, -0.46]}>
-        <boxGeometry args={[0.02, 0.2, 0.12]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      <mesh position={[-0.23, 0.22, -0.46]}>
-        <boxGeometry args={[0.02, 0.2, 0.12]} />
-        <meshStandardMaterial {...body} />
-      </mesh>
-      {/* open wheels — cylinders with the axle along X */}
-      {([[0.27, 0.47], [-0.27, 0.47], [0.27, -0.4], [-0.27, -0.4]] as const).map(([x, z], i) => (
-        <mesh key={i} position={[x, 0.13, z]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.13, 0.13, 0.15, 18]} />
-          <meshStandardMaterial {...tyre} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
 
 // Positions + orients a car each frame from the live `t` in a ref (no re-render).
 // Both cars are TIME-synced — sampled at the SAME elapsed `t`. The ghost also fades
@@ -738,6 +661,7 @@ function Scene({
   otherColour,
   tRef,
   cameraMode,
+  tier,
 }: {
   outline: Mapped;
   ribbon: { pts: THREE.Vector3[]; halfL: number[]; halfR: number[] };
@@ -747,6 +671,7 @@ function Scene({
   otherColour: string;
   tRef: React.RefObject<number>;
   cameraMode: CameraMode;
+  tier: QualityTier;
 }) {
   const followMotion = useMemo(
     () => buildMotion(followPts, outline.cx, outline.cy),
@@ -774,6 +699,7 @@ function Scene({
       {/* The grass apron now lives inside TrackRibbon so it follows the track's
           own elevation (climbs + falls with it) instead of a flat plane. */}
       <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
+      <TrackEnvironment centreline={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} tier={tier} />
       {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} />}
       {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} />}
       {followMotion && <FollowCam motion={followMotion} tRef={tRef} mode={cameraMode} />}
@@ -985,6 +911,7 @@ export function GhostLap3D({
   circuit?: Circuit | null;
 }) {
   const reduced = usePrefersReducedMotion();
+  const tier = useQualityTier();
 
   const aHasTrack = !!traceA.track;
   const bHasTrack = !!traceB.track;
@@ -1138,7 +1065,7 @@ export function GhostLap3D({
       </div>
 
       <div className="h-80 overflow-hidden rounded-md border border-border bg-surface md:h-[28rem]">
-        <Canvas camera={{ position: [0.3, 0.2, 0.5], fov: 60, near: 0.02, far: 60 }} dpr={[1, 2]}>
+        <Canvas camera={{ position: [0.3, 0.2, 0.5], fov: 60, near: 0.02, far: 60 }} dpr={tier === 'high' ? [1, 2] : 1}>
           <Scene
             outline={mapped}
             ribbon={ribbon!}
@@ -1148,6 +1075,7 @@ export function GhostLap3D({
             otherColour={otherColour}
             tRef={tRef}
             cameraMode={cameraMode}
+            tier={tier}
           />
         </Canvas>
       </div>
