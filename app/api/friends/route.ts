@@ -44,8 +44,8 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'error';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('POST /api/friends failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }
 

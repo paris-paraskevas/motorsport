@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     const grantedThisRun = await grantMonthlyToAll(computeMonthlyAllowance(new Date()));
     return NextResponse.json({ ok: true, grantedThisRun, at: new Date().toISOString() });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('GET /api/cron/grant-credits failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

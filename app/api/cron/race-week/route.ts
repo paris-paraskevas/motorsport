@@ -175,7 +175,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ ok: true, sent, evicted, skipped, weekKey });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('GET /api/cron/race-week failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

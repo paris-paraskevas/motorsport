@@ -27,6 +27,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
-    return NextResponse.json({ error: message }, { status: /unknown status/.test(message) ? 400 : 500 });
+    // Curated validation message (400) stays user-facing; anything else is
+    // logged server-side and returned as a generic 500 (security audit).
+    if (/unknown status/.test(message)) {
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
+    console.error('POST /api/feedback/[id] failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }

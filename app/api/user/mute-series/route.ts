@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         : await addMutedSeries(a.userId, slug);
     return NextResponse.json({ ok: true, mutedSeries: prefs.mutedSeries ?? [] });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('POST /api/user/mute-series failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

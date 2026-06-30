@@ -13,10 +13,8 @@ export async function GET() {
     const followed = await getUserFollowed(userId);
     return NextResponse.json({ followed });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('GET /api/user/prefs failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -46,9 +44,7 @@ export async function PUT(request: Request) {
     await setUserFollowed(userId, body.followed as string[]);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('PUT /api/user/prefs failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }

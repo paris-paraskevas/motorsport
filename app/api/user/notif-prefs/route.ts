@@ -17,10 +17,8 @@ export async function GET() {
     const prefs = await getUserNotifPrefs(userId);
     return NextResponse.json({ prefs });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('GET /api/user/notif-prefs failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -51,9 +49,7 @@ export async function PUT(request: Request) {
     const next = await setUserNotifPrefs(userId, patch);
     return NextResponse.json({ prefs: next });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('PUT /api/user/notif-prefs failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
