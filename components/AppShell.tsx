@@ -11,8 +11,6 @@ import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
 import { HeaderNavMenu } from './HeaderNavMenu';
 import { PushSoundPlayer } from './PushSoundPlayer';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { Toaster } from '@/components/ui/sonner';
 
 // One nav system since 0.17.0 (operator: "navigation menu and burger bar can
 // go"): a single fixed header on every viewport — wordmark + inline links on
@@ -58,7 +56,7 @@ export function AppShell({
   }, []);
 
   return (
-    <TooltipProvider delay={300}>
+    <>
       {/* Fixed (not sticky — overflow-x: hidden on body kills sticky) */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated/85 backdrop-blur-xl border-b border-border pt-[env(safe-area-inset-top)]">
         <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto px-3 md:px-4 h-14 flex items-center gap-6">
@@ -158,8 +156,7 @@ export function AppShell({
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
       <PushSoundPlayer />
-      <Toaster position="bottom-right" closeButton richColors />
-    </TooltipProvider>
+    </>
   );
 }
 

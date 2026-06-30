@@ -26,12 +26,3 @@ export function setFollowedSeries(slugs: string[]): void {
     /* quota or denied — silently ignore */
   }
 }
-
-export function clearFollowedSeries(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.removeItem(KEY);
-  } catch {
-    /* ignore */
-  }
-}

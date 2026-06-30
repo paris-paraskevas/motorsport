@@ -5,10 +5,6 @@ const BATCH_SIZE = 1000;
 
 // IndexNow is a fire-and-forget hint, not a critical path. Failures log
 // and continue — never throw, never block a caller, never raise.
-export async function submitUrl(url: string): Promise<void> {
-  return submitUrls([url]);
-}
-
 export async function submitUrls(urls: string[]): Promise<void> {
   if (urls.length === 0) return;
   const host = new URL(SITE_URL).host;

@@ -54,13 +54,6 @@ export function sessionBySlug(weekend: Weekend, slug: string): Session | null {
   return weekend.sessions.find(s => sessionSlug(s.title) === slug) ?? null;
 }
 
-export function roundForSession(weekends: Weekend[], uid: string): number | undefined {
-  for (const w of weekends) {
-    if (w.sessions.some(s => s.uid === uid)) return w.round;
-  }
-  return undefined;
-}
-
 function lookupKey(seriesSlug: string, uid: string): string {
   return `${seriesSlug}:${uid}`;
 }
@@ -92,10 +85,6 @@ export function roundFor(lookup: Map<string, number>, seriesSlug: string, uid: s
   return lookup.get(lookupKey(seriesSlug, uid));
 }
 
-export function weekendHref(seriesSlug: string, round: number): string {
-  return `/series/${seriesSlug}/weekend/${round}`;
-}
-
 export function weekendStartEnd(weekend: Weekend): { start: Date; end: Date } {
   const sorted = [...weekend.sessions].sort((a, b) => a.start.getTime() - b.start.getTime());
   return { start: sorted[0].start, end: sorted[sorted.length - 1].end };
@@ -103,8 +92,4 @@ export function weekendStartEnd(weekend: Weekend): { start: Date; end: Date } {
 
 export function weekendIsLive(weekend: Weekend, now: Date = new Date()): boolean {
   return weekend.sessions.some(s => !s.dateOnly && s.start <= now && now <= s.end);
-}
-
-export function liveSessionsIn(weekend: Weekend, now: Date = new Date()): Session[] {
-  return weekend.sessions.filter(s => !s.dateOnly && s.start <= now && now <= s.end);
 }

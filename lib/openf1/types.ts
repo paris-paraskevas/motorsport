@@ -24,19 +24,6 @@ export interface OF1Session {
   year: number;
 }
 
-/** A GP weekend / test event. */
-export interface OF1Meeting {
-  meeting_key: number;
-  meeting_name: string; // "Italian Grand Prix"
-  meeting_official_name?: string;
-  circuit_key: number;
-  circuit_short_name: string;
-  country_name: string;
-  location: string;
-  date_start: string; // ISO
-  year: number;
-}
-
 /** Per-session driver metadata. `team_colour` is hex WITHOUT a leading '#'. */
 export interface OF1Driver {
   driver_number: number;
@@ -98,23 +85,6 @@ export interface OF1Location {
   session_key: number;
 }
 
-/** Gap data during a race (~4 s). Strings like "+1 LAP" appear for lapped cars. */
-export interface OF1Interval {
-  driver_number: number;
-  date: string; // ISO
-  gap_to_leader: number | string | null;
-  interval: number | string | null; // gap to car ahead
-  session_key: number;
-}
-
-/** Track position over time. */
-export interface OF1Position {
-  driver_number: number;
-  date: string; // ISO
-  position: number;
-  session_key: number;
-}
-
 /** A continuous tyre stint. */
 export interface OF1Stint {
   driver_number: number;
@@ -164,43 +134,5 @@ export interface OF1Overtake {
   overtaking_driver_number: number;
   overtaken_driver_number: number;
   position: number;
-  session_key: number;
-}
-
-/**
- * Final session classification. `duration`/`gap_to_leader` are [Q1,Q2,Q3]
- * arrays for qualifying, scalars for race/practice.
- */
-export interface OF1SessionResult {
-  position: number | null;
-  driver_number: number;
-  number_of_laps: number | null;
-  dnf: boolean;
-  dns: boolean;
-  dsq: boolean;
-  duration: number | Array<number | null> | null;
-  gap_to_leader: number | string | Array<number | null> | null;
-  points?: number;
-  session_key: number;
-}
-
-/** Starting grid (from qualifying). */
-export interface OF1StartingGrid {
-  driver_number: number;
-  position: number;
-  lap_duration: number | null;
-  session_key: number;
-}
-
-/** Track conditions (updated each minute). */
-export interface OF1Weather {
-  date: string; // ISO
-  air_temperature: number;
-  track_temperature: number;
-  humidity: number;
-  pressure: number;
-  rainfall: number;
-  wind_direction: number;
-  wind_speed: number;
   session_key: number;
 }
