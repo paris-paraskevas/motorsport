@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.130.3 — 2026-06-30
+
+Outbound-fetch resilience across the data layer (audit remediation, track B).
+
+### Added
+- `lib/fetch-upstream.ts` — a shared `fetchUpstream` wrapper adding `AbortSignal.timeout(8000)` (merged with any caller-supplied signal) + structured `[upstream]` failure logging, plus `logSourceError(key, err)` for the previously-silent KV/Supabase catches.
+
+### Changed
+- Routed every outbound fetch through the wrapper — OpenF1 client (token-bucket pacing untouched), all `lib/results/*` + `lib/standings/*` scrapers, both Wikipedia loaders, `lib/ics.ts`; added `logSourceError` to the fail-soft catches in `lib/results-cache.ts` + `lib/source-snapshot.ts`. A hung upstream now aborts at 8s instead of stalling the server render to the platform wall-clock, and a broken source surfaces in logs instead of silently returning empty. Net control flow unchanged (log-then-return on non-ok, log-then-rethrow on network error), so all parser tests stay green.
+
 ## 0.130.2 — 2026-06-30
 
 Hotfix — actually land the onboard motion de-jitter. The fix was written on the #314 branch (`499ac5e`) but the PR's squash-merge predated that commit being pushed, so 0.130.0 shipped the cockpit camera WITHOUT the de-jitter, and the ghost "teleport" persisted on prod. (main's 0.130.0 notes correctly described cockpit-cam-only; nothing to reconcile there.)
