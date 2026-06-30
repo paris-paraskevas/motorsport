@@ -17,6 +17,11 @@
 /.next/
 /out/
 
+# serwist service worker — generated into public/ on every build by @serwist/next
+# (swDest: public/sw.js). Regenerated per build, so it is not tracked.
+/public/sw.js
+/public/swe-worker-*.js
+
 # production
 /build
 
@@ -57,6 +62,9 @@ Thumbs.db
 
 # local secret: Supabase PAT handed in for Management-API migrations (rotate after use)
 /.supabase-pat
+
+# local secret: prod Clerk keys handed in for the Backend-API email-template update (rotate + delete after use)
+/.clerk-prod
 
 # playwright MCP browser profile
 /.playwright-mcp/
