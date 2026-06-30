@@ -518,8 +518,13 @@ export async function setMemberProfile(
 export async function renameLeague(leagueId: string, ownerId: string, name: string): Promise<void> {
   const trimmed = name.trim();
   if (!trimmed || trimmed.length > 60) throw new Error('name must be 1–60 characters');
-  const { error } = await betDb().from('league').update({ name: trimmed }).eq('id', leagueId).eq('owner_id', ownerId);
+  const { error, count } = await betDb()
+    .from('league')
+    .update({ name: trimmed }, { count: 'exact' })
+    .eq('id', leagueId)
+    .eq('owner_id', ownerId);
   if (error) throw new Error(`renameLeague failed: ${error.message}`);
+  if (!count) throw new Error('league not found, or you are not the owner');
 }
 
 /** Disband a league (owner only). Cascades members + invites; any pending league

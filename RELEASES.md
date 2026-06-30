@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.130.4 — 2026-06-30
+
+Betting reliability: trying to rename a league you don't own now fails with a clear message instead of silently doing nothing, and internal errors no longer expose technical details. (A safeguard capping extreme single-bet payouts is staged and goes live with the next database update.)
+
 ## 0.130.3 — 2026-06-30
 
 Internal: hardened how we fetch live data — upstream requests now time out instead of hanging, and failures are logged so a broken data source is caught faster. No visible change.
