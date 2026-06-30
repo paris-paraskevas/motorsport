@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.130.6 — 2026-06-30
+
+Dead-code + unused-dependency sweep (audit remediation, track A). No runtime behaviour change.
+
+### Removed
+- `components/ui/*` — the entire 12-file shadcn/ui kit. Verified inert: only `AppShell` imported `TooltipProvider`+`Toaster`, both of which rendered nothing (the chart tooltips are recharts; `toast()` was never called). Dropped the AppShell imports + wrappers and the now-orphaned `@import "shadcn/tailwind.css"` from `app/globals.css` (the `@theme` tokens the app relies on are defined in globals.css itself).
+- 6 unused deps: `next-themes`, `shadcn`, `@base-ui/react`, `cmdk`, `sonner`, `class-variance-authority` (285 transitive packages pruned from the lockfile). Kept `clsx`/`tailwind-merge` (used by `cn` in `HeaderNavMenu`) + `tw-animate-css` (globals.css).
+- Dead exports: `lib/onboarding.ts` (whole file), `lib/follow.ts` `clearFollowedSeries`, `lib/indexnow.ts` `submitUrl`, `lib/weekend.ts` `roundForSession`/`liveSessionsIn`/`weekendHref` fn, and 6 unused `lib/openf1/types.ts` interfaces (`OF1Meeting`/`Interval`/`Position`/`SessionResult`/`StartingGrid`/`Weather`).
+
+### Added
+- `domhandler` declared as a direct dependency — imported in 8 scraper files but previously only present transitively via cheerio (phantom dep).
+
 ## 0.130.5 — 2026-06-30
 
 Security hardening (audit remediation, track C).

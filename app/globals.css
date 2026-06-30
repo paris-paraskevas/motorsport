@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
 /* Tailwind v4 dark variant. Paddock is dark-only (June 2026 redesign);
