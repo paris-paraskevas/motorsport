@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.130.4 — 2026-06-30
+
+Betting hardening (audit remediation, track G).
+
+### Fixed
+- `lib/betting/leagues.ts` `renameLeague` now requests the affected-row count and throws "league not found, or you are not the owner" when zero rows update — it previously returned `{ ok: true }` on a non-owner / bad-id no-op. Matches the `disbandLeague`/`setBetLimit` idiom.
+- `app/api/bet/market` + `app/api/bet/place` 500 branches now log server-side and return a generic `{ error: 'internal error' }` instead of leaking raw Postgres/PostgREST text; the curated 4xx domain messages are preserved.
+
+### Added (migration — NOT auto-applied; needs operator apply via the Supabase Management API)
+- `supabase/migrations/20260630120000_settle_market_solo_cap.sql` — `CREATE OR REPLACE settle_market` adding a solo-book payout cap of 1,000,000 credits (`least(floor(stake*mult), 1e6)`), gated on `league_id is null` so pari-mutuel pools are untouched. Bounds the degenerate max-stake (1M) × max-multiplier (500) = 500M tail. The cap is inert until the migration is applied to prod.
+
 ## 0.130.3 — 2026-06-30
 
 Outbound-fetch resilience across the data layer (audit remediation, track B).
