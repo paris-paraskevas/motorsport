@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.130.1 — 2026-06-30
+
+Internal: documentation and build housekeeping. No changes to the app itself.
+
 ## 0.130.0 — 2026-06-30
 
 **New onboard cockpit camera.** The qualifying onboard replay now has a Chase ⟷ Cockpit toggle. Cockpit drops you into a T-cam just above the driver's head, looking out over the nose down the track — like a real onboard. Chase stays the default for comparing the two laps; Cockpit is there for the immersion, and you'll catch the rival's translucent "ghost" ahead on the straights when you're chasing it.

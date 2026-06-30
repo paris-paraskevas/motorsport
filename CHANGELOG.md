@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.130.1 — 2026-06-30
+
+Documentation + build housekeeping. No runtime behaviour change.
+
+### Added
+- `docs/research/onboard-3d-rebuild.md` — the approved architecture spec for the full onboard 3D rebuild (real 1:1 track via TUMFTM + per-circuit Kabsch–Umeyama alignment, all-driver lines, CC-BY car models, broadcast cameras; phased P1–P5). Moved onto `main` from the working tree so the spec is no longer at risk of a stray checkout.
+
+### Changed
+- `docs/HANDOFF.md`, `IDEAS.md` — refreshed with the 2026-06-30 session pickup (onboard 3D rebuild = Task #1) and the 7-lens audit findings.
+- `.gitignore` — stop tracking the serwist-generated `public/sw.js` + `public/swe-worker-*.js` (regenerated on every build, so they churned `git status` on each build) and `git rm --cached` the committed copies; also ignore the local `.clerk-prod` secret file.
+
 ## 0.130.0 — 2026-06-30
 
 Onboard cockpit camera for the ghost replay (operator: "do the above the head").

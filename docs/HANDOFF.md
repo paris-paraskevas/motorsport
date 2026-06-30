@@ -6,6 +6,91 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-30 (ONBOARD 3D REBUILD = TASK #1) — main 0.129.4 · PR #314 open
+
+main = **0.129.4**. The onboard "ghost jump" saga is **RESOLVED**: the violent dart was the chase camera's near plane (fixed by pulling `CAM_BACK` 0.17→0.35, #312/#313, merged); the residual recurring "teleport" (ghost surging past the followed car) was **OpenF1 location-TIMESTAMP jitter** — a real ~0.25 s of travel stamped ~0.10 s — fixed by **re-timing each trace from a smoothed speed** in `buildMotion` (in **PR #314, open**, which also adds the **Chase⟷Cockpit** onboard camera). **Merge #314 first** (on-lap look), then Task #1.
+
+### ⛔ TASK #1 (top priority) — full onboard 3D rebuild. **SPEC: `docs/research/onboard-3d-rebuild.md` — read it first.**
+Rebuild the comparison view into: a **1:1 real track** (independent of the racing lines), **every driver's own distinct line + pace** over a full lap, **pick any two** to compare, **realistic CC-BY (non-team) car models**, and **broadcast cameras** — for **every track + every quali**. Researched + decided (detail in the spec):
+- **Libraries:** three.js + r3f + drei (`useGLTF` + `<Instances>`). **NO physics engine** — motion is kinematic GPS replay; body lean is faked from telemetry g (`a_lat=v²·κ`, `a_lon=dv/dt`, damped).
+- **Track:** [TUMFTM/racetrack-database](https://github.com/TUMFTM/racetrack-database) (centreline+width, ~15 current tracks, LGPL — attribute + keep derived data open) + OSM `highway=raceway` fallback for the rest. Elevation draped from OpenF1 `z` (real DEM is a P5 upgrade for marquees).
+- **Alignment (THE CRUX):** OpenF1's local metres frame → the real track via a build-time **Kabsch-Umeyama** 2D similarity fit per circuit (resample both loops by arc-length; try both handedness/direction; verify residual; flag bad fits). Prove on 2–3 tracks before all.
+- **Cars:** generic **CC-BY** modern-F1 glTF recoloured per team (**NO team trademarks/liveries** — avoid Ferrari/Red Bull meshes); `Blender458 F1-2022` is the candidate.
+- **Cameras:** auto-place from centreline **curvature** (corner/apex maxima), pan+zoom+director; curated **hero** cameras for famous corners (Eau Rouge, 130R, Maggotts-Becketts, Parabolica, Casino…).
+
+### Open items (flat) — and how they parallelize
+3D rebuild is phased; **{P1, P4} run alongside P2; P3 follows P2; P5 is per-track.** Build-time per-circuit work (geometry → alignment → cameras) parallelizes **across tracks**. The carried backlog is **folder-disjoint** from the 3D work → fully parallel.
+
+**Task #1 — 3D rebuild phases:**
+- **P1** — all-driver roster + any-two picker (cache every driver's line per session). *Independent; start now.*
+- **P2** — real track geometry + per-circuit Umeyama alignment + elevation from `z`. *Build-time pipeline parallel across the ~15 TUMFTM tracks.*
+- **P3** — broadcast cameras (curvature auto-placement + director + curated hero corners). *After P2 geometry; corner curation can be researched in parallel.*
+- **P4** — realistic CC-BY car models + GPU instancing + kinematic body lean. *Independent; parallel to P2.*
+- **P5** — long-tail/street tracks via OSM + DEM elevation upgrades + curated camera overrides. *Per-track, ongoing.*
+
+**Carried backlog (independent of Task #1 — parallel, folder-disjoint):**
+- **Merge PR #314** (cockpit cam + de-jitter) after an on-lap look.
+- **Owed signed-in verify pass** (localhost dev-user): home widgets #298/#289, notification bell #295/#297, account avatars #300, practice telemetry #299, standings parity, 3D quali.
+- **Lane A** — `/series` "too wide" (which tab? — operator) + `/social` "weird cards" (needs a signed-in screenshot / local Clerk).
+- **Lane C** — "better bet handling" (scope: awards/honours? richer leagues? more market info on bet cards? — operator).
+- **Loutris's PWA won't open** (device + browser + symptom → check manifest `start_url`/scope + `StandaloneRedirect`).
+- **Results table** — row hover-highlight + interval (gap to car ahead) + leader-gap columns; scope which surface first.
+- **Carried/owed:** F1 headshots → Wikimedia/own-licensed (`lib/openf1/headshots.ts`); OpenF1 LIVE tab (paid Sponsor tier — operator); lazy-Clerk-anon (perf); legacy lint (`QualifyingDecoder` set-state-in-effect); rotate Supabase PAT + prod Clerk `sk_live`.
+
+### 🔍 Audit findings — 7-lens battery (2026-06-30), TO REVISIT (parallel cleanup track, NOT Task #1)
+Ran YAGNI / code-quality / security / performance / testability / readability / architecture audits over the whole repo. **Verdict: the codebase is fundamentally solid** — no Critical/High security issues, no injection, secrets gitignored, Clerk-OIDC auth with server-side access control + role checks, strong KV/ISR caching, framework-aligned, well-tested parsers. The debt is **dead-weight + a few hot spots, not over-engineering.** All 7 lenses converged on the SAME ~7-item list (full per-finding detail was in-chat 2026-06-30; the older `docs/research/code-audit-2026-06.md` Wave 1–4 overlaps and was mostly never executed — `next-themes`/`public/sw.js` still present confirm that). Ranked by ROI:
+
+1. **Delete the shadcn/ui kit + dead deps** (biggest single win — bundle + dead code). Re-grep each primitive first, then remove `components/ui/*` (12 files — only AppShell's *inert* `TooltipProvider` + `Toaster` import them), `lib/utils.ts` `cn`, and drop deps: `next-themes` (zero imports — removable today), `shadcn` (CLI mis-listed as a runtime dep), `@base-ui/react`, `cmdk`, `sonner`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tw-animate-css`. (~9 of 31 runtime deps.)
+2. **Fetch layer — timeouts + observability + injectable client.** A shared `fetchUpstream` wrapper with `AbortSignal.timeout()` (NO outbound request has a timeout today) + structured failure logging (replace the silent `catch { return [] }` in ~40 files); inject `fetch` + encapsulate the `lib/openf1/client.ts` token-bucket module-globals (flaky tests). NB OpenF1 is *intentionally* rate-limited — don't naively `Promise.all` it; DO parallelize the non-paced scrapers (`lib/results/dtm.ts` nested loop, `wec.ts` per-class, `wikipedia-champions.ts`).
+3. **Registries instead of per-series conditionals + split HomeContent.** `Record<slug, renderer>` for `ResultsTab`/`StandingsTab`/the session page (OCP); a `HOME_WIDGETS` registry to break `components/HomeContent.tsx` (2097 lines) into per-widget components (kills the prop-drilling too).
+4. **GhostLap3D perf + testability.** Throttle the rAF `setT` to ~15 fps (keep `tRef` at 60 fps — today it re-renders + recomputes the strip's `sampleTel`/`turnRateAt` 60×/s); reuse scratch `Vector3` in `useFrame`; bucket the O(G²·P) terrain nearest-search; **extract `buildMotion`/`samplePos`/`sampleHeading`/re-time to `lib/openf1/motion.ts` + unit-test** (untested today; also the Task-#1 foundation).
+5. **Security hardening.** Add a **CSP** header (`next.config.ts`; start Report-Only — the one missing header); **allowlist push-service hosts** in `app/api/push/subscribe/route.ts` (SSRF — endpoints are only https+length-checked); return **generic 500s** (stop returning raw `err.message` in `threads/[id]`, `bet/place`, …); **sanitize blog markdown→HTML** (rehype-sanitize) BEFORE the planned non-admin-author role ships (latent stored-XSS); rotate + delete the local `.supabase-pat`/`.clerk-prod`.
+6. **Dead code / artifacts.** `git rm --cached public/sw.js public/swe-worker-*.js` + gitignore; `git worktree prune` the 14 stale `.claude/worktrees`; add `.claude/**` + `public/sw*.js` to eslint `globalIgnores` (un-reds lint); delete dead exports (`lib/onboarding.ts`, `lib/follow.ts` `clearFollowedSeries`, `lib/indexnow.ts` `submitUrl`, unused `lib/weekend.ts` helpers) + the speculative `lib/openf1/types.ts` interfaces (OF1Meeting/Interval/Position/SessionResult/StartingGrid/Weather); trim the 10 dead `globals.css` per-series tokens; add a root `/*.png` gitignore.
+7. **Hygiene.** Inject `now: Date` into time logic (`lib/weekend.ts`, notify-cron windows — untestable clock coupling); declare `domhandler` (phantom transitive dep, used in 8 scrape files); name the scraper magic column-indices.
+
+**Sizing:** ~29% of runtime deps + ~5–7% of source LOC safely deletable; the application code is NOT over-engineered. Highest ROI = items 1–4. **Status: documented, none executed — revisit as a cleanup track parallel to Task #1.**
+
+---
+
+## ⚡ Next session pickup — 2026-06-29 (ONBOARD GHOST-JUMP = TASK #1, gated) — main 0.129.3
+
+main = **0.129.3**, no open PRs. This session rebuilt the F1 Qualifying Decoder's 3D view into a full **onboard ghost-comparison** (0.125.0 → 0.129.3, ~15 PRs). It now has: a GPS-**reconstructed track** (centreline curvature-shifted so cars run off-centre to apexes/kerbs), **terrain** following real elevation, **time-correct Hermite motion**, kerbs + white track-limit lines, a throttle/brake strip with live flat/lift/brake + a **°/s turn readout**, a 2D↔Onboard toggle, Follow A/B, playback speeds (0.5–4×). Lane D (official-channel media) done (0.126.1); the nav-hover + duplicate-notification bugs are fixed (0.128.1). The Austria recap is LIVE. **One bug blocks everything else → Task #1.**
+
+### ⛔ TASK #1 (do FIRST, operator-blocking) — the onboard GHOST car jumps forward/back
+
+**Symptom:** the rival ghost (e.g. LEC) darts forward then snaps back instead of driving its own smooth accel/decel. The followed car looks fine because the (now-rigid) camera tracks it; the ghost is rendered raw, so only it exposes the artifact.
+
+**Already tried + RULED OUT — do NOT repeat:**
+- NOT a delta to the lead car — each car is positioned from its OWN GPS via `sampleMotion(buildMotion(ownPts), t)`, both reading the same elapsed `t` (confirmed in `components/f1/GhostLap3D.tsx`).
+- Rigid camera (`CAM_LERP`→1, 0.129.3) — didn't fix it ⇒ not (only) camera rubber-band.
+- GPS out-and-back spike rejection (`buildMotion`, detour > 2.2× direct, 0.129.3) — didn't fix it ⇒ not gross position glitches.
+
+**Leading hypothesis:** the time-domain **Catmull-Rom / Hermite OVERSHOOTS** at sharp speed changes (heavy braking / hard accel). The central-difference velocity tangents (`m1`/`m2` in `sampleMotion`) carry too much speed into a braking zone, so the cubic overshoots the position then recovers — "darts forward then back, instead of accelerating/decelerating in the zones the car actually did." Spike-rejection can't catch this: the data points are fine; the interpolation *between* them overshoots.
+
+**Plan:**
+1. **Diagnose first (no more ship-and-hope).** Instrument the ghost — sample its along-track distance (or world pos) at fine `t` steps across a lap and look for **non-monotonic backward steps**, especially at braking zones. Branch on the result:
+   - (a) backtracks/overshoots at braking-accel transitions → spline overshoot → step 2;
+   - (b) monotonic in isolation but the **gap to the lead car swings** → that's the REAL time-delta (one driver faster here, the other there), NOT a bug — confirm the comparison model with the operator (time-sync "both launch at the line" vs distance-sync) instead of "fixing" it;
+   - (c) timing misalignment — each car's `t=0` is its first location sample (~±270 ms off true lap-start, differing per car) → anchor both to `lap.dateStart`.
+2. **If overshoot (most likely): make the interpolation MONOTONE.** Replace the Catmull-Rom tangents with **monotone cubic / PCHIP (Fritsch-Carlson)** per coordinate (x/y/z vs time), or slope-limit `m1`/`m2` to the adjacent secants. Monotone cubic guarantees no overshoot between samples → smooth, physical motion. Fallback: resample to a dense uniform-time grid via monotone interp, then linear-interp at playback.
+3. **Verify with the operator in PLAYBACK.** Motion smoothness cannot be confirmed from a still — get an on-lap sign-off before calling it done. `npm run dev` → `/series/f1/weekend/8/qualifying` → Onboard. NB a stale dev server may hold :3000 (kill it + `rm -rf .next` for a clean run); clear the Playwright profile's service worker if localhost serves a stale build.
+
+All onboard 3D logic is in `components/f1/GhostLap3D.tsx`; trace/reconstruction in `lib/openf1/{decoder,track,delta}.ts`.
+
+### ▶ Sequencing instruction (operator-set)
+Do **Task #1 only** first. When it is finished AND the operator **approves the result**, THEN — and only then — work the **open-items flat list** below. Do not start the open items before Task #1 is approved.
+
+### Open items (flat) — only AFTER Task #1 is approved
+- **Owed signed-in verify pass** (localhost dev-user): home widgets #298/#289, notification bell #295/#297, account avatars #300, practice telemetry #299, standings parity, 3D quali.
+- **Lane A — `/series` "too wide"**: which tab? (needs operator) + **`/social` "weird cards"** (needs a signed-in screenshot / local Clerk).
+- **Lane C — "better bet handling"**: scope — awards/honours screen? richer league screens? more market info on bet cards? (needs operator).
+- **Loutris's PWA won't open**: device + browser + symptom (needs operator) → check manifest `start_url`/scope + `StandaloneRedirect`.
+- **Results table**: row hover-highlight + interval (gap to car ahead) + leader-gap columns; scope which surface first (F1 OpenF1 classification vs per-series Results tab).
+- **Onboard environment** (gravel/grandstands): only if real-position data is feasible (not via OpenF1) — else leave road + terrain.
+- **Carried/owed:** F1 headshots → Wikimedia/own-licensed (`lib/openf1/headshots.ts`); OpenF1 LIVE tab (paid Sponsor tier — operator); lazy-Clerk-anon (perf); legacy lint (`QualifyingDecoder` set-state-in-effect); rotate Supabase PAT + prod Clerk `sk_live`.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-29 (FINAL) — `/feedback` board worked (≈14 PRs → 0.124.0); 6 items OPEN, teed up for PARALLEL next session
 
 main = **0.124.0**, **no open PRs**. Authoritative end-of-session state (the "(later)" block below is the mid-session record — the first 5 PRs). The operator then handed over the **`/feedback` board** (12 items) + mid-stream asks; worked as an autonomous self-merge run with folder-disjoint worktree subagents. The **Austria recap is approved + scheduled to publish 3pm** (all-users push). Prod was serving 0.123.0 at wrap (the Vercel queue is flowing toward 0.124.0).
