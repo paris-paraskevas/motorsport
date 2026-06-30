@@ -57,11 +57,31 @@ describe('allowRequest', () => {
 });
 
 describe('clientIp', () => {
-  it('takes the first x-forwarded-for hop', () => {
+  it('takes the RIGHTMOST x-forwarded-for hop (the trusted proxy appends it)', () => {
+    // Security: the leftmost entry is client-supplied and spoofable. Vercel
+    // appends the real edge-observed IP to the right, so that is the trusted hop.
     const req = new Request('https://x.example', {
       headers: { 'x-forwarded-for': '203.0.113.7, 10.0.0.1' },
     });
-    expect(clientIp(req)).toBe('203.0.113.7');
+    expect(clientIp(req)).toBe('10.0.0.1');
+  });
+
+  it('does not trust a spoofed leftmost x-forwarded-for entry', () => {
+    // A client sends a fake left value; Vercel appends the genuine IP on the right.
+    const req = new Request('https://x.example', {
+      headers: { 'x-forwarded-for': '1.2.3.4 (spoofed), 198.51.100.9' },
+    });
+    expect(clientIp(req)).toBe('198.51.100.9');
+  });
+
+  it('prefers x-vercel-forwarded-for over x-forwarded-for', () => {
+    const req = new Request('https://x.example', {
+      headers: {
+        'x-vercel-forwarded-for': '203.0.113.50',
+        'x-forwarded-for': '203.0.113.7, 10.0.0.1',
+      },
+    });
+    expect(clientIp(req)).toBe('203.0.113.50');
   });
 
   it('falls back to x-real-ip then unknown', () => {

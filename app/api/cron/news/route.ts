@@ -154,7 +154,7 @@ export async function GET(req: Request) {
       evicted,
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('GET /api/cron/news failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

@@ -15,7 +15,8 @@ export async function GET() {
     const layout = await getUserHomeLayout(userId);
     return NextResponse.json({ layout });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
+    console.error('GET /api/user/home-layout failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -34,6 +35,7 @@ export async function PUT(request: Request) {
     await setUserHomeLayout(userId, parsed);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
+    console.error('PUT /api/user/home-layout failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }

@@ -16,7 +16,10 @@ export async function GET() {
   try {
     return NextResponse.json({ threads: await listThreads('approved') });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
+    // Log the real error server-side; return a generic message so DB/PostgREST
+    // internals never leak to clients (security audit).
+    console.error('GET /api/threads failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -56,6 +59,11 @@ export async function POST(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'could not post';
     const domain = /title must|body must/i.test(message);
-    return NextResponse.json({ ok: false, error: message }, { status: domain ? 422 : 500 });
+    // Curated validation messages (422) stay user-facing; anything else is an
+    // internal failure — log it server-side and return a generic 500 so we
+    // don't leak DB/PostgREST internals (security audit).
+    if (domain) return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    console.error('POST /api/threads failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

@@ -2,25 +2,53 @@ import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
-import remarkHtml from 'remark-html';
+import remarkRehype from 'remark-rehype';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeStringify from 'rehype-stringify';
 
-// remark-html (via mdast-util-to-hast) double-applies the clobber prefix to
-// footnote element IDs but only single-applies it to the corresponding hrefs,
-// so the in-page scroll-to-footnote behaviour silently breaks. remark-html
-// silently drops `clobberPrefix` options, and rehype-stringify isn't an
-// existing dependency, so the pragmatic fix is a post-process pass that
-// normalises the doubled prefix on IDs. Only affects footnote-related IDs
-// (the only IDs the pipeline generates from operator-curated markdown);
-// operator content does not contain raw `id="user-content-user-content-"`.
+// Sanitised markdown→HTML (security audit). The rendered HTML feeds
+// dangerouslySetInnerHTML in the blog + the file-backed legal/About/History
+// tabs, so an XSS sink existed while the old remark-html pipeline ran with
+// remark-html's default `sanitize:false` (raw HTML — incl. <script> — passed
+// straight through). The pipeline now lowers mdast→hast (allowing raw HTML
+// through so rehype-raw can re-parse it into real nodes), then rehype-sanitize
+// strips anything outside GitHub's safe schema — <script>, event handlers,
+// javascript: URLs, etc. — before stringifying.
+//
+// rehype-sanitize's default (GitHub) schema preserves everything operator
+// content actually uses: GFM tables, links, images, headings, blockquotes,
+// hard-breaks, and footnote markup (it permits `id`/`href` only under the
+// `user-content-` clobber prefix that mdast-util-to-hast emits). So this is a
+// no-visible-change for trusted content; it only removes dangerous HTML.
+//
+// Footnote-id note: the `normaliseFootnoteIds` post-process is STILL required
+// (verified against this exact pipeline). mdast-util-to-hast already emits
+// `user-content-`-prefixed footnote IDs/hrefs; rehype-sanitize's default schema
+// then applies its OWN `clobberPrefix: 'user-content-'` and re-prefixes the
+// IDs (but not the hrefs it doesn't clobber), so raw output has
+// id="user-content-user-content-fn-1" against href="#user-content-fn-1" — the
+// in-page scroll-to-footnote anchors break without this fix. Stripping the
+// doubled prefix realigns IDs with hrefs. (Same symptom the old remark-html
+// path had, for a different internal reason.) Operator markdown never contains
+// a literal `id="user-content-user-content-"`, so the replace is targeted.
+// See lib/content.test.ts for the footnote-anchor + sanitisation coverage.
 function normaliseFootnoteIds(html: string): string {
   return html.replace(/id="user-content-user-content-/g, 'id="user-content-');
 }
 
-/** Render a markdown STRING to HTML (GFM + the footnote-id fix). The shared core,
- *  used for both file-backed content (below) and DB-backed content (blog posts). */
+/** Render a markdown STRING to sanitised HTML (GFM + footnote-id safety). The
+ *  shared core, used for both file-backed content (below) and DB-backed content
+ *  (blog posts). Output is XSS-safe and goes straight to dangerouslySetInnerHTML. */
 export async function renderMarkdown(content: string): Promise<string> {
   if (!content.trim()) return '';
-  const processed = await remark().use(remarkGfm).use(remarkHtml).process(content);
+  const processed = await remark()
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeSanitize)
+    .use(rehypeStringify)
+    .process(content);
   return normaliseFootnoteIds(processed.toString());
 }
 

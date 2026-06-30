@@ -27,6 +27,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     await decideThread(id, userId, body.action === 'approve');
     return NextResponse.json({ ok: true });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
+    console.error('POST /api/threads/[id] failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }

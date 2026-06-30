@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     const summary = await openUpcomingMarkets();
     return NextResponse.json({ ok: true, ...summary, at: new Date().toISOString() });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('GET /api/cron/open-markets failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

@@ -19,7 +19,8 @@ export async function GET() {
   try {
     return NextResponse.json({ items: await listFeedback() });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
+    console.error('GET /api/feedback failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -61,6 +62,10 @@ export async function POST(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'could not post';
     const domain = /must be/i.test(message);
-    return NextResponse.json({ ok: false, error: message }, { status: domain ? 422 : 500 });
+    // Curated validation messages (422) stay user-facing; everything else is
+    // logged server-side and returned as a generic 500 (security audit).
+    if (domain) return NextResponse.json({ ok: false, error: message }, { status: 422 });
+    console.error('POST /api/feedback failed:', err);
+    return NextResponse.json({ ok: false, error: 'internal error' }, { status: 500 });
   }
 }

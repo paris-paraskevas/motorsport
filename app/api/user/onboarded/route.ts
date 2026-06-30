@@ -27,10 +27,8 @@ export async function GET() {
     }
     return NextResponse.json({ onboarded });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('GET /api/user/onboarded failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -43,10 +41,8 @@ export async function POST() {
     await markUserOnboarded(userId);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('POST /api/user/onboarded failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
 
@@ -59,9 +55,7 @@ export async function DELETE() {
     await resetUserOnboarded(userId);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'unknown' },
-      { status: 500 },
-    );
+    console.error('DELETE /api/user/onboarded failed:', err);
+    return NextResponse.json({ error: 'internal error' }, { status: 500 });
   }
 }
