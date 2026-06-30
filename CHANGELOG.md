@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.130.2 — 2026-06-30
+
+Hotfix — actually land the onboard motion de-jitter. The fix was written on the #314 branch (`499ac5e`) but the PR's squash-merge predated that commit being pushed, so 0.130.0 shipped the cockpit camera WITHOUT the de-jitter, and the ghost "teleport" persisted on prod. (main's 0.130.0 notes correctly described cockpit-cam-only; nothing to reconcile there.)
+
+### Fixed (`components/f1/GhostLap3D.tsx`)
+- `buildMotion` now RE-TIMES each trace — re-derives point times from a speed low-passed over ±`REHELP_TAU` (0.5 s, so genuine braking/accel survives), rescaled to the true lap duration so overall time-sync holds. OpenF1's location timestamps jitter (a real ~0.25 s of travel often stamped ~0.10 s), which made the time-domain spline zoom-then-crawl and, between two cars, read as the rival ghost surging ahead then snapping back (relative surges ~170 m/s — 2× a car's top speed). Same path, same finish time, physically smooth pacing. Block applied verbatim from `499ac5e`.
+
 ## 0.130.1 — 2026-06-30
 
 Documentation + build housekeeping. No runtime behaviour change.
