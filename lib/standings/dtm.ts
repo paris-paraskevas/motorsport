@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { Element } from 'domhandler';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
@@ -55,14 +56,14 @@ const MIN_CONSTRUCTOR_ROWS = 2;
 
 async function fetchHtml(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         'User-Agent': BROWSER_UA,
         Accept: 'text/html',
         'Accept-Encoding': 'gzip, deflate, br',
       },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {

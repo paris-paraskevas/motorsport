@@ -1,4 +1,5 @@
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
+import { logSourceError } from '@/lib/fetch-upstream';
 
 // Durable last-good cache + health record for upstream feeds, in Postgres
 // (the `source_snapshot` table). The DB-as-fallback the operator asked for:
@@ -43,7 +44,10 @@ async function readSnapshot<T>(key: string): Promise<T | null> {
       .maybeSingle();
     if (error || !data) return null;
     return (data.payload as T) ?? null;
-  } catch {
+  } catch (err) {
+    // Fail-soft (mirrors lib/results-cache.ts): a Supabase outage must not break
+    // the render. Log so a persistent last-good read failure is visible.
+    logSourceError(`source-snapshot:read:${key}`, err);
     return null;
   }
 }
@@ -64,8 +68,10 @@ async function writeSnapshot<T>(key: string, payload: T): Promise<void> {
         },
         { onConflict: 'source_key' },
       );
-  } catch {
-    /* non-fatal: the caller already has fresh data in hand */
+  } catch (err) {
+    // Non-fatal: the caller already has fresh data in hand. Log so a persistent
+    // last-good write failure surfaces instead of degrading the fallback silently.
+    logSourceError(`source-snapshot:write:${key}`, err);
   }
 }
 

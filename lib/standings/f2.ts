@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
@@ -125,7 +126,7 @@ function parseConstructors(html: string): ConstructorStanding[] | null {
 
 async function fetchHtml(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         // The fiaformula2.com FIA-shared SSR template returns a SPA shell to
         // non-browser UAs; a stock Chromium UA produces the page with the
@@ -137,7 +138,7 @@ async function fetchHtml(url: string): Promise<string | null> {
       // Hourly revalidate — F2 standings update within minutes of a Sunday
       // race finish; an hour is fine for the standings tab.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {

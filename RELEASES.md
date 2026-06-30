@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.130.3 — 2026-06-30
+
+Internal: hardened how we fetch live data — upstream requests now time out instead of hanging, and failures are logged so a broken data source is caught faster. No visible change.
+
 ## 0.130.2 — 2026-06-30
 
 **The onboard ghost really stops surging now.** The motion-smoothing mentioned around the last onboard update didn't quite make it into the live build — this lands it, so the rival's translucent "ghost" holds its true, even pace through the lap instead of occasionally darting ahead and dropping back.

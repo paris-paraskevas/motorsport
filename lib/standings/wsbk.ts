@@ -1,4 +1,5 @@
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 export type { DriverStanding, ConstructorStanding };
 
@@ -130,7 +131,7 @@ function standingsUrl(year: number, category: string, kind: 'riders' | 'manufact
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         Accept: 'application/json',
         // Pulselive's CloudFront returns 404/Incapsula for some non-browser
@@ -142,7 +143,7 @@ async function fetchJson<T>(url: string): Promise<T | null> {
       // Hourly revalidate — WorldSBK posts updated standings within minutes
       // of Race 2 finishing; an hour cap is fine for the standings tab.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

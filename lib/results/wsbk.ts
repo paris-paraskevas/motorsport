@@ -1,4 +1,5 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import {
   readResultsCache,
@@ -75,14 +76,14 @@ function buildIncludedMap(
 
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         Accept: 'application/json',
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
       },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

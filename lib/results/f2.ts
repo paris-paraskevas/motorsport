@@ -6,6 +6,7 @@ import {
   writeResultsCache,
   seasonCacheKey,
 } from '@/lib/results-cache';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -120,13 +121,13 @@ function parseDate(date: string | undefined | null): Date | null {
 
 async function fetchHtml(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         'User-Agent': USER_AGENT,
         Accept: 'text/html',
       },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {

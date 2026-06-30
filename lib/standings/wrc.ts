@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { Element } from 'domhandler';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
@@ -37,13 +38,13 @@ const BROWSER_UA =
 
 async function fetchHtml(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         'User-Agent': BROWSER_UA,
         Accept: 'text/html',
       },
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {

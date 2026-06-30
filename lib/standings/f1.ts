@@ -1,5 +1,6 @@
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 import { withF1LastGood } from '@/lib/f1-cache';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 export type { DriverStanding, ConstructorStanding };
 
@@ -91,8 +92,8 @@ type F1Standings = {
 async function fetchF1StandingsLive(): Promise<F1Standings | null> {
   try {
     const [driverRes, constructorRes] = await Promise.all([
-      fetch(DRIVER_URL, { next: { revalidate: 3600 } }),
-      fetch(CONSTRUCTOR_URL, { next: { revalidate: 3600 } }),
+      fetchUpstream(DRIVER_URL, { next: { revalidate: 3600 } }),
+      fetchUpstream(CONSTRUCTOR_URL, { next: { revalidate: 3600 } }),
     ]);
     if (!driverRes.ok || !constructorRes.ok) return null;
     const [driverJson, constructorJson] = (await Promise.all([

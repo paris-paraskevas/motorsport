@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 // IMSA WeatherTech SportsCar Championship has four classes that each award
 // their own drivers' / teams' / manufacturers' titles. LMP2 is privateer-only
@@ -225,12 +226,12 @@ function readTable(
 export async function fetchImsaStandings(): Promise<ImsaStandings | null> {
   let html: string;
   try {
-    const res = await fetch(STANDINGS_URL, {
+    const res = await fetchUpstream(STANDINGS_URL, {
       headers: FETCH_HEADERS,
       // Hourly revalidate matches the IndyCar loader; Wikipedia updates
       // within ~24h of each round, an hour is more than fine.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     html = await res.text();
   } catch {

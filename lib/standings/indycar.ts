@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { DriverStanding } from '@/lib/types';
 
 export type { DriverStanding };
@@ -36,7 +37,7 @@ export async function fetchIndyCarStandings(): Promise<{
 } | null> {
   let html: string;
   try {
-    const res = await fetch(STANDINGS_URL, {
+    const res = await fetchUpstream(STANDINGS_URL, {
       headers: {
         // Non-browser User-Agents have been observed to receive a SPA shell
         // instead of the SSR'd HTML; a standard Chromium UA returns the page
@@ -48,7 +49,7 @@ export async function fetchIndyCarStandings(): Promise<{
       // Hourly revalidate — IndyCar updates the page within minutes of a
       // session ending; an hour is fine for the standings tab.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     html = await res.text();
   } catch {

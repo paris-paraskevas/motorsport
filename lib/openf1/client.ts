@@ -12,6 +12,8 @@
 // Extends the original narrow client in lib/results/openf1.ts; that one stays
 // as-is for the per-session results path until a later consolidation.
 
+import { fetchUpstream } from '@/lib/fetch-upstream';
+
 const BASE = 'https://api.openf1.org/v1';
 
 /**
@@ -76,10 +78,10 @@ async function pacedFetch(
   for (let attempt = 0; attempt < attempts; attempt++) {
     await takeToken();
     try {
-      const res = await fetch(url, { next: { revalidate } });
+      const res = await fetchUpstream(url, { next: { revalidate } });
       if (res.status !== 429 && res.status !== 503) return res;
     } catch {
-      // network error — fall through to backoff + retry
+      // network error / timeout — fall through to backoff + retry
     }
     if (attempt < attempts - 1) {
       await new Promise(resolve => setTimeout(resolve, 350 * (attempt + 1)));

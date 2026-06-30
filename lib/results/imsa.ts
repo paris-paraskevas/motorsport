@@ -1,4 +1,5 @@
 import { type ImsaClass } from '@/lib/standings/imsa';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import manifest from '@/content/series/imsa/alkamel-rounds.json';
 
 // IMSA WeatherTech SportsCar Championship — full-class race results sourced
@@ -164,14 +165,14 @@ export async function fetchImsaRoundResults(
 ): Promise<ImsaRoundResults | null> {
   let raw: string;
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: FETCH_HEADERS,
       // Hourly revalidate matches the standings loader. Alkamel marks each
       // file Official/Provisional/Unofficial — once Official is filed (a few
       // days after the race) the data is frozen, so caching aggressively is
       // safe.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     raw = await res.text();
   } catch {

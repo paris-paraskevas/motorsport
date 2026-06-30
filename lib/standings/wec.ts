@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 
 // FIA WEC has two classes that each award their own championships, but with
 // asymmetric titles: Hypercar awards Drivers + Manufacturers (no Teams — at
@@ -201,7 +202,7 @@ function parseTeamRow(
 export async function fetchWecStandings(): Promise<WecStandings | null> {
   let html: string;
   try {
-    const res = await fetch(STANDINGS_URL, {
+    const res = await fetchUpstream(STANDINGS_URL, {
       headers: FETCH_HEADERS,
       next: { revalidate: 600 },
     });

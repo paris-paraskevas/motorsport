@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 
 export type { RaceResult, RaceResultEntry };
@@ -246,10 +247,10 @@ interface FetchOptions {
 
 async function defaultFetch(url: string): Promise<{ status: number; body: string }> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: FETCH_HEADERS,
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return { status: res.status, body: '' };
     const body = await res.text();
     return { status: res.status, body };

@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
@@ -122,7 +123,7 @@ export function parseStandingsHtml<T>(
 
 async function fetchHtml(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: {
         // Match the indycar.com loader pattern: some CMS layers return a
         // SPA shell to non-browser UAs.
@@ -133,7 +134,7 @@ async function fetchHtml(url: string): Promise<string | null> {
       // Hourly revalidate. GTWCE updates each event's points within an
       // hour of the chequered flag.
       next: { revalidate: 3600 },
-    } as RequestInit);
+    });
     if (!res.ok) return null;
     return await res.text();
   } catch {

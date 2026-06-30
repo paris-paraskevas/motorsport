@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { AnyNode, Element } from 'domhandler';
+import { fetchUpstream } from './fetch-upstream';
 
 const REST_BASE = 'https://en.wikipedia.org/api/rest_v1/page/html';
 
@@ -315,10 +316,10 @@ export async function fetchSeasonLineup(
   const url = `${REST_BASE}/${encodeURIComponent(seasonPage)}`;
   let html: string;
   try {
-    const res = await fetch(url, {
+    const res = await fetchUpstream(url, {
       headers: { Accept: 'text/html' },
       next: { revalidate: 86400 },
-    } as RequestInit);
+    });
     if (!res.ok) return [];
     html = await res.text();
   } catch {
