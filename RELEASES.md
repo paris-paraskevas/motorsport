@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.129.4 — 2026-06-29
+
+**The onboard ghost no longer darts forward and back — for real this time.** We traced the jump to the chase camera sitting too close: when you followed the quicker car, the slower "ghost" slipped behind the camera and the picture snapped. The camera now sits a little further back so both cars stay in shot, the replay holds a steady, smooth pace, and the view no longer swims through the rougher parts of the GPS trace. Each car is shown where it was at the same moment in the lap, so you can watch the gap open and close corner by corner.
+
 ## 0.129.3 — 2026-06-29
 
 **Fixed the onboard ghost jumping.** The rival "ghost" car no longer darts forward and back — occasional GPS glitches in the position feed were making the replay overshoot, and those are now filtered out, so the ghost drives smoothly at its own real pace.

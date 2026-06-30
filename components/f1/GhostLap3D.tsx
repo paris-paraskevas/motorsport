@@ -8,11 +8,17 @@ import type { EnrichedDriver } from '@/lib/openf1/drivers';
 import type { Circuit, TrackPath, TrackPoint } from '@/lib/openf1/track';
 
 // The onboard comparison view: a TV-style "ghost car" replay. A chase camera
-// rides just behind + above the followed driver's car (a team-coloured proxy),
-// oriented along the track tangent, while the rival rides the same circuit as a
-// time-aligned translucent GHOST — both "launch" at the line at t=0, so you watch
-// the ghost pull ahead / drop back turn-by-turn (exactly F1's broadcast Ghost
-// Car tool, reconstructed from OpenF1 location + telemetry rather than video).
+// rides behind + above the followed driver's car (a team-coloured proxy), while
+// the rival rides the same circuit as a translucent GHOST. Both are TIME-synced —
+// shown where each car was at the SAME elapsed time from the lap start — so you
+// watch the rival pull ahead / drop back turn-by-turn. The camera sits far enough
+// back (CAM_BACK) that the rival, even a few car-lengths behind, stays IN FRONT of
+// it: a closer camera (the old 0.17) let the slower car fall behind the near plane
+// where perspective explodes — that was the ghost "darting forward then snapping
+// back" (the dart was the camera, never the spline/timing). A depth-fade dissolves
+// the ghost if it ever does pass behind the camera (a badly mismatched pair). The
+// camera AIM comes from a finite-difference heading (sampleHeading), not the raw
+// per-frame Hermite velocity, which spiked the aim to ~600°/s at OpenF1's GPS gaps.
 // A throttle/brake strip below answers "did he lift?" — THROTTLE-led, because
 // OpenF1 brake is 0/100 (force-based, no trail-brake modulation), so the throttle
 // trace is the reliable lift signal. Heavy deps (three/drei) live ONLY here and
@@ -31,13 +37,22 @@ import type { Circuit, TrackPath, TrackPoint } from '@/lib/openf1/track';
 // left/right read true. S keeps the ~1000-wide track at ~11 world units.
 const SCENE_SCALE = 90;
 
-// Chase-camera rig (world units). Close + low — just behind / above the cockpit
-// (T-cam). Distances are small because the track + car are scaled near to real
-// proportions (see TRACK_HALF_W) so the ribbon never folds through hairpins.
-const CAM_BACK = 0.17; // distance behind the car
-const CAM_UP = 0.085; // height above the car
-const CAM_LOOKAHEAD = 0.55; // how far ahead the camera aims
-const CAM_LERP = 1; // rigid follow: the (spike-cleaned, time-correct) motion is smooth, so the camera tracks the lead car exactly — any lag rubber-bands the scene + makes the ghost surge/recoil
+// Chase-camera rig (world units). Behind + above the car, pulled back enough that
+// the TIME-synced rival (up to a few car-lengths behind the followed car) stays in
+// FRONT of the camera — at the old 0.17 it fell behind the near plane and the
+// projection exploded (the "dart forward then snap back"). Distances are small
+// because the track + car are scaled near to real proportions (see TRACK_HALF_W).
+const CAM_BACK = 0.35; // distance behind the car
+const CAM_UP = 0.14; // height above the car
+const CAM_LOOKAHEAD = 0.6; // how far ahead the camera aims
+const CAM_LERP = 1; // rigid follow: position is smooth AND the heading is finite-difference-smoothed (see sampleHeading), so the camera tracks the car exactly without swimming — raw per-frame Hermite velocity used to spike the aim to ~600°/s at GPS gaps
+
+// Translucent rival overlay + a depth-fade: a rival that drifts behind the camera
+// (a badly mismatched pair) dissolves smoothly instead of exploding through the
+// near plane. depth = how far in front of the camera (along its view) the ghost is.
+const GHOST_OPACITY = 0.42;
+const GHOST_FADE_LO = 0.03; // fully hidden at/under this depth
+const GHOST_FADE_HI = 0.09; // fully opaque beyond this depth
 
 // The single-seater is modelled ~1.3 long in local units, scaled so it spans
 // ~40% of the asphalt width — a ~2 m car on our near-real ~5 m-wide track.
@@ -67,12 +82,12 @@ function mapTrack(track: TrackPath): Mapped {
 }
 
 // A car's lap as a SMOOTH, TIME-CORRECT motion: cleaned scene-space location
-// points + their lap-time stamps. sampleMotion interpolates with a non-uniform
-// Catmull-Rom (Hermite) parameterised by TIME — so the car passes through each
-// sample at its real time AND moves at the right speed everywhere. (three.js's
-// CatmullRomCurve3 is parameterised by point INDEX, not time, so sampling it
-// advanced the car at uneven speed — surge/slow ~4×/s — which the lagging chase
-// camera amplified into "jump forward then fall behind". This removes that.)
+// points + their lap-time stamps. samplePos interpolates position with a
+// non-uniform Catmull-Rom (Hermite) in the TIME domain (right speed everywhere;
+// proven non-overshooting on real GPS). sampleHeading takes the heading from a
+// finite difference of samplePos, NOT the analytic Hermite velocity — that
+// velocity differentiates ≤1.16 s-gapped GPS, so its DIRECTION spikes to ~600°/s
+// at gaps and a rigid chase cam re-aiming off it swims the whole scene.
 interface Motion {
   pts: THREE.Vector3[]; // cleaned scene-space points
   times: number[]; // lap-time (s) per point, strictly ascending
@@ -116,21 +131,15 @@ function buildMotion(points: TrackPoint[], cx: number, cy: number): Motion | nul
   return { pts, times };
 }
 
-// Position + forward tangent (XZ, y-zeroed) at lap time t via a non-uniform
-// Catmull-Rom Hermite in the TIME domain: passes through each sample at its time,
-// C1-smooth, and moves at the real speed (no index-parameter wobble). The Hermite
-// derivative gives a smooth heading — no getTangent noise. Clamps at the ends.
-function sampleMotion(m: Motion, t: number): { pos: THREE.Vector3; tan: THREE.Vector3 } {
+// Position at lap time t via a non-uniform Catmull-Rom Hermite in the TIME domain:
+// passes through each sample at its time, C1-smooth, moves at the real speed (no
+// index-parameter wobble), clamps at the ends. Proven NON-overshooting on real
+// OpenF1 GPS (the cars never backtrack), so monotone/PCHIP tangents are unneeded.
+function samplePos(m: Motion, t: number): THREE.Vector3 {
   const { pts, times } = m;
   const n = pts.length;
-  const headingFrom = (a: THREE.Vector3, b: THREE.Vector3): THREE.Vector3 => {
-    const d = b.clone().sub(a);
-    d.y = 0;
-    return d.lengthSq() > 1e-9 ? d.normalize() : new THREE.Vector3(0, 0, 1);
-  };
-  if (t <= times[0]) return { pos: pts[0].clone(), tan: headingFrom(pts[0], pts[1]) };
-  if (t >= times[n - 1]) return { pos: pts[n - 1].clone(), tan: headingFrom(pts[n - 2], pts[n - 1]) };
-
+  if (t <= times[0]) return pts[0].clone();
+  if (t >= times[n - 1]) return pts[n - 1].clone();
   let i = 0;
   while (i < n - 1 && times[i + 1] <= t) i++; // segment [i, i+1] with times[i] <= t < times[i+1]
   const p1 = pts[i];
@@ -149,20 +158,33 @@ function sampleMotion(m: Motion, t: number): { pos: THREE.Vector3; tan: THREE.Ve
   const s = (t - t1) / h;
   const s2 = s * s;
   const s3 = s2 * s;
-  // Hermite basis (position) + its derivative (velocity → heading).
-  const pos = new THREE.Vector3()
+  return new THREE.Vector3()
     .addScaledVector(p1, 2 * s3 - 3 * s2 + 1)
     .addScaledVector(m1, (s3 - 2 * s2 + s) * h)
     .addScaledVector(p2, -2 * s3 + 3 * s2)
     .addScaledVector(m2, (s3 - s2) * h);
-  const vel = new THREE.Vector3()
-    .addScaledVector(p1, 6 * s2 - 6 * s)
-    .addScaledVector(m1, (3 * s2 - 4 * s + 1) * h)
-    .addScaledVector(p2, -6 * s2 + 6 * s)
-    .addScaledVector(m2, (3 * s2 - 2 * s) * h);
-  vel.y = 0;
-  const tan = vel.lengthSq() > 1e-9 ? vel.normalize() : headingFrom(p1, p2);
-  return { pos, tan };
+}
+
+// Half-window (s) for the finite-difference heading. ~one sample period each side
+// low-passes the GPS-noise / sampling-gap direction spikes: the analytic Hermite
+// velocity hit ~600°/s at gaps; this caps the camera near ~90°/s (a real slow
+// corner's rate). Position is smooth, so a heading between two positions HEAD_DT
+// apart is stable — unlike the per-frame derivative.
+const HEAD_DT = 0.3;
+
+// Forward heading (XZ, y-zeroed) at lap time t — the direction between two SMOOTH
+// positions HEAD_DT apart, NOT the analytic velocity. Clamped at the lap ends.
+function sampleHeading(m: Motion, t: number): THREE.Vector3 {
+  const { times } = m;
+  const a = samplePos(m, Math.max(times[0], t - HEAD_DT));
+  const b = samplePos(m, Math.min(times[times.length - 1], t + HEAD_DT));
+  const d = b.sub(a);
+  d.y = 0;
+  return d.lengthSq() > 1e-9 ? d.normalize() : new THREE.Vector3(0, 0, 1);
+}
+
+function sampleMotion(m: Motion, t: number): { pos: THREE.Vector3; tan: THREE.Vector3 } {
+  return { pos: samplePos(m, t), tan: sampleHeading(m, t) };
 }
 
 // Distance reached along a trace at lap time t (for the gap readout + strip playhead).
@@ -234,7 +256,7 @@ function fmtGap(delta: number): string {
 // y=0): survival cell + nose + front/rear wings + sidepods + airbox + 4 open
 // wheels. Team colour on bodywork, dark tyres. Scaled by the parent (CAR_SCALE).
 function F1Car({ colour, ghost }: { colour: string; ghost: boolean }) {
-  const op = ghost ? 0.42 : 1;
+  const op = ghost ? GHOST_OPACITY : 1;
   const body = {
     color: colour,
     emissive: colour,
@@ -306,6 +328,10 @@ function F1Car({ colour, ghost }: { colour: string; ghost: boolean }) {
 }
 
 // Positions + orients a car each frame from the live `t` in a ref (no re-render).
+// Both cars are TIME-synced — sampled at the SAME elapsed `t`. The ghost also fades
+// as it nears / passes behind the camera (its depth in front of the camera drops
+// below GHOST_FADE_*), so a far-behind rival dissolves instead of exploding through
+// the near plane.
 function CarRig({
   motion,
   colour,
@@ -318,12 +344,33 @@ function CarRig({
   tRef: React.RefObject<number>;
 }) {
   const ref = useRef<THREE.Group>(null);
+  const camera = useThree(s => s.camera);
+  const camFwd = useRef(new THREE.Vector3());
   useFrame(() => {
     const g = ref.current;
     if (!g) return;
     const { pos, tan } = sampleMotion(motion, tRef.current ?? 0);
     g.position.copy(pos);
     g.rotation.y = Math.atan2(tan.x, tan.z); // align local +Z to travel direction
+    if (ghost) {
+      camera.getWorldDirection(camFwd.current); // unit camera view direction
+      const depth =
+        (pos.x - camera.position.x) * camFwd.current.x +
+        (pos.y - camera.position.y) * camFwd.current.y +
+        (pos.z - camera.position.z) * camFwd.current.z;
+      const fade = THREE.MathUtils.clamp(
+        (depth - GHOST_FADE_LO) / (GHOST_FADE_HI - GHOST_FADE_LO),
+        0,
+        1,
+      );
+      g.visible = fade > 0.02;
+      if (g.visible) {
+        g.traverse(o => {
+          const mat = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+          if (mat && mat.transparent) mat.opacity = GHOST_OPACITY * fade;
+        });
+      }
+    }
   });
   return (
     <group ref={ref}>
@@ -785,6 +832,7 @@ function TelemetryStrip({
   const phTel = followingA ? telA : telB;
   const phX = xForDist(distanceAtTime(phTel, t), maxD);
 
+  // Time-synced: both cars' instantaneous readouts at the same elapsed t.
   const sA = sampleTel(telA, t);
   const sB = sampleTel(telB, t);
   const stateA = inputState(sA.throttle, sA.brake);
@@ -898,20 +946,21 @@ export function GhostLap3D({
     return { pts: mapped.pts, halfL: uniform, halfR: uniform };
   }, [circuit, mapped]);
 
-  // Playback runs over the slower lap so both cars stay on track the whole time.
+  // Time-synced playback runs over the slower lap so both cars stay on track the
+  // whole time (the faster car clamps at its finish while the slower completes).
   const duration = useMemo(
     () => Math.max(traceA.lapTime, traceB.lapTime) || 0,
     [traceA.lapTime, traceB.lapTime],
   );
 
-  // Distance-aligned delta (sign relative to A/B, unchanged), sampled by the
-  // faster driver's reached distance.
-  const ref = traceA.lapTime <= traceB.lapTime ? traceA : traceB;
+  // Distance-aligned delta (sign: + → B behind A). At elapsed `tv`, read the delta
+  // at the distance the FOLLOWED car (the one the camera rides) has reached — i.e.
+  // the time gap between the two cars at that point on the track.
   const delta = useMemo(() => computeDelta(traceA, traceB), [traceA, traceB]);
   const gapAt = useCallback(
     (tv: number): number | null => {
       if (delta.length === 0) return null;
-      const d = distanceAtTime(ref.telemetry, tv);
+      const d = distanceAtTime(followedTrace.telemetry, tv);
       if (d <= delta[0].d) return delta[0].delta;
       for (let i = 1; i < delta.length; i++) {
         if (delta[i].d >= d) {
@@ -922,7 +971,7 @@ export function GhostLap3D({
       }
       return delta[delta.length - 1].delta;
     },
-    [delta, ref],
+    [delta, followedTrace],
   );
 
   // t lives in BOTH a ref (read by the rAF loop + per-frame cam/cars, no re-render)
