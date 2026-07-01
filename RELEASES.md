@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.139.2 — 2026-07-01
+
+**Clearer F1 About tab.** The Formula 1 overview now sits under a labelled "Series overview" heading, so the page reads more cleanly.
+
 ## 0.139.1 — 2026-07-01
 
 **Sharper notification badge.** The little chequered-flag badge on push notifications reads more cleanly at small sizes. No other change.
