@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.141.2 — 2026-07-01
+
+**The F1 About tab now links to the official rules and explains the basics.** There's a new "FIA regulations" link in the Further reading section that opens the FIA's official Formula 1 regulations page in a new tab, plus a short "Common topics" reference covering the points system, penalties and stewards, parc fermé, the 2026 overtaking aid that replaced DRS, track limits, and tyres — a quick primer without leaving the page.
+
 ## 0.141.0 — 2026-07-01
 
 **Classic F1 teams get their colours on the Champions tab.** In the Constructors' Championship list, historic title-winning teams — Brabham, Team Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo and Maserati — now show in their heritage colours (Lotus gold, Brabham green, Vanwall British racing green, Brawn's fluorescent yellow, and more) instead of plain text. Today's teams are unchanged, and the older team names stay as coloured labels since they don't have their own profile pages.

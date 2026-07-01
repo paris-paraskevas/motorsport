@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.141.2 — 2026-07-01
+
+Adds official FIA regulations discoverability and a fan-facing rules quick-reference to the F1 About tab.
+
+### Added
+- `lib/types.ts`: new optional `SeriesMeta.regulationsUrl` field — the official governing-body regulations page (FIA's F1 hub for Formula 1). Optional; absent → no chip. Generic so other FIA/sanctioning-body series can adopt it later.
+- `content/series/f1/meta.json`: set `regulationsUrl` to `https://www.fia.com/regulation/category/110` — the FIA's Formula One World Championship regulations landing page (the F1 entry the `fia.com/regulations` hub links to). WebFetch-confirmed HTTP 200; a stable landing page rather than a rotating per-issue PDF; not disallowed by `fia.com/robots.txt`.
+- `components/tabs/AboutTab.tsx`: `ExternalSourcesCard` now pushes an `{ label: 'FIA regulations', url: series.meta.regulationsUrl }` chip into the "Further reading" card when the field is present, rendered with the existing `rel="noopener noreferrer"` + `target="_blank"` chip markup alongside Official site / Standings. No Rules tab re-added.
+- `components/tabs/AboutTab.tsx`: new F1-only `F1CommonTopics` section (`isF1` slug-guarded, matching the "Series overview" `<section>` + `font-display` uppercase-h2 tokens) — a static `<dl>` quick-reference for Points system, Penalties & stewards, Parc fermé, Overtaking aid, Track limits, and Tyres. Content is aligned to the curated `content/series/f1/rules.md` (2026-06-11): no fastest-lap point (scrapped from 2025), and DRS replaced by 2026 active aero + Overtake Mode — verified against primary sources per the scrutinise-drafts rule rather than shipping stale DRS/fastest-lap copy.
+
+### Changed
+- `components/tabs/AboutTab.tsx`: fixed two stale comments that predated the per-series rules.md rollout. The `rulesPath` comment (was "absent file = no section") now notes every current series ships a `rules.md` while the `.catch` still tolerates absence; the `ExternalSourcesCard` header comment (was "no series ever shipped a curated rules.md") now points to the "Rules essentials" section that renders that content. Behaviour unchanged.
+
 ## 0.141.0 — 2026-07-01
 
 Historic F1 champion constructors now get plausible team-heritage colours in the Champions tab, instead of rendering as plain grey text.
