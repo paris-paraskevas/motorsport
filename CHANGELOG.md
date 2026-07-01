@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.138.0 — 2026-07-01
+
+F1 Rules tab resurfaced as a dedicated, F1-first component: an authoritative link to the official FIA regulations plus a scannable "common topics" quick reference. Delivers the long-standing `IDEAS.md` / `docs/HANDOFF.md` (S6) backlog item ("Improve Rules tab with an FIA link and a 'common topics' surface").
+
+### Added
+- `components/tabs/RulesTab.tsx` — new F1-guarded tab component (the generic Rules tab was retired in 0.19.0; content had folded into About). Two sections built on the standard tab surface (`border-y border-border`, H2 headings, shared tint/mono/prose tokens):
+  1. **Official FIA regulations** — an external link (`target="_blank"` + `rel="noopener noreferrer"`) to the FIA regulations landing page `https://www.fia.com/regulations`. Deliberately the stable landing page, not a versioned Sporting/Technical PDF: those PDFs are re-issued through the season (Section B/C hit Iss 07/19 on 2026-06-25), so a deep PDF URL rots fast. URL web-searched against fia.com and `WebFetch`-verified 200 + current on 2026-07-01 per the repo "never ship an unverified link" rule.
+  2. **Common topics** — a `<dl>` quick reference (points system, penalties & the stewards, parc fermé, DRS, track limits, tyre rules) with evergreen plain-English one-liners (no season-specific numbers, so the list can't silently rot; authoritative detail is one click away in the FIA regs).
+- Guarded by `series.meta.slug !== 'f1'` → falls back to `PlaceholderTab`, so the component is shared-safe if ever mounted for another series before that series has curated rules content.
+- **Wiring caveat (follow-up, out of this change's file scope):** `'rules'` is not currently a `TabKey` in `lib/tabs.ts`, and `renderTab()` in `components/SeriesPageView.tsx` has no `case 'rules'`, so the component is not yet reachable from the tab rail. Re-adding the tab key + the `renderTab` case (and, for SEO, a `describeTab` entry) is a separate coordinated change; this component is ready to drop in once that lands.
+
 ## 0.135.0 — 2026-07-01
 
 Onboard qualifying replay: cars now start together on a painted start/finish line.

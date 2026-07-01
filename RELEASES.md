@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.138.0 — 2026-07-01
+
+Internal: prepared a new Formula 1 Rules reference — a direct link to the official FIA regulations plus a plain-English rundown of the topics fans ask about most (points, penalties, parc fermé, DRS, track limits, tyres). It goes live on the F1 page in a follow-up update.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
