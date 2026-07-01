@@ -6,6 +6,45 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-07-01 (LATEST) — main 0.147.0 · Wave-A shipped · ▶ WAVE B = FIRST PRIORITY
+
+**main = 0.147.0.** Continued the ultracode waves. **▶ NEXT SESSION, FIRST PRIORITY: Wave B (below)** — it needs 3 operator decisions before it can run.
+
+### Wave A — SHIPPED (ultracode workflow, 6/6 merged)
+- **0.142.0 (#351)** durable last-good (`withSourceSnapshot`) extended to WEC/FE/WRC/NASCAR standings. 145 tests green.
+- **0.143.0 (#350)** MotoGP standings trend chart (Sprint→`extras`; fixes the 132→157 under-count). **OWED: preview pass** confirming chart total == standings on live 2026 data.
+- **0.144.0 (#353)** NLS results — winners-only from the Wikipedia season page (the VLN PDF isn't parseable in the Vercel runtime without a PDF lib). **OWED: datacenter-verify** the Wikipedia fetch on a preview (low risk — WP already datacenter-proven).
+- **0.145.0 (#352)** F1 About: FIA-regs link (`fia.com/regulation/category/110`, 200-verified) + a 2026-correct rules quick-reference. NB it flagged `content/series/f1/overview.md:13` still claims a "fastest-lap bonus point" — **stale for 2026, quick content fix owed**.
+- **0.146.0 (#348)** aggregated `/news` page (gives the Community menu its News destination). **OWED: visual pass.**
+- **0.147.0 (#349)** collapsible Champions sections. **OWED a11y fast-follow:** section labels are `<span>` — restore `<h2>` inside the `<summary>` for heading semantics + sibling-tab parity (flagged in CHANGELOG).
+
+### Ultracode lesson (fix the build prompt next wave)
+**2 of 6 build agents corrupted CHANGELOG** by RENAMING the top `## 0.141.0` heading in place instead of PREPENDING — destroyed the 0.141.0 entry + misattributed its bullets. Repaired all at merge via `git merge origin/main -X theirs` + clean re-add. **FUTURE WAVE PROMPTS must say:** "PREPEND a NEW `## <version>` section at the top of CHANGELOG/RELEASES — do NOT edit/rename the existing top heading." Also keep: **`git fetch origin` before EACH cascade merge** (a stale ref dropped 0.140.0 once) + **eyeball CHANGELOG headers after each merge** (every version present, bodies intact). RELEASES was never corrupted (agents prepend it correctly).
+
+### ▶ WAVE B — FIRST PRIORITY (items 1 + 8–12)
+**Cannot parallelize** — #1/#8/#9/#10/#11 all touch `AppShell`/`HomeContent`/the analysis routes. Run coordinated: rename (#1) → search/IA/gating → H2H; onboard cameras (#12) is a separate visual-gated build.
+
+**3 DECISIONS to unblock (operator):**
+1. **Rename "Decoder"** → proposed **"Qualifying Analysis"** + ghost-lap **"Replay"** (12 user-facing files incl. OG/SEO — grep `Decoder`). Confirm names.
+2. **Gating** — recommend an **account-creation wall** (NOT paywall; paywall = separate Stripe/pricing/legal decision) on the F1 analysis/replays; keep schedule/standings/results public. Confirm + exactly which surfaces.
+3. **IA** — recommend **increment-1 = home "quick access" launcher + the global search**; defer a bigger nav restructure. Confirm.
+
+**Design scope (condensed — full version in the 2026-07-01 chat):**
+- **#1 Rename** — sweep `Decoder`/`decoding` → Analysis/Replay across the 12 files; verify no "Decoder" remains (headings, nav, buttons, OG/SEO, notifications).
+- **#8 Global search** — build-time STATIC index (drivers/teams/weekends/series+tabs/blog/pages) → lazy-loaded JSON + tiny client fuzzy; header ⌘K overlay grouped by type; no per-keystroke network; off the initial bundle.
+- **#9 Head-to-head driver page** — `/f1/compare?a=&b=`; reuse `profile-stats` — points/pos/wins/podiums/last-5 + same-season quali & race H2H + trajectory mini-chart; F1 + live-standings series.
+- **#10 Gating** — Clerk `<SignedIn>/<SignedOut>` (or `proxy.ts`) on the analysis routes + a "Sign in to unlock" teaser.
+- **#11 IA increment-1** — home quick-access launcher (followed series · jump-to driver/team/weekend · analysis hub · standings) + search.
+- **#12 Onboard broadcast cameras (P3)** — 3rd View; auto-placed corner cams + a DIRECTOR (pan/zoom/auto-cut, frame both when far apart). Big + visual-gated → its own focused pass.
+
+### Owed / carry-over
+- The Wave-A preview/datacenter/visual passes above + the `overview.md` fastest-lap fix.
+- `gh` is left on `paris-paraskevas` (operator: keep — do NOT revert).
+- Prod converging to 0.147.0 (Vercel queues the day's many deploys).
+- Older backlog (accurate post-triage — see IDEAS.md 2026-07-01 entries): rotate `.supabase-pat` + prod Clerk `sk_live`; CSP flip Report-Only→enforcing (AdSense hosts now present); onboard P1 all-lines overlay + P2 real-geometry; results-table hover/interval/leader-gap; lazy-Clerk-anon; imagery program (Wikimedia photos + team logos + CC0 push sound); Sentry (needs DSN). Now/Next in IDEAS: betting real-odds adapter + exact_position go-live, security audit, B-perf, W3/W4/W5/W8, weather+news audit.
+
+---
+
 ## ⚡ Next session pickup — 2026-07-01 (LATE) — main 0.141.0 · big autonomous batch + triage + Wave-2 ultracode
 
 **main = 0.141.0.** Long high-throughput session after the 0.132.0 onboard overhaul: shipped 0.133.0 → 0.141.0 (~14 PRs) plus a backlog-accuracy triage that found **~40% of the planned "next 20" was already built**, then a **Wave-2 ultracode `Workflow`** (self-triage → build → adversarial-verify → cascade-merge).
