@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import type { Champion, Series } from '@/lib/types';
 import { fetchChampions } from '@/lib/wikipedia-champions';
-import { loadCuratedChampions, loadCuratedDrivers } from '@/lib/series-content';
+import {
+  loadCuratedChampions,
+  loadCuratedDrivers,
+  loadHistoricTeamColors,
+} from '@/lib/series-content';
 import { slugify } from '@/lib/slug';
 import { PlaceholderTab } from './PlaceholderTab';
 
@@ -134,13 +138,16 @@ function nameForSlugMatch(name: string): string {
 // (e.g. champions: "Red Bull"; drivers.json: "Red Bull Racing"). Build a slug
 // → canonical-ref map so a champion name slug-matches via the suffix-stripped
 // alias but the Link still routes to the real team page slug. The ref also
-// carries the drivers.json team color: champion team names render in their
-// team color where the team is on the current grid; historic teams with no
-// color mapping stay plain (curated historic color map is a future task).
+// carries a team color: current-grid teams get their drivers.json color and
+// link to /teams/<slug>; pre-current-grid champion constructors get a curated
+// heritage color from historic-team-colors.json but have no profile page, so
+// they render as coloured text (see TeamLinkResolver).
 const TEAM_SUFFIX_STRIP = /\s+(Racing|F1 Team|GP|Team)$/i;
 
 interface TeamRef {
-  slug: string;
+  /** /teams/<slug> profile page target; omitted for historic teams that have
+   * no page (colour the text, but don't render a dead link). */
+  slug?: string;
   color?: string;
 }
 
@@ -171,7 +178,7 @@ function TeamLinkResolver({
 }) {
   const slug = slugify(nameForSlugMatch(name));
   const ref = teamSlugMap.get(slug);
-  if (ref) {
+  if (ref?.slug) {
     return (
       <Link
         href={`/teams/${ref.slug}`}
@@ -181,6 +188,10 @@ function TeamLinkResolver({
         {name}
       </Link>
     );
+  }
+  // Historic teams: no profile page, so colour the text but don't link.
+  if (ref?.color) {
+    return <span style={{ color: ref.color }}>{name}</span>;
   }
   return <>{name}</>;
 }
@@ -418,9 +429,10 @@ export async function ChampionsTab({ series }: { series: Series }) {
   // Championship" is the wrong word. Reuse the same meta flag that drives the
   // slim tab set (SINGLE_EVENT_TAB_KEYS) and the tab-strip label.
   const isSingleEvent = series.meta.singleEvent === true;
-  const [curated, curatedDrivers] = await Promise.all([
+  const [curated, curatedDrivers, historicColors] = await Promise.all([
     loadCuratedChampions(series.meta.slug),
     loadCuratedDrivers(series.meta.slug),
+    loadHistoricTeamColors(series.meta.slug),
   ]);
 
   // Build per-series slug sets from the current series's curated drivers/teams.
@@ -446,6 +458,18 @@ export async function ChampionsTab({ series }: { series: Series }) {
     if (stripped !== canonical && !teamSlugMap.has(stripped)) {
       teamSlugMap.set(stripped, ref);
     }
+  }
+  // Fill the gaps with curated heritage colours for pre-current-grid champion
+  // constructors (Brabham, Lotus, Tyrrell…). Runs AFTER the drivers.json pass
+  // and never overwrites an existing key, so current-grid teams keep priority
+  // (their color + /teams page). Each hex gets the same readableTeamColor lift
+  // so dark heritage hues stay legible on the near-black background.
+  for (const [teamSlug, entry] of Object.entries(historicColors)) {
+    if (teamSlugMap.has(teamSlug)) continue;
+    teamSlugMap.set(teamSlug, {
+      slug: entry.page,
+      color: readableTeamColor(entry.color),
+    });
   }
 
   let champions: Champion[];

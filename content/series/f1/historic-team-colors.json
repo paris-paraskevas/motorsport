@@ -1,0 +1,53 @@
+{
+  "_comment": "Curated heritage colours for pre-current-grid F1 champion constructors, so historic rows in the Champions tab (Drivers' + Constructors' sections) get a plausible team colour too. Keys are the slugified team name as it appears in champions.json (see lib/slug.ts). `color` is a plausible team-heritage hex; `page` (optional) is a /teams/<slug> page target — omitted here because none of these teams have a current profile page, so the consumer colours the text and renders a <span>, not a broken <Link>. `note` documents the heritage rationale and is ignored by code. Colours are plausible identities, not canonical PMS/hex — historic F1 liveries have no official codes (paint sprayed in layers; national racing colours predate sponsorship). Current-grid teams keep priority: these only fill slugs drivers.json doesn't already cover.",
+  "teams": {
+    "brabham": {
+      "color": "#00963E",
+      "note": "Australian racing green-and-gold of owner Jack Brabham; 1966-67 constructor titles."
+    },
+    "lotus": {
+      "color": "#C8A24B",
+      "note": "Team Lotus — JPS black-and-gold gold accent is the enduring signature; BRG in the early-60s title era. Gold reads clearly on the dark background."
+    },
+    "tyrrell": {
+      "color": "#1E63C8",
+      "note": "Elf-era dark blue; 1971 constructors' + 1971/73 drivers' titles (Stewart)."
+    },
+    "matra": {
+      "color": "#0055A4",
+      "note": "Bleu de France / French racing blue; 1969 constructors' + drivers' title (Matra-Ford, Stewart)."
+    },
+    "brm": {
+      "color": "#2E7D4F",
+      "note": "British Racing Motors' dark metallic green; 1962 constructors' + drivers' title (Graham Hill)."
+    },
+    "cooper": {
+      "color": "#3DA35D",
+      "note": "Cooper's lighter racing green (with red flash); 1959-60 constructor titles (Brabham)."
+    },
+    "vanwall": {
+      "color": "#0F5C3A",
+      "note": "British Racing Green; won the inaugural 1958 Constructors' Championship."
+    },
+    "brawn-gp": {
+      "color": "#D9DD1E",
+      "note": "Fluorescent yellow of the white/yellow/black BGP 001; 2009 double title."
+    },
+    "renault": {
+      "color": "#F4D40A",
+      "note": "Renault's signature yellow (blue-and-yellow in the 2005-06 title years, Alonso)."
+    },
+    "benetton": {
+      "color": "#00A050",
+      "note": "Benetton's own green, retained on the sidepods through the 1994-95 title era; the team's heritage identity (blue was sponsor Mild Seven)."
+    },
+    "alfa-romeo": {
+      "color": "#8C1212",
+      "note": "Rosso corsa, deep; 1950-51 drivers' titles (Farina, Fangio). Darker than the current Ferrari red so it stays distinct."
+    },
+    "maserati": {
+      "color": "#A01A1A",
+      "note": "Maserati's oxblood-leaning rosso corsa; 1957 drivers' title (Fangio)."
+    }
+  }
+}
