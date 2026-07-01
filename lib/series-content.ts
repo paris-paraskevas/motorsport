@@ -30,6 +30,34 @@ export function loadCuratedChampions(slug: string): Promise<Champion[] | null> {
   );
 }
 
+/** One curated historic-team entry: a plausible heritage `color`, plus an
+ * optional `page` slug when the team happens to have a /teams/<slug> profile
+ * (historic teams usually don't — then the consumer colours text only). `note`
+ * is curation provenance, ignored at read time. */
+export interface HistoricTeamColor {
+  color: string;
+  page?: string;
+  note?: string;
+}
+
+/** Sidecar shape: slugified-team-name → heritage colour. Underscore-prefixed
+ * keys (e.g. `_comment`) are file-level metadata; only `teams` is read. */
+interface HistoricTeamColorsFile {
+  teams?: Record<string, HistoricTeamColor>;
+}
+
+/** Curated heritage colours for pre-current-grid champion constructors, so
+ * historic Champions-tab rows get a team colour too. Returns a slug→entry map
+ * (empty when the series has no sidecar). */
+export async function loadHistoricTeamColors(
+  slug: string,
+): Promise<Record<string, HistoricTeamColor>> {
+  const file = await readJsonIfExists<HistoricTeamColorsFile>(
+    path.join(SERIES_ROOT, slug, 'historic-team-colors.json'),
+  );
+  return file?.teams ?? {};
+}
+
 export function loadResultsOverrides(
   slug: string,
 ): Promise<ResultsOverridesFile | null> {

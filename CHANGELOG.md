@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.141.0 — 2026-07-01
+
+Historic F1 champion constructors now get plausible team-heritage colours in the Champions tab, instead of rendering as plain grey text.
+
+### Added
+- `content/series/f1/historic-team-colors.json` (new sidecar): curated slug→`{ color, page?, note? }` heritage-colour map for pre-current-grid F1 champion constructors — Brabham, Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo, Maserati. Colours are plausible team identities (Australian green for Brabham, JPS gold for Lotus, Elf/French blue for Tyrrell/Matra, BRG for Vanwall, fluorescent yellow for Brawn, rosso corsa for Alfa/Maserati, etc.) curated from multiple sources per the 5-source rule; historic F1 liveries have no canonical PMS/hex, so these are heritage identities not official codes. Each entry carries an inline `note` documenting the rationale (ignored by code).
+- `lib/series-content.ts`: `loadHistoricTeamColors(slug)` loader (mirrors `loadCuratedChampions`) returning a slug→entry map (empty when no sidecar), plus a local `HistoricTeamColor` type. Reads only the `teams` key so file-level `_comment` metadata is ignored.
+
+### Changed
+- `components/tabs/ChampionsTab.tsx`: after the `drivers.json` team-colour pass, merge historic-colour entries into `teamSlugMap` **without overwriting existing keys**, so current-grid teams keep priority (their `drivers.json` colour + `/teams/<slug>` link) and historic slugs only fill the gaps. Each heritage hex runs through the same `readableTeamColor()` contrast lift, so dark hues (Matra/Vanwall/Alfa/Maserati) stay legible on the near-black background.
+- `components/tabs/ChampionsTab.tsx`: `TeamRef.slug` is now optional; `TeamLinkResolver` renders a coloured `<span>` (colour, no `<Link>`) when a ref has a colour but no page target. Historic champion teams have no `/teams/<slug>` profile (`findTeamBySlug` only knows the current curated roster → 404), so this colours the text without emitting a dead link. Current-grid teams still render as `<Link>` unchanged.
 ## 0.140.0 — 2026-07-01
 
 Extends the durable last-good pattern (Postgres `source_snapshot`) to the F1 feeds and the motorsport.com-sourced DTM standings, so a transient upstream outage serves the last good data instead of blanking the page.

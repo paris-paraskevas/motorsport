@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.141.0 — 2026-07-01
+
+**Classic F1 teams get their colours on the Champions tab.** In the Constructors' Championship list, historic title-winning teams — Brabham, Team Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo and Maserati — now show in their heritage colours (Lotus gold, Brabham green, Vanwall British racing green, Brawn's fluorescent yellow, and more) instead of plain text. Today's teams are unchanged, and the older team names stay as coloured labels since they don't have their own profile pages.
 ## 0.140.0 — 2026-07-01
 
 **Standings and results stay up when a data source has a wobble.** The F1 standings and results, and the DTM standings, now fall back to the last good data we saw if their source is briefly unreachable — so those pages keep showing the latest available figures instead of going blank during an outage, and refresh themselves the moment the source recovers.
