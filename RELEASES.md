@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.132.2 — 2026-07-01
+
+For single-event series like the 24h Nürburgring, the Champions tab now reads "Past Winners" — a clearer fit for a one-off race, where the list is previous race winners rather than season champions. Full championship series are unchanged.
+
 ## 0.132.0 — 2026-07-01
 
 The qualifying onboard replay is now a proper 3D scene on every circuit — a real Formula 1 car in team colours on a track that sits naturally on the rolling ground, with run-off, barriers, grandstands, a pit lane and greenery in the distance. Watch it from the chase camera or a broadcast-style cockpit view looking down the nose. On phones, the playback-speed buttons under the replay now always fit on screen.
