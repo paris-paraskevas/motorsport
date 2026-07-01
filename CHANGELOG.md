@@ -4,20 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.131.0 — 2026-06-30
+## 0.132.0 — 2026-07-01
 
-Onboard 3D graphics overhaul — Phase 1 (car model + procedural environment). The qualifying onboard replay now renders a real car model + a dressed trackside scene on the GPS-reconstructed circuit, for every track (procedural, centreline-driven). The 2D ghost replay is **kept as a fallback** for now — removed in a follow-up once the live 3D is confirmed.
+Onboard 3D graphics overhaul — rebuilt and gated on live screenshots (supersedes the reverted 0.131.0). Touches `components/f1/onboard/CarModel.tsx`, `components/f1/onboard/TrackEnvironment.tsx`, `lib/openf1/track-environment.ts` (+ test), `components/f1/GhostLap3D.tsx`.
 
 ### Added
-- `public/models/f1-2022/car.glb` — CC-BY generic open-wheel glTF (FetchCFD project 4314; untextured, 28 flat materials) + `ATTRIBUTION.md`. Recoloured per team by material luminance (no team trademarks/liveries).
-- `components/f1/onboard/CarModel.tsx` — loads the glTF (drei `useGLTF`), luminance recolour, bbox recentre + scale; replaces the box-built `F1Car`.
-- `lib/openf1/track-environment.ts` (pure, unit-tested) — procedural barriers/grandstands/trees/banners from the reconstructed centreline; `components/f1/onboard/TrackEnvironment.tsx` renders them GPU-instanced (one draw call per element type).
-- `lib/onboard/useQualityTier.ts` — device heuristic → `high|low`; drives instance counts + Canvas `dpr` so mobile stays lean.
+- Real CC-BY glTF F1 car (`public/models/f1-2022/`), recoloured to the flat team colour, bbox-recentred with the wheels on the track.
+- Procedural trackside dressing off the reconstructed centreline: continuous set-back barriers, corner grandstands + banners, an outfield treeline, and a pit lane + garages on the main straight with a tapered entry/exit. Adaptive quality tier (`lib/onboard/useQualityTier.ts`).
 
 ### Changed
-- `components/f1/GhostLap3D.tsx` — mounts `TrackEnvironment` + reads the quality tier; removed the now-dead `F1Car`/`CAR_SCALE`.
+- Car sized by WIDTH to the real ratio (1.9 m car / ~12.5 m track ≈ 0.152) of the **measured** track half-width, so it's correct on any circuit; the chase/cockpit rig scales by the same factor (`camScale`) so the dialled framing is preserved.
+- Cockpit view dialled to a broadcast onboard T-cam (lens on the airbox edge, looking down the nose).
+- **One** inverse-distance-weighted ground surface (`groundHeight`), clamped below the nearest track elevation, is shared by the terrain mesh and every draped element — so the track always sits on top (no grass over the track) and nothing floats.
+- Barriers keep their own smooth track elevation (not draped) with a deep downward skirt (no tilted/flying walls) and drop self-folds at hairpins; trees + grandstands are outfield-only and cleared of every track section (none on the racing line); the side normal now matches the ribbon (`crossVectors(tangent, UP)`).
+- Onboard transport row wraps (`flex-wrap`) so the 4× speed button never clips on narrow (Pixel 9) viewports.
 
-Spec + plan: `docs/superpowers/specs/2026-06-30-onboard-3d-graphics-design.md`, `docs/superpowers/plans/2026-06-30-onboard-graphics-overhaul.md`. Pre-merge visual sign-off was deferred to a live prod check (the Vercel preview is SSO-walled).
+## 0.131.1 — 2026-06-30
+
+Revert the onboard 3D graphics overhaul (0.131.0). The procedural environment walled both track edges (no runoff), scattered trees onto the racing surface (noisy-centreline normals + oversized cones), and the glTF car was mis-oriented + half-sunk below the ground plane (bbox-centre origin) with a crude luminance recolour. Root cause: shipped on green unit tests (structure, not realism) past the visual gate. Reverted to the clean 0.130.6 onboard (reconstructed track + simple car) while it's rebuilt, gated on screenshots. Code + model + spec/plan retained on `feat/onboard-graphics-overhaul`.
 
 ## 0.130.6 — 2026-06-30
 
