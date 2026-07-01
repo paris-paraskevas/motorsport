@@ -1,8 +1,16 @@
 What's new in Paddock Tracker. Newest first.
 
-## 0.135.2 — 2026-07-01
+## 0.139.0 — 2026-07-01
 
-**Sharper notification icon.** The little badge that appears on push notifications is now a cleaner chequered-flag design that stays crisp at the small size Android shows it.
+**The home "up next" now shows the whole race day.** When your next few sessions are packed into the same day — qualifying, sprint and race stacked together — the hero lists the next two or three right under the main countdown, each with its own timer, instead of showing just one. On a quieter day it stays a single session as before.
+
+**Championship leader no longer goes blank.** If you'd turned every series off in the leader widget, it now shows all your series again rather than an empty box; and if a series you picked has no standings yet, you'll see a short prompt to pick one instead of blank space.
+## 0.136.0 — 2026-07-01
+
+**Spot the dynasties at a glance on the Champions tab.** Repeat champions now carry a small title count — like "×7" next to Lewis Hamilton or "×4" next to Max Verstappen — with a tiny bar that fills in as their titles add up year by year. It works across the Drivers', Constructors', and Endurance Cup lists, so multi-time winners and title streaks jump out while you scan. One-off champions stay clean, and the by-decade grouping is unchanged.
+## 0.135.1 — 2026-07-01
+
+**The home news filter now remembers your choice.** When you filter the Paddock wire to a single series, that choice sticks across page reloads instead of resetting to "All" every time.
 
 ## 0.135.0 — 2026-07-01
 

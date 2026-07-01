@@ -4,18 +4,36 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.135.2 — 2026-07-01
+## 0.139.0 — 2026-07-01
+## 0.136.0 — 2026-07-01
 
-Notification badge refreshed to a cleaner chequered-flag silhouette.
+Champions tab: cumulative-title markers on the (already decade-grouped) champions lists so repeat champions and dynasties pop when scanning.
+
+### Added
+- `components/tabs/ChampionsTab.tsx`: `computeTitleTally(rows, keyOf)` — derives, per championship section, each champion's cumulative title number *up to and including* that season plus their section total, purely from the champions list already on the page (no data-model change, no new fetch). Totals are keyed by the exact display string, so GT World's comma-joined Endurance Cup crews are matched as a unit rather than split into phantom per-driver counts. The running count walks oldest-first, so with the existing newest-first row order the top row shows the champion's highest tally (e.g. Verstappen's 2024 row → 4; Schumacher's 2004 → 7, correctly counting across the non-consecutive 1994→2004 span).
+- `components/tabs/ChampionsTab.tsx`: `TitleTallyBadge` — renders a compact `×N` count in the series tint (`text-tint`) plus a mini bar of `count`-filled pips out of `total` (`bg-tint` filled / `bg-border` empty), capped at `PIP_CAP = 7` so a 7- or 10-time champion stays as tight as a 2-time one. Rendered only for repeat champions (`total > 1`); one-off winners stay clean. Pips are `hidden sm:inline-flex` so mobile shows just the `×N` count and rows stay dense. `title`/`aria-label` expose "Title k of N".
+- Wired into all three sections — Drivers' (keyed by driver), Constructors' (keyed by team; Ferrari/McLaren/Williams etc. repeat heavily), and the secondary Endurance Cup (keyed by crew string) — on both the desktop grid and the mobile stacked layout.
+
+Note: the PRIMARY ask of this task — decade/era sub-headers within each championship section — was **already shipped** in a prior commit (`groupByDecade` + collapsible `<details>` per decade). This release adds only the SECONDARY per-champion visual, which the curated data cleanly supports.
+## 0.135.1 — 2026-07-01
+
+Home PADDOCK WIRE series filter now persists across reloads.
+
+### Added
+- `components/HomeContent.tsx`: the wire's active series filter is persisted to `localStorage` under the namespaced key `paddock:news-filter`. New module-scope `readStoredNewsFilter` / `writeStoredNewsFilter` helpers guard `typeof window` and swallow quota/denied errors (mirrors `lib/follow.ts`). Read returns `null` (= "All", the default) for absent/empty/malformed values.
 
 ### Changed
-- `scripts/gen-badge.py`: redraws `public/icons/badge-96.png` as a chequered flag on a pole using a 4×4 checkerboard of opaque-white cells (was a 4×3 grid with 1px transparent gutters). Dropping the inner gutters lets the opaque squares meet corner-to-corner, which survives Android's status-bar downscale + silhouette mask far better than gutter-separated cells. Grid is even-multiple sized (48px flag ÷ 4 = 12px cells) so the squares stay pixel-aligned.
-- `scripts/gen-badge.py`: added post-save invariant assertions — output is 96×96, every fully-opaque pixel is pure white `(255,255,255)`, and at least one fully-transparent pixel exists — so a future edit can't silently ship a coloured or opaque badge (the documented monochrome landmine). Pixel access uses `Image.load()` rather than the Pillow-12-deprecated `getdata()`.
-- `public/icons/badge-96.png`: regenerated from the updated script — still 96×96 RGBA, single opaque colour (white) on transparency.
+- `components/HomeContent.tsx`: `newsFilter` still initialises to the SSR default (`null`) and adopts the stored slug in a post-mount `useEffect`, so the hydration render matches the server HTML (no mismatch — same "default then adopt" idiom as `LocalTime`/`useHomeLayout`). Chip clicks route through a new `selectNewsFilter` wrapper that sets state and writes through. A derived `effectiveNewsFilter` ignores a stored slug whose series has dropped out of the feed (falls back to "All"), so a stale value can't strand the wire on an empty, unresettable view when the chip bar is hidden (≤1 series); it also drives the chip active-state highlighting.
 
 ## 0.135.0 — 2026-07-01
 
-Onboard qualifying replay: cars now start together on a painted start/finish line.
+Home hero surfaces a busy race day's next 2–3 sessions; championship-leader no longer renders a blank block when all series are deselected.
+
+### Added
+- `components/HomeContent.tsx`: **busy-race-day hero.** New `heroUpNext` derivation after `next` — takes `upcomingItems.slice(1, 4)` and keeps only the sessions whose `start` is within a 24h window of the primary countdown's start (`HERO_WINDOW_MS`). Guarded to a primary with a precise start (`!next.session.dateOnly` — a `dateOnly` "this weekend · time TBC" hero has no instant to measure 24h from and hides its countdown anyway); `dateOnly` companions are also skipped. Rendered as a compact "Also today" list beneath the primary countdown inside the chyron (own `<Link>` rows — the primary hero is itself an `<a>`, so companions can't nest inside it), each with the series dot + name, title, local time, and its own live `<Countdown>`. Falls back to the single-session default (`heroUpNext` empty) on a quiet day; robust to fewer than 3 upcoming sessions via the slice.
+
+### Fixed
+- `components/HomeContent.tsx`: **championship-leader blank block when all series deselected.** The widget filtered `standings` by `leaderSet` (`cfg('championship-leader').seriesSet`) with `!leaderSet || leaderSet.includes(s.slug)`; an empty array (which the customise multi-select persists once every series is toggled off) is truthy, so the predicate matched nothing and rendered an empty `border-y` div. Now a precomputed `leaderRows` treats an absent OR empty `seriesSet` as "all followed" (matching the field's documented "absent = all" semantic), so deselecting everything shows all leaders again. A genuine empty result (a non-empty subset whose series have no standings yet) now renders a "Pick a series in Customise to see its leader." empty-state line instead of a blank block. Closes the tracked follow-up in `IDEAS.md` / `docs/HANDOFF.md`.
 
 ### Fixed
 - `lib/openf1/track.ts`: new `startFinishReference` + `anchorTrackToStartFinish` (pure, unit-tested) re-anchor every driver trace to ONE shared start/finish line. Each trace was previously timed from its own first GPS sample (`t0 = points[0].ms`), which lands a different distance past the line per driver (OpenF1 location sampling phase), so the time-synced onboard showed a slower car starting ahead of the pole car. The S/F-crossing search is windowed to the first ~15% so a flying lap's END crossing of the same line can't be mistaken for the start.
