@@ -14,6 +14,15 @@ Champions tab: cumulative-title markers on the (already decade-grouped) champion
 - Wired into all three sections — Drivers' (keyed by driver), Constructors' (keyed by team; Ferrari/McLaren/Williams etc. repeat heavily), and the secondary Endurance Cup (keyed by crew string) — on both the desktop grid and the mobile stacked layout.
 
 Note: the PRIMARY ask of this task — decade/era sub-headers within each championship section — was **already shipped** in a prior commit (`groupByDecade` + collapsible `<details>` per decade). This release adds only the SECONDARY per-champion visual, which the curated data cleanly supports.
+## 0.135.1 — 2026-07-01
+
+Home PADDOCK WIRE series filter now persists across reloads.
+
+### Added
+- `components/HomeContent.tsx`: the wire's active series filter is persisted to `localStorage` under the namespaced key `paddock:news-filter`. New module-scope `readStoredNewsFilter` / `writeStoredNewsFilter` helpers guard `typeof window` and swallow quota/denied errors (mirrors `lib/follow.ts`). Read returns `null` (= "All", the default) for absent/empty/malformed values.
+
+### Changed
+- `components/HomeContent.tsx`: `newsFilter` still initialises to the SSR default (`null`) and adopts the stored slug in a post-mount `useEffect`, so the hydration render matches the server HTML (no mismatch — same "default then adopt" idiom as `LocalTime`/`useHomeLayout`). Chip clicks route through a new `selectNewsFilter` wrapper that sets state and writes through. A derived `effectiveNewsFilter` ignores a stored slug whose series has dropped out of the feed (falls back to "All"), so a stale value can't strand the wire on an empty, unresettable view when the chip bar is hidden (≤1 series); it also drives the chip active-state highlighting.
 
 ## 0.135.0 — 2026-07-01
 

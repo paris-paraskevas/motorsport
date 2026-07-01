@@ -3,6 +3,9 @@ What's new in Paddock Tracker. Newest first.
 ## 0.136.0 — 2026-07-01
 
 **Spot the dynasties at a glance on the Champions tab.** Repeat champions now carry a small title count — like "×7" next to Lewis Hamilton or "×4" next to Max Verstappen — with a tiny bar that fills in as their titles add up year by year. It works across the Drivers', Constructors', and Endurance Cup lists, so multi-time winners and title streaks jump out while you scan. One-off champions stay clean, and the by-decade grouping is unchanged.
+## 0.135.1 — 2026-07-01
+
+**The home news filter now remembers your choice.** When you filter the Paddock wire to a single series, that choice sticks across page reloads instead of resetting to "All" every time.
 
 ## 0.135.0 — 2026-07-01
 
