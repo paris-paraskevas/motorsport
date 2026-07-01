@@ -6,6 +6,28 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-07-01 (LATE) — main 0.139.2 · big autonomous batch + backlog triage
+
+**main = 0.139.2.** Long high-throughput session after the 0.132.0 onboard overhaul: shipped 0.133.0 → 0.139.2 (~11 PRs) plus a backlog-accuracy triage that found **~40% of the planned "next 20" was already built**.
+
+### Shipped this session (all merged)
+- **0.133.0 (#330)** decoder delta-chart X-axis by **turn** (T1..Tn), not km — new `lib/openf1/turns.ts` (+test), km fallback if <3 turns. Verified live (T1–T8 on Austria).
+- **0.134.0 (#329)** `/changelog` grouped by month; **0.134.1 (#332)** months collapsible (native `<details>`, no client JS) + curated per-month abstracts (`app/(app)/changelog/releases.ts` `MONTH_ABSTRACTS`). Verified live.
+- **0.135.0 (#333) ONBOARD START/FINISH FIX** — each trace was timed from that driver's own first GPS sample (`lib/openf1/track.ts` `t0=points[0].ms`), a different distance past the line per driver → the slower car looked like it started ahead. New `startFinishReference` + `anchorTrackToStartFinish` (pure, unit-tested) re-anchor every trace to ONE shared S/F line; `buildDecoderTraces` applies it + trace cache key **v3→v4**; `GhostLap3D` paints a chequered `StartFinishLine`. **Localhost-verified** (t=0 both cars on the line; mid-lap the faster pulls ahead).
+- **Wave 1 quick-wins (parallel worktrees):** 0.135.1 (#337) news-filter persists (localStorage); 0.136.0 (#341) Champions cumulative-title badges; 0.139.0 (#339) home hero "Also today" busy-day + championship-leader empty-set fix; 0.139.1 (#336) sharper monochrome badge + `gen-badge.py` invariants; 0.139.2 (#338) F1 About "Series overview" label.
+- **docs (#334)** the **ultracode-assessment RULE** — state at the start of every task whether ultracode is needed (in project `CLAUDE.md` + device-wide `~/.claude/CLAUDE.md`).
+
+### Backlog triage (2026-07-01) — verified against code
+- **Already done (stop resurfacing):** MotoGP + WEC + GTWC live results & standings (real parsers wired in Results/StandingsTab); onboarding tour (`components/Tour.tsx`); contact-form categories; custom error pages; `/api/cron/health`; decoder turns-axis; changelog month-group + collapsible. Onboard any-two picker mostly exists (decoder already picks any two — only an all-lines overlay remains).
+- **Genuinely open (real Wave 2):** NLS Nürburgring results (no `lib/results/nls.ts`; VLN PDF; **datacenter-verify**); standings last-good resilience (`withSourceSnapshot` wired to news only — extend to F1 standings/results + motorsport.com + a warm cron); head-to-head **driver** comparison page (only the onboard session comparison exists); `/news` aggregated page (API only, no route); Sentry (**needs a DSN** — operator-gated). Verify-first: MotoGP standings-chart under-count (likely moot — no MotoGP trend chart), `/drivers/[slug]` enrichment depth (page exists).
+
+### Landmines surfaced this session
+- **git push flaky-403:** the machine's default `gh` account is read-only `parisparaskevas-hub`; write needs `paris-paraskevas`. Fixed for the session via `gh auth switch -u paris-paraskevas` + `gh auth setup-git`. **`gh` is currently left on `paris-paraskevas`** — revert to `parisparaskevas-hub` if you want the original default.
+- **Parallel-PR CHANGELOG auto-merge can TANGLE** — 0.139.0 shipped with a bare header + its body under 0.135.0 (repaired in #336). When cascading parallel PRs: resolve `package.json` with `--ours`, and **eyeball the CHANGELOG top after each merge** — don't trust the auto-merge. RELEASES was unaffected.
+- Version gaps on `/changelog` (0.137.0/0.138.0) are from closed PRs (#335 contact = already-live; #340 rules = retired/dead) — harmless.
+
+---
+
 ## ⚡ Next session pickup — 2026-07-01 — main 0.132.0 · ONBOARD 3D OVERHAUL SHIPPED ✅
 
 **main = 0.132.0** (verified live on prod `/changelog`). The onboard 3D graphics overhaul is **rebuilt, merged (PR #323, squash `3216427`) and deployed** — the 0.131.0→0.131.1 revert saga is closed. Built + verified via operator-visible localhost screenshots + operator live sign-off (the visual gate 0.131.0 skipped).
