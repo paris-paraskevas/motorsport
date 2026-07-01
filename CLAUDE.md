@@ -56,6 +56,15 @@ Approvals are explicit ("yes", "go ahead", "approved", "do it"). Do not infer ap
 - **Stay in execute mode** when: single-file edit, clear and specific instruction, bug fix with known location, or read-only research.
 - **When unsure:** ask. *"This looks like it needs a plan. Want me to enter plan mode?"*
 
+## Ultracode assessment — state it up front (RULE)
+
+At the **start of every task**, before planning or acting, state in one line whether **ultracode** is needed — and why. Ultracode = defaulting to multi-agent `Workflow` orchestration + adversarial verification (author/run a workflow) instead of a single-agent pass.
+
+- **Needed** when the task is large / ambiguous / high-stakes, or wants **breadth** (many independent sub-tasks in parallel) or **depth** (adversarial verify, multi-source research, wide audits/migrations, loop-until-dry discovery).
+- **Not needed** for single-file edits, known-location fixes, quick lookups, or conversational turns → say "ultracode: not needed" and proceed.
+- It's a **depth/orchestration** choice, not a breadth one: plain parallel worktree agents don't require ultracode — flag when they fit better than full ultracode depth.
+- **Recommend only; the user opts in.** Never launch a workflow without explicit approval.
+
 ## Time tracking
 
 Realistic *active* time per session, not wall-clock between prompts. **Per-prompt prefix `[+Nm]`** at the start of a new prompt = `N` active minutes the user spent between the previous prompt and this one.
