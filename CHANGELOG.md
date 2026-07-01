@@ -4,6 +4,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.139.0 — 2026-07-01
 ## 0.136.0 — 2026-07-01
 
 Champions tab: cumulative-title markers on the (already decade-grouped) champions lists so repeat champions and dynasties pop when scanning.
@@ -26,7 +27,13 @@ Home PADDOCK WIRE series filter now persists across reloads.
 
 ## 0.135.0 — 2026-07-01
 
-Onboard qualifying replay: cars now start together on a painted start/finish line.
+Home hero surfaces a busy race day's next 2–3 sessions; championship-leader no longer renders a blank block when all series are deselected.
+
+### Added
+- `components/HomeContent.tsx`: **busy-race-day hero.** New `heroUpNext` derivation after `next` — takes `upcomingItems.slice(1, 4)` and keeps only the sessions whose `start` is within a 24h window of the primary countdown's start (`HERO_WINDOW_MS`). Guarded to a primary with a precise start (`!next.session.dateOnly` — a `dateOnly` "this weekend · time TBC" hero has no instant to measure 24h from and hides its countdown anyway); `dateOnly` companions are also skipped. Rendered as a compact "Also today" list beneath the primary countdown inside the chyron (own `<Link>` rows — the primary hero is itself an `<a>`, so companions can't nest inside it), each with the series dot + name, title, local time, and its own live `<Countdown>`. Falls back to the single-session default (`heroUpNext` empty) on a quiet day; robust to fewer than 3 upcoming sessions via the slice.
+
+### Fixed
+- `components/HomeContent.tsx`: **championship-leader blank block when all series deselected.** The widget filtered `standings` by `leaderSet` (`cfg('championship-leader').seriesSet`) with `!leaderSet || leaderSet.includes(s.slug)`; an empty array (which the customise multi-select persists once every series is toggled off) is truthy, so the predicate matched nothing and rendered an empty `border-y` div. Now a precomputed `leaderRows` treats an absent OR empty `seriesSet` as "all followed" (matching the field's documented "absent = all" semantic), so deselecting everything shows all leaders again. A genuine empty result (a non-empty subset whose series have no standings yet) now renders a "Pick a series in Customise to see its leader." empty-state line instead of a blank block. Closes the tracked follow-up in `IDEAS.md` / `docs/HANDOFF.md`.
 
 ### Fixed
 - `lib/openf1/track.ts`: new `startFinishReference` + `anchorTrackToStartFinish` (pure, unit-tested) re-anchor every driver trace to ONE shared start/finish line. Each trace was previously timed from its own first GPS sample (`t0 = points[0].ms`), which lands a different distance past the line per driver (OpenF1 location sampling phase), so the time-synced onboard showed a slower car starting ahead of the pole car. The S/F-crossing search is windowed to the first ~15% so a flying lap's END crossing of the same line can't be mistaken for the start.

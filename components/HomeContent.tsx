@@ -510,7 +510,13 @@ export function HomeContent({
   const schedDays = cfg('schedule').days === 3 ? 3 : 7;
   const newsCount = cfg('news').count ?? NEWS_LIMIT;
   const blogCount = cfg('from-the-blog').count ?? 4;
+  // championship-leader subset. An ABSENT or EMPTY set both mean "all followed"
+  // (the customise UI can persist [] when every series is deselected — treating
+  // that as "show nothing" left a blank block). A non-empty set filters.
   const leaderSet = cfg('championship-leader').seriesSet;
+  const leaderRows = (standings ?? []).filter(
+    s => !leaderSet || leaderSet.length === 0 || leaderSet.includes(s.slug),
+  );
   const snapSeries = cfg('standings-snapshot').series;
   const snapRows = cfg('standings-snapshot').rows ?? 5;
   const sjmCount = Math.min(Math.max(cfg('series-just-missed').count ?? 5, 1), 10);
@@ -558,6 +564,23 @@ export function HomeContent({
     i.session.dateOnly ? i.session.end > now : i.session.start > now,
   );
   const next = upcomingItems[0];
+  // Busy-race-day hero: when the 2nd/3rd upcoming sessions land within ~24h of
+  // the primary countdown, surface them compactly beneath it (a race day is
+  // quali + sprint + race stacked together). Otherwise the hero stays a single
+  // session. Only when the primary has a precise start (dateOnly = "this
+  // weekend, time TBC" has nothing to measure 24h from, and its countdown block
+  // is hidden anyway); companions without a precise start are skipped too.
+  const HERO_WINDOW_MS = 24 * 60 * 60 * 1000;
+  const heroUpNext =
+    next && !next.session.dateOnly
+      ? upcomingItems
+          .slice(1, 4)
+          .filter(
+            i =>
+              !i.session.dateOnly &&
+              i.session.start.getTime() - next.session.start.getTime() <= HERO_WINDOW_MS,
+          )
+      : [];
 
   const weekItems = upcomingItems.filter(
     i => i.session.start.getTime() - now.getTime() <= schedDays * 86_400_000,
@@ -764,6 +787,42 @@ export function HomeContent({
               </div>
             )}
           </Link>
+          {heroUpNext.length > 0 && (
+            <div className="mt-3 border-t border-border pt-2.5">
+              <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                Also today
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {heroUpNext.map(item => (
+                  <Link
+                    key={`${item.seriesSlug}-${item.session.uid}`}
+                    href={hrefFor(item)}
+                    className="group flex items-center gap-2.5 min-w-0"
+                  >
+                    <span
+                      className="w-1.5 h-1.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span
+                      className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold"
+                      style={{ color: item.color }}
+                    >
+                      {item.seriesName}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-text">
+                      {item.session.title}
+                    </span>
+                    <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
+                      {timeHM(item.session.start, clock)} {tz}
+                    </span>
+                    <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">
+                      <Countdown to={item.session.start} initialNow={now} />
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           {next.watch && (
             <a
               href={next.watch.url}
@@ -1291,9 +1350,13 @@ export function HomeContent({
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
                 Standings unavailable right now.
               </p>
+            ) : leaderRows.length === 0 ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                Pick a series in Customise to see its leader.
+              </p>
             ) : (
               <div className={`border-y border-border divide-y divide-border${dense('championship-leader') ? ' [&_a]:py-1.5' : ''}`}>
-                {standings.filter(s => !leaderSet || leaderSet.includes(s.slug)).map(s => (
+                {leaderRows.map(s => (
                   <Link
                     key={s.slug}
                     href={`/series/${s.slug}/standings`}
