@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.139.4 — 2026-07-01
+
+**Hardened push notification registration.** Signing up for push notifications now only accepts endpoints from genuine browser push services (Chrome, Firefox, Safari, Edge). This closes a gap where a bogus notification target could otherwise be registered. No change to how you turn notifications on or off.
+
 ## 0.139.2 — 2026-07-01
 
 **Clearer F1 About tab.** The Formula 1 overview now sits under a labelled "Series overview" heading, so the page reads more cleanly.

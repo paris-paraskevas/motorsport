@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.139.4 — 2026-07-01
+
+### Fixed
+- Security (SSRF / outbound-POST misuse): `/api/push/subscribe` accepted any `https:` URL as a push endpoint after a shape-only check (length caps). Since the notify/blog/betting crons web-push to every stored endpoint, a signed-in user could seed the KV store with an arbitrary target URL and turn the cron fan-out into an outbound POST at them. New `lib/push-hosts.ts` `isAllowedPushEndpoint(url: URL)` allowlists real Web Push service hosts only — `fcm.googleapis.com`, `updates.push.services.mozilla.com` / `*.push.services.mozilla.com` / `*.autopush.services.mozilla.com`, `web.push.apple.com` / `*.push.apple.com`, `*.notify.windows.com` — matched on a dot boundary (exact host or trusted parent domain) so look-alikes like `fcm.googleapis.com.evil.com` are rejected (substring `includes` matching would have accepted them). `app/api/push/subscribe/route.ts` now calls it after the existing URL/protocol/length checks and returns the same generic `400 invalid subscription`. Reverses the "shape-validate, don't allowlist" note in the 2026-06-11 audit (finding #2) — the host set is small and stable enough that an allowlist is the stronger control.
+- Defense-in-depth at the read + sink: `lib/push-store.ts` `listSubscriptions()` now filters out any stored subscription whose endpoint fails `isAllowedPushEndpoint` (covers pre-allowlist junk rows already in KV for every caller — both crons and the `test`/`inspect` routes — without touching each loop), logging a compact `console.warn` with the drop count. `lib/push.ts` `sendPushTo()` gets a final guard that refuses to POST to an off-allowlist endpoint and returns `{ ok: false, gone: true }` so callers evict the row via their existing gone-handling path.
+- Tests: `lib/push-hosts.test.ts` asserts real fcm/mozilla/apple/windows endpoints (and allowlisted subdomains) are accepted, and that look-alike suffixes, arbitrary/internal hosts (`169.254.169.254`, `localhost`), and non-https schemes are rejected.
+
 ## 0.139.2 — 2026-07-01
 
 ### Changed
