@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.139.0 — 2026-07-01
+
+**The home "up next" now shows the whole race day.** When your next few sessions are packed into the same day — qualifying, sprint and race stacked together — the hero lists the next two or three right under the main countdown, each with its own timer, instead of showing just one. On a quieter day it stays a single session as before.
+
+**Championship leader no longer goes blank.** If you'd turned every series off in the leader widget, it now shows all your series again rather than an empty box; and if a series you picked has no standings yet, you'll see a short prompt to pick one instead of blank space.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
