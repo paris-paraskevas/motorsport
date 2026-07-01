@@ -24,6 +24,41 @@ vi.mock('@vercel/kv', () => ({
   },
 }));
 
+// In-memory fake of the `source_snapshot` Postgres table (the durable backstop
+// layered beneath the KV tier). JSON-cycling the payload on read simulates jsonb
+// storage — Date objects come back as ISO strings, which is what makes the
+// durable read path exercise `reviveDates`. `snapshotConfigured` defaults to
+// FALSE so the KV-only tests above behave exactly as before (durable tier inert,
+// matching a test env with no SUPABASE_URL); the durable block flips it on.
+const snapshotTable = new Map<string, unknown>();
+let snapshotConfigured = false;
+
+vi.mock('@/lib/betting/client', () => ({
+  isBettingConfigured: () => snapshotConfigured,
+  betDb: () => ({
+    from: () => {
+      let selectedKey: string | null = null;
+      const builder = {
+        select: () => builder,
+        eq: (_col: string, value: string) => {
+          selectedKey = value;
+          return builder;
+        },
+        maybeSingle: async () => {
+          const raw = selectedKey != null ? snapshotTable.get(selectedKey) : undefined;
+          if (raw === undefined) return { data: null, error: null };
+          return { data: { payload: JSON.parse(JSON.stringify(raw)) }, error: null };
+        },
+        upsert: async (row: { source_key: string; payload: unknown }) => {
+          snapshotTable.set(row.source_key, row.payload);
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  }),
+}));
+
 import { fetchF1Standings } from './standings/f1';
 import {
   fetchF1LastRace,
@@ -319,6 +354,66 @@ describe('f1-cache last-good resilience', () => {
       vi.stubGlobal('fetch', mockFetch(true));
       const result = await fetchF1SeasonResults();
       expect(result).toEqual([]); // read threw → null → falls back to fresh []
+    });
+  });
+
+  // The durable Postgres backstop underneath KV. Here KV is UNCONFIGURED (so its
+  // tier is inert) and Supabase IS configured — proving the snapshot alone keeps
+  // the page alive when the hot tier is missing/evicted during an outage.
+  describe('durable source_snapshot backstop (KV unconfigured, Supabase up)', () => {
+    beforeEach(() => {
+      unconfigureKv();
+      snapshotTable.clear();
+      snapshotConfigured = true;
+    });
+    afterEach(() => {
+      snapshotConfigured = false;
+      snapshotTable.clear();
+    });
+
+    it('standings: SUCCESS writes the durable f1:standings snapshot', async () => {
+      vi.stubGlobal('fetch', mockFetch());
+      const result = await fetchF1Standings();
+      expect(result).not.toBeNull();
+      expect(snapshotTable.has('f1:standings')).toBe(true);
+      // KV was unconfigured, so the hot tier never ran.
+      expect(setSpy).not.toHaveBeenCalled();
+    });
+
+    it('standings: FAILURE serves the durable snapshot when KV is absent', async () => {
+      vi.stubGlobal('fetch', mockFetch());
+      await fetchF1Standings(); // prime the durable snapshot
+      vi.stubGlobal('fetch', mockFetch(true)); // Jolpica 521 + KV off
+      const recovered = await fetchF1Standings();
+      expect(recovered).not.toBeNull();
+      expect(recovered!.drivers[0].driverName).toBe('Max Verstappen');
+    });
+
+    it('last-race: FAILURE serves the durable snapshot with a rehydrated Date', async () => {
+      vi.stubGlobal('fetch', mockFetch());
+      await fetchF1LastRace();
+      vi.stubGlobal('fetch', mockFetch(true));
+      const recovered = await fetchF1LastRace();
+      expect(recovered).not.toBeNull();
+      expect(recovered!.raceName).toBe('Abu Dhabi Grand Prix');
+      // jsonb stored the Date as an ISO string; the durable read path must revive it.
+      expect(recovered!.date).toBeInstanceOf(Date);
+      expect(recovered!.date.toISOString().startsWith('2026-12-06')).toBe(true);
+    });
+
+    it('season-results: FAILURE serves the durable array with rehydrated Dates', async () => {
+      vi.stubGlobal('fetch', mockFetch());
+      await fetchF1SeasonResults();
+      vi.stubGlobal('fetch', mockFetch(true));
+      const recovered = await fetchF1SeasonResults();
+      expect(recovered).toHaveLength(1);
+      expect(recovered[0].raceName).toBe('Bahrain Grand Prix');
+      expect(recovered[0].date).toBeInstanceOf(Date);
+    });
+
+    it('season-results: FAILURE with no durable snapshot returns [] (today behaviour)', async () => {
+      vi.stubGlobal('fetch', mockFetch(true));
+      expect(await fetchF1SeasonResults()).toEqual([]);
     });
   });
 });

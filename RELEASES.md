@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.140.0 — 2026-07-01
+
+**Standings and results stay up when a data source has a wobble.** The F1 standings and results, and the DTM standings, now fall back to the last good data we saw if their source is briefly unreachable — so those pages keep showing the latest available figures instead of going blank during an outage, and refresh themselves the moment the source recovers.
+
 ## 0.139.2 — 2026-07-01
 
 **Clearer F1 About tab.** The Formula 1 overview now sits under a labelled "Series overview" heading, so the page reads more cleanly.

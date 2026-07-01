@@ -34,7 +34,15 @@ function defaultIsEmpty(v: unknown): boolean {
   return v == null || (Array.isArray(v) && v.length === 0);
 }
 
-async function readSnapshot<T>(key: string): Promise<T | null> {
+/**
+ * Read the last-good payload stored under `key`, or null on miss / error /
+ * unconfigured. Exported so callers that already own a hotter cache tier (e.g.
+ * `lib/f1-cache.ts`'s KV last-good) can layer this durable Postgres backstop
+ * *beneath* it without going through `withSourceSnapshot`. Payloads round-trip
+ * through jsonb, so any `Date` fields come back as ISO strings — rehydrate on
+ * the caller side.
+ */
+export async function readSnapshot<T>(key: string): Promise<T | null> {
   if (!isBettingConfigured()) return null;
   try {
     const { data, error } = await betDb()
@@ -52,7 +60,12 @@ async function readSnapshot<T>(key: string): Promise<T | null> {
   }
 }
 
-async function writeSnapshot<T>(key: string, payload: T): Promise<void> {
+/**
+ * Persist `payload` as the last-good snapshot for `key` (upsert). Fail-soft:
+ * a Supabase outage is logged, never thrown. Exported alongside `readSnapshot`
+ * for the layered-backstop use described above.
+ */
+export async function writeSnapshot<T>(key: string, payload: T): Promise<void> {
   if (!isBettingConfigured()) return;
   try {
     await betDb()
