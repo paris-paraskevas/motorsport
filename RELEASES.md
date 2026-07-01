@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.133.0 — 2026-07-01
+
+The Qualifying Decoder's speed-and-delta chart now marks the bottom axis by corner — T1, T2, T3… — instead of raw kilometres, so it's obvious where in the lap each gain or loss happens. Hover any point and the tooltip still shows the exact distance alongside the nearest turn. On the rare lap where the track shape can't be read cleanly, the axis falls back to distance so nothing breaks.
+
 ## 0.132.0 — 2026-07-01
 
 The qualifying onboard replay is now a proper 3D scene on every circuit — a real Formula 1 car in team colours on a track that sits naturally on the rolling ground, with run-off, barriers, grandstands, a pit lane and greenery in the distance. Watch it from the chase camera or a broadcast-style cockpit view looking down the nose. On phones, the playback-speed buttons under the replay now always fit on screen.
