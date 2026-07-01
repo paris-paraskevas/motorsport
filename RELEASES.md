@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.140.0 — 2026-07-01
+
+**Standings and results stay up when a data source has a wobble.** The F1 standings and results, and the DTM standings, now fall back to the last good data we saw if their source is briefly unreachable — so those pages keep showing the latest available figures instead of going blank during an outage, and refresh themselves the moment the source recovers.
 ## 0.139.4 — 2026-07-01
 
 **Hardened push notification registration.** Signing up for push notifications now only accepts endpoints from genuine browser push services (Chrome, Firefox, Safari, Edge). This closes a gap where a bogus notification target could otherwise be registered. No change to how you turn notifications on or off.

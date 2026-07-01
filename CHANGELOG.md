@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.140.0 — 2026-07-01
+
+Extends the durable last-good pattern (Postgres `source_snapshot`) to the F1 feeds and the motorsport.com-sourced DTM standings, so a transient upstream outage serves the last good data instead of blanking the page.
+
+### Added
+- `lib/source-snapshot.ts`: exported the previously module-private `readSnapshot` / `writeSnapshot` so a caller that already owns a hotter cache tier can layer this durable Postgres backstop *beneath* it without going through `withSourceSnapshot`. Behaviour unchanged; `withSourceSnapshot` still composes them.
+- `lib/f1-cache.ts`: layered the durable `source_snapshot` tier beneath the existing KV last-good in `withF1LastGood`, keyed `f1:<name>` (`f1:standings`, `f1:last-race`, `f1:season-results`, `f1:season-sprints`). On a fresh non-empty result it now writes BOTH tiers (KV hot + Postgres durable, both awaited + fail-soft); on the failure path it reads KV first, then falls through to the durable snapshot before surrendering to the empty value. KV is evictable + region-scoped and its TTL can lapse during a long outage; Postgres persists indefinitely. The durable read path runs the jsonb payload through the existing `reviveDates` (jsonb round-trips `RaceResult.date` to an ISO string, exactly like KV), added a private `f1SnapshotKey(name)` helper.
+- `lib/standings/dtm.ts`: wrapped `fetchDTMStandings` in `withSourceSnapshot` (key `standings:dtm`, `isEmpty = v => v == null || v.drivers.length === 0`), renaming the live body to `fetchDTMStandingsLive`. A motorsport.com outage (5xx / anti-bot / structural break → null) now serves last-good instead of null. `DTMStandings` carries no `Date` fields, so the jsonb round-trip is lossless — no rehydration.
+
+### Tests
+- `lib/source-snapshot.test.ts` (new): in-memory fake of the `source_snapshot` table exercising `withSourceSnapshot` — persists on success, serves last-good on null / empty-array / thrown fetch, self-heals on the next good fetch, and fails soft (runs the fetcher uncached, never throws) when Supabase is unconfigured or when the Supabase read/write itself throws.
+- `lib/f1-cache.test.ts`: added a durable-backstop block (KV unconfigured, Supabase up) asserting the `f1:*` snapshot is written on success and served on failure when the hot tier is absent, including `Date` rehydration on the durable read path (last-race + season-results) and the no-snapshot `[]` floor.
+- `lib/standings/dtm.test.ts`: added a `source_snapshot` last-good block — persists under `standings:dtm`, serves last-good on a motorsport.com outage, self-heals, returns null with no snapshot, and fails soft when Supabase is unconfigured. Pre-existing parse + fan-out tests unchanged (the snapshot fake defaults to unconfigured so they behave as before).
+
+Fail-open/soft contract is preserved end to end: with KV **and** Supabase unconfigured (local dev) every helper returns exactly today's null / [] value. Verified via `vitest run` (the two failing `lib/openf1/turns.test.ts` cases are pre-existing on `main` and unrelated to this change).
 ## 0.139.4 — 2026-07-01
 
 ### Fixed

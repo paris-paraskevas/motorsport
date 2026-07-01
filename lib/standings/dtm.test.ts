@@ -1,6 +1,41 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+// In-memory fake of the durable `source_snapshot` table so the last-good wrap on
+// `fetchDTMStandings` can be exercised. `snapshotConfigured` defaults FALSE so
+// the pre-existing fetch tests below behave exactly as before (wrapper runs the
+// fetcher uncached, as in a test env with no SUPABASE_URL); the last-good block
+// flips it on.
+const snapshotTable = new Map<string, unknown>();
+let snapshotConfigured = false;
+
+vi.mock('@/lib/betting/client', () => ({
+  isBettingConfigured: () => snapshotConfigured,
+  betDb: () => ({
+    from: () => {
+      let selectedKey: string | null = null;
+      const builder = {
+        select: () => builder,
+        eq: (_col: string, value: string) => {
+          selectedKey = value;
+          return builder;
+        },
+        maybeSingle: async () => {
+          const raw = selectedKey != null ? snapshotTable.get(selectedKey) : undefined;
+          if (raw === undefined) return { data: null, error: null };
+          return { data: { payload: JSON.parse(JSON.stringify(raw)) }, error: null };
+        },
+        upsert: async (row: { source_key: string; payload: unknown }) => {
+          snapshotTable.set(row.source_key, row.payload);
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  }),
+}));
+
 import {
   parseDriverStandingsFromHtml,
   parseTeamStandingsFromHtml,
@@ -180,5 +215,72 @@ describe('fetchDTMStandings', () => {
     expect(data!.drivers.length).toBeGreaterThanOrEqual(15);
     expect(data!.teams).toEqual([]);
     expect(data!.constructors).toEqual([]);
+  });
+});
+
+// Durable last-good: a motorsport.com outage should serve the previous good
+// standings instead of the null that blanks the page. Supabase IS configured
+// here (in-memory fake); DTMStandings carries no Date fields so no rehydration.
+describe('fetchDTMStandings — durable last-good (source_snapshot)', () => {
+  const originalFetch = globalThis.fetch;
+  const okFor = (html: string) =>
+    ({ ok: true, status: 200, text: async () => html }) as Response;
+  const goodFetch = () =>
+    vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url.includes('type=Driver')) return okFor(driversHtml);
+      if (url.includes('type=Team')) return okFor(teamsHtml);
+      if (url.includes('type=Constructor')) return okFor(constructorsHtml);
+      return { ok: false, status: 404, text: async () => '' } as Response;
+    }) as unknown as typeof fetch;
+  const downFetch = () =>
+    vi.fn(async () => ({ ok: false, status: 503, text: async () => '' }) as Response) as unknown as typeof fetch;
+
+  beforeEach(() => {
+    snapshotTable.clear();
+    snapshotConfigured = true;
+  });
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    snapshotConfigured = false;
+    snapshotTable.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('SUCCESS persists the standings under standings:dtm', async () => {
+    globalThis.fetch = goodFetch();
+    const data = await fetchDTMStandings();
+    expect(data).not.toBeNull();
+    expect(snapshotTable.has('standings:dtm')).toBe(true);
+  });
+
+  it('FAILURE serves the last-good standings instead of null', async () => {
+    globalThis.fetch = goodFetch();
+    await fetchDTMStandings(); // prime the snapshot
+    globalThis.fetch = downFetch(); // motorsport.com 503 everywhere
+    const recovered = await fetchDTMStandings();
+    expect(recovered).not.toBeNull();
+    expect(recovered!.drivers.length).toBeGreaterThanOrEqual(15);
+    expect(recovered!.drivers[0].driverName).toBe('M. Engel');
+  });
+
+  it('a good fetch overwrites the snapshot (self-heal)', async () => {
+    // Seed a deliberately-stale snapshot, then a good fetch must replace it.
+    snapshotTable.set('standings:dtm', { drivers: [{ position: 1, driverName: 'stale', team: 'x', points: 0 }] });
+    globalThis.fetch = goodFetch();
+    await fetchDTMStandings();
+    const stored = snapshotTable.get('standings:dtm') as { drivers: unknown[] };
+    expect(stored.drivers.length).toBeGreaterThanOrEqual(15);
+  });
+
+  it('FAILURE with no snapshot present returns null (today behaviour)', async () => {
+    globalThis.fetch = downFetch();
+    expect(await fetchDTMStandings()).toBeNull();
+  });
+
+  it('FAIL-SOFT: Supabase unconfigured behaves exactly like the live fetch', async () => {
+    snapshotConfigured = false;
+    globalThis.fetch = downFetch();
+    expect(await fetchDTMStandings()).toBeNull();
   });
 });

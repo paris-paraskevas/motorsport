@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { Element } from 'domhandler';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
@@ -230,7 +231,7 @@ export interface DTMStandings {
   driverRoundBreakdown: DriverRow[];
 }
 
-export async function fetchDTMStandings(): Promise<DTMStandings | null> {
+async function fetchDTMStandingsLive(): Promise<DTMStandings | null> {
   const [driversHtml, teamsHtml, constructorsHtml] = await Promise.all([
     fetchHtml(`${BASE_URL}?type=Driver&class=`),
     fetchHtml(`${BASE_URL}?type=Team&class=`),
@@ -265,4 +266,22 @@ export async function fetchDTMStandings(): Promise<DTMStandings | null> {
     })),
     driverRoundBreakdown: driverRows,
   };
+}
+
+/**
+ * Public DTM standings fetch, wrapped in the durable `source_snapshot` last-good
+ * so a motorsport.com outage (5xx / anti-bot challenge / structural break →
+ * null) serves the last successful standings instead of blanking the page.
+ * Self-heals on the next good fetch (which overwrites the snapshot).
+ *
+ * `DTMStandings` carries no `Date` fields, so the jsonb round-trip is lossless
+ * and no rehydration is needed. Fails soft when Supabase is unconfigured (local
+ * dev): behaves exactly like `fetchDTMStandingsLive`. Return type is unchanged.
+ */
+export async function fetchDTMStandings(): Promise<DTMStandings | null> {
+  return withSourceSnapshot<DTMStandings | null>(
+    'standings:dtm',
+    fetchDTMStandingsLive,
+    v => v == null || v.drivers.length === 0,
+  );
 }
