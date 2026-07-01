@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.139.1 — 2026-07-01
+
+**Sharper notification badge.** The little chequered-flag badge on push notifications reads more cleanly at small sizes. No other change.
+
 ## 0.139.0 — 2026-07-01
 
 **The home "up next" now shows the whole race day.** When your next few sessions are packed into the same day — qualifying, sprint and race stacked together — the hero lists the next two or three right under the main countdown, each with its own timer, instead of showing just one. On a quieter day it stays a single session as before.
