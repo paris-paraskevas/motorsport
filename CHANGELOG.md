@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.137.0 — 2026-07-01
+
+Contact form now self-triages by category.
+
+### Added
+- `components/ContactModal.tsx`: required `<select>` category field (General / Bug report / Feature request / Suggested change; defaults General), styled to match the form inputs. Reset to `general` each time the modal opens; the chosen value is sent in the POST body alongside `email` + `message`.
+- `app/api/contact/route.ts`: server-side category validation — unknown/missing values fall back to `general` (never trusts the client). The resolved label prefixes the operator notification subject (`[Bug report] …`), appears in the email heading/intro, and is persisted on the KV record. Rate limit (per-IP + global) and the 12-month KV retention (`ex: 60*60*24*365`) are unchanged.
+
 ## 0.135.0 — 2026-07-01
 
 Onboard qualifying replay: cars now start together on a painted start/finish line.

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.137.0 — 2026-07-01
+
+**Tell us what kind of message you're sending.** The contact form now has a category picker — Bug report, Feature request, Suggested change, or General — so your message reaches us already sorted. General is selected by default.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
