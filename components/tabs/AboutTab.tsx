@@ -22,7 +22,9 @@ export async function AboutTab({ series }: { series: Series }) {
   const isF1 = series.meta.slug === 'f1';
   // Rules essentials live INSIDE About (operator decision 2026-06-11 — the
   // Rules tab stays retired per 0.19.0). Curated per series under
-  // content/series/<slug>/rules.md; absent file = no section.
+  // content/series/<slug>/rules.md; every current series ships one, but the
+  // catch below tolerates an absent file (no section) if one is ever added
+  // without rules.
   const rulesPath = path.join(
     process.cwd(),
     'content',
@@ -109,13 +111,64 @@ export async function AboutTab({ series }: { series: Series }) {
           </div>
         </div>
       )}
+      {isF1 && <F1CommonTopics />}
       <ExternalSourcesCard series={series} />
     </div>
   );
 }
 
+// F1-only quick-reference of the rule areas fans most often look up, sitting
+// alongside the curated "Rules essentials" prose and the FIA-regulations link.
+// A static reference (not links) — the FIA regulations chip in Further reading
+// is the authoritative deep-dive. F1-gated by slug like the rest of this tab.
+const F1_COMMON_TOPICS: Array<{ term: string; blurb: string }> = [
+  {
+    term: 'Points system',
+    blurb: 'The top ten score 25-18-15-12-10-8-6-4-2-1; there is no fastest-lap bonus point (scrapped from 2025). Sprints pay the top eight 8-7-6-5-4-3-2-1.',
+  },
+  {
+    term: 'Penalties & stewards',
+    blurb: 'The FIA stewards judge incidents and can apply time penalties, grid drops, or licence points; a driver reaching 12 points in 12 months serves a one-race ban.',
+  },
+  {
+    term: 'Parc fermé',
+    blurb: 'From the start of qualifying the car is locked to its set-up; only a defined list of changes is allowed, and breaking the rules means a pit-lane start.',
+  },
+  {
+    term: 'Overtaking aid',
+    blurb: 'DRS is gone for 2026: every car sheds drag on the straights with active aero, and the passing aid is Overtake Mode — a burst of extra electric power when within one second of the car ahead at the detection point.',
+  },
+  {
+    term: 'Track limits',
+    blurb: 'A lap is deleted or a warning issued when all four wheels go beyond the white lines; repeated breaches escalate to a black-and-white flag then a penalty.',
+  },
+  {
+    term: 'Tyres',
+    blurb: 'Pirelli brings three dry compounds per weekend; a dry race requires at least two different slick compounds to be used, with wets and intermediates for rain.',
+  },
+];
+
+function F1CommonTopics() {
+  return (
+    <section className="border-y border-border py-5 md:py-6">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        Common topics
+      </h2>
+      <dl className="space-y-2.5">
+        {F1_COMMON_TOPICS.map(topic => (
+          <div key={topic.term} className="text-sm leading-relaxed">
+            <dt className="inline font-semibold text-text">{topic.term}.</dt>{' '}
+            <dd className="inline text-text-muted">{topic.blurb}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 // Official links (formerly the Rules tab's "Further reading" card — that tab
-// was retired in 0.19.0; no series ever shipped a curated rules.md).
+// was retired in 0.19.0; its rules content now lives in the per-series
+// rules.md rendered as the "Rules essentials" section above).
 function ExternalSourcesCard({ series }: { series: Series }) {
   const items: Array<{ label: string; url: string }> = [];
   if (series.meta.officialSite) {
@@ -123,6 +176,9 @@ function ExternalSourcesCard({ series }: { series: Series }) {
   }
   if (series.meta.officialStandingsUrl) {
     items.push({ label: 'Standings', url: series.meta.officialStandingsUrl });
+  }
+  if (series.meta.regulationsUrl) {
+    items.push({ label: 'FIA regulations', url: series.meta.regulationsUrl });
   }
   if (items.length === 0) return null;
 

@@ -18,6 +18,11 @@ export interface SeriesMeta {
   seasonPage?: string;
   officialStandingsUrl?: string;
   officialSite?: string;
+  /** Official governing-body regulations page (e.g. the FIA's Formula 1
+   *  regulations hub). Rendered as a "Regulations" chip in the About tab's
+   *  "Further reading" card. Optional — absent → no chip. Prefer a stable
+   *  landing page over a rotating PDF link. */
+  regulationsUrl?: string;
   /** Where to watch the series — the official global streaming product where
    *  one exists (F1 TV, MotoGP VideoPass, WRC+…), else the series' official
    *  "how to watch" page for broadcast-by-region cases. `service` is the

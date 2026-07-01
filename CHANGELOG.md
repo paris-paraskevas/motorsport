@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.145.0 — 2026-07-01
+
+F1 About tab: official FIA regulations link + a rules quick-reference.
+
+### Added
+- `components/tabs/AboutTab.tsx` (F1-only, slug-guarded): a "FIA regulations" link in the Further-reading card → `https://www.fia.com/regulation/category/110` (the FIA regulations hub; WebFetch-confirmed HTTP 200, robots-allowed; opens in a new tab with `rel="noopener noreferrer"`), plus a "Common topics" quick-reference (points, penalties & stewards, parc fermé, overtaking aid, track limits, tyres) — content verified for 2026 (no fastest-lap bonus point; DRS replaced by active aero + Overtake Mode).
+- `lib/types.ts`: optional `SeriesMeta.regulationsUrl`; set in `content/series/f1/meta.json`.
+
 ## 0.144.0 — 2026-07-01
 
 NLS (Nürburgring Langstrecken-Serie) gains a Results tab: overall winners per completed round, sourced from the Wikipedia season page, with a link out to the official VLN documents portal for the full field.
