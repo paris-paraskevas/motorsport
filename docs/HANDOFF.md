@@ -6,6 +6,32 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-07-01 — main 0.132.0 · ONBOARD 3D OVERHAUL SHIPPED ✅
+
+**main = 0.132.0** (verified live on prod `/changelog`). The onboard 3D graphics overhaul is **rebuilt, merged (PR #323, squash `3216427`) and deployed** — the 0.131.0→0.131.1 revert saga is closed. Built + verified via operator-visible localhost screenshots + operator live sign-off (the visual gate 0.131.0 skipped).
+
+### What shipped (onboard is now realistic + generalises to every quali)
+- **Car** (`components/f1/onboard/CarModel.tsx`): real CC-BY glTF, tinted flat team colour, bbox-recentred, wheels on y=0. Sized by **WIDTH** to the real ratio (1.9 m car / ~12.5 m track ≈ **0.152**) of the **measured** track half-width → right on any circuit. `carW` passed from `Scene` (median of `ribbon.halfL/halfR`).
+- **Camera** (`GhostLap3D`): chase + cockpit rigs scale by `camScale = carW / REF_CAR_WIDTH` so the dialled framing survives the resize. Cockpit T-cam = broadcast onboard: `COCKPIT_UP 0.045 / BACK 0 / LOOKAHEAD 0.18 / FOV 95`; near `= max(0.004, 0.02·camScale)`.
+- **Ground** (`lib/openf1/track-environment.ts` `groundHeight`, shared by `buildRibbon` terrain + the env drape): ONE inverse-distance-weighted surface **clamped ≤ nearest-track-y − GROUND_DROP(0.02)** → the asphalt always sits on top (no grass-over-track), one shared height. `TERRAIN_GRID` 96, box-blur removed.
+- **Barriers**: continuous wall at `BARRIER_MULT(1.2)·w` set-back; keep their OWN smooth track elevation (**NOT draped** — draping read a nearer, different-elevation section → tilted/flying panels, the reported bug) with a **deep downward skirt (height·8)** to meet the ground; `dropFolds` removes hairpin self-crossing. Side normal now matches the ribbon (`crossVectors(tangent, UP)`).
+- **Trees + grandstands**: OUTFIELD-only (global outfield sign from the point farthest from the centroid — robust on the non-convex loop) AND dropped within `3·w` of ANY centreline point → none on the racing line.
+- **Pit**: procedural lane + garages on the longest straight, tapered ends = entry/exit.
+- **Mobile**: onboard transport row `flex-wrap` → 4× speed button never clips (verified 412 + 360 px).
+- Gates: vitest **567/567**, `tsc` clean, prod `next build` clean, `/changelog` shows 0.132.0.
+
+### The workflow that worked (KEEP — this is the gate)
+Claude drove the operator's **own localhost via the Playwright MCP** (repo is on the operator's machine): jump to exact lap fractions with `browser_evaluate` (set the range input's value + dispatch `input`), `canvas.scrollIntoView`, screenshot; **pause playback before every screenshot** (a live-rendering WebGL canvas times out the element-grab — use viewport/fullPage shots, and pause). Iterate shape→screenshot→fix, operator eyeballs live + signs off. Gotchas: HMR applies edits live, but the machine sleeping between turns throws `ChunkLoadError` on the lazy GhostLap3D chunk → reload; the "Onboard" toggle isn't in the DOM until data assembles (~4–6 s after load) → wait before clicking.
+
+### Open / carry-over (NOT the onboard work)
+- **Cloudflare Workers KV limit alerts** (operator forwarded 2026-07-01, "50% then exceeded"): **NOT Paddock** — Paddock uses Vercel/Upstash KV (`KV_REST_API_URL`), not Cloudflare Workers KV, and the onboard work does zero KV ops. Almost certainly a **separate Cloudflare project** on the operator's account. Needs the operator to identify the worker; unresolved.
+- **Rotate `.supabase-pat`** (used for the #317 migration) — still owed.
+- **CSP `frame-src` missing AdSense** (`pagead2.googlesyndication.com`, `ep2.adtrafficquality.google`) — add before flipping CSP Report-Only → enforcing, or ads break.
+- **Onboard polish (optional):** pit is generic (grey garages); at a downhill corner (T3) the outfield barrier reads as a tall retaining wall where the ground falls away (grounded/continuous, just prominent). Roadmap: real-geometry P2 (TUMFTM/Umeyama) + the all-driver picker (parent spec `docs/research/onboard-3d-rebuild.md`).
+- Carried backlog below (audit D/E/F, Lane A/C, results-table polish, etc.) unchanged.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-30 (LATE) — main 0.131.1 · ONBOARD GRAPHICS REBUILD on `feat/onboard-graphics-overhaul`
 
 **main = 0.131.1.** Two arcs this session: the 7-axis audit's Wave-1 remediation shipped clean, then an onboard 3D graphics overhaul shipped + was reverted, and is now being rebuilt carefully on a branch.
@@ -21,7 +47,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 ### Onboard graphics overhaul — SHIPPED 0.131.0 then REVERTED → 0.131.1 (prod is CLEAN)
 Spec `docs/superpowers/specs/2026-06-30-onboard-3d-graphics-design.md` + plan `docs/superpowers/plans/2026-06-30-onboard-graphics-overhaul.md`. Built Phase 1 (CC-BY car model + procedural environment + quality tiers) via subagents, **pushed to prod skipping the visual gate** → badly broken (walls both edges/no runoff, trees on the racing surface, car mis-oriented + half-sunk + red+green recolour). **Reverted to 0.131.1** (`git revert`, PR #322) — prod restored to the clean box-car reconstructed onboard, screenshot-verified. Model + code + spec/plan all retained on `feat/onboard-graphics-overhaul`.
 
-### ▶ RESUME HERE — rebuild on `feat/onboard-graphics-overhaul` (NOT merged; do NOT ship to prod until visually right)
+### ✅ DONE 2026-07-01 — rebuilt, merged (PR #323) + shipped as 0.132.0 (see the top block). Historical detail below.
 **Workflow that works:** iterate on the **operator's own localhost dev server** — this repo IS on the operator's machine; they watch edits live via reload at `localhost:3000`. OpenF1 is reachable here so the decoder assembles Austria fresh without KV (first load slow). **Vercel previews are SSO-walled** (can't screenshot anon); localhost (operator-visible) is the gate. Start the dev server with the Bash `run_in_background` flag, **NOT `&`** (the `&` one died on teardown — restart it next session). Test path: `/series/f1/weekend/8/qualifying` → Qualifying Decoder → Ghost lap → **Onboard** → Chase/Cockpit.
 
 **DONE on the branch (committed this session):**
