@@ -28,6 +28,7 @@ import { fetchNascarCupSeasonResults } from '@/lib/results/nascar-cup';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
 import { fetchWRCSeasonResults } from '@/lib/results/wrc';
 import { fetchDTMSeasonResults } from '@/lib/results/dtm';
+import { fetchNlsSeasonResults, NLS_SOURCE_URL } from '@/lib/results/nls';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import { loadCuratedDrivers, loadResultsOverrides } from '@/lib/series-content';
 import { applyResultsOverrides } from '@/lib/results/overrides';
@@ -948,6 +949,35 @@ export async function ResultsTab({ series }: { series: Series }) {
           href={`https://www.motorsport.com/dtm/results/${series.meta.season}/`}
           label="motorsport.com"
         />
+      </div>
+    );
+  }
+
+  if (series.meta.slug === 'nls') {
+    const [races, overrides] = await Promise.all([
+      fetchNlsSeasonResults(series.meta.season),
+      loadResultsOverrides(series.meta.slug),
+    ]);
+    if (races.length === 0) {
+      return (
+        <EmptyState message="Results are temporarily unavailable. Check back shortly." />
+      );
+    }
+    const merged = applyResultsOverrides(races, overrides);
+    // Winners-only by design: NLS is a club endurance series with no season
+    // championship points (see lib/profile-stats.ts), so each round surfaces
+    // the overall (fastest-race-time) winning crew via the SeasonResultsPanel
+    // `isWinnersOnly` flat-row path. Source link points at the official VLN
+    // documents portal, where the full per-round classification PDFs live.
+    return (
+      <div className="space-y-4">
+        <SeasonResultsPanel
+          races={merged}
+          heading="Overall winners"
+          seriesSlug={slug}
+          weekendRounds={weekendRounds}
+        />
+        <SourceLink href={NLS_SOURCE_URL} label="teilnehmer.vln.de (official documents)" />
       </div>
     );
   }

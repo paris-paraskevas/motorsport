@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.144.0 — 2026-07-01
+
+**NLS Nürburgring results are here.** The Nürburgring Langstrecken-Serie now has a Results tab listing the overall winner of every completed round this season — the winning crew and their team, with a link through to each round's weekend. Because NLS doesn't run a points championship, results show the overall race winners rather than a full points table; the official VLN documents portal is linked as the source if you want the complete classification for a round.
 ## 0.143.0 — 2026-07-01
 
 **MotoGP now has a season-trend chart.** The MotoGP Standings tab shows a drivers' championship trend line, just like F1, F2, F3 and WorldSBK. Each weekend is a single point on the chart, with the Grand Prix and the Sprint added together — and the running total now matches every rider's points in the standings table exactly. This also fixes a rounds-with-few-finishers gap that had been under-counting some riders' totals.
