@@ -6,17 +6,17 @@ import * as THREE from 'three';
 const MODEL_URL = '/models/f1-2022/car.glb';
 useGLTF.preload(MODEL_URL);
 
-// Model bbox ≈ 1.78(w) × 1.08(h) × 4.46(l) m with an off-centre origin. We recentre
-// X/Z to the bbox centre but drop the BOTTOM (min-Y) onto y=0 so the wheels rest on
-// the track instead of the car being half-buried, then scale so the longest axis ≈
-// TARGET_LENGTH world units (the old proxy spanned ~0.2 on the ~0.2-wide asphalt).
-const TARGET_LENGTH = 0.15;
-// The model is untextured flat materials in arbitrary colours (its own body is a
-// dark red), so luminance thresholding can't separate body from tyres — it left the
-// car red/patchwork. Tint EVERY material to the flat team colour for a clean, correct
-// single-colour car. (Darkening the tyres is a later polish.)
+// Fallback car width (world units) if no measured track width is supplied.
+const DEFAULT_CAR_WIDTH = 0.03;
 
-export function CarModel({ colour, ghost }: { colour: string; ghost: boolean }) {
+// The model is untextured flat materials in arbitrary colours (its own body is a dark
+// red), so luminance thresholding can't separate body from tyres — tint EVERY material
+// to the flat team colour for a clean single-colour car. (Darkening the tyres is later
+// polish.) Sizing is by WIDTH: a real 2026 F1 car is 1.9 m wide, and the caller passes
+// the world-space width that is the right fraction of the reconstructed track — so the
+// car is never too big for the road, on any circuit. Recentre X/Z to the bbox centre
+// and drop the bottom onto y=0 so the wheels rest on the track.
+export function CarModel({ colour, ghost, carW }: { colour: string; ghost: boolean; carW?: number }) {
   const { scene } = useGLTF(MODEL_URL);
   const node = useMemo(() => {
     const root = scene.clone(true);
@@ -40,13 +40,17 @@ export function CarModel({ colour, ghost }: { colour: string; ghost: boolean }) 
     box.getCenter(centre);
     // X/Z centred on the GPS point; Y so the model's bottom sits on the track (y=0).
     root.position.set(-centre.x, -box.min.y, -centre.z);
-    const longest = Math.max(size.x, size.y, size.z) || 1;
+    // Car width = the MIDDLE of the three bbox extents (length is largest, height is
+    // smallest) — robust to the model's axis order. Scale so it equals the target width.
+    const dims = [size.x, size.y, size.z].sort((a, b) => a - b);
+    const width = dims[1] || 1;
+    const target = carW && carW > 0 ? carW : DEFAULT_CAR_WIDTH;
     const wrap = new THREE.Group();
     wrap.add(root);
-    wrap.scale.setScalar(TARGET_LENGTH / longest);
+    wrap.scale.setScalar(target / width);
     return wrap;
-  }, [scene, colour, ghost]);
+  }, [scene, colour, ghost, carW]);
   // The model's long axis is Z and CarRig already orients local +Z to the travel
-  // direction, so no extra yaw — the previous Math.PI flip faced it at the camera.
+  // direction, so no extra yaw.
   return <primitive object={node} />;
 }

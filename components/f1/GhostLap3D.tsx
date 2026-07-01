@@ -10,6 +10,7 @@ import type { Circuit, TrackPath, TrackPoint } from '@/lib/openf1/track';
 import { CarModel } from '@/components/f1/onboard/CarModel';
 import { useQualityTier, type QualityTier } from '@/lib/onboard/useQualityTier';
 import { TrackEnvironment } from '@/components/f1/onboard/TrackEnvironment';
+import { groundHeight } from '@/lib/openf1/track-environment';
 
 // The onboard comparison view: a TV-style "ghost car" replay. A chase camera
 // rides behind + above the followed driver's car (a team-coloured proxy), while
@@ -59,11 +60,20 @@ const CAM_LERP = 1; // rigid follow: position is smooth AND the heading is finit
 // straights, not a constant presence (the chase view is the one for comparing). The
 // depth-fade still guards the rare near/behind-camera pass.
 type CameraMode = 'chase' | 'cockpit';
-const COCKPIT_UP = 0.05; // clear of the car's structures (roll hoop/halo), looking down over them
-const COCKPIT_BACK = 0; // dead centre over the head
-const COCKPIT_LOOKAHEAD = 0.5; // aim down the track ahead
+const COCKPIT_UP = 0.045; // sit on top of the airbox so the helmet + halo fall just below the lens, intake out of frame
+const COCKPIT_BACK = 0; // over the airbox/head; tune ± to frame the helmet + halo
+const COCKPIT_LOOKAHEAD = 0.18; // aim toward the nose (a closer point = real downward pitch) while the wide FOV keeps the road + cars ahead in frame
 const CHASE_FOV = 60; // the Canvas default (chase)
-const COCKPIT_FOV = 90; // wide onboard view
+const COCKPIT_FOV = 95; // wide onboard view — nose + front tyres in the lower frame, cars ahead up the road
+
+// Real-world sizing. A 2026 F1 car is 1.9 m wide; the Red Bull Ring is ~12.5 m across,
+// so the car spans ~0.152 of the full track width. CarModel sizes the model to that
+// fraction of the MEASURED track width (generalises to any circuit); the camera rig is
+// scaled by carW / REF_CAR_WIDTH so the dialled framing is preserved as the car shrinks.
+const CAR_WIDTH_FRAC = 0.152;
+// Width the current camera offsets were dialled against (old model: longest→0.15, bbox
+// ≈1.78w×4.46l ⇒ width≈0.06). Only used to derive the camera scale; visually verified.
+const REF_CAR_WIDTH = 0.06;
 
 // Translucent rival overlay + a depth-fade: a rival that drifts behind the camera
 // (a badly mismatched pair) dissolves smoothly instead of exploding through the
@@ -318,11 +328,13 @@ function CarRig({
   colour,
   ghost,
   tRef,
+  carW,
 }: {
   motion: Motion;
   colour: string;
   ghost: boolean;
   tRef: React.RefObject<number>;
+  carW: number;
 }) {
   const ref = useRef<THREE.Group>(null);
   const camera = useThree(s => s.camera);
@@ -355,7 +367,7 @@ function CarRig({
   });
   return (
     <group ref={ref}>
-      <CarModel colour={colour} ghost={ghost} />
+      <CarModel colour={colour} ghost={ghost} carW={carW} />
     </group>
   );
 }
@@ -368,10 +380,12 @@ function FollowCam({
   motion,
   tRef,
   mode,
+  camScale,
 }: {
   motion: Motion;
   tRef: React.RefObject<number>;
   mode: CameraMode;
+  camScale: number;
 }) {
   const camera = useThree(s => s.camera);
   const inited = useRef(false);
@@ -381,16 +395,16 @@ function FollowCam({
   useFrame(() => {
     const { pos, tan } = sampleMotion(motion, tRef.current ?? 0);
     const cockpit = mode === 'cockpit';
-    const target = pos.clone().addScaledVector(tan, cockpit ? -COCKPIT_BACK : -CAM_BACK);
-    target.y += cockpit ? COCKPIT_UP : CAM_UP;
+    const target = pos.clone().addScaledVector(tan, (cockpit ? -COCKPIT_BACK : -CAM_BACK) * camScale);
+    target.y += (cockpit ? COCKPIT_UP : CAM_UP) * camScale;
     if (!inited.current) {
       camera.position.copy(target);
       inited.current = true;
     } else {
       camera.position.lerp(target, CAM_LERP);
     }
-    const look = pos.clone().addScaledVector(tan, cockpit ? COCKPIT_LOOKAHEAD : CAM_LOOKAHEAD);
-    look.y += cockpit ? COCKPIT_UP * 0.5 : 0.02;
+    const look = pos.clone().addScaledVector(tan, (cockpit ? COCKPIT_LOOKAHEAD : CAM_LOOKAHEAD) * camScale);
+    look.y += (cockpit ? COCKPIT_UP * 0.5 : 0.02) * camScale;
     camera.lookAt(look);
   });
   return null;
@@ -407,8 +421,8 @@ const WHITE_W = 0.014; // white track-limit line, inset at each asphalt edge
 const KERB_BAND = 5; // centreline points per alternating red/white band
 const KERB_RED = [0.74, 0.12, 0.12];
 const KERB_WHITE = [0.9, 0.9, 0.92];
-const TERRAIN_GRID = 64; // ground heightfield resolution (per axis)
-const TERRAIN_DROP = 0.02; // terrain sits just below the asphalt
+const TERRAIN_GRID = 96; // ground heightfield resolution (per axis)
+const TERRAIN_DROP = 0.004; // terrain sits just below the asphalt (small → track flush on the ground)
 
 function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   asphalt: THREE.BufferGeometry;
@@ -556,44 +570,14 @@ function buildRibbon(pts: THREE.Vector3[], halfL: number[], halfR: number[]): {
   const G = TERRAIN_GRID;
   const gx = (ix: number) => tMinX + ((tMaxX - tMinX) * ix) / (G - 1);
   const gz = (iz: number) => tMinZ + ((tMaxZ - tMinZ) * iz) / (G - 1);
+  // ONE smooth ground surface: inverse-distance-weighted over the centreline's real GPS
+  // elevations (groundHeight), so it hugs the true track elevation and blends between
+  // sections with no Voronoi steps. The env builder drapes barriers/furniture onto this
+  // SAME function, so the ground, the track and everything on it share one height.
   const height = new Array<number>(G * G);
   for (let iz = 0; iz < G; iz++) {
     for (let ix = 0; ix < G; ix++) {
-      const x = gx(ix);
-      const z = gz(iz);
-      let by = 0;
-      let bd = Infinity;
-      for (const p of pts) {
-        const dx = x - p.x;
-        const dz = z - p.z;
-        const d = dx * dx + dz * dz;
-        if (d < bd) {
-          bd = d;
-          by = p.y;
-        }
-      }
-      height[iz * G + ix] = by;
-    }
-  }
-  // Box-blur the heightfield so it reads as smooth terrain, not Voronoi steps.
-  for (let pass = 0; pass < 2; pass++) {
-    const src = height.slice();
-    for (let iz = 0; iz < G; iz++) {
-      for (let ix = 0; ix < G; ix++) {
-        let s = 0;
-        let c = 0;
-        for (let dz = -1; dz <= 1; dz++) {
-          for (let dx = -1; dx <= 1; dx++) {
-            const jx = ix + dx;
-            const jz = iz + dz;
-            if (jx >= 0 && jx < G && jz >= 0 && jz < G) {
-              s += src[jz * G + jx];
-              c += 1;
-            }
-          }
-        }
-        height[iz * G + ix] = s / c;
-      }
+      height[iz * G + ix] = groundHeight(pts, gx(ix), gz(iz));
     }
   }
   const tPos = new Float32Array(G * G * 3);
@@ -637,7 +621,7 @@ function TrackRibbon({ pts, halfL, halfR }: { pts: THREE.Vector3[]; halfL: numbe
   return (
     <group>
       <mesh geometry={terrain}>
-        <meshStandardMaterial color="#2c3a20" roughness={1} metalness={0} side={THREE.DoubleSide} />
+        <meshStandardMaterial color="#3f6d33" roughness={1} metalness={0} side={THREE.DoubleSide} />
       </mesh>
       <mesh geometry={asphalt}>
         <meshStandardMaterial color="#2b2b33" roughness={0.95} metalness={0} side={THREE.DoubleSide} />
@@ -681,6 +665,14 @@ function Scene({
     () => (otherPts ? buildMotion(otherPts, outline.cx, outline.cy) : null),
     [otherPts, outline.cx, outline.cy],
   );
+  // Measure the track's real half-width (median) → size the car to the right fraction
+  // of it and scale the camera rig by the same factor (framing preserved as it shrinks).
+  const trackHalf = useMemo(() => {
+    const hs = [...ribbon.halfL, ...ribbon.halfR].filter(h => h > 0).sort((a, b) => a - b);
+    return hs.length ? hs[hs.length >> 1] : TRACK_HALF_W;
+  }, [ribbon]);
+  const carW = CAR_WIDTH_FRAC * 2 * trackHalf;
+  const camScale = carW / REF_CAR_WIDTH;
   return (
     <>
       {/* Default camera — FOV declarative (wider for the cockpit); FollowCam drives
@@ -688,7 +680,7 @@ function Scene({
       <PerspectiveCamera
         makeDefault
         fov={cameraMode === 'cockpit' ? COCKPIT_FOV : CHASE_FOV}
-        near={0.02}
+        near={Math.max(0.004, 0.02 * camScale)}
         far={60}
       />
       <color attach="background" args={['#aecbe6']} />
@@ -701,9 +693,9 @@ function Scene({
           own elevation (climbs + falls with it) instead of a flat plane. */}
       <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
       <TrackEnvironment centreline={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} tier={tier} />
-      {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} />}
-      {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} />}
-      {followMotion && <FollowCam motion={followMotion} tRef={tRef} mode={cameraMode} />}
+      {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} carW={carW} />}
+      {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} carW={carW} />}
+      {followMotion && <FollowCam motion={followMotion} tRef={tRef} mode={cameraMode} camScale={camScale} />}
     </>
   );
 }
@@ -1082,7 +1074,7 @@ export function GhostLap3D({
       </div>
 
       {/* Transport: play/pause (hidden under reduced motion) + scrub + clock. */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         {!reduced && (
           <button
             type="button"
@@ -1101,12 +1093,12 @@ export function GhostLap3D({
           value={Math.min(t, duration)}
           onChange={e => onScrub(Number(e.target.value))}
           aria-label="Scrub replay position"
-          className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-border accent-brand"
+          className="h-1 min-w-[6rem] flex-1 cursor-pointer appearance-none rounded-full bg-border accent-brand"
         />
         <span className="w-14 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted">
           {t.toFixed(2)}s
         </span>
-        <div className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Playback speed">
+        <div className="ml-auto flex shrink-0 items-center gap-0.5" role="group" aria-label="Playback speed">
           {([0.5, 1, 2, 4] as const).map(s => (
             <button
               key={s}
