@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.132.1 — 2026-07-01
+
+### Changed
+- Added the two AdSense frame origins (`https://pagead2.googlesyndication.com`, `https://ep2.adtrafficquality.google`) to the `frame-src` directive of `CSP_REPORT_ONLY` in `next.config.ts`. These are the ad-slot iframe host and Google's ad-traffic-quality frame; both were missing, producing `Content-Security-Policy-Report-Only` violation reports and would have broken ad rendering once CSP is promoted to enforcing. Scope limited to `frame-src` — no other directive touched. Unblocks the "flip CSP Report-Only → enforcing" work.
+
 ## 0.132.0 — 2026-07-01
 
 Onboard 3D graphics overhaul — rebuilt and gated on live screenshots (supersedes the reverted 0.131.0). Touches `components/f1/onboard/CarModel.tsx`, `components/f1/onboard/TrackEnvironment.tsx`, `lib/openf1/track-environment.ts` (+ test), `components/f1/GhostLap3D.tsx`.
