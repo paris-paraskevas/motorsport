@@ -22,6 +22,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/app` },
     { url: `${SITE_URL}/series` },
     { url: `${SITE_URL}/calendar` },
+    { url: `${SITE_URL}/news` },
     { url: `${SITE_URL}/blog` },
     { url: `${SITE_URL}/about` },
     { url: `${SITE_URL}/changelog` },

@@ -110,11 +110,12 @@ export function AppShell({
             {/* Community — no page of its own, so a menu-only trigger. */}
             <HeaderNavMenu
               label="Community"
-              active={isActive('/blog') || isActive('/threads')}
+              active={isActive('/news') || isActive('/blog') || isActive('/threads')}
               panelLabel="Community"
             >
               <MenuLinkList
                 items={[
+                  { href: '/news', label: 'News', desc: 'Latest across the grid' },
                   { href: '/blog', label: 'Blog', desc: 'Analysis & recaps' },
                   { href: '/threads', label: 'Threads', desc: 'Fan discussion' },
                 ]}
