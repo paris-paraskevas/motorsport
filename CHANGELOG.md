@@ -11,6 +11,10 @@ Single-event series now say "Past Winners" instead of "Champions" on the Champio
 ### Changed
 - `components/tabs/ChampionsTab.tsx`: derive `isSingleEvent = series.meta.singleEvent === true` (reusing the existing meta flag that already drives `SINGLE_EVENT_TAB_KEYS` and the `SeriesTabs` tab-strip label). The `PlaceholderTab` fallback label and the "Drivers' Championship" `SectionHeading` now read "Past Winners" for single-event series; multi-round championship series are unchanged.
 - Tab-strip label needed no change — `components/SeriesTabs.tsx` already renders "Past Winners" for `singleEvent && tab.key === 'champions'`. This makes the in-tab headings consistent with it.
+## 0.132.1 — 2026-07-01
+
+### Changed
+- Added the two AdSense frame origins (`https://pagead2.googlesyndication.com`, `https://ep2.adtrafficquality.google`) to the `frame-src` directive of `CSP_REPORT_ONLY` in `next.config.ts`. These are the ad-slot iframe host and Google's ad-traffic-quality frame; both were missing, producing `Content-Security-Policy-Report-Only` violation reports and would have broken ad rendering once CSP is promoted to enforcing. Scope limited to `frame-src` — no other directive touched. Unblocks the "flip CSP Report-Only → enforcing" work.
 
 ## 0.132.0 — 2026-07-01
 
