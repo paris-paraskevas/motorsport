@@ -35,6 +35,7 @@ import { fetchDTMSeasonChartData } from '@/lib/results/dtm';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SeasonResults } from '@/lib/results/f3';
 import { fetchWsbkSeasonResults } from '@/lib/results/wsbk';
+import { fetchMotoGPSeasonResults } from '@/lib/results/motogp';
 import { applyResultsOverrides } from '@/lib/results/overrides';
 import {
   applyDriverOverrides,
@@ -707,6 +708,24 @@ export async function StandingsTab({ series }: { series: Series }) {
     const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
     return (
       <div className="space-y-4">
+        <Suspense fallback={<TrendSkeleton />}>
+          <StreamedTrend
+            slug={series.meta.slug}
+            season={series.meta.season}
+            // A MotoGP weekend is one x-axis round but two point-scoring
+            // sessions: the Grand Prix and the (half-points) Sprint. Split
+            // by the `— Sprint` raceName suffix so the Sprint folds into the
+            // same round tick via `extras` (like F1 sprints) instead of
+            // plotting a second tick / double-tallying. Chart totals then
+            // reconcile to the DriversTable (standings) totals.
+            load={s =>
+              fetchMotoGPSeasonResults(s).then(all => ({
+                races: all.filter(r => !/Sprint/i.test(r.raceName)),
+                extras: all.filter(r => /Sprint/i.test(r.raceName)),
+              }))
+            }
+          />
+        </Suspense>
         <DriversTable drivers={drivers} />
         <SourceLink
           href="https://www.motogp.com/en/world-standing"
