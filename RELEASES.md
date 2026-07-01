@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.148.0 — 2026-07-01
+
+**Clearer names for the F1 analysis tools.** The "Qualifying Decoder" is now called **Qualifying Analysis**, and the lap-by-lap ghost view is now simply **Replay** — the same tools, with plainer names across the site, menus and notifications.
+
 ## 0.147.0 — 2026-07-01
 
 **Tidier Champions tab.** The Drivers' and Constructors' championship lists can now be collapsed, so a long history folds away — tap a section to expand or collapse it.

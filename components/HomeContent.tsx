@@ -1865,9 +1865,9 @@ export function HomeContent({
       {/* ── LATEST DECODED (F1) — opt-in. The most recent past F1 round's
              qualifying (→ Decoder, pole + P2 codes) and race (→ Race Story). ── */}
       {!isHidden('latest-decoded') && (
-        <section aria-label="Latest Decoded" className="mb-8" style={{ order: orderOf('latest-decoded') }}>
+        <section aria-label="Latest Analysis" className="mb-8" style={{ order: orderOf('latest-decoded') }}>
           <CollapsibleSectionHead
-            title="Latest Decoded"
+            title="Latest Analysis"
             sub={decoded ? decoded.gp : 'F1 analysis'}
             collapsed={isCollapsed('latest-decoded')}
             onToggle={() => toggleCollapsed('latest-decoded')}
@@ -1880,7 +1880,7 @@ export function HomeContent({
               </div>
             ) : decoded === null ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
-                No decoded F1 session yet.
+                No analysed F1 session yet.
               </p>
             ) : (
               <div className="border-y border-border py-4">
@@ -1888,11 +1888,11 @@ export function HomeContent({
                   {decoded.qualifying && (
                     <Link href={decoded.qualifying.href} className="group block min-w-0">
                       <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
-                        Pole lap decoded · {decoded.gp}
+                        Pole lap analysis · {decoded.gp}
                       </span>
                       <span className="mt-0.5 flex items-center gap-2 min-w-0">
                         <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text leading-none">
-                          Qualifying Decoder
+                          Qualifying Analysis
                         </span>
                         <ArrowUpRight size={14} className="shrink-0 text-text-faint group-hover:text-text transition-colors duration-(--duration-fast)" />
                       </span>

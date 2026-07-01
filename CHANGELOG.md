@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.148.0 — 2026-07-01
+
+Renamed the user-facing "Decoder" wording to "Analysis" / "Replay" across the F1 telemetry surfaces. Copy-only; no behaviour change.
+
+### Changed
+- Swept visible strings across ~10 files. "Qualifying Decoder" → "Qualifying Analysis": the session-page section title (`app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`), the OG share-card badge (`.../opengraph-image.tsx`), the `/f1/analysis` hub copy + meta description (`app/(app)/f1/analysis/page.tsx`), the Latest-Analysis home widget (`components/HomeContent.tsx`), and the "analysis ready" push body (`app/api/cron/notify/route.ts`). Nav label "Decoder & Race Story" → "Analysis & Race Story" (`components/AppShell.tsx`, `components/SeriesPageView.tsx`). The "Latest Decoded" home widget + its `/settings/customize` gallery label → "Latest Analysis" (`lib/homeLayout.ts`). Ghost-lap replay view → "Replay" (`components/f1/QualifyingDecoder.tsx` toggle label; `components/f1/GhostLapReplay.tsx` heading "Lap replay" + aria-label).
+- Internal identifiers left unchanged on purpose (avoid breaking cached prefs / bookmarks / caches): the `/api/f1/decoder` route paths, the `latest-decoded` widget id, KV cache keys, and the `QualifyingDecoder` / `DecoderSummary` / `lib/openf1/decoder` names. The `<img decoding="async">` attribute is untouched.
+
 ## 0.147.0 — 2026-07-01
 
 Champions tab: the top-level championship sections are now collapsible.

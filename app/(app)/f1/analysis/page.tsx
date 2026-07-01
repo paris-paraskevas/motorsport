@@ -16,7 +16,7 @@ export const revalidate = 3600;
 
 const TITLE = 'F1 Telemetry & Analysis';
 const DESCRIPTION =
-  'Decode every 2026 Formula 1 weekend — lap-by-lap Qualifying Decoder pole breakdowns and full Race Story strategy timelines, free, for every Grand Prix once the cars have run.';
+  'Analyse every 2026 Formula 1 weekend — lap-by-lap Qualifying Analysis pole breakdowns and full Race Story strategy timelines, free, for every Grand Prix once the cars have run.';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -75,7 +75,7 @@ export default async function F1AnalysisPage() {
         <p className="mt-4 max-w-prose text-sm md:text-base text-text-muted leading-relaxed">
           Once a Grand Prix weekend has run, every session unlocks two free
           breakdowns built from the timing data. The{' '}
-          <span className="text-text font-medium">Qualifying Decoder</span> puts
+          <span className="text-text font-medium">Qualifying Analysis</span> puts
           pole laps side by side — sector, mini-sector and corner-by-corner
           delta. The{' '}
           <span className="text-text font-medium">Race Story</span> charts the
@@ -116,7 +116,7 @@ export default async function F1AnalysisPage() {
                     <span aria-hidden style={{ color }}>
                       ▸
                     </span>
-                    Qualifying Decoder
+                    Qualifying Analysis
                   </Link>
                   <Link
                     href={`/series/f1/weekend/${r.round}/race`}

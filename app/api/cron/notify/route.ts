@@ -147,7 +147,7 @@ function analysisPayload(
   gp: string,
   isRace: boolean,
 ): PushPayload {
-  const surface = isRace ? 'Race Story' : 'Qualifying Decoder';
+  const surface = isRace ? 'Race Story' : 'Qualifying Analysis';
   return {
     title: 'Formula 1 · Analysis ready',
     body: `${surface} is up — ${gp}`,
