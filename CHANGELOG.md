@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.135.2 — 2026-07-01
+
+Notification badge refreshed to a cleaner chequered-flag silhouette.
+
+### Changed
+- `scripts/gen-badge.py`: redraws `public/icons/badge-96.png` as a chequered flag on a pole using a 4×4 checkerboard of opaque-white cells (was a 4×3 grid with 1px transparent gutters). Dropping the inner gutters lets the opaque squares meet corner-to-corner, which survives Android's status-bar downscale + silhouette mask far better than gutter-separated cells. Grid is even-multiple sized (48px flag ÷ 4 = 12px cells) so the squares stay pixel-aligned.
+- `scripts/gen-badge.py`: added post-save invariant assertions — output is 96×96, every fully-opaque pixel is pure white `(255,255,255)`, and at least one fully-transparent pixel exists — so a future edit can't silently ship a coloured or opaque badge (the documented monochrome landmine). Pixel access uses `Image.load()` rather than the Pillow-12-deprecated `getdata()`.
+- `public/icons/badge-96.png`: regenerated from the updated script — still 96×96 RGBA, single opaque colour (white) on transparency.
+
 ## 0.135.0 — 2026-07-01
 
 Onboard qualifying replay: cars now start together on a painted start/finish line.

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.135.2 — 2026-07-01
+
+**Sharper notification icon.** The little badge that appears on push notifications is now a cleaner chequered-flag design that stays crisp at the small size Android shows it.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
