@@ -10,6 +10,8 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 **main = 0.132.0** (verified live on prod `/changelog`). The onboard 3D graphics overhaul is **rebuilt, merged (PR #323, squash `3216427`) and deployed** — the 0.131.0→0.131.1 revert saga is closed. Built + verified via operator-visible localhost screenshots + operator live sign-off (the visual gate 0.131.0 skipped).
 
+**▶ NEXT SESSION — FIRST TASK (operator-set 2026-07-01):** print the operator a flat list of all open items — from this block's "Open / carry-over", `IDEAS.md` (Now / Next / Inbox), and the carried backlog in the older blocks below. Then await direction.
+
 ### What shipped (onboard is now realistic + generalises to every quali)
 - **Car** (`components/f1/onboard/CarModel.tsx`): real CC-BY glTF, tinted flat team colour, bbox-recentred, wheels on y=0. Sized by **WIDTH** to the real ratio (1.9 m car / ~12.5 m track ≈ **0.152**) of the **measured** track half-width → right on any circuit. `carW` passed from `Scene` (median of `ribbon.halfL/halfR`).
 - **Camera** (`GhostLap3D`): chase + cockpit rigs scale by `camScale = carW / REF_CAR_WIDTH` so the dialled framing survives the resize. Cockpit T-cam = broadcast onboard: `COCKPIT_UP 0.045 / BACK 0 / LOOKAHEAD 0.18 / FOV 95`; near `= max(0.004, 0.02·camScale)`.
