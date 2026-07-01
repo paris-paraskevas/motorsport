@@ -44,8 +44,10 @@ const CSP_REPORT_ONLY = [
   // XHR/fetch/websocket targets: self, Clerk, analytics, ad networks, and the
   // OpenF1 telemetry API. https: kept broad while observing.
   "connect-src 'self' https: wss://*.clerk.accounts.dev wss://clerk.paddock-tracker.com",
-  // Frames: Clerk (auth widgets) + AdSense/DoubleClick.
-  "frame-src 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://www.google.com",
+  // Frames: Clerk (auth widgets) + AdSense/DoubleClick. pagead2.googlesyndication.com
+  // serves the ad-slot iframes; ep2.adtrafficquality.google is Google's ad-traffic
+  // quality (spam/fraud) frame that AdSense injects alongside them.
+  "frame-src 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google",
 ].join("; ");
 
 const nextConfig: NextConfig = {

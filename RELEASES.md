@@ -3,6 +3,12 @@ What's new in Paddock Tracker. Newest first.
 ## 0.132.3 — 2026-07-01
 
 If something ever goes wrong on a page, you'll now see a calm Paddock-styled message with a "Try again" button and a link back home, instead of a bare browser error. This covers both individual pages and the rare case where the whole app shell fails to load.
+## 0.132.2 — 2026-07-01
+
+For single-event series like the 24h Nürburgring, the Champions tab now reads "Past Winners" — a clearer fit for a one-off race, where the list is previous race winners rather than season champions. Full championship series are unchanged.
+## 0.132.1 — 2026-07-01
+
+Internal: adjusted the site's monitoring-mode security policy so it correctly accounts for the ad frames, clearing spurious console warnings. No visible change.
 
 ## 0.132.0 — 2026-07-01
 
