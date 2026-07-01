@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.144.0 — 2026-07-01
+
+**NLS Nürburgring results are here.** The Nürburgring Langstrecken-Serie now has a Results tab listing the overall winner of every completed round this season — the winning crew and their team, with a link through to each round's weekend. Because NLS doesn't run a points championship, results show the overall race winners rather than a full points table; the official VLN documents portal is linked as the source if you want the complete classification for a round.
+
 ## 0.141.0 — 2026-07-01
 
 **Classic F1 teams get their colours on the Champions tab.** In the Constructors' Championship list, historic title-winning teams — Brabham, Team Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo and Maserati — now show in their heritage colours (Lotus gold, Brabham green, Vanwall British racing green, Brawn's fluorescent yellow, and more) instead of plain text. Today's teams are unchanged, and the older team names stay as coloured labels since they don't have their own profile pages.
