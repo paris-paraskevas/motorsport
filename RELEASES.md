@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.132.3 — 2026-07-01
+
+If something ever goes wrong on a page, you'll now see a calm Paddock-styled message with a "Try again" button and a link back home, instead of a bare browser error. This covers both individual pages and the rare case where the whole app shell fails to load.
+
 ## 0.132.0 — 2026-07-01
 
 The qualifying onboard replay is now a proper 3D scene on every circuit — a real Formula 1 car in team colours on a track that sits naturally on the rolling ground, with run-off, barriers, grandstands, a pit lane and greenery in the distance. Watch it from the chase camera or a broadcast-style cockpit view looking down the nose. On phones, the playback-speed buttons under the replay now always fit on screen.

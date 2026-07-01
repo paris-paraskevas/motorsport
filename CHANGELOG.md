@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.132.3 — 2026-07-01
+
+App-wide custom error boundaries — a fault anywhere in the tree now lands on a Paddock-branded fallback instead of the raw Next.js default. Adds `app/error.tsx` and `app/global-error.tsx`.
+
+### Added
+- `app/error.tsx` — root route-segment error boundary (Client Component, `{ error, reset }` per the App Router convention, mirroring the shape already used by `app/(app)/error.tsx`). Reuses the "Yellow flag / Something broke" surface (`bg-surface/60`, rounded-3xl, radial red/amber accent, lucide icons, pill buttons); "Try again" calls `reset()`, Home links to `/`. Renders `error.digest` as a support reference and logs to the console via `useEffect`.
+- `app/global-error.tsx` — root global error boundary that replaces the root layout when the layout/template itself throws. Client Component that renders its own `<html lang="en" class="dark">` + `<body>`; fully inline-styled with the Paddock token hex values (globals.css may be unavailable in this boundary) so the dark surface survives. "Red flag" heading, `reset()` button, plain `<a href="/">` for Home.
+- Note: Next 16.2 also exposes an `unstable_retry` prop (recommended over `reset` in the 16.2.6 docs, `error.md` version history). We intentionally keep `reset` to match the existing `app/(app)/error.tsx` contract and avoid an unstable API surface; migrating both boundaries to `unstable_retry` is a follow-up.
+- Not touched: per-route/per-segment `error.tsx` boundaries beyond the existing `app/(app)/error.tsx` remain a follow-up.
+
 ## 0.132.0 — 2026-07-01
 
 Onboard 3D graphics overhaul — rebuilt and gated on live screenshots (supersedes the reverted 0.131.0). Touches `components/f1/onboard/CarModel.tsx`, `components/f1/onboard/TrackEnvironment.tsx`, `lib/openf1/track-environment.ts` (+ test), `components/f1/GhostLap3D.tsx`.
