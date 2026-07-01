@@ -176,7 +176,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
               <span aria-hidden="true" className="inline-block h-3.5 w-[3px] shrink-0 bg-tint" />
               <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-                Decoder &amp; Race Story →
+                Analysis &amp; Race Story →
               </span>
             </Link>
           </div>
