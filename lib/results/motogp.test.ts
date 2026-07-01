@@ -1,5 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fetchMotoGPSeasonResults } from './motogp';
+import { buildSeasonTrendData } from '@/lib/season-trend';
+import type { RaceResult } from '@/lib/types';
+
+// Mirror the StandingsTab motogp branch: one x-axis round per weekend, with
+// the Sprint folded into `extras` (not a second race tick) so GP + Sprint
+// sum into the same round's cumulative total.
+function splitGpSprint(all: RaceResult[]): { races: RaceResult[]; extras: RaceResult[] } {
+  return {
+    races: all.filter(r => !/Sprint/i.test(r.raceName)),
+    extras: all.filter(r => /Sprint/i.test(r.raceName)),
+  };
+}
 
 // Mock the four-stage Pulselive fetch chain:
 //   1) /results/seasons
@@ -256,9 +268,14 @@ describe('fetchMotoGPSeasonResults', () => {
     expect(races[0].raceName).toContain('Thailand');
   });
 
-  it('drops a session whose classification has fewer than 10 finishers', async () => {
-    const tiny = {
-      classification: RAC_CLASSIFICATION.classification.slice(0, 5),
+  it('keeps a real classified session with fewer than 10 finishers', async () => {
+    // Regression guard for the standings-chart under-count (chart 132 vs
+    // standings 157 for Di Giannantonio): a high-attrition Grand Prix that
+    // classified only 9 riders is valid championship points the official
+    // standings DO count, so it must NOT be dropped by the finisher floor —
+    // dropping it silently under-tallies the season-trend chart.
+    const short = {
+      classification: RAC_CLASSIFICATION.classification.slice(0, 9),
     };
     setupFetch({
       seasons: SEASONS_2026,
@@ -272,14 +289,102 @@ describe('fetchMotoGPSeasonResults', () => {
         ],
       },
       classificationsBySession: {
-        'rac-1': tiny,
+        'rac-1': short,
         'spr-1': SPR_CLASSIFICATION,
       },
     });
     const races = await fetchMotoGPSeasonResults(2026);
-    // RAC dropped under the floor; SPR survives.
+    // Both the 9-rider GP and the Sprint survive — nothing dropped.
+    expect(races).toHaveLength(2);
+    const gp = races.find(r => r.raceName.includes('Grand Prix'));
+    expect(gp).toBeDefined();
+    expect(gp!.results).toHaveLength(9);
+    // The 9th-placed finisher's points are retained (P9 = 7 in the fixture).
+    expect(gp!.results[8].points).toBe(7);
+  });
+
+  it('drops only a structurally-broken (near-empty) classification', async () => {
+    // The floor still guards against a junk feed: fewer than 3 rows is not a
+    // real race, so that session is skipped while a healthy session survives.
+    const junk = { classification: RAC_CLASSIFICATION.classification.slice(0, 2) };
+    setupFetch({
+      seasons: SEASONS_2026,
+      events: [
+        event({ id: 'tha-1', name: 'GRAND PRIX OF THAILAND', dateStart: '2026-02-27', dateEnd: '2026-03-01' }),
+      ],
+      sessionsByEvent: {
+        'tha-1': [
+          { id: 'rac-1', type: 'RAC' },
+          { id: 'spr-1', type: 'SPR' },
+        ],
+      },
+      classificationsBySession: {
+        'rac-1': junk,
+        'spr-1': SPR_CLASSIFICATION,
+      },
+    });
+    const races = await fetchMotoGPSeasonResults(2026);
     expect(races).toHaveLength(1);
     expect(races[0].raceName).toContain('Sprint');
+  });
+
+  it('chart totals (GP + Sprint fold) reconcile to per-rider championship points', async () => {
+    // The locked cross-series invariant: the season-trend chart's final
+    // cumulative value per rider must equal that rider's standings points.
+    // Here we prove the GP-into-races / Sprint-into-extras split feeds
+    // buildSeasonTrendData a total that equals GP points + Sprint points for
+    // the top riders (what the standings endpoint reports), over two rounds.
+    setupFetch({
+      seasons: SEASONS_2026,
+      events: [
+        event({ id: 'tha-1', name: 'GRAND PRIX OF THAILAND', dateStart: '2026-02-27', dateEnd: '2026-03-01' }),
+        event({ id: 'arg-2', name: 'GRAND PRIX OF ARGENTINA', dateStart: '2026-03-13', dateEnd: '2026-03-15' }),
+      ],
+      sessionsByEvent: {
+        'tha-1': [
+          { id: 'rac-tha', type: 'RAC' },
+          { id: 'spr-tha', type: 'SPR' },
+        ],
+        'arg-2': [
+          { id: 'rac-arg', type: 'RAC' },
+          { id: 'spr-arg', type: 'SPR' },
+        ],
+      },
+      classificationsBySession: {
+        'rac-tha': RAC_CLASSIFICATION,
+        'spr-tha': SPR_CLASSIFICATION,
+        'rac-arg': RAC_CLASSIFICATION,
+        'spr-arg': SPR_CLASSIFICATION,
+      },
+    });
+    const all = await fetchMotoGPSeasonResults(2026);
+    const { races, extras } = splitGpSprint(all);
+    // One x-tick per weekend (2 rounds), not four (no double-plot).
+    expect(races).toHaveLength(2);
+    expect(extras).toHaveLength(2);
+
+    const trend = buildSeasonTrendData(races, extras);
+    // Two rounds on the x-axis, chronological.
+    expect(trend.data).toHaveLength(2);
+    expect(trend.data[0].round).toBe(1);
+    expect(trend.data[1].round).toBe(2);
+
+    // Per-round per-rider points (GP + Sprint), ×2 rounds:
+    //   Bezzecchi:  25 + 9  = 34  → 68
+    //   M. Marquez: 16 + 12 = 28  → 56
+    //   Acosta:     20 + 7  = 27  → 54
+    //   Di Giannantonio: 9 + 0 = 9 → 18  (Sprint 0 must still be counted)
+    expect(trend.totalsByDriver['Marco Bezzecchi']).toBe(68);
+    expect(trend.totalsByDriver['Marc Marquez']).toBe(56);
+    expect(trend.totalsByDriver['Pedro Acosta']).toBe(54);
+    expect(trend.totalsByDriver['Fabio Di Giannantonio']).toBe(18);
+
+    // The final data point's cumulative value equals totalsByDriver — the
+    // exact number the chart's end-of-season label renders and the standings
+    // table must match.
+    const last = trend.data[trend.data.length - 1];
+    expect(last['Marco Bezzecchi']).toBe(68);
+    expect(last['Fabio Di Giannantonio']).toBe(18);
   });
 
   it('returns an empty array when seasons fetch fails', async () => {

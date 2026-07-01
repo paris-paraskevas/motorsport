@@ -1,6 +1,41 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+
+// In-memory fake of the durable `source_snapshot` table so the last-good wrap on
+// `fetchWecStandings` can be exercised. `snapshotConfigured` defaults FALSE so
+// the pre-existing fetch/parse tests below behave exactly as before (wrapper runs
+// the fetcher uncached, as in a test env with no SUPABASE_URL); the last-good
+// block flips it on. Mirrors lib/standings/dtm.test.ts.
+const snapshotTable = new Map<string, unknown>();
+let snapshotConfigured = false;
+
+vi.mock('@/lib/betting/client', () => ({
+  isBettingConfigured: () => snapshotConfigured,
+  betDb: () => ({
+    from: () => {
+      let selectedKey: string | null = null;
+      const builder = {
+        select: () => builder,
+        eq: (_col: string, value: string) => {
+          selectedKey = value;
+          return builder;
+        },
+        maybeSingle: async () => {
+          const raw = selectedKey != null ? snapshotTable.get(selectedKey) : undefined;
+          if (raw === undefined) return { data: null, error: null };
+          return { data: { payload: JSON.parse(JSON.stringify(raw)) }, error: null };
+        },
+        upsert: async (row: { source_key: string; payload: unknown }) => {
+          snapshotTable.set(row.source_key, row.payload);
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  }),
+}));
+
 import {
   fetchWecStandings,
   parseWecStandings,
@@ -152,5 +187,73 @@ describe('fetchWecStandings', () => {
     expect(out!.drivers.LMGT3.length).toBeGreaterThan(0);
     expect(out!.manufacturers.Hypercar?.length ?? 0).toBeGreaterThan(0);
     expect(out!.teams.LMGT3?.length ?? 0).toBeGreaterThan(0);
+  });
+});
+
+// Durable last-good: a fiawec.com outage should serve the previous good
+// standings instead of the null that blanks the page. Supabase IS configured
+// here (in-memory fake); WecStandings carries no Date fields so no rehydration.
+// isEmpty keys off a non-empty per-class drivers map.
+describe('fetchWecStandings — durable last-good (source_snapshot)', () => {
+  const originalFetch = globalThis.fetch;
+  const okFor = (html: string) =>
+    ({ ok: true, status: 200, text: async () => html }) as Response;
+  const goodFetch = () =>
+    vi.fn(async () => okFor(REAL_FIXTURE)) as unknown as typeof fetch;
+  const downFetch = () =>
+    vi.fn(async () => ({ ok: false, status: 503, text: async () => '' }) as Response) as unknown as typeof fetch;
+
+  beforeEach(() => {
+    snapshotTable.clear();
+    snapshotConfigured = true;
+  });
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    snapshotConfigured = false;
+    snapshotTable.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('SUCCESS persists the standings under standings:wec', async () => {
+    globalThis.fetch = goodFetch();
+    const data = await fetchWecStandings();
+    expect(data).not.toBeNull();
+    expect(snapshotTable.has('standings:wec')).toBe(true);
+  });
+
+  it('FAILURE serves the last-good standings instead of null', async () => {
+    globalThis.fetch = goodFetch();
+    await fetchWecStandings(); // prime the snapshot
+    globalThis.fetch = downFetch(); // fiawec.com 503
+    const recovered = await fetchWecStandings();
+    expect(recovered).not.toBeNull();
+    expect(recovered!.drivers.Hypercar.length).toBeGreaterThan(0);
+    expect(recovered!.drivers.LMGT3.length).toBeGreaterThan(0);
+  });
+
+  it('a good fetch overwrites the snapshot (self-heal)', async () => {
+    // Seed a deliberately-stale snapshot, then a good fetch must replace it.
+    snapshotTable.set('standings:wec', {
+      drivers: { Hypercar: [{ position: 1, driverName: 'stale', team: 'x', points: 0 }], LMGT3: [] },
+      teams: {},
+      manufacturers: {},
+    });
+    globalThis.fetch = goodFetch();
+    await fetchWecStandings();
+    const stored = snapshotTable.get('standings:wec') as {
+      drivers: { Hypercar: unknown[]; LMGT3: unknown[] };
+    };
+    expect(stored.drivers.Hypercar.length).toBeGreaterThan(1);
+  });
+
+  it('FAILURE with no snapshot present returns null (today behaviour)', async () => {
+    globalThis.fetch = downFetch();
+    expect(await fetchWecStandings()).toBeNull();
+  });
+
+  it('FAIL-SOFT: Supabase unconfigured behaves exactly like the live fetch', async () => {
+    snapshotConfigured = false;
+    globalThis.fetch = downFetch();
+    expect(await fetchWecStandings()).toBeNull();
   });
 });
