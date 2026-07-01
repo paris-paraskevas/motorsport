@@ -331,6 +331,11 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 export async function ChampionsTab({ series }: { series: Series }) {
+  // Single-event series (e.g. the 24h Nürburgring) have no season championship —
+  // this tab is a list of past race winners, so "Champions" / "Drivers'
+  // Championship" is the wrong word. Reuse the same meta flag that drives the
+  // slim tab set (SINGLE_EVENT_TAB_KEYS) and the tab-strip label.
+  const isSingleEvent = series.meta.singleEvent === true;
   const [curated, curatedDrivers] = await Promise.all([
     loadCuratedChampions(series.meta.slug),
     loadCuratedDrivers(series.meta.slug),
@@ -381,7 +386,7 @@ export async function ChampionsTab({ series }: { series: Series }) {
       candidates.push(series.meta.wikipediaPage);
     }
     if (candidates.length === 0) {
-      return <PlaceholderTab tabLabel="Champions" />;
+      return <PlaceholderTab tabLabel={isSingleEvent ? 'Past Winners' : 'Champions'} />;
     }
     champions = await fetchChampions(candidates);
     sourceLabel = 'Wikipedia';
@@ -461,7 +466,9 @@ export async function ChampionsTab({ series }: { series: Series }) {
   return (
     <div className="space-y-8">
       <section>
-        <SectionHeading>Drivers&apos; Championship</SectionHeading>
+        <SectionHeading>
+          {isSingleEvent ? 'Past Winners' : <>Drivers&apos; Championship</>}
+        </SectionHeading>
         <DriversSection
           champions={champions}
           driverSlugs={driverSlugs}

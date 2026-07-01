@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.132.2 — 2026-07-01
+
+Single-event series now say "Past Winners" instead of "Champions" on the Champions tab. For one-off / annual-race formats (e.g. `adac-ravenol-24h`, `singleEvent: true`) the tab is a list of past race winners, not season champions, so the championship wording was wrong.
+
+### Changed
+- `components/tabs/ChampionsTab.tsx`: derive `isSingleEvent = series.meta.singleEvent === true` (reusing the existing meta flag that already drives `SINGLE_EVENT_TAB_KEYS` and the `SeriesTabs` tab-strip label). The `PlaceholderTab` fallback label and the "Drivers' Championship" `SectionHeading` now read "Past Winners" for single-event series; multi-round championship series are unchanged.
+- Tab-strip label needed no change — `components/SeriesTabs.tsx` already renders "Past Winners" for `singleEvent && tab.key === 'champions'`. This makes the in-tab headings consistent with it.
 ## 0.132.1 — 2026-07-01
 
 ### Changed

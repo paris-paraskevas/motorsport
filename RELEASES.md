@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.132.2 — 2026-07-01
+
+For single-event series like the 24h Nürburgring, the Champions tab now reads "Past Winners" — a clearer fit for a one-off race, where the list is previous race winners rather than season champions. Full championship series are unchanged.
 ## 0.132.1 — 2026-07-01
 
 Internal: adjusted the site's monitoring-mode security policy so it correctly accounts for the ad frames, clearing spurious console warnings. No visible change.
