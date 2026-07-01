@@ -636,6 +636,58 @@ function TrackRibbon({ pts, halfL, halfR }: { pts: THREE.Vector3[]; halfL: numbe
   );
 }
 
+// A chequered start/finish line laid flat across the track. Every trace is
+// re-anchored (server-side) to begin ON the shared S/F line, so the followed car's
+// motion start (samplePos at times[0] + its heading) IS the line — draw the strip
+// there, spanning the measured track width, perpendicular to the direction of travel.
+function makeCheckerTexture(): THREE.Texture {
+  const cols = 18;
+  const rows = 2;
+  const cell = 12;
+  const cvs = document.createElement('canvas');
+  cvs.width = cols * cell;
+  cvs.height = rows * cell;
+  const ctx = cvs.getContext('2d');
+  if (ctx) {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        ctx.fillStyle = (r + c) % 2 === 0 ? '#141414' : '#f4f4f6';
+        ctx.fillRect(c * cell, r * cell, cell, cell);
+      }
+    }
+  }
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function StartFinishLine({ motion, carW }: { motion: Motion; carW: number }) {
+  const tex = useMemo(() => makeCheckerTexture(), []);
+  const { pos, rotY } = useMemo(() => {
+    const p = samplePos(motion, motion.times[0]);
+    const h = sampleHeading(motion, motion.times[0]);
+    return { pos: p, rotY: Math.atan2(h.x, h.z) }; // local +Z → travel, so +X spans across
+  }, [motion]);
+  const width = carW / CAR_WIDTH_FRAC; // full measured track width (carW = frac × width)
+  const depth = Math.max(width * 0.05, carW * 0.6); // shallow band along travel
+  return (
+    <group position={[pos.x, pos.y + 0.003, pos.z]} rotation={[0, rotY, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[width, depth]} />
+        <meshStandardMaterial
+          map={tex}
+          roughness={0.75}
+          metalness={0}
+          side={THREE.DoubleSide}
+          polygonOffset
+          polygonOffsetFactor={-2}
+          polygonOffsetUnits={-2}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 function Scene({
   outline,
   ribbon,
@@ -693,6 +745,7 @@ function Scene({
           own elevation (climbs + falls with it) instead of a flat plane. */}
       <TrackRibbon pts={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} />
       <TrackEnvironment centreline={ribbon.pts} halfL={ribbon.halfL} halfR={ribbon.halfR} tier={tier} />
+      {followMotion && <StartFinishLine motion={followMotion} carW={carW} />}
       {followMotion && <CarRig motion={followMotion} colour={followColour} ghost={false} tRef={tRef} carW={carW} />}
       {otherMotion && <CarRig motion={otherMotion} colour={otherColour} ghost tRef={tRef} carW={carW} />}
       {followMotion && <FollowCam motion={followMotion} tRef={tRef} mode={cameraMode} camScale={camScale} />}

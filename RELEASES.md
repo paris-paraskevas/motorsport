@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.135.0 — 2026-07-01
+
+**Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
+
 ## 0.134.1 — 2026-07-01
 
 **Collapsible changelog months.** Each month now has a one-line summary of what shipped and folds away — the newest month is open, older ones are collapsed. Tap a month to expand its releases.
