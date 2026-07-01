@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.146.0 — 2026-07-01
+
+**A News page.** Every series' racing headlines now live on one filterable `/news` page (reachable from the Community menu) — newest first, with a series filter that remembers your pick.
+
 ## 0.145.0 — 2026-07-01
 
 **F1 rules, one tap away.** The F1 About tab now links straight to the official FIA regulations and lists the common rule topics — points, penalties, parc fermé, overtaking aid, track limits and tyres — at a glance.

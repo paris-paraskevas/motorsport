@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.146.0 — 2026-07-01
+
+Aggregated cross-series `/news` page (gives the Community menu its News destination).
+
+### Added
+- `app/(app)/news/page.tsx` (Server Component, `revalidate=1800`) + `app/(app)/news/NewsPageContent.tsx` (client feed): a cross-series news page reusing the existing `fetchAggregatedNews(10)` + `loadAllSeriesMeta()` — no new heavy fetch (rides the same cached RSS pulls as the home wire). Series-filter chips share the home wire's `paddock:news-filter` localStorage key; signed-in followed-series filter; client "Load more" pagination; hydration-safe relative time; empty states.
+- `components/AppShell.tsx`: the Community mega-menu leads with a "News" item (+ `/news` active state). `lib/sitemap-data.ts`: `/news` added to the sitemap.
+
 ## 0.145.0 — 2026-07-01
 
 F1 About tab: official FIA regulations link + a rules quick-reference.
