@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.141.1 — 2026-07-01
+
+**Fold whole championship lists on the Champions tab.** Each championship — Drivers', Constructors', and any extra like the Endurance Cup — now has its own header you can tap to collapse or expand the entire list at once, on top of the existing by-decade folding inside it. The Drivers' and Constructors' lists open by default; any secondary championship starts collapsed to keep the page tidy. Series with a single championship are unchanged.
+
 ## 0.141.0 — 2026-07-01
 
 **Classic F1 teams get their colours on the Champions tab.** In the Constructors' Championship list, historic title-winning teams — Brabham, Team Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo and Maserati — now show in their heritage colours (Lotus gold, Brabham green, Vanwall British racing green, Brawn's fluorescent yellow, and more) instead of plain text. Today's teams are unchanged, and the older team names stay as coloured labels since they don't have their own profile pages.
