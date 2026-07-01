@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.147.0 — 2026-07-01
+
+**Tidier Champions tab.** The Drivers' and Constructors' championship lists can now be collapsed, so a long history folds away — tap a section to expand or collapse it.
+
 ## 0.146.0 — 2026-07-01
 
 **A News page.** Every series' racing headlines now live on one filterable `/news` page (reachable from the Community menu) — newest first, with a series filter that remembers your pick.
