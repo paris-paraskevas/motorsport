@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.134.0 — 2026-07-01
+
+Changelog page redesign — group the flat release list by calendar month. `/changelog` previously rendered `RELEASES.md` as one `dangerouslySetInnerHTML` blob; it now parses the `## <version> — <YYYY-MM-DD>` sections itself and buckets them into month groups.
+
+### Changed
+- New colocated helper `app/(app)/changelog/releases.ts`: `splitSections()` splits the markdown on `## ` headers (intro line before the first header discarded), `loadReleaseGroups()` renders each body through the shared `lib/content#renderMarkdown` sanitised pipeline and groups by `YYYY-MM`. Header regex tolerates the two irregular shapes in the file — the `0.9.0–0.9.7` version range (en-dash U+2013, distinct from the U+2014 date separator) and the dateless `Pre-0.8.0` (→ trailing "Earlier" bucket).
+- `app/(app)/changelog/page.tsx` rewritten to render month sections (label + release count) with each release as a card. Groups sort newest-month-first; releases within a month sort by date desc with stable file order as the tiebreaker.
+- The "currently running" release (version === `package.json.version`) keeps its highlight: a brand-tinted card with a ring + a "Running" badge, alongside the existing "Currently running vX.Y.Z" header line.
+- Stays a Server Component with `dynamic = 'force-static'`; no client JS added. Metadata/breadcrumb JSON-LD unchanged. Per-release prose tokens carried over from the old blob (minus the h2/h3 rules, now that the version is the card header).
+
 ## 0.132.0 — 2026-07-01
 
 Onboard 3D graphics overhaul — rebuilt and gated on live screenshots (supersedes the reverted 0.131.0). Touches `components/f1/onboard/CarModel.tsx`, `components/f1/onboard/TrackEnvironment.tsx`, `lib/openf1/track-environment.ts` (+ test), `components/f1/GhostLap3D.tsx`.
