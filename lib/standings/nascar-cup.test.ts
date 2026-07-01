@@ -1,4 +1,39 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// In-memory fake of the durable `source_snapshot` table so the last-good wrap on
+// `fetchNascarCupStandings` can be exercised. `snapshotConfigured` defaults FALSE
+// so the pre-existing fetch tests below behave exactly as before (wrapper runs
+// the fetcher uncached, as in a test env with no SUPABASE_URL); the last-good
+// block flips it on. Mirrors lib/standings/dtm.test.ts.
+const snapshotTable = new Map<string, unknown>();
+let snapshotConfigured = false;
+
+vi.mock('@/lib/betting/client', () => ({
+  isBettingConfigured: () => snapshotConfigured,
+  betDb: () => ({
+    from: () => {
+      let selectedKey: string | null = null;
+      const builder = {
+        select: () => builder,
+        eq: (_col: string, value: string) => {
+          selectedKey = value;
+          return builder;
+        },
+        maybeSingle: async () => {
+          const raw = selectedKey != null ? snapshotTable.get(selectedKey) : undefined;
+          if (raw === undefined) return { data: null, error: null };
+          return { data: { payload: JSON.parse(JSON.stringify(raw)) }, error: null };
+        },
+        upsert: async (row: { source_key: string; payload: unknown }) => {
+          snapshotTable.set(row.source_key, row.payload);
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  }),
+}));
+
 import { fetchNascarCupStandings } from './nascar-cup';
 
 // Build a driver standings row mirroring the Wikipedia 2026 NASCAR Cup Series
@@ -294,5 +329,65 @@ describe('fetchNascarCupStandings', () => {
     const positions = result!.drivers.map((d) => d.position);
     const sorted = [...positions].sort((a, b) => a - b);
     expect(positions).toEqual(sorted);
+  });
+});
+
+// Durable last-good: a Wikipedia outage / article restructure should serve the
+// previous good standings instead of the null that blanks the page. Supabase IS
+// configured here (in-memory fake); the standings payload carries no Date fields
+// so no rehydration. isEmpty keys off drivers.length.
+describe('fetchNascarCupStandings — durable last-good (source_snapshot)', () => {
+  const originalFetch = globalThis.fetch;
+
+  beforeEach(() => {
+    snapshotTable.clear();
+    snapshotConfigured = true;
+  });
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    snapshotConfigured = false;
+    snapshotTable.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('SUCCESS persists the standings under standings:nascar-cup', async () => {
+    mockFetchOk(FULL_SAMPLE_HTML);
+    const data = await fetchNascarCupStandings();
+    expect(data).not.toBeNull();
+    expect(snapshotTable.has('standings:nascar-cup')).toBe(true);
+  });
+
+  it('FAILURE serves the last-good standings instead of null', async () => {
+    mockFetchOk(FULL_SAMPLE_HTML);
+    await fetchNascarCupStandings(); // prime the snapshot
+    mockFetch500(); // Wikipedia 500
+    const recovered = await fetchNascarCupStandings();
+    expect(recovered).not.toBeNull();
+    expect(recovered!.drivers).toHaveLength(20);
+    expect(recovered!.drivers[0].driverName).toBe('Tyler Reddick');
+    expect(recovered!.constructors).toHaveLength(3);
+  });
+
+  it('a good fetch overwrites the snapshot (self-heal)', async () => {
+    // Seed a deliberately-stale snapshot, then a good fetch must replace it.
+    snapshotTable.set('standings:nascar-cup', {
+      drivers: [{ position: 1, driverName: 'stale', team: 'x', points: 0, wins: 0 }],
+      constructors: [],
+    });
+    mockFetchOk(FULL_SAMPLE_HTML);
+    await fetchNascarCupStandings();
+    const stored = snapshotTable.get('standings:nascar-cup') as { drivers: unknown[] };
+    expect(stored.drivers).toHaveLength(20);
+  });
+
+  it('FAILURE with no snapshot present returns null (today behaviour)', async () => {
+    mockFetch500();
+    expect(await fetchNascarCupStandings()).toBeNull();
+  });
+
+  it('FAIL-SOFT: Supabase unconfigured behaves exactly like the live fetch', async () => {
+    snapshotConfigured = false;
+    mockFetch500();
+    expect(await fetchNascarCupStandings()).toBeNull();
   });
 });

@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
@@ -238,10 +239,12 @@ function parseManufacturerStandings(
   return constructors.sort((a, b) => a.position - b.position);
 }
 
-export async function fetchNascarCupStandings(): Promise<{
+export interface NascarCupStandings {
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];
-} | null> {
+}
+
+async function fetchNascarCupStandingsLive(): Promise<NascarCupStandings | null> {
   let html: string;
   try {
     const res = await fetchUpstream(SEASON_PAGE_URL, {
@@ -272,4 +275,23 @@ export async function fetchNascarCupStandings(): Promise<{
   } catch {
     return null;
   }
+}
+
+/**
+ * Public NASCAR Cup standings fetch, wrapped in the durable `source_snapshot`
+ * last-good so a Wikipedia outage / article restructure (→ null) serves the last
+ * successful standings instead of blanking the page. Self-heals on the next good
+ * fetch (which overwrites the snapshot).
+ *
+ * `NascarCupStandings` carries no `Date` fields, so the jsonb round-trip is
+ * lossless and no rehydration is needed (same as `standings:dtm`). Fails soft
+ * when Supabase is unconfigured (local dev): behaves exactly like
+ * `fetchNascarCupStandingsLive`. Return type is unchanged.
+ */
+export async function fetchNascarCupStandings(): Promise<NascarCupStandings | null> {
+  return withSourceSnapshot<NascarCupStandings | null>(
+    'standings:nascar-cup',
+    fetchNascarCupStandingsLive,
+    v => v == null || v.drivers.length === 0,
+  );
 }
