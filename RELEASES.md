@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.143.0 — 2026-07-01
+
+**MotoGP now has a season-trend chart.** The MotoGP Standings tab shows a drivers' championship trend line, just like F1, F2, F3 and WorldSBK. Each weekend is a single point on the chart, with the Grand Prix and the Sprint added together — and the running total now matches every rider's points in the standings table exactly. This also fixes a rounds-with-few-finishers gap that had been under-counting some riders' totals.
+
 ## 0.141.0 — 2026-07-01
 
 **Classic F1 teams get their colours on the Champions tab.** In the Constructors' Championship list, historic title-winning teams — Brabham, Team Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo and Maserati — now show in their heritage colours (Lotus gold, Brabham green, Vanwall British racing green, Brawn's fluorescent yellow, and more) instead of plain text. Today's teams are unchanged, and the older team names stay as coloured labels since they don't have their own profile pages.
