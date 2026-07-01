@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.136.0 — 2026-07-01
+
+**Spot the dynasties at a glance on the Champions tab.** Repeat champions now carry a small title count — like "×7" next to Lewis Hamilton or "×4" next to Max Verstappen — with a tiny bar that fills in as their titles add up year by year. It works across the Drivers', Constructors', and Endurance Cup lists, so multi-time winners and title streaks jump out while you scan. One-off champions stay clean, and the by-decade grouping is unchanged.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
