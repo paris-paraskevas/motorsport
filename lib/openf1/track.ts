@@ -149,6 +149,108 @@ export function buildTrackPath(
   return { d, width, height, viewBox: `0 0 ${width} ${height}`, points };
 }
 
+// ── Start/finish anchoring ───────────────────────────────────────────────────
+// Each trace is timed from its OWN first GPS sample (see `t0` above), which lands
+// a different distance past the start/finish line per driver (OpenF1 location
+// samples are ~0.2–0.4 s apart, and each lap clip begins on a different sampling
+// phase). The onboard replay is time-synced, so at t=0 the cars sit on those
+// mismatched spots — a slower driver can appear to START ahead. These helpers
+// re-anchor every trace to ONE shared S/F line so all cars begin ON the line at
+// t=0 and then diverge by pace.
+
+/** Shared start/finish reference: a line through a reference trace's first point
+ *  (use the fastest lap), perpendicular to the track direction there. */
+export interface StartFinishRef {
+  x: number;
+  y: number;
+  dx: number; // unit track direction (travel) at the line
+  dy: number;
+}
+
+/** Unit track direction at the lap start: points[0] → the first point at least a
+ *  car-length away (a stable heading, not one noisy sample). Falls back to [0]→[1]. */
+function startDirection(points: TrackPoint[]): { dx: number; dy: number } {
+  const p0 = points[0];
+  for (let i = 1; i < points.length; i++) {
+    const dx = points[i].x - p0.x;
+    const dy = points[i].y - p0.y;
+    const len = Math.hypot(dx, dy);
+    if (len >= 15) return { dx: dx / len, dy: dy / len };
+  }
+  const dx = points[1].x - p0.x;
+  const dy = points[1].y - p0.y;
+  const len = Math.hypot(dx, dy) || 1;
+  return { dx: dx / len, dy: dy / len };
+}
+
+/** Build the shared S/F reference from a trace (pass the fastest lap). */
+export function startFinishReference(ref: TrackPath): StartFinishRef | null {
+  if (ref.points.length < 2) return null;
+  const p0 = ref.points[0];
+  const { dx, dy } = startDirection(ref.points);
+  if (dx === 0 && dy === 0) return null;
+  return { x: p0.x, y: p0.y, dx, dy };
+}
+
+function lerpPoint(a: TrackPoint, b: TrackPoint, f: number): TrackPoint {
+  return {
+    x: round2(a.x + (b.x - a.x) * f),
+    y: round2(a.y + (b.y - a.y) * f),
+    z: round2(a.z + (b.z - a.z) * f),
+    t: round2(a.t + (b.t - a.t) * f),
+  };
+}
+
+/**
+ * Re-anchor a trace so it BEGINS on the shared S/F line at t=0. Finds where the
+ * trace crosses the S/F plane near the lap start — searching only the first ~15%
+ * so a flying lap's END crossing of the same line can't be picked — synthesizes
+ * that exact crossing point, drops anything before it, and re-zeros time there.
+ * Same pace, new time origin = the line. Pure + synchronous (unit-tested).
+ */
+export function anchorTrackToStartFinish(track: TrackPath, ref: StartFinishRef): TrackPath {
+  const pts = track.points;
+  if (pts.length < 2) return track;
+  const s = (p: TrackPoint) => (p.x - ref.x) * ref.dx + (p.y - ref.y) * ref.dy;
+  const win = Math.max(2, Math.floor(pts.length * 0.15));
+
+  let start: TrackPoint;
+  let rest: TrackPoint[];
+  let crossed = -1;
+  for (let i = 1; i < win; i++) {
+    if (s(pts[i - 1]) <= 0 && s(pts[i]) > 0) {
+      crossed = i;
+      break;
+    }
+  }
+  if (crossed >= 0) {
+    const a = pts[crossed - 1];
+    const b = pts[crossed];
+    const sa = s(a);
+    const sb = s(b);
+    const f = sb === sa ? 0 : (0 - sa) / (sb - sa);
+    start = lerpPoint(a, b, f);
+    rest = pts.slice(crossed);
+  } else {
+    // First sample already past the line (s0 > 0) → extrapolate backward to s=0.
+    const a = pts[0];
+    const b = pts[1];
+    const sa = s(a);
+    const sb = s(b);
+    if (sb === sa) return track; // degenerate; leave as-is
+    const f = (0 - sa) / (sb - sa); // f < 0 → just before the first sample, on the line
+    start = lerpPoint(a, b, f);
+    rest = pts.slice(0);
+  }
+
+  const t0 = start.t;
+  const points: TrackPoint[] = [start, ...rest]
+    .filter((p, i, arr) => i === 0 || p.t !== arr[i - 1].t) // drop a coincident synthetic start
+    .map(p => ({ x: p.x, y: p.y, z: p.z, t: round2(p.t - t0) }));
+  const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x} ${p.y}`).join(' ');
+  return { ...track, points, d };
+}
+
 // Cap a measured half-width (viewBox units) so a car running deep into a runoff
 // / pit entry can't blow the ribbon out to absurd width. ~3% of the circuit's
 // width is a generous F1 track + kerbs + a little verge.

@@ -19,7 +19,14 @@ import {
   fetchLaps,
   type TelemetrySample,
 } from './laps';
-import { buildTrackPath, computeTrackFrame, reconstructCircuit, type TrackPath } from './track';
+import {
+  anchorTrackToStartFinish,
+  buildTrackPath,
+  computeTrackFrame,
+  reconstructCircuit,
+  startFinishReference,
+  type TrackPath,
+} from './track';
 import type { OF1Location } from './types';
 import type { DecoderSummary, DecoderTraces, DistSample, DriverTrace } from './delta';
 import {
@@ -93,9 +100,9 @@ export async function buildDecoderTraces(
   slug = 'f1',
 ): Promise<DecoderTraces> {
   const cacheKey = openf1DatasetKey(
-    // v3: reconstructed circuit is now a curvature-shifted centreline (so cars
-    // sit off-centre / on kerbs) — invalidate the v2 (centred) circuits.
-    'decoder-traces-v3',
+    // v4: every trace is re-anchored to a shared start/finish line (all cars
+    // start together on the line) — invalidate v3 (per-driver first-sample origin).
+    'decoder-traces-v4',
     sessionKey,
     [...driverNumbers].sort((a, b) => a - b).join('-'),
   );
@@ -157,6 +164,18 @@ export async function buildDecoderTraces(
     }),
   );
   traces.sort((a, b) => a.lapTime - b.lapTime);
+
+  // Re-anchor every trace to ONE shared start/finish line (the fastest trace's
+  // line) so all cars begin ON the line at t=0 and then diverge by pace —
+  // otherwise each is timed from its own first GPS sample (a different distance
+  // past the line), so the time-synced onboard shows a slower car starting ahead.
+  const refTrack = traces.find(t => t.track && t.track.points.length >= 2)?.track ?? null;
+  const sfRef = refTrack ? startFinishReference(refTrack) : null;
+  if (sfRef) {
+    for (const t of traces) {
+      if (t.track) t.track = anchorTrackToStartFinish(t.track, sfRef);
+    }
+  }
 
   const drivers = driverNumbers
     .map(n => byNumber.get(n))
