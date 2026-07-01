@@ -1,4 +1,5 @@
 import webpush, { type PushSubscription } from 'web-push';
+import { isAllowedPushEndpoint } from './push-hosts';
 
 let configured = false;
 
@@ -46,6 +47,21 @@ export async function sendPushTo(
   payload: PushPayload,
 ): Promise<{ ok: true } | { ok: false; gone: boolean; status?: number }> {
   configure();
+  // Final sink guard: never POST to an endpoint outside the Web Push allowlist,
+  // even if a caller assembled the subscription without going through
+  // listSubscriptions (which already filters). Report it as `gone` so callers
+  // evict the junk row via their existing gone-handling path.
+  let endpointUrl: URL | null = null;
+  try {
+    endpointUrl = new URL(subscription.endpoint);
+  } catch {
+    endpointUrl = null;
+  }
+  if (!endpointUrl || !isAllowedPushEndpoint(endpointUrl)) {
+    const tail = subscription.endpoint.slice(-12);
+    console.warn(`push send skipped: off-allowlist endpoint …${tail}`);
+    return { ok: false, gone: true };
+  }
   try {
     await webpush.sendNotification(subscription, JSON.stringify(payload));
     return { ok: true };
