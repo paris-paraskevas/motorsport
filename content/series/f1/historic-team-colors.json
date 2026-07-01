@@ -10,16 +10,16 @@
       "note": "Team Lotus — JPS black-and-gold gold accent is the enduring signature; BRG in the early-60s title era. Gold reads clearly on the dark background."
     },
     "tyrrell": {
-      "color": "#1E63C8",
-      "note": "Elf-era dark blue; 1971 constructors' + 1971/73 drivers' titles (Stewart)."
+      "color": "#3B82F6",
+      "note": "Elf-era blue, brightened for AA contrast on the dark UI; 1971 constructors' + 1971/73 drivers' titles (Stewart)."
     },
     "matra": {
       "color": "#0055A4",
       "note": "Bleu de France / French racing blue; 1969 constructors' + drivers' title (Matra-Ford, Stewart)."
     },
     "brm": {
-      "color": "#2E7D4F",
-      "note": "British Racing Motors' dark metallic green; 1962 constructors' + drivers' title (Graham Hill)."
+      "color": "#3FAE6B",
+      "note": "British Racing Motors' metallic green, brightened for AA contrast on the dark UI; 1962 constructors' + drivers' title (Graham Hill)."
     },
     "cooper": {
       "color": "#3DA35D",
