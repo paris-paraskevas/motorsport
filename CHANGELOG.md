@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.146.0 — 2026-07-01
+
+Aggregated cross-series `/news` page (gives the Community menu its News destination).
+
+### Added
+- `app/(app)/news/page.tsx` (Server Component, `revalidate=1800`) + `app/(app)/news/NewsPageContent.tsx` (client feed): a cross-series news page reusing the existing `fetchAggregatedNews(10)` + `loadAllSeriesMeta()` — no new heavy fetch (rides the same cached RSS pulls as the home wire). Series-filter chips share the home wire's `paddock:news-filter` localStorage key; signed-in followed-series filter; client "Load more" pagination; hydration-safe relative time; empty states.
+- `components/AppShell.tsx`: the Community mega-menu leads with a "News" item (+ `/news` active state). `lib/sitemap-data.ts`: `/news` added to the sitemap.
+
 ## 0.145.0 — 2026-07-01
 
 F1 About tab: official FIA regulations link + a rules quick-reference.
@@ -63,7 +71,15 @@ Extends the durable last-good pattern (Postgres `source_snapshot`) to the remain
 
 ## 0.141.0 — 2026-07-01
 
-Historic F1 champion constructors now get plausible team-heritage colours in the Champions tab, instead of rendering as plain grey text.
+New aggregated cross-series `/news` page — one fuller motorsport.com feed, filterable by series, wired as the Community mega-menu's "News" destination. Reuses the existing news lib (no new upstream fetch): the home wire's `fetchAggregatedNews` cache.
+
+### Added
+- `app/(app)/news/page.tsx` (new server component, `revalidate = 1800`): aggregated news feed. Calls `fetchAggregatedNews(10)` (a fuller per-series depth than the home wire's 3) and joins each item to `loadAllSeriesMeta()` for name/color, mirroring the `seriesBySlug` flat-map + drop-unknown-slugs guard in `app/(app)/app/page.tsx`. Static-render + 1800s ISR matches `lib/news.ts`'s per-fetch `next.revalidate: 1800`, so the page reuses the SAME cached upstream RSS pulls as the home block rather than adding a heavier fetch. `generateMetadata`-equivalent static `metadata` with canonical `/news`, `withSocialMeta`, and a breadcrumb `JsonLd`. Page shell (brand rule + display H1) matches `/calendar`; container width matches `/blog` (`lg:max-w-4xl`).
+- `app/(app)/news/NewsPageContent.tsx` (new client component): interactive feed. Series-filter chips mirror `HomeContent.tsx`'s `seriesWithNews` (first-seen order + per-series counts) and share its `paddock:news-filter` localStorage key (SSR-default null so no hydration mismatch; stale-slug fallback to "All"). Honours the followed-series filter for signed-in users via `useFollowedSeries` exactly as the home does (`followed === null` = follow-all; full feed until prefs hydrate, then narrow). Client-side "Load more" pagination (`PAGE_SIZE = 20`, resets on filter change) since the feed is longer than the wire. Hydration-safe relative-time engine (server instant → device clock after mount) copied from `HomeContent`. Row markup lifts the richer `NewsTab.tsx` language — relative time + series chip + `ExternalLink` + headline + 2-line excerpt — inlined rather than extracted (only two similar consumers; per CLAUDE.md "no new abstractions without a real second consumer").
+
+### Changed
+- `components/AppShell.tsx`: Community mega-menu now leads with a `News` item (`/news`, "Latest across the grid") ahead of Blog + Threads, giving the menu its previously-dead "News" destination. The trigger's `active` state now also matches `/news`.
+- `lib/sitemap-data.ts`: added `${SITE_URL}/news` to the static sitemap URLs (between `/calendar` and `/blog`).
 
 ### Added
 - `content/series/f1/historic-team-colors.json` (new sidecar): curated slug→`{ color, page?, note? }` heritage-colour map for pre-current-grid F1 champion constructors — Brabham, Lotus, Tyrrell, Matra, BRM, Cooper, Vanwall, Brawn GP, Renault, Benetton, Alfa Romeo, Maserati. Colours are plausible team identities (Australian green for Brabham, JPS gold for Lotus, Elf/French blue for Tyrrell/Matra, BRG for Vanwall, fluorescent yellow for Brawn, rosso corsa for Alfa/Maserati, etc.) curated from multiple sources per the 5-source rule; historic F1 liveries have no canonical PMS/hex, so these are heritage identities not official codes. Each entry carries an inline `note` documenting the rationale (ignored by code).
