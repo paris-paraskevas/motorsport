@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.134.1 — 2026-07-01
+
+Changelog months are now collapsible with a per-month summary. Follows 0.134.0's month grouping.
+
+### Added
+- `app/(app)/changelog/releases.ts`: `MONTH_ABSTRACTS` (keyed `YYYY-MM`, plus the undated key) — a curated one-line thematic summary per month, grounded in that month's `RELEASES.md` entries. `MonthGroup` gains an `abstract` field (`MONTH_ABSTRACTS[key] ?? null`), so a month without a curated line falls back to the release count alone.
+
+### Changed
+- `app/(app)/changelog/page.tsx`: each month renders as a native `<details>`/`<summary>` — no client JS, stays `dynamic = 'force-static'`. The summary carries the month label, release count, and abstract, so a collapsed month still previews what shipped; the newest month is `open` by default, older months collapsed. Custom chevron rotates via `group-open:rotate-90`; the default disclosure marker is hidden.
+
 ## 0.134.0 — 2026-07-01
 
 Changelog page redesign — group the flat release list by calendar month. `/changelog` previously rendered `RELEASES.md` as one `dangerouslySetInnerHTML` blob; it now parses the `## <version> — <YYYY-MM-DD>` sections itself and buckets them into month groups.

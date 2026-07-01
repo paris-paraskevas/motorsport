@@ -34,6 +34,8 @@ export interface MonthGroup {
   key: string;
   /** Human label, e.g. "July 2026" or "Earlier". */
   label: string;
+  /** One-line thematic summary of the month's releases, or null if none curated. */
+  abstract: string | null;
   releases: ReleaseEntry[];
 }
 
@@ -91,6 +93,21 @@ function monthLabel(dateISO: string): string {
 
 const UNDATED_KEY = '0000-00';
 
+/** Curated one-line summary per calendar month (key = "YYYY-MM", or the undated
+ *  key for the "Earlier" bucket). Shown under the month header so a collapsed
+ *  month still previews what shipped. Grounded in that month's RELEASES.md
+ *  entries — add a line when a new month opens; months without one fall back to
+ *  the release count alone (see `abstract: … ?? null`). */
+export const MONTH_ABSTRACTS: Record<string, string> = {
+  '2026-07':
+    'A realistic 3D onboard for qualifying replays, plus a round of polish — a clearer decoder chart, friendlier error pages, and this grouped changelog.',
+  '2026-06':
+    'The big build month: the predictions & social game (friend leagues, forecast markets), a full F1 telemetry suite (qualifying decoder, race story, 3D ghost cars, leaderboards), customisable home widgets, and the blog pipeline.',
+  '2026-05':
+    'Foundations — live standings and results across the grid, curated champions for every series, the search-and-discoverability push, legal pages, and the content-authoring workflow.',
+  [UNDATED_KEY]: 'The earliest releases, from before these per-version notes began.',
+};
+
 /** Parse RELEASES.md into month groups, newest month first, and newest release
  *  first within each month. Undated entries collect into a trailing "Earlier"
  *  group. File order is preserved as the tiebreaker for same-date entries (the
@@ -122,6 +139,7 @@ export async function loadReleaseGroups(filePath: string): Promise<MonthGroup[]>
       group = {
         key,
         label: entry.dateISO ? monthLabel(entry.dateISO) : 'Earlier',
+        abstract: MONTH_ABSTRACTS[key] ?? null,
         releases: [],
       };
       groups.set(key, group);

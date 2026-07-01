@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.134.1 — 2026-07-01
+
+**Collapsible changelog months.** Each month now has a one-line summary of what shipped and folds away — the newest month is open, older ones are collapsed. Tap a month to expand its releases.
+
 ## 0.134.0 — 2026-07-01
 
 **A tidier changelog.** This page now groups releases by month — each month gets its own heading and a count — instead of one long unbroken list, so it's easier to scan what shipped and when. The version you're currently running is still marked.
