@@ -65,23 +65,45 @@ export default async function ChangelogPage() {
           <div className="text-text-faint text-sm">Release notes are on the way.</div>
         </div>
       ) : (
-        <div className="space-y-10">
-          {groups.map((group) => (
-            <section key={group.key} aria-labelledby={`month-${group.key}`}>
-              <div className="mb-4 flex items-baseline gap-3 border-b border-border/60 pb-2">
-                <h2
-                  id={`month-${group.key}`}
-                  className="text-text text-lg font-semibold tracking-tight"
+        <div className="space-y-4">
+          {groups.map((group, i) => (
+            <details
+              key={group.key}
+              open={i === 0}
+              className="group rounded-2xl border border-border/60 bg-surface/30 overflow-hidden"
+            >
+              <summary className="flex cursor-pointer list-none select-none items-start gap-3 p-4 md:p-5 [&::-webkit-details-marker]:hidden">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mt-1 h-4 w-4 shrink-0 text-text-faint transition-transform duration-(--duration-fast) group-open:rotate-90"
                 >
-                  {group.label}
-                </h2>
-                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tnum">
-                  {group.releases.length}{' '}
-                  {group.releases.length === 1 ? 'release' : 'releases'}
-                </span>
-              </div>
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline gap-3">
+                    <h2 className="text-text text-lg font-semibold tracking-tight">
+                      {group.label}
+                    </h2>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tnum">
+                      {group.releases.length}{' '}
+                      {group.releases.length === 1 ? 'release' : 'releases'}
+                    </span>
+                  </div>
+                  {group.abstract && (
+                    <p className="mt-1 text-sm text-text-muted leading-relaxed">
+                      {group.abstract}
+                    </p>
+                  )}
+                </div>
+              </summary>
 
-              <ul className="space-y-3">
+              <ul className="space-y-3 px-4 md:px-5 pb-5 pt-1">
                 {group.releases.map((release) => {
                   const isRunning = release.version === APP_VERSION;
                   return (
@@ -127,7 +149,7 @@ export default async function ChangelogPage() {
                   );
                 })}
               </ul>
-            </section>
+            </details>
           ))}
         </div>
       )}
