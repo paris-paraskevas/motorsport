@@ -3,6 +3,18 @@ What's new in Paddock Tracker. Newest first.
 ## 0.134.0 — 2026-07-01
 
 **A tidier changelog.** This page now groups releases by month — each month gets its own heading and a count — instead of one long unbroken list, so it's easier to scan what shipped and when. The version you're currently running is still marked.
+## 0.133.0 — 2026-07-01
+
+The Qualifying Decoder's speed-and-delta chart now marks the bottom axis by corner — T1, T2, T3… — instead of raw kilometres, so it's obvious where in the lap each gain or loss happens. Hover any point and the tooltip still shows the exact distance alongside the nearest turn. On the rare lap where the track shape can't be read cleanly, the axis falls back to distance so nothing breaks.
+## 0.132.3 — 2026-07-01
+
+If something ever goes wrong on a page, you'll now see a calm Paddock-styled message with a "Try again" button and a link back home, instead of a bare browser error. This covers both individual pages and the rare case where the whole app shell fails to load.
+## 0.132.2 — 2026-07-01
+
+For single-event series like the 24h Nürburgring, the Champions tab now reads "Past Winners" — a clearer fit for a one-off race, where the list is previous race winners rather than season champions. Full championship series are unchanged.
+## 0.132.1 — 2026-07-01
+
+Internal: adjusted the site's monitoring-mode security policy so it correctly accounts for the ad frames, clearing spurious console warnings. No visible change.
 
 ## 0.132.0 — 2026-07-01
 

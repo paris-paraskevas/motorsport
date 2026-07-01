@@ -13,6 +13,37 @@ Changelog page redesign — group the flat release list by calendar month. `/cha
 - `app/(app)/changelog/page.tsx` rewritten to render month sections (label + release count) with each release as a card. Groups sort newest-month-first; releases within a month sort by date desc with stable file order as the tiebreaker.
 - The "currently running" release (version === `package.json.version`) keeps its highlight: a brand-tinted card with a ring + a "Running" badge, alongside the existing "Currently running vX.Y.Z" header line.
 - Stays a Server Component with `dynamic = 'force-static'`; no client JS added. Metadata/breadcrumb JSON-LD unchanged. Per-release prose tokens carried over from the old blob (minus the h2/h3 rules, now that the version is the card header).
+## 0.133.0 — 2026-07-01
+
+Qualifying Decoder delta chart now labels its X-axis by track TURN (T1, T2…) instead of raw kilometres — "where in the lap" reads as corners, not distances. Touches `components/f1/DeltaTrace.tsx` and adds `lib/openf1/turns.ts` (+ `turns.test.ts`).
+
+### Added
+- `lib/openf1/turns.ts` — a pure, client-safe turn detector (`detectTurns`, `nearestTurn`). It reuses the corner-detection approach from `lib/openf1/track-environment.ts` (`cornerIndices`): per-point turning angle from incoming/outgoing chord vectors, then local maxima above a threshold. Reimplemented on the 2D `{x, y}` reconstructed lap points (`TrackPath.points`) so it needs no `three` import, and treated as an OPEN path (no closed-loop wrap) since a fastest-lap trace starts/ends on the straight. Each corner's `points[i].t` is mapped to a lap distance by interpolating the telemetry's `(t, d)` series (the two ~3.7 Hz series share the lap-time axis but are not index-aligned). Sustained curves merge via a min-spacing (fraction of lap length); output is numbered T1..Tn in lap order, capped at a sane max.
+- `lib/openf1/turns.test.ts` — square-lap → 4 numbered turns, straight → none, null geometry / empty telemetry → `[]`, sustained-arc merge, and `nearestTurn` gap handling.
+
+### Changed
+- `components/f1/DeltaTrace.tsx`: X-axis ticks are now pinned to each detected turn's distance and formatted `T{n}` (with `interval={0}` so every turn shows). Falls back to the previous km `tickFormatter` when fewer than 3 turns are detected (sparse/thin geometry), so the axis is never empty. The hover tooltip keeps the precise km and prefixes the nearest turn (`T3 · 1.82 km`) when on the turn axis, so no detail is lost.
+- No changes to `GhostLap3D.tsx`, `track-environment.ts`, or the decoder assembly — turn detection is derived entirely from the props `DeltaTrace` already receives.
+## 0.132.3 — 2026-07-01
+
+App-wide custom error boundaries — a fault anywhere in the tree now lands on a Paddock-branded fallback instead of the raw Next.js default. Adds `app/error.tsx` and `app/global-error.tsx`.
+
+### Added
+- `app/error.tsx` — root route-segment error boundary (Client Component, `{ error, reset }` per the App Router convention, mirroring the shape already used by `app/(app)/error.tsx`). Reuses the "Yellow flag / Something broke" surface (`bg-surface/60`, rounded-3xl, radial red/amber accent, lucide icons, pill buttons); "Try again" calls `reset()`, Home links to `/`. Renders `error.digest` as a support reference and logs to the console via `useEffect`.
+- `app/global-error.tsx` — root global error boundary that replaces the root layout when the layout/template itself throws. Client Component that renders its own `<html lang="en" class="dark">` + `<body>`; fully inline-styled with the Paddock token hex values (globals.css may be unavailable in this boundary) so the dark surface survives. "Red flag" heading, `reset()` button, plain `<a href="/">` for Home.
+- Note: Next 16.2 also exposes an `unstable_retry` prop (recommended over `reset` in the 16.2.6 docs, `error.md` version history). We intentionally keep `reset` to match the existing `app/(app)/error.tsx` contract and avoid an unstable API surface; migrating both boundaries to `unstable_retry` is a follow-up.
+- Not touched: per-route/per-segment `error.tsx` boundaries beyond the existing `app/(app)/error.tsx` remain a follow-up.
+## 0.132.2 — 2026-07-01
+
+Single-event series now say "Past Winners" instead of "Champions" on the Champions tab. For one-off / annual-race formats (e.g. `adac-ravenol-24h`, `singleEvent: true`) the tab is a list of past race winners, not season champions, so the championship wording was wrong.
+
+### Changed
+- `components/tabs/ChampionsTab.tsx`: derive `isSingleEvent = series.meta.singleEvent === true` (reusing the existing meta flag that already drives `SINGLE_EVENT_TAB_KEYS` and the `SeriesTabs` tab-strip label). The `PlaceholderTab` fallback label and the "Drivers' Championship" `SectionHeading` now read "Past Winners" for single-event series; multi-round championship series are unchanged.
+- Tab-strip label needed no change — `components/SeriesTabs.tsx` already renders "Past Winners" for `singleEvent && tab.key === 'champions'`. This makes the in-tab headings consistent with it.
+## 0.132.1 — 2026-07-01
+
+### Changed
+- Added the two AdSense frame origins (`https://pagead2.googlesyndication.com`, `https://ep2.adtrafficquality.google`) to the `frame-src` directive of `CSP_REPORT_ONLY` in `next.config.ts`. These are the ad-slot iframe host and Google's ad-traffic-quality frame; both were missing, producing `Content-Security-Policy-Report-Only` violation reports and would have broken ad rendering once CSP is promoted to enforcing. Scope limited to `frame-src` — no other directive touched. Unblocks the "flip CSP Report-Only → enforcing" work.
 
 ## 0.132.0 — 2026-07-01
 

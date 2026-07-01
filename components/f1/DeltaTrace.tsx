@@ -11,7 +11,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { computeDelta, type DriverTrace } from '@/lib/openf1/delta';
+import { detectTurns, nearestTurn } from '@/lib/openf1/turns';
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
+
+// Fewer detected turns than this and the axis reads as noise, not a lap map — so
+// we fall back to plain distance labels rather than show one or two lonely ticks.
+const MIN_TURNS_FOR_AXIS = 3;
 
 // Headline analytical view: both drivers' speed traces (left axis, km/h) over
 // lap distance, plus the cumulative time delta (right axis, seconds) as a
@@ -87,6 +92,18 @@ export function DeltaTrace({
 }) {
   const rows = useMemo(() => buildRows(traceA, traceB), [traceA, traceB]);
 
+  // Turn markers for the X-axis. Prefer the faster lap's reconstructed line (A is
+  // sorted fastest-first upstream); fall back to B if A's geometry is too thin.
+  const turns = useMemo(() => {
+    const fromA = detectTurns(traceA.track, traceA.telemetry);
+    if (fromA.length >= MIN_TURNS_FOR_AXIS) return fromA;
+    const fromB = detectTurns(traceB.track, traceB.telemetry);
+    return fromB.length > fromA.length ? fromB : fromA;
+  }, [traceA, traceB]);
+  const useTurnAxis = turns.length >= MIN_TURNS_FOR_AXIS;
+  const turnTicks = useMemo(() => turns.map(t => t.d), [turns]);
+  const turnLabel = useMemo(() => new Map(turns.map(t => [t.d, `T${t.n}`])), [turns]);
+
   if (rows.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center border border-border bg-surface/40 text-center text-sm text-text-faint sm:h-72 md:h-80">
@@ -109,6 +126,9 @@ export function DeltaTrace({
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={rows} margin={{ top: 6, right: 8, bottom: 6, left: 0 }}>
             <CartesianGrid stroke="var(--border)" vertical={false} />
+            {/* X-axis reads by track TURN (T1, T2…) where the lap geometry gives
+                enough corners; otherwise it falls back to distance in km so the
+                axis is never empty. Ticks are pinned to each turn's distance. */}
             <XAxis
               dataKey="d"
               type="number"
@@ -116,8 +136,16 @@ export function DeltaTrace({
               stroke="var(--text-faint)"
               tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
               tickLine={false}
-              tickFormatter={(v: number) => `${(v / 1000).toFixed(1)}km`}
-              minTickGap={28}
+              {...(useTurnAxis
+                ? {
+                    ticks: turnTicks,
+                    tickFormatter: (v: number) => turnLabel.get(v) ?? '',
+                    interval: 0 as const,
+                  }
+                : {
+                    tickFormatter: (v: number) => `${(v / 1000).toFixed(1)}km`,
+                    minTickGap: 28,
+                  })}
             />
             {/* Left: speed (km/h). */}
             <YAxis
@@ -148,7 +176,15 @@ export function DeltaTrace({
               }}
               labelStyle={{ color: 'var(--text)', fontWeight: 600 }}
               itemStyle={{ color: 'var(--text-muted)' }}
-              labelFormatter={(label) => `${(Number(label) / 1000).toFixed(2)} km`}
+              labelFormatter={(label) => {
+                const d = Number(label);
+                const km = `${(d / 1000).toFixed(2)} km`;
+                // Keep the precise km in the tooltip so the turn axis loses no
+                // detail; prefix the nearest turn when we're labelling by turn.
+                if (!useTurnAxis) return km;
+                const near = nearestTurn(turns, d);
+                return near ? `T${near.n} · ${km}` : km;
+              }}
               formatter={(value, name) => {
                 if (value == null) return ['—', name as string];
                 if (name === 'delta') {
