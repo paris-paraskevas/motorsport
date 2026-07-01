@@ -10,5 +10,6 @@
   "seasonPage": "2026_Formula_One_World_Championship",
   "officialStandingsUrl": "https://www.formula1.com/en/results.html/2026/drivers.html",
   "officialSite": "https://www.formula1.com/",
+  "regulationsUrl": "https://www.fia.com/regulation/category/110",
   "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" }
 }

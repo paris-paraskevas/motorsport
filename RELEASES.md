@@ -1,8 +1,22 @@
 What's new in Paddock Tracker. Newest first.
 
-## 0.141.1 — 2026-07-01
+## 0.146.0 — 2026-07-01
 
-**Fold whole championship lists on the Champions tab.** Each championship — Drivers', Constructors', and any extra like the Endurance Cup — now has its own header you can tap to collapse or expand the entire list at once, on top of the existing by-decade folding inside it. The Drivers' and Constructors' lists open by default; any secondary championship starts collapsed to keep the page tidy. Series with a single championship are unchanged.
+**A News page.** Every series' racing headlines now live on one filterable `/news` page (reachable from the Community menu) — newest first, with a series filter that remembers your pick.
+
+## 0.145.0 — 2026-07-01
+
+**F1 rules, one tap away.** The F1 About tab now links straight to the official FIA regulations and lists the common rule topics — points, penalties, parc fermé, overtaking aid, track limits and tyres — at a glance.
+
+## 0.144.0 — 2026-07-01
+
+**NLS Nürburgring results are here.** The Nürburgring Langstrecken-Serie now has a Results tab listing the overall winner of every completed round this season — the winning crew and their team, with a link through to each round's weekend. Because NLS doesn't run a points championship, results show the overall race winners rather than a full points table; the official VLN documents portal is linked as the source if you want the complete classification for a round.
+## 0.143.0 — 2026-07-01
+
+**MotoGP now has a season-trend chart.** The MotoGP Standings tab shows a drivers' championship trend line, just like F1, F2, F3 and WorldSBK. Each weekend is a single point on the chart, with the Grand Prix and the Sprint added together — and the running total now matches every rider's points in the standings table exactly. This also fixes a rounds-with-few-finishers gap that had been under-counting some riders' totals.
+## 0.142.0 — 2026-07-01
+
+**More standings survive a data-source wobble.** WEC, Formula E, WRC and NASCAR standings now fall back to the last good figures we saw if their source is briefly unreachable, so those tabs keep showing the latest available standings instead of going blank during an outage — and refresh themselves the moment the source recovers. This extends the same safety net F1 and DTM standings already had.
 
 ## 0.141.0 — 2026-07-01
 

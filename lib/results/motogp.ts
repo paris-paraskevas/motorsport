@@ -27,7 +27,22 @@ export type { RaceResult, RaceResultEntry };
 // `f3fd8ba7-...`) returns 8 sessions including RAC + SPR, each with a
 // 26-lap classification of 22 riders.
 
-const MIN_FINISHERS = 10;
+// Sanity floor for the practice/qualifying session path (fetchMotoGP
+// SessionClassification): a structurally-broken feed returns an empty/near-
+// empty array; a real session has the full ~22-rider grid. This floor is a
+// junk-feed guard, not a "the session was short" filter.
+const MIN_SESSION_ROWS = 10;
+
+// The RACE/SPRINT points path uses a much lower floor. A real classified
+// Grand Prix or Sprint with heavy attrition can leave fewer than 10 riders
+// classified, yet those are valid championship points that the official
+// standings endpoint DOES count — so gating the race/sprint result at 10
+// silently under-counts the season-trend chart against the standings table
+// (breaks the chart-total == standings-total invariant; e.g. Di
+// Giannantonio charted 132 vs a standings total of 157). We still drop a
+// truly empty/degenerate classification (< 3 rows) as junk; `entries.length
+// === 0` below is the final backstop.
+const MIN_RACE_ROWS = 3;
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
@@ -163,7 +178,7 @@ async function buildRaceResult(
     `${MOTOGP_API_BASE}/motogp/v1/results/session/${session.id}/classification?test=false`,
   );
   if (!resp?.classification) return null;
-  if (resp.classification.length < MIN_FINISHERS) return null;
+  if (resp.classification.length < MIN_RACE_ROWS) return null;
 
   const date = parseEventDate(event);
   if (!date) return null;
@@ -333,7 +348,7 @@ export async function fetchMotoGPSessionClassification(
   const resp = await fetchJson<PulseliveClassificationResponse>(
     `${MOTOGP_API_BASE}/motogp/v1/results/session/${session.id}/classification?test=false`,
   );
-  if (!resp?.classification || resp.classification.length < MIN_FINISHERS) return null;
+  if (!resp?.classification || resp.classification.length < MIN_SESSION_ROWS) return null;
 
   return buildSessionClassification(resp.classification);
 }
