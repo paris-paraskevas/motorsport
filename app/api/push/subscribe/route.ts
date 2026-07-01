@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { saveSubscription } from '@/lib/push-store';
+import { isAllowedPushEndpoint } from '@/lib/push-hosts';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,10 +31,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'malformed subscription' }, { status: 400 });
   }
 
-  // The notify cron web-pushes to every stored endpoint — only accept
-  // plausible push-service URLs so the store can't be seeded with junk
-  // targets (security audit 2026-06-11). Hosts vary by browser vendor, so
-  // shape-validate rather than allowlist: https + sane lengths.
+  // The notify cron web-pushes to every stored endpoint, so an endpoint is an
+  // outbound-POST target — validate it before it can be stored. First the shape
+  // (https + sane lengths), then the host against the Web Push service allowlist
+  // (see lib/push-hosts) so the store can't be seeded with arbitrary/attacker
+  // URLs (security audit 2026-06-11 finding #2, hardened to an allowlist).
   let endpointUrl: URL | null = null;
   try {
     endpointUrl = new URL(sub.endpoint);
@@ -45,7 +47,8 @@ export async function POST(req: Request) {
     endpointUrl.protocol !== 'https:' ||
     sub.endpoint.length > 1024 ||
     sub.keys.p256dh.length > 512 ||
-    sub.keys.auth.length > 512
+    sub.keys.auth.length > 512 ||
+    !isAllowedPushEndpoint(endpointUrl)
   ) {
     return NextResponse.json({ ok: false, error: 'invalid subscription' }, { status: 400 });
   }

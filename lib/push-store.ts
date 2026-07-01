@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv';
 import type { PushSubscription } from 'web-push';
+import { isAllowedPushEndpoint } from './push-hosts';
 
 const KEY_PREFIX = 'paddock:push:';
 
@@ -61,7 +62,31 @@ export async function listSubscriptions(): Promise<StoredSubscription[]> {
   } while (cursor !== '0');
   if (keys.length === 0) return [];
   const values = await kv.mget<StoredSubscription[]>(...keys);
-  return values.filter((v): v is StoredSubscription => Boolean(v && v.subscription));
+  const stored = values.filter((v): v is StoredSubscription => Boolean(v && v.subscription));
+
+  // Defense-in-depth: never hand a caller (crons, test/inspect routes) an
+  // endpoint that isn't on the Web Push allowlist, even if a pre-allowlist junk
+  // row is still sitting in KV. The subscribe route rejects these at write time
+  // now, but old rows predate that check. Filtered here so every read path is
+  // covered without touching each cron loop.
+  const allowed = stored.filter(s => isStoredEndpointAllowed(s.subscription.endpoint));
+  const dropped = stored.length - allowed.length;
+  if (dropped > 0) {
+    console.warn(`listSubscriptions: skipped ${dropped} off-allowlist push endpoint(s)`);
+  }
+  return allowed;
+}
+
+/** Parse a stored endpoint string and test it against the push-host allowlist.
+ *  Unparseable endpoints are treated as not-allowed (fail closed). */
+function isStoredEndpointAllowed(endpoint: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    return false;
+  }
+  return isAllowedPushEndpoint(url);
 }
 
 function endpointHash(endpoint: string): string {

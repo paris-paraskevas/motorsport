@@ -1,8 +1,10 @@
 import { kv } from '@vercel/kv';
 import type { RaceResult } from '@/lib/types';
+import { readSnapshot, writeSnapshot } from '@/lib/source-snapshot';
 
 /**
- * KV "last-good" read-through for the F1 standings + results parsers.
+ * KV "last-good" read-through for the F1 standings + results parsers, backed by
+ * a durable Postgres snapshot underneath.
  *
  * Both pull ONLY from the Jolpica API (`api.jolpi.ca`). When Jolpica has an
  * origin outage (observed 2026-06: HTTP 521 on every endpoint) the parsers
@@ -11,14 +13,32 @@ import type { RaceResult } from '@/lib/types';
  * Jolpica outage never blanks the page; the parsers self-heal on the next
  * successful fetch (which overwrites the cached value).
  *
- * Contract is identical to `lib/results-cache.ts`: it FAILS OPEN. KV env is
- * absent in local dev, so if `KV_REST_API_URL` / `KV_REST_API_TOKEN` are
- * missing — or KV throws — every helper behaves as if uncached (read → null,
- * write → no-op). Callers fall back to exactly today's null / [] behaviour.
+ * TWO TIERS (belt-and-suspenders, no caller changes):
+ *   1. Vercel KV — the hot tier, 21-day TTL, per-render read-through.
+ *   2. `source_snapshot` (Postgres via `withSourceSnapshot`'s primitives) — the
+ *      durable backstop. KV is evictable + region-scoped and its TTL can lapse
+ *      during a long outage; Postgres persists indefinitely. On a fresh success
+ *      we write BOTH; on failure we read KV first, then fall through to the
+ *      durable snapshot before surrendering to the empty value.
+ *
+ * Contract is identical to `lib/results-cache.ts`: it FAILS OPEN / SOFT. KV env
+ * is absent in local dev, so if `KV_REST_API_URL` / `KV_REST_API_TOKEN` are
+ * missing — or KV throws — the KV tier behaves as if uncached (read → null,
+ * write → no-op). Likewise the snapshot tier no-ops when Supabase is
+ * unconfigured. Callers fall back to exactly today's null / [] behaviour.
  *
  * F1 payloads (`RaceResult`) carry `Date` objects, which JSON-serialise to ISO
- * strings in KV and need rehydration on read — reused from results-cache.
+ * strings in KV *and* to ISO strings in jsonb, so both read paths run the
+ * payload through `reviveDates` before returning it.
  */
+
+/**
+ * Durable snapshot key for an F1 last-good slot. Namespaced `f1:*` to sit
+ * alongside the `news:*` snapshot keys in the shared `source_snapshot` table.
+ */
+function f1SnapshotKey(name: string): string {
+  return `f1:${name}`;
+}
 
 // 21 days. Long enough to ride out a multi-day-to-multi-week Jolpica outage
 // without blanking the page (the task floor is 14-30 days). Each successful
@@ -110,14 +130,21 @@ export async function writeF1LastGood<T>(name: string, data: T): Promise<void> {
 }
 
 /**
- * Read-through wrapper. Runs `fetcher`; if it yields a non-empty result, writes
- * it to the `name` last-good slot and returns it. If it yields the empty
- * sentinel (`isEmpty(result)` true — i.e. today's null / [] failure path),
- * serves the last-good value from KV instead, falling back to the fresh-but-
- * empty result when no last-good exists.
+ * Read-through wrapper over two last-good tiers. Runs `fetcher`; if it yields a
+ * non-empty result, writes it to BOTH the KV slot (hot) and the durable
+ * `source_snapshot` row (backstop), then returns it. If it yields the empty
+ * sentinel (`isEmpty(result)` true — i.e. today's null / [] failure path), it
+ * serves the KV last-good, then — if KV missed too (evicted, TTL lapsed, or
+ * unconfigured) — the durable snapshot, and only then surrenders to the fresh-
+ * but-empty result.
  *
- * FAILS OPEN throughout: with KV unconfigured, the reads/writes are no-ops and
- * this returns exactly what `fetcher` returned.
+ * FAILS OPEN/SOFT throughout: with KV unconfigured the KV reads/writes are
+ * no-ops; with Supabase unconfigured the snapshot reads/writes are no-ops. In
+ * both-unconfigured local dev this returns exactly what `fetcher` returned.
+ *
+ * The durable snapshot stores payloads type-agnostically (jsonb → ISO strings),
+ * so its read path runs `reviveDates` to restore `RaceResult.date` — the KV
+ * tier already does this inside `readF1LastGood`.
  */
 export async function withF1LastGood<T>(
   name: string,
@@ -126,9 +153,17 @@ export async function withF1LastGood<T>(
 ): Promise<T> {
   const fresh = await fetcher();
   if (!isEmpty(fresh)) {
+    // Both writes are awaited + individually fail-soft: neither a KV nor a
+    // Supabase outage can throw into the render, and awaiting guarantees the
+    // durable write flushes before a serverless invocation ends.
     await writeF1LastGood(name, fresh);
+    await writeSnapshot(f1SnapshotKey(name), fresh);
     return fresh;
   }
   const cached = await readF1LastGood<T>(name);
-  return cached ?? fresh;
+  if (cached != null) return cached;
+  // KV missed — fall through to the durable Postgres backstop. Rehydrate the
+  // jsonb payload's Date fields (KV's readF1LastGood already does this).
+  const durable = await readSnapshot<T>(f1SnapshotKey(name));
+  return durable != null ? reviveDates(durable) : fresh;
 }
