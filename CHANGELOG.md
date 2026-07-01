@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.147.0 — 2026-07-01
+
+Champions tab: the top-level championship sections are now collapsible.
+
+### Changed
+- `components/tabs/ChampionsTab.tsx`: each top-level championship section (Drivers', Constructors', and any secondary like GT World's Endurance Cup) is wrapped in a native `<details>`/`<summary>` — no client JS, the tab stays a Server Component — reusing the decade-group disclosure styling. The summary carries the section label + a champion count; Drivers' + Constructors' open by default, secondary collapsed. The nested by-decade `<details>` are unchanged; single-championship series (IndyCar/NASCAR) keep their bare, un-collapsed section. Follow-up: restore `<h2>` inside the summary (labels are currently `<span>`) to keep heading semantics + parity with sibling tabs.
+
 ## 0.146.0 — 2026-07-01
 
 Aggregated cross-series `/news` page (gives the Community menu its News destination).

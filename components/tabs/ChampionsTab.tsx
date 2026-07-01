@@ -415,11 +415,38 @@ function SecondarySection({
   );
 }
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
+// Top-level championship section as a native collapsible. Mirrors the
+// decade-group `<details>` shell (same border/hover/marker-hidden treatment)
+// but one tier up: the summary carries the uppercase-tracked SectionHeading look
+// instead of a decade label, plus a faint mono champion count matching the
+// decade summaries' count style. Native `<details>` needs no JS, so ChampionsTab
+// stays a server component; the nested decade `<details>` toggle independently.
+function CollapsibleSection({
+  label,
+  count,
+  defaultOpen = false,
+  children,
+}: {
+  label: React.ReactNode;
+  count: number;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
   return (
-    <h2 className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-3">
-      {children}
-    </h2>
+    <details
+      open={defaultOpen}
+      className="group border-y border-border overflow-hidden"
+    >
+      <summary className="flex items-baseline justify-between gap-3 px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
+        <span className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold">
+          {label}
+        </span>
+        <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
+          {count} {count === 1 ? 'champion' : 'champions'}
+        </span>
+      </summary>
+      <div className="pt-3">{children}</div>
+    </details>
   );
 }
 
@@ -570,35 +597,41 @@ export async function ChampionsTab({ series }: { series: Series }) {
   }
 
   return (
-    <div className="space-y-8">
-      <section>
-        <SectionHeading>
-          {isSingleEvent ? 'Past Winners' : <>Drivers&apos; Championship</>}
-        </SectionHeading>
+    <div className="space-y-4">
+      <CollapsibleSection
+        label={isSingleEvent ? 'Past Winners' : <>Drivers&apos; Championship</>}
+        count={champions.length}
+        defaultOpen
+      >
         <DriversSection
           champions={champions}
           driverSlugs={driverSlugs}
           teamSlugMap={teamSlugMap}
         />
-      </section>
+      </CollapsibleSection>
       {hasConstructorChampionship && (
-        <section>
-          <SectionHeading>Constructors&apos; Championship</SectionHeading>
+        <CollapsibleSection
+          label={<>Constructors&apos; Championship</>}
+          count={constructorChampions.length}
+          defaultOpen
+        >
           <ConstructorsSection
             champions={constructorChampions}
             teamSlugMap={teamSlugMap}
           />
-        </section>
+        </CollapsibleSection>
       )}
       {hasSecondaryChampionship && (
-        <section>
-          <SectionHeading>{secondaryLabel}</SectionHeading>
+        <CollapsibleSection
+          label={secondaryLabel}
+          count={secondaryChampions.length}
+        >
           <SecondarySection
             champions={secondaryChampions}
             driverSlugs={driverSlugs}
             teamSlugMap={teamSlugMap}
           />
-        </section>
+        </CollapsibleSection>
       )}
       {sourceFooter}
     </div>
