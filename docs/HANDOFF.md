@@ -6,6 +6,45 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-06-30 (LATE) — main 0.131.1 · ONBOARD GRAPHICS REBUILD on `feat/onboard-graphics-overhaul`
+
+**main = 0.131.1.** Two arcs this session: the 7-axis audit's Wave-1 remediation shipped clean, then an onboard 3D graphics overhaul shipped + was reverted, and is now being rebuilt carefully on a branch.
+
+### Audit remediation — SHIPPED to main (0.130.1 → 0.130.6), all deploys verified green
+- **#315 (0.130.1)** docs/spec preservation + `git rm --cached` the serwist `public/sw.js`/`swe-worker-*` + gitignore.
+- **#316 (0.130.2) de-jitter** — the `buildMotion` REHELP_TAU re-timing was written on the #314 branch (`499ac5e`) but the #314 squash predated its push, so prod had shipped cockpit-cam-only and kept the ghost-teleport. Landed verbatim; on-lap verified.
+- **#319 (0.130.3) fetch resilience** — `lib/fetch-upstream.ts` (`AbortSignal.timeout(8000)` + `[upstream]`/`[source]` logging) routed through the OpenF1 client + all scrapers + KV/Supabase catches.
+- **#317 (0.130.4) betting** — `renameLeague` owner-check + generic 500s on bet routes + a `settle_market` **solo-payout-cap migration (1,000,000)**. **Migration APPLIED to prod** via the Supabase Management API (ref `dzelqrtajnauunzmxfic`, confirmed `has_cap=true`). NB the 0.130.4 CHANGELOG still says "needs operator apply" — now stale.
+- **#320 (0.130.5) security** — markdown sanitize via rehype-sanitize (`lib/content.ts`); `Content-Security-Policy-Report-Only` in `next.config.ts`; clientIp trusted-XFF; generic 500s across ~22 routes.
+- **#318 (0.130.6) dead-code/deps** — deleted the 12-file shadcn/ui kit + 6 deps (285 transitive pruned), dead `lib/` exports, declared `domhandler`.
+
+### Onboard graphics overhaul — SHIPPED 0.131.0 then REVERTED → 0.131.1 (prod is CLEAN)
+Spec `docs/superpowers/specs/2026-06-30-onboard-3d-graphics-design.md` + plan `docs/superpowers/plans/2026-06-30-onboard-graphics-overhaul.md`. Built Phase 1 (CC-BY car model + procedural environment + quality tiers) via subagents, **pushed to prod skipping the visual gate** → badly broken (walls both edges/no runoff, trees on the racing surface, car mis-oriented + half-sunk + red+green recolour). **Reverted to 0.131.1** (`git revert`, PR #322) — prod restored to the clean box-car reconstructed onboard, screenshot-verified. Model + code + spec/plan all retained on `feat/onboard-graphics-overhaul`.
+
+### ▶ RESUME HERE — rebuild on `feat/onboard-graphics-overhaul` (NOT merged; do NOT ship to prod until visually right)
+**Workflow that works:** iterate on the **operator's own localhost dev server** — this repo IS on the operator's machine; they watch edits live via reload at `localhost:3000`. OpenF1 is reachable here so the decoder assembles Austria fresh without KV (first load slow). **Vercel previews are SSO-walled** (can't screenshot anon); localhost (operator-visible) is the gate. Start the dev server with the Bash `run_in_background` flag, **NOT `&`** (the `&` one died on teardown — restart it next session). Test path: `/series/f1/weekend/8/qualifying` → Qualifying Decoder → Ghost lap → **Onboard** → Chase/Cockpit.
+
+**DONE on the branch (committed this session):**
+- **Car** (`components/f1/onboard/CarModel.tsx`): real CC-BY glTF. Recolour **ALL materials to the flat team colour** (luminance thresholding failed — the model body is dark-red); bbox recenter X/Z + **bottom on y=0** (was sunk); **no yaw** (the `Math.PI` flip faced it backwards); `TARGET_LENGTH = 0.15` (down from 0.2). Tyres are currently team-coloured — darkening them is noted polish.
+- **Lighting** (`GhostLap3D` Scene): brightened — ambient `1.4`, directional "sun" intensity `3` @ `[6,12,4]`, hemisphere `0.9`, sky/fog `#aecbe6`.
+- **Cockpit camera** (operator-dialed live): `COCKPIT_UP 0.05`, `COCKPIT_BACK 0`, `COCKPIT_FOV 90`. Tension: a low dead-centre eye on a *visible* car sees *inside* the bodywork; raised UP to clear it. For lower-but-outside, try `COCKPIT_BACK ≈ +0.015` (over the airbox/roll-hoop behind the head — a real T-cam mount). **Operator was still fine-tuning this exact eye position** — pick it back up here.
+
+**NOT done — NEXT MAJOR TASK: ENVIRONMENT REDESIGN** (`lib/openf1/track-environment.ts` + `TrackEnvironment.tsx`) — still the broken builder (walls both edges, trees on track). Operator's required direction: **runoff NOT walls** (sparse barriers set well back); **ONE consistent outward normal** (the Task-4 `crossVectors(UP,tan)` flip desynced consumers → trees on the inside/track); **scale measured from the real track width** (the gap/set-back constants were guessed); **trees only well off-track + smaller**; **pit on the correct side**. Option: temporarily disable `<TrackEnvironment>` to ship car+cockpit+lighting alone (a clean win) ahead of the env. THE VISUAL GATE IS NON-NEGOTIABLE — 0.131.0 shipped past it on green unit tests (which validate structure, not realism).
+
+### Landmines surfaced this session
+- **Vercel previews 401 / SSO-walled** anon — verify on prod or the operator's localhost.
+- **Dev server**: Bash `run_in_background`, never inline `&`.
+- **CSP report-only is missing AdSense frame domains** (`pagead2.googlesyndication.com`, `ep2.adtrafficquality.google` — 6 console errors per page). Add to `frame-src` before flipping CSP to enforcing, or ads break.
+- **`.supabase-pat` was used** (the #317 migration) — ROTATE it. The Management API needs a **browser UA** (Cloudflare 1010 on the datacenter IP/default UA).
+- **headless `body.innerText` is unreliable** on the decoder page — judge from screenshots, not innerText.
+
+### Carried open items (parallel to the onboard work)
+- Audit remainder NOT in Wave 1: **D** per-series registry (Results/Standings/session `switch(slug)`), **E** split HomeContent (2097 lines), **F** GhostLap3D perf + extract/test `buildMotion`; deferred LOW tail.
+- **Decoder idea (operator):** on the "Speed & cumulative delta" chart, label the X-axis by **turns**, not km.
+- Backlog: Lane A (/series too-wide, /social cards), Lane C (better bet handling), Loutris PWA won't open, results-table hover+interval+leader-gap, owed signed-in verify pass, F1 headshots→Wikimedia, OpenF1 LIVE tab, lazy-Clerk-anon, CSP→enforce, rotate prod Clerk `sk_live`.
+
+---
+
 ## ⚡ Next session pickup — 2026-06-30 (ONBOARD 3D REBUILD = TASK #1) — main 0.129.4 · PR #314 open
 
 main = **0.129.4**. The onboard "ghost jump" saga is **RESOLVED**: the violent dart was the chase camera's near plane (fixed by pulling `CAM_BACK` 0.17→0.35, #312/#313, merged); the residual recurring "teleport" (ghost surging past the followed car) was **OpenF1 location-TIMESTAMP jitter** — a real ~0.25 s of travel stamped ~0.10 s — fixed by **re-timing each trace from a smoothed speed** in `buildMotion` (in **PR #314, open**, which also adds the **Chase⟷Cockpit** onboard camera). **Merge #314 first** (on-lap look), then Task #1.
