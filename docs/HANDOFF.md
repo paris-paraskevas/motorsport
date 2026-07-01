@@ -6,9 +6,9 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-01 (LATE) — main 0.139.2 · big autonomous batch + backlog triage
+## ⚡ Next session pickup — 2026-07-01 (LATE) — main 0.141.0 · big autonomous batch + triage + Wave-2 ultracode
 
-**main = 0.139.2.** Long high-throughput session after the 0.132.0 onboard overhaul: shipped 0.133.0 → 0.139.2 (~11 PRs) plus a backlog-accuracy triage that found **~40% of the planned "next 20" was already built**.
+**main = 0.141.0.** Long high-throughput session after the 0.132.0 onboard overhaul: shipped 0.133.0 → 0.141.0 (~14 PRs) plus a backlog-accuracy triage that found **~40% of the planned "next 20" was already built**, then a **Wave-2 ultracode `Workflow`** (self-triage → build → adversarial-verify → cascade-merge).
 
 ### Shipped this session (all merged)
 - **0.133.0 (#330)** decoder delta-chart X-axis by **turn** (T1..Tn), not km — new `lib/openf1/turns.ts` (+test), km fallback if <3 turns. Verified live (T1–T8 on Austria).
@@ -19,11 +19,18 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ### Backlog triage (2026-07-01) — verified against code
 - **Already done (stop resurfacing):** MotoGP + WEC + GTWC live results & standings (real parsers wired in Results/StandingsTab); onboarding tour (`components/Tour.tsx`); contact-form categories; custom error pages; `/api/cron/health`; decoder turns-axis; changelog month-group + collapsible. Onboard any-two picker mostly exists (decoder already picks any two — only an all-lines overlay remains).
-- **Genuinely open (real Wave 2):** NLS Nürburgring results (no `lib/results/nls.ts`; VLN PDF; **datacenter-verify**); standings last-good resilience (`withSourceSnapshot` wired to news only — extend to F1 standings/results + motorsport.com + a warm cron); head-to-head **driver** comparison page (only the onboard session comparison exists); `/news` aggregated page (API only, no route); Sentry (**needs a DSN** — operator-gated). Verify-first: MotoGP standings-chart under-count (likely moot — no MotoGP trend chart), `/drivers/[slug]` enrichment depth (page exists).
+- **Genuinely open (after Wave 2):** NLS Nürburgring results (no `lib/results/nls.ts`; VLN PDF; **datacenter-verify**); head-to-head **driver** comparison page (only the onboard session comparison exists) — needs a design pass; `/news` aggregated page (API only, no route) — needs a design pass; Sentry (**needs a DSN** — operator-gated). Confirmed NOT open (Wave-2 triage): MotoGP standings-chart under-count (moot — no MotoGP trend chart exists), `/drivers/[slug]` enrichment (already shipped — `SeasonForm` shows position/points/last-5), standings last-good resilience (shipped 0.140.0 #344).
+
+### Wave 2 (ultracode `Workflow`, 2026-07-01) — 6 candidates → 3 shipped, 3 self-skipped
+Ran a `Workflow`: triage → build-in-worktree → independent adversarial-verify → cascade-merge. The depth pass paid off.
+- **Self-triage skipped 3 already-shipped** (zero wasted builds): csp-adsense (CSP already lists AdSense in script/connect/img-src; frame-src from #327), weekend-urls (FE doubleheader URLs + GTWC round numbers done + tested), drivers-enrichment (`SeasonForm` already shows position/points/last-5; MotoGP trend chart doesn't exist → under-count moot).
+- **Shipped (built + adversarially verified + merged):** **0.139.4 (#343)** push-subscribe SSRF host-allowlist (`lib/push-hosts.ts` `isAllowedPushEndpoint`, dot-boundary match + `listSubscriptions`/`sendPushTo` defense-in-depth; verifier threw 30+ SSRF payloads — all rejected); **0.140.0 (#344)** durable last-good extended to F1 feeds + DTM standings (`withSourceSnapshot`/`lib/f1-cache.ts`; 45 tests + tsc green); **0.141.0 (#345)** historic F1 champion-constructor colours on the Champions tab (`content/series/f1/historic-team-colors.json` + `lib/series-content.ts` `loadHistoricTeamColors`).
+- **Adversarial-verify caught a real defect:** #345's Tyrrell/BRM colours landed under the 4.5 WCAG-AA contrast floor — brightened them in-hue (`#3B82F6`/`#3FAE6B`) before merge.
+- **Owed (preview/datacenter, operator):** standings-resilience Supabase reachability from datacenter IPs; push-ssrf on a preview; a light prod eyeball of the historic champion colours.
 
 ### Landmines surfaced this session
 - **git push flaky-403:** the machine's default `gh` account is read-only `parisparaskevas-hub`; write needs `paris-paraskevas`. Fixed for the session via `gh auth switch -u paris-paraskevas` + `gh auth setup-git`. **`gh` is currently left on `paris-paraskevas`** — revert to `parisparaskevas-hub` if you want the original default.
-- **Parallel-PR CHANGELOG auto-merge can TANGLE** — 0.139.0 shipped with a bare header + its body under 0.135.0 (repaired in #336). When cascading parallel PRs: resolve `package.json` with `--ours`, and **eyeball the CHANGELOG top after each merge** — don't trust the auto-merge. RELEASES was unaffected.
+- **Parallel-PR CHANGELOG auto-merge can TANGLE** — 0.139.0 shipped with a bare header + its body under 0.135.0 (repaired in #336). And a **stale `origin/main` ref** mid-cascade momentarily dropped 0.140.0 from the #345 changelog (caught by eyeballing → `git fetch` + redo). When cascading parallel PRs: **`git fetch origin` before EACH merge**, resolve `package.json` with `--ours`, and **eyeball the CHANGELOG top (every version present, bodies intact) after each merge** — don't trust the auto-merge. RELEASES was unaffected both times.
 - Version gaps on `/changelog` (0.137.0/0.138.0) are from closed PRs (#335 contact = already-live; #340 rules = retired/dead) — harmless.
 
 ---
