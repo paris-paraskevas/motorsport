@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.142.0 — 2026-07-01
+
+Extends the durable last-good pattern (Postgres `source_snapshot`) to the remaining scraped standings feeds — WEC, Formula E, WRC, and NASCAR Cup — mirroring the `standings:dtm` wrap from 0.140.0. A transient upstream outage (5xx / anti-bot / structural break → `null`) now serves the last good standings instead of blanking the Standings tab, and self-heals on the next good fetch.
+
+### Added
+- `lib/standings/wec.ts`: wrapped `fetchWecStandings` in `withSourceSnapshot` (key `standings:wec`), renaming the live body to `fetchWecStandingsLive`. `isEmpty = v => v == null || Object.values(v.drivers).every(a => a.length === 0)` — the top-level shape is per-class `Record`s, so a non-empty drivers map is the meaningful "have data" signal (teams/manufacturers can be legitimately empty for a class). `WecStandings` carries no `Date` fields, so the jsonb round-trip is lossless — no rehydration.
+- `lib/standings/formula-e.ts`: wrapped `fetchFormulaEStandings` in `withSourceSnapshot` (key `standings:formula-e`, `isEmpty = v => v == null || v.drivers.length === 0`), renaming the live body to `fetchFormulaEStandingsLive`. Extracted the previously-anonymous return shape into an exported `FormulaEStandings` interface (structurally identical — no consumer change). No `Date` fields; lossless round-trip.
+- `lib/standings/wrc.ts`: wrapped `fetchWRCStandings` in `withSourceSnapshot` (key `standings:wrc`, `isEmpty = v => v == null || v.drivers.length === 0`), renaming the live body (wrc.com → Wikipedia fallback chain, unchanged) to `fetchWRCStandingsLive`. `WRCStandings` carries no `Date` fields; lossless round-trip.
+- `lib/standings/nascar-cup.ts`: wrapped `fetchNascarCupStandings` in `withSourceSnapshot` (key `standings:nascar-cup`, `isEmpty = v => v == null || v.drivers.length === 0`), renaming the live body to `fetchNascarCupStandingsLive`. Extracted the return shape into an exported `NascarCupStandings` interface (structurally identical). No `Date` fields; lossless round-trip.
+
+### Tests
+- `lib/standings/{wec,formula-e,wrc,nascar-cup}.test.ts`: each gains an in-memory `source_snapshot` fake (via `vi.mock('@/lib/betting/client')`, `snapshotConfigured` defaulting FALSE) and a durable-last-good block mirroring `dtm.test.ts` — persists under the series' `standings:<slug>` key on success, serves last-good on an upstream outage, self-heals on the next good fetch, returns `null` with no snapshot, and fails soft (runs the fetcher uncached, never throws) when Supabase is unconfigured. Pre-existing parse/fetch tests are unchanged (the fake defaults to unconfigured so they behave exactly as before).
+
+### Notes
+- Scope mirrors 0.140.0/#344 exactly: only the **standings** fetchers are wrapped. The results season-fetchers are untouched — WEC's `fetchWecSeasonResults` already owns a durable KV tier (`readResultsCache`/`writeResultsCache`, same as DTM's `fetchDTMSeasonResults`, which #344 also left alone), and Formula E / WRC / NASCAR results emit `RaceResult[]` with `Date` fields that would need `reviveDates` rehydration — out of the lossless-standings pattern specified here. Consumer call-sites are untouched (they all call the public fetchers, whose names + signatures are identical).
+- Fail-open/soft is preserved end to end: with Supabase unconfigured (local dev) every wrapped fetcher returns exactly today's `null`. Verified via `vitest run lib/standings` (145 passed) + `tsc --noEmit` (clean).
+
 ## 0.141.0 — 2026-07-01
 
 Historic F1 champion constructors now get plausible team-heritage colours in the Champions tab, instead of rendering as plain grey text.

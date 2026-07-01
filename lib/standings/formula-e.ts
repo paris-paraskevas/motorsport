@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { AnyNode, Element } from 'domhandler';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
@@ -341,10 +342,12 @@ function parseTeams(html: string): ConstructorStanding[] | null {
   return teams.sort((a, b) => a.position - b.position);
 }
 
-export async function fetchFormulaEStandings(): Promise<{
+export interface FormulaEStandings {
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];
-} | null> {
+}
+
+async function fetchFormulaEStandingsLive(): Promise<FormulaEStandings | null> {
   let html: string;
   try {
     const res = await fetchUpstream(`${WIKI_BASE}/${SEASON_PAGE}`, {
@@ -369,4 +372,23 @@ export async function fetchFormulaEStandings(): Promise<{
   // misleading on a tab labelled "Standings".
   if (!drivers || !constructors) return null;
   return { drivers, constructors };
+}
+
+/**
+ * Public Formula E standings fetch, wrapped in the durable `source_snapshot`
+ * last-good so a Wikipedia outage / article restructure (→ null) serves the last
+ * successful standings instead of blanking the page. Self-heals on the next good
+ * fetch (which overwrites the snapshot).
+ *
+ * `FormulaEStandings` carries no `Date` fields, so the jsonb round-trip is
+ * lossless and no rehydration is needed (same as `standings:dtm`). Fails soft
+ * when Supabase is unconfigured (local dev): behaves exactly like
+ * `fetchFormulaEStandingsLive`. Return type is unchanged.
+ */
+export async function fetchFormulaEStandings(): Promise<FormulaEStandings | null> {
+  return withSourceSnapshot<FormulaEStandings | null>(
+    'standings:formula-e',
+    fetchFormulaEStandingsLive,
+    v => v == null || v.drivers.length === 0,
+  );
 }

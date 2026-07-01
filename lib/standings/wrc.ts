@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { Element } from 'domhandler';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
@@ -265,7 +266,7 @@ export function parseStandingsFromHtml(html: string): WRCStandings | null {
   }
 }
 
-export async function fetchWRCStandings(): Promise<WRCStandings | null> {
+async function fetchWRCStandingsLive(): Promise<WRCStandings | null> {
   // wrc.com is the user-facing source but bot-blocks the agent fetcher with
   // 403. Production Vercel fetches may also be 403'd by the upstream WAF;
   // we attempt it first (cheap) and fall back to Wikipedia, which has a
@@ -283,4 +284,23 @@ export async function fetchWRCStandings(): Promise<WRCStandings | null> {
   const wikiHtml = await fetchHtml(WIKIPEDIA_URL);
   if (!wikiHtml) return null;
   return parseStandingsFromHtml(wikiHtml);
+}
+
+/**
+ * Public WRC standings fetch, wrapped in the durable `source_snapshot` last-good
+ * so a total upstream outage (both wrc.com and Wikipedia unreachable / restructured
+ * → null) serves the last successful standings instead of blanking the page.
+ * Self-heals on the next good fetch (which overwrites the snapshot).
+ *
+ * `WRCStandings` carries no `Date` fields, so the jsonb round-trip is lossless
+ * and no rehydration is needed (same as `standings:dtm`). Fails soft when
+ * Supabase is unconfigured (local dev): behaves exactly like
+ * `fetchWRCStandingsLive`. Return type is unchanged.
+ */
+export async function fetchWRCStandings(): Promise<WRCStandings | null> {
+  return withSourceSnapshot<WRCStandings | null>(
+    'standings:wrc',
+    fetchWRCStandingsLive,
+    v => v == null || v.drivers.length === 0,
+  );
 }
