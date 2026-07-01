@@ -4,9 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.135.0 — 2026-07-01
+## 0.135.3 — 2026-07-01
 
-Onboard qualifying replay: cars now start together on a painted start/finish line.
+F1 About tab: the curated series overview now renders under a "Series overview" section header.
+
+### Changed
+- `components/tabs/AboutTab.tsx`: F1's `series.overview` (loaded from `content/series/f1/overview.md` by `lib/series.ts`, already the lead block of the About tab) is now wrapped in a labelled `<section>` with a "Series overview" heading, matching its siblings (`Rules essentials`, `About {name}`) and the HistoryTab's `<h2>` header pattern — previously it rendered as an unlabelled `<article>` and read as orphaned intro text. Guarded by `series.meta.slug === 'f1'` (same slug-gate pattern as the F1 Telemetry hub in `SeriesPageView.tsx`), so every other series keeps the existing bare render. The F1 branch also lowers the wrapped article's `prose-h2` from `text-lg` to `text-base` so the overview's own `## Race weekend shape` / `## Points` markdown headings sit subordinate to the new section label. No content duplication (`series.overview` has always had exactly one consumer); no loader change.
 
 ### Fixed
 - `lib/openf1/track.ts`: new `startFinishReference` + `anchorTrackToStartFinish` (pure, unit-tested) re-anchor every driver trace to ONE shared start/finish line. Each trace was previously timed from its own first GPS sample (`t0 = points[0].ms`), which lands a different distance past the line per driver (OpenF1 location sampling phase), so the time-synced onboard showed a slower car starting ahead of the pole car. The S/F-crossing search is windowed to the first ~15% so a flying lap's END crossing of the same line can't be mistaken for the start.

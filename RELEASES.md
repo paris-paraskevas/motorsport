@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.135.3 — 2026-07-01
+
+**A clearer Formula 1 About tab.** The Formula 1 overview — the race-weekend shape, points, and what's new for 2026 — now sits under its own "Series overview" heading, so it reads as a proper labelled section alongside the rules and Wikipedia summary rather than loose intro text.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
