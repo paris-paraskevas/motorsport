@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.133.0 — 2026-07-01
+
+The Qualifying Decoder's speed-and-delta chart now marks the bottom axis by corner — T1, T2, T3… — instead of raw kilometres, so it's obvious where in the lap each gain or loss happens. Hover any point and the tooltip still shows the exact distance alongside the nearest turn. On the rare lap where the track shape can't be read cleanly, the axis falls back to distance so nothing breaks.
 ## 0.132.3 — 2026-07-01
 
 If something ever goes wrong on a page, you'll now see a calm Paddock-styled message with a "Try again" button and a link back home, instead of a bare browser error. This covers both individual pages and the rare case where the whole app shell fails to load.

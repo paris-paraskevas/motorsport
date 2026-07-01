@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.133.0 — 2026-07-01
+
+Qualifying Decoder delta chart now labels its X-axis by track TURN (T1, T2…) instead of raw kilometres — "where in the lap" reads as corners, not distances. Touches `components/f1/DeltaTrace.tsx` and adds `lib/openf1/turns.ts` (+ `turns.test.ts`).
+
+### Added
+- `lib/openf1/turns.ts` — a pure, client-safe turn detector (`detectTurns`, `nearestTurn`). It reuses the corner-detection approach from `lib/openf1/track-environment.ts` (`cornerIndices`): per-point turning angle from incoming/outgoing chord vectors, then local maxima above a threshold. Reimplemented on the 2D `{x, y}` reconstructed lap points (`TrackPath.points`) so it needs no `three` import, and treated as an OPEN path (no closed-loop wrap) since a fastest-lap trace starts/ends on the straight. Each corner's `points[i].t` is mapped to a lap distance by interpolating the telemetry's `(t, d)` series (the two ~3.7 Hz series share the lap-time axis but are not index-aligned). Sustained curves merge via a min-spacing (fraction of lap length); output is numbered T1..Tn in lap order, capped at a sane max.
+- `lib/openf1/turns.test.ts` — square-lap → 4 numbered turns, straight → none, null geometry / empty telemetry → `[]`, sustained-arc merge, and `nearestTurn` gap handling.
+
+### Changed
+- `components/f1/DeltaTrace.tsx`: X-axis ticks are now pinned to each detected turn's distance and formatted `T{n}` (with `interval={0}` so every turn shows). Falls back to the previous km `tickFormatter` when fewer than 3 turns are detected (sparse/thin geometry), so the axis is never empty. The hover tooltip keeps the precise km and prefixes the nearest turn (`T3 · 1.82 km`) when on the turn axis, so no detail is lost.
+- No changes to `GhostLap3D.tsx`, `track-environment.ts`, or the decoder assembly — turn detection is derived entirely from the props `DeltaTrace` already receives.
 ## 0.132.3 — 2026-07-01
 
 App-wide custom error boundaries — a fault anywhere in the tree now lands on a Paddock-branded fallback instead of the raw Next.js default. Adds `app/error.tsx` and `app/global-error.tsx`.
