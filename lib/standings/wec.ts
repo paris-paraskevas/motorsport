@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 // FIA WEC has two classes that each award their own championships, but with
 // asymmetric titles: Hypercar awards Drivers + Manufacturers (no Teams — at
@@ -199,7 +200,7 @@ function parseTeamRow(
   return { position, team, points };
 }
 
-export async function fetchWecStandings(): Promise<WecStandings | null> {
+async function fetchWecStandingsLive(): Promise<WecStandings | null> {
   let html: string;
   try {
     const res = await fetchUpstream(STANDINGS_URL, {
@@ -212,6 +213,27 @@ export async function fetchWecStandings(): Promise<WecStandings | null> {
     return null;
   }
   return parseWecStandings(html);
+}
+
+/**
+ * Public WEC standings fetch, wrapped in the durable `source_snapshot` last-good
+ * so a fiawec.com outage (5xx / anti-bot challenge / structural break → null)
+ * serves the last successful standings instead of blanking the page. Self-heals
+ * on the next good fetch (which overwrites the snapshot).
+ *
+ * `WecStandings` carries no `Date` fields, so the jsonb round-trip is lossless
+ * and no rehydration is needed (same as `standings:dtm`). The top-level shape is
+ * per-class Records; a non-empty drivers map is the meaningful "have data"
+ * signal — teams/manufacturers can be legitimately empty for a class. Fails soft
+ * when Supabase is unconfigured (local dev): behaves exactly like
+ * `fetchWecStandingsLive`. Return type is unchanged.
+ */
+export async function fetchWecStandings(): Promise<WecStandings | null> {
+  return withSourceSnapshot<WecStandings | null>(
+    'standings:wec',
+    fetchWecStandingsLive,
+    v => v == null || Object.values(v.drivers).every(a => a.length === 0),
+  );
 }
 
 export function parseWecStandings(html: string): WecStandings | null {
