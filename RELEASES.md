@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.145.0 — 2026-07-01
+
+**F1 rules, one tap away.** The F1 About tab now links straight to the official FIA regulations and lists the common rule topics — points, penalties, parc fermé, overtaking aid, track limits and tyres — at a glance.
+
 ## 0.144.0 — 2026-07-01
 
 **NLS Nürburgring results are here.** The Nürburgring Langstrecken-Serie now has a Results tab listing the overall winner of every completed round this season — the winning crew and their team, with a link through to each round's weekend. Because NLS doesn't run a points championship, results show the overall race winners rather than a full points table; the official VLN documents portal is linked as the source if you want the complete classification for a round.
