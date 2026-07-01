@@ -4,7 +4,42 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.135.3 — 2026-07-01
+## 0.139.1 — 2026-07-01
+
+### Changed
+- `scripts/gen-badge.py`: redrew the monochrome push-notification badge as a gutterless 4×4 chequered flag on a pole (legible at status-bar size) + added post-generation invariants (96×96, every opaque pixel pure white, has transparency) so the monochrome-badge landmine can't break silently. Regenerated `public/icons/badge-96.png`.
+
+## 0.139.0 — 2026-07-01
+
+Home hero surfaces a busy race day's next 2–3 sessions; championship-leader no longer renders a blank block when all series are deselected.
+
+### Added
+- `components/HomeContent.tsx`: busy-race-day hero — `heroUpNext` surfaces the next 2–3 upcoming sessions within a 24h window of the primary countdown as a compact "Also today" list (each with its own live `<Countdown>`); quiet days keep the single-session hero. Guarded on a precise-start primary; robust to <3 upcoming.
+
+### Fixed
+- `components/HomeContent.tsx`: championship-leader rendered a blank block when `seriesSet` was empty (the customise multi-select persists `[]` when all series are toggled off, and the truthy empty array matched nothing). An absent OR empty `seriesSet` is now treated as "all followed"; a non-empty subset with no standings shows a "Pick a series" empty-state.
+
+## 0.136.0 — 2026-07-01
+
+Champions tab: cumulative-title markers on the (already decade-grouped) champions lists so repeat champions and dynasties pop when scanning.
+
+### Added
+- `components/tabs/ChampionsTab.tsx`: `computeTitleTally(rows, keyOf)` — derives, per championship section, each champion's cumulative title number *up to and including* that season plus their section total, purely from the champions list already on the page (no data-model change, no new fetch). Totals are keyed by the exact display string, so GT World's comma-joined Endurance Cup crews are matched as a unit rather than split into phantom per-driver counts. The running count walks oldest-first, so with the existing newest-first row order the top row shows the champion's highest tally (e.g. Verstappen's 2024 row → 4; Schumacher's 2004 → 7, correctly counting across the non-consecutive 1994→2004 span).
+- `components/tabs/ChampionsTab.tsx`: `TitleTallyBadge` — renders a compact `×N` count in the series tint (`text-tint`) plus a mini bar of `count`-filled pips out of `total` (`bg-tint` filled / `bg-border` empty), capped at `PIP_CAP = 7` so a 7- or 10-time champion stays as tight as a 2-time one. Rendered only for repeat champions (`total > 1`); one-off winners stay clean. Pips are `hidden sm:inline-flex` so mobile shows just the `×N` count and rows stay dense. `title`/`aria-label` expose "Title k of N".
+- Wired into all three sections — Drivers' (keyed by driver), Constructors' (keyed by team; Ferrari/McLaren/Williams etc. repeat heavily), and the secondary Endurance Cup (keyed by crew string) — on both the desktop grid and the mobile stacked layout.
+
+Note: the PRIMARY ask of this task — decade/era sub-headers within each championship section — was **already shipped** in a prior commit (`groupByDecade` + collapsible `<details>` per decade). This release adds only the SECONDARY per-champion visual, which the curated data cleanly supports.
+## 0.135.1 — 2026-07-01
+
+Home PADDOCK WIRE series filter now persists across reloads.
+
+### Added
+- `components/HomeContent.tsx`: the wire's active series filter is persisted to `localStorage` under the namespaced key `paddock:news-filter`. New module-scope `readStoredNewsFilter` / `writeStoredNewsFilter` helpers guard `typeof window` and swallow quota/denied errors (mirrors `lib/follow.ts`). Read returns `null` (= "All", the default) for absent/empty/malformed values.
+
+### Changed
+- `components/HomeContent.tsx`: `newsFilter` still initialises to the SSR default (`null`) and adopts the stored slug in a post-mount `useEffect`, so the hydration render matches the server HTML (no mismatch — same "default then adopt" idiom as `LocalTime`/`useHomeLayout`). Chip clicks route through a new `selectNewsFilter` wrapper that sets state and writes through. A derived `effectiveNewsFilter` ignores a stored slug whose series has dropped out of the feed (falls back to "All"), so a stale value can't strand the wire on an empty, unresettable view when the chip bar is hidden (≤1 series); it also drives the chip active-state highlighting.
+
+## 0.135.0 — 2026-07-01
 
 F1 About tab: the curated series overview now renders under a "Series overview" section header.
 

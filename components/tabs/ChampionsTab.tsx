@@ -31,6 +31,80 @@ function groupByDecade<T extends { year: number }>(items: T[]): DecadeGroup<T>[]
   return groups;
 }
 
+// Cumulative-title tally, derived purely from the champions list already on the
+// page — no new data. For a given championship section we count how many titles
+// each champion holds (keyed by the exact display string, so GT World's
+// comma-joined crews are matched as a unit, not split) and stamp each year with
+// that champion's running count *up to and including* that season. Because rows
+// render newest-first, the top row shows the champion's highest tally (e.g.
+// Verstappen's 2024 row → 4), making dynasties scannable at a glance. The
+// section total lets the UI show the pip visual as "k of total".
+interface TitleTally {
+  /** This champion's cumulative title number as of this year (1 = first). */
+  count: number;
+  /** This champion's total titles within this section. */
+  total: number;
+}
+
+function computeTitleTally<T extends { year: number }>(
+  rows: T[],
+  keyOf: (row: T) => string,
+): Map<T, TitleTally> {
+  const totals = new Map<string, number>();
+  for (const row of rows) {
+    const key = keyOf(row).trim();
+    if (!key) continue;
+    totals.set(key, (totals.get(key) ?? 0) + 1);
+  }
+  // Walk oldest-first so the running count increments chronologically, then
+  // attach the season's number + the champion's section total to each row.
+  const chronological = [...rows].sort((a, b) => a.year - b.year);
+  const running = new Map<string, number>();
+  const out = new Map<T, TitleTally>();
+  for (const row of chronological) {
+    const key = keyOf(row).trim();
+    if (!key) continue;
+    const next = (running.get(key) ?? 0) + 1;
+    running.set(key, next);
+    out.set(row, { count: next, total: totals.get(key) ?? next });
+  }
+  return out;
+}
+
+// Compact "cumulative titles" marker: an "×N" pill in the series tint plus a
+// mini bar of `count`-filled pips out of `total`, capped so a 7-time champion
+// stays as tight as a 2-time one. Rendered only for repeat champions (total > 1)
+// so one-off winners stay clean. Read-only; the count is the current season's
+// running total, so scanning a repeat champion's rows shows the tally climb.
+const PIP_CAP = 7;
+
+function TitleTallyBadge({ tally }: { tally: TitleTally | undefined }) {
+  if (!tally || tally.total < 2) return null;
+  const shown = Math.min(tally.total, PIP_CAP);
+  const filled = Math.min(tally.count, shown);
+  return (
+    <span
+      className="inline-flex items-center gap-1 align-middle"
+      title={`Title ${tally.count} of ${tally.total}`}
+      aria-label={`Title ${tally.count} of ${tally.total}`}
+    >
+      <span className="text-[10px] leading-none font-semibold font-mono tabular-nums text-tint">
+        ×{tally.total}
+      </span>
+      <span className="hidden sm:inline-flex items-center gap-[2px]" aria-hidden>
+        {Array.from({ length: shown }, (_, i) => (
+          <span
+            key={i}
+            className={`h-2 w-[3px] rounded-full ${
+              i < filled ? 'bg-tint' : 'bg-border'
+            }`}
+          />
+        ))}
+      </span>
+    </span>
+  );
+}
+
 interface ConstructorChampion {
   year: number;
   team: string;
@@ -149,6 +223,7 @@ function DriversSection({
   teamSlugMap: Map<string, TeamRef>;
 }) {
   const groups = groupByDecade(champions);
+  const tally = computeTitleTally(champions, c => c.driver);
   return (
     <div className="space-y-3">
       {groups.map((group, idx) => (
@@ -173,8 +248,9 @@ function DriversSection({
                   <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
                     {c.year}
                   </div>
-                  <div className="text-text text-sm leading-snug">
+                  <div className="text-text text-sm leading-snug flex items-baseline gap-2">
                     <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                    <TitleTallyBadge tally={tally.get(c)} />
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
                     {c.constructor ? (
@@ -185,13 +261,14 @@ function DriversSection({
                   </div>
                 </div>
                 <div className="sm:hidden">
-                  <div className="flex items-baseline gap-3">
+                  <div className="flex items-baseline gap-2">
                     <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                       {c.year}
                     </span>
                     <span className="text-text text-sm">
                       <DriverCell name={c.driver} driverSlugs={driverSlugs} />
                     </span>
+                    <TitleTallyBadge tally={tally.get(c)} />
                   </div>
                   {c.constructor && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
@@ -216,6 +293,7 @@ function ConstructorsSection({
   teamSlugMap: Map<string, TeamRef>;
 }) {
   const groups = groupByDecade(champions);
+  const tally = computeTitleTally(champions, c => c.team);
   return (
     <div className="space-y-3">
       {groups.map((group, idx) => (
@@ -236,13 +314,14 @@ function ConstructorsSection({
           <div className="divide-y divide-border/40 border-t border-border/60">
             {group.rows.map((c, i) => (
               <div key={`${c.year}-${i}`} className="px-4 py-2.5">
-                <div className="flex items-baseline gap-3">
+                <div className="flex items-baseline gap-2">
                   <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                     {c.year}
                   </span>
                   <span className="text-text text-sm leading-snug">
                     <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
                   </span>
+                  <TitleTallyBadge tally={tally.get(c)} />
                 </div>
               </div>
             ))}
@@ -263,6 +342,7 @@ function SecondarySection({
   teamSlugMap: Map<string, TeamRef>;
 }) {
   const groups = groupByDecade(champions);
+  const tally = computeTitleTally(champions, c => c.driver);
   return (
     <div className="space-y-3">
       {groups.map((group, idx) => (
@@ -287,8 +367,9 @@ function SecondarySection({
                   <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
                     {c.year}
                   </div>
-                  <div className="text-text text-sm leading-snug">
+                  <div className="text-text text-sm leading-snug flex items-baseline gap-2">
                     <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                    <TitleTallyBadge tally={tally.get(c)} />
                   </div>
                   <div className="text-xs text-text-muted leading-snug">
                     {c.team ? (
@@ -299,13 +380,14 @@ function SecondarySection({
                   </div>
                 </div>
                 <div className="sm:hidden">
-                  <div className="flex items-baseline gap-3">
+                  <div className="flex items-baseline gap-2">
                     <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
                       {c.year}
                     </span>
                     <span className="text-text text-sm">
                       <DriverCell name={c.driver} driverSlugs={driverSlugs} />
                     </span>
+                    <TitleTallyBadge tally={tally.get(c)} />
                   </div>
                   {c.team && (
                     <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
