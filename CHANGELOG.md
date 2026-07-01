@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.135.1 — 2026-07-01
+
+Home PADDOCK WIRE series filter now persists across reloads.
+
+### Added
+- `components/HomeContent.tsx`: the wire's active series filter is persisted to `localStorage` under the namespaced key `paddock:news-filter`. New module-scope `readStoredNewsFilter` / `writeStoredNewsFilter` helpers guard `typeof window` and swallow quota/denied errors (mirrors `lib/follow.ts`). Read returns `null` (= "All", the default) for absent/empty/malformed values.
+
+### Changed
+- `components/HomeContent.tsx`: `newsFilter` still initialises to the SSR default (`null`) and adopts the stored slug in a post-mount `useEffect`, so the hydration render matches the server HTML (no mismatch — same "default then adopt" idiom as `LocalTime`/`useHomeLayout`). Chip clicks route through a new `selectNewsFilter` wrapper that sets state and writes through. A derived `effectiveNewsFilter` ignores a stored slug whose series has dropped out of the feed (falls back to "All"), so a stale value can't strand the wire on an empty, unresettable view when the chip bar is hidden (≤1 series); it also drives the chip active-state highlighting.
+
 ## 0.135.0 — 2026-07-01
 
 Onboard qualifying replay: cars now start together on a painted start/finish line.

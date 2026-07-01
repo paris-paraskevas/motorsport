@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.135.1 — 2026-07-01
+
+**The home news filter now remembers your choice.** When you filter the Paddock wire to a single series, that choice sticks across page reloads instead of resetting to "All" every time.
+
 ## 0.135.0 — 2026-07-01
 
 **Onboard replay now lines the cars up properly.** Both cars start together on a painted chequered start/finish line, then the faster lap pulls ahead through the lap — previously a slower driver could look like it started in front.
