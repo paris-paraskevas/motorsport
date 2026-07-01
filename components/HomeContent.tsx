@@ -122,6 +122,34 @@ interface HomeSpotlightDriver {
 
 const NEWS_LIMIT = 10;
 
+/* ── PADDOCK WIRE filter persistence ─────────────────────────────────────
+   The wire's active series filter survives reloads via localStorage. Read
+   returns null (= "All", the default) on the server and for any absent or
+   malformed value, so the first render always matches the SSR default and the
+   stored slug is adopted after mount (see the effect below) — no hydration
+   mismatch. Mirrors the `typeof window` guarding in lib/follow.ts. */
+const NEWS_FILTER_KEY = 'paddock:news-filter';
+
+function readStoredNewsFilter(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(NEWS_FILTER_KEY);
+    return typeof raw === 'string' && raw.length > 0 ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredNewsFilter(slug: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (slug) window.localStorage.setItem(NEWS_FILTER_KEY, slug);
+    else window.localStorage.removeItem(NEWS_FILTER_KEY);
+  } catch {
+    /* quota or denied — silently ignore */
+  }
+}
+
 /* ── Hydration-safe time engine ─────────────────────────────────────────
    Every time-derived string on this page renders from `now`, which starts
    as the SERVER's render instant (serverNow prop). SSR HTML and the first
@@ -248,7 +276,20 @@ export function HomeContent({
   // Layout is read here; the customise CONTROLS live in Account (a banner with a
   // preview). The home keeps an inline collapse toggle on its collapsible blocks.
   const { layout, toggleCollapsed } = useHomeLayout();
+  // Starts at the SSR default ("All" = null); the persisted slug is adopted
+  // after mount so the hydration render matches the server HTML. Guarded so a
+  // stored series that's since dropped out of the feed can still be re-picked
+  // from the chips (the value is validated against the rendered set at use).
   const [newsFilter, setNewsFilter] = useState<string | null>(null);
+  useEffect(() => {
+    const stored = readStoredNewsFilter();
+    if (stored !== null) setNewsFilter(stored);
+  }, []);
+  // Persist on every change so the wire re-opens on the last-used filter.
+  const selectNewsFilter = (slug: string | null) => {
+    setNewsFilter(slug);
+    writeStoredNewsFilter(slug);
+  };
   // JUST MISSED is fetched as cacheable Ajax (/api/just-missed) rather than
   // server-rendered, so /app itself stays statically generated / edge-cached
   // (the WEC podium path does a no-store live fetch that otherwise forces the
@@ -578,12 +619,18 @@ export function HomeContent({
       }
     }
   }
+  // A persisted filter (from localStorage) is honoured only while its series is
+  // still in the feed; if that series has dropped out we fall back to "All" so a
+  // stale stored slug can't strand the wire on an empty, unresettable view (the
+  // chip bar hides when there's ≤1 series, leaving no in-UI way to clear it).
+  const effectiveNewsFilter =
+    newsFilter && seriesWithNews.some(s => s.slug === newsFilter) ? newsFilter : null;
   // Dedupe by link before slicing: motorsport.com cross-posts the same story
   // to multiple series feeds, so an unfiltered "All" view rendered it twice
   // back-to-back under different chips (heuristic walk 2026-06). Per-series
   // filtering is unaffected — a single-series view has no cross-series dups.
-  const newsForView = newsFilter
-    ? filteredNews.filter(n => n.seriesSlug === newsFilter)
+  const newsForView = effectiveNewsFilter
+    ? filteredNews.filter(n => n.seriesSlug === effectiveNewsFilter)
     : filteredNews;
   const seenLinks = new Set<string>();
   const topNews = newsForView
@@ -1132,9 +1179,9 @@ export function HomeContent({
             <div className="mb-3 -mx-1 px-1 flex gap-1.5 overflow-x-auto scrollbar-none">
               <button
                 type="button"
-                onClick={() => setNewsFilter(null)}
+                onClick={() => selectNewsFilter(null)}
                 className={`shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 border transition-colors duration-(--duration-fast) ${
-                  newsFilter === null
+                  effectiveNewsFilter === null
                     ? 'bg-text text-bg border-text'
                     : 'text-text-muted border-border hover:text-text hover:border-border-strong'
                 }`}
@@ -1143,12 +1190,12 @@ export function HomeContent({
                 <span className="ml-1.5 tnum opacity-70">{filteredNews.length}</span>
               </button>
               {seriesWithNews.map(s => {
-                const active = newsFilter === s.slug;
+                const active = effectiveNewsFilter === s.slug;
                 return (
                   <button
                     key={s.slug}
                     type="button"
-                    onClick={() => setNewsFilter(s.slug)}
+                    onClick={() => selectNewsFilter(s.slug)}
                     className={`shrink-0 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-3 py-1.5 border transition-colors duration-(--duration-fast) ${
                       active
                         ? 'text-black border-transparent'
