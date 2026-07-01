@@ -1,4 +1,39 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// In-memory fake of the durable `source_snapshot` table so the last-good wrap on
+// `fetchWRCStandings` can be exercised. `snapshotConfigured` defaults FALSE so
+// the pre-existing fetch/parse tests below behave exactly as before (wrapper runs
+// the fetcher uncached, as in a test env with no SUPABASE_URL); the last-good
+// block flips it on. Mirrors lib/standings/dtm.test.ts.
+const snapshotTable = new Map<string, unknown>();
+let snapshotConfigured = false;
+
+vi.mock('@/lib/betting/client', () => ({
+  isBettingConfigured: () => snapshotConfigured,
+  betDb: () => ({
+    from: () => {
+      let selectedKey: string | null = null;
+      const builder = {
+        select: () => builder,
+        eq: (_col: string, value: string) => {
+          selectedKey = value;
+          return builder;
+        },
+        maybeSingle: async () => {
+          const raw = selectedKey != null ? snapshotTable.get(selectedKey) : undefined;
+          if (raw === undefined) return { data: null, error: null };
+          return { data: { payload: JSON.parse(JSON.stringify(raw)) }, error: null };
+        },
+        upsert: async (row: { source_key: string; payload: unknown }) => {
+          snapshotTable.set(row.source_key, row.payload);
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  }),
+}));
+
 import { fetchWRCStandings, parseStandingsFromHtml } from './wrc';
 
 // Mirrors the Wikipedia 2026 WRC article shape: three wikitables anchored
@@ -314,5 +349,66 @@ describe('fetchWRCStandings', () => {
     expect(result!.drivers).toHaveLength(7);
     // Verify only one fetch was needed when the first one parses.
     expect((globalThis.fetch as unknown as { mock: { calls: unknown[] } }).mock.calls).toHaveLength(1);
+  });
+});
+
+// Durable last-good: a total upstream outage (wrc.com + Wikipedia both down)
+// should serve the previous good standings instead of the null that blanks the
+// page. Supabase IS configured here (in-memory fake); WRCStandings carries no
+// Date fields so no rehydration. isEmpty keys off drivers.length.
+describe('fetchWRCStandings — durable last-good (source_snapshot)', () => {
+  const originalFetch = globalThis.fetch;
+
+  beforeEach(() => {
+    snapshotTable.clear();
+    snapshotConfigured = true;
+  });
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    snapshotConfigured = false;
+    snapshotTable.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('SUCCESS persists the standings under standings:wrc', async () => {
+    mockOk(FULL_HTML);
+    const data = await fetchWRCStandings();
+    expect(data).not.toBeNull();
+    expect(snapshotTable.has('standings:wrc')).toBe(true);
+  });
+
+  it('FAILURE serves the last-good standings instead of null', async () => {
+    mockOk(FULL_HTML);
+    await fetchWRCStandings(); // prime the snapshot
+    mockFail(); // both wrc.com and Wikipedia 403
+    const recovered = await fetchWRCStandings();
+    expect(recovered).not.toBeNull();
+    expect(recovered!.drivers).toHaveLength(7);
+    expect(recovered!.drivers[0].driverName).toBe('Elfyn Evans');
+    expect(recovered!.manufacturers[0].name).toBe('Toyota Gazoo Racing WRT');
+  });
+
+  it('a good fetch overwrites the snapshot (self-heal)', async () => {
+    // Seed a deliberately-stale snapshot, then a good fetch must replace it.
+    snapshotTable.set('standings:wrc', {
+      drivers: [{ position: 1, driverName: 'stale', team: '', points: 0 }],
+      coDrivers: [],
+      manufacturers: [],
+    });
+    mockOk(FULL_HTML);
+    await fetchWRCStandings();
+    const stored = snapshotTable.get('standings:wrc') as { drivers: unknown[] };
+    expect(stored.drivers).toHaveLength(7);
+  });
+
+  it('FAILURE with no snapshot present returns null (today behaviour)', async () => {
+    mockFail();
+    expect(await fetchWRCStandings()).toBeNull();
+  });
+
+  it('FAIL-SOFT: Supabase unconfigured behaves exactly like the live fetch', async () => {
+    snapshotConfigured = false;
+    mockFail();
+    expect(await fetchWRCStandings()).toBeNull();
   });
 });

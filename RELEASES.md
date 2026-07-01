@@ -1,8 +1,14 @@
 What's new in Paddock Tracker. Newest first.
 
-## 0.141.2 — 2026-07-01
+## 0.144.0 — 2026-07-01
 
-**The F1 About tab now links to the official rules and explains the basics.** There's a new "FIA regulations" link in the Further reading section that opens the FIA's official Formula 1 regulations page in a new tab, plus a short "Common topics" reference covering the points system, penalties and stewards, parc fermé, the 2026 overtaking aid that replaced DRS, track limits, and tyres — a quick primer without leaving the page.
+**NLS Nürburgring results are here.** The Nürburgring Langstrecken-Serie now has a Results tab listing the overall winner of every completed round this season — the winning crew and their team, with a link through to each round's weekend. Because NLS doesn't run a points championship, results show the overall race winners rather than a full points table; the official VLN documents portal is linked as the source if you want the complete classification for a round.
+## 0.143.0 — 2026-07-01
+
+**MotoGP now has a season-trend chart.** The MotoGP Standings tab shows a drivers' championship trend line, just like F1, F2, F3 and WorldSBK. Each weekend is a single point on the chart, with the Grand Prix and the Sprint added together — and the running total now matches every rider's points in the standings table exactly. This also fixes a rounds-with-few-finishers gap that had been under-counting some riders' totals.
+## 0.142.0 — 2026-07-01
+
+**More standings survive a data-source wobble.** WEC, Formula E, WRC and NASCAR standings now fall back to the last good figures we saw if their source is briefly unreachable, so those tabs keep showing the latest available standings instead of going blank during an outage — and refresh themselves the moment the source recovers. This extends the same safety net F1 and DTM standings already had.
 
 ## 0.141.0 — 2026-07-01
 
