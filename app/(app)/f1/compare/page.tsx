@@ -8,6 +8,8 @@ import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
 import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { withSocialMeta } from '@/lib/seo';
 import type { RaceResult } from '@/lib/types';
+import { AnalysisGate } from '@/components/f1/AnalysisGate';
+import { auth } from '@clerk/nextjs/server';
 
 // F1 driver head-to-head. Reuses the SAME season-form + trend cumulation the
 // driver pages and weekend snapshots use (lib/profile-stats + lib/season-trend
@@ -144,7 +146,12 @@ export default async function F1ComparePage({
 
   const driverA = a ? f1Drivers.find((d) => d.slug === a) ?? null : null;
   const driverB = b ? f1Drivers.find((d) => d.slug === b) ?? null : null;
-  const ready = Boolean(driverA && driverB && driverA.slug !== driverB.slug);
+  const canCompare = Boolean(driverA && driverB && driverA.slug !== driverB.slug);
+  // Head-to-head is gated (signed-in only), leak-free: the comparison is only
+  // computed when unlocked, so an anonymous client never receives the stats.
+  // The picker itself stays public so the page is indexable + markets the tool.
+  const { userId } = await auth();
+  const ready = canCompare && Boolean(userId);
 
   let formA: DriverSeasonForm | null = null;
   let formB: DriverSeasonForm | null = null;
@@ -235,7 +242,12 @@ export default async function F1ComparePage({
         </button>
       </form>
 
-      {!ready ? (
+      {canCompare && !userId ? (
+        <AnalysisGate
+          title="Head-to-head"
+          blurb="Sign in to compare any two F1 drivers this season — points, position, wins, their race-by-race record and a points trajectory."
+        />
+      ) : !ready ? (
         <p className="border-y border-border py-10 text-center text-sm text-text-muted">
           {driverA && driverB && driverA.slug === driverB.slug
             ? 'Pick two different drivers.'

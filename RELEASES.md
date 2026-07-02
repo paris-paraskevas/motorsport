@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.151.0 — 2026-07-02
+
+**A free account unlocks the F1 analysis.** The lap-by-lap Qualifying Analysis, the ghost Replay, the Race Story and the driver head-to-head now ask you to sign in (it's free) — schedules, standings, results, champions and everything else stay open to everyone.
+
 ## 0.150.2 — 2026-07-02
 
 **NLS results are back.** The Nürburgring Langstrecken-Serie Results tab was coming up empty on the live site — it now loads each round's overall winner again.

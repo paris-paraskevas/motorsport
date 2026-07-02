@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.151.0 — 2026-07-02
+
+Account gate on the F1 analysis surfaces (Arc 2, part 1) — the interactive analysis is now signed-in-only; all content stays public + indexable.
+
+### Added
+- `components/f1/AnalysisGate.tsx`: a server-rendered "sign in to unlock" teaser that stands in for a gated analysis surface. The swap is server-side, so an anonymous client never receives the analysis payload (leak-free — a client `<SignedIn>` wrap would still ship it in the HTML). Free account, not a paywall.
+
+### Changed
+- `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`: the F1 **Qualifying Analysis** (+ ghost Replay), **Race Story** and **Practice Analysis** sections render only for signed-in users (`await auth()`), else the teaser. Classification + the stat boards (speed trap / pit league / overtakes) stay public. The page was already `force-dynamic`, so no caching penalty.
+- `app/(app)/f1/compare/page.tsx`: the head-to-head comparison is signed-in-only (computed only when unlocked → no anon leak); the driver picker stays public so the page stays indexable + markets the tool.
+
+Verified anon (leak-free): the teaser renders and the Decoder/comparison payloads are absent from the anonymous HTML; `tsc` clean. Owed: a signed-in visual pass (browser was locked). Rollout for the rest of the interactive layer (social pages, home-customise, following) is specced in `docs/research/2026-07-02-account-gating.md` — it hinges on a product decision (walling following/customise reverses the device-local-guest model) + a signed-in pass, so it's held for review.
+
 ## 0.150.2 — 2026-07-02
 
 ### Fixed
