@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.154.0 — 2026-07-02
+
+**News in one click, and a proper welcome to Social.** "News" is now a top-level link in the main menu (Blog and Threads are a hover away). And the Social area greets signed-out visitors with a preview of the predictions game — back the grid, build private leagues, add friends, all with free virtual credits and no cash — instead of a bare sign-in prompt.
+
 ## 0.153.0 — 2026-07-02
 
 **A tidier home, and a quicker way around.** A new "Jump to" bar on your home gives one-tap access to the calendar, standings, results and news for any series, and the "Up next" countdown and latest results now stay pinned at the top. Weekend and session pages gained quick links straight to that series' standings and results, so you're never more than a click away. Following series and customising your home are now part of a free account — sign in to tailor your home; schedules, standings, results and everything else stay open to everyone.

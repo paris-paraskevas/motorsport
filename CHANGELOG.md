@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.154.0 — 2026-07-02
+
+Arc-2 follow-ups: a marketing teaser landing for `/social` + News promoted to a top-level nav item.
+
+### Added
+- **`/social` teaser landing** (`app/(app)/social/page.tsx`): a guest now sees a public, indexable marketing preview of the predictions game — the Play / Leagues / Friends cards (routing to `/sign-in`) + a "free to play" CTA + the public Blog/Threads cards — instead of the bare "sign in to manage friends and leagues" line. Signed-in users get the live destinations unchanged. Page is now indexable (dropped `robots: index:false`) with a marketing `description`.
+
+### Changed
+- **Top nav → clickable News** (`components/AppShell.tsx`): the menu-only "Community" trigger becomes a **News** item — navigates to `/news` on click, with Blog + Threads on its hover panel. News is now a one-click top-level destination (IA increment 2). The Series mega-menu was already category-grouped, so no change there. The deeper IA taste calls (Social→"Play", F1-Analysis nav slot, Drivers/Teams nav home, per-page density, full jobs-to-be-done regroup) remain deferred pending an explicit decision.
+
 ## 0.153.0 — 2026-07-02
 
 Account-gate personalization + a fixed Home spine, a "Jump to" launcher and weekend/session quick-links (Arc-2 IA increment 1).
