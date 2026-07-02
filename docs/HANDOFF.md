@@ -6,7 +6,28 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-02 (LATEST) — WAVE B SHIPPED: ALL 7 PRs MERGED → main 0.151.0 · ▶ REMAINING = PROD EYEBALL (esp. NLS datacenter) + MotoGP CHART BUG + ARC-2 DECISIONS
+## ⚡ Next session pickup — 2026-07-02 (LATEST) — main 0.151.0 → 0.154.0 (#365–#368) · MotoGP chart ROOT-CAUSED + FIXED (red-flag restart) · ▶ REMAINING = anon VISUAL PASSES + deferred IA taste calls
+
+**Shipped + merged this session (0.151.0 → 0.154.0):**
+- **#365 (0.152.1)** — greened `lib/openf1/turns.test.ts` (2 fixtures shipped red in #330 and never passed: a dead-loop phantom corner + an arc below the 0.30 detection threshold — **test-only fix, `detectTurns` unchanged**) + **re-landed the MotoGP chart gate** that missed the #364 squash by ~5 min.
+- **#366 (0.152.2)** — **MotoGP chart root-caused, FIXED, and re-enabled.** See the correction below. Fix in `lib/results/motogp.ts` (`pickScoringRace`).
+- **#367 (0.153.0)** — **Arc-2 IA increment 1:** following + home-customize are now **signed-in only** (guests get the fixed default home + "sign in — it's free" CTAs — reverses the device-local-guest model, per operator); **Up-next + Just-missed pinned as a non-hideable spine** (`SPINE_IDS` in `lib/homeLayout.ts`); a **"Jump to" launcher** (`components/HomeLauncher.tsx`, category-grouped Standings/Results pickers) above the widget zone; **Standings/Results quick-links** in weekend + session headers.
+- **#368 (0.154.0)** — **`/social` teaser landing** for guests (indexable marketing preview) + the menu-only "Community" nav trigger is now a clickable top-level **News** (→ `/news`, Blog/Threads on hover).
+
+**🔑 CORRECTION — the MotoGP chart bug was NOT what the prior handoff diagnosed.** Not per-round value gaps, not a name split, not a finisher-floor. Root cause (live-Pulselive + motogp.com verified): the **2026 Grand Prix of Catalonia (R6) was red-flagged and restarted.** Pulselive exposes TWO race sessions — the annulled first race (`RAC`, every row **0 points**) and the scored restart (`RAC2`, the full **140 pts**, Di Giannantonio's win, which the standings count). `fetchMotoGPSeasonResults` picked the first `RAC` → Catalonia contributed 0 → every scorer under-counted by exactly their Catalonia finish (the clean GP-scale deltas). Fix = **`pickScoringRace`** (build all RAC-family sessions, keep the one carrying points). **Verified: all 27 riders now reconcile exactly to the standings; the chart is un-gated + correct.** The "28 vs 27 series" was Lorenzo Savadori (a 0-pt wildcard). NB the prior plan (`results-overrides.json` curation) would have **mis-fired** — the override mechanism keys by round only, so it can't target the GP without corrupting that round's Sprint.
+
+**▶ OPEN for next session:**
+- **Visual passes owed** — every Playwright smoke this session ran **signed-in** (the operator's browser has a persistent Clerk session), so the ANON surfaces are code-verified but not eyeballed: **anon home walling** (#367 — sign out on prod → follow CTA on `/settings`, customize CTA on `/settings/customize`, home = fixed default, all series); **anon `/social` teaser** (#368); the **weekend/session Standings·Results quick-links**; the **News hover panel** at desktop widths; the **launcher** at 390/1024/1440 + live states + its keyboard/focus order (it's first in DOM, visually CSS-order-3).
+- **Signed-in F1-analysis-gate pass** (#361) — still owed from the prior handoff.
+- **Deferred IA taste calls** (#15 increment 2/3, held pending an explicit decision): **Social→"Play"** label; **F1-Analysis top-level nav slot**; **Drivers/Teams nav home**; **per-page density/disclosure** pass; **full jobs-to-be-done regroup**.
+- **Flaky test:** one transient full-suite failure surfaced once (passed on immediate re-run) — not turns/sitemap; dedicated hunt if it recurs.
+- **#14 = DONE** (teaser landings: `/settings/customize` CTA in #367, `/social` teaser in #368).
+
+**Gotchas this session:** after a base PR squash-merges, a stacked child needs `git rebase --onto origin/main <old-base-sha> <branch>` to drop the duplicated base commit (used to retarget #366 → main cleanly). The dev server ran on the feature branches (localhost served each branch's build). `.env.local` still has no KV vars (signed-in writes no-op in dev). Playwright uses the operator's signed-in session — sign out to verify anon.
+
+---
+
+## ⚡ Next session pickup — 2026-07-02 — WAVE B SHIPPED: ALL 7 PRs MERGED → main 0.151.0 · ▶ REMAINING = PROD EYEBALL (esp. NLS datacenter) + MotoGP CHART BUG + ARC-2 DECISIONS
 
 **✅ ALL MERGED 2026-07-02 (operator-approved merge run):** #356→#361 squash-merged in stack order + #362 docs — **main = 0.151.0**, prod deploying. Every PR fully verified pre-merge: anon + **signed-in** browser passes (operator signed in on localhost — gate unlock, Replay toggle, compare chart, 3D onboard all render), ultracode adversarial review (0 material), tsc, 642/644 tests (the 2 reds = pre-existing `turns.test` from clean main). Also shipped in-stack per operator: the ⌘K glyph removed from the search trigger (we're not on Mac; Ctrl+K still works, Enter-nav verified). **Merge-cascade lesson:** do NOT `--delete-branch` while a stacked PR still bases on it — GitHub CLOSED #357 (recovered: re-push the branch SHA → reopen → retarget); per-PR the version files resolve `--ours` (the branch is the superset) and code conflicts against fresher squashes resolve `--ours` after diff-verifying only that PR's changes remain.
 

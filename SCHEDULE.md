@@ -961,6 +961,22 @@ Won't touch: merging to prod (visual gate); the deferred gating wall + the IA bu
 
 Active: _(autonomous overnight; no `[+Nm]` prefixes)_
 
+### Thu 2026-07-02 (continued) — Wave B merged + 5 more PRs shipped → main 0.147.0 → 0.154.0
+
+Operator returned; merged Wave B (#356–#362 → 0.151.0), then a continuous build-and-ship session (#364–#368 → 0.154.0), all merged to prod.
+
+- → done: **turns.test greened + MotoGP gate re-landed** (#365, 0.152.1) — the 2 `turns.test` reds were broken fixtures shipped in #330 (test-only fix; `detectTurns` unchanged); re-landed the MotoGP chart gate that missed the #364 squash by ~5 min.
+- → done: **MotoGP chart root-caused + FIXED, un-gated** (#366, 0.152.2) — the 2026 Catalonia GP (R6) is a red-flag restart; the parser summed the annulled `RAC` (0 pts) instead of the scored `RAC2` (140 pts). Fixed via `pickScoringRace`; all 27 riders reconcile. (Corrects the prior "per-round value gaps" theory.)
+- → done: **Arc-2 IA increment 1** (#367, 0.153.0) — following + home-customize walled to signed-in (guests get the fixed default + sign-in CTAs); Up-next/Just-missed pinned as a spine; "Jump to" launcher; weekend/session Standings·Results quick-links.
+- → done: **`/social` teaser landing + top-level clickable News nav** (#368, 0.154.0).
+- → done: **session-end triage** — HANDOFF pickup block + IDEAS closures + corrected MotoGP diagnosis.
+- Verified per PR: tsc + 648 tests + Playwright smoke (signed-in, 0 console errors). **Owed: anon visual passes** (home walling, `/social` teaser, quick-links, launcher widths/focus) — every smoke ran signed-in.
+- Started: **British GP preview** — research agents launched (facts / championship / news); synthesis + draft pending.
+
+Won't touch: the deferred IA taste calls (Social→"Play", F1-Analysis nav slot, Drivers/Teams nav home, per-page density, full jobs-to-be-done regroup) — held for explicit decisions.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
