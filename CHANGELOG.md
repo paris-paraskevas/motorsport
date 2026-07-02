@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.153.0 — 2026-07-02
+
+Account-gate personalization + a fixed Home spine, a "Jump to" launcher and weekend/session quick-links (Arc-2 IA increment 1).
+
+### Changed
+- **Following + home customization are now signed-in only** (`lib/useFollowedSeries.ts`, `lib/useHomeLayout.ts`). A guest always follows everything and gets the fixed default Home; `setFollowed` + layout mutations no longer persist for guests (an inline fold/expand stays ephemeral for the session — so the default-collapsed Just-missed can still be opened). The Settings "Followed championships" section (`components/SettingsClient.tsx`) and the customize surface (`components/HomeCustomizeBanner.tsx` → `/settings/customize`) render a "sign in — it's free" CTA for guests. Reverses the prior device-local-guest model, per operator decision.
+- **Fixed Home spine** (`lib/homeLayout.ts`): `chyron` (Up next) + `just-missed` are pinned to the front of the layout and can never be hidden or reordered (new `SPINE_IDS`); `reconcileHomeLayout` enforces it (strips them from `hidden`, prepends them to `order`) and the customize controls (`components/HomeCustomizeBanner.tsx`) only reorder/hide the non-spine blocks. `just-missed` stays collapsible.
+
+### Added
+- **Home "Jump to" launcher** (`components/HomeLauncher.tsx`): a chip row — Calendar · F1 Analysis · Standings▾ · Results▾ · News · Social — pinned above the customizable widget zone (`HomeContent` renders it at CSS order 3, between the spine and the widgets; `orderOf` scaled ×2 to make room), shown to everyone since all content is public. Standings/Results open a category-grouped series picker (reuses `groupSeriesByCategory`); the long tail is covered by ⌘K search. F1 Analysis carries a lock hint for guests. The page threads a minimal series list (`app/(app)/app/page.tsx`).
+- **Series quick-links on weekend + session pages** (`components/weekend/WeekendHero.tsx` + the session page header): Standings + Results links in the header meta row, so reaching a series' standings from a deep session page is one click — closes the long-standing "standings is too far back" IA gap.
+
+Verified: `tsc` clean; 648 tests green (incl. new spine-reconcile cases); Playwright smoke (signed-in) — launcher + spine + every widget render with 0 console errors, and the Standings picker opens category-grouped with correct `/series/<slug>/standings` links. **Owed — operator visual pass:** the anon walling CTAs (the smoke browser was signed-in), the weekend/session quick-links, and mobile/1024/1440 + live states. NB the launcher sits first in DOM (CSS-order-3 visually) — confirm keyboard/focus order in the pass.
+
 ## 0.152.2 — 2026-07-02
 
 Fix the MotoGP season-trend under-count at the source and re-enable the chart (supersedes the 0.152.1 interim gate).

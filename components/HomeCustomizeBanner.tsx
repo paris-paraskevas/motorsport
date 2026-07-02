@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, type ComponentType } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import {
   ArrowUp,
   ArrowDown,
@@ -15,6 +17,7 @@ import {
   FlagTriangleRight,
   GripVertical,
   LayoutGrid,
+  Lock,
   MapPin,
   Newspaper,
   RotateCcw,
@@ -26,6 +29,7 @@ import {
 import {
   AVAILABLE_WIDGETS,
   HOME_ELEMENTS,
+  SPINE_IDS,
   type AvailableWidget,
   type HomeElementId,
   type HomeLayoutPrefs,
@@ -109,20 +113,61 @@ const NUMERIC_SETTING: Partial<
 };
 
 function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: string; name: string }[] }) {
-  const { layout, move, reorder, toggleHidden, toggleCollapsed, setWidgetSetting, reset } = useHomeLayout();
+  const { isSignedIn } = useAuth();
+  const { layout, reorder, toggleHidden, toggleCollapsed, setWidgetSetting, reset } = useHomeLayout();
   const { followed } = useFollowedSeries();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [openId, setOpenId] = useState<HomeElementId | null>(null);
+
+  // Customising the Home (reorder / hide / fold / per-widget settings) is a
+  // free-account feature — a guest gets the fixed default layout, so show a
+  // sign-in CTA instead of the controls. (useHomeLayout no-ops persistence for
+  // guests, so nothing here could be saved anyway.)
+  if (!isSignedIn) {
+    return (
+      <div className="border border-border bg-surface/40 px-6 py-8 text-center">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-border text-text-faint">
+          <Lock size={16} aria-hidden />
+        </div>
+        <p className="mx-auto max-w-sm text-sm text-text-muted">
+          Rearrange your Home — reorder, fold or hide any block and pin extra widgets. It’s a free account feature.
+        </p>
+        <Link
+          href="/sign-in"
+          className="mt-4 inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-brand"
+        >
+          Sign in to customise
+        </Link>
+        <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          Free — an account keeps it free
+        </p>
+      </div>
+    );
+  }
+
+  // The spine (Up-next + Just-missed) is fixed — it isn't listed below and can't
+  // be reordered or hidden. Controls operate on the rest; every reorder
+  // re-prepends the spine so it stays pinned to the top.
+  const controllable = layout.order.filter(id => !(SPINE_IDS as readonly string[]).includes(id));
+
+  const moveControllable = (id: HomeElementId, dir: -1 | 1) => {
+    const i = controllable.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= controllable.length) return;
+    const next = [...controllable];
+    [next[i], next[j]] = [next[j], next[i]];
+    reorder([...SPINE_IDS, ...next]);
+  };
 
   const onDrop = (to: number) => {
     if (dragIndex === null || dragIndex === to) {
       setDragIndex(null);
       return;
     }
-    const next = [...layout.order];
+    const next = [...controllable];
     const [moved] = next.splice(dragIndex, 1);
     next.splice(to, 0, moved);
-    reorder(next);
+    reorder([...SPINE_IDS, ...next]);
     setDragIndex(null);
   };
 
@@ -233,7 +278,7 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
       </div>
       <div>
         <ul className="divide-y divide-border">
-          {layout.order.map((id, i) => {
+          {controllable.map((id, i) => {
             const hidden = layout.hidden.includes(id);
             const collapsed = layout.collapsed.includes(id);
             const meta = META.get(id);
@@ -263,7 +308,7 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
                   </span>
                   <button
                     type="button"
-                    onClick={() => move(id, -1)}
+                    onClick={() => moveControllable(id, -1)}
                     disabled={i === 0}
                     aria-label={`Move ${meta?.label ?? id} up`}
                     className="p-1 text-text-muted hover:text-text disabled:opacity-30"
@@ -272,8 +317,8 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
                   </button>
                   <button
                     type="button"
-                    onClick={() => move(id, 1)}
-                    disabled={i === layout.order.length - 1}
+                    onClick={() => moveControllable(id, 1)}
+                    disabled={i === controllable.length - 1}
                     aria-label={`Move ${meta?.label ?? id} down`}
                     className="p-1 text-text-muted hover:text-text disabled:opacity-30"
                   >

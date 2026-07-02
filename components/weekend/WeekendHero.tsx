@@ -88,6 +88,22 @@ export function WeekendHero({
             </span>
           </>
         )}
+        {/* Quick-links back into the series — Standings / Results are otherwise
+            a multi-step back-track from a weekend (IA: "standings is too far"). */}
+        <span className="text-border-strong">·</span>
+        <Link
+          href={`/series/${seriesSlug}/standings`}
+          className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          Standings
+        </Link>
+        <span className="text-border-strong">·</span>
+        <Link
+          href={`/series/${seriesSlug}/results`}
+          className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          Results
+        </Link>
       </div>
 
       <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
