@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.149.0 — 2026-07-02
+
+**Search, everywhere.** Press **⌘K** (or tap the new search box in the header, or hit **/**) to jump straight to any driver, team, race weekend, series, blog post or page — fuzzy matching, results grouped by type, arrow keys to pick.
+
 ## 0.148.0 — 2026-07-01
 
 **Clearer names for the F1 analysis tools.** The "Qualifying Decoder" is now called **Qualifying Analysis**, and the lap-by-lap ghost view is now simply **Replay** — the same tools, with plainer names across the site, menus and notifications.
