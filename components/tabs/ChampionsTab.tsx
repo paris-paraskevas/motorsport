@@ -438,9 +438,9 @@ function CollapsibleSection({
       className="group border-y border-border overflow-hidden"
     >
       <summary className="flex items-baseline justify-between gap-3 px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
-        <span className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold">
+        <h2 className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold">
           {label}
-        </span>
+        </h2>
         <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
           {count} {count === 1 ? 'champion' : 'champions'}
         </span>
