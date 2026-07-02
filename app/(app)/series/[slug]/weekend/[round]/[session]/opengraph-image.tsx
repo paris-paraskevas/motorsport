@@ -46,7 +46,7 @@ export default async function Image({
     }
     const isQuali = /qualifying|superpole|shootout/i.test(sessionName);
     const isRace = !isQuali && /race|sprint/i.test(sessionName);
-    if (slug === 'f1' && isQuali) badge = 'Qualifying Decoder';
+    if (slug === 'f1' && isQuali) badge = 'Qualifying Analysis';
     else if (slug === 'f1' && isRace) badge = 'Race Story';
   } catch {
     // generic card

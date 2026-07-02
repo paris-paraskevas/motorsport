@@ -737,7 +737,7 @@ export default async function SessionPage({
       </CollapsibleSection>
 
       {decoderSummary && (
-        <CollapsibleSection title="Qualifying Decoder" defaultOpen>
+        <CollapsibleSection title="Qualifying Analysis" defaultOpen>
           <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
         </CollapsibleSection>
       )}

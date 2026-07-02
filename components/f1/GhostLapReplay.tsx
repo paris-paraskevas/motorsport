@@ -165,7 +165,7 @@ export function GhostLapReplay({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-text">Ghost lap replay</h3>
+        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-text">Lap replay</h3>
         <span className="font-mono text-[11px] tabular-nums text-text-muted">
           {gap == null ? (
             <span className="text-text-faint">gap unavailable</span>
@@ -185,7 +185,7 @@ export function GhostLapReplay({
       </div>
 
       <div className="border border-border bg-surface/40 p-3">
-        <svg viewBox={outline.viewBox} className="h-auto w-full" role="img" aria-label="Animated ghost-lap replay on the circuit map">
+        <svg viewBox={outline.viewBox} className="h-auto w-full" role="img" aria-label="Animated lap replay on the circuit map">
           <path d={outline.d} fill="none" stroke="var(--border-strong)" strokeWidth={4} strokeLinejoin="round" strokeLinecap="round" />
           {posA && (
             <circle cx={posA.x} cy={posA.y} r={dotR} fill={driverA.teamColour} stroke="var(--bg)" strokeWidth={dotR * 0.35}>

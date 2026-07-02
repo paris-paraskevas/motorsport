@@ -53,7 +53,7 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'threads', label: 'Paddock chatter', hint: 'The newest approved community threads — tap in to read or reply.', collapsible: true },
   { id: 'bets', label: 'Your bets & credits', hint: 'Your open bets, credit balance and the next market closing. Signed-in only.', collapsible: true },
   { id: 'social', label: 'Your leagues & friends', hint: 'Your prediction leagues (with your rank) and a friends summary. Signed-in only.', collapsible: true },
-  { id: 'latest-decoded', label: 'Latest Decoded', hint: 'The most recent F1 qualifying + race, deep-linked to the Decoder and Race Story.', collapsible: true },
+  { id: 'latest-decoded', label: 'Latest Analysis', hint: 'The most recent F1 qualifying + race, deep-linked to the Qualifying Analysis and Race Story.', collapsible: true },
   { id: 'where-to-watch', label: 'Where to watch', hint: 'Broadcast links for your next few upcoming sessions.', collapsible: true },
   { id: 'next-weather', label: 'Next-race weather', hint: 'The forecast for your next followed round.', collapsible: true },
   { id: 'driver-spotlight', label: 'Driver spotlight', hint: 'A rotating driver from your series, with links into Drivers and Teams.', collapsible: true },

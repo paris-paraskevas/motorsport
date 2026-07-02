@@ -193,7 +193,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
         <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
         <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
         <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          Decoder &amp; Race Story →
+          Analysis &amp; Race Story →
         </span>
       </Link>
       <div className="grid grid-cols-3 gap-x-6 gap-y-4">

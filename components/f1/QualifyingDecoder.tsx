@@ -171,7 +171,7 @@ export function QualifyingDecoder({
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
-                    Ghost lap
+                    Replay
                   </span>
                   <div className="flex gap-1">
                     {([['2D', false], ['Onboard', true]] as const).map(([label, is3d]) => (
