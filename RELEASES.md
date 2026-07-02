@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.152.0 — 2026-07-02
+
+**Filter your search.** The search box now has quick filter chips — narrow results to just Drivers, Teams, Series, Weekends, Blog or Pages, each with a live count. Internal: hardened the sign-in-only preference saves so they never error on a mis-provisioned build, and the welcome wizard no longer re-appears if it can't reach its store.
+
 ## 0.151.0 — 2026-07-02
 
 **A free account unlocks the F1 analysis.** The lap-by-lap Qualifying Analysis, the ghost Replay, the Race Story and the driver head-to-head now ask you to sign in (it's free) — schedules, standings, results, champions and everything else stay open to everyone.
@@ -18,7 +22,7 @@ What's new in Paddock Tracker. Newest first.
 
 ## 0.149.0 — 2026-07-02
 
-**Search, everywhere.** Press **⌘K** (or tap the new search box in the header, or hit **/**) to jump straight to any driver, team, race weekend, series, blog post or page — fuzzy matching, results grouped by type, arrow keys to pick.
+**Search, everywhere.** Hit **/** or the header search box (**Ctrl-K**, or **⌘K** on Mac) to jump straight to any driver, team, race weekend, series, blog post or page — fuzzy matching, results grouped by type, arrow keys to pick.
 
 ## 0.148.0 — 2026-07-01
 

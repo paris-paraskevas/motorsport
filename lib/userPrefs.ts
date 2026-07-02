@@ -9,6 +9,18 @@ function isKvConfigured(): boolean {
   );
 }
 
+// Guard for a KV write. KV is always provisioned in production, so a missing
+// binding THERE is a real misconfiguration → throw so it's caught loudly. In
+// dev (no local KV creds) a missing store is expected, so degrade to a no-op
+// instead of 500-ing every write. Returns false when the caller should skip.
+function assertKvForWrite(): boolean {
+  if (isKvConfigured()) return true;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Vercel KV is not configured.');
+  }
+  return false;
+}
+
 export async function getUserFollowed(userId: string): Promise<string[] | null> {
   if (!isKvConfigured()) return null;
   const v = await kv.get<string[]>(`${PREFIX}${userId}:followed`);
@@ -16,9 +28,7 @@ export async function getUserFollowed(userId: string): Promise<string[] | null> 
 }
 
 export async function setUserFollowed(userId: string, slugs: string[]): Promise<void> {
-  if (!isKvConfigured()) {
-    throw new Error('Vercel KV is not configured.');
-  }
+  if (!assertKvForWrite()) return;
   await kv.set(`${PREFIX}${userId}:followed`, slugs);
 }
 
@@ -29,9 +39,7 @@ export async function isUserOnboarded(userId: string): Promise<boolean> {
 }
 
 export async function markUserOnboarded(userId: string): Promise<void> {
-  if (!isKvConfigured()) {
-    throw new Error('Vercel KV is not configured.');
-  }
+  if (!assertKvForWrite()) return;
   await kv.set(`${PREFIX}${userId}:onboarded`, true);
 }
 
@@ -84,9 +92,7 @@ export async function setUserNotifPrefs(
   userId: string,
   patch: Partial<NotifPrefs>,
 ): Promise<NotifPrefs> {
-  if (!isKvConfigured()) {
-    throw new Error('Vercel KV is not configured.');
-  }
+  if (!assertKvForWrite()) return { ...DEFAULT_NOTIF_PREFS, ...patch };
   const current = await getUserNotifPrefs(userId);
   const next: NotifPrefs = { ...current, ...patch };
   await kv.set(`${PREFIX}${userId}:notifPrefs`, next);
@@ -100,8 +106,6 @@ export async function getUserHomeLayout(userId: string): Promise<HomeLayoutPrefs
 }
 
 export async function setUserHomeLayout(userId: string, prefs: HomeLayoutPrefs): Promise<void> {
-  if (!isKvConfigured()) {
-    throw new Error('Vercel KV is not configured.');
-  }
+  if (!assertKvForWrite()) return;
   await kv.set(`${PREFIX}${userId}:homeLayout`, reconcileHomeLayout(prefs));
 }

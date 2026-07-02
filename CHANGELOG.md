@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.152.0 — 2026-07-02
+
+Search filter chips + local-dev resilience for the account-scoped writes.
+
+### Added
+- `components/search/SearchOverlay.tsx`: type-filter chips (All · Drivers · Teams · Series · Weekends · Series tabs · Blog · Pages) above the results — each shows a live count over the full result set, only the types actually present are shown, and the active chip narrows the results (keyboard nav operates on the filtered set). A new query resets the filter to All so it can't strand an empty view.
+
+### Fixed
+- `lib/userPrefs.ts`: KV writes (`setUserFollowed` / `markUserOnboarded` / `setUserNotifPrefs` / `setUserHomeLayout`) now degrade to a no-op when KV is unconfigured **in dev** (a store-less local build) instead of throwing 500s; **production still throws** (a missing KV binding there is a real misconfiguration to catch loudly).
+- `components/OnboardingWizard.tsx`: a device-local `paddock:onboarded` localStorage flag (mirrors the app's other device-local prefs) keeps the wizard dismissed once completed/skipped even when the server can't persist it (KV outage / store-less build), so it no longer loops.
+- `RELEASES.md`: the 0.149.0 search note said "Press ⌘K" (Mac-only) — corrected to include Ctrl-K.
+
 ## 0.151.0 — 2026-07-02
 
 Account gate on the F1 analysis surfaces (Arc 2, part 1) — the interactive analysis is now signed-in-only; all content stays public + indexable.

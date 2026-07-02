@@ -26,6 +26,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState('');
   const [docs, setDocs] = useState<SearchDoc[] | null>(INDEX_CACHE);
   const [active, setActive] = useState(0);
+  const [typeFilter, setTypeFilter] = useState<SearchType | 'all'>('all');
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -60,20 +61,30 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
 
   const results = useMemo(() => (docs ? searchDocs(docs, query, 40) : []), [docs, query]);
 
-  // Group for display; flatten (in display order) for keyboard navigation.
+  // Per-type counts over the FULL result set — drives the filter chips.
+  const counts = useMemo(() => {
+    const c: Partial<Record<SearchType, number>> = {};
+    for (const d of results) c[d.type] = (c[d.type] ?? 0) + 1;
+    return c;
+  }, [results]);
+
+  // Narrow to the chosen type (or all); group for display + flatten (in display
+  // order) for keyboard navigation.
   const { groups, flat } = useMemo(() => {
+    const scoped = typeFilter === 'all' ? results : results.filter((d) => d.type === typeFilter);
     const byType = new Map<SearchType, SearchDoc[]>();
-    for (const d of results) {
+    for (const d of scoped) {
       const arr = byType.get(d.type);
       if (arr) arr.push(d);
       else byType.set(d.type, [d]);
     }
     const grouped = TYPE_ORDER.filter((t) => byType.has(t)).map((t) => ({ type: t, items: byType.get(t)! }));
     return { groups: grouped, flat: grouped.flatMap((g) => g.items) };
-  }, [results]);
+  }, [results, typeFilter]);
 
   useEffect(() => {
     setActive(0);
+    setTypeFilter('all'); // a new query resets the type filter so it can't strand an empty view
   }, [query]);
 
   const go = (doc: SearchDoc | undefined) => {
@@ -135,6 +146,32 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
+        {docs && results.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2" role="tablist" aria-label="Filter results by type">
+            <FilterChip
+              label="All"
+              count={results.length}
+              active={typeFilter === 'all'}
+              onClick={() => {
+                setTypeFilter('all');
+                inputRef.current?.focus();
+              }}
+            />
+            {TYPE_ORDER.filter((t) => counts[t]).map((t) => (
+              <FilterChip
+                key={t}
+                label={TYPE_LABEL[t]}
+                count={counts[t]!}
+                active={typeFilter === t}
+                onClick={() => {
+                  setTypeFilter(t);
+                  inputRef.current?.focus();
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         <div ref={listRef} id="search-results" role="listbox" className="max-h-[60vh] overflow-y-auto">
           {docs === null ? (
             <p className="px-4 py-6 text-center font-mono text-xs uppercase tracking-[0.14em] text-text-faint">Loading…</p>
@@ -184,5 +221,35 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// A single type-filter chip: label + live count; lit when it's the active filter.
+function FilterChip({
+  label,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
+        active
+          ? 'border-border-strong bg-surface text-text'
+          : 'border-border text-text-faint hover:border-border-strong hover:text-text-muted'
+      }`}
+    >
+      {label}
+      <span className="tabular-nums opacity-70">{count}</span>
+    </button>
   );
 }
