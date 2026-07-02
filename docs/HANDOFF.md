@@ -6,7 +6,13 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-02 (LATEST) — OVERNIGHT RUN + MORNING TEST PASS · main still 0.147.0 · 7 stacked PRs OPEN, none merged · ▶ REMAINING = SIGNED-IN PASS + MERGE + MotoGP CHART BUG
+## ⚡ Next session pickup — 2026-07-02 (LATEST) — WAVE B SHIPPED: ALL 7 PRs MERGED → main 0.151.0 · ▶ REMAINING = PROD EYEBALL (esp. NLS datacenter) + MotoGP CHART BUG + ARC-2 DECISIONS
+
+**✅ ALL MERGED 2026-07-02 (operator-approved merge run):** #356→#361 squash-merged in stack order + #362 docs — **main = 0.151.0**, prod deploying. Every PR fully verified pre-merge: anon + **signed-in** browser passes (operator signed in on localhost — gate unlock, Replay toggle, compare chart, 3D onboard all render), ultracode adversarial review (0 material), tsc, 642/644 tests (the 2 reds = pre-existing `turns.test` from clean main). Also shipped in-stack per operator: the ⌘K glyph removed from the search trigger (we're not on Mac; Ctrl+K still works, Enter-nav verified). **Merge-cascade lesson:** do NOT `--delete-branch` while a stacked PR still bases on it — GitHub CLOSED #357 (recovered: re-push the branch SHA → reopen → retarget); per-PR the version files resolve `--ours` (the branch is the superset) and code conflicts against fresher squashes resolve `--ours` after diff-verifying only that PR's changes remain.
+
+**Post-merge follow-ups:** (1) **prod eyeball** once Vercel converges to 0.151.0 — especially **`/series/nls/results` on the datacenter** (#360's whole point) + an anon spot-check of the gate teasers; (2) the **MotoGP chart-parity bug** (section below); (3) the **Arc-2 decisions** — gating scope (device-local model) `docs/research/2026-07-02-account-gating.md` + IA increment + 7 taste Qs `docs/research/2026-07-02-ia-restructure.md`; (4) local-env note: `.env.local` has no KV vars → signed-in `/api/user/prefs`/`onboarded` 500 on localhost (wizard re-shows) — env artifact, fine on prod.
+
+*(The block below records the run as it stood pre-merge — historical.)*
 
 **main = 0.147.0 — nothing merged, prod UNCHANGED.** Operator authorised an autonomous overnight run. I built **Arc 1 (rename → search → H2H) + owed Wave-A fixes + the NLS prod-bug fix + Arc-2 gating part 1** + the IA design tournament — then, once the browser unlocked, ran a **full testing pass**: real Playwright (anon) on every UI surface + an **ultracode adversarial review of all 6 code PRs** + the Wave-A owed visual passes. 3 real bugs found + fixed + cascaded through the stack. One NEW prod bug found (MotoGP chart parity, below).
 
