@@ -40,6 +40,8 @@ import {
 } from '@/lib/results-cache';
 import { buildDecoderSummary, type DecoderSummary } from '@/lib/openf1/decoder';
 import { QualifyingDecoder } from '@/components/f1/QualifyingDecoder';
+import { AnalysisGate } from '@/components/f1/AnalysisGate';
+import { auth } from '@clerk/nextjs/server';
 import { buildRaceStory } from '@/lib/openf1/racestory-loader';
 import type { RaceStoryData } from '@/lib/openf1/racestory';
 import { RaceStory } from '@/components/f1/RaceStory';
@@ -581,6 +583,15 @@ export default async function SessionPage({
   // KV-cached per session, so a warm render skips the OpenF1 fan-out; the
   // Decoder traces fetch client-side per pair. Resolve this session's OpenF1 key
   // once and reuse it for every board.
+  // Account gate: the F1 telemetry ANALYSIS surfaces (Qualifying Analysis + the
+  // ghost Replay, Race Story, Practice Analysis) are signed-in-only. Resolved
+  // server-side so a locked visitor never receives the analysis payload (a
+  // client <SignedIn> wrap would still ship it in the HTML). Classification and
+  // the stat boards (speed trap / pit league / overtakes) stay public. The page
+  // is already force-dynamic, so auth() adds no caching penalty.
+  const { userId } = await auth();
+  const analysisUnlocked = Boolean(userId);
+
   let decoderSummary: DecoderSummary | null = null;
   let raceStory: RaceStoryData | null = null;
   let speedTrap: SpeedTrapData | null = null;
@@ -736,23 +747,44 @@ export default async function SessionPage({
         )}
       </CollapsibleSection>
 
-      {decoderSummary && (
-        <CollapsibleSection title="Qualifying Analysis" defaultOpen>
-          <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
-        </CollapsibleSection>
-      )}
+      {decoderSummary &&
+        (analysisUnlocked ? (
+          <CollapsibleSection title="Qualifying Analysis" defaultOpen>
+            <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
+          </CollapsibleSection>
+        ) : (
+          <AnalysisGate
+            title="Qualifying Analysis"
+            blurb="Lap-by-lap pole breakdown, sector and corner deltas, and the ghost-lap Replay."
+            seriesColor={color}
+          />
+        ))}
 
-      {raceStory && (
-        <CollapsibleSection title="Race Story" defaultOpen>
-          <RaceStory data={raceStory} seriesColor={color} />
-        </CollapsibleSection>
-      )}
+      {raceStory &&
+        (analysisUnlocked ? (
+          <CollapsibleSection title="Race Story" defaultOpen>
+            <RaceStory data={raceStory} seriesColor={color} />
+          </CollapsibleSection>
+        ) : (
+          <AnalysisGate
+            title="Race Story"
+            blurb="The strategy that decided the race — stints, tyre choices, pit windows and the moments that turned it."
+            seriesColor={color}
+          />
+        ))}
 
-      {practice && (
-        <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
-          <PracticeAnalysis data={practice} seriesColor={color} />
-        </CollapsibleSection>
-      )}
+      {practice &&
+        (analysisUnlocked ? (
+          <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
+            <PracticeAnalysis data={practice} seriesColor={color} />
+          </CollapsibleSection>
+        ) : (
+          <AnalysisGate
+            title="Practice Analysis"
+            blurb="Fastest laps and long-run race pace from every practice session."
+            seriesColor={color}
+          />
+        ))}
 
       {speedTrap && (
         <CollapsibleSection title="Speed Trap" defaultOpen={false}>
