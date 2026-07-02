@@ -11,6 +11,7 @@ import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
 import { HeaderNavMenu } from './HeaderNavMenu';
 import { PushSoundPlayer } from './PushSoundPlayer';
+import { SearchTrigger } from './search/SearchTrigger';
 
 // One nav system since 0.17.0 (operator: "navigation menu and burger bar can
 // go"): a single fixed header on every viewport — wordmark + inline links on
@@ -141,7 +142,10 @@ export function AppShell({
             )}
           </nav>
 
-          <div className="ml-auto" data-tour="account"><HeaderUtils /></div>
+          <div className="ml-auto flex items-center gap-1.5">
+            <SearchTrigger />
+            <div data-tour="account"><HeaderUtils /></div>
+          </div>
         </div>
       </header>
 

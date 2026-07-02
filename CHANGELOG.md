@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.149.0 — 2026-07-02
+
+Global search — a ⌘K command palette over drivers, teams, weekends, series (and their tabs), blog posts and top-level pages.
+
+### Added
+- `lib/search-index.ts` `buildSearchIndex()`: a flat, JSON-serialisable `SearchDoc[]` covering drivers/teams (`loadAllDrivers`/`loadAllTeams`), series + non-calendar tabs (`tabsFor`), weekends (resolved via `groupByWeekend` for URL parity with the sitemap/pages), blog (file MDX `loadAllPosts` + DB `publishedPosts`, fail-soft) and curated top-level pages. Deduped by URL (~1,074 docs today).
+- `app/api/search/route.ts`: serves the index `dynamic='force-static'` + hourly `revalidate` — built once, no per-request cost, refreshes newly-published posts / newly-past weekends. Fetched client-side once, cached in-module.
+- `lib/search-match.ts` `searchDocs()`: dependency-free fuzzy matcher (exact / prefix / word-start / substring / subsequence scoring; multi-word AND; gentle per-type weighting). Unit-tested — `lib/search-match.test.ts` (7 cases).
+- `components/search/SearchTrigger.tsx` + `SearchOverlay.tsx`: a header ⌘K / "/" trigger + a lazy (`dynamic ssr:false`) overlay — grouped results, arrow-key nav, Enter-to-open, Escape/backdrop close. The overlay, matcher and fetched index stay off the initial bundle. Mounted in `components/AppShell.tsx` (left of the account cluster).
+
+Indexes public content only (no `/social`, `/settings`) — consistent with the account-gating plan.
+
 ## 0.148.0 — 2026-07-01
 
 Renamed the user-facing "Decoder" wording to "Analysis" / "Replay" across the F1 telemetry surfaces. Copy-only; no behaviour change.
