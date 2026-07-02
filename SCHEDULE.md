@@ -946,6 +946,23 @@ Won't touch (held): OpenF1 LIVE tab (paid Sponsor tier — operator action), AdS
 
 ---
 
+### Thu 2026-07-02 — overnight autonomous run (Wave B + fixes) → 7 PRs #356–#362, NONE merged
+
+Operator left it overnight ("take care of everything; use ultracode if needed"). Held the visual-gate policy: everything is a review-ready PR, verified headlessly (tsc / unit tests / curl / anon-leak checks), NOT merged (MCP browser locked + previews SSO-walled). main stays 0.147.0; prod unchanged.
+
+- → done: **Arc 1** — Decoder→Analysis/Replay rename (#356, 0.148.0) · global ⌘K search (#357, 0.149.0) · F1 head-to-head `/f1/compare` (#358, 0.150.0).
+- → done: **owed Wave-A fixes** — overview.md fastest-lap + Champions `<h2>` a11y (#359, 0.150.1).
+- → done: **NLS prod fix** — root-caused (the `/wiki/` frontend blocks datacenter IPs) + fixed via the Wikimedia action API like the champions fetcher (#360, 0.150.2; 9/9 tests, live winners render). Safe to merge.
+- → done: **Arc-2 gating pt1** — F1 analysis account-walled, leak-free server-side (#361, 0.151.0; anon-leak-free verified). Rest of the wall specced + DEFERRED (device-local model = a product call): `docs/research/2026-07-02-account-gating.md`.
+- → done: **IA restructure** — 3-lens design tournament → design doc + proposal (#362, docs-only off main): `docs/research/2026-07-02-ia-restructure.md`. Needs operator taste + a visual pass.
+- Flag: pre-existing non-green tests on main — `turns.test` ×2 (deterministic), `sitemap-data` (flaky). Not mine.
+
+Won't touch: merging to prod (visual gate); the deferred gating wall + the IA build (need operator decisions/visual).
+
+Active: _(autonomous overnight; no `[+Nm]` prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**

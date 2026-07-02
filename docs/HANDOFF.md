@@ -6,9 +6,41 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-01 (LATEST) — main 0.147.0 · Wave-A shipped · ▶ WAVE B = FIRST PRIORITY
+## ⚡ Next session pickup — 2026-07-02 (LATEST) — OVERNIGHT AUTONOMOUS RUN · main still 0.147.0 · 7 stacked PRs OPEN, none merged · ▶ MORNING = VISUAL-VERIFY + MERGE THE STACK
 
-**main = 0.147.0.** Continued the ultracode waves. **▶ NEXT SESSION, FIRST PRIORITY: Wave B (below)** — it needs 3 operator decisions before it can run.
+**main = 0.147.0 — nothing merged overnight, prod UNCHANGED.** Operator went to sleep and authorised an autonomous overnight run ("take care of everything… use ultracode if needed"). I built **Arc 1 (rename → search → H2H) + owed Wave-A fixes + the NLS prod-bug fix + Arc-2 gating part 1**, plus an IA design tournament.
+
+### ▶ POLICY I HELD TO (why nothing is merged)
+The visual gate ("browser-verify before shipped") was **impossible overnight** — the MCP Playwright browser was locked, Vercel previews are SSO-walled, and you were asleep. The handoff's #1 lesson is "don't ship UI past the visual gate" (the 0.131.0 prod break). So **everything is a review-ready PR, verified as far as headlessly possible (tsc / unit tests / curl / anon-leak checks), NOT merged.** Your morning job: visual-verify + merge the stack in order.
+
+### The stack (merge in this order — each PR's base is the previous)
+| PR | ver | what | headless verify | merge note |
+|---|---|---|---|---|
+| #356 | 0.148.0 | rename "Decoder"→"Qualifying Analysis" / "Replay" (visible copy only) | tsc✓, 3 rendered surfaces 0-legacy | eyeball the client-only **"Replay"** toggle |
+| #357 | 0.149.0 | global ⌘K search (static index + fuzzy overlay) | tsc✓, matcher 7/7, index route 200/1074 docs, button in SSR | eyeball ⌘K open→type→arrow→enter |
+| #358 | 0.150.0 | F1 head-to-head `/f1/compare` | tsc✓, picker + Norris/Piastri comparison render | eyeball picker submit + chart |
+| #359 | 0.150.1 | owed: overview.md fastest-lap fix + Champions `<h2>` a11y | tsc✓ | trivial; safe |
+| #360 | 0.150.2 | **NLS prod fix** — fetch via Wikimedia action API not `/wiki/` | tsc✓, 9/9, live winners render | **safe to merge** (server fetch path, no UI) |
+| #361 | 0.151.0 | **Arc-2 gating pt1** — F1 analysis account-walled (leak-free) | tsc✓, anon-leak-free confirmed | **HOLD — needs signed-in visual pass** (does the analysis render signed-in? `/sign-in` round-trip?) |
+| #362 | docs | **IA restructure — DESIGN DOC + proposal** (off main, independent; tournament `wf_bdfe1a86-402`) | tournament synthesis | pick a rollout increment; answer the 7 open Qs |
+
+**Squash-merge caveat (documented before):** merging #356 squashed will make the shared files (CHANGELOG/RELEASES/package.json) diverge from the stack → resolve per the usual `git fetch` + `--ours` on package.json + eyeball-CHANGELOG dance. `gh` is on `paris-paraskevas` (keep).
+
+### ⚠️ Owed visual/signed-in passes (per PR above) + one flag
+- Per-PR eyeballs listed in the table. The **gating (#361) signed-in path is the most important** — I could only verify the anon/leak-free side headlessly.
+- **Pre-existing test reds (NOT mine):** on clean `main`, `lib/openf1/turns.test.ts` fails ×2 (deterministic — the turn-detection behind the Analysis delta-chart's turn axis; could be a real edge bug or stale tests) and `lib/sitemap-data.test.ts` is **flaky** (a different subset fails per run). The suite is not green on main — worth a dedicated look.
+
+### Arc-2 gating — what's DONE vs DEFERRED
+Done (pt1, #361): the F1 analysis (Qualifying Analysis + Replay, Race Story, Practice Analysis, `/f1/compare`) is signed-in-only, server-gated leak-free; all content stays public. The write-actions (follow/notifications/threads/bets) were **already API-gated** — mapped in `docs/research/2026-07-02-account-gating.md`. **DEFERRED (needs your product call):** walling `/social` pages, home-customise and **following** would reverse the "device-local guest" model (anon currently follows + customises via localStorage). That's a UX/architecture reversal — specced in the doc, held for your decision + a visual pass.
+
+### IA restructure (Arc-2, subjective + high blast radius) — PR #362 (docs)
+Ran a design tournament (3 lens-diverse proposals → adversarial synthesis) → **`docs/research/2026-07-02-ia-restructure.md`** (PR #362, docs-only off main). NOT a blind nav rewrite — it needs your taste + a visual pass. **Recommendation:** evolve-not-revolt spine (keep the 0.97.0 shell) + a home launcher ("Up next" → "Just missed" → a "Jump to" chip row with a Standings▾/Results▾ series-picker) + two low-risk label wins, in **3 increments** (inc 1 = Home v3 + launcher + weekend breadcrumb; the Decoder→Analysis copy sweep is already in #356). **7 taste/product questions await you** in the doc (e.g. does F1 Analysis keep a top-level slot; Social vs "Play"; do Drivers/Teams get a nav home now).
+
+---
+
+## ⚡ Next session pickup — 2026-07-01 — main 0.147.0 · Wave-A shipped · WAVE B (now IN PROGRESS as the overnight PRs above)
+
+**main = 0.147.0.** Continued the ultracode waves. Wave B is being delivered as the stacked PRs in the 2026-07-02 block above.
 
 ### Wave A — SHIPPED (ultracode workflow, 6/6 merged)
 - **0.142.0 (#351)** durable last-good (`withSourceSnapshot`) extended to WEC/FE/WRC/NASCAR standings. 145 tests green.
