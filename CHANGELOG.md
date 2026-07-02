@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.150.0 — 2026-07-02
+
+F1 driver head-to-head — `/f1/compare?a=&b=`.
+
+### Added
+- `app/(app)/f1/compare/page.tsx`: pick two F1 drivers → side-by-side season stats (position / points / wins), a race-by-race head-to-head record (who finished ahead over shared rounds), a two-driver points-trajectory chart, and last-5 form. Reuses `driverSeasonForm` (`lib/profile-stats`), `buildSeasonTrendData` (`lib/season-trend`) and the existing `SeasonTrendChart` (filtered to the two drivers) off `loadSnapshotSource('f1')` — no new fetch or parser. The picker is a native GET form (works without client JS); canonical is the bare `/f1/compare` (query combos aren't indexed). Discoverable via global search + a link on the `/f1/analysis` hub.
+- `lib/search-index.ts`: `/f1/compare` added to the searchable pages.
+
+Quali head-to-head is deferred (needs a per-weekend OpenF1 fan-out); F1-only for now — extending to other live-standings series is a follow-up.
+
 ## 0.149.0 — 2026-07-02
 
 Global search — a ⌘K command palette over drivers, teams, weekends, series (and their tabs), blog posts and top-level pages.

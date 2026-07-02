@@ -38,6 +38,7 @@ const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
   { url: '/blog', title: 'Blog', subtitle: 'Analysis & recaps' },
   { url: '/threads', title: 'Threads', subtitle: 'Fan discussion' },
   { url: '/series', title: 'All series', subtitle: 'Browse every championship' },
+  { url: '/f1/compare', title: 'F1 head-to-head', subtitle: 'Compare two drivers' },
   { url: '/about', title: 'About Paddock', subtitle: 'What this is' },
   { url: '/changelog', title: 'Changelog', subtitle: "What's new" },
   { url: '/privacy', title: 'Privacy policy', subtitle: 'Legal' },

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.150.0 — 2026-07-02
+
+**Head-to-head.** Compare any two F1 drivers this season side by side — points, championship position, wins, their race-by-race record and a points-trajectory chart. Find it from the search box or the F1 analysis page.
+
 ## 0.149.0 — 2026-07-02
 
 **Search, everywhere.** Press **⌘K** (or tap the new search box in the header, or hit **/**) to jump straight to any driver, team, race weekend, series, blog post or page — fuzzy matching, results grouped by type, arrow keys to pick.

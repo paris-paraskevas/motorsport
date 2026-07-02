@@ -82,6 +82,15 @@ export default async function F1AnalysisPage() {
           strategy that decided Sunday — stints, tyre choices, pit windows and
           the moments that turned the race. Pick a round below.
         </p>
+        <Link
+          href="/f1/compare"
+          className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+        >
+          <span aria-hidden style={{ color }}>
+            ▸
+          </span>
+          Compare two drivers head-to-head →
+        </Link>
       </header>
 
       {pastRounds.length === 0 ? (
