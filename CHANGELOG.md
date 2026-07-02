@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.150.2 — 2026-07-02
+
+### Fixed
+- NLS Results were empty on production (0.144.0 known issue). `lib/results/nls.ts` fetched the `/wiki/` article frontend, which applies bot mitigation that blocks Vercel's datacenter IPs — residential fetches (and the pre-ship verifier) worked, but prod returned `[]` and the Results tab showed "temporarily unavailable". Switched to the Wikimedia **action API** (`action=parse&prop=text&formatversion=2`) with a descriptive, policy-compliant User-Agent: the programmatic endpoint cloud IPs can reach (the same class of endpoint `lib/wikipedia-champions.ts` already uses successfully on datacenter). `action=parse` returns the standard parser HTML (`mw-parser-output` / `mw-heading` / `table.wikitable`), so the positional Calendar/Results parser is unchanged; the `fetchNlsSeasonResults` test mock now returns the `{ parse: { text } }` shape. Verified: tsc + 9/9 NLS unit tests + the live Results tab rendering the overall winners.
+
 ## 0.150.1 — 2026-07-02
 
 Wave-A follow-ups: F1 points wording + Champions heading semantics.

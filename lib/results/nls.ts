@@ -32,29 +32,47 @@ export type { RaceResult, RaceResultEntry };
 //   full per-round classification can vendor a PDF lib and parse the
 //   Gesamtergebnis PDF; the winners-only shape here is forward-compatible.
 
-const WIKIPEDIA_SEASON_URL =
-  'https://en.wikipedia.org/wiki/2026_N%C3%BCrburgring_Langstrecken-Serie';
+// Fetch the rendered page HTML via the Wikimedia ACTION API (action=parse,
+// prop=text) rather than the /wiki/ article frontend. The frontend applies bot
+// mitigation that blocks Vercel's datacenter IPs: residential fetches (and the
+// pre-ship verifier) worked, but on prod the article fetch came back empty and
+// the Results tab showed "temporarily unavailable" (0.144.0 known issue). The
+// action API is the programmatic endpoint cloud IPs can reach — the same reason
+// lib/wikipedia-champions.ts fetches the REST API instead of /wiki/. Unlike
+// REST/Parsoid, action=parse returns the STANDARD parser HTML (mw-parser-output
+// + mw-heading wrappers + table.wikitable), so the positional parser below is
+// unchanged.
+const WIKIPEDIA_TITLE = '2026_N%C3%BCrburgring_Langstrecken-Serie';
+const WIKIPEDIA_SEASON_API =
+  `https://en.wikipedia.org/w/api.php?action=parse&page=${WIKIPEDIA_TITLE}` +
+  '&prop=text&format=json&formatversion=2&redirects=1';
 
 // Fan-facing source: the official VLN documents portal (per-round official
 // results/classification PDFs live under the "Offizieller Aushang" for each
 // event date). Used only as the Results-tab "Source" link, not fetched.
 export const NLS_SOURCE_URL = 'https://teilnehmer.vln.de/';
 
-const BROWSER_UA =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-  '(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+// Wikimedia asks API clients for a descriptive User-Agent identifying the app +
+// a contact. A datacenter IP spoofing a browser UA is exactly what the /wiki/
+// frontend mitigation blocked; identify Paddock instead.
+const WIKIMEDIA_UA =
+  'PaddockTracker/1.0 (https://paddock-tracker.com; pparaskevas.dev@gmail.com)';
 
-async function fetchHtml(url: string): Promise<string | null> {
+interface WikiParseResponse {
+  parse?: { text?: string };
+}
+
+// The page's rendered content HTML (action=parse `text`), or null on any
+// failure — callers already fail soft on null.
+async function fetchSeasonHtml(): Promise<string | null> {
   try {
-    const res = await fetchUpstream(url, {
-      headers: {
-        'User-Agent': BROWSER_UA,
-        Accept: 'text/html',
-      },
+    const res = await fetchUpstream(WIKIPEDIA_SEASON_API, {
+      headers: { 'User-Agent': WIKIMEDIA_UA, Accept: 'application/json' },
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;
-    return await res.text();
+    const json = (await res.json()) as WikiParseResponse;
+    return json.parse?.text ?? null;
   } catch {
     return null;
   }
@@ -329,7 +347,7 @@ export function parseNlsSeasonResults(html: string): NlsWinnerRow[] {
 export async function fetchNlsSeasonResults(
   season = 2026,
 ): Promise<RaceResult[]> {
-  const html = await fetchHtml(WIKIPEDIA_SEASON_URL);
+  const html = await fetchSeasonHtml();
   if (!html) return [];
 
   const calendar = parseNlsCalendar(html, season);
