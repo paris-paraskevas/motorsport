@@ -34,12 +34,19 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
     if (INDEX_CACHE) return;
     let alive = true;
     fetch('/api/search')
-      .then((r) => (r.ok ? r.json() : []))
+      .then((r) => {
+        // Throw on a non-2xx so it lands in .catch below — a transient error
+        // (cold revalidation miss, mid-deploy) must NOT poison INDEX_CACHE with
+        // [], which would leave search dead for the whole session with no retry.
+        if (!r.ok) throw new Error(`search index ${r.status}`);
+        return r.json();
+      })
       .then((data: SearchDoc[]) => {
         INDEX_CACHE = data;
         if (alive) setDocs(data);
       })
       .catch(() => {
+        // Show empty this time but leave INDEX_CACHE null, so the next ⌘K open retries.
         if (alive) setDocs([]);
       });
     return () => {
