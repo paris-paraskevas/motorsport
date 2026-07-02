@@ -39,7 +39,7 @@ export function SearchTrigger() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search"
-        title="Search (Ctrl+K)"
+        title="Search"
         className="inline-flex items-center gap-2 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
       >
         <Search size={15} aria-hidden />
