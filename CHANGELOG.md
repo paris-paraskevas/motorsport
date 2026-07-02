@@ -15,6 +15,7 @@ Search filter chips + local-dev resilience for the account-scoped writes.
 - `lib/userPrefs.ts`: KV writes (`setUserFollowed` / `markUserOnboarded` / `setUserNotifPrefs` / `setUserHomeLayout`) now degrade to a no-op when KV is unconfigured **in dev** (a store-less local build) instead of throwing 500s; **production still throws** (a missing KV binding there is a real misconfiguration to catch loudly).
 - `components/OnboardingWizard.tsx`: a device-local `paddock:onboarded` localStorage flag (mirrors the app's other device-local prefs) keeps the wizard dismissed once completed/skipped even when the server can't persist it (KV outage / store-less build), so it no longer loops.
 - `RELEASES.md`: the 0.149.0 search note said "Press ⌘K" (Mac-only) — corrected to include Ctrl-K.
+- `components/tabs/StandingsTab.tsx`: **gated the MotoGP season-trend chart** — it sums the per-session results feed while the standings table is the authoritative motogp.com source, and they diverge on live data (Bezzecchi −13 / Ogura −8 / Di Giannantonio −25; 28 chart series vs 27 standings rows). Per the locked chart==standings invariant it's dropped (like WRC/GTWCE/IMSA/FE) until the feed reconciles with standings — deeper fix (curate `results-overrides.json` for the missing rounds) tracked in IDEAS/HANDOFF.
 
 ## 0.151.0 — 2026-07-02
 

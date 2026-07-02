@@ -2,7 +2,7 @@ What's new in Paddock Tracker. Newest first.
 
 ## 0.152.0 — 2026-07-02
 
-**Filter your search.** The search box now has quick filter chips — narrow results to just Drivers, Teams, Series, Weekends, Blog or Pages, each with a live count. Internal: hardened the sign-in-only preference saves so they never error on a mis-provisioned build, and the welcome wizard no longer re-appears if it can't reach its store.
+**Filter your search.** The search box now has quick filter chips — narrow results to just Drivers, Teams, Series, Weekends, Blog or Pages, each with a live count. The MotoGP standings trend chart is temporarily hidden while we reconcile its totals with the standings table (a few riders' numbers didn't line up). Internal: hardened the sign-in-only preference saves so they never error on a mis-provisioned build, and the welcome wizard no longer re-appears if it can't reach its store.
 
 ## 0.151.0 — 2026-07-02
 
