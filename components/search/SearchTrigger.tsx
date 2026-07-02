@@ -39,14 +39,11 @@ export function SearchTrigger() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search"
-        title="Search (⌘K)"
+        title="Search (Ctrl+K)"
         className="inline-flex items-center gap-2 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
       >
         <Search size={15} aria-hidden />
         <span className="hidden xl:inline font-mono text-[10px] uppercase tracking-[0.14em]">Search</span>
-        <span className="hidden xl:inline font-mono text-[10px] text-text-faint" aria-hidden>
-          ⌘K
-        </span>
       </button>
       {open && <SearchOverlay onClose={() => setOpen(false)} />}
     </>
