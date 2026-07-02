@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.152.2 — 2026-07-02
+
+**MotoGP trend chart is back — and correct.** The season-points chart on the MotoGP standings page now matches the standings table exactly. The gap traced to the red-flagged Catalan Grand Prix, whose restarted (and officially scored) result wasn't being counted — so every rider was short by their Catalonia points. That's now fixed and the chart is live again.
+
 ## 0.152.1 — 2026-07-02
 
 **MotoGP trend chart paused.** The season-points trend chart on the MotoGP standings page was showing totals that didn't line up with the standings table for a few riders, so we've hidden it until the underlying data reconciles — the standings table itself is correct and unaffected. Internal: greened a long-broken test file so the build runs clean.

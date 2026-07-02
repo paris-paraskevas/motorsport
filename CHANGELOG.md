@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.152.2 — 2026-07-02
+
+Fix the MotoGP season-trend under-count at the source and re-enable the chart (supersedes the 0.152.1 interim gate).
+
+### Fixed
+- `lib/results/motogp.ts`: on a red-flagged, restarted Grand Prix the Pulselive feed exposes two race sessions — the annulled original (`RAC`, every row 0 points) and the scored restart (`RAC2`, the points the official standings actually count). `fetchMotoGPSeasonResults` picked the first `RAC`, so the 2026 Grand Prix of Catalonia contributed **0** points and the season-trend chart under-counted every scorer by their Catalonia finish (140 pts: Di Giannantonio −25, Aldeguer −20, Bagnaia −16, Bezzecchi −13, … Miller −1), breaking the locked chart==standings invariant. It now builds every RAC-family session and keeps the one carrying championship points (`pickScoringRace`); normal single-race rounds resolve to their sole `RAC` unchanged. **Verified against live data: all 27 riders' summed chart totals now reconcile exactly to the standings endpoint.** Primary source (motogp.com) confirms Di Giannantonio won the twice-red-flagged Catalan GP — i.e. `RAC2` is the real result. This is a per-session upstream data defect, not a name-split or finisher-floor; the earlier "curate results-overrides.json" plan would have mis-fired (the override mechanism keys by round only, so it can't target the GP without also corrupting the Sprint). The Results tab + home podium share this loader, so they are corrected too. (The "28 vs 27 series" the chart carried = Lorenzo Savadori, a 0-point wildcard — present in results, absent from standings; harmless.)
+- `components/tabs/StandingsTab.tsx`: re-enable the MotoGP season-trend chart (reverts the 0.152.1 interim gate) now that it reconciles.
+
+### Added
+- `lib/results/motogp.test.ts`: a red-flag-restart case (annulled `RAC` + scored `RAC2` → the scored race is emitted, the annulled one dropped) plus `pickScoringRace` unit tests (points-bearing selection, order-independence, null handling).
+
 ## 0.152.1 — 2026-07-02
 
 Restore main to its intended 0.152.0 state: re-land the MotoGP chart gate that missed the 0.152.0 squash-merge, and green a long-broken test file.
