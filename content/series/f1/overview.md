@@ -10,7 +10,7 @@ Most weekends run **Practice 1, Practice 2, Practice 3, Qualifying, Race**. A ha
 
 ## Points
 
-The top ten finishers in the main race score **25-18-15-12-10-8-6-4-2-1** points, plus one bonus point for the fastest lap *if* it's set by a driver inside the top ten. A driver must complete at least 90 % of the race distance to be classified for points. From 2022 onward, half-points rules apply on a sliding scale when a race is cut short by weather or red flags.
+The top ten finishers in the main race score **25-18-15-12-10-8-6-4-2-1** points — the bonus point for the fastest lap was scrapped from 2025, so there's no fastest-lap point in 2026. A driver must complete at least 90 % of the race distance to be classified for points. From 2022 onward, half-points rules apply on a sliding scale when a race is cut short by weather or red flags.
 
 ## What to watch for in 2026
 
