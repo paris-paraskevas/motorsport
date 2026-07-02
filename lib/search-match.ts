@@ -39,8 +39,15 @@ function scoreTerm(doc: SearchDoc, term: string): number {
   if (new RegExp(`\\b${escapeRegExp(term)}`).test(title)) return 400; // word-start in title
   if (title.includes(term)) return 250;
   if (hay.includes(term)) return 120; // matched in subtitle / keywords
-  if (subsequence(title, term)) return 80; // fuzzy in title
-  if (subsequence(hay, term)) return 40; // fuzzy anywhere
+  // Subsequence fuzz is TITLE-only (typo tolerance on names). Deliberately NOT
+  // run over the full haystack: team + series + keywords make it long enough
+  // that almost any short query is a subsequence of it, flooding results with
+  // noise (browser-tested — "norris" pulled ~25 unrelated drivers). The
+  // substring-in-haystack tier (120, above) is the keyword backstop instead.
+  // ...and only for SHORT titles (driver names, codes, series names). A long
+  // event / sponsor-laden team title would itself subsequence-match almost any
+  // query — the same noise problem one tier up — so cap it.
+  if (title.length <= 30 && subsequence(title, term)) return 80;
   return 0;
 }
 
