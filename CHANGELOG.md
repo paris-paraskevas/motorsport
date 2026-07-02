@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.152.1 — 2026-07-02
+
+Restore main to its intended 0.152.0 state: re-land the MotoGP chart gate that missed the 0.152.0 squash-merge, and green a long-broken test file.
+
+### Fixed
+- `components/tabs/StandingsTab.tsx`: gate the MotoGP season-trend chart off until it reconciles with the standings table. The chart derives from the per-session results feed (motogp.com results API) while `DriversTable` renders the authoritative motogp.com standings — the two diverge on live data (the feed under-counts Bezzecchi −13 / Ogura −8 / Di Giannantonio −25; 28 rider series vs 27 standings rows). Per the locked chart==standings invariant, drop the chart (as WRC/GTWCE/IMSA/FE already do) until reconciled. This change was authored in `246958e` but committed ~5 min **after** the #364 squash-merge, so it never reached main and prod kept rendering the un-reconciled chart. Reconcile (curate `content/series/motogp/results-overrides.json` for the gap rounds, or fix the feed) then restore the chart — tracked in the handoff + `IDEAS.md`.
+- `lib/openf1/turns.test.ts`: fix two fixtures that shipped red in #330 and never passed (the suite was never green on main). The square-lap builder had a dead loop (`for i=20; i<20` when called with `perSide=20`) that jumped the trace backward at point 1, spawning a phantom 180° "corner" — so `detectTurns` correctly reported 5, not the asserted 4. The "merge sustained curve" arc peaked at 0.168 rad, below the 0.30 detection threshold, so it detected 0 corners and never exercised the merge it claimed to test. Both fixtures rewritten (a clean open square → exactly 4 corners; a tighter arc → 3 adjacent hits collapsing to 1). **`detectTurns` itself is unchanged** — it is live and browser-verified on real data (Austria T1–T8) — so there is no runtime behaviour change; this is a test-only fix.
+
 ## 0.152.0 — 2026-07-02
 
 Search filter chips + local-dev resilience for the account-scoped writes.

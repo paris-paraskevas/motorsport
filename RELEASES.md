@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.152.1 — 2026-07-02
+
+**MotoGP trend chart paused.** The season-points trend chart on the MotoGP standings page was showing totals that didn't line up with the standings table for a few riders, so we've hidden it until the underlying data reconciles — the standings table itself is correct and unaffected. Internal: greened a long-broken test file so the build runs clean.
+
 ## 0.152.0 — 2026-07-02
 
 **Filter your search.** The search box now has quick filter chips — narrow results to just Drivers, Teams, Series, Weekends, Blog or Pages, each with a live count. Internal: hardened the sign-in-only preference saves so they never error on a mis-provisioned build, and the welcome wizard no longer re-appears if it can't reach its store.
