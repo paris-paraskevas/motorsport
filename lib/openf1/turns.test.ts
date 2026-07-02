@@ -26,29 +26,20 @@ function telemetry(tEnd: number, lapDist: number, steps = 200): DistSample[] {
   return out;
 }
 
-// A square lap traced OPEN (start/finish mid-way down the bottom edge, back to it),
-// giving four ~90° corners — the canonical corner-detection fixture, matching the
-// square used in track-environment.test.ts.
+// A square lap traced OPEN — start/finish half-way along the bottom edge, once
+// around, back to it — giving four ~90° corners on the straights between. The
+// canonical corner-detection fixture (cf. the square in track-environment.test.ts).
 function squareLap(perSide = 20): [number, number][] {
-  const corners: [number, number][] = [
-    [0, 0],
-    [100, 0],
-    [100, 100],
-    [0, 100],
-    [0, 0],
-  ];
+  const half = Math.round(perSide / 2);
   const pts: [number, number][] = [];
-  // Start half-way along the bottom edge so the lap opens/closes on a straight.
-  pts.push([50, 0]);
-  for (let i = 20; i < perSide; i++) pts.push([(100 * i) / perSide, 0]);
-  for (let s = 1; s < corners.length; s++) {
-    const [ax, ay] = corners[s - 1];
-    const [bx, by] = corners[s];
-    for (let i = 1; i <= perSide; i++) {
-      pts.push([ax + ((bx - ax) * i) / perSide, ay + ((by - ay) * i) / perSide]);
-    }
-  }
-  for (let i = 1; i <= perSide / 2; i++) pts.push([(100 * i) / perSide, 0]);
+  // Open on the bottom straight at (50,0) and walk to the first corner (100,0)…
+  for (let i = 0; i <= half; i++) pts.push([50 + (50 * i) / half, 0]);
+  // …up the right edge, across the top, down the left (corners 1–4)…
+  for (let i = 1; i <= perSide; i++) pts.push([100, (100 * i) / perSide]);
+  for (let i = 1; i <= perSide; i++) pts.push([100 - (100 * i) / perSide, 100]);
+  for (let i = 1; i <= perSide; i++) pts.push([0, 100 - (100 * i) / perSide]);
+  // …then close along the bottom straight back to the (50,0) start.
+  for (let i = 1; i <= half; i++) pts.push([(50 * i) / half, 0]);
   return pts;
 }
 
@@ -90,15 +81,17 @@ describe('detectTurns', () => {
   });
 
   it('merges a sustained curve into a single turn via minSpacing', () => {
-    // A gentle 90° arc sampled densely — many adjacent high-curvature points that
-    // must collapse to ONE turn, not a cluster.
+    // A 90° arc sampled across several points — each clears the corner threshold,
+    // so detection yields a cluster of adjacent hits that minSpacing must collapse
+    // to ONE turn (not one marker per sample).
+    const R = 8;
     const arc: [number, number][] = [];
     for (let i = 0; i < 15; i++) arc.push([i * 5, 0]); // lead-in straight
-    for (let i = 0; i <= 30; i++) {
-      const a = (i / 30) * (Math.PI / 2);
-      arc.push([70 + 20 * Math.sin(a), 20 - 20 * Math.cos(a)]);
+    for (let i = 0; i <= 10; i++) {
+      const a = (i / 10) * (Math.PI / 2);
+      arc.push([70 + R * Math.sin(a), R - R * Math.cos(a)]);
     }
-    for (let i = 1; i < 15; i++) arc.push([90, 20 + i * 5]); // lead-out straight
+    for (let i = 1; i < 15; i++) arc.push([70 + R, R + i * 5]); // lead-out straight
     const turns = detectTurns(path(arc, 100), telemetry(100, 3000), { minSpacingFrac: 0.1 });
     expect(turns.length).toBe(1);
   });
