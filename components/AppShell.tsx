@@ -108,15 +108,16 @@ export function AppShell({
               <SeriesMegaMenu groups={groups} />
             </HeaderNavMenu>
 
-            {/* Community — no page of its own, so a menu-only trigger. */}
+            {/* News is now a top-level clickable destination (→ /news); Blog +
+                Threads sit on its hover panel (was the menu-only "Community"). */}
             <HeaderNavMenu
-              label="Community"
+              label="News"
+              href="/news"
               active={isActive('/news') || isActive('/blog') || isActive('/threads')}
-              panelLabel="Community"
+              panelLabel="News & community"
             >
               <MenuLinkList
                 items={[
-                  { href: '/news', label: 'News', desc: 'Latest across the grid' },
                   { href: '/blog', label: 'Blog', desc: 'Analysis & recaps' },
                   { href: '/threads', label: 'Threads', desc: 'Fan discussion' },
                 ]}
