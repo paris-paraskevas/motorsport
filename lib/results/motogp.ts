@@ -195,6 +195,33 @@ async function buildRaceResult(
   };
 }
 
+const raceTotalPoints = (race: RaceResult): number =>
+  race.results.reduce((sum, e) => sum + e.points, 0);
+
+/**
+ * From a round's RAC-family race candidates, the one that actually carries
+ * championship points — i.e. the scored race. When a red flag annuls a race and
+ * it is restarted, the feed exposes the annulled original (session type `RAC`,
+ * every row 0 points) alongside the scored restart (`RAC2`); the official
+ * standings count the restart. Picking by points (rather than by session
+ * name/order) is robust to which session number holds them. Ties keep the first
+ * candidate; nulls are ignored. Returns null when there is no race session.
+ *
+ * Real case this guards: the 2026 Grand Prix of Catalonia was red-flagged and
+ * restarted — `RAC` totalled 0 points, `RAC2` totalled the full 140 (Di
+ * Giannantonio's win). Summing the first `RAC` under-counted every scorer by
+ * their Catalonia finish and broke the locked chart==standings invariant.
+ */
+export function pickScoringRace(candidates: (RaceResult | null)[]): RaceResult | null {
+  let best: RaceResult | null = null;
+  for (const race of candidates) {
+    if (race && (best === null || raceTotalPoints(race) > raceTotalPoints(best))) {
+      best = race;
+    }
+  }
+  return best;
+}
+
 export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult[]> {
   const seasonUuid = await resolveMotoGPSeasonUuid(year);
   if (!seasonUuid) return [];
@@ -227,13 +254,19 @@ export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult
       );
       if (!Array.isArray(sessions)) return;
 
-      const racSession = sessions.find(s => s?.type === 'RAC');
+      // A red-flagged, restarted race appears as two RAC-family sessions: the
+      // annulled original (`RAC`, 0 points) and the scored restart (`RAC2`).
+      // The standings count the restart, so build every RAC-family candidate
+      // and keep the one carrying points (see pickScoringRace) — not simply the
+      // first `RAC`. Normal rounds have a single `RAC`, so this is a no-op there.
+      const racSessions = sessions.filter(s => s?.type?.startsWith('RAC') && s?.id);
       const sprSession = sessions.find(s => s?.type === 'SPR');
 
-      const [racResult, sprResult] = await Promise.all([
-        racSession ? buildRaceResult(event, racSession, round, 'Grand Prix') : null,
+      const [racCandidates, sprResult] = await Promise.all([
+        Promise.all(racSessions.map(s => buildRaceResult(event, s, round, 'Grand Prix'))),
         sprSession ? buildRaceResult(event, sprSession, round, 'Sprint') : null,
       ]);
+      const racResult = pickScoringRace(racCandidates);
 
       // Order: Grand Prix card before Sprint card within the same round
       // (matches WSBK precedent: marquee race appears first).

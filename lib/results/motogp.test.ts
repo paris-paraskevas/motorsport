@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { fetchMotoGPSeasonResults } from './motogp';
+import { fetchMotoGPSeasonResults, pickScoringRace } from './motogp';
 import { buildSeasonTrendData } from '@/lib/season-trend';
 import type { RaceResult } from '@/lib/types';
 
@@ -153,6 +153,21 @@ const SPR_CLASSIFICATION = {
     rider({ position: 10, fullName: 'Fabio Di Giannantonio', number: 49, team: 'Team VR46', points: 0, gap: '9.500' }),
     rider({ position: 11, fullName: 'Johann Zarco', number: 5, team: 'LCR Honda', points: 0, gap: '12.000' }),
     rider({ position: 12, fullName: 'Joan Mir', number: 36, team: 'Honda HRC', points: 0, gap: '15.000' }),
+  ],
+};
+
+// A red-flagged race annulled after the start: a full grid is classified (so it
+// clears the finisher floor) but every row scores 0 championship points. The
+// scored restart is a separate RAC2 session (reusing RAC_CLASSIFICATION, which
+// carries points). The order here differs from RAC_CLASSIFICATION so the test
+// proves the SCORED session is chosen, not that the two happen to coincide.
+const RAC_ANNULLED = {
+  classification: [
+    rider({ position: 1, fullName: 'Pedro Acosta', number: 37, team: 'Red Bull KTM Factory Racing', points: 0 }),
+    rider({ position: 2, fullName: 'Jorge Martin', number: 89, team: 'Aprilia Racing', points: 0, gap: '2.000' }),
+    rider({ position: 3, fullName: 'Fabio Di Giannantonio', number: 49, team: 'Team VR46', points: 0, gap: '4.000' }),
+    rider({ position: 4, fullName: 'Marco Bezzecchi', number: 72, team: 'Aprilia Racing', points: 0, gap: '6.000' }),
+    rider({ position: 5, fullName: 'Francesco Bagnaia', number: 1, team: 'Ducati Lenovo Team', points: 0, gap: '8.000' }),
   ],
 };
 
@@ -328,6 +343,42 @@ describe('fetchMotoGPSeasonResults', () => {
     expect(races[0].raceName).toContain('Sprint');
   });
 
+  it('uses the scored restart (RAC2), not the annulled first race (RAC), on a red-flagged round', async () => {
+    // 2026 Catalonia shape: the first start was red-flagged and annulled (RAC,
+    // 0 points); the restart scored the championship points (RAC2). The parser
+    // must emit the scored restart — else the season-trend chart under-counts
+    // every scorer by that whole race and breaks the chart==standings invariant.
+    setupFetch({
+      seasons: SEASONS_2026,
+      events: [
+        event({ id: 'cat-6', name: 'GRAND PRIX OF CATALONIA', dateStart: '2026-05-15', dateEnd: '2026-05-17' }),
+      ],
+      sessionsByEvent: {
+        'cat-6': [
+          { id: 'rac-annulled', type: 'RAC' },
+          { id: 'rac2-scored', type: 'RAC2' },
+          { id: 'spr-6', type: 'SPR' },
+        ],
+      },
+      classificationsBySession: {
+        'rac-annulled': RAC_ANNULLED, // Acosta 'leads', 0 points — annulled
+        'rac2-scored': RAC_CLASSIFICATION, // Bezzecchi wins, full points — scored
+        'spr-6': SPR_CLASSIFICATION,
+      },
+    });
+    const races = await fetchMotoGPSeasonResults(2026);
+
+    // Exactly one Grand Prix card for the round — the annulled race is dropped,
+    // not rendered alongside the scored restart. (Filter by the non-Sprint
+    // convention: the event name itself contains "Grand Prix".)
+    const gps = races.filter(r => !/Sprint/i.test(r.raceName));
+    expect(gps).toHaveLength(1);
+    // …and it is the SCORED restart: real winner + full points, not the 0-point RAC.
+    expect(gps[0].results[0].driverName).toBe('Marco Bezzecchi');
+    expect(gps[0].results[0].points).toBe(25);
+    expect(gps[0].results.reduce((s, e) => s + e.points, 0)).toBeGreaterThan(0);
+  });
+
   it('chart totals (GP + Sprint fold) reconcile to per-rider championship points', async () => {
     // The locked cross-series invariant: the season-trend chart's final
     // cumulative value per rider must equal that rider's standings points.
@@ -407,5 +458,36 @@ describe('fetchMotoGPSeasonResults', () => {
     }) as unknown as typeof fetch;
     const races = await fetchMotoGPSeasonResults(2026);
     expect(races).toEqual([]);
+  });
+});
+
+describe('pickScoringRace', () => {
+  const race = (name: string, points: number[]): RaceResult => ({
+    round: 6,
+    raceName: name,
+    date: new Date('2026-05-17T00:00:00Z'),
+    circuit: 'Circuit de Barcelona-Catalunya',
+    results: points.map((p, i) => ({
+      position: i + 1,
+      driverName: `Rider ${i + 1}`,
+      team: 'Team',
+      status: 'Finished',
+      points: p,
+    })),
+  });
+
+  it('keeps the points-bearing race (scored restart) over an annulled 0-point race', () => {
+    const annulled = race('Grand Prix — annulled', [0, 0, 0]);
+    const scored = race('Grand Prix — scored', [25, 20, 16]);
+    expect(pickScoringRace([annulled, scored])).toBe(scored);
+    // Order-independent: the choice is by points, not by session order.
+    expect(pickScoringRace([scored, annulled])).toBe(scored);
+  });
+
+  it('ignores nulls and returns null when there is no race', () => {
+    expect(pickScoringRace([])).toBeNull();
+    expect(pickScoringRace([null, null])).toBeNull();
+    const only = race('Grand Prix', [25, 20]);
+    expect(pickScoringRace([null, only])).toBe(only);
   });
 });
