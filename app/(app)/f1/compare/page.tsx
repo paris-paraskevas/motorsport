@@ -277,7 +277,7 @@ export default async function F1ComparePage({
 
           <section className="mb-4">
             <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-              Last {Math.max(formA.last5.length, formB.last5.length)} races
+              Recent form
             </h2>
             <div className="grid grid-cols-2 gap-6">
               <Last5Column form={formA} align="left" />
