@@ -62,6 +62,14 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
 const COLLAPSIBLE_IDS = HOME_ELEMENTS.filter(e => e.collapsible).map(e => e.id) as string[];
 
+// The fixed "spine": the always-on essentials that render first and can't be
+// hidden or reordered — personalization is additive, below the spine. They stay
+// in HOME_ELEMENTS (HomeContent renders them normally); reconcile pins them to
+// the front of `order` and strips them from `hidden`. `just-missed` stays
+// collapsible — pinned means always-present + on top, not un-foldable.
+export const SPINE_IDS = ['chyron', 'just-missed'] as const satisfies readonly HomeElementId[];
+const SPINE_SET = new Set<HomeElementId>(SPINE_IDS);
+
 // ── Widget-discovery catalogue (UI-only) ────────────────────────────────────
 // Descriptors for the "More widgets" gallery on /settings/customize. These are
 // NOT part of HomeLayoutPrefs and never touch DEFAULT_HOME_LAYOUT or the home
@@ -217,7 +225,11 @@ export function reconcileHomeLayout(stored: Partial<HomeLayoutPrefs> | null | un
     ? dedupe(stored!.collapsed.filter(isHomeElementId)).filter(id => COLLAPSIBLE_IDS.includes(id))
     : [...DEFAULT_COLLAPSED];
   const config = reconcileConfig(stored?.config);
-  return { version: HOME_LAYOUT_VERSION, order, hidden, collapsed, config };
+  // Pin the spine to the front (fixed order) and force it visible — Up-next +
+  // Just-missed are always-on essentials above the customizable zone.
+  const pinnedOrder = [...SPINE_IDS, ...order.filter(id => !SPINE_SET.has(id))];
+  const visibleHidden = hidden.filter(id => !SPINE_SET.has(id));
+  return { version: HOME_LAYOUT_VERSION, order: pinnedOrder, hidden: visibleHidden, collapsed, config };
 }
 
 /** Validate + normalize an API payload; null when the shape is wrong. */

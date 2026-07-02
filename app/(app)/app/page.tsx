@@ -135,6 +135,11 @@ export default async function Home() {
   // Ajax) — keeping the WEC live-component fetch off this render is what lets
   // /app stay statically generated / edge-cached. See HomeContent.
 
+  // Minimal series list for the home launcher's Standings/Results pickers.
+  const launcherSeries = all
+    .map(s => ({ slug: s.meta.slug, name: s.meta.name, color: s.meta.color, category: s.meta.category }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <HomeContent
@@ -145,6 +150,7 @@ export default async function Home() {
         roundByKey={roundByKey}
         serverNow={now.toISOString()}
         upcomingCountBySeries={upcomingCountBySeries}
+        series={launcherSeries}
       />
     </div>
   );

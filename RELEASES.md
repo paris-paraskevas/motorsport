@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.153.0 — 2026-07-02
+
+**A tidier home, and a quicker way around.** A new "Jump to" bar on your home gives one-tap access to the calendar, standings, results and news for any series, and the "Up next" countdown and latest results now stay pinned at the top. Weekend and session pages gained quick links straight to that series' standings and results, so you're never more than a click away. Following series and customising your home are now part of a free account — sign in to tailor your home; schedules, standings, results and everything else stay open to everyone.
+
 ## 0.152.2 — 2026-07-02
 
 **MotoGP trend chart is back — and correct.** The season-points chart on the MotoGP standings page now matches the standings table exactly. The gap traced to the red-flagged Catalan Grand Prix, whose restarted (and officially scored) result wasn't being counted — so every rider was short by their Catalonia points. That's now fixed and the chart is live again.

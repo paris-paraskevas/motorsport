@@ -683,6 +683,22 @@ export default async function SessionPage({
               </span>
             </>
           )}
+          {/* Quick-links back into the series — from a deep session page,
+              Standings / Results are otherwise a multi-step back-track. */}
+          <span className="text-border-strong">·</span>
+          <Link
+            href={`/series/${slug}/standings`}
+            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+          >
+            Standings
+          </Link>
+          <span className="text-border-strong">·</span>
+          <Link
+            href={`/series/${slug}/results`}
+            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+          >
+            Results
+          </Link>
         </div>
 
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">

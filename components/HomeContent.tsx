@@ -15,6 +15,7 @@ import type { HomeElementId, WidgetSettings } from '@/lib/homeLayout';
 import type { CircuitLayout } from '@/lib/circuit-layout';
 import { formatBetSelection } from '@/lib/betting/constants';
 import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
+import { HomeLauncher, type LauncherSeries } from '@/components/HomeLauncher';
 
 interface HomeItem {
   session: Session;
@@ -249,6 +250,7 @@ export function HomeContent({
   roundByKey,
   serverNow,
   upcomingCountBySeries,
+  series,
 }: {
   // Live + this-week sessions + the first beyond-week session per series
   // (so `next` resolves under any follow filter) — NOT the whole season.
@@ -261,6 +263,8 @@ export function HomeContent({
   // Per-series count of ALL remaining upcoming sessions (same predicate as
   // upcomingItems below); powers beyondCount without shipping the tail.
   upcomingCountBySeries?: Record<string, number>;
+  // All series (slug/name/color/category) for the Jump-to launcher pickers.
+  series: LauncherSeries[];
 }) {
   const { now, clock } = useNow(serverNow);
   const tz = tzShort(now, clock);
@@ -646,9 +650,11 @@ export function HomeContent({
   // Home-layout customization: each top-level block gets a CSS `order` from the
   // user's prefs (so the DEFAULT order renders identically), and hidden blocks
   // are dropped. Applied on a flex column below.
+  // Scaled ×2 so the fixed Jump-to launcher can slot at an odd order (3) between
+  // the spine (chyron 0, just-missed 2) and the customizable zone (4+).
   const orderOf = (id: HomeElementId): number => {
     const i = layout.order.indexOf(id);
-    return i < 0 ? 99 : i;
+    return (i < 0 ? 99 : i) * 2;
   };
   const isHidden = (id: HomeElementId): boolean => layout.hidden.includes(id);
   const isCollapsed = (id: HomeElementId): boolean => layout.collapsed.includes(id);
@@ -665,6 +671,12 @@ export function HomeContent({
           it stays a single flex column (mobile/laptop unchanged). CSS `order` from
           the customise prefs still applies to grid items. */}
       <div className="flex flex-col 3xl:grid 3xl:grid-cols-2 3xl:gap-x-10 3xl:items-start">
+      {/* ── Jump-to launcher — fixed quick-access row, pinned above the
+             customizable zone (order 3 sits between the Just-missed spine and
+             the first widget). Shown to everyone; all content is public. ── */}
+      <div className="mb-8 3xl:col-span-2" style={{ order: 3 }}>
+        <HomeLauncher series={series} />
+      </div>
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next
              session with a ticking countdown. ── */}
       {!isHidden('chyron') && (

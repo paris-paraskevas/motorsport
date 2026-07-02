@@ -69,20 +69,42 @@ export function useHomeLayout(): {
     };
   }, [isLoaded, isSignedIn]);
 
+  // Guests get the fixed DEFAULT home — customization is a signed-in feature. The
+  // synchronous seed may have picked up a stale localStorage layout from a
+  // pre-gate guest session on this device; snap back to default once auth
+  // resolves signed-out. setState is deferred to a microtask (not the effect
+  // body) to match the reconcile effect above and stay clear of
+  // react-hooks/set-state-in-effect.
+  useEffect(() => {
+    if (!isLoaded || isSignedIn) return;
+    let cancelled = false;
+    Promise.resolve().then(() => {
+      if (cancelled) return;
+      dirty.current = false;
+      setLayout(DEFAULT_HOME_LAYOUT);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoaded, isSignedIn]);
+
   const persist = useCallback(
     (next: HomeLayoutPrefs) => {
       dirty.current = true;
       setLayout(next);
+      // Home customization is signed-in only. A guest's changes stay in-memory
+      // for the session (so an inline fold/expand still works) but never persist
+      // — no localStorage, no KV — and /settings/customize is a sign-in CTA for
+      // guests, so reorder/hide/settings aren't reachable anyway.
+      if (!isSignedIn) return;
       setLocalHomeLayout(next); // synchronous local copy → instant correct paint next load
-      if (isSignedIn) {
-        fetch('/api/user/home-layout', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(next),
-        }).catch(() => {
-          /* best-effort; UI already updated */
-        });
-      }
+      fetch('/api/user/home-layout', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(next),
+      }).catch(() => {
+        /* best-effort; UI already updated */
+      });
     },
     [isSignedIn],
   );

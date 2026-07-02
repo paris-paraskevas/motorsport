@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { Lock } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
 import type { SeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
@@ -50,6 +52,28 @@ export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
 
   if (!hydrated) {
     return <div className="text-text-faint text-sm">Loading preferences…</div>;
+  }
+
+  // Following is a free-account feature — a guest can't persist a set (the hook
+  // no-ops setFollowed signed-out), so show a sign-in CTA in place of the list.
+  if (!isSignedIn) {
+    return (
+      <div className="border-t border-border py-5 md:py-6">
+        <h2 className="text-text text-base font-semibold">Followed championships</h2>
+        <p className="mt-1 max-w-md text-text-faint text-xs">
+          Follow your championships for a Home and Calendar tuned to just your series. It’s a free account feature.
+        </p>
+        <Link
+          href="/sign-in"
+          className="mt-4 inline-flex items-center gap-2 border border-border-strong bg-surface px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text transition-colors duration-(--duration-fast) hover:border-brand"
+        >
+          <Lock size={13} aria-hidden /> Sign in to follow
+        </Link>
+        <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          Free — an account keeps it free
+        </p>
+      </div>
+    );
   }
 
   // Default when nothing stored yet: treat as "follow everything" for UI selection.
