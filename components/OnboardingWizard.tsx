@@ -14,6 +14,12 @@ import {
 
 type Step = 'series' | 'notifications' | 'done';
 
+// Device-local "already onboarded" flag — mirrors the app's other device-local
+// prefs (follow / home-layout). Keeps a completed-or-skipped wizard dismissed
+// even when the server can't persist it (KV outage / store-less local build),
+// so it never loops.
+const ONBOARDED_LS = 'paddock:onboarded';
+
 export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   const { isLoaded, isSignedIn } = useAuth();
   const { setFollowed } = useFollowedSeries();
@@ -32,6 +38,16 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
     if (!isSignedIn) {
       setOpen(false);
       return;
+    }
+    // Device-local guard: once done/skipped on this device, don't re-nag — even
+    // if the server couldn't persist it (KV blip / store-less build).
+    try {
+      if (typeof window !== 'undefined' && window.localStorage.getItem(ONBOARDED_LS) === '1') {
+        setOpen(false);
+        return;
+      }
+    } catch {
+      /* private mode — fall through to the server check */
     }
     try {
       const res = await fetch('/api/user/onboarded');
@@ -158,6 +174,11 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   };
 
   const finish = async () => {
+    try {
+      window.localStorage.setItem(ONBOARDED_LS, '1');
+    } catch {
+      /* private mode — the server POST below is the fallback */
+    }
     try {
       await fetch('/api/user/onboarded', { method: 'POST' });
     } catch {
