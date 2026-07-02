@@ -6,29 +6,40 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-02 (LATEST) — OVERNIGHT AUTONOMOUS RUN · main still 0.147.0 · 7 stacked PRs OPEN, none merged · ▶ MORNING = VISUAL-VERIFY + MERGE THE STACK
+## ⚡ Next session pickup — 2026-07-02 (LATEST) — OVERNIGHT RUN + MORNING TEST PASS · main still 0.147.0 · 7 stacked PRs OPEN, none merged · ▶ REMAINING = SIGNED-IN PASS + MERGE + MotoGP CHART BUG
 
-**main = 0.147.0 — nothing merged overnight, prod UNCHANGED.** Operator went to sleep and authorised an autonomous overnight run ("take care of everything… use ultracode if needed"). I built **Arc 1 (rename → search → H2H) + owed Wave-A fixes + the NLS prod-bug fix + Arc-2 gating part 1**, plus an IA design tournament.
+**main = 0.147.0 — nothing merged, prod UNCHANGED.** Operator authorised an autonomous overnight run. I built **Arc 1 (rename → search → H2H) + owed Wave-A fixes + the NLS prod-bug fix + Arc-2 gating part 1** + the IA design tournament — then, once the browser unlocked, ran a **full testing pass**: real Playwright (anon) on every UI surface + an **ultracode adversarial review of all 6 code PRs** + the Wave-A owed visual passes. 3 real bugs found + fixed + cascaded through the stack. One NEW prod bug found (MotoGP chart parity, below).
 
 ### ▶ POLICY I HELD TO (why nothing is merged)
-The visual gate ("browser-verify before shipped") was **impossible overnight** — the MCP Playwright browser was locked, Vercel previews are SSO-walled, and you were asleep. The handoff's #1 lesson is "don't ship UI past the visual gate" (the 0.131.0 prod break). So **everything is a review-ready PR, verified as far as headlessly possible (tsc / unit tests / curl / anon-leak checks), NOT merged.** Your morning job: visual-verify + merge the stack in order.
+Overnight the visual gate was impossible (browser locked, previews SSO-walled, operator asleep) → everything shipped as review-ready PRs, not merges. The morning pass then covered everything **anon-reachable** in a real browser; what remains un-verified is exactly the **signed-in** side (blocked: the permission classifier denied provisioning a Clerk test user — reasonable; needs operator creds or explicit approval) and the **datacenter** behaviour (prod-only).
 
 ### The stack (merge in this order — each PR's base is the previous)
-| PR | ver | what | headless verify | merge note |
+| PR | ver | what | verified | remaining before/at merge |
 |---|---|---|---|---|
-| #356 | 0.148.0 | rename "Decoder"→"Qualifying Analysis" / "Replay" (visible copy only) | tsc✓, 3 rendered surfaces 0-legacy | eyeball the client-only **"Replay"** toggle |
-| #357 | 0.149.0 | global ⌘K search (static index + fuzzy overlay) | tsc✓, matcher 7/7, index route 200/1074 docs, button in SSR | eyeball ⌘K open→type→arrow→enter |
-| #358 | 0.150.0 | F1 head-to-head `/f1/compare` | tsc✓, picker + Norris/Piastri comparison render | eyeball picker submit + chart |
-| #359 | 0.150.1 | owed: overview.md fastest-lap fix + Champions `<h2>` a11y | tsc✓ | trivial; safe |
-| #360 | 0.150.2 | **NLS prod fix** — fetch via Wikimedia action API not `/wiki/` | tsc✓, 9/9, live winners render | **safe to merge** (server fetch path, no UI) |
-| #361 | 0.151.0 | **Arc-2 gating pt1** — F1 analysis account-walled (leak-free) | tsc✓, anon-leak-free confirmed | **HOLD — needs signed-in visual pass** (does the analysis render signed-in? `/sign-in` round-trip?) |
-| #362 | docs | **IA restructure — DESIGN DOC + proposal** (off main, independent; tournament `wf_bdfe1a86-402`) | tournament synthesis | pick a rollout increment; answer the 7 open Qs |
+| #356 | 0.148.0 | rename "Decoder"→"Qualifying Analysis" / "Replay" (visible copy) | tsc✓ · browser: hub/nav/session title renamed, 0 legacy | "Replay" toggle sits INSIDE the now-gated analysis → only visible signed-in (by design) — check it in the signed-in pass |
+| #357 | 0.149.0 | global ⌘K search | tsc✓ · matcher 7/7 · index 200/1074 docs · **browser: open→type→grouped results→click navigates** · +2 fixes (below) | none for anon; optionally re-try Enter-nav signed-in (Playwright focus quirk, click-nav proven) |
+| #358 | 0.150.0 | F1 head-to-head `/f1/compare` | tsc✓ · browser: picker renders + pre-fills; teaser correct · chart component proven on Standings | the UNLOCKED comparison view (signed-in) |
+| #359 | 0.150.1 | overview.md fastest-lap + Champions `<h2>` | tsc✓ · **browser: Champions renders identical + collapse interaction works** | none — safe |
+| #360 | 0.150.2 | **NLS prod fix** (Wikimedia action API) | tsc✓ · 9/9 · **browser: Results tab shows 4 winner rows + VLN source** | **safe to merge**; datacenter behaviour = confirm on prod after deploy |
+| #361 | 0.151.0 | **Arc-2 gating pt1** (F1 analysis walled, leak-free) | tsc✓ · **browser (anon): teasers on session page + compare; Classification + Speed Trap stay public; mobile 390px clean; 0 console errors everywhere** | **HOLD — signed-in pass** (analysis renders when signed in? `/sign-in` round-trips?) |
+| #362 | docs | IA design doc + session wrap | tournament synthesis | review; answer the 7 open Qs; pick increment |
 
-**Squash-merge caveat (documented before):** merging #356 squashed will make the shared files (CHANGELOG/RELEASES/package.json) diverge from the stack → resolve per the usual `git fetch` + `--ours` on package.json + eyeball-CHANGELOG dance. `gh` is on `paris-paraskevas` (keep).
+**Squash-merge caveat:** merging #356 squashed makes the shared files (CHANGELOG/RELEASES/package.json) diverge from the stack → the usual `git fetch` + `--ours` on package.json + eyeball-CHANGELOG dance per merge. `gh` is on `paris-paraskevas` (keep).
 
-### ⚠️ Owed visual/signed-in passes (per PR above) + one flag
-- Per-PR eyeballs listed in the table. The **gating (#361) signed-in path is the most important** — I could only verify the anon/leak-free side headlessly.
-- **Pre-existing test reds (NOT mine):** on clean `main`, `lib/openf1/turns.test.ts` fails ×2 (deterministic — the turn-detection behind the Analysis delta-chart's turn axis; could be a real edge bug or stale tests) and `lib/sitemap-data.test.ts` is **flaky** (a different subset fails per run). The suite is not green on main — worth a dedicated look.
+### Morning testing pass (2026-07-02) — what it found + fixed
+- **Ultracode adversarial review** (6 independent reviewers, one per code PR → verify pass): **0 material defects**; 2 low findings, both real, both FIXED: (a) #357 a non-2xx from `/api/search` cached `[]` into the module-level index cache → search silently dead all session, no retry (now throws → `.catch` → cache stays null → next open retries); (b) #358 "Last N races" heading used `max(A,B)` vs per-column counts (→ "Recent form").
+- **Browser-caught 3rd bug:** the search fuzzy tail was far too loose ("norris" → ~25 junk rows via haystack-subsequence). Matcher tightened (title-only subsequence, capped to ≤30-char titles) → "norris" returns exactly Lando Norris. Re-verified live.
+- **All 3 fixes cascaded up the stack** (merged clean through #358→#359→#360→#361; every branch consistent; pushed).
+- **Wave-A owed passes now done:** `/news` ✅ (chips + counts + tagged feed) · Champions collapsibles ✅ (render + collapse/expand interaction; `<h2>` swap = no visual change) · NLS Results ✅ (4 winner rows) · **MotoGP 0.143.0 ❌ FAILED — see the bug below.**
+
+### 🔴 NEW BUG (pre-existing on prod, NOT from this stack) — MotoGP trend chart violates the chart==standings invariant
+0.143.0's owed parity pass fails on live data: chart legend vs standings table — **Bezzecchi 173 vs 186 (−13) · Ogura 160 vs 168 (−8) · Di Giannantonio 152 vs 177 (−25)**; Martin/Marquez/R.Fernandez exact. Diagnosis done: all 10 rounds + sprints ARE in the results feed (Results tab lists every GP+Sprint incl. R10 Netherlands); **no name-variant splits** (each rider appears under exactly one spelling in the chart payload); the shortfalls are **per-round value gaps** (per-round cumulatives extracted in-session; e.g. Bezzecchi R9 Δ=0 AND absent from the R9 race classification page — possibly a genuine DNF, in which case his missing 13 pts live elsewhere). Chart carries **28 rider series vs 27 standings rows** (one extra line, unidentified). **Next step:** round-by-round comparison of the two upstreams (standings = motogp.com; results feed = motorcyclesports.net) for the 3 riders → then (a) curate `results-overrides.json` (mechanism exists), (b) parser fix, or (c) per the locked invariant, gate/drop the MotoGP chart until parity. It's live on prod NOW.
+
+### ⚠️ Remaining operator-gated items
+- **Signed-in pass** (the one thing I could not do): the unlocked analysis surfaces (#361), the Replay toggle (#356), the unlocked comparison + chart (#358). Blocked because creating a Clerk test user via the Backend API was (fairly) denied by the permission classifier. Options: sign in yourself on localhost:3000 (Clerk is dev-mode `pk_test`), or explicitly authorise a `…+clerk_test@…` test user and I'll drive the whole pass.
+- **NLS datacenter confirm** — after #360 deploys, eyeball prod `/series/nls/results`.
+- **Pre-existing test reds (NOT mine):** clean `main` fails `lib/openf1/turns.test.ts` ×2 (deterministic) and `lib/sitemap-data.test.ts` is flaky. Suite not green on main — dedicated look owed.
+- Dev server: the tree is parked on `feat/gate-f1-analysis` (top of code stack) so localhost:3000 serves the full feature set.
 
 ### Arc-2 gating — what's DONE vs DEFERRED
 Done (pt1, #361): the F1 analysis (Qualifying Analysis + Replay, Race Story, Practice Analysis, `/f1/compare`) is signed-in-only, server-gated leak-free; all content stays public. The write-actions (follow/notifications/threads/bets) were **already API-gated** — mapped in `docs/research/2026-07-02-account-gating.md`. **DEFERRED (needs your product call):** walling `/social` pages, home-customise and **following** would reverse the "device-local guest" model (anon currently follows + customises via localStorage). That's a UX/architecture reversal — specced in the doc, held for your decision + a visual pass.
@@ -44,11 +55,11 @@ Ran a design tournament (3 lens-diverse proposals → adversarial synthesis) →
 
 ### Wave A — SHIPPED (ultracode workflow, 6/6 merged)
 - **0.142.0 (#351)** durable last-good (`withSourceSnapshot`) extended to WEC/FE/WRC/NASCAR standings. 145 tests green.
-- **0.143.0 (#350)** MotoGP standings trend chart (Sprint→`extras`; fixes the 132→157 under-count). **OWED: preview pass** confirming chart total == standings on live 2026 data.
+- **0.143.0 (#350)** MotoGP standings trend chart (Sprint→`extras`; fixes the 132→157 under-count). ~~OWED: preview pass~~ **→ PASS RUN 2026-07-02: FAILED — chart still under-counts 3 riders (−13/−8/−25). Full diagnosis in the top block.**
 - **0.144.0 (#353)** NLS results — winners-only from the Wikipedia season page (the VLN PDF isn't parseable in the Vercel runtime without a PDF lib). **⚠️ KNOWN ISSUE — prod Results tab is EMPTY** ("Results are temporarily unavailable"): the parser returns `[]` on prod, though the verifier got 4 completed rounds on a residential IP. This is the datacenter-verify #353 flagged, now CONFIRMED failing. INVESTIGATE: (a) Vercel function logs for the `[upstream]`/`[source]` warn on the `en.wikipedia.org` fetch (datacenter block / TLS / timeout / 8s abort?); (b) whether the live 2026 NLS Wikipedia page's table structure differs from the test fixture on the datacenter fetch; (c) a cached-empty `source_snapshot`/ISR entry. Standings "Coming soon" + News "not configured" are **EXPECTED** (NLS ships results-only — no standings, no news feed).
 - **0.145.0 (#352)** F1 About: FIA-regs link (`fia.com/regulation/category/110`, 200-verified) + a 2026-correct rules quick-reference. NB it flagged `content/series/f1/overview.md:13` still claims a "fastest-lap bonus point" — **stale for 2026, quick content fix owed**.
-- **0.146.0 (#348)** aggregated `/news` page (gives the Community menu its News destination). **OWED: visual pass.**
-- **0.147.0 (#349)** collapsible Champions sections. **OWED a11y fast-follow:** section labels are `<span>` — restore `<h2>` inside the `<summary>` for heading semantics + sibling-tab parity (flagged in CHANGELOG).
+- **0.146.0 (#348)** aggregated `/news` page (gives the Community menu its News destination). ~~OWED: visual pass~~ **→ DONE 2026-07-02 ✅.**
+- **0.147.0 (#349)** collapsible Champions sections. ~~OWED a11y fast-follow~~ **→ `<h2>` shipped in PR #359; render + collapse interaction browser-verified 2026-07-02 ✅.**
 
 ### Ultracode lesson (fix the build prompt next wave)
 **2 of 6 build agents corrupted CHANGELOG** by RENAMING the top `## 0.141.0` heading in place instead of PREPENDING — destroyed the 0.141.0 entry + misattributed its bullets. Repaired all at merge via `git merge origin/main -X theirs` + clean re-add. **FUTURE WAVE PROMPTS must say:** "PREPEND a NEW `## <version>` section at the top of CHANGELOG/RELEASES — do NOT edit/rename the existing top heading." Also keep: **`git fetch origin` before EACH cascade merge** (a stale ref dropped 0.140.0 once) + **eyeball CHANGELOG headers after each merge** (every version present, bodies intact). RELEASES was never corrupted (agents prepend it correctly).
