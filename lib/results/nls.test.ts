@@ -88,9 +88,16 @@ describe('fetchNlsSeasonResults', () => {
   });
 
   it('emits winners-only RaceResults keyed to numeric rounds', async () => {
+    // fetchNlsSeasonResults now consumes the Wikimedia action API
+    // (action=parse&prop=text), so the mock returns { parse: { text } } — the
+    // fixture is the same standard-parser HTML the API's `text` carries.
     globalThis.fetch = vi.fn(
       async () =>
-        ({ ok: true, status: 200, text: async () => seasonHtml }) as Response,
+        ({
+          ok: true,
+          status: 200,
+          json: async () => ({ parse: { text: seasonHtml } }),
+        }) as unknown as Response,
     ) as unknown as typeof fetch;
 
     const races = await fetchNlsSeasonResults(2026);

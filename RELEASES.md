@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.150.2 — 2026-07-02
+
+**NLS results are back.** The Nürburgring Langstrecken-Serie Results tab was coming up empty on the live site — it now loads each round's overall winner again.
+
 ## 0.150.1 — 2026-07-02
 
 **Small fixes.** Corrected the F1 points explainer (the fastest-lap bonus point was dropped for 2025) and improved the Champions tab's section headings for screen readers.
