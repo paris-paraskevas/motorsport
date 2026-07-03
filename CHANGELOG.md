@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.154.1 — 2026-07-03
+
+### Fixed
+- **Stale guest copy on `/settings`** (`components/AccountIdentity.tsx`): the signed-out identity strip still promised "Preferences below save to this device. Sign in to sync…" — the pre-0.153.0 device-local-guest model. Following / home-customise / notifications have been account-walled since #367, so the line now sells the unlock ("free account features — sign in to unlock them"). Found by the owed anon visual pass (2026-07-03): `/settings/customize` + `/settings/series` walls verified correct; only this hub copy contradicted them.
+
 ## 0.154.0 — 2026-07-02
 
 Arc-2 follow-ups: a marketing teaser landing for `/social` + News promoted to a top-level nav item.

@@ -5,7 +5,9 @@ import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 // Identity strip at the top of /settings (the bottom bar calls it Account —
 // PR 2d makes the page keep that promise). Signed in: avatar + name/email,
 // with Clerk's UserButton carrying manage-account and sign-out. Signed out:
-// why-sign-in line + CTA. Preferences below work either way (device-local).
+// why-sign-in line + CTA. Since 0.153.0 following / home-customise /
+// notifications are account-only (guests hit sign-in walls on those pages),
+// so the guest line sells the unlock instead of promising device-local saves.
 export function AccountIdentity() {
   const { isLoaded, isSignedIn, user } = useUser();
 
@@ -19,8 +21,8 @@ export function AccountIdentity() {
         <div className="flex-1 min-w-0">
           <h2 className="text-text text-base font-semibold">You&apos;re browsing as a guest</h2>
           <p className="text-text-faint text-xs mt-1 leading-relaxed">
-            Preferences below save to this device. Sign in to sync followed
-            series and notification settings across devices.
+            Following championships, customising your home and notifications
+            are free account features — sign in to unlock them.
           </p>
         </div>
         <SignInButton mode="modal">

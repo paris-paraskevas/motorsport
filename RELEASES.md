@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.154.1 — 2026-07-03
+
+**Clearer account message.** The Account page no longer suggests guest preferences save to this device — following championships, customising your home and notifications are free account features, and the page now says so plainly.
+
 ## 0.154.0 — 2026-07-02
 
 **News in one click, and a proper welcome to Social.** "News" is now a top-level link in the main menu (Blog and Threads are a hover away). And the Social area greets signed-out visitors with a preview of the predictions game — back the grid, build private leagues, add friends, all with free virtual credits and no cash — instead of a bare sign-in prompt.
