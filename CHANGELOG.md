@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.159.0 — 2026-07-03
+
+Betting wave (salvaged batch A of the 2026-07-03 build day; agent's adapters + my gate tests and league links).
+
+### Added
+- **F2 prediction markets** (`lib/betting/series-sources.ts` + 5 gate tests): F2 joins F1 in the market automation behind three tested correctness gates — (a) field/settlement name consistency with whitespace normalization (the FIA feeds carry a live double-space record), (b) Feature-race-only settlement (a Sprint classification can never settle a market), (c) curated-vs-FIA round alignment. Markets auto-open for upcoming F2 rounds via the existing open-markets cron. **F3 deliberately NOT wired**: the live probe caught FIA's post-Bahrain-cancellation renumbering diverging from `content/series/f3/rounds.json` — a market would settle against the wrong race; a regression tripwire test keeps it unwired until rounds.json is renumbered.
+- **Dormant 'grid' market type** (`markets.ts` `createGridMarket`, `pricing.ts` `gridMultipliers`, `components/betting/GridBetCard.tsx`, enum migration `20260703120000_grid_enum.sql`): pick a driver's exact starting slot, settles on qualifying. No builder entry, no UI listing, migration is the enum-only first step (the settle_market branch ships at go-live) — the podium/top10 dormant pattern. Go-live steps documented on `createGridMarket`.
+- **League profile links** (`LeagueDetailView.tsx`): member rows + honours podium names link to `/social/users/[id]`.
+
 ## 0.158.2 — 2026-07-03
 
 ### Fixed

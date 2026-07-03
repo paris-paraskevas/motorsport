@@ -1,25 +1,16 @@
 import { betDb } from './client';
 import { createWinnerMarket, createPodiumMarket, createTop10Market, createForecastMarket, createExactPositionMarket, settleMarket } from './markets';
-import { PODIUM_SLOTS, TOP10_SLOTS, type DriverForm } from './pricing';
+import { PODIUM_SLOTS, TOP10_SLOTS } from './pricing';
 import { loadAllSeries } from '@/lib/series';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { looksLikeRaceSession, looksLikeQualifying } from '@/lib/results-ready';
-import { fetchF1Standings } from '@/lib/standings/f1';
+import { FIELD_SOURCES, RESULT_SOURCES } from './series-sources';
 import { settleLeagueMarket } from './settlement';
-import { fetchF1SeasonResults } from '@/lib/results/f1';
 import type { RaceResult } from '@/lib/types';
 
-// Server-only. Auto-open winner markets for upcoming races. A series qualifies
-// when its field can be priced as {name, points} from a standings source whose
-// driver names match the results feed used at settlement — so a winning pick
-// resolves cleanly. F1 first (Jolpica names are identical on both sides); add
-// adapters here as other series line up.
-const FIELD_SOURCES: Record<string, () => Promise<DriverForm[] | null>> = {
-  f1: async () => {
-    const s = await fetchF1Standings();
-    return s ? s.drivers.map(d => ({ name: d.driverName, points: d.points })) : null;
-  },
-};
+// Server-only. Auto-open markets for upcoming races and settle them once the
+// official classification is in. Which series run markets — and the correctness
+// gates a series must pass first — lives in ./series-sources (f1 + f2 today).
 
 // How many upcoming weekends to keep an open winner market for, per series —
 // gives bettors real lead time instead of only ever the single next race.
@@ -30,7 +21,9 @@ const LOOKAHEAD_WEEKENDS = 3;
 // LIVE 0.88.0; exact_position (single driver + exact finishing position) went LIVE
 // by operator decision — its picker (ExactPositionBetCard) is wired in
 // WeekendBetting and settlement is routed in settleDueMarkets (the `positions`
-// branch). All five share the same creation-time-priced field.
+// branch). All five share the same creation-time-priced field. 'grid' (exact
+// starting slot, settles on qualifying) exists end-to-end but is deliberately
+// NOT built here — it ships dormant, like podium/top10 originally did.
 const MARKET_BUILDERS: { type: string; create: (opts: Parameters<typeof createWinnerMarket>[0]) => Promise<string> }[] = [
   { type: 'winner', create: createWinnerMarket },
   { type: 'podium', create: createPodiumMarket },
@@ -137,10 +130,6 @@ export async function openUpcomingMarkets(): Promise<OpenMarketsSummary> {
 
 // ---- settlement ------------------------------------------------------------
 
-const RESULT_SOURCES: Record<string, () => Promise<RaceResult[]>> = {
-  f1: () => fetchF1SeasonResults(),
-};
-
 /** The official winner (P1 driver name) for a series' round, or null if the
  *  classification isn't in yet. Names come from the same feed used to price the
  *  market, so a winning pick resolves cleanly. */
@@ -203,6 +192,12 @@ export async function settleDueMarkets(): Promise<SettleSummary> {
     const round = m.round as number;
     const marketId = m.id as string;
     try {
+      // 'grid' is DELIBERATELY absent: the type exists end-to-end (pricing,
+      // picker, settle_market SQL branch) but ships dormant. It settles on the
+      // QUALIFYING classification — wiring it means adding a QUALI_SOURCES map
+      // in ./series-sources and calling settleMarket with {grid: {name: pos}}
+      // here, keyed off the quali session rather than the race. Until then a
+      // grid market (none are opened) would sit in `awaiting` forever.
       if (m.type !== 'winner' && m.type !== 'podium' && m.type !== 'top10' && m.type !== 'exact_position' && m.type !== 'forecast') {
         summary.awaiting.push(`${slug} R${round}: ${m.type} settlement not supported yet`);
         continue;

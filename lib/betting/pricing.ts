@@ -169,6 +169,19 @@ export function exactPositionMultipliers(drivers: DriverForm[], margin = HOUSE_M
 }
 
 /**
+ * {`driver@position` -> decimal multiplier} for a GRID (qualifying) market —
+ * every (driver, grid slot) pair priced through the same clamp band. Reuses
+ * positionProbabilities exactly like exact_position: championship form is the
+ * best zero-config prior for one-lap pace too (a quali-specific prior can
+ * replace this without touching the key shape). Keys stay `${name}@${slot}`
+ * (slot 1-based = grid position); settlement reads selection {driver, position}
+ * against the QUALIFYING classification (settle_market's `grid` branch).
+ */
+export function gridMultipliers(drivers: DriverForm[], margin = HOUSE_MARGIN): Record<string, number> {
+  return exactPositionMultipliers(drivers, margin);
+}
+
+/**
  * Combined multiplier for a `forecast` bet (≥2 legs): the PRODUCT of each leg's
  * stored per-pair multiplier (the exact-position odds, keyed `driver@position`),
  * clamped to MAX_MULTIPLIER. Returns 0 for <2 legs or any leg whose pair isn't

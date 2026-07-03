@@ -20,9 +20,13 @@ export const MARKET_TYPE_META: Record<string, MarketTypeMeta> = {
   top10: { label: 'Top 10 finish', blurb: 'Back a driver to finish in the points — top ten.', cta: 'back a top-10 finish', selectionKey: 'driver' },
   exact_position: { label: 'Exact finish', blurb: 'Pick a driver and their exact finishing position.', cta: 'call an exact finish', selectionKey: 'driver' },
   forecast: { label: 'Forecast', blurb: 'Pick two or more drivers and their exact finishing positions — all or nothing.', cta: 'call a forecast', selectionKey: 'legs' },
+  // DORMANT — no automation opens a grid market yet (settles on qualifying,
+  // which has no settlement source wired). Meta exists so the type renders
+  // sanely everywhere the moment it goes live.
+  grid: { label: 'Grid slot', blurb: 'Pick a driver and their exact starting grid slot — settles on qualifying.', cta: 'call a grid slot', selectionKey: 'driver' },
 };
 // Display order for a round's markets (unknown types fall to the end).
-export const MARKET_TYPE_ORDER = ['winner', 'podium', 'top10', 'exact_position', 'forecast'];
+export const MARKET_TYPE_ORDER = ['winner', 'podium', 'top10', 'exact_position', 'forecast', 'grid'];
 
 /** Split an exact-position odds map (keyed `driver@position`, as written by
  *  exactPositionMultipliers) into its drivers (favourite-first by win odds) and
@@ -45,7 +49,7 @@ export function parseExactPositionOdds(odds: Record<string, number>): { drivers:
 
 /** Human-readable summary of a bet's selection — NEVER raw JSON. Selection shapes
  *  (see lib/betting/markets selectionForMarket): winner→{winner}, podium/top10→
- *  {driver}, exact_position→{driver,position}, forecast→{legs:[{driver,position}]}. */
+ *  {driver}, exact_position/grid→{driver,position}, forecast→{legs:[{driver,position}]}. */
 export function formatBetSelection(type: string, selection: Record<string, unknown>): string {
   const name = selection.winner ?? selection.driver;
   const driver = typeof name === 'string' ? name : undefined;
@@ -60,6 +64,9 @@ export function formatBetSelection(type: string, selection: Record<string, unkno
   }
   if (type === 'exact_position' && driver && typeof selection.position === 'number') {
     return `${driver} P${selection.position}`;
+  }
+  if (type === 'grid' && driver && typeof selection.position === 'number') {
+    return `${driver} grid P${selection.position}`;
   }
   return driver ?? '—';
 }
