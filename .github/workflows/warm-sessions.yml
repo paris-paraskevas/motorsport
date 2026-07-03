@@ -1,0 +1,36 @@
+name: warm sessions
+
+on:
+  schedule:
+    # Every 30 minutes — captures recently-ended F1 sessions' classifications
+    # into KV before OpenF1's next live-session lockout can 401 them. A miss
+    # (classification not yet published) is never cached, so the next tick
+    # simply retries; per-run upstream load is capped inside the route.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+# Required so the workflow can read CRON_SECRET from repo secrets.
+permissions:
+  contents: read
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /api/cron/warm-sessions
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -e
+          AUTH_HEADER=""
+          if [ -n "$CRON_SECRET" ]; then
+            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
+          fi
+          STATUS=$(curl -sS -o /tmp/warm-sessions.json -w "%{http_code}" \
+            -H "$AUTH_HEADER" \
+            https://paddock-tracker.com/api/cron/warm-sessions)
+          echo "Status: $STATUS"
+          cat /tmp/warm-sessions.json
+          echo ""
+          test "$STATUS" = "200"

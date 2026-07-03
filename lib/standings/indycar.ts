@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { DriverStanding } from '@/lib/types';
 
 export type { DriverStanding };
@@ -32,7 +33,7 @@ function teamFromAlt(alt: string | undefined): string {
   return alt.replace(/\s+Logo\s*$/i, '').trim();
 }
 
-export async function fetchIndyCarStandings(): Promise<{
+async function fetchIndyCarStandingsLive(): Promise<{
   drivers: DriverStanding[];
 } | null> {
   let html: string;
@@ -106,4 +107,25 @@ export async function fetchIndyCarStandings(): Promise<{
   } catch {
     return null;
   }
+}
+
+/**
+ * Public IndyCar standings fetch, wrapped in the durable `source_snapshot`
+ * last-good so an indycar.com outage / SPA-shell response / CMS restructure
+ * (→ null) serves the last successful standings instead of blanking the page.
+ * Self-heals on the next good fetch (which overwrites the snapshot).
+ *
+ * The payload carries no `Date` fields, so the jsonb round-trip is lossless and
+ * no rehydration is needed (same as `standings:dtm`). Fails soft when Supabase
+ * is unconfigured (local dev): behaves exactly like `fetchIndyCarStandingsLive`.
+ * Return type is unchanged.
+ */
+export async function fetchIndyCarStandings(): Promise<{
+  drivers: DriverStanding[];
+} | null> {
+  return withSourceSnapshot(
+    'standings:indycar',
+    fetchIndyCarStandingsLive,
+    v => v == null || v.drivers.length === 0,
+  );
 }

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.157.0 — 2026-07-03
+
+**Sturdier data, quietly.** Four more championships' standings now keep showing the last good table if their source hiccups instead of going blank. F1 session results get captured right after a session ends, so they stay visible even while live-timing data is locked during the next session. And a weekly watchdog now flags when a past result quietly changes upstream — late penalties get noticed instead of slipping by.
+
 ## 0.156.0 — 2026-07-03
 
 **Your series, in your calendar.** Every championship now has a subscribe link on its Calendar tab — add it to Apple, Google or Outlook and race weekends keep themselves up to date, including sessions that only have a date so far. Formula 1 also gained a Tracks tab mapping every circuit on the calendar, and pages now show a proper loading state while heavy sections fetch instead of a blank screen.

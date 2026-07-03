@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
@@ -210,8 +211,8 @@ export interface GtWorldStandings {
 // drivers table failed (likely network outage / CMS rebuild), which
 // mirrors the F1 loader contract: null → render the "temporarily
 // unavailable" placeholder.
-export async function fetchGtWorldStandings(
-  season: number = 2026,
+async function fetchGtWorldStandingsLive(
+  season: number,
 ): Promise<GtWorldStandings | null> {
   const championships: Championship[] = ['overall', 'sprint', 'endurance'];
   const results = await Promise.all(
@@ -257,4 +258,33 @@ export async function fetchGtWorldStandings(
     return null;
   }
   return { season, overall, sprint, endurance };
+}
+
+/**
+ * Public GTWCE standings fetch, wrapped in the durable `source_snapshot`
+ * last-good so an SRO CMS outage / anti-bot page / table restructure (→ null)
+ * serves the last successful standings instead of blanking the page. Self-heals
+ * on the next good fetch (which overwrites the snapshot).
+ *
+ * The snapshot key is season-scoped (`standings:gt-world:<season>`) because the
+ * fetch is parameterised by season — a last-good from a different season must
+ * never be served for the requested one. `GtWorldStandings` carries no `Date`
+ * fields, so the jsonb round-trip is lossless and no rehydration is needed
+ * (same as `standings:dtm`). isEmpty mirrors the live fetch's own fail-closed
+ * condition: every championship's drivers table empty. Fails soft when Supabase
+ * is unconfigured (local dev): behaves exactly like `fetchGtWorldStandingsLive`.
+ * Return type is unchanged.
+ */
+export async function fetchGtWorldStandings(
+  season: number = 2026,
+): Promise<GtWorldStandings | null> {
+  return withSourceSnapshot<GtWorldStandings | null>(
+    `standings:gt-world:${season}`,
+    () => fetchGtWorldStandingsLive(season),
+    v =>
+      v == null ||
+      (v.overall.drivers.length === 0 &&
+        v.sprint.drivers.length === 0 &&
+        v.endurance.drivers.length === 0),
+  );
 }
