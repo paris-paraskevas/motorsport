@@ -102,10 +102,18 @@ export async function createDraft(authorId: string, input: DraftInput): Promise<
   return data.id as string;
 }
 
-/** Posts in a given status, newest first, author names resolved. */
-export async function listPosts(status: PostStatus, seriesSlug?: string): Promise<BlogPost[]> {
+/** Posts in a given status, newest first, author names resolved.
+ *  `authorId` scopes the list to one author's posts — the blog API uses it so
+ *  an `author`-role user sees only their own drafts/scheduled posts, while
+ *  admins omit it and see everything. */
+export async function listPosts(
+  status: PostStatus,
+  seriesSlug?: string,
+  authorId?: string,
+): Promise<BlogPost[]> {
   let q = betDb().from('post').select(COLS).eq('status', status);
   if (seriesSlug) q = q.eq('series_slug', seriesSlug);
+  if (authorId) q = q.eq('author_id', authorId);
   const { data, error } = await q.order('created_at', { ascending: false });
   if (error) throw new Error(`listPosts failed: ${error.message}`);
   return withNames(data ?? []);
@@ -147,6 +155,52 @@ export async function getPostById(id: string): Promise<BlogPost | null> {
   if (error || !data) return null;
   const names = await displayNames([data.author_id as string]);
   return toPost(data, names.get(data.author_id as string) ?? null);
+}
+
+export interface PostContentPatch {
+  title?: string;
+  summary?: string;
+  body?: string;
+}
+
+/** Edit a post's text in place (the /blog/[slug] admin-preview pencil — spec
+ *  docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md). Only title /
+ *  summary / body are editable; slug, series, hero image and publish time are
+ *  immutable in this surface. Trims every provided field and enforces the same
+ *  limits as createDraft. The UPDATE is status-guarded to 'draft' | 'approved'
+ *  with an exact count, so a published or rejected post can never be silently
+ *  rewritten — including the race where the publish cron takes an approved post
+ *  live mid-edit (the caller maps that domain error to a 422). Returns the
+ *  updated post id. */
+export async function updatePostContent(id: string, patch: PostContentPatch): Promise<string> {
+  const fields: Record<string, string> = {};
+  if (patch.title !== undefined) {
+    const title = patch.title.trim();
+    if (!title || title.length > TITLE_MAX) throw new Error(`title must be 1–${TITLE_MAX} characters`);
+    fields.title = title;
+  }
+  if (patch.summary !== undefined) {
+    const summary = patch.summary.trim();
+    if (!summary || summary.length > SUMMARY_MAX) throw new Error(`summary must be 1–${SUMMARY_MAX} characters`);
+    fields.summary = summary;
+  }
+  if (patch.body !== undefined) {
+    const body = patch.body.trim();
+    if (!body || body.length > BODY_MAX) throw new Error(`body must be 1–${BODY_MAX} characters`);
+    fields.body = body;
+  }
+  if (Object.keys(fields).length === 0) {
+    throw new Error('at least one of title, summary, body is required');
+  }
+
+  const { error, count } = await betDb()
+    .from('post')
+    .update({ ...fields, updated_at: new Date().toISOString() }, { count: 'exact' })
+    .eq('id', id)
+    .in('status', ['draft', 'approved']);
+  if (error) throw new Error(`updatePostContent failed: ${error.message}`);
+  if (!count) throw new Error('post is not editable (only drafts and scheduled posts can be edited)');
+  return id;
 }
 
 /** Approve (schedule) or reject a draft (admin only — caller pre-verified).

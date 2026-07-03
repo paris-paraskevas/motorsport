@@ -9,6 +9,8 @@ import { getPostBySlug, type BlogPost } from '@/lib/blog';
 import { isAdmin } from '@/lib/threads';
 import { renderMarkdown } from '@/lib/content';
 import { mdxComponents } from '@/components/mdx/mdx-components';
+import { DraftEditor } from '@/components/blog/DraftEditor';
+import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
@@ -198,17 +200,27 @@ export default async function PostPage({
         Back to blog
       </Link>
 
-      {draftPreview && (
-        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
-          Draft preview · not yet scheduled · only admins can see this
-        </div>
-      )}
-      {scheduledAt && (
-        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
-          Scheduled preview · publishes {formatDateTime(scheduledAt)} UTC · only admins can see this
-        </div>
-      )}
-
+      {/* Admin preview (draft/scheduled): DraftEditor owns the amber banner +
+          header + article and swaps them for the in-place markdown editor via
+          the pencil (spec 2026-07-03). The public/published path below is
+          untouched. db is always set here — only DB posts have these states. */}
+      {db && (draftPreview || scheduledAt) ? (
+        <DraftEditor
+          id={db.id}
+          title={post.frontmatter.title}
+          summary={post.frontmatter.summary}
+          body={db.body}
+          bodyHtml={bodyHtml ?? ''}
+          dateLabel={formatDate(post.frontmatter.publishedAt)}
+          banner={
+            draftPreview
+              ? { kind: 'draft' }
+              : { kind: 'scheduled', label: formatDateTime(scheduledAt as string) }
+          }
+          author={author}
+        />
+      ) : (
+        <>
       <header className="mb-8">
         <div className="flex items-baseline gap-3 mb-3 flex-wrap">
           <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
@@ -249,21 +261,15 @@ export default async function PostPage({
         </p>
       </header>
 
-      <article
-        className="prose dark:prose-invert prose-zinc max-w-none
-                   prose-headings:tracking-tight
-                   prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-                   prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
-                   prose-p:leading-relaxed
-                   prose-strong:text-text
-                   prose-a:text-text prose-a:underline-offset-4"
-      >
+      <article className={POST_ARTICLE_CLASS}>
         {bodyHtml !== null ? (
           <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
         ) : (
           <MDXRemote source={post.source} components={mdxComponents} />
         )}
       </article>
+        </>
+      )}
     </div>
   );
 }
