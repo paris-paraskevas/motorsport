@@ -52,6 +52,15 @@ interface HomeStandingsItem {
   top: { position: number; name: string; points: number }[];
 }
 
+// Mirrors the /api/home/movers route export (lib/standings/movers SeriesMovers).
+interface HomeMoversItem {
+  slug: string;
+  name: string;
+  color: string;
+  latestRound: string;
+  movers: { name: string; rank: number; points: number; delta: number | null }[];
+}
+
 // ── New opt-in widget payloads (mirror the /api/home/* route exports) ──
 interface HomeThreadItem {
   id: string;
@@ -377,6 +386,29 @@ export function HomeContent({
       alive = false;
     };
   }, [needStandings, standingsParam]);
+
+  // STANDINGS MOVERS — opt-in, default-hidden. Round-over-round rank change per
+  // series (F1/F3/MotoGP eligible); the route filters to eligible+has-data, so
+  // its response defines what renders. Same defer-fetch shape as standings.
+  const [movers, setMovers] = useState<HomeMoversItem[] | null>(null);
+  const moversShown =
+    !layout.hidden.includes('standings-movers') && !layout.collapsed.includes('standings-movers');
+  const moversParam = followed === null ? 'all' : followed.join(',');
+  useEffect(() => {
+    if (!moversShown || !moversParam) return;
+    let alive = true;
+    fetch(`/api/home/movers?series=${encodeURIComponent(moversParam)}`)
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => {
+        if (alive) setMovers(d as HomeMoversItem[]);
+      })
+      .catch(() => {
+        if (alive) setMovers([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [moversShown, moversParam]);
 
   // THREADS ("paddock chatter") — opt-in, default-hidden; same defer-fetch shape
   // as from-the-blog. The newest approved threads load only when the block is
@@ -1454,6 +1486,74 @@ export function HomeContent({
               </>
             );
           })()}
+        </section>
+      )}
+      {/* ── STANDINGS MOVERS — opt-in, default-hidden. Round-over-round rank
+             change per eligible series (F1/F3/MotoGP), from the same trend the
+             Standings tab charts. Fetch is deferred to when the block is shown. ── */}
+      {!isHidden('standings-movers') && (
+        <section aria-label="Standings movers" className="mb-8" style={{ order: orderOf('standings-movers') }}>
+          <CollapsibleSectionHead
+            title="Standings movers"
+            sub="since the last race"
+            collapsed={isCollapsed('standings-movers')}
+            onToggle={() => toggleCollapsed('standings-movers')}
+          />
+          {!isCollapsed('standings-movers') &&
+            (movers === null ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-1/3 animate-pulse bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+              </div>
+            ) : movers.length === 0 ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                No round-over-round changes to show yet.
+              </p>
+            ) : (
+              <div className="space-y-5">
+                {movers.map(series => {
+                  // Biggest actual movers first (skip holds / season-openers).
+                  const changed = series.movers
+                    .filter(m => m.delta !== null && m.delta !== 0)
+                    .sort((a, b) => Math.abs(b.delta!) - Math.abs(a.delta!))
+                    .slice(0, 5);
+                  return (
+                    <div key={series.slug}>
+                      <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em]">
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: series.color }} />
+                          <span className="font-semibold" style={{ color: series.color }}>{series.name}</span>
+                        </span>
+                        <span className="text-text-faint">· after {series.latestRound}</span>
+                      </div>
+                      {changed.length === 0 ? (
+                        <p className="border-y border-border py-3 font-mono text-xs text-text-faint">
+                          No position changes this round.
+                        </p>
+                      ) : (
+                        <ol className={`border-y border-border divide-y divide-border${dense('standings-movers') ? ' [&_li]:py-1.5' : ''}`}>
+                          {changed.map(m => {
+                            const up = (m.delta ?? 0) > 0;
+                            return (
+                              <li key={m.name} className="flex items-baseline gap-3 py-2 px-2 -mx-2 min-w-0">
+                                <span
+                                  className={`w-9 shrink-0 font-mono text-[11px] font-semibold tnum ${up ? 'text-brand' : 'text-red-400'}`}
+                                >
+                                  {up ? '▲' : '▼'}{Math.abs(m.delta!)}
+                                </span>
+                                <span className="min-w-0 flex-1 truncate text-sm font-medium text-text">{m.name}</span>
+                                <span className="shrink-0 font-mono text-[11px] text-text-faint tnum">P{m.rank}</span>
+                                <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">{m.points}</span>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
         </section>
       )}
       {/* ── SERIES COUNTDOWNS — opt-in. Each followed series' next session with

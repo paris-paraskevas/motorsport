@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.164.0 — 2026-07-03
+
+### Added
+- **Standings movers home widget** (batch J, item #94): a new opt-in, default-hidden home block showing who climbed or fell in the championship since the latest race, per followed series. Eligible v1 series: F1, F3, MotoGP — the set where a single season-results fetch reconciles to the standings table (`lib/standings/movers.ts` `MOVERS_ELIGIBLE_SLUGS`). Rank deltas are derived from the SAME per-round trend the Standings tab charts (`buildSeasonTrendData` → `computeMovers`, 5 unit tests), so a mover reconciles with the chart — no new data layer, no stored history. New lazy route `app/(app)/api/home/movers` (mirrors `/api/home/standings`: `?series=all|csv`, edge-cached, fail-soft per series). Registry: `standings-movers` added to `lib/homeLayout.ts` (HOME_LAYOUT_VERSION 8→9; reconcile default-hides it for existing users). Renders in the app's flat divider-row idiom (▲ brand / ▼ red, name · rank · points). Browser-verified on localhost with real data (F1 after Austria: Piastri ▲2, Russell ▲1, Hamilton ▼1). NB: the delta is "since the most recent race", which for F3/MotoGP can be a sprint (the per-series line names the exact race); F2 + other series deferred — their sprint/pole/FL points models need per-series reconciliation first.
+
 ## 0.163.3 — 2026-07-03
 
 ### Changed

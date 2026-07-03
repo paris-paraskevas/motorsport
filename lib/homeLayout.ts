@@ -6,7 +6,7 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 8;
+export const HOME_LAYOUT_VERSION = 9;
 
 export type HomeElementId =
   | 'chyron'
@@ -16,6 +16,7 @@ export type HomeElementId =
   | 'from-the-blog'
   | 'championship-leader'
   | 'standings-snapshot'
+  | 'standings-movers'
   | 'series-countdowns'
   | 'series-just-missed'
   | 'track-layout'
@@ -47,6 +48,7 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'from-the-blog', label: 'From the blog', hint: 'The latest Paddock long-reads and explainers.', collapsible: true },
   { id: 'championship-leader', label: 'Championship leader', hint: 'Who’s leading each series you follow, and by how much.', collapsible: true },
   { id: 'standings-snapshot', label: 'Standings snapshot', hint: 'The top of the table for one series, refreshed each round.', collapsible: true },
+  { id: 'standings-movers', label: 'Standings movers', hint: 'Who climbed or fell in the championship after the latest round (F1, F3, MotoGP).', collapsible: true },
   { id: 'series-countdowns', label: 'Series countdowns', hint: 'A separate next-session countdown for each series you follow.', collapsible: true },
   { id: 'series-just-missed', label: 'Series results', hint: 'The latest result for each series you follow, split out by series.', collapsible: true },
   { id: 'track-layout', label: 'Circuit map', hint: 'The track layout for the next round you follow (F1 for now).', collapsible: true },
@@ -138,7 +140,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
