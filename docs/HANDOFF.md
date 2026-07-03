@@ -6,7 +6,45 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-03 (LATEST) — main 0.154.0 (#365–#371) · MotoGP chart FIXED (red-flag restart) · British GP preview live · ▶ REMAINING = anon VISUAL PASSES + deferred IA taste calls
+## ⚡ Next session pickup — 2026-07-03 (LATEST) — main 0.163.2 · triage build-day (batches A–N salvaged) + audit fixes (F2 betting / blog 404 / social) · ALL signed-in verifs PASS
+
+**The day in one line:** ran an evidence-required triage of the full 109-item backlog (`docs/research/2026-07-03-backlog-triage-109.md`), then salvaged the wave-1 build batches one at a time (each: commit the agent's WIP → rebase → gates → release notes → PR → merge → prod-verify), then audited all 19 PRs and fixed the three that were wrong. **main 0.154.0 → 0.163.2, PRs #373–#394.**
+
+**Salvaged build batches (each merged + prod-checked):**
+- **0.155.0 (#378) DEF** — ranked points rail beside standings charts, F1 session interval/leader-gap columns (`deriveIntervals`, 9 tests), watch link + circuit figure on session pages, champions sparklines, denser Y ticks.
+- **content (#379) M-slice** — IMSA R6/R7 FP1 backfills + CTMP timetable correction, FE Sanya R11 sessions (2-source verified). (Historic colours ×8 + media seeds NOT done — deferred.)
+- **0.156.0 (#380) HI** — per-series ICS feeds (`/api/calendar/<slug>.ics`, 16 tests), F1 Tracks tab, route-segment loading skeletons + a series segment error boundary. (AppShell `--tint` NOT done — deferred.)
+- **0.157.0 (#381) C** — `withSourceSnapshot` last-good on F2/F3/IndyCar/GT-World standings; **warm-sessions** cron (pre-lockout F1 capture) + **recheck-results** cron (report-only late-penalty diff). Both fail-closed (401 verified).
+- **0.158.0 (#382) B** — per-session-type notif toggles (practice/quali/race), original CC0 chime (F1-radio mp3 deleted), offline fallback page. (Devices list + DRY push hook + sound variants NOT done — deferred.)
+- **0.159.0 (#385) A** — F2 prediction markets wired in automation behind 3 tested gates; **F3 deliberately NOT wired** (FIA renumbered post-Bahrain vs curated rounds.json — tripwire test guards it); dormant `grid` market type (enum migration only, NOT applied to prod); league profile links.
+- **0.160.0 (#386) G** — in-page draft editor (pencil on draft/scheduled admin previews → markdown edit → PATCH → re-render), local `/blog/[slug]` 500 fix, author-role `listPosts` scoping groundwork. (Author-role gate/UI + thread replies/markdown/rate-limit NOT done — deferred.)
+- **0.162.0 (#390) L** — Wikipedia bios (Wikimedia action API, datacenter-safe) + "In the news" mentions + season-trend chart on driver pages. (Team-compare mode = tested lib aggregator only; page wiring deferred.)
+- small fixes in between: 0.154.1 settings guest copy (#377), 0.158.1/0.158.2 calendar labels + stray-file cleanup (#383/#384), 0.160.1/#388 (blog 404 note), 0.161.0 social re-token (#389 — later found a no-op, see below), 0.162.1 Z lint sweep → 0 errors + husky pre-commit (#391).
+
+**Audit (all 19 PRs) → 3 real problems found + fixed (0.163.x):**
+- **#385 F2 betting — was unreachable → FIXED 0.163.0 (#392).** Weekend Bets tab was hard-gated `slug==='f1'`, so F2 (wired in automation) never surfaced. Added **`BETTABLE_SERIES`** (`lib/betting/constants.ts`, client-safe) as the single gate SoT + a sync test vs the automation sources. **Prod-verified: F2 weekend shows the Bets tab + graceful empty state.** ⚠️ **No F2 market row exists yet** — the open-markets cron opens one on its next run for an eligible F2 round; can't trigger it without `CRON_SECRET`. Reachable but not placeable until then.
+- **#387 blog 404 — was soft-404 (200) → FIXED 0.163.1 (#393).** `app/(app)/blog/loading.tsx` wrapped `/blog/[slug]` in a streaming boundary that committed a 200 before `notFound()`. Removed it (the ISR list never showed the skeleton). **Prod-verified: bogus/hidden blog slug → 404, published → 200.**
+- **#389 social re-token — was a visual no-op → PROPERLY FIXED 0.163.2 (#394).** `--border` ≈ `white/10` so the colour swap did nothing. Real cause: `/social` used `max-w-screen-2xl` + a `rounded-2xl` card grid. Rebuilt as the flat divider-row launcher (mirrors `/settings`) at the app reading width. **Audited all social child pages — already correct width + only app-consistent small `rounded`, untouched.** Prod-verified (0 rounded-2xl, 5 flat rows).
+
+**Signed-in verification (operator signed in via Playwright) — ALL PASS:**
+- **#382** toggle → PUT 200 → persists across reload → restored. **#385 league links** → 5 rows resolve to real profiles. **#386 draft editor** → created a throwaway draft via the composer, pencil + amber banner render, edit → PATCH 200 → re-render, then rejected it (now 404). The British GP draft that couldn't be tested earlier had been **approved+scheduled(12:00)+auto-published(13:19)** — proving the draft→publish pipeline.
+
+**Gates at close:** tsc clean · 745/745 tests (1 transient `sitemap-data` flake, passed on re-run) · eslint 0 errors · working tree clean.
+
+**▶ OPEN / DEFERRED (carry-over):**
+- **F2 betting go-live** — needs the open-markets cron to run for an eligible F2 round (trigger the GH Actions workflow with `CRON_SECRET`, or wait for schedule). Verify at `/api/bet/market?series=f2&round=N`.
+- **F3 betting** — blocked until `content/series/f3/rounds.json` is renumbered to the FIA post-cancellation scheme (tripwire test in `series-sources.test.ts`).
+- **Grid market** — dormant; enum migration `20260703120000_grid_enum.sql` NOT applied to prod; go-live steps in `createGridMarket`.
+- **Deferred batch remainders:** AppShell `--tint` (HI); notif devices-list + DRY push hook + per-series/type sound variants (B); author-role blog gate/UI + thread replies/markdown/rate-limit (G); team-compare page wiring (L); historic team colours ×8 + media.json seeds + geo-clip audit (M).
+- **Owed visual passes** from earlier: #367 anon home walling nuances, launcher focus order at 1024/1440.
+- **IA taste calls** (5, deferred) — `docs/research/2026-07-02-ia-restructure.md`.
+- **New idea:** F1 classification speed (IDEAS inbox 2026-07-03) — quicker results loading; event-driven warming off sessions.json.
+
+**Landmines added today:** `BETTABLE_SERIES` is the SoT for which series show betting (keep in lockstep with FIELD_SOURCES — enforced by test). `/blog` has NO `loading.tsx` on purpose (removing it is what gives `/blog/[slug]` a hard 404 — don't re-add it). Social area uses the flat divider-row language now (don't reintroduce `rounded-2xl` card grids there). Husky pre-commit lints staged `.ts/.tsx`.
+
+---
+
+## ⚡ Session pickup — 2026-07-03 (earlier) — main 0.154.0 (#365–#371) · MotoGP chart FIXED (red-flag restart) · British GP preview live · ▶ REMAINING = anon VISUAL PASSES + deferred IA taste calls
 
 **Shipped + merged this session (0.151.0 → 0.154.0, + docs/content):**
 - **#365 (0.152.1)** — greened `lib/openf1/turns.test.ts` (2 fixtures shipped red in #330 and never passed: a dead-loop phantom corner + an arc below the 0.30 detection threshold — **test-only fix, `detectTurns` unchanged**) + **re-landed the MotoGP chart gate** that missed the #364 squash by ~5 min.
