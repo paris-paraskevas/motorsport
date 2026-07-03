@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.158.1 — 2026-07-03
+
+**Clearer calendar buttons.** The schedule-feed links on Calendar tabs now say "Add to your calendar" and "download file" instead of technical shorthand.
+
 ## 0.158.0 — 2026-07-03
 
 **Notifications, your way.** Session reminders can now skip practice (or qualifying, or races) — pick which session types ping you, per your account. The notification sound is a new original chime. And if you open Paddock with no connection, you'll get a proper offline page instead of a browser error.

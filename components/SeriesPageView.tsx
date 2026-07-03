@@ -191,8 +191,10 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
       {/* Calendar tab only: subscribe to this series' schedule as a live ICS
-          feed (/api/calendar/[slug]). webcal:// opens the device's calendar
-          app; the .ics link is the plain-https fallback for clients (and
+          feed (/api/calendar/[slug]). Plain-language labels (operator feedback
+          2026-07-03 — "Subscribe (webcal) · .ics" read as jargon): the primary
+          webcal: link opens the device's calendar app and keeps itself updated;
+          the https .ics link is the one-off-download fallback for clients (and
           desktops) that don't register the scheme. */}
       {activeTab === 'calendar' && (
         <div className="-mt-2 mb-4 flex justify-end">
@@ -201,14 +203,14 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
               href={`${SITE_URL.replace(/^https?:/, 'webcal:')}/api/calendar/${slug}.ics`}
               className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
             >
-              Subscribe (webcal)
+              Add to your calendar
             </a>
             {' · '}
             <a
               href={`/api/calendar/${slug}.ics`}
               className="transition-colors duration-(--duration-fast) hover:text-text-muted"
             >
-              .ics
+              download file
             </a>
           </span>
         </div>
