@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.162.0",
+  "version": "0.162.1",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -12,7 +12,8 @@
     "indexnow:submit": "tsx scripts/submit-sitemap-to-indexnow.ts",
     "health:standings": "tsx scripts/health-standings.mts",
     "health:results": "tsx scripts/health-results.mts",
-    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts"
+    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.3",
@@ -59,6 +60,7 @@
     "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "husky": "^9.1.7",
     "serwist": "^9.5.11",
     "tailwindcss": "^4",
     "tsx": "^4.22.3",

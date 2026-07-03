@@ -74,6 +74,7 @@ export function useFollowedSeries(): {
   }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate() adopts the local mirror synchronously on mount — the hydration-safe pattern
     hydrate();
     const onChange = () => hydrate();
     window.addEventListener(FOLLOWED_CHANGED_EVENT, onChange);

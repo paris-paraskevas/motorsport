@@ -137,6 +137,10 @@ export default function GlobalError({
               >
                 Try again
               </button>
+              {/* Plain anchor on purpose: global-error replaces the ROOT layout,
+                  so the router/Link context may itself be the thing that crashed —
+                  a full document navigation is the only reliable escape. */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a
                 href="/"
                 style={{

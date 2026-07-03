@@ -55,6 +55,7 @@ export function FriendsPanel({
   useEffect(() => {
     const term = q.trim();
     if (term.length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- debounce-head reset: clearing results/spinner must be synchronous with the query change
       setResults([]);
       setSearching(false);
       return;

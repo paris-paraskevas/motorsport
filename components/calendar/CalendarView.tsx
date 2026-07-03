@@ -88,6 +88,7 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
       if (raw) {
         const p = JSON.parse(raw) as { types?: unknown; series?: unknown };
         if (Array.isArray(p.types)) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- persisted-filter adoption after mount is the hydration-safe pattern
           setTypes(new Set(p.types.filter((t): t is SessionKind => t === 'practice' || t === 'qualifying' || t === 'race')));
         }
         setSeriesSel(Array.isArray(p.series) ? new Set(p.series.filter((s): s is string => typeof s === 'string')) : null);

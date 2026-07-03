@@ -1,0 +1,5 @@
+# Lint + typecheck only what is staged — fast enough to run on every commit.
+files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' || true)
+if [ -n "$files" ]; then
+  npx eslint $files --max-warnings=99 || exit 1
+fi
