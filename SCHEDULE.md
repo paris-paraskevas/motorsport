@@ -977,6 +977,21 @@ Won't touch: the deferred IA taste calls (Social→"Play", F1-Analysis nav slot,
 
 Active: _(no `[+Nm]` prefixes captured this session)_
 
+### Fri 2026-07-03 — triage build-day + audit → main 0.154.0 → 0.163.2 (#373–#394)
+
+Started with the British GP MDX→draft fix + blog SOP, then an evidence-required triage of all 109 backlog items (14 verify agents), then salvaged the wave-1 build batches one-by-one (operator stopped the parallel agents; each batch hand-finished from its worktree: commit WIP → rebase → gates → notes → PR → merge → prod-verify), then audited all 19 PRs and fixed the 3 that were wrong.
+
+- → done: **blog SOP + British GP unpublish** (#373/#374) — MDX pulled, re-inserted as a prod DB draft; SOP codified (posts are prod drafts, never public MDX) + memory rule.
+- → done: **109-item triage** (#375/#376) — 20 shipped / 4 killed / 15 operator-gated / 70 open; doc `docs/research/2026-07-03-backlog-triage-109.md`; IDEAS synced (W4 is the only v1.0 launch gate left).
+- → done: **salvaged batches** — DEF 0.155.0 (#378) · M-slice content (#379) · HI 0.156.0 (#380) · C 0.157.0 (#381) · B 0.158.0 (#382) · A 0.159.0 (#385) · G 0.160.0 (#386) · L 0.162.0 (#390); + fixes 0.154.1 (#377), 0.158.1/2 (#383/#384), 0.161.0 (#389), Z lint 0.162.1 (#391).
+- → done: **audit + 3 fixes** — F2 betting un-gate 0.163.0 (#392) · blog hard-404 0.163.1 (#393) · social flat-language rebuild 0.163.2 (#394). All prod-verified.
+- → done: **signed-in verification pass** — #382 notif toggles, #385 league links, #386 draft-editor pencil all PASS (operator signed in via Playwright).
+- → carry: F2 market needs the open-markets cron to run (no `CRON_SECRET` to trigger); deferred batch remainders (AppShell tint, devices list, author-role gate, thread replies, team-compare wiring, historic colours/media seeds); F3 betting blocked on rounds.json renumber.
+
+Won't-touch held: prod DB writes beyond the sanctioned composer flow; triggering crons; the deferred IA taste calls.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
