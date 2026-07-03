@@ -2,7 +2,7 @@ What's new in Paddock Tracker. Newest first.
 
 ## 0.160.1 — 2026-07-03
 
-Internal: unpublished-post links correctly report page-not-found again.
+Internal: hardened how unpublished posts stay hidden; hidden or unknown pages are excluded from search engines.
 
 ## 0.160.0 — 2026-07-03
 
