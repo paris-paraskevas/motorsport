@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.163.2 — 2026-07-03
+
+**Social now matches the rest of the app.** The Social hub was rebuilt to use the same clean, list-style layout as the rest of Paddock instead of its own wide grid of boxes.
+
 ## 0.163.1 — 2026-07-03
 
 **Correct not-found pages for blog links.** Unknown or unpublished blog URLs now return a proper "page not found" instead of a blank 200 page.

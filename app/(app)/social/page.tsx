@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { type ReactNode } from 'react';
 import Link from 'next/link';
+import { Coins, Trophy, Users, BookOpen, MessagesSquare, ArrowUpRight } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 
@@ -11,12 +12,14 @@ export const metadata: Metadata = {
     'Predict race results with free monthly virtual credits, build private leagues with friends, and climb the win-rate leaderboard on Paddock Tracker. No cash, just bragging rights.',
 };
 
-// Social hub: a launcher of cards — play (solo → /play, with-friends → /social/leagues),
-// Friends (→ /social/friends, its own page since 2026-06-25), and a community row
-// (blog + threads). Each card opens a dedicated page; no per-user data loads here.
+// Social hub: a launcher of destinations — play (solo → /play, with-friends →
+// /social/leagues), Friends (→ /social/friends), and community (blog + threads).
+// Rendered as the app's flat divider-row list (mirrors /settings) rather than a
+// boxed-card grid, so Social reads as the same app as everywhere else (operator
+// 2026-07-03). No per-user data loads here.
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
@@ -28,21 +31,42 @@ function frame(children: ReactNode) {
   );
 }
 
-const cardClass =
-  'rounded-2xl border border-border bg-surface/60 p-5 transition-colors duration-(--duration-fast) hover:border-brand/50';
+const rowClass =
+  'group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface';
+
+function Row({ href, icon, eyebrow, title, desc }: {
+  href: string;
+  icon: ReactNode;
+  eyebrow: string;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <Link href={href} className={rowClass}>
+      <span className="shrink-0 text-text-muted">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+          {eyebrow}
+        </span>
+        <span className="block text-base font-semibold text-text">{title}</span>
+        <span className="block text-xs text-text-faint">{desc}</span>
+      </span>
+      <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+    </Link>
+  );
+}
 
 export default async function SocialPage() {
   if (!isBettingConfigured()) return frame(<p className="font-mono text-sm text-text-muted">Not live yet.</p>);
   const { userId } = await auth();
   const signedIn = Boolean(userId);
-  // Teaser landing: a guest sees the same marketing cards (a public, indexable
-  // preview of what Social offers) with the play/friends actions routing to
-  // sign-in; a signed-in user gets the live destinations. Blog + Threads are
-  // public either way.
+  // Teaser landing: a guest sees the same destinations (a public, indexable
+  // preview) with the play/friends actions routing to sign-in; a signed-in user
+  // gets the live pages. Blog + Threads are public either way.
   return frame(
-    <div className="space-y-8">
+    <>
       {!signedIn && (
-        <div className="rounded-2xl border border-brand/40 bg-surface/60 p-5">
+        <div className="mb-6 border-y border-border py-4">
           <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Free to play</div>
           <p className="mt-1 max-w-xl text-sm text-text-muted">
             Predict race results with free monthly virtual credits, build private leagues with friends, and
@@ -57,44 +81,43 @@ export default async function SocialPage() {
         </div>
       )}
 
-      {/* Play + people — solo, leagues, and your friends. Guests route to sign-in. */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Link href={signedIn ? '/play' : '/sign-in'} className={cardClass}>
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Play solo</div>
-          <div className="mt-1 font-semibold text-text">Back the grid</div>
-          <p className="mt-1 text-sm text-text-muted">
-            Spend your monthly virtual credits predicting race results, solo against the house.
-          </p>
-        </Link>
-        <Link href={signedIn ? '/social/leagues' : '/sign-in'} className={cardClass}>
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Play with friends</div>
-          <div className="mt-1 font-semibold text-text">Private leagues</div>
-          <p className="mt-1 text-sm text-text-muted">
-            Create or join a league, share an invite link, climb the win-rate leaderboard.
-          </p>
-        </Link>
-        <Link href={signedIn ? '/social/friends' : '/sign-in'} className={cardClass}>
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Friends</div>
-          <div className="mt-1 font-semibold text-text">Your racers</div>
-          <p className="mt-1 text-sm text-text-muted">
-            Add friends, accept requests and share your invite link.
-          </p>
-        </Link>
-      </div>
-
-      {/* Community — blog + threads (public either way) */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/blog" className={cardClass}>
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Read</div>
-          <div className="mt-1 font-semibold text-text">Blog</div>
-          <p className="mt-1 text-sm text-text-muted">Analysis, recaps and championship deep-dives.</p>
-        </Link>
-        <Link href="/threads" className={cardClass}>
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">Discuss</div>
-          <div className="mt-1 font-semibold text-text">Threads</div>
-          <p className="mt-1 text-sm text-text-muted">Fan discussion, lightly moderated — start one or join in.</p>
-        </Link>
-      </div>
-    </div>,
+      <nav className="border-t border-border">
+        <Row
+          href={signedIn ? '/play' : '/sign-in'}
+          icon={<Coins size={18} />}
+          eyebrow="Play solo"
+          title="Back the grid"
+          desc="Spend your monthly virtual credits predicting race results, solo against the house."
+        />
+        <Row
+          href={signedIn ? '/social/leagues' : '/sign-in'}
+          icon={<Trophy size={18} />}
+          eyebrow="Play with friends"
+          title="Private leagues"
+          desc="Create or join a league, share an invite link, climb the win-rate leaderboard."
+        />
+        <Row
+          href={signedIn ? '/social/friends' : '/sign-in'}
+          icon={<Users size={18} />}
+          eyebrow="Friends"
+          title="Your racers"
+          desc="Add friends, accept requests and share your invite link."
+        />
+        <Row
+          href="/blog"
+          icon={<BookOpen size={18} />}
+          eyebrow="Read"
+          title="Blog"
+          desc="Analysis, recaps and championship deep-dives."
+        />
+        <Row
+          href="/threads"
+          icon={<MessagesSquare size={18} />}
+          eyebrow="Discuss"
+          title="Threads"
+          desc="Fan discussion, lightly moderated — start one or join in."
+        />
+      </nav>
+    </>,
   );
 }
