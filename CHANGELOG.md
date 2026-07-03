@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.158.2 — 2026-07-03
+
+### Fixed
+- **Repo housekeeping**: removed 16 stray scratch files (June-10 agent-salvage notes, page snapshots, a lockfile) accidentally committed by a broad `git add -A` in #383. No app impact; files remain local-only as before.
+
 ## 0.158.1 — 2026-07-03
 
 ### Fixed
