@@ -100,6 +100,16 @@
       ]
     },
     {
+      "matchDate": "2026-06-20",
+      "round": 11,
+      "sessions": [
+        { "title": "FE - FP1 (Sanya R11)", "start": "2026-06-19T08:30:00Z", "end": "2026-06-19T09:10:00Z", "location": "Sanya Street Circuit, Sanya, China" },
+        { "title": "FE - FP2 (Sanya R11)", "start": "2026-06-20T00:30:00Z", "end": "2026-06-20T01:10:00Z", "location": "Sanya Street Circuit, Sanya, China" },
+        { "title": "FE - Qualifying (Sanya R11)", "start": "2026-06-20T02:40:00Z", "end": "2026-06-20T03:48:00Z", "location": "Sanya Street Circuit, Sanya, China" },
+        { "title": "FE - Race (Sanya R11)", "start": "2026-06-20T07:05:00Z", "end": "2026-06-20T08:00:00Z", "location": "Sanya Street Circuit, Sanya, China" }
+      ]
+    },
+    {
       "matchDate": "2026-07-04",
       "round": 12,
       "sessions": [
