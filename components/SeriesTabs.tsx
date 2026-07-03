@@ -20,7 +20,7 @@ export function SeriesTabs({
   activeTab: TabKey;
   singleEvent?: boolean;
 }) {
-  const tabs = tabsFor(singleEvent);
+  const tabs = tabsFor(singleEvent, slug);
   const activeRef = useRef<HTMLAnchorElement | null>(null);
   const prevTabRef = useRef<TabKey | null>(null);
 

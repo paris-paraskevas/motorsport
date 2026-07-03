@@ -37,10 +37,12 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   // The bare series URL (the calendar landing) plus each non-calendar tab as
   // its own path (B11 path-based tabs — each is a distinct, indexable page).
-  // Single-event series carry a reduced tab set, so respect tabsFor.
+  // Single-event series carry a reduced tab set, and the coverage-gated
+  // Tracks tab only exists for TRACKS_TAB_SLUGS series — so respect tabsFor
+  // (slug-aware since the Tracks tab landed).
   const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m) => [
     { url: `${SITE_URL}/series/${m.slug}` },
-    ...tabsFor(m.singleEvent)
+    ...tabsFor(m.singleEvent, m.slug)
       .filter((t) => t.key !== 'calendar')
       .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),
   ]);

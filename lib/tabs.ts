@@ -4,6 +4,7 @@ export const TABS = [
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
   { key: 'drivers',   label: 'Drivers' },
+  { key: 'tracks',    label: 'Tracks' },
   { key: 'about',     label: 'About' },
   { key: 'history',   label: 'History' },
   { key: 'champions', label: 'Champions' },
@@ -17,14 +18,35 @@ export type TabKey = typeof TABS[number]['key'];
 // flagship lineup was unreachable on its own series page without it.
 export const SINGLE_EVENT_TAB_KEYS = ['calendar', 'drivers', 'about', 'history', 'champions'] as const;
 
-export function tabsFor(singleEvent: boolean | undefined): typeof TABS[number][] {
-  if (!singleEvent) return [...TABS];
-  return TABS.filter(t => (SINGLE_EVENT_TAB_KEYS as readonly string[]).includes(t.key));
+/**
+ * Series whose calendars have curated circuit-layout coverage
+ * (content/circuits-layout.json) and therefore show the Tracks tab. A static
+ * list because this module is client-bundled AND runs in middleware — the fs
+ * check in lib/circuit-layout.ts can't live here. Kept honest by the
+ * coverage-sync test in lib/sitemap-data.test.ts: every slug listed must
+ * resolve layouts for most of its season.
+ */
+export const TRACKS_TAB_SLUGS = ['f1'] as const;
+
+export function seriesHasTracksTab(slug: string | undefined): boolean {
+  return slug != null && (TRACKS_TAB_SLUGS as readonly string[]).includes(slug);
 }
 
-export function resolveTab(value: string | string[] | undefined, singleEvent?: boolean): TabKey {
+export function tabsFor(singleEvent: boolean | undefined, slug?: string): typeof TABS[number][] {
+  const base = singleEvent
+    ? TABS.filter(t => (SINGLE_EVENT_TAB_KEYS as readonly string[]).includes(t.key))
+    : [...TABS];
+  // Tracks is coverage-gated: callers that don't know the slug never get it.
+  return base.filter(t => t.key !== 'tracks' || seriesHasTracksTab(slug));
+}
+
+export function resolveTab(
+  value: string | string[] | undefined,
+  singleEvent?: boolean,
+  slug?: string,
+): TabKey {
   const v = Array.isArray(value) ? value[0] : value;
-  const allowed = tabsFor(singleEvent);
+  const allowed = tabsFor(singleEvent, slug);
   const match = allowed.find(t => t.key === v);
   return match?.key ?? 'calendar';
 }
@@ -75,6 +97,11 @@ export function describeTab(
       return {
         title: `${seriesName} ${season} drivers and teams`,
         description: `Full ${season} ${seriesName} driver lineup and team pairings, with car numbers and any mid-season seat changes.`,
+      };
+    case 'tracks':
+      return {
+        title: `${seriesName} ${season} tracks — every circuit mapped`,
+        description: `All ${season} ${seriesName} circuits in one place — track layouts, locations, and links to each race weekend.`,
       };
     case 'about':
       return {
