@@ -7,7 +7,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 ## 0.160.1 — 2026-07-03
 
 ### Fixed
-- **Hidden-draft URLs 404 again** (soft-404 regression caught on prod minutes after 0.160.0): streamed metadata flushed the shell before the page body notFound() could set the status, so anon hits on unpublished-post URLs returned 200 with an empty not-found shell (no content leaked — verified). The visibility gate now also runs in generateMetadata, which executes before streaming.
+- **Hidden-post visibility gate hardened + the 200-status finding documented** (amended post-deploy — the original note overstated): anon hits on unpublished-post URLs return 200 + an empty not-found shell with an auto-injected robots noindex. Root cause is NOT the blog change — the 0.156.0 route skeletons (loading.tsx) make these segments stream, and a streamed response commits its 200 before any notFound() (page or metadata) can set the status; Next marks such not-founds noindex by design (verified on prod: draft URLs, bogus series/driver slugs — no content leaks anywhere). Trade-off accepted: skeletons + index-safe noindex over hard 404s. The generateMetadata gate from this patch stays as defense-in-depth for non-streamed renders.
 
 ## 0.160.0 — 2026-07-03
 
