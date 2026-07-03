@@ -1,5 +1,5 @@
 import { betDb } from './client';
-import { winMultipliers, podiumMultipliers, topTenMultipliers, exactPositionMultipliers, type DriverForm } from './pricing';
+import { winMultipliers, podiumMultipliers, topTenMultipliers, exactPositionMultipliers, gridMultipliers, type DriverForm } from './pricing';
 import { MARKET_TYPE_META } from './constants';
 import { readBetCache, writeBetCache, bustBetCache, OPEN_MARKETS_KEY, OPEN_MARKETS_TTL } from './cache';
 
@@ -17,7 +17,7 @@ interface CreateMarketOpts {
 // Shared market insert — winner/podium/top10 differ only in `type` and how the
 // field is priced into the {selection -> multiplier} odds snapshot on the row.
 async function createMarket(
-  type: 'winner' | 'podium' | 'top10' | 'exact_position' | 'forecast',
+  type: 'winner' | 'podium' | 'top10' | 'exact_position' | 'forecast' | 'grid',
   odds: Record<string, number>,
   opts: CreateMarketOpts,
 ): Promise<string> {
@@ -66,6 +66,20 @@ export function createExactPositionMarket(opts: CreateMarketOpts): Promise<strin
  *  + settle_market's `least(product, 500)`). Returns market id. */
 export function createForecastMarket(opts: CreateMarketOpts): Promise<string> {
   return createMarket('forecast', exactPositionMultipliers(opts.field), opts);
+}
+
+/** Create a 'grid' market (driver × exact starting grid slot, odds keyed
+ *  `driver@position` like exact_position). DORMANT: no MARKET_BUILDERS entry
+ *  opens one and settleDueMarkets skips the type, exactly how podium/top10
+ *  first shipped. Settlement input is the QUALIFYING classification — going
+ *  live needs (1) a per-series quali source beside RESULT_SOURCES in
+ *  ./series-sources (f2's fetchF2SeasonResults().qualifying already exists;
+ *  F1 needs one), (2) a `grid` result branch in settleDueMarkets calling
+ *  settleMarket with `{grid: {driverName: gridPosition}}` (the SQL branch
+ *  already reads that shape), and (3) a lock BEFORE quali starts — the
+ *  existing quali−1h lock already satisfies this. Returns market id. */
+export function createGridMarket(opts: CreateMarketOpts): Promise<string> {
+  return createMarket('grid', gridMultipliers(opts.field), opts);
 }
 
 export interface SettlementSummary {
@@ -164,7 +178,9 @@ export async function selectionForMarket(
     }
     return { legs: ls.map(l => ({ driver: l.driver, position: l.position })) };
   }
-  if (type === 'exact_position') {
+  // grid shares exact_position's {driver, position} selection shape — the
+  // position is a starting grid slot instead of a finishing position.
+  if (type === 'exact_position' || type === 'grid') {
     if (!Number.isInteger(position) || (position as number) < 1) throw new Error('position required');
     return { driver: pick, position: position as number };
   }

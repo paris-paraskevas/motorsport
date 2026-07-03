@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { LeagueDetail, LeagueMemberDetail } from '@/lib/betting/leagues';
 
@@ -162,7 +163,12 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
                   className="inline-block h-3 w-3 rounded-full border border-white/20"
                   style={{ backgroundColor: m.color || FALLBACK_COLOR }}
                 />
-                {memberName(m)}
+                <Link
+                  href={`/social/users/${m.userId}`}
+                  className="hover:text-brand hover:underline underline-offset-2 transition-colors"
+                >
+                  {memberName(m)}
+                </Link>
                 {m.awards.length > 0 && (
                   <span className="flex items-center gap-0.5" aria-label="prizes">
                     {m.awards.map(a => (
@@ -265,7 +271,13 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
                 {h.podium.map((p, idx) => (
                   <span key={p.rank}>
                     {idx > 0 && ' · '}
-                    <span title={p.title}>{MEDALS[p.rank] ?? '🏅'}</span> {p.name}
+                    <span title={p.title}>{MEDALS[p.rank] ?? '🏅'}</span>{' '}
+                    <Link
+                      href={`/social/users/${p.userId}`}
+                      className="hover:text-brand hover:underline underline-offset-2 transition-colors"
+                    >
+                      {p.name}
+                    </Link>
                   </span>
                 ))}
               </li>
