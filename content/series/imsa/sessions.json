@@ -100,6 +100,13 @@
       ]
     },
     {
+      "matchDate": "2026-06-26",
+      "round": 6,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-06-26T15:25:00Z", "end": "2026-06-26T16:55:00Z", "location": "Watkins Glen International" }
+      ]
+    },
+    {
       "matchDate": "2026-06-27",
       "round": 6,
       "sessions": [
@@ -115,11 +122,18 @@
       ]
     },
     {
+      "matchDate": "2026-07-10",
+      "round": 7,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-07-10T17:55:00Z", "end": "2026-07-10T19:25:00Z", "location": "Canadian Tire Motorsport Park" }
+      ]
+    },
+    {
       "matchDate": "2026-07-11",
       "round": 7,
       "sessions": [
-        { "title": "IMSA - Practice 2", "start": "2026-07-11T17:25:00Z", "end": "2026-07-11T19:25:00Z", "location": "Canadian Tire Motorsport Park" },
-        { "title": "IMSA - Qualifying", "start": "2026-07-11T21:25:00Z", "end": "2026-07-11T22:10:00Z", "location": "Canadian Tire Motorsport Park" }
+        { "title": "IMSA - Practice 2", "start": "2026-07-11T14:35:00Z", "end": "2026-07-11T16:05:00Z", "location": "Canadian Tire Motorsport Park" },
+        { "title": "IMSA - Qualifying", "start": "2026-07-11T20:00:00Z", "end": "2026-07-11T21:05:00Z", "location": "Canadian Tire Motorsport Park" }
       ]
     },
     {
