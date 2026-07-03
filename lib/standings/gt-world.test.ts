@@ -1,4 +1,39 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// In-memory fake of the durable `source_snapshot` table so the last-good wrap on
+// `fetchGtWorldStandings` can be exercised. `snapshotConfigured` defaults FALSE
+// so the pre-existing fetch tests below behave exactly as before (wrapper runs
+// the fetcher uncached, as in a test env with no SUPABASE_URL); the last-good
+// block flips it on. Mirrors lib/standings/dtm.test.ts.
+const snapshotTable = new Map<string, unknown>();
+let snapshotConfigured = false;
+
+vi.mock('@/lib/betting/client', () => ({
+  isBettingConfigured: () => snapshotConfigured,
+  betDb: () => ({
+    from: () => {
+      let selectedKey: string | null = null;
+      const builder = {
+        select: () => builder,
+        eq: (_col: string, value: string) => {
+          selectedKey = value;
+          return builder;
+        },
+        maybeSingle: async () => {
+          const raw = selectedKey != null ? snapshotTable.get(selectedKey) : undefined;
+          if (raw === undefined) return { data: null, error: null };
+          return { data: { payload: JSON.parse(JSON.stringify(raw)) }, error: null };
+        },
+        upsert: async (row: { source_key: string; payload: unknown }) => {
+          snapshotTable.set(row.source_key, row.payload);
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  }),
+}));
+
 import {
   fetchGtWorldStandings,
   buildStandingsUrl,
@@ -346,5 +381,98 @@ describe('fetchGtWorldStandings', () => {
     })) as unknown as typeof fetch;
     const result = await fetchGtWorldStandings(2030);
     expect(result).toBeNull();
+  });
+});
+
+// Durable last-good: an SRO CMS outage should serve the previous good standings
+// instead of the null that blanks the page. Supabase IS configured here
+// (in-memory fake); GtWorldStandings carries no Date fields so no rehydration.
+// The key is season-scoped (standings:gt-world:<season>) because the fetch is
+// parameterised by season; isEmpty mirrors the live fetch's own fail-closed
+// condition (every championship's drivers table empty).
+describe('fetchGtWorldStandings — durable last-good (source_snapshot)', () => {
+  const originalFetch = globalThis.fetch;
+
+  const goodRoutes = {
+    '0_0_drivers': DRIVERS_OVERALL_HTML,
+    '0_0_teams': TEAMS_OVERALL_HTML,
+    '43_0_drivers': SPRINT_DRIVERS_HTML,
+    '43_0_teams': SPRINT_TEAMS_HTML,
+    '42_0_drivers': ENDURANCE_DRIVERS_HTML,
+    '42_0_teams': ENDURANCE_TEAMS_HTML,
+  };
+
+  beforeEach(() => {
+    snapshotTable.clear();
+    snapshotConfigured = true;
+  });
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    snapshotConfigured = false;
+    snapshotTable.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('SUCCESS persists the standings under the season-scoped key', async () => {
+    globalThis.fetch = mockFetchByUrl(goodRoutes) as unknown as typeof fetch;
+    const data = await fetchGtWorldStandings(2026);
+    expect(data).not.toBeNull();
+    expect(snapshotTable.has('standings:gt-world:2026')).toBe(true);
+  });
+
+  it('FAILURE serves the last-good standings instead of null', async () => {
+    globalThis.fetch = mockFetchByUrl(goodRoutes) as unknown as typeof fetch;
+    await fetchGtWorldStandings(2026); // prime the snapshot
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('network down');
+    }) as unknown as typeof fetch;
+    const recovered = await fetchGtWorldStandings(2026);
+    expect(recovered).not.toBeNull();
+    expect(recovered!.season).toBe(2026);
+    expect(recovered!.overall.drivers).toHaveLength(7);
+    expect(recovered!.overall.drivers[0].driverName).toBe('Lucas Auer');
+    expect(recovered!.sprint.drivers).toHaveLength(6);
+    expect(recovered!.endurance.drivers).toHaveLength(6);
+  });
+
+  it('a good fetch overwrites the snapshot (self-heal)', async () => {
+    // Seed a deliberately-stale snapshot, then a good fetch must replace it.
+    snapshotTable.set('standings:gt-world:2026', {
+      season: 2026,
+      overall: { championship: 'overall', drivers: [{ position: 1, driverName: 'stale', team: '', points: 0 }], teams: [] },
+      sprint: { championship: 'sprint', drivers: [], teams: [] },
+      endurance: { championship: 'endurance', drivers: [], teams: [] },
+    });
+    globalThis.fetch = mockFetchByUrl(goodRoutes) as unknown as typeof fetch;
+    await fetchGtWorldStandings(2026);
+    const stored = snapshotTable.get('standings:gt-world:2026') as {
+      overall: { drivers: unknown[] };
+    };
+    expect(stored.overall.drivers).toHaveLength(7);
+  });
+
+  it('FAILURE with no snapshot present returns null (today behaviour)', async () => {
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('network down');
+    }) as unknown as typeof fetch;
+    expect(await fetchGtWorldStandings(2026)).toBeNull();
+  });
+
+  it('does not serve another season\'s snapshot (season-scoped key)', async () => {
+    globalThis.fetch = mockFetchByUrl(goodRoutes) as unknown as typeof fetch;
+    await fetchGtWorldStandings(2026); // prime 2026
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('network down');
+    }) as unknown as typeof fetch;
+    // 2025 has no snapshot of its own — must return null, not the 2026 payload.
+    expect(await fetchGtWorldStandings(2025)).toBeNull();
+  });
+
+  it('FAIL-SOFT: Supabase unconfigured behaves exactly like the live fetch', async () => {
+    snapshotConfigured = false;
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('network down');
+    }) as unknown as typeof fetch;
+    expect(await fetchGtWorldStandings(2026)).toBeNull();
   });
 });

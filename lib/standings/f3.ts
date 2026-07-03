@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 
 export type { DriverStanding, ConstructorStanding };
@@ -137,7 +138,7 @@ async function fetchHtml(url: string): Promise<string | null> {
   }
 }
 
-export async function fetchF3Standings(): Promise<{
+async function fetchF3StandingsLive(): Promise<{
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];
 } | null> {
@@ -152,4 +153,26 @@ export async function fetchF3Standings(): Promise<{
   if (!drivers || !constructors) return null;
 
   return { drivers, constructors };
+}
+
+/**
+ * Public F3 standings fetch, wrapped in the durable `source_snapshot` last-good
+ * so a fiaformula3.com outage / SPA-shell response / `__NEXT_DATA__` restructure
+ * (→ null) serves the last successful standings instead of blanking the page.
+ * Self-heals on the next good fetch (which overwrites the snapshot).
+ *
+ * The payload carries no `Date` fields, so the jsonb round-trip is lossless and
+ * no rehydration is needed (same as `standings:dtm`). Fails soft when Supabase
+ * is unconfigured (local dev): behaves exactly like `fetchF3StandingsLive`.
+ * Return type is unchanged.
+ */
+export async function fetchF3Standings(): Promise<{
+  drivers: DriverStanding[];
+  constructors: ConstructorStanding[];
+} | null> {
+  return withSourceSnapshot(
+    'standings:f3',
+    fetchF3StandingsLive,
+    v => v == null || v.drivers.length === 0,
+  );
 }
