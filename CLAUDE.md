@@ -29,6 +29,7 @@ Read this whole file at the start of every session. Then read `IDEAS.md` + `SCHE
    - `feedback-paddock-release-notes` — every push must update `CHANGELOG.md` + bump `package.json` version. Hard rule.
    - `feedback-paddock-espa` — Evaluate / Scrutinize / Present / Await before every non-trivial action. Imported from `eshp`. Approvals must be explicit; commits never include Claude attribution.
    - `feedback-paddock-time-tracking` — per-prompt `[+Nm]` prefix logs active minutes to `SCHEDULE.md`. See the Time tracking section below.
+   - `feedback-paddock-blog-draft-queue` — blog posts NEVER ship as public MDX; always a prod DB draft the operator approves + schedules. See the Blog publishing SOP below.
 
 ## ESPA — before every non-trivial action
 
@@ -125,6 +126,15 @@ The `/changelog` page reads `RELEASES.md` directly and shows `package.json.versi
 
 If you forget and code is already pushed, push a follow-up commit with both files updated immediately. Don't leave them stale.
 
+## Blog publishing SOP — drafts only, operator approves
+
+**Every blog post is created as a DB draft on PROD Supabase. Never ship a post as public MDX** — `content/posts/*.mdx` publishes on merge with no approval step (the 2026-07-03 British GP preview went live without sign-off this way; reverted in #373). MDX is allowed only when the operator explicitly asks for that path.
+
+1. **Create the draft on PROD:** `scripts/draft-post.mts` with the PROD `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + `BLOG_AUTHOR_ID` — or a Management API SQL insert (`.supabase-pat`, browser UA). ⚠️ `.env.local` points at LOCAL Supabase (127.0.0.1); a draft created with default env never reaches prod.
+2. **Leave `publish_at` null.** The operator approves + sets the scheduled time in the `/blog` admin queue (`lib/blog.ts` `createDraft` contract); the publish cron takes it live + fires the push.
+3. **Verify:** the row exists with `status='draft'` on prod, and the post does NOT appear on public `/blog`.
+4. Content itself still follows `feedback-paddock-scrutinise-drafts` — triple-check facts against primary sources before queueing.
+
 ## Critical landmines
 
 Detailed rationale in the handoff. Quick-reference:
@@ -144,7 +154,7 @@ Detailed rationale in the handoff. Quick-reference:
 | `components/` | React components. `components/weekend/*` for the race-weekend page. |
 | `lib/` | Pure modules (parsing, grouping, types). Server-only helpers end in `*-loader.ts` to keep client bundles clean. |
 | `content/series/<slug>/` | Per-series curated data (meta, drivers, champions, rounds, sessions overrides, overview, significance, fallback ICS). |
-| `content/posts/*.mdx` | Blog posts. |
+| `content/posts/*.mdx` | Legacy blog posts. Do NOT add new ones — see the Blog publishing SOP. |
 | `tests/fixtures/` | ICS + JSON test fixtures. |
 | `memory/` (per-user, not in repo) | `project-paddock-handoff.md` is the running ops record; `feedback-*` files are rules. |
 | `IDEAS.md`, `SCHEDULE.md` | Idea ledger + time plan. Read at every session start. |
