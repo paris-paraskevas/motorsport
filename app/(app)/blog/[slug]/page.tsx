@@ -103,14 +103,16 @@ function formatDateTime(iso: string): string {
 // edits in their account), KV-cached 1h, fail-soft to the stored display name
 // (no avatar) if Clerk is unreachable / the user can't be resolved. Clerk is
 // authoritative here, which is why the byline can differ from app_user.display_name.
+// The ENTIRE body is inside the try (the KV read/write used to sit outside it):
+// the byline is a decoration, and no decoration may 500 a blog URL.
 async function resolveBlogAuthor(
   authorId: string,
   fallbackName: string | null,
 ): Promise<{ name: string | null; image: string | null }> {
-  const key = `paddock:blog-author:${authorId}`;
-  const cached = await readResultsCache<{ name: string | null; image: string | null }>(key);
-  if (cached) return cached;
   try {
+    const key = `paddock:blog-author:${authorId}`;
+    const cached = await readResultsCache<{ name: string | null; image: string | null }>(key);
+    if (cached) return cached;
     const u = await (await clerkClient()).users.getUser(authorId);
     const name =
       u.fullName ||
@@ -122,6 +124,20 @@ async function resolveBlogAuthor(
     return result;
   } catch {
     return { name: fallbackName, image: null };
+  }
+}
+
+// Fail-soft Clerk session lookup. The admin-preview gate is a decoration on a
+// public route: if Clerk misbehaves (local dev without a warm handshake, a
+// backend-API blip), the viewer downgrades to anonymous — the draft hides
+// (404) instead of the whole page 500ing. Local dev has seen /blog/[slug]
+// 500s that typecheck/curl missed (docs/HANDOFF.md gotcha, 2026-07-03); every
+// non-essential dependency of this page is now wrapped like this.
+async function safeCurrentUser() {
+  try {
+    return await currentUser();
+  } catch {
+    return null;
   }
 }
 
@@ -142,7 +158,7 @@ export default async function PostPage({
     if (db.status === 'published') {
       post = dbToPost(db);
       bodyHtml = await renderMarkdown(db.body);
-    } else if ((db.status === 'approved' || db.status === 'draft') && isAdmin(await currentUser())) {
+    } else if ((db.status === 'approved' || db.status === 'draft') && isAdmin(await safeCurrentUser())) {
       // Not yet live (scheduled, or still a draft) — only admins may preview it,
       // so an editor can read the whole piece in full before approving it.
       post = dbToPost(db);
