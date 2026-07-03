@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.164.0 — 2026-07-03
+
+**New home widget: Standings movers.** Add it from Customise to see who climbed or fell in the championship since the latest race, for Formula 1, Formula 3 and MotoGP. Off by default — turn it on when you want it.
+
 ## 0.163.3 — 2026-07-03
 
 **Tidier empty states on the home.** When the This-week or News blocks have nothing to show, they now match the clean, flat style used everywhere else instead of a boxed card.
