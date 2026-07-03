@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.163.3 — 2026-07-03
+
+**Tidier empty states on the home.** When the This-week or News blocks have nothing to show, they now match the clean, flat style used everywhere else instead of a boxed card.
+
 ## 0.163.2 — 2026-07-03
 
 **Social now matches the rest of the app.** The Social hub was rebuilt to use the same clean, list-style layout as the rest of Paddock instead of its own wide grid of boxes.
