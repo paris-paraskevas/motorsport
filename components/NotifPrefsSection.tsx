@@ -25,7 +25,11 @@ const SESSION_TYPE_ROWS: Array<{ key: keyof SessionTypePrefs; label: string }> =
   { key: 'race', label: 'Races' },
 ];
 
-const ROWS: Array<{ key: keyof NotifPrefs; label: string; description: string }> = [
+const ROWS: Array<{
+  key: Exclude<keyof NotifPrefs, 'sessionTypes'>;
+  label: string;
+  description: string;
+}> = [
   {
     key: 'sessions',
     label: 'Session reminders',

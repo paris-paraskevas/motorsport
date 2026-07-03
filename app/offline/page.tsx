@@ -24,7 +24,10 @@ export default function OfflinePage() {
           Reconnect and try again — the page reloads automatically when
           you&apos;re back online.
         </p>
-        {/* Plain anchor on purpose: a full navigation retries the network. */}
+        {/* Plain anchor on purpose: a full document navigation is the only way
+            to escape the precached offline fallback once connectivity returns —
+            a client-side <Link/> transition would run inside the stale shell. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a
           href="/app"
           className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep px-4 py-2 transition-colors"

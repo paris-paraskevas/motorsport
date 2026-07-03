@@ -280,7 +280,7 @@ export async function GET(req: Request) {
     const batch = queue.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
     // Per-user followed + notif-prefs cache (avoid re-fetching for the same userId)
-    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string>; sessionTypes: SessionTypePrefs }>();
+    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string>; sessionTypes: SessionTypePrefs | undefined }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
