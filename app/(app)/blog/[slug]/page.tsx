@@ -51,7 +51,17 @@ export async function generateMetadata({
   const { slug } = await params;
   // DB-first (published only — unpublished drafts get generic metadata), MDX fallback.
   const db = await getPostBySlug(slug);
+  // Hidden-post 404 belongs HERE, not only in the page: with streamed metadata
+  // the shell flushes before the page body's notFound() can set the status, so
+  // gating only in the page yields a 200 soft-404 (regression caught on prod
+  // minutes after 0.160.0). Same visibility rule as the page branch.
+  if (db && db.status !== 'published' && !(await loadPost(slug))) {
+    const previewable =
+      (db.status === 'approved' || db.status === 'draft') && isAdmin(await safeCurrentUser());
+    if (!previewable) notFound();
+  }
   const post = db && db.status === 'published' ? dbToPost(db) : await loadPost(slug);
+  if (!post && db) return { title: 'Draft preview' }; // admin preview metadata stays generic
   if (!post) return { title: 'Post not found' };
   // Blog posts carry article-specific openGraph fields (publishedTime, hero
   // images) that the shared withSocialMeta() helper doesn't model, so build
