@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.163.3 — 2026-07-03
+
+### Changed
+- **Home widget consistency pass** (batch J, item #90): audited the original home blocks (chyron / just-missed / this-week / news) against the newer gallery widgets and found they already share the polish idiom — border-y sections, mono eyebrows, series-colour accents, hover rows, loading skeletons, arrow affordances — the row markup is literally identical to Where-to-watch. The one genuine inconsistency: This-week and News rendered EMPTY states as boxed `bg-surface/40 p-6` cards while every gallery block + Just-missed use the flat `border-y … py-4 font-mono` treatment. Normalised both. Populated blocks untouched (edit confined to the empty-state branch); verified-by-precedent (identical to the shipped Where-to-watch empty state). A broader "remaster" was scoped out — no concrete polish defect in the populated blocks. (Shipped in #396; this entry + the version bump were missed on that PR and added here as the required follow-up.)
+
 ## 0.163.2 — 2026-07-03
 
 ### Changed
