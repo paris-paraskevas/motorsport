@@ -3,7 +3,7 @@ import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription, type StoredSubscription } from '@/lib/push-store';
 import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
 import { recordSent } from '@/lib/push-history';
-import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs, sessionTypeAllowed, type SessionTypePrefs } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import {
   wasNotified,
@@ -280,7 +280,7 @@ export async function GET(req: Request) {
     const batch = queue.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
     // Per-user followed + notif-prefs cache (avoid re-fetching for the same userId)
-    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string> }>();
+    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string>; sessionTypes: SessionTypePrefs }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -293,6 +293,7 @@ export async function GET(req: Request) {
         sessionsOn: prefs.sessions,
         soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
+        sessionTypes: prefs.sessionTypes,
       };
       userCache.set(userId, state);
       return state;
@@ -303,6 +304,11 @@ export async function GET(req: Request) {
       payload: PushPayload,
       seriesSlug: string,
       subsList: StoredSubscription[],
+      // Raw session title — lets the pre-session reminder kinds apply the
+      // user's per-session-type toggles (skip practice etc.). Other kinds
+      // (results/analysis) ignore it: an opted-in race fan still wants the
+      // results push even with practice reminders off.
+      sessionTitle?: string,
     ) => {
       let sent = 0;
       let evicted = 0;
@@ -315,6 +321,14 @@ export async function GET(req: Request) {
         if (userId) {
           const state = await getUserState(userId);
           if (!state.sessionsOn) {
+            skipped++;
+            continue;
+          }
+          if (
+            (kind === 't30' || kind === 't10') &&
+            sessionTitle !== undefined &&
+            !sessionTypeAllowed(state.sessionTypes, sessionTitle)
+          ) {
             skipped++;
             continue;
           }
@@ -366,7 +380,7 @@ export async function GET(req: Request) {
       // subscriber on the next tick. Worst case is one missed notification,
       // which beats a doubled one.
       await markNotified(item.kind, item.session.uid);
-      const r = await sendToAll(item.kind, item.payload, item.session.seriesSlug, subs);
+      const r = await sendToAll(item.kind, item.payload, item.session.seriesSlug, subs, item.session.title);
       sent += r.sent;
       evicted += r.evicted;
       skipped += r.skipped;

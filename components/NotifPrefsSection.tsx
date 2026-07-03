@@ -3,6 +3,12 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { Bell } from 'lucide-react';
 
+interface SessionTypePrefs {
+  practice: boolean;
+  qualifying: boolean;
+  race: boolean;
+}
+
 interface NotifPrefs {
   sessions: boolean;
   news: boolean;
@@ -10,7 +16,14 @@ interface NotifPrefs {
   betting: boolean;
   blog: boolean;
   sound: boolean;
+  sessionTypes: SessionTypePrefs;
 }
+
+const SESSION_TYPE_ROWS: Array<{ key: keyof SessionTypePrefs; label: string }> = [
+  { key: 'practice', label: 'Practice' },
+  { key: 'qualifying', label: 'Qualifying' },
+  { key: 'race', label: 'Races' },
+];
 
 const ROWS: Array<{ key: keyof NotifPrefs; label: string; description: string }> = [
   {
@@ -74,9 +87,10 @@ export function NotifPrefsSection() {
     };
   }, [isSignedIn]);
 
-  const toggle = async (key: keyof NotifPrefs) => {
+  // Shared optimistic-save plumbing: apply `next` locally, PUT `patch`, revert
+  // on failure. Used by both the kind toggles and the session-type toggles.
+  const save = async (next: NotifPrefs, patch: object) => {
     if (!prefs) return;
-    const next: NotifPrefs = { ...prefs, [key]: !prefs[key] };
     setPrefs(next); // optimistic
     setSaving(true);
     setError(null);
@@ -84,7 +98,7 @@ export function NotifPrefsSection() {
       const res = await fetch('/api/user/notif-prefs', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prefs: { [key]: next[key] } }),
+        body: JSON.stringify({ prefs: patch }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
@@ -97,6 +111,18 @@ export function NotifPrefsSection() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const toggle = (key: Exclude<keyof NotifPrefs, 'sessionTypes'>) => {
+    if (!prefs) return;
+    const next: NotifPrefs = { ...prefs, [key]: !prefs[key] };
+    void save(next, { [key]: next[key] });
+  };
+
+  const toggleSessionType = (key: keyof SessionTypePrefs) => {
+    if (!prefs) return;
+    const sessionTypes = { ...prefs.sessionTypes, [key]: !prefs.sessionTypes[key] };
+    void save({ ...prefs, sessionTypes }, { sessionTypes: { [key]: sessionTypes[key] } });
   };
 
   return (
@@ -119,24 +145,42 @@ export function NotifPrefsSection() {
       {prefs && (
         <div className="space-y-2">
           {ROWS.map(row => (
-            <label
-              key={row.key}
-              className="flex items-start gap-3 p-3 border border-border bg-surface/40 cursor-pointer hover:bg-surface transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="text-text text-sm font-medium">{row.label}</div>
-                <p className="text-xs text-text-faint mt-0.5 leading-relaxed">
-                  {row.description}
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                checked={prefs[row.key]}
-                onChange={() => toggle(row.key)}
-                disabled={saving}
-                className="w-5 h-5 rounded accent-brand cursor-pointer disabled:cursor-not-allowed mt-0.5 shrink-0"
-              />
-            </label>
+            <div key={row.key}>
+              <label className="flex items-start gap-3 p-3 border border-border bg-surface/40 cursor-pointer hover:bg-surface transition-colors">
+                <div className="flex-1 min-w-0">
+                  <div className="text-text text-sm font-medium">{row.label}</div>
+                  <p className="text-xs text-text-faint mt-0.5 leading-relaxed">
+                    {row.description}
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={prefs[row.key]}
+                  onChange={() => toggle(row.key)}
+                  disabled={saving}
+                  className="w-5 h-5 rounded accent-brand cursor-pointer disabled:cursor-not-allowed mt-0.5 shrink-0"
+                />
+              </label>
+              {row.key === 'sessions' && prefs.sessions && (
+                <div className="mt-1 ml-3 border-l border-border pl-3 py-2 flex flex-wrap gap-x-5 gap-y-1.5">
+                  {SESSION_TYPE_ROWS.map(st => (
+                    <label
+                      key={st.key}
+                      className="inline-flex items-center gap-2 cursor-pointer text-xs text-text-muted hover:text-text transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={prefs.sessionTypes[st.key]}
+                        onChange={() => toggleSessionType(st.key)}
+                        disabled={saving}
+                        className="w-4 h-4 rounded accent-brand cursor-pointer disabled:cursor-not-allowed"
+                      />
+                      {st.label}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}

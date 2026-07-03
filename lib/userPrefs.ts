@@ -1,4 +1,5 @@
 import { kv } from '@vercel/kv';
+import { classifySession } from './calendar-grid';
 import { reconcileHomeLayout, type HomeLayoutPrefs } from './homeLayout';
 
 const PREFIX = 'paddock:user:';
@@ -48,6 +49,21 @@ export async function resetUserOnboarded(userId: string): Promise<void> {
   await kv.del(`${PREFIX}${userId}:onboarded`);
 }
 
+// Per-session-type granularity for the `sessions` notification kind only.
+// The keys mirror lib/calendar-grid's classifySession() buckets ('other' is
+// never filtered — parades/ceremonies stay opt-out via the kind toggle).
+export interface SessionTypePrefs {
+  practice: boolean;
+  qualifying: boolean;
+  race: boolean;
+}
+
+export const DEFAULT_SESSION_TYPE_PREFS: SessionTypePrefs = {
+  practice: true,
+  qualifying: true,
+  race: true,
+};
+
 export interface NotifPrefs {
   sessions: boolean;   // ~30 min before each session
   news: boolean;       // new article from a followed series
@@ -56,7 +72,14 @@ export interface NotifPrefs {
   blog: boolean;       // a new blog post goes live (site-wide; followed-filtered when series-tagged)
   sound: boolean;      // play the OS default notification sound (off = silent)
   mutedSeries?: string[];  // per-series mute (independent of follow state)
+  sessionTypes?: SessionTypePrefs; // sessions-kind granularity; absent (pre-0.159 rows) = all true
 }
+
+// Stored/patch shape: everything optional, and sessionTypes itself may be
+// partial (defensive against hand-edited or half-written KV rows).
+export type NotifPrefsPatch = Omit<Partial<NotifPrefs>, 'sessionTypes'> & {
+  sessionTypes?: Partial<SessionTypePrefs>;
+};
 
 export const DEFAULT_NOTIF_PREFS: NotifPrefs = {
   sessions: true,
@@ -66,7 +89,39 @@ export const DEFAULT_NOTIF_PREFS: NotifPrefs = {
   blog: true,
   sound: true,
   mutedSeries: [],
+  sessionTypes: { ...DEFAULT_SESSION_TYPE_PREFS },
 };
+
+/**
+ * Merge a stored (possibly pre-0.159, possibly partial) prefs row over the
+ * defaults. Shallow spread alone would let a partial `sessionTypes` object
+ * wipe the unspecified type flags, so that field is deep-merged: absent field
+ * or absent key = true (the pre-granularity behaviour).
+ */
+export function mergeNotifPrefs(stored: NotifPrefsPatch | null | undefined): NotifPrefs {
+  const s = stored ?? {};
+  return {
+    ...DEFAULT_NOTIF_PREFS,
+    ...s,
+    sessionTypes: { ...DEFAULT_SESSION_TYPE_PREFS, ...(s.sessionTypes ?? {}) },
+  };
+}
+
+/**
+ * Whether a sessions-kind notification about `sessionTitle` passes the user's
+ * per-session-type toggles. Classification reuses lib/calendar-grid's
+ * classifySession — the same buckets the calendar filter uses — so "Sprint
+ * Qualifying" counts as qualifying, "Sprint" as race, warm-ups as practice.
+ * Titles classified 'other' are never filtered here. Absent prefs = allowed.
+ */
+export function sessionTypeAllowed(
+  sessionTypes: Partial<SessionTypePrefs> | undefined,
+  sessionTitle: string,
+): boolean {
+  const kind = classifySession(sessionTitle);
+  if (kind === 'other') return true;
+  return { ...DEFAULT_SESSION_TYPE_PREFS, ...(sessionTypes ?? {}) }[kind] !== false;
+}
 
 export async function addMutedSeries(userId: string, slug: string): Promise<NotifPrefs> {
   const prefs = await getUserNotifPrefs(userId);
@@ -83,18 +138,27 @@ export async function removeMutedSeries(userId: string, slug: string): Promise<N
 }
 
 export async function getUserNotifPrefs(userId: string): Promise<NotifPrefs> {
-  if (!isKvConfigured()) return DEFAULT_NOTIF_PREFS;
-  const stored = await kv.get<Partial<NotifPrefs>>(`${PREFIX}${userId}:notifPrefs`);
-  return { ...DEFAULT_NOTIF_PREFS, ...(stored ?? {}) };
+  if (!isKvConfigured()) return mergeNotifPrefs(null);
+  const stored = await kv.get<NotifPrefsPatch>(`${PREFIX}${userId}:notifPrefs`);
+  return mergeNotifPrefs(stored);
 }
 
 export async function setUserNotifPrefs(
   userId: string,
-  patch: Partial<NotifPrefs>,
+  patch: NotifPrefsPatch,
 ): Promise<NotifPrefs> {
-  if (!assertKvForWrite()) return { ...DEFAULT_NOTIF_PREFS, ...patch };
+  if (!assertKvForWrite()) return mergeNotifPrefs(patch);
   const current = await getUserNotifPrefs(userId);
-  const next: NotifPrefs = { ...current, ...patch };
+  // sessionTypes deep-merges so a partial patch never drops the other flags.
+  const next: NotifPrefs = {
+    ...current,
+    ...patch,
+    sessionTypes: {
+      ...DEFAULT_SESSION_TYPE_PREFS,
+      ...current.sessionTypes,
+      ...(patch.sessionTypes ?? {}),
+    },
+  };
   await kv.set(`${PREFIX}${userId}:notifPrefs`, next);
   return next;
 }
