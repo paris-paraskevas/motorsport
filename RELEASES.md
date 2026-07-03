@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.158.0 — 2026-07-03
+
+**Notifications, your way.** Session reminders can now skip practice (or qualifying, or races) — pick which session types ping you, per your account. The notification sound is a new original chime. And if you open Paddock with no connection, you'll get a proper offline page instead of a browser error.
+
 ## 0.157.0 — 2026-07-03
 
 **Sturdier data, quietly.** Four more championships' standings now keep showing the last good table if their source hiccups instead of going blank. F1 session results get captured right after a session ends, so they stay visible even while live-timing data is locked during the next session. And a weekly watchdog now flags when a past result quietly changes upstream — late penalties get noticed instead of slipping by.

@@ -11,12 +11,37 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+// Offline fallback — precache the branded /offline page and serve it whenever
+// a document navigation can't be satisfied (defaultCache's NetworkFirst page
+// strategies fail with no cached copy). The revision is derived from the
+// injected build manifest: stable across SW restarts within one build, changes
+// exactly when a new build ships — so the cached HTML always references the
+// current hashed chunks instead of purged ones.
+const OFFLINE_FALLBACK_URL = '/offline';
+const manifest = self.__SW_MANIFEST ?? [];
+const offlineRevision = (() => {
+  const s = JSON.stringify(manifest);
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(h, 31) + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+})();
+
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
+  precacheEntries: [...manifest, { url: OFFLINE_FALLBACK_URL, revision: offlineRevision }],
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: defaultCache,
+  fallbacks: {
+    entries: [
+      {
+        url: OFFLINE_FALLBACK_URL,
+        matcher({ request }) {
+          return request.destination === 'document';
+        },
+      },
+    ],
+  },
 });
 
 serwist.addEventListeners();
@@ -47,7 +72,9 @@ interface PushPayload {
 // Picked to read against the black launcher icon background.
 const ACCENT_COLOR = '#e10600';
 
-const FOREGROUND_SOUND_URL = '/sounds/f1-radio-notification.mp3';
+// Paddock's original two-tone chime (synthesized in-repo by
+// scripts/gen-notification-sound.mjs — no third-party audio licensing).
+const FOREGROUND_SOUND_URL = '/sounds/paddock-chime.wav';
 
 self.addEventListener('push', (event: PushEvent) => {
   if (!event.data) return;
