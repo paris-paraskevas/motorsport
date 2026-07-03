@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.155.0 — 2026-07-03
+
+Results-surfaces readability wave (salvaged batch DEF of the 2026-07-03 triage build day).
+
+### Added
+- **Ranked points rail on standings charts** (`components/SeasonTrendChart.tsx`): every series trend chart now carries a ranked name+points list (desc) — right rail on lg+, stacked below on phones — reading the same totals map as the chart so the chart==standings invariant holds by construction. Capped at 10 rows behind a "Show all" expander (NASCAR's 47-driver field stays scannable).
+- **Interval + leader-gap columns on F1 session classifications** (`lib/results/openf1.ts` `deriveIntervals` + the session page): gap-to-car-ahead derived from OpenF1's gap_to_leader in finishing order; leader/lapped/DNF/negative-delta rows honestly render — (9 unit tests). Non-F1 feeds never set it, so the column doesn't exist there.
+- **Watch link + circuit figure on session pages**: the series' watch metadata + the round's curated circuit schematic (with source + license attribution) now render on session pages.
+- **Titles-over-time sparklines on Champions sections** (`components/tabs/ChampionsTab.tsx`): tiny dependency-free inline SVG derived from computeTitleTally; renders nothing under two seasons.
+
+### Changed
+- **Denser Y-axis ticks** on season trend charts (tickCount 8, integers only) — NASCAR's 0–600 range no longer jumps ~150pts between gridlines.
+- **Hover row highlight** on session classification + per-series Results tables.
+
 ## 0.154.1 — 2026-07-03
 
 ### Fixed

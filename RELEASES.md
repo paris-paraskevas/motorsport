@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.155.0 — 2026-07-03
+
+**Results pages you can actually read.** Standings charts now come with a ranked points list alongside the trend lines, with denser scale markings so mid-pack battles are legible. F1 session results show each car's interval to the one ahead plus the gap to the leader, rows highlight as you move over them, and session pages now carry a where-to-watch link and the circuit map. Champions tabs gained a small titles-over-time sparkline per championship.
+
 ## 0.154.1 — 2026-07-03
 
 **Clearer account message.** The Account page no longer suggests guest preferences save to this device — following championships, customising your home and notifications are free account features, and the page now says so plainly.

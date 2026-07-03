@@ -109,6 +109,68 @@ function TitleTallyBadge({ tally }: { tally: TitleTally | undefined }) {
   );
 }
 
+// Titles-over-time sparkline for a section header: x = season (oldest →
+// newest), y = that season's champion's cumulative title count — the same
+// number computeTitleTally stamps on each row, so it derives purely from the
+// champions list already on the page. Dynasties read as climbing runs; a
+// change of champion drops the line back to 1. Tiny inline SVG polyline in
+// the series tint (matching the tally badges) — no chart dependency. Honest
+// empty state: under two seasons there is no "over time" to draw, so render
+// nothing rather than a fabricated line; an all-first-titles era draws flat
+// along the baseline because that's what the data says.
+const SPARK_W = 96;
+const SPARK_H = 20;
+const SPARK_PAD = 2;
+
+function TitleSparkline<T extends { year: number }>({
+  rows,
+  keyOf,
+  label,
+}: {
+  rows: T[];
+  keyOf: (row: T) => string;
+  label: string;
+}) {
+  const tally = computeTitleTally(rows, keyOf);
+  const values = [...rows]
+    .sort((a, b) => a.year - b.year)
+    .map(r => tally.get(r)?.count)
+    .filter((v): v is number => typeof v === 'number');
+  if (values.length < 2) return null;
+  // Floor the scale at 2 so a no-repeats section sits on the baseline instead
+  // of mid-air, and (max - 1) never divides by zero.
+  const max = Math.max(...values, 2);
+  const stepX = (SPARK_W - SPARK_PAD * 2) / (values.length - 1);
+  const points = values
+    .map((v, i) => {
+      const x = SPARK_PAD + i * stepX;
+      const y =
+        SPARK_H - SPARK_PAD - ((v - 1) / (max - 1)) * (SPARK_H - SPARK_PAD * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+  return (
+    <svg
+      width={SPARK_W}
+      height={SPARK_H}
+      viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
+      className="hidden sm:block shrink-0 self-center text-tint"
+      role="img"
+      aria-label={label}
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={0.75}
+      />
+    </svg>
+  );
+}
+
 interface ConstructorChampion {
   year: number;
   team: string;
@@ -424,11 +486,15 @@ function SecondarySection({
 function CollapsibleSection({
   label,
   count,
+  sparkline,
   defaultOpen = false,
   children,
 }: {
   label: React.ReactNode;
   count: number;
+  /** Optional titles-over-time sparkline (TitleSparkline), rendered beside
+   *  the champion count on sm+ viewports. */
+  sparkline?: React.ReactNode;
   defaultOpen?: boolean;
   children: React.ReactNode;
 }) {
@@ -441,8 +507,11 @@ function CollapsibleSection({
         <h2 className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold">
           {label}
         </h2>
-        <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-          {count} {count === 1 ? 'champion' : 'champions'}
+        <span className="flex items-center gap-3 min-w-0">
+          {sparkline}
+          <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono whitespace-nowrap">
+            {count} {count === 1 ? 'champion' : 'champions'}
+          </span>
         </span>
       </summary>
       <div className="pt-3">{children}</div>
@@ -601,6 +670,13 @@ export async function ChampionsTab({ series }: { series: Series }) {
       <CollapsibleSection
         label={isSingleEvent ? 'Past Winners' : <>Drivers&apos; Championship</>}
         count={champions.length}
+        sparkline={
+          <TitleSparkline
+            rows={champions}
+            keyOf={c => c.driver}
+            label="Titles over time — each season's champion's cumulative title count"
+          />
+        }
         defaultOpen
       >
         <DriversSection
@@ -613,6 +689,13 @@ export async function ChampionsTab({ series }: { series: Series }) {
         <CollapsibleSection
           label={<>Constructors&apos; Championship</>}
           count={constructorChampions.length}
+          sparkline={
+            <TitleSparkline
+              rows={constructorChampions}
+              keyOf={c => c.team}
+              label="Titles over time — each season's champion's cumulative title count"
+            />
+          }
           defaultOpen
         >
           <ConstructorsSection
@@ -625,6 +708,13 @@ export async function ChampionsTab({ series }: { series: Series }) {
         <CollapsibleSection
           label={secondaryLabel}
           count={secondaryChampions.length}
+          sparkline={
+            <TitleSparkline
+              rows={secondaryChampions}
+              keyOf={c => c.driver}
+              label="Titles over time — each season's champion's cumulative title count"
+            />
+          }
         >
           <SecondarySection
             champions={secondaryChampions}
