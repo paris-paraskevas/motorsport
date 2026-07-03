@@ -1035,7 +1035,7 @@ export function HomeContent({
           {!isCollapsed('schedule') && (
           <>
           {byDay.length === 0 ? (
-            <div className="border border-border bg-surface/40 p-6 text-sm text-text-faint">
+            <div className="border-y border-border py-4 font-mono text-sm text-text-faint">
               {isEmptyFromFilter ? (
                 <>
                   No sessions in your followed series this week.{' '}
@@ -1228,7 +1228,7 @@ export function HomeContent({
             </div>
           )}
           {topNews.length === 0 ? (
-            <div className="border border-border bg-surface/40 p-6 text-sm text-text-faint">
+            <div className="border-y border-border py-4 font-mono text-sm text-text-faint">
               {isEmptyFromFilter
                 ? 'No recent stories from your followed series.'
                 : 'Latest stories unavailable right now.'}
