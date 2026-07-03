@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { ExternalLink } from 'lucide-react';
 import { findTeamBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource, type SnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
@@ -9,6 +10,9 @@ import {
   teamSeasonForm,
   type TeamSeasonForm,
 } from '@/lib/profile-stats';
+import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
+import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
+import type { NewsItem } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
 
 // ISR: team pages edge-cache (was force-dynamic). Same cached snapshot feeds
@@ -36,6 +40,101 @@ export async function generateMetadata({
   };
 }
 
+// Short "About" bio (Wikipedia intro) + "In the news" mentions. Twins of the
+// sections on app/(app)/drivers/[slug]/page.tsx — duplicated because page
+// modules can't export shared components and these two pages are the only
+// consumers (no-premature-helper rule).
+function AboutSection({ bio }: { bio: WikipediaBio }) {
+  return (
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        About
+      </h2>
+      <div className="space-y-3">
+        {bio.paragraphs.map((p, i) => (
+          <p key={i} className="text-sm text-text-muted leading-relaxed">
+            {p}
+          </p>
+        ))}
+      </div>
+      <div className="mt-3 text-xs text-text-faint">
+        Source:{' '}
+        <a
+          href={bio.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
+        >
+          Wikipedia &rarr;
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function NewsMentionsSection({ items }: { items: NewsItem[] }) {
+  return (
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        In the news
+      </h2>
+      <div className="divide-y divide-border/60">
+        {items.map(item => {
+          const excerpt = item.description
+            ? item.description.length > 140
+              ? item.description.slice(0, 137).trimEnd() + '…'
+              : item.description
+            : null;
+          return (
+            <a
+              key={item.link}
+              href={item.link}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="group block py-3.5 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+            >
+              <div className="flex items-center gap-2 mb-1 min-w-0">
+                <time
+                  dateTime={item.pubDate.toISOString()}
+                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
+                >
+                  {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                </time>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint shrink-0">
+                  · motorsport.com
+                </span>
+                <ExternalLink
+                  size={12}
+                  className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
+                />
+              </div>
+              <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
+                {item.title}
+              </h3>
+              {excerpt && (
+                <p className="mt-1 text-sm text-text-muted leading-relaxed line-clamp-2">
+                  {excerpt}
+                </p>
+              )}
+            </a>
+          );
+        })}
+      </div>
+      <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        Source:{' '}
+        <a
+          href="https://www.motorsport.com/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+          className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
+        >
+          motorsport.com ↗
+        </a>
+      </div>
+    </section>
+  );
+}
+
 export default async function TeamPage({
   params,
 }: {
@@ -50,17 +149,27 @@ export default async function TeamPage({
   // Season form from the series' results feeds (same path as driver pages
   // and weekend snapshots). Team standings render only where a per-team sum
   // IS that series' championship — the snapshot source's showTeams flag.
-  let teamForm: TeamSeasonForm | null = null;
-  let source: SnapshotSource | null = null;
-  try {
-    const series = await loadSeries(team.seriesSlug);
-    source = await loadSnapshotSource(series);
-    if (source && source.showTeams) {
-      teamForm = teamSeasonForm(source.races, source.extras, team.name);
-    }
-  } catch {
-    teamForm = null;
-  }
+  // Wikipedia bio + series news load in parallel; each independently
+  // fail-soft (absent section, never an error).
+  const [seasonData, bio, seriesNews] = await Promise.all([
+    (async (): Promise<{ teamForm: TeamSeasonForm | null; source: SnapshotSource | null }> => {
+      try {
+        const series = await loadSeries(team.seriesSlug);
+        const source = await loadSnapshotSource(series);
+        const teamForm =
+          source && source.showTeams
+            ? teamSeasonForm(source.races, source.extras, team.name)
+            : null;
+        return { teamForm, source };
+      } catch {
+        return { teamForm: null, source: null };
+      }
+    })(),
+    fetchWikipediaBio(team.name),
+    fetchNews(team.seriesSlug),
+  ]);
+  const { teamForm, source } = seasonData;
+  const mentions = filterNewsByMention(seriesNews, newsMentionAliases('team', team.name));
 
   const driverRows = team.drivers.map(d => {
     const form = source ? driverSeasonForm(source.races, source.extras, d.name) : null;
@@ -129,7 +238,7 @@ export default async function TeamPage({
         </section>
       )}
 
-      <section className="border-y border-border py-4">
+      <section className="mb-8 border-y border-border py-4">
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
           Drivers
         </h2>
@@ -168,6 +277,10 @@ export default async function TeamPage({
           </div>
         )}
       </section>
+
+      {bio && <AboutSection bio={bio} />}
+
+      {mentions.length > 0 && <NewsMentionsSection items={mentions} />}
     </div>
   );
 }
