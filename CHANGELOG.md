@@ -4,7 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.156.0 — 2026-07-03
+## 0.157.0 — 2026-07-03
+
+Data-resilience wave (salvaged batch C of the 2026-07-03 build day).
+
+### Added
+- **Durable last-good for four more standings sources** (`lib/standings/{f2,f3,indycar,gt-world}.ts`, +21 tests): each fetch is wrapped in `withSourceSnapshot` mirroring the 0.142.0 pattern — an upstream outage / SPA-shell response / markup restructure serves the last successful standings instead of blanking the tab; self-heals on the next good fetch. Parser logic untouched.
+- **warm-sessions cron** (`app/api/cron/warm-sessions/route.ts` + 30-min workflow): captures just-ended F1 sessions' classifications into the session-class KV via the session page's exact capture path + write shape, BEFORE OpenF1's next live-session 401 lockout can strand them — closes the 0.39.1 residual (a cold entry first opened during a lockout couldn't render). Capped at 3 captures/run; misses are never cached (next tick retries); F1-only by design.
+- **recheck-results cron** (`app/api/cron/recheck-results/route.ts` + weekly workflow): REPORT-ONLY late-penalty watchdog — re-reads 8 series' season results, diffs rounds completed in the last 35 days against its own `source_snapshot` baseline ledger (each change reported exactly once), logs structured `[recheck-results]` warnings + persists the run summary where `/api/cron/health` surfaces its freshness. Never mutates user-serving caches — fixing a stale capture stays a deliberate operator action. Sequential + time-budgeted for upstream politeness.
+
+
 
 Platform wave (salvaged batch HI of the 2026-07-03 build day): subscribe-able calendars, an F1 Tracks tab, and route-level loading/error states.
 
