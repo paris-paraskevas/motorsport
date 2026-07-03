@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.163.2 — 2026-07-03
+
+### Changed
+- **Social hub restyled to the app's language** (audit finding, properly fixes #389 — the 0.161.0 re-token was a near-no-op): `/social` used an ultra-wide frame (`max-w-screen-2xl`) and a grid of `rounded-2xl` boxed cards, which is why it read as "a different app". Rebuilt it as the flat divider-row launcher the rest of the app uses (mirrors `/settings`): narrow `max-w-2xl lg:max-w-4xl` column, `border-b` rows with icon + eyebrow + title + description + arrow. Audited every social child page too — `/play`, `/social/{friends,leagues,leagues/[id],users/[id]}` already use the correct width and only app-consistent small `rounded` (buttons/chips), so no change needed there. Verified in a browser (anon landing + signed-in leagues).
+
 ## 0.163.1 — 2026-07-03
 
 ### Fixed
