@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.158.2 — 2026-07-03
+
+Internal: repository housekeeping — no visible changes.
+
 ## 0.158.1 — 2026-07-03
 
 **Clearer calendar buttons.** The schedule-feed links on Calendar tabs now say "Add to your calendar" and "download file" instead of technical shorthand.
