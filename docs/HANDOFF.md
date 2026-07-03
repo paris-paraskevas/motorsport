@@ -6,24 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-02 (LATEST) — main 0.151.0 → 0.154.0 (#365–#368) · MotoGP chart ROOT-CAUSED + FIXED (red-flag restart) · ▶ REMAINING = anon VISUAL PASSES + deferred IA taste calls
+## ⚡ Next session pickup — 2026-07-03 (LATEST) — main 0.154.0 (#365–#371) · MotoGP chart FIXED (red-flag restart) · British GP preview live · ▶ REMAINING = anon VISUAL PASSES + deferred IA taste calls
 
-**Shipped + merged this session (0.151.0 → 0.154.0):**
+**Shipped + merged this session (0.151.0 → 0.154.0, + docs/content):**
 - **#365 (0.152.1)** — greened `lib/openf1/turns.test.ts` (2 fixtures shipped red in #330 and never passed: a dead-loop phantom corner + an arc below the 0.30 detection threshold — **test-only fix, `detectTurns` unchanged**) + **re-landed the MotoGP chart gate** that missed the #364 squash by ~5 min.
-- **#366 (0.152.2)** — **MotoGP chart root-caused, FIXED, and re-enabled.** See the correction below. Fix in `lib/results/motogp.ts` (`pickScoringRace`).
-- **#367 (0.153.0)** — **Arc-2 IA increment 1:** following + home-customize are now **signed-in only** (guests get the fixed default home + "sign in — it's free" CTAs — reverses the device-local-guest model, per operator); **Up-next + Just-missed pinned as a non-hideable spine** (`SPINE_IDS` in `lib/homeLayout.ts`); a **"Jump to" launcher** (`components/HomeLauncher.tsx`, category-grouped Standings/Results pickers) above the widget zone; **Standings/Results quick-links** in weekend + session headers.
-- **#368 (0.154.0)** — **`/social` teaser landing** for guests (indexable marketing preview) + the menu-only "Community" nav trigger is now a clickable top-level **News** (→ `/news`, Blog/Threads on hover).
+- **#366 (0.152.2)** — **MotoGP chart root-caused, FIXED, re-enabled** (`pickScoringRace` in `lib/results/motogp.ts`). See the correction below.
+- **#367 (0.153.0)** — **Arc-2 IA increment 1:** following + home-customize are now **signed-in only** (guests get the fixed default home + "sign in — it's free" CTAs — reverses the device-local-guest model, per operator); **Up-next + Just-missed pinned as a non-hideable spine** (`SPINE_IDS` in `lib/homeLayout.ts`); a **"Jump to" launcher** (`components/HomeLauncher.tsx`) above the widget zone; **Standings/Results quick-links** in weekend + session headers.
+- **#368 (0.154.0)** — **`/social` teaser landing** for guests (indexable) + the menu-only "Community" nav trigger is now a clickable top-level **News** (→ `/news`, Blog/Threads on hover).
+- **#369 / #370 (docs)** — session-end triage + IDEAS closures; captured the **dev.paddock-tracker.com** idea (an admin/moderator staging env to review drafts/moderation off prod).
+- **#371 (content)** — **British Grand Prix 2026 preview** blog post (`content/posts/british-grand-prix-2026-preview.mdx`), 3× adversarially fact-checked. Shipped as MDX (publishes on merge) rather than a DB draft — see the blog gotcha.
 
 **🔑 CORRECTION — the MotoGP chart bug was NOT what the prior handoff diagnosed.** Not per-round value gaps, not a name split, not a finisher-floor. Root cause (live-Pulselive + motogp.com verified): the **2026 Grand Prix of Catalonia (R6) was red-flagged and restarted.** Pulselive exposes TWO race sessions — the annulled first race (`RAC`, every row **0 points**) and the scored restart (`RAC2`, the full **140 pts**, Di Giannantonio's win, which the standings count). `fetchMotoGPSeasonResults` picked the first `RAC` → Catalonia contributed 0 → every scorer under-counted by exactly their Catalonia finish (the clean GP-scale deltas). Fix = **`pickScoringRace`** (build all RAC-family sessions, keep the one carrying points). **Verified: all 27 riders now reconcile exactly to the standings; the chart is un-gated + correct.** The "28 vs 27 series" was Lorenzo Savadori (a 0-pt wildcard). NB the prior plan (`results-overrides.json` curation) would have **mis-fired** — the override mechanism keys by round only, so it can't target the GP without corrupting that round's Sprint.
 
-**▶ OPEN for next session:**
-- **Visual passes owed** — every Playwright smoke this session ran **signed-in** (the operator's browser has a persistent Clerk session), so the ANON surfaces are code-verified but not eyeballed: **anon home walling** (#367 — sign out on prod → follow CTA on `/settings`, customize CTA on `/settings/customize`, home = fixed default, all series); **anon `/social` teaser** (#368); the **weekend/session Standings·Results quick-links**; the **News hover panel** at desktop widths; the **launcher** at 390/1024/1440 + live states + its keyboard/focus order (it's first in DOM, visually CSS-order-3).
-- **Signed-in F1-analysis-gate pass** (#361) — still owed from the prior handoff.
-- **Deferred IA taste calls** (#15 increment 2/3, held pending an explicit decision): **Social→"Play"** label; **F1-Analysis top-level nav slot**; **Drivers/Teams nav home**; **per-page density/disclosure** pass; **full jobs-to-be-done regroup**.
-- **Flaky test:** one transient full-suite failure surfaced once (passed on immediate re-run) — not turns/sitemap; dedicated hunt if it recurs.
-- **#14 = DONE** (teaser landings: `/settings/customize` CTA in #367, `/social` teaser in #368).
+**▶ OPEN — VISUAL PASSES OWED** (every Playwright smoke this session ran **signed-in** — the operator's browser has a persistent Clerk session — so ANON surfaces are code-verified but not eyeballed):
+1. **#367 anon home walling** — sign out on prod → follow CTA on `/settings`, customize CTA on `/settings/customize`, home = fixed default (all series, no personalization).
+2. **#367 weekend/session Standings·Results quick-links** + the **"Jump to" launcher** at 390/1024/1440 + live states + keyboard/focus order (launcher is first in DOM, visually CSS-order-3).
+3. **#368 anon `/social` teaser.**
+4. **#371 British GP preview** renders on the prod deploy at `/blog/british-grand-prix-2026-preview` (local `/blog/[slug]` 500s — see gotcha).
+5. **Signed-in F1-analysis-gate pass** (#361) — still owed from before.
 
-**Gotchas this session:** after a base PR squash-merges, a stacked child needs `git rebase --onto origin/main <old-base-sha> <branch>` to drop the duplicated base commit (used to retarget #366 → main cleanly). The dev server ran on the feature branches (localhost served each branch's build). `.env.local` still has no KV vars (signed-in writes no-op in dev). Playwright uses the operator's signed-in session — sign out to verify anon.
+**▶ DECISIONS PENDING — deferred IA taste calls** (#15 increment 2/3): **Social→"Play"** label · **F1-Analysis top-level nav slot** · **Drivers/Teams nav home** · **per-page density/disclosure** pass · **full jobs-to-be-done regroup**. Doc: `docs/research/2026-07-02-ia-restructure.md`.
+
+**▶ OTHER OPEN:**
+- **Flaky test** — one transient full-suite failure this session (passed on immediate re-run); not turns/sitemap; hunt if it recurs.
+- **Local dev `/blog/[slug]` route 500s** — `le-mans-2026-preview` 500s locally too, so it's a **pre-existing LOCAL-env issue** (`getPostBySlug` / local Supabase / Clerk-via-curl?), NOT content and NOT prod. Fix so blog posts can be locally browser-verified.
+- **#14 = DONE** (teaser landings: `/settings/customize` CTA #367, `/social` teaser #368).
+
+**Gotchas this session:**
+- **`.env.local`'s `SUPABASE_URL` = LOCAL Supabase (`127.0.0.1`), NOT prod (project `dzelqrtajnauunzmxfic`).** So `scripts/draft-post.mts` creates blog DB drafts in the **local** DB — invisible to prod `/blog`. To queue a DB draft on PROD: run `draft-post.mts` with the PROD `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` (Supabase dashboard → Settings → API) + `BLOG_AUTHOR_ID`. The auto-mode classifier gates prod-Supabase access (approve, or run it yourself). A leftover LOCAL draft (slug `british-grand-prix-2026-preview`, id `c1bb9032`) sits in the 127.0.0.1 DB — harmless (local only); it's also why that `/blog` URL 500s locally (draft gated for anon).
+- **Blog:** MDX posts (`content/posts/*.mdx`) publish on merge with **no version bump** (content, not a release); DB posts go through the `/blog` admin approve queue (draft → approve → publish cron). The British GP preview shipped as MDX to sidestep the prod-creds issue (live on merge, no in-app approve step). Operator's Clerk `publicMetadata.role: "admin"` gates thread accept/deny + blog approval.
+- **Content workflow proven this session:** research agents → draft → **3× adversarial audit** (caught 2 real errors: McLaren P3 not behind Red Bull; Ferrari "Macarena" **rear** wing not front) → ship. Reuse for recaps/previews.
+- Stacked squash-merges: after the base PR squash-merges, rebase the child with `git rebase --onto origin/main <old-base-sha> <branch>` to drop the duplicated base commit.
+- Playwright uses the operator's signed-in Clerk session — **sign out to verify anon**. `.env.local` has no KV vars (signed-in writes no-op in dev). Release notes mandatory on APP pushes (CHANGELOG + RELEASES + version bump; docs/content don't bump). No Claude attribution in commits. `gh` on `paris-paraskevas`. A dev server was left running in the background.
 
 ---
 
