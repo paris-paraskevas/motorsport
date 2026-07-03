@@ -14,8 +14,10 @@ import { auth } from '@clerk/nextjs/server';
 // F1 driver head-to-head. Reuses the SAME season-form + trend cumulation the
 // driver pages and weekend snapshots use (lib/profile-stats + lib/season-trend
 // off loadSnapshotSource), so nothing new is fetched or parsed. F1-only for now
-// (both drivers share the F1 feed); extending to other live-standings series is
-// a follow-up. Quali H2H is deferred — it needs a per-weekend OpenF1 fan-out.
+// (both drivers share the F1 feed). Team mode (?ta=&tb=) is a follow-up — the
+// tested trend aggregator (lib/season-trend aggregateTeamsTrend) already
+// exists; the page wiring + picker do not. Quali H2H stays deferred (needs a
+// per-weekend OpenF1 fan-out).
 export const revalidate = 3600;
 
 const TITLE = 'F1 head-to-head';

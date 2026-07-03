@@ -81,6 +81,52 @@ export function buildSeasonTrendData(
   return { data, drivers, totalsByDriver: { ...running } };
 }
 
+export interface TeamTrendInput {
+  /** Display name for the aggregated line (curated team name). */
+  name: string;
+  /** Results-feed constructor name — lets the chart resolve team colors. */
+  feedTeam?: string;
+  /** Member driver keys as they appear in the SeasonTrendData (feed names). */
+  memberNames: string[];
+}
+
+/**
+ * Aggregate a per-driver season trend into per-team lines by summing the
+ * member drivers' cumulative points at every round. Pure over
+ * `buildSeasonTrendData` output; the caller resolves membership (feed team
+ * string → curated team) so this stays matcher-agnostic.
+ *
+ * Caveat: `buildSeasonTrendData` registers one team per driver, so a
+ * mid-season seat swap attributes the driver's whole cumulative line to the
+ * summed team — fine for a two-team comparison chart, not championship math
+ * (that's `buildStandingsAtRound`, which attributes per race entry).
+ */
+export function aggregateTeamsTrend(
+  full: SeasonTrendData,
+  teams: TeamTrendInput[],
+): SeasonTrendData {
+  const sumFor = (memberNames: string[], values: Record<string, number | string>): number =>
+    memberNames.reduce((acc, m) => {
+      const v = values[m];
+      return acc + (typeof v === 'number' ? v : 0);
+    }, 0);
+
+  const data: SeasonTrendPoint[] = full.data.map(p => {
+    const point: SeasonTrendPoint = { round: p.round, raceName: p.raceName };
+    for (const t of teams) point[t.name] = sumFor(t.memberNames, p);
+    return point;
+  });
+
+  const totalsByDriver: Record<string, number> = {};
+  for (const t of teams) totalsByDriver[t.name] = sumFor(t.memberNames, full.totalsByDriver);
+
+  return {
+    data,
+    drivers: teams.map(t => ({ name: t.name, team: t.feedTeam })),
+    totalsByDriver,
+  };
+}
+
 export interface StandingsAtRound {
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];

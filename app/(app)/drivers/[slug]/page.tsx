@@ -1,10 +1,16 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { ExternalLink } from 'lucide-react';
 import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
-import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
+import { driverSeasonForm, namesMatch, type DriverSeasonForm } from '@/lib/profile-stats';
+import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
+import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
+import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
+import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
+import type { NewsItem } from '@/lib/types';
 import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
 import { withSocialMeta } from '@/lib/seo';
 
@@ -32,6 +38,119 @@ export async function generateMetadata({
     description,
     ...withSocialMeta({ title: driver.name, description, path: `/drivers/${slug}` }),
   };
+}
+
+// Narrow the full-season trend to this one driver so the reused chart draws a
+// single line (mirrors the compare page's trendForTwo). null when the driver
+// never appears in the results feed.
+function trendForDriver(full: SeasonTrendData, name: string): SeasonTrendData | null {
+  const d = full.drivers.find(x => namesMatch(x.name, name));
+  if (!d) return null;
+  return {
+    data: full.data.map(p => ({
+      round: p.round,
+      raceName: p.raceName,
+      [d.name]: p[d.name] ?? 0,
+    })),
+    drivers: [d],
+    totalsByDriver: { [d.name]: full.totalsByDriver[d.name] ?? 0 },
+  };
+}
+
+// Short "About" bio (Wikipedia intro). Attribution mirrors the series About
+// tab's "Source: Wikipedia →" credit; absent bio → no section (fail-soft).
+function AboutSection({ bio }: { bio: WikipediaBio }) {
+  return (
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        About
+      </h2>
+      <div className="space-y-3">
+        {bio.paragraphs.map((p, i) => (
+          <p key={i} className="text-sm text-text-muted leading-relaxed">
+            {p}
+          </p>
+        ))}
+      </div>
+      <div className="mt-3 text-xs text-text-faint">
+        Source:{' '}
+        <a
+          href={bio.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
+        >
+          Wikipedia &rarr;
+        </a>
+      </div>
+    </section>
+  );
+}
+
+// Latest series-feed stories mentioning this name — same wire-row language as
+// the series News tab. Dates are absolute (the page is ISR-cached, so a
+// relative "3h ago" would go stale).
+function NewsMentionsSection({ items }: { items: NewsItem[] }) {
+  return (
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        In the news
+      </h2>
+      <div className="divide-y divide-border/60">
+        {items.map(item => {
+          const excerpt = item.description
+            ? item.description.length > 140
+              ? item.description.slice(0, 137).trimEnd() + '…'
+              : item.description
+            : null;
+          return (
+            <a
+              key={item.link}
+              href={item.link}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="group block py-3.5 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+            >
+              <div className="flex items-center gap-2 mb-1 min-w-0">
+                <time
+                  dateTime={item.pubDate.toISOString()}
+                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
+                >
+                  {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                </time>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint shrink-0">
+                  · motorsport.com
+                </span>
+                <ExternalLink
+                  size={12}
+                  className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
+                />
+              </div>
+              <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
+                {item.title}
+              </h3>
+              {excerpt && (
+                <p className="mt-1 text-sm text-text-muted leading-relaxed line-clamp-2">
+                  {excerpt}
+                </p>
+              )}
+            </a>
+          );
+        })}
+      </div>
+      <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        Source:{' '}
+        <a
+          href="https://www.motorsport.com/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+          className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
+        >
+          motorsport.com ↗
+        </a>
+      </div>
+    </section>
+  );
 }
 
 function StatBlock({ label, value }: { label: string; value: string }) {
@@ -104,15 +223,36 @@ export default async function DriverPage({
 
   // Season form from the series' results feeds — the same cumulation the
   // weekend snapshots use. Null (no feed / no points / name unmatched)
-  // degrades to the identity-only page.
-  let form: DriverSeasonForm | null = null;
-  try {
-    const series = await loadSeries(driver.seriesSlug);
-    const source = await loadSnapshotSource(series);
-    if (source) form = driverSeasonForm(source.races, source.extras, driver.name);
-  } catch {
-    form = null;
-  }
+  // degrades to the identity-only page. The Wikipedia bio and the series news
+  // feed load in parallel with it; each is independently fail-soft (absent
+  // section, never an error).
+  const [seasonData, bio, seriesNews] = await Promise.all([
+    (async (): Promise<{ form: DriverSeasonForm | null; trend: SeasonTrendData | null }> => {
+      try {
+        const series = await loadSeries(driver.seriesSlug);
+        const source = await loadSnapshotSource(series);
+        if (!source) return { form: null, trend: null };
+        const form = driverSeasonForm(source.races, source.extras, driver.name);
+        // Trend chart only where the feed's per-race points are
+        // championship-canonical (`pointsExact` — the same set of series the
+        // Standings tab charts); winners-only / derived-points feeds would
+        // draw a misleading line.
+        const trend = source.pointsExact
+          ? trendForDriver(
+              buildSeasonTrendData(source.races, source.extras ?? []),
+              driver.name,
+            )
+          : null;
+        return { form, trend };
+      } catch {
+        return { form: null, trend: null };
+      }
+    })(),
+    fetchWikipediaBio(driver.name),
+    fetchNews(driver.seriesSlug),
+  ]);
+  const { form, trend } = seasonData;
+  const mentions = filterNewsByMention(seriesNews, newsMentionAliases('driver', driver.name));
 
   // F1-only headshot (official F1 media via OpenF1 — see lib/openf1/headshots).
   // KV-cached + fail-soft; absent for non-F1 series or any lookup miss, in which
@@ -200,6 +340,22 @@ export default async function DriverPage({
       </header>
 
       {form && <SeasonForm form={form} />}
+
+      {trend && (
+        <section className="mb-8 border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+            Points trajectory
+          </h2>
+          <LazySeasonTrendChart {...trend} />
+          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            Cumulative points by round · from race results
+          </div>
+        </section>
+      )}
+
+      {bio && <AboutSection bio={bio} />}
+
+      {mentions.length > 0 && <NewsMentionsSection items={mentions} />}
 
       <section className="border-y border-border py-4">
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">

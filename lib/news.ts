@@ -124,6 +124,88 @@ export async function fetchAggregatedNews(
   }));
 }
 
+// ---------------------------------------------------------------------------
+// Profile-page "In the news" — pure filtering over the SAME per-series feed
+// the News tab renders (fetchNews above). No new fetch, no new source.
+
+// Lowercase, strip diacritics (NFD + combining-mark removal, same trick as
+// lib/slug.ts), collapse every non-alphanumeric run to a single space, and pad
+// with spaces so word-boundary matching is a plain substring test:
+// "O'Ward" → " o ward ".
+function normalizeForMatch(s: string): string {
+  const collapsed = s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+  return collapsed ? ` ${collapsed} ` : '';
+}
+
+// Generational suffixes that aren't a usable surname token ("Martin Truex Jr").
+const NAME_SUFFIXES = new Set(['jr', 'sr', 'ii', 'iii', 'iv', 'v']);
+// Generic trailing team-name words: stripped so "Red Bull Racing" also matches
+// headlines that say just "Red Bull". Never used as a standalone alias — a
+// bare "Team"/"Racing" would match everything.
+const TEAM_GENERIC_TAIL = new Set(['f1', 'team', 'racing', 'gp', 'motorsport', 'motorsports']);
+
+/**
+ * Aliases a headline could plausibly use for this driver/team, for
+ * `filterNewsByMention`. Drivers: the full name plus the surname (headlines
+ * say "Verstappen wins", not "Max Verstappen wins"), skipping generational
+ * suffixes. Teams: the full name plus the name with generic trailing words
+ * stripped ("Haas F1 Team" → "Haas"). Pure; word-boundary + diacritic handling
+ * happens in the matcher, so aliases keep their human spelling.
+ */
+export function newsMentionAliases(kind: 'driver' | 'team', name: string): string[] {
+  const aliases: string[] = [];
+  const push = (alias: string) => {
+    const trimmed = alias.trim();
+    if (trimmed && !aliases.some(a => a.toLowerCase() === trimmed.toLowerCase())) {
+      aliases.push(trimmed);
+    }
+  };
+  push(name);
+
+  const tokens = name.trim().split(/\s+/).filter(Boolean);
+  if (kind === 'driver' && tokens.length >= 2) {
+    let i = tokens.length - 1;
+    while (i > 0 && NAME_SUFFIXES.has(tokens[i].toLowerCase().replace(/\./g, ''))) i--;
+    const surname = tokens[i];
+    // ≥3 letters: a two-letter token is too collision-prone as a word.
+    if (i > 0 && surname.replace(/[^a-z]/gi, '').length >= 3) push(surname);
+  }
+  if (kind === 'team' && tokens.length >= 2) {
+    let end = tokens.length;
+    while (end > 1 && TEAM_GENERIC_TAIL.has(tokens[end - 1].toLowerCase())) end--;
+    if (end < tokens.length) push(tokens.slice(0, end).join(' '));
+  }
+  return aliases;
+}
+
+/**
+ * Filter news items to those mentioning any of `aliases` in title or summary —
+ * word-boundary, diacritic-insensitive ("Perez" matches "Pérez"). Preserves
+ * the input order (feeds arrive date-desc) and caps at `limit`. Pure.
+ */
+export function filterNewsByMention<T extends NewsItem>(
+  items: T[],
+  aliases: string[],
+  limit = 5,
+): T[] {
+  const needles = aliases.map(normalizeForMatch).filter(Boolean);
+  if (needles.length === 0) return [];
+  const out: T[] = [];
+  for (const item of items) {
+    const haystack = normalizeForMatch(`${item.title} ${item.description ?? ''}`);
+    if (needles.some(n => haystack.includes(n))) {
+      out.push(item);
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
+}
+
 export async function fetchNews(seriesSlug: string): Promise<NewsItem[]> {
   const motorsportSlug = NEWS_SLUG_MAP[seriesSlug];
   if (!motorsportSlug) return [];
