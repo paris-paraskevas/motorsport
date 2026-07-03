@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.163.0 — 2026-07-03
+
+**Formula 2 betting is now reachable.** F2 race weekends now show the Bets tab like Formula 1 — markets open closer to each weekend, with the same free virtual credits.
+
 ## 0.162.1 — 2026-07-03
 
 Internal: code-health housekeeping — no visible changes.

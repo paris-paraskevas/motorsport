@@ -13,6 +13,7 @@ vi.mock('@/lib/standings/f2', () => ({ fetchF2Standings: vi.fn() }));
 vi.mock('@/lib/results/f2', () => ({ fetchF2SeasonResults: vi.fn() }));
 
 import { FIELD_SOURCES, RESULT_SOURCES } from './series-sources';
+import { BETTABLE_SERIES } from './constants';
 import { fetchF2Standings } from '@/lib/standings/f2';
 import { fetchF2SeasonResults } from '@/lib/results/f2';
 
@@ -83,5 +84,14 @@ describe('betting series-sources gates', () => {
   it('only gate-verified series are wired', () => {
     expect(Object.keys(FIELD_SOURCES).sort()).toEqual(['f1', 'f2']);
     expect(Object.keys(RESULT_SOURCES).sort()).toEqual(['f1', 'f2']);
+  });
+
+  it('the betting UI gate (BETTABLE_SERIES) matches the wired automation sources', () => {
+    // Drift here means either an empty Bets tab (listed but not wired) or the
+    // cron opening markets no UI renders (wired but not listed). The weekend
+    // page's showBets gate reads BETTABLE_SERIES.
+    const wired = Object.keys(FIELD_SOURCES).sort();
+    expect([...BETTABLE_SERIES].sort()).toEqual(wired);
+    expect(Object.keys(RESULT_SOURCES).sort()).toEqual([...BETTABLE_SERIES].sort());
   });
 });
