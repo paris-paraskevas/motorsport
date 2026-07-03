@@ -69,6 +69,7 @@ export function QualifyingDecoder({
   useEffect(() => {
     if (aNum == null || bNum == null) return;
     let active = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-effect kickoff: the loading state must paint before the trace fetch resolves
     setLoading(true);
     fetchTraces(aNum, bNum).then(d => {
       if (!active) return;

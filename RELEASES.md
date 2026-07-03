@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.162.1 — 2026-07-03
+
+Internal: code-health housekeeping — no visible changes.
+
 ## 0.162.0 — 2026-07-03
 
 **Driver and team pages grew up.** Profiles now carry a short biography (with source credit), the latest news mentioning that driver or team, and — where full scoring data exists — their season points chart right on the page.

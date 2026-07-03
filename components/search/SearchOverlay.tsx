@@ -83,6 +83,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
   }, [results, typeFilter]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset-on-query is intentional and must be synchronous so a new query can never render a stale filter
     setActive(0);
     setTypeFilter('all'); // a new query resets the type filter so it can't strand an empty view
   }, [query]);

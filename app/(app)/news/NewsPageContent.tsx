@@ -91,6 +91,7 @@ export function NewsPageContent({
   const [newsFilter, setNewsFilter] = useState<string | null>(null);
   useEffect(() => {
     const stored = readStoredNewsFilter();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- stored-filter adoption after mount is the hydration-safe pattern (SSR renders the default; one sync pass swaps in the persisted choice)
     if (stored !== null) setNewsFilter(stored);
   }, []);
   const selectNewsFilter = (slug: string | null) => {

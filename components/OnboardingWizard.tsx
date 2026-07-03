@@ -61,6 +61,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount-time evaluate must set visibility synchronously or the wizard flashes closed-then-open
     evaluateAndShow();
     const onReopen = () => {
       setStep('series');
@@ -86,6 +87,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
   useEffect(() => {
     if (step !== 'notifications') return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- step-entry kickoff: the 'checking' state must paint before the async availability probe
     setNotifState('checking');
     setNotifMsg(null);
 

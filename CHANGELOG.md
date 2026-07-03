@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.162.1 — 2026-07-03
+
+### Fixed
+- **Lint suite → 0 errors + a pre-commit hook (the Z sweep)**: the 12 standing errors closed — 10× react-hooks/set-state-in-effect are DELIBERATE patterns (hydration-adoption reads, spinner kickoffs, reset-on-input) now carrying per-line justifications instead of red noise; global-error keeps its plain anchors by design (Link cannot be trusted when the root layout itself crashed). husky pre-commit lints staged .ts/.tsx so new violations cannot land silently.
+
 ## 0.162.0 — 2026-07-03
 
 Profiles wave (salvaged batch L — the last of the 2026-07-03 build day).
