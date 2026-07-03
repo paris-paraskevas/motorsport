@@ -88,8 +88,8 @@ async function PlayData({ userId }: { userId: string }) {
 function PlaySkeleton() {
   return (
     <div className="space-y-8" aria-hidden="true">
-      <div className="h-24 animate-pulse rounded-lg border border-white/10 bg-white/5" />
-      <div className="h-40 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+      <div className="h-24 animate-pulse rounded-lg border border-border bg-surface/40" />
+      <div className="h-40 animate-pulse rounded-lg border border-border bg-surface/40" />
     </div>
   );
 }

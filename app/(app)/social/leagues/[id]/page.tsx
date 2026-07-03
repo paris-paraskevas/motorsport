@@ -77,10 +77,10 @@ async function LeagueData({ id, userId }: { id: string; userId: string }) {
 function LeagueSkeleton() {
   return (
     <div className="space-y-3" aria-hidden="true">
-      <div className="h-8 w-2/3 animate-pulse rounded bg-white/5" />
-      <div className="h-16 animate-pulse rounded-lg border border-white/10 bg-white/5" />
-      <div className="h-16 animate-pulse rounded-lg border border-white/10 bg-white/5" />
-      <div className="h-16 animate-pulse rounded-lg border border-white/10 bg-white/5" />
+      <div className="h-8 w-2/3 animate-pulse rounded bg-surface/40" />
+      <div className="h-16 animate-pulse rounded-lg border border-border bg-surface/40" />
+      <div className="h-16 animate-pulse rounded-lg border border-border bg-surface/40" />
+      <div className="h-16 animate-pulse rounded-lg border border-border bg-surface/40" />
     </div>
   );
 }

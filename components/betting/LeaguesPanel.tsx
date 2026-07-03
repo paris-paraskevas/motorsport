@@ -149,7 +149,7 @@ export function LeaguesPanel({
               close();
               setModal('join');
             }}
-            className="rounded border border-white/10 px-3 py-1.5 font-mono text-sm text-text-muted hover:text-text"
+            className="rounded border border-border px-3 py-1.5 font-mono text-sm text-text-muted hover:text-text"
           >
             Join
           </button>
@@ -163,7 +163,7 @@ export function LeaguesPanel({
       ) : (
         <ul className="space-y-3">
           {leagues.map(({ league, rows }) => (
-            <li key={league.id} className="rounded border border-white/10 p-3">
+            <li key={league.id} className="rounded border border-border p-3">
               <div className="flex items-baseline justify-between gap-2">
                 <Link
                   href={`/social/leagues/${league.id}`}
@@ -180,7 +180,7 @@ export function LeaguesPanel({
                   type="button"
                   onClick={() => invite(league.id)}
                   disabled={busy}
-                  className="rounded border border-white/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
+                  className="rounded border border-border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
                 >
                   {invites[league.id] ? 'Copied — copy again' : 'Copy invite link'}
                 </button>
@@ -219,12 +219,12 @@ export function LeaguesPanel({
                   readOnly
                   value={createdLink}
                   onFocus={e => e.currentTarget.select()}
-                  className="min-w-0 flex-1 rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-[11px] text-text-muted"
+                  className="min-w-0 flex-1 rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-[11px] text-text-muted"
                 />
                 <button
                   type="button"
                   onClick={() => navigator.clipboard.writeText(createdLink).catch(() => {})}
-                  className="shrink-0 rounded border border-white/10 px-2 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text"
+                  className="shrink-0 rounded border border-border px-2 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text"
                 >
                   Copy
                 </button>
@@ -243,7 +243,7 @@ export function LeaguesPanel({
                   maxLength={60}
                   autoFocus
                   placeholder="e.g. Sunday Service"
-                  className="mt-1 w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-sm text-text"
+                  className="mt-1 w-full rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-sm text-text"
                 />
               </label>
               <p className="font-mono text-[11px] text-text-faint">
@@ -273,7 +273,7 @@ export function LeaguesPanel({
                 onChange={e => setCode(e.target.value)}
                 autoFocus
                 placeholder="8-char code or pasted link"
-                className="mt-1 w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-sm text-text"
+                className="mt-1 w-full rounded border border-border bg-surface/40 px-2 py-1.5 font-mono text-sm text-text"
               />
             </label>
             <p className="font-mono text-[11px] text-text-faint">

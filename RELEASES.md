@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.161.0 — 2026-07-03
+
+**Social matches the rest of the app.** The Social area — leagues, friends, play — now uses the same borders and surfaces as every other page, instead of its own slightly-off styling.
+
 ## 0.160.1 — 2026-07-03
 
 Internal: hardened how unpublished posts stay hidden; hidden or unknown pages are excluded from search engines.

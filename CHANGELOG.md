@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.161.0 — 2026-07-03
+
+### Changed
+- **Social area re-tokened** (operator report 2026-07-03: "the CSS in the social tab is completely different from the rest of the application"): the 12 betting-era files under `components/betting/*` + `app/(app)/{social,play}` swapped their raw white-alpha classes for the app token system — border-white/10→border-border (47), bg-white/5→bg-surface/40 (17), divide-white/10→divide-border (2), border-white/20→border-border (1). Zero non-token border/surface classes remain in those trees; structure and layout untouched. Blog/threads surfaces were already token-clean — any remaining perceived difference there is layout rhythm, not palette.
+
 ## 0.160.1 — 2026-07-03
 
 ### Fixed

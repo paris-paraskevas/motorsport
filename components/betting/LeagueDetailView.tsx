@@ -80,7 +80,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={60}
-              className="rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-sm text-text"
+              className="rounded border border-border bg-surface/40 px-2 py-1 font-mono text-sm text-text"
             />
             <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">
               Save
@@ -91,7 +91,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
                 setRenaming(false);
                 setName(league.name);
               }}
-              className="rounded border border-white/10 px-3 py-1 font-mono text-sm text-text-muted"
+              className="rounded border border-border px-3 py-1 font-mono text-sm text-text-muted"
             >
               Cancel
             </button>
@@ -114,7 +114,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
           type="button"
           onClick={copyInvite}
           disabled={busy}
-          className="rounded border border-white/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
+          className="rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint disabled:opacity-40"
         >
           {invite ? 'Copied — copy again' : 'Copy invite link'}
         </button>
@@ -123,7 +123,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
 
       {/* Per-bet stake limit — owner sets it, everyone sees it. */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3 font-mono text-xs">
+      <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3 font-mono text-xs">
         <span className="uppercase tracking-[0.14em] text-text-faint">Bet limit</span>
         {league.isOwner ? (
           <form
@@ -139,7 +139,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               value={limitInput}
               onChange={e => setLimitInput(e.target.value)}
               placeholder="No limit"
-              className="w-24 rounded border border-white/10 bg-white/5 px-2 py-1 text-text"
+              className="w-24 rounded border border-border bg-surface/40 px-2 py-1 text-text"
             />
             <span className="text-text-faint">credits / bet</span>
             <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">
@@ -155,12 +155,12 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
 
       <ol className="space-y-2">
         {league.members.map((m, i) => (
-          <li key={m.userId} className="rounded border border-white/10 p-3">
+          <li key={m.userId} className="rounded border border-border p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="flex items-center gap-2 font-mono text-sm text-text">
                 <span className="text-text-muted">{i + 1}.</span>
                 <span
-                  className="inline-block h-3 w-3 rounded-full border border-white/20"
+                  className="inline-block h-3 w-3 rounded-full border border-border"
                   style={{ backgroundColor: m.color || FALLBACK_COLOR }}
                 />
                 <Link
@@ -237,13 +237,13 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
       </ol>
 
       {league.addableFriends.length > 0 && (
-        <div className="border-t border-white/10 pt-3">
+        <div className="border-t border-border pt-3">
           <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Invite friends</h2>
           <ul className="space-y-1">
             {league.addableFriends.map(f => (
               <li
                 key={f.userId}
-                className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
+                className="flex items-center justify-between rounded border border-border px-3 py-2 font-mono text-sm"
               >
                 <span className="text-text">{f.displayName || `Racer ${f.userId.slice(-4)}`}</span>
                 <button
@@ -261,7 +261,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
       )}
 
       {league.honours.length > 0 && (
-        <div className="border-t border-white/10 pt-3">
+        <div className="border-t border-border pt-3">
           <h2 className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Honours</h2>
           <ul className="space-y-1.5">
             {league.honours.map(h => (
@@ -288,7 +288,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
 
       {league.isOwner &&
         (confirmDisband ? (
-          <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
+          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
             <span className="font-mono text-xs text-red-400">Disband {league.name} for everyone?</span>
             <button
               type="button"
@@ -301,13 +301,13 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
             <button
               type="button"
               onClick={() => setConfirmDisband(false)}
-              className="rounded border border-white/10 px-3 py-1 font-mono text-sm text-text-muted"
+              className="rounded border border-border px-3 py-1 font-mono text-sm text-text-muted"
             >
               Cancel
             </button>
           </div>
         ) : (
-          <div className="border-t border-white/10 pt-3">
+          <div className="border-t border-border pt-3">
             <button
               type="button"
               onClick={() => setConfirmDisband(true)}
@@ -388,20 +388,20 @@ function ProfileEditor({
         e.preventDefault();
         onSave(nickname, color);
       }}
-      className="mt-2 flex flex-wrap items-center gap-2 border-t border-white/10 pt-2"
+      className="mt-2 flex flex-wrap items-center gap-2 border-t border-border pt-2"
     >
       <input
         value={nickname}
         onChange={e => setNickname(e.target.value)}
         maxLength={40}
         placeholder="Nickname"
-        className="min-w-0 flex-1 rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-sm text-text"
+        className="min-w-0 flex-1 rounded border border-border bg-surface/40 px-2 py-1 font-mono text-sm text-text"
       />
       <input
         type="color"
         value={color}
         onChange={e => setColor(e.target.value)}
-        className="h-8 w-10 rounded border border-white/10 bg-transparent"
+        className="h-8 w-10 rounded border border-border bg-transparent"
         aria-label="Colour"
       />
       <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">

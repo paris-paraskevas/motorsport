@@ -34,7 +34,7 @@ export function FriendInviteFlow({ ownerId, ownerName }: { ownerId: string; owne
   }
 
   return (
-    <div className="space-y-3 rounded border border-white/10 p-4">
+    <div className="space-y-3 rounded border border-border p-4">
       <p className="font-mono text-sm text-text">
         <b>{ownerName}</b> wants to be friends.
       </p>
@@ -51,7 +51,7 @@ export function FriendInviteFlow({ ownerId, ownerName }: { ownerId: string; owne
           type="button"
           onClick={() => respond(false)}
           disabled={busy}
-          className="rounded border border-white/10 px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
+          className="rounded border border-border px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
         >
           Decline
         </button>

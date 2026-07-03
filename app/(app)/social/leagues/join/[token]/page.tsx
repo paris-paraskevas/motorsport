@@ -59,7 +59,7 @@ export default async function JoinLeaguePage({ params }: { params: Promise<{ tok
           </Link>
           <Link
             href={`/sign-in?redirect_url=${back}`}
-            className="rounded border border-white/10 px-4 py-2 text-center font-mono text-sm text-text-muted"
+            className="rounded border border-border px-4 py-2 text-center font-mono text-sm text-text-muted"
           >
             I already have an account
           </Link>
