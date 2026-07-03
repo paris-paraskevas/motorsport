@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.163.1 — 2026-07-03
+
+### Fixed
+- **Hidden/unknown blog URLs now return a real 404** (audit finding, completes #387/#388): `app/(app)/blog/loading.tsx` (added in #380) wrapped `/blog` AND its child `/blog/[slug]` in a streaming boundary, so the slug route flushed a 200 shell before `notFound()` could set the status — a soft-404. Removed that route-level skeleton (the `/blog` list is ISR/`revalidate=300`, so it prerenders and never actually showed the skeleton, and it was the sole thing forcing the child to stream). Verified on a local production build: a nonexistent blog slug now returns **404** (was 200), published posts stay 200. No content ever leaked; drafts were already `noindex`.
+
 ## 0.163.0 — 2026-07-03
 
 ### Fixed

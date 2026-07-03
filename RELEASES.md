@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.163.1 — 2026-07-03
+
+**Correct not-found pages for blog links.** Unknown or unpublished blog URLs now return a proper "page not found" instead of a blank 200 page.
+
 ## 0.163.0 — 2026-07-03
 
 **Formula 2 betting is now reachable.** F2 race weekends now show the Bets tab like Formula 1 — markets open closer to each weekend, with the same free virtual credits.
