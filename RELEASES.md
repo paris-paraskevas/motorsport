@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.160.0 — 2026-07-03
+
+**Edit drafts right on the page.** Reviewing an unpublished post now comes with a pencil — click it and the draft turns into an editor where the title, summary and text can be fixed in place, then saved and re-checked before it's approved for publication. (Editor-only; published posts are unaffected.)
+
 ## 0.159.0 — 2026-07-03
 
 **Formula 2 predictions are live.** The prediction game now opens markets for F2 race weekends alongside Formula 1 — same free virtual credits, settling on the Feature race. In your leagues, member and podium names now click through to their profiles.
