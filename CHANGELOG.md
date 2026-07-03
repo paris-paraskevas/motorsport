@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.162.0 — 2026-07-03
+
+Profiles wave (salvaged batch L — the last of the 2026-07-03 build day).
+
+### Added
+- **Wikipedia "About" bios on driver + team pages** (`lib/wikipedia-bio.ts`, 15 tests): intro extract via the Wikimedia ACTION API (never the datacenter-blocked /wiki/ frontend — 0.150.2 lesson), descriptive Wikimedia UA, a motorsport-hint guard so a name-sharing politician can't land on a driver page, 24h KV cache, fail-soft absent section, per-bio "Wikipedia →" attribution.
+- **"In the news" on driver + team pages** (`lib/news.ts` mention filter + tests): up to 5 items from the series' existing feed matching the profile's name aliases.
+- **Season points chart on driver pages**: the same trend the compare page draws, narrowed to the one driver — only for series with full per-round points (the chart==standings invariant series set).
+
+### Changed
+- **Team head-to-head trimmed to its lib layer**: `aggregateTeamsTrend` shipped tested in `lib/season-trend.ts`; the compare-page wiring + team picker stay in the ledger (the killed agent never wired them — dead scaffolding removed rather than rushed).
+
 ## 0.161.0 — 2026-07-03
 
 ### Changed
