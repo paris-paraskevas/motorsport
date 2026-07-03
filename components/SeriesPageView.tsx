@@ -22,6 +22,7 @@ import { StandingsTab } from '@/components/tabs/StandingsTab';
 import { ResultsTab } from '@/components/tabs/ResultsTab';
 import { DriversTab } from '@/components/tabs/DriversTab';
 import { NewsTab } from '@/components/tabs/NewsTab';
+import { TracksTab } from '@/components/tabs/TracksTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
 // Shared shell for the series page, rendered by BOTH route entries: the bare
@@ -43,7 +44,7 @@ export function seriesTabCanonical(slug: string, tab: TabKey): string {
 export async function seriesTabMetadata(slug: string, rawTab: string | undefined): Promise<Metadata> {
   try {
     const meta = await loadSeriesMeta(slug);
-    const tab = resolveTab(rawTab, meta.singleEvent);
+    const tab = resolveTab(rawTab, meta.singleEvent, slug);
     const { title, description } = describeTab(tab, meta.name, meta.season);
     const canonical = seriesTabCanonical(slug, tab);
     return {
@@ -69,6 +70,8 @@ function renderTab(activeTab: TabKey, series: Series) {
       return <ResultsTab series={series} />;
     case 'drivers':
       return <DriversTab series={series} />;
+    case 'tracks':
+      return <TracksTab series={series} />;
     case 'about':
       return <AboutTab series={series} />;
     case 'history':
@@ -186,6 +189,30 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />
 
       <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
+
+      {/* Calendar tab only: subscribe to this series' schedule as a live ICS
+          feed (/api/calendar/[slug]). webcal:// opens the device's calendar
+          app; the .ics link is the plain-https fallback for clients (and
+          desktops) that don't register the scheme. */}
+      {activeTab === 'calendar' && (
+        <div className="-mt-2 mb-4 flex justify-end">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <a
+              href={`${SITE_URL.replace(/^https?:/, 'webcal:')}/api/calendar/${slug}.ics`}
+              className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+            >
+              Subscribe (webcal)
+            </a>
+            {' · '}
+            <a
+              href={`/api/calendar/${slug}.ics`}
+              className="transition-colors duration-(--duration-fast) hover:text-text-muted"
+            >
+              .ics
+            </a>
+          </span>
+        </div>
+      )}
 
       {/* Stream the tab body: header + rail paint immediately while the
           upstream fetches (standings/results scrapes) resolve. keyed so

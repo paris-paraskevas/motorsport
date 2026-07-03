@@ -17,7 +17,7 @@ export async function generateStaticParams() {
     const meta = await loadSeriesMeta(slug).catch(() => null);
     // Single-event series carry a reduced tab set; only emit tabs that series
     // actually shows (and never `calendar` — that's the bare path).
-    for (const t of tabsFor(meta?.singleEvent)) {
+    for (const t of tabsFor(meta?.singleEvent, slug)) {
       if (t.key !== 'calendar') params.push({ slug, tab: t.key });
     }
   }
@@ -44,7 +44,7 @@ export default async function SeriesTabPage({
 
   const meta = await loadSeriesMeta(slug).catch(() => null);
   if (!meta) notFound();
-  const allowed = tabsFor(meta.singleEvent).map(t => t.key) as string[];
+  const allowed = tabsFor(meta.singleEvent, slug).map(t => t.key) as string[];
   if (!allowed.includes(tab)) notFound();
 
   return <SeriesPageView slug={slug} activeTab={tab as TabKey} />;

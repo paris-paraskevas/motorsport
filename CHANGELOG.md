@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.156.0 — 2026-07-03
+
+Platform wave (salvaged batch HI of the 2026-07-03 build day): subscribe-able calendars, an F1 Tracks tab, and route-level loading/error states.
+
+### Added
+- **Per-series ICS calendar feeds** (`app/api/calendar/[slug]/route.ts` + `lib/ics-export.ts`, 16 tests): `GET /api/calendar/<slug>.ics` emits the SAME session resolution the calendar tab renders (loadSeries + groupByWeekend) — future + 30-day recent-past window, stable UIDs (dedupe counter runs over the whole weekend so UIDs never shift as the window advances), RFC 5545 folding/escaping, `dateOnly` sessions as honest all-day events (no invented midnights), 1h edge cache. "Subscribe (webcal)" link on the series Calendar tab (`components/SeriesPageView.tsx`).
+- **Tracks tab (F1)** (`components/tabs/TracksTab.tsx`, `lib/tabs.ts`): season circuits grid from the curated f1db schematics with per-figure attribution; coverage-gated via `TRACKS_TAB_SLUGS` (static list — `lib/tabs.ts` is client-bundled + runs in middleware, so no fs checks; a sitemap coverage-sync test keeps it honest). Path-based route + per-tab metadata + sitemap entries included.
+- **Route-segment skeletons** — `loading.tsx` for the 7 heavy dynamic segments (series, tab, weekend, session, drivers, news, blog) + a segment-scoped `error.tsx` for `series/[slug]` so a failing tab render degrades inside the shell instead of blanking the (app) group.
+
+### Not shipped (scoped out of the batch)
+- The series-tinted AppShell (`--tint` lift) stays open — untouched by the killed agent; tracked in the ledger.
+
 ## 0.155.0 — 2026-07-03
 
 Results-surfaces readability wave (salvaged batch DEF of the 2026-07-03 triage build day).

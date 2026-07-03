@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.156.0 — 2026-07-03
+
+**Your series, in your calendar.** Every championship now has a subscribe link on its Calendar tab — add it to Apple, Google or Outlook and race weekends keep themselves up to date, including sessions that only have a date so far. Formula 1 also gained a Tracks tab mapping every circuit on the calendar, and pages now show a proper loading state while heavy sections fetch instead of a blank screen.
+
 ## 0.155.0 — 2026-07-03
 
 **Results pages you can actually read.** Standings charts now come with a ranked points list alongside the trend lines, with denser scale markings so mid-pack battles are legible. F1 session results show each car's interval to the one ahead plus the gap to the leader, rows highlight as you move over them, and session pages now carry a where-to-watch link and the circuit map. Champions tabs gained a small titles-over-time sparkline per championship.

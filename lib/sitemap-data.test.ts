@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { buildSitemapEntries } from './sitemap-data';
+import { TRACKS_TAB_SLUGS } from './tabs';
+import { loadSeries } from './series';
+import { groupByWeekend } from './group';
+import { weekendLabel } from './weekend';
+import { circuitLayoutFor } from './circuit-layout';
 import { SITE_URL } from './site';
 
 describe('buildSitemapEntries', () => {
@@ -27,6 +32,41 @@ describe('buildSitemapEntries', () => {
     const urls = await buildSitemapEntries();
     const feWeekends = urls.filter((u) => u.url.includes('/series/formula-e/weekend/'));
     expect(feWeekends).toHaveLength(17);
+  });
+
+  it('emits the Tracks tab URL only for coverage-gated series (today: f1)', async () => {
+    const urls = await buildSitemapEntries();
+    const trackUrls = urls
+      .filter((u) => /\/series\/[^/]+\/tracks$/.test(u.url))
+      .map((u) => u.url);
+    expect(trackUrls).toEqual(
+      TRACKS_TAB_SLUGS.map((slug) => `${SITE_URL}/series/${slug}/tracks`),
+    );
+  });
+
+  it('every Tracks-tab series has real circuit-layout coverage (gate sync)', async () => {
+    // TRACKS_TAB_SLUGS is a static list (lib/tabs is client- and
+    // middleware-bundled, so it can't fs-check content/circuits-layout.json
+    // itself). This test IS the sync: a slug may only be listed while most of
+    // its season resolves a curated layout via the same resolver the tab uses.
+    const now = new Date();
+    for (const slug of TRACKS_TAB_SLUGS) {
+      const series = await loadSeries(slug);
+      const weekends = groupByWeekend(series.sessions, now, series.rounds).filter(
+        (w) => w.round >= 1,
+      );
+      expect(weekends.length).toBeGreaterThan(0);
+      const layouts = await Promise.all(
+        weekends.map((w) =>
+          circuitLayoutFor(
+            w.sessions.find((s) => s.location)?.location,
+            weekendLabel(w, w.round).title,
+          ),
+        ),
+      );
+      const covered = layouts.filter(Boolean).length;
+      expect(covered / weekends.length).toBeGreaterThanOrEqual(0.5);
+    }
   });
 
   it('omits /drivers/* and /teams/* URLs (they 404 today)', async () => {
