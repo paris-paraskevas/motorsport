@@ -6,9 +6,15 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-03 (LATEST) — main 0.163.2 · triage build-day (batches A–N salvaged) + audit fixes (F2 betting / blog 404 / social) · ALL signed-in verifs PASS
+## ⚡ Next session pickup — 2026-07-03 (LATEST) — main 0.164.0 · triage build-day + audit fixes + signed-in verifs + batch J (home) — PRs #373–#399
 
-**The day in one line:** ran an evidence-required triage of the full 109-item backlog (`docs/research/2026-07-03-backlog-triage-109.md`), then salvaged the wave-1 build batches one at a time (each: commit the agent's WIP → rebase → gates → release notes → PR → merge → prod-verify), then audited all 19 PRs and fixed the three that were wrong. **main 0.154.0 → 0.163.2, PRs #373–#394.**
+**The day in one line:** ran an evidence-required triage of the full 109-item backlog (`docs/research/2026-07-03-backlog-triage-109.md`), salvaged the wave-1 build batches one at a time (each: commit the agent's WIP → rebase → gates → release notes → PR → merge → prod-verify), audited all 19 PRs and fixed the three that were wrong, verified the signed-in surfaces, then built batch J (home). **main 0.154.0 → 0.164.0, PRs #373–#399.**
+
+**Post-audit follow-through (after the #395 wrap):**
+- **Signed-in verification (operator logged in via Playwright) — ALL PASS:** #382 notif toggles (toggle → PUT 200 → persists reload → restored), #385 league links (5 rows → real profiles), **#386 draft editor now fully verified** — created a throwaway draft via the `/blog` composer, pencil + amber banner render, edit → PATCH 200 → re-render, then rejected it (now 404). (The British GP draft that couldn't be tested earlier had been approved+scheduled+auto-published — proving the pipeline.)
+- **Batch J (home widgets):** **0.163.3 (#396 + notes #397)** — normalised This-week/News EMPTY states to the flat gallery treatment; audit found the populated blocks already at the polish bar, so no speculative restyle. **0.164.0 (#399)** — **standings-movers** widget (opt-in, default-hidden): championship ▲/▼ since the latest race, per followed series (F1/F3/MotoGP v1), deltas from the same season-trend the Standings tab charts (`lib/standings/movers.ts` `computeMovers`, 5 tests; lazy `/api/home/movers`; HOME_LAYOUT_VERSION 8→9). Prod API 200 (datacenter fetch verified); render verified on localhost (F1 after Austria: Piastri ▲2 / Russell ▲1 / Hamilton ▼1, reconciles with standings).
+- **Process slip (caught + fixed):** #396 merged the code but a broken shell heredoc skipped the release notes; #397 added the bump + CHANGELOG/RELEASES immediately.
+- **New IDEAS captured:** bet-display refinement — show multiplier + credits-to-earn + pick/state wherever placed bets render (#398); F1 classification speed (quicker results loading).
 
 **Salvaged build batches (each merged + prod-checked):**
 - **0.155.0 (#378) DEF** — ranked points rail beside standings charts, F1 session interval/leader-gap columns (`deriveIntervals`, 9 tests), watch link + circuit figure on session pages, champions sparklines, denser Y ticks.
@@ -38,9 +44,10 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 - **Deferred batch remainders:** AppShell `--tint` (HI); notif devices-list + DRY push hook + per-series/type sound variants (B); author-role blog gate/UI + thread replies/markdown/rate-limit (G); team-compare page wiring (L); historic team colours ×8 + media.json seeds + geo-clip audit (M).
 - **Owed visual passes** from earlier: #367 anon home walling nuances, launcher focus order at 1024/1440.
 - **IA taste calls** (5, deferred) — `docs/research/2026-07-02-ia-restructure.md`.
-- **New idea:** F1 classification speed (IDEAS inbox 2026-07-03) — quicker results loading; event-driven warming off sessions.json.
+- **standings-movers follow-ups:** extend past F1/F3/MotoGP (F2 + others need their sprint/pole/FL points models reconciled first, like the chart invariant); the widget is opt-in default-hidden so it needs enabling in Customise to appear.
+- **New ideas (IDEAS inbox 2026-07-03):** bet-display refinement (show multiplier + credits-to-earn + pick/state on placed bets); F1 classification speed (quicker results loading; event-driven warming off sessions.json).
 
-**Landmines added today:** `BETTABLE_SERIES` is the SoT for which series show betting (keep in lockstep with FIELD_SOURCES — enforced by test). `/blog` has NO `loading.tsx` on purpose (removing it is what gives `/blog/[slug]` a hard 404 — don't re-add it). Social area uses the flat divider-row language now (don't reintroduce `rounded-2xl` card grids there). Husky pre-commit lints staged `.ts/.tsx`.
+**Landmines added today:** `BETTABLE_SERIES` is the SoT for which series show betting (keep in lockstep with FIELD_SOURCES — enforced by test). `/blog` has NO `loading.tsx` on purpose (removing it is what gives `/blog/[slug]` a hard 404 — don't re-add it). Social area uses the flat divider-row language now (don't reintroduce `rounded-2xl` card grids there). `standings-movers` deltas come from `buildSeasonTrendData` — only wire a series into `MOVERS_ELIGIBLE_SLUGS` once its cumulative reconciles to standings. Husky pre-commit lints staged `.ts/.tsx`.
 
 ---
 
