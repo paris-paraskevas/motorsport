@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.159.0 — 2026-07-03
+
+**Formula 2 predictions are live.** The prediction game now opens markets for F2 race weekends alongside Formula 1 — same free virtual credits, settling on the Feature race. In your leagues, member and podium names now click through to their profiles.
+
 ## 0.158.2 — 2026-07-03
 
 Internal: repository housekeeping — no visible changes.
