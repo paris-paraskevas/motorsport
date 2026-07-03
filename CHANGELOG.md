@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.163.0 — 2026-07-03
+
+### Fixed
+- **F2 betting was unreachable** (audit finding, corrects #385): the weekend Bets tab was hard-gated `slug === "f1"` (`weekend/[round]/page.tsx:219`), so although the automation wires F2 (FIELD_SOURCES/RESULT_SOURCES + gates + tests), no user could ever see or place an F2 bet. Introduced `BETTABLE_SERIES` (`lib/betting/constants.ts`, client-safe) as the single source of truth for which series surface betting; the weekend gate now reads it, and a new `series-sources.test.ts` case asserts it stays in lockstep with the wired automation sources so the UI and cron can never drift again. `WeekendBetting` was already series-generic and shows its "Markets open closer to the weekend" empty state until the open-markets cron opens an F2 market. NB: no F2 market row exists yet — the cron opens one on its next run for an eligible F2 round.
+
 ## 0.162.1 — 2026-07-03
 
 ### Fixed

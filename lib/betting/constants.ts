@@ -5,6 +5,14 @@ export const STANDARD_STAKE = 100; // the unit of "a bet" — the UI default sta
 export const PER_WEEKEND_CREDITS = 100; // ~one standard bet per race weekend
 export const BASE_CREDITS = 50; // off-month floor (F1 has 0-race months: Jan/Feb/Apr)
 
+// Series that surface betting. MUST stay in lockstep with the automation's
+// FIELD_SOURCES/RESULT_SOURCES (lib/betting/series-sources) — a series here but
+// not wired there shows an empty Bets tab; wired there but not here means the
+// cron opens markets no UI ever renders. series-sources.test.ts asserts the two
+// match. Kept in this client-safe module so the weekend page's server gate and
+// any client surface can both read it without pulling the server fetchers.
+export const BETTABLE_SERIES = ['f1', 'f2'] as const;
+
 // Per-market-type UI + selection metadata. `selectionKey` is the JSON key a pick
 // is stored under in bet.selection_json — it MUST match what settlement reads
 // (settle_market / settleLeagueMarket): winner→'winner', podium→'driver'.

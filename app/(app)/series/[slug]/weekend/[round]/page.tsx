@@ -8,6 +8,7 @@ import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendTabs } from '@/components/weekend/WeekendTabs';
 import { isBettingConfigured } from '@/lib/betting/client';
+import { BETTABLE_SERIES } from '@/lib/betting/constants';
 import { NEWS_SLUG_MAP } from '@/lib/news';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
@@ -216,7 +217,7 @@ export default async function WeekendPage({
         slug={slug}
         round={round}
         isPast={isPast}
-        showBets={slug === 'f1' && !isPast && isBettingConfigured()}
+        showBets={(BETTABLE_SERIES as readonly string[]).includes(slug) && !isPast && isBettingConfigured()}
         showNews={NEWS_SLUG_MAP[slug] != null}
       />
     </div>

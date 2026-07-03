@@ -1,0 +1,425 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Paddock•Tracker" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Sections" [ref=e5]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /app
+        - link "Calendar" [ref=e7] [cursor=pointer]:
+          - /url: /calendar
+        - link "Series" [ref=e8] [cursor=pointer]:
+          - /url: /series
+        - link "Blog" [ref=e9] [cursor=pointer]:
+          - /url: /blog
+        - link "Play" [ref=e10] [cursor=pointer]:
+          - /url: /play
+      - generic [ref=e12]:
+        - button "Contact" [ref=e13]:
+          - img [ref=e14]
+          - generic [ref=e17]: Contact
+        - link "Buy me a coffee" [ref=e18] [cursor=pointer]:
+          - /url: https://buymeacoffee.com/parisp
+          - img [ref=e19]
+          - generic [ref=e21]: Buy me a coffee
+        - button "Sign in" [ref=e433]:
+          - img [ref=e434]
+          - generic [ref=e437]: Sign in
+  - main [ref=e22]:
+    - generic [ref=e24]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - link "Formula 1" [ref=e28] [cursor=pointer]:
+            - /url: /series/f1
+          - generic [ref=e29]: ·
+          - generic [ref=e30]: Round 8
+        - heading "Austrian Grand Prix." [level=1] [ref=e31]
+        - generic [ref=e32]:
+          - time [ref=e33]: 26–28 Jun
+          - generic [ref=e34]: in 3 days
+        - generic [ref=e35]:
+          - img [ref=e36]
+          - generic [ref=e39]: Red Bull Ring, Spielberg
+      - generic [ref=e40]:
+        - heading "Where to watch" [level=2] [ref=e41]
+        - link "Watch live on F1 TV" [ref=e42] [cursor=pointer]:
+          - /url: https://f1tv.formula1.com/
+          - img [ref=e43]
+          - text: Watch live on F1 TV
+          - img [ref=e46]
+      - generic [ref=e49]:
+        - heading "Weather" [level=2] [ref=e50]
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - generic [ref=e53]: Fri 26 Jun
+            - generic [ref=e54]:
+              - generic [ref=e55]: 🌤️
+              - generic [ref=e56]: 31°
+              - generic [ref=e57]: 14°
+            - generic [ref=e58]: Mostly clear
+          - generic [ref=e59]:
+            - generic [ref=e60]: Sat 27 Jun
+            - generic [ref=e61]:
+              - generic [ref=e62]: ☁️
+              - generic [ref=e63]: 33°
+              - generic [ref=e64]: 14°
+            - generic [ref=e65]: Overcast
+          - generic [ref=e66]:
+            - generic [ref=e67]: Sun 28 Jun
+            - generic [ref=e68]:
+              - generic [ref=e69]: ☁️
+              - generic [ref=e70]: 33°
+              - generic [ref=e71]: 18°
+            - generic [ref=e72]: Overcast
+        - generic [ref=e73]: "Source: Open-Meteo · Red Bull Ring"
+      - generic [ref=e74]:
+        - heading "Schedule" [level=2] [ref=e75]
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - generic [ref=e78]: Fri 26 Jun
+            - list [ref=e79]:
+              - listitem [ref=e80]:
+                - link "F1 - Practice 1" [ref=e84] [cursor=pointer]:
+                  - /url: /series/f1/weekend/8/practice-1
+                  - generic [ref=e85]: F1 - Practice 1
+                  - img [ref=e86]
+                - time [ref=e89]: Fri, 14:30 EEST
+              - listitem [ref=e90]:
+                - link "F1 - Practice 2" [ref=e94] [cursor=pointer]:
+                  - /url: /series/f1/weekend/8/practice-2
+                  - generic [ref=e95]: F1 - Practice 2
+                  - img [ref=e96]
+                - time [ref=e99]: Fri, 18:00 EEST
+          - generic [ref=e100]:
+            - generic [ref=e101]: Sat 27 Jun
+            - list [ref=e102]:
+              - listitem [ref=e103]:
+                - link "F1 - Practice 3" [ref=e107] [cursor=pointer]:
+                  - /url: /series/f1/weekend/8/practice-3
+                  - generic [ref=e108]: F1 - Practice 3
+                  - img [ref=e109]
+                - time [ref=e112]: Sat, 13:30 EEST
+              - listitem [ref=e113]:
+                - link "F1 - Qualifying" [ref=e117] [cursor=pointer]:
+                  - /url: /series/f1/weekend/8/qualifying
+                  - generic [ref=e118]: F1 - Qualifying
+                  - img [ref=e119]
+                - time [ref=e122]: Sat, 17:00 EEST
+          - generic [ref=e123]:
+            - generic [ref=e124]: Sun 28 Jun
+            - list [ref=e125]:
+              - listitem [ref=e126]:
+                - link "F1 - Race" [ref=e130] [cursor=pointer]:
+                  - /url: /series/f1/weekend/8/race
+                  - generic [ref=e131]: F1 - Race
+                  - img [ref=e132]
+                - time [ref=e135]: Sun, 16:00 EEST
+      - generic [ref=e438]:
+        - heading "Paddock Betting." [level=2] [ref=e439]
+        - generic [ref=e440]:
+          - paragraph [ref=e441]: Back the race winner with free Paddock credits — no cashout.
+          - generic [ref=e442]:
+            - generic [ref=e443]:
+              - generic [ref=e444]: Andrea Kimi Antonelli
+              - generic [ref=e445]: ×3.44
+            - generic [ref=e446]:
+              - generic [ref=e447]: Lewis Hamilton
+              - generic [ref=e448]: ×5.41
+            - generic [ref=e449]:
+              - generic [ref=e450]: George Russell
+              - generic [ref=e451]: ×6.11
+            - generic [ref=e452]:
+              - generic [ref=e453]: Charles Leclerc
+              - generic [ref=e454]: ×10.2
+            - generic [ref=e455]:
+              - generic [ref=e456]: Lando Norris
+              - generic [ref=e457]: ×10.62
+            - generic [ref=e458]:
+              - generic [ref=e459]: Oscar Piastri
+              - generic [ref=e460]: ×11.79
+          - link "Sign in to back the winner" [ref=e461] [cursor=pointer]:
+            - /url: /sign-in
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - heading "Standings at this round" [level=2] [ref=e138]
+          - generic [ref=e139]: Going into round 8
+        - generic [ref=e140]:
+          - generic [ref=e141]:
+            - generic [ref=e142]: Drivers
+            - list [ref=e143]:
+              - listitem [ref=e144]:
+                - generic [ref=e145]: "1"
+                - generic [ref=e146]: Andrea Kimi Antonelli
+                - generic [ref=e147]: Mercedes
+                - generic [ref=e148]: "156"
+              - listitem [ref=e149]:
+                - generic [ref=e150]: "2"
+                - generic [ref=e151]: Lewis Hamilton
+                - generic [ref=e152]: Ferrari
+                - generic [ref=e153]: "115"
+              - listitem [ref=e154]:
+                - generic [ref=e155]: "3"
+                - generic [ref=e156]: George Russell
+                - generic [ref=e157]: Mercedes
+                - generic [ref=e158]: "106"
+              - listitem [ref=e159]:
+                - generic [ref=e160]: "4"
+                - generic [ref=e161]: Charles Leclerc
+                - generic [ref=e162]: Ferrari
+                - generic [ref=e163]: "75"
+              - listitem [ref=e164]:
+                - generic [ref=e165]: "5"
+                - generic [ref=e166]: Lando Norris
+                - generic [ref=e167]: McLaren
+                - generic [ref=e168]: "73"
+              - listitem [ref=e169]:
+                - generic [ref=e170]: "6"
+                - generic [ref=e171]: Oscar Piastri
+                - generic [ref=e172]: McLaren
+                - generic [ref=e173]: "68"
+              - listitem [ref=e174]:
+                - generic [ref=e175]: "7"
+                - generic [ref=e176]: Max Verstappen
+                - generic [ref=e177]: Red Bull
+                - generic [ref=e178]: "55"
+              - listitem [ref=e179]:
+                - generic [ref=e180]: "8"
+                - generic [ref=e181]: Pierre Gasly
+                - generic [ref=e182]: Alpine F1 Team
+                - generic [ref=e183]: "41"
+              - listitem [ref=e184]:
+                - generic [ref=e185]: "9"
+                - generic [ref=e186]: Isack Hadjar
+                - generic [ref=e187]: Red Bull
+                - generic [ref=e188]: "34"
+              - listitem [ref=e189]:
+                - generic [ref=e190]: "10"
+                - generic [ref=e191]: Liam Lawson
+                - generic [ref=e192]: RB F1 Team
+                - generic [ref=e193]: "28"
+              - listitem [ref=e194]:
+                - generic [ref=e195]: "11"
+                - generic [ref=e196]: Oliver Bearman
+                - generic [ref=e197]: Haas F1 Team
+                - generic [ref=e198]: "18"
+              - listitem [ref=e199]:
+                - generic [ref=e200]: "12"
+                - generic [ref=e201]: Franco Colapinto
+                - generic [ref=e202]: Alpine F1 Team
+                - generic [ref=e203]: "16"
+              - listitem [ref=e204]:
+                - generic [ref=e205]: "13"
+                - generic [ref=e206]: Arvid Lindblad
+                - generic [ref=e207]: RB F1 Team
+                - generic [ref=e208]: "13"
+              - listitem [ref=e209]:
+                - generic [ref=e210]: "14"
+                - generic [ref=e211]: Carlos Sainz
+                - generic [ref=e212]: Williams
+                - generic [ref=e213]: "6"
+              - listitem [ref=e214]:
+                - generic [ref=e215]: "15"
+                - generic [ref=e216]: Alexander Albon
+                - generic [ref=e217]: Williams
+                - generic [ref=e218]: "5"
+              - listitem [ref=e219]:
+                - generic [ref=e220]: "16"
+                - generic [ref=e221]: Esteban Ocon
+                - generic [ref=e222]: Haas F1 Team
+                - generic [ref=e223]: "3"
+              - listitem [ref=e224]:
+                - generic [ref=e225]: "17"
+                - generic [ref=e226]: Gabriel Bortoleto
+                - generic [ref=e227]: Audi
+                - generic [ref=e228]: "2"
+              - listitem [ref=e229]:
+                - generic [ref=e230]: "18"
+                - generic [ref=e231]: Fernando Alonso
+                - generic [ref=e232]: Aston Martin
+                - generic [ref=e233]: "1"
+              - listitem [ref=e234]:
+                - generic [ref=e235]: "19"
+                - generic [ref=e236]: Lance Stroll
+                - generic [ref=e237]: Aston Martin
+                - generic [ref=e238]: "0"
+              - listitem [ref=e239]:
+                - generic [ref=e240]: "20"
+                - generic [ref=e241]: Nico Hülkenberg
+                - generic [ref=e242]: Audi
+                - generic [ref=e243]: "0"
+              - listitem [ref=e244]:
+                - generic [ref=e245]: "21"
+                - generic [ref=e246]: Sergio Pérez
+                - generic [ref=e247]: Cadillac F1 Team
+                - generic [ref=e248]: "0"
+              - listitem [ref=e249]:
+                - generic [ref=e250]: "22"
+                - generic [ref=e251]: Valtteri Bottas
+                - generic [ref=e252]: Cadillac F1 Team
+                - generic [ref=e253]: "0"
+          - generic [ref=e254]:
+            - generic [ref=e255]: Teams
+            - list [ref=e256]:
+              - listitem [ref=e257]:
+                - generic [ref=e258]: "1"
+                - generic [ref=e259]: Mercedes
+                - generic [ref=e260]: "262"
+              - listitem [ref=e261]:
+                - generic [ref=e262]: "2"
+                - generic [ref=e263]: Ferrari
+                - generic [ref=e264]: "190"
+              - listitem [ref=e265]:
+                - generic [ref=e266]: "3"
+                - generic [ref=e267]: McLaren
+                - generic [ref=e268]: "141"
+              - listitem [ref=e269]:
+                - generic [ref=e270]: "4"
+                - generic [ref=e271]: Red Bull
+                - generic [ref=e272]: "89"
+              - listitem [ref=e273]:
+                - generic [ref=e274]: "5"
+                - generic [ref=e275]: Alpine F1 Team
+                - generic [ref=e276]: "57"
+              - listitem [ref=e277]:
+                - generic [ref=e278]: "6"
+                - generic [ref=e279]: RB F1 Team
+                - generic [ref=e280]: "41"
+              - listitem [ref=e281]:
+                - generic [ref=e282]: "7"
+                - generic [ref=e283]: Haas F1 Team
+                - generic [ref=e284]: "21"
+              - listitem [ref=e285]:
+                - generic [ref=e286]: "8"
+                - generic [ref=e287]: Williams
+                - generic [ref=e288]: "11"
+              - listitem [ref=e289]:
+                - generic [ref=e290]: "9"
+                - generic [ref=e291]: Audi
+                - generic [ref=e292]: "2"
+              - listitem [ref=e293]:
+                - generic [ref=e294]: "10"
+                - generic [ref=e295]: Aston Martin
+                - generic [ref=e296]: "1"
+              - listitem [ref=e297]:
+                - generic [ref=e298]: "11"
+                - generic [ref=e299]: Cadillac F1 Team
+                - generic [ref=e300]: "0"
+      - generic [ref=e301]:
+        - heading "News this weekend" [level=2] [ref=e302]
+        - generic [ref=e303]:
+          - link "Formula 1 · 15m ago What’s behind Honda and Aston Martin’s F1 “team gathering” in Barcelona?" [ref=e304] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/whats-behind-honda-and-aston-martins-f1-team-gathering-in-barcelona/10832438/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e305]:
+              - generic [ref=e307]: Formula 1
+              - generic [ref=e308]: ·
+              - time [ref=e309]: 15m ago
+              - img [ref=e310]
+            - heading "What’s behind Honda and Aston Martin’s F1 “team gathering” in Barcelona?" [level=3] [ref=e314]
+          - link "Formula 1 · 29m ago James Vowles explains how Alex Albon's Barcelona GP became a test session" [ref=e315] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/james-vowles-explains-how-alex-albons-barcelona-gp-became-a-test-session/10832272/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e316]:
+              - generic [ref=e318]: Formula 1
+              - generic [ref=e319]: ·
+              - time [ref=e320]: 29m ago
+              - img [ref=e321]
+            - heading "James Vowles explains how Alex Albon's Barcelona GP became a test session" [level=3] [ref=e325]
+          - link "Formula 1 · 2h ago Lewis Hamilton urges more action to tackle \"ridiculous\" cost of motorsport" [ref=e326] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/lewis-hamilton-urges-more-action-to-tackle-ridiculous-cost-of-motorsport/10832393/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e327]:
+              - generic [ref=e329]: Formula 1
+              - generic [ref=e330]: ·
+              - time [ref=e331]: 2h ago
+              - img [ref=e332]
+            - heading "Lewis Hamilton urges more action to tackle \"ridiculous\" cost of motorsport" [level=3] [ref=e336]
+          - link "Formula 1 · 3h ago “He doesn't hide anything” – Isack Hadjar opens up on team-mate relationship with Max Verstappen" [ref=e337] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/isack-hadjar-reveals-what-his-team-mate-relationship-with-max-verstappen-is-like/10832369/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e338]:
+              - generic [ref=e340]: Formula 1
+              - generic [ref=e341]: ·
+              - time [ref=e342]: 3h ago
+              - img [ref=e343]
+            - heading "“He doesn't hide anything” – Isack Hadjar opens up on team-mate relationship with Max Verstappen" [level=3] [ref=e347]
+          - link "Formula 1 · 5h ago The Adrian Newey quality that keeps Aston Martin believing" [ref=e348] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/the-adrian-newey-quality-that-keeps-aston-martin-believing/10831909/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e349]:
+              - generic [ref=e351]: Formula 1
+              - generic [ref=e352]: ·
+              - time [ref=e353]: 5h ago
+              - img [ref=e354]
+            - heading "The Adrian Newey quality that keeps Aston Martin believing" [level=3] [ref=e358]
+          - link "Formula 1 · 5h ago James Vowles predicts \"fast and frantic\" Austrian GP as he sets realistic Williams expectations" [ref=e359] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/james-vowles-predicts-fast-and-frantic-austrian-gp-as-he-sets-realistic-williams-expectations/10832276/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e360]:
+              - generic [ref=e362]: Formula 1
+              - generic [ref=e363]: ·
+              - time [ref=e364]: 5h ago
+              - img [ref=e365]
+            - heading "James Vowles predicts \"fast and frantic\" Austrian GP as he sets realistic Williams expectations" [level=3] [ref=e369]
+          - link "Formula 1 · 20h ago George Russell recalls Zhou Guanyu's terrifying first-lap crash at 2022 British GP" [ref=e370] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/george-russell-recalls-zhou-guanyus-terrifying-first-lap-crash-at-2022-british-gp/10832107/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e371]:
+              - generic [ref=e373]: Formula 1
+              - generic [ref=e374]: ·
+              - time [ref=e375]: 20h ago
+              - img [ref=e376]
+            - heading "George Russell recalls Zhou Guanyu's terrifying first-lap crash at 2022 British GP" [level=3] [ref=e380]
+          - link "Formula 1 · 23h ago Mercedes shoots down favouritism speculation between George Russell and Kimi Antonelli" [ref=e381] [cursor=pointer]:
+            - /url: https://www.motorsport.com/f1/news/mercedes-shoots-down-favouritism-speculation-between-george-russell-and-kimi-antonelli/10831591/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-F1&utm_term=News&utm_content=www
+            - generic [ref=e382]:
+              - generic [ref=e384]: Formula 1
+              - generic [ref=e385]: ·
+              - time [ref=e386]: 23h ago
+              - img [ref=e387]
+            - heading "Mercedes shoots down favouritism speculation between George Russell and Kimi Antonelli" [level=3] [ref=e391]
+        - generic [ref=e392]: "Source: motorsport.com"
+    - generic [ref=e394]:
+      - generic [ref=e395]:
+        - generic [ref=e396]: Paddock•Tracker
+        - paragraph [ref=e397]: Personal motorsport companion — F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more.
+      - generic [ref=e398]:
+        - generic [ref=e399]:
+          - heading "Site" [level=2] [ref=e400]
+          - list [ref=e401]:
+            - listitem [ref=e402]:
+              - link "Landing" [ref=e403] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e404]:
+              - link "About" [ref=e405] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e406]:
+              - link "Blog" [ref=e407] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e408]:
+              - link "Release notes" [ref=e409] [cursor=pointer]:
+                - /url: /changelog
+            - listitem [ref=e410]:
+              - link "Account" [ref=e411] [cursor=pointer]:
+                - /url: /settings
+            - listitem [ref=e412]:
+              - button "Manage cookies" [ref=e413] [cursor=pointer]
+        - generic [ref=e414]:
+          - heading "Legal" [level=2] [ref=e415]
+          - list [ref=e416]:
+            - listitem [ref=e417]:
+              - link "Privacy" [ref=e418] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e419]:
+              - link "Terms" [ref=e420] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e421]:
+              - link "Cookies" [ref=e422] [cursor=pointer]:
+                - /url: /cookies
+            - listitem [ref=e423]:
+              - link "Accessibility" [ref=e424] [cursor=pointer]:
+                - /url: /accessibility
+            - listitem [ref=e425]:
+              - link "Do Not Sell or Share" [ref=e426] [cursor=pointer]:
+                - /url: /do-not-sell
+            - listitem [ref=e427]:
+              - link "Imprint" [ref=e428] [cursor=pointer]:
+                - /url: /imprint
+      - generic [ref=e429]:
+        - generic [ref=e430]: Paddock Tracker v0.46.0
+        - generic [ref=e431]: © 2026 Paddock Tracker. All rights reserved.
+  - region "Notifications alt+T"
+  - alert [ref=e432]
