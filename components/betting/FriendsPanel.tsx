@@ -112,7 +112,7 @@ export function FriendsPanel({
           value={q}
           onChange={e => setQ(e.target.value)}
           placeholder="Search people by name…"
-          className="w-full rounded border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-text"
+          className="w-full rounded border border-border bg-surface/40 px-3 py-2 font-mono text-sm text-text"
         />
         {q.trim().length >= 2 && (
           <ul className="mt-2 space-y-1">
@@ -123,7 +123,7 @@ export function FriendsPanel({
             {results.map(r => (
               <li
                 key={r.userId}
-                className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
+                className="flex items-center justify-between rounded border border-border px-3 py-2 font-mono text-sm"
               >
                 <Link href={`/social/users/${r.userId}`} className="text-text hover:text-brand">
                   {label(r.displayName, r.userId)}
@@ -154,12 +154,12 @@ export function FriendsPanel({
             ))}
           </ul>
         )}
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted">Or share your link</span>
           <button
             type="button"
             onClick={shareFriendLink}
-            className="rounded border border-white/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint"
+            className="rounded border border-border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:border-text-faint"
           >
             {linkCopied ? 'Link copied — share again' : 'Share invite link'}
           </button>
@@ -179,7 +179,7 @@ export function FriendsPanel({
             {incoming.map(r => (
               <li
                 key={r.requesterId}
-                className="flex flex-wrap items-center justify-between gap-2 rounded border border-white/10 px-3 py-2 font-mono text-sm"
+                className="flex flex-wrap items-center justify-between gap-2 rounded border border-border px-3 py-2 font-mono text-sm"
               >
                 <span className="text-text">{label(r.displayName, r.requesterId)} wants to be friends</span>
                 <span className="flex gap-2">
@@ -195,7 +195,7 @@ export function FriendsPanel({
                     type="button"
                     disabled={busy}
                     onClick={() => act({ action: 'decline', userId: r.requesterId })}
-                    className="rounded border border-white/10 px-3 py-1 text-text-muted disabled:opacity-40"
+                    className="rounded border border-border px-3 py-1 text-text-muted disabled:opacity-40"
                   >
                     Decline
                   </button>
@@ -214,7 +214,7 @@ export function FriendsPanel({
             {outgoing.map(o => (
               <li
                 key={o.addresseeId}
-                className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
+                className="flex items-center justify-between rounded border border-border px-3 py-2 font-mono text-sm"
               >
                 <span className="text-text">
                   {label(o.displayName, o.addresseeId)} <span className="text-text-muted">· pending</span>
@@ -245,7 +245,7 @@ export function FriendsPanel({
             {friends.map(f => (
               <li
                 key={f.userId}
-                className="flex items-center justify-between rounded border border-white/10 px-3 py-2 font-mono text-sm"
+                className="flex items-center justify-between rounded border border-border px-3 py-2 font-mono text-sm"
               >
                 <Link href={`/social/users/${f.userId}`} className="text-text hover:text-brand">
                   {label(f.displayName, f.userId)}

@@ -71,7 +71,7 @@ export function JoinLeagueFlow({
   return (
     <div className="space-y-3">
       {step === 'friend' ? (
-        <div className="space-y-3 rounded border border-white/10 p-4">
+        <div className="space-y-3 rounded border border-border p-4">
           <p className="font-mono text-sm text-text">
             <b>{inviter}</b> wants to be friends.
           </p>
@@ -88,14 +88,14 @@ export function JoinLeagueFlow({
               type="button"
               onClick={() => friend(false)}
               disabled={busy}
-              className="rounded border border-white/10 px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
+              className="rounded border border-border px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
             >
               Skip
             </button>
           </div>
         </div>
       ) : (
-        <div className="space-y-3 rounded border border-white/10 p-4">
+        <div className="space-y-3 rounded border border-border p-4">
           <p className="font-mono text-sm text-text">
             Join <b>{leagueName}</b>?
           </p>
@@ -112,7 +112,7 @@ export function JoinLeagueFlow({
               type="button"
               onClick={() => router.push('/social/leagues')}
               disabled={busy}
-              className="rounded border border-white/10 px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
+              className="rounded border border-border px-4 py-2 font-mono text-sm text-text-muted disabled:opacity-40"
             >
               Not now
             </button>

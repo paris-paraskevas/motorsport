@@ -53,7 +53,7 @@ export function PlayMarkets({
                   count={`${group.length} ${group.length === 1 ? 'market' : 'markets'}`}
                   defaultOpen={false}
                 >
-                  <ul className="divide-y divide-white/10">
+                  <ul className="divide-y divide-border">
                     {group.map(m => (
                       <li key={m.id} className="flex items-center justify-between py-2">
                         <span className="font-mono text-sm text-text">
@@ -83,7 +83,7 @@ export function PlayMarkets({
         {bets.length === 0 ? (
           <p className="font-mono text-sm text-text-muted">No bets yet — open a race weekend to back the winner.</p>
         ) : (
-          <ul className="divide-y divide-white/10">
+          <ul className="divide-y divide-border">
             {bets.map(b => {
               const sel = formatBetSelection(b.type, b.selection);
               const tone =
