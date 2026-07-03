@@ -9,6 +9,8 @@ import { getPostBySlug, type BlogPost } from '@/lib/blog';
 import { isAdmin } from '@/lib/threads';
 import { renderMarkdown } from '@/lib/content';
 import { mdxComponents } from '@/components/mdx/mdx-components';
+import { DraftEditor } from '@/components/blog/DraftEditor';
+import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
@@ -103,14 +105,16 @@ function formatDateTime(iso: string): string {
 // edits in their account), KV-cached 1h, fail-soft to the stored display name
 // (no avatar) if Clerk is unreachable / the user can't be resolved. Clerk is
 // authoritative here, which is why the byline can differ from app_user.display_name.
+// The ENTIRE body is inside the try (the KV read/write used to sit outside it):
+// the byline is a decoration, and no decoration may 500 a blog URL.
 async function resolveBlogAuthor(
   authorId: string,
   fallbackName: string | null,
 ): Promise<{ name: string | null; image: string | null }> {
-  const key = `paddock:blog-author:${authorId}`;
-  const cached = await readResultsCache<{ name: string | null; image: string | null }>(key);
-  if (cached) return cached;
   try {
+    const key = `paddock:blog-author:${authorId}`;
+    const cached = await readResultsCache<{ name: string | null; image: string | null }>(key);
+    if (cached) return cached;
     const u = await (await clerkClient()).users.getUser(authorId);
     const name =
       u.fullName ||
@@ -122,6 +126,20 @@ async function resolveBlogAuthor(
     return result;
   } catch {
     return { name: fallbackName, image: null };
+  }
+}
+
+// Fail-soft Clerk session lookup. The admin-preview gate is a decoration on a
+// public route: if Clerk misbehaves (local dev without a warm handshake, a
+// backend-API blip), the viewer downgrades to anonymous — the draft hides
+// (404) instead of the whole page 500ing. Local dev has seen /blog/[slug]
+// 500s that typecheck/curl missed (docs/HANDOFF.md gotcha, 2026-07-03); every
+// non-essential dependency of this page is now wrapped like this.
+async function safeCurrentUser() {
+  try {
+    return await currentUser();
+  } catch {
+    return null;
   }
 }
 
@@ -142,7 +160,7 @@ export default async function PostPage({
     if (db.status === 'published') {
       post = dbToPost(db);
       bodyHtml = await renderMarkdown(db.body);
-    } else if ((db.status === 'approved' || db.status === 'draft') && isAdmin(await currentUser())) {
+    } else if ((db.status === 'approved' || db.status === 'draft') && isAdmin(await safeCurrentUser())) {
       // Not yet live (scheduled, or still a draft) — only admins may preview it,
       // so an editor can read the whole piece in full before approving it.
       post = dbToPost(db);
@@ -182,17 +200,27 @@ export default async function PostPage({
         Back to blog
       </Link>
 
-      {draftPreview && (
-        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
-          Draft preview · not yet scheduled · only admins can see this
-        </div>
-      )}
-      {scheduledAt && (
-        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
-          Scheduled preview · publishes {formatDateTime(scheduledAt)} UTC · only admins can see this
-        </div>
-      )}
-
+      {/* Admin preview (draft/scheduled): DraftEditor owns the amber banner +
+          header + article and swaps them for the in-place markdown editor via
+          the pencil (spec 2026-07-03). The public/published path below is
+          untouched. db is always set here — only DB posts have these states. */}
+      {db && (draftPreview || scheduledAt) ? (
+        <DraftEditor
+          id={db.id}
+          title={post.frontmatter.title}
+          summary={post.frontmatter.summary}
+          body={db.body}
+          bodyHtml={bodyHtml ?? ''}
+          dateLabel={formatDate(post.frontmatter.publishedAt)}
+          banner={
+            draftPreview
+              ? { kind: 'draft' }
+              : { kind: 'scheduled', label: formatDateTime(scheduledAt as string) }
+          }
+          author={author}
+        />
+      ) : (
+        <>
       <header className="mb-8">
         <div className="flex items-baseline gap-3 mb-3 flex-wrap">
           <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
@@ -233,21 +261,15 @@ export default async function PostPage({
         </p>
       </header>
 
-      <article
-        className="prose dark:prose-invert prose-zinc max-w-none
-                   prose-headings:tracking-tight
-                   prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-                   prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
-                   prose-p:leading-relaxed
-                   prose-strong:text-text
-                   prose-a:text-text prose-a:underline-offset-4"
-      >
+      <article className={POST_ARTICLE_CLASS}>
         {bodyHtml !== null ? (
           <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
         ) : (
           <MDXRemote source={post.source} components={mdxComponents} />
         )}
       </article>
+        </>
+      )}
     </div>
   );
 }

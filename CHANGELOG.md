@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.160.0 — 2026-07-03
+
+Blog editing wave (salvaged batch G — the day's flagship: the operator-requested in-place draft editor).
+
+### Added
+- **In-page draft editing** (`components/blog/DraftEditor.tsx` + `PostHeader.tsx`, `PATCH /api/blog/[id]`, `lib/blog.ts` `updatePostContent` + 6 tests; spec `docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md`): on a draft/scheduled admin preview, a pencil in the amber banner swaps the post for a markdown editor (title/summary/body). Save PATCHes and `router.refresh()` re-renders through the server pipeline — no client-side markdown. The UPDATE is status-guarded to draft|approved with an exact count, so the publish-cron race maps to a 422 instead of silently rewriting a live post. Slug/series/hero/publish-time immutable. Public/published rendering byte-identical (shared `POST_ARTICLE_CLASS`).
+
+### Fixed
+- **Local dev `/blog/[slug]` 500s** (`safeCurrentUser` + fail-soft byline decorations): the admin-gate/byline decorations on this public route could crash the whole page locally; every non-essential dependency is now fail-soft. MDX posts verified rendering on a local server again.
+
+### Not shipped (scoped out; stay in the ledger)
+- Author-role blogs (the `listPosts` author scoping landed as groundwork; the role gate + UI did not), thread replies/markdown/rate-limit, and the `prose-zinc` palette swap (now a one-line change in `POST_ARTICLE_CLASS`, browser-owed).
+
 ## 0.159.0 — 2026-07-03
 
 Betting wave (salvaged batch A of the 2026-07-03 build day; agent's adapters + my gate tests and league links).
