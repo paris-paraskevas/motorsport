@@ -52,6 +52,10 @@ export interface SessionClassificationEntry {
   // Display-ready values; which ones are present depends on session type.
   time?: string; // race: winner's total; practice: best lap
   gap?: string;
+  /** Gap to the car ahead ("+1.234"), derived from consecutive rows' leader
+   *  gaps via deriveIntervals. Absent where it can't be honestly derived
+   *  (leader, lapped/DNF rows and their followers, qualifying). */
+  interval?: string;
   q1?: string;
   q2?: string;
   q3?: string;
@@ -124,6 +128,34 @@ export function formatGap(gap: number | string | null | undefined): string {
   return `+${gap.toFixed(3)}`;
 }
 
+/**
+ * Interval (gap to the car ahead) per classified row, derived from the rows'
+ * gap-to-leader values in finishing order. Returns display-ready "+D.DDD"
+ * strings aligned with the input; `null` where the delta can't be honestly
+ * derived: the leader (no car ahead), lapped cars (OpenF1 sends "+N LAP"
+ * strings), DNF/DNS rows (null gaps), any row directly behind one of those,
+ * qualifying's per-segment arrays, and out-of-order data that would produce
+ * a negative interval. Only the front row may treat a null/0 gap as zero —
+ * a null further down means "no timing", not "0s behind the leader".
+ */
+export function deriveIntervals(
+  gaps: Array<number | string | Array<number | null> | null | undefined>,
+): Array<string | null> {
+  const numeric = gaps.map((g, i) => {
+    if (typeof g === 'number' && Number.isFinite(g)) return g;
+    if (i === 0 && g == null) return 0;
+    return null;
+  });
+  return numeric.map((cur, i) => {
+    if (i === 0) return null; // leader: no car ahead
+    const prev = numeric[i - 1];
+    if (cur == null || prev == null) return null;
+    const delta = cur - prev;
+    if (delta < 0) return null;
+    return `+${delta.toFixed(3)}`;
+  });
+}
+
 function lastFiniteIndex(arr: Array<number | null>): number {
   for (let i = arr.length - 1; i >= 0; i--) {
     const v = arr[i];
@@ -145,37 +177,44 @@ export async function fetchSessionClassification(
   const isQualifying = /qualifying/i.test(session.session_name);
   const isRace = /^(sprint|race)$/i.test(session.session_name);
 
-  const entries: SessionClassificationEntry[] = [...results]
-    .sort((a, b) => (a.position ?? 99) - (b.position ?? 99))
-    .map(r => {
-      const driver = byNumber.get(r.driver_number);
-      const status = r.dsq ? 'DSQ' : r.dns ? 'DNS' : r.dnf ? 'DNF' : undefined;
-      const entry: SessionClassificationEntry = {
-        position: r.position,
-        driverName: driver?.full_name ?? `#${r.driver_number}`,
-        driverCode: driver?.name_acronym,
-        team: driver?.team_name ?? '',
-        laps: r.number_of_laps ?? undefined,
-        points: r.points,
-        status,
-      };
+  const sorted = [...results].sort(
+    (a, b) => (a.position ?? 99) - (b.position ?? 99),
+  );
+  // Self-gating: qualifying's per-segment gap arrays and DNF/lapped rows all
+  // derive to null, so only rows with real consecutive timing get an interval.
+  const intervals = deriveIntervals(sorted.map(r => r.gap_to_leader));
 
-      if (isQualifying && Array.isArray(r.duration)) {
-        const [q1, q2, q3] = r.duration;
-        if (typeof q1 === 'number') entry.q1 = formatSeconds(q1);
-        if (typeof q2 === 'number') entry.q2 = formatSeconds(q2);
-        if (typeof q3 === 'number') entry.q3 = formatSeconds(q3);
-        const best = lastFiniteIndex(r.duration);
-        if (best >= 0) entry.time = formatSeconds(r.duration[best] as number);
-      } else if (typeof r.duration === 'number') {
-        entry.time = formatSeconds(r.duration);
-      }
+  const entries: SessionClassificationEntry[] = sorted.map((r, idx) => {
+    const driver = byNumber.get(r.driver_number);
+    const status = r.dsq ? 'DSQ' : r.dns ? 'DNS' : r.dnf ? 'DNF' : undefined;
+    const entry: SessionClassificationEntry = {
+      position: r.position,
+      driverName: driver?.full_name ?? `#${r.driver_number}`,
+      driverCode: driver?.name_acronym,
+      team: driver?.team_name ?? '',
+      laps: r.number_of_laps ?? undefined,
+      points: r.points,
+      status,
+    };
 
-      if (!Array.isArray(r.gap_to_leader)) {
-        entry.gap = formatGap(r.gap_to_leader);
-      }
-      return entry;
-    });
+    if (isQualifying && Array.isArray(r.duration)) {
+      const [q1, q2, q3] = r.duration;
+      if (typeof q1 === 'number') entry.q1 = formatSeconds(q1);
+      if (typeof q2 === 'number') entry.q2 = formatSeconds(q2);
+      if (typeof q3 === 'number') entry.q3 = formatSeconds(q3);
+      const best = lastFiniteIndex(r.duration);
+      if (best >= 0) entry.time = formatSeconds(r.duration[best] as number);
+    } else if (typeof r.duration === 'number') {
+      entry.time = formatSeconds(r.duration);
+    }
+
+    if (!Array.isArray(r.gap_to_leader)) {
+      entry.gap = formatGap(r.gap_to_leader);
+    }
+    const interval = intervals[idx];
+    if (interval) entry.interval = interval;
+    return entry;
+  });
 
   return { isQualifying, isRace, entries };
 }

@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
+import { circuitLayoutFor } from '@/lib/circuit-layout';
 import type { Weekend } from '@/lib/types';
 import { LocalTime } from '@/components/LocalTime';
 import {
@@ -454,6 +456,12 @@ function ClassificationTable({
   // to avoid duplicating it. Multi-class tables keep their per-class headings.
   showHeading?: boolean;
 }) {
+  // Interval (gap to the car ahead) renders only where the feed actually
+  // carries it — F1 rows via OpenF1's gap_to_leader (see deriveIntervals in
+  // lib/results/openf1.ts). Other series never set it, so the column simply
+  // doesn't exist for them; rows where it can't be honestly derived (leader,
+  // lapped, DNF) show an em dash.
+  const hasIntervals = data.entries.some(e => e.interval);
   return (
     <section className="border-y border-border py-4">
       {showHeading ? (
@@ -463,7 +471,10 @@ function ClassificationTable({
       ) : null}
       <ul className="divide-y divide-border/60">
         {data.entries.map(e => (
-          <li key={`${e.position}-${e.driverName}`} className="flex items-baseline gap-3 py-2">
+          <li
+            key={`${e.position}-${e.driverName}`}
+            className="flex items-baseline gap-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+          >
             <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
               {e.position ?? '–'}
             </span>
@@ -485,6 +496,11 @@ function ClassificationTable({
                 <span className="w-20 text-right text-text">{e.q3 ?? ''}</span>
               </span>
             ) : null}
+            {hasIntervals ? (
+              <span className="hidden sm:block w-20 shrink-0 font-mono text-[11px] tabular-nums text-right text-text-muted">
+                {e.interval ?? '—'}
+              </span>
+            ) : null}
             <span className={`font-mono text-[11px] tabular-nums text-right w-24 truncate ${data.isQualifying ? 'sm:hidden text-text' : 'text-text-muted'}`}>
               {e.status ?? (e.position === 1 ? e.time : e.gap || e.time) ?? ''}
             </span>
@@ -500,6 +516,11 @@ function ClassificationTable({
         <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint sm:text-right">
           <span className="hidden sm:inline">Columns: Q1 · Q2 · Q3</span>
           <span className="sm:hidden">Best qualifying lap shown</span>
+        </div>
+      ) : hasIntervals ? (
+        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint sm:text-right">
+          <span className="hidden sm:inline">Columns: Interval · Gap</span>
+          <span className="sm:hidden">Gap to leader shown</span>
         </div>
       ) : null}
     </section>
@@ -647,6 +668,16 @@ export default async function SessionPage({
     isRaceLikeTitle(session.title),
   );
 
+  // Watch link (same series.meta.watch the home UP NEXT card reads) + the
+  // round's circuit schematic where one is curated — resolved exactly like the
+  // weekend page (venue/name via the shared circuit matcher; fs reads, so it
+  // gracefully nulls for circuits without a layout).
+  const watch = series.meta.watch;
+  const circuitLayout = await circuitLayoutFor(
+    weekend.sessions.find(s => s.location)?.location,
+    weekendTitle,
+  );
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -721,6 +752,55 @@ export default async function SessionPage({
             <span className="text-sm text-text-faint">{session.location}</span>
           )}
         </div>
+
+        {watch && (
+          <div className="mt-3">
+            <a
+              href={watch.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+            >
+              <Tv size={13} />
+              {isPast ? 'Watch on' : 'Watch live on'} {watch.service}
+              <ArrowUpRight size={12} className="opacity-60" />
+            </a>
+          </div>
+        )}
+
+        {circuitLayout && (
+          <figure className="mt-4 flex items-center gap-3">
+            {/* Compact take on the weekend hero's circuit figure: fixed square
+                box (the schematics share a square viewBox) so the lazy image
+                reserves its footprint, name + attribution alongside. */}
+            <div className="aspect-square w-16 shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={circuitLayout.svg}
+                alt={`${circuitLayout.name} circuit layout`}
+                loading="lazy"
+                width={64}
+                height={64}
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <figcaption className="min-w-0">
+              <div className="text-sm font-medium text-text">{circuitLayout.name}</div>
+              <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                Circuit map ·{' '}
+                <a
+                  href={circuitLayout.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-text-muted"
+                >
+                  {circuitLayout.source}
+                </a>{' '}
+                ({circuitLayout.license})
+              </div>
+            </figcaption>
+          </figure>
+        )}
       </section>
 
       <SessionRail items={nav.items} />

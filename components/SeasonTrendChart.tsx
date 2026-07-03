@@ -82,6 +82,11 @@ function legendLabel(codeOrName: string): string {
 
 const DEFAULT_VISIBLE_COUNT = 6;
 
+// Ranked points rail: enough rows to cover every charted line plus the chase
+// pack without turning NASCAR's 47-driver field into a wall — the rest sits
+// behind the same "+N more" expander pattern the chip legend uses.
+const RANKED_LIST_VISIBLE_COUNT = 10;
+
 export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendData) {
   const ranked = useMemo(
     () =>
@@ -95,6 +100,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
     () => new Set(ranked.slice(0, DEFAULT_VISIBLE_COUNT).map(d => d.name)),
   );
   const [legendExpanded, setLegendExpanded] = useState(false);
+  const [listExpanded, setListExpanded] = useState(false);
   const lineStyles = useMemo(() => buildLineStyles(ranked), [ranked]);
 
   const toggle = (name: string) => {
@@ -122,70 +128,135 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
     : ranked.filter((d, i) => i < DEFAULT_VISIBLE_COUNT || visible.has(d.name));
   const hiddenCount = ranked.length - shown.length;
 
+  const listRows = listExpanded
+    ? ranked
+    : ranked.slice(0, RANKED_LIST_VISIBLE_COUNT);
+  const listHiddenCount = ranked.length - listRows.length;
+
   return (
     <div className="space-y-3">
-      {/* Renders on every viewport (operator reversal of the 0.18.0
-          desktop-only call): phone-fit height + tight axes. Keeping the
-          container always-displayed also sidesteps the old 0-size
-          ResponsiveContainer measurement bug — it only mis-measured inside
-          display:none parents. */}
-      <div className="h-64 sm:h-72 md:h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 6, right: 12, bottom: 6, left: 0 }}>
-            <CartesianGrid stroke="var(--border)" vertical={false} />
-            <XAxis
-              dataKey="round"
-              stroke="var(--text-faint)"
-              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
-              tickLine={false}
-              minTickGap={14}
-            />
-            <YAxis
-              stroke="var(--text-faint)"
-              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
-              tickLine={false}
-              width={28}
-            />
-            <Tooltip
-              contentStyle={{
-                background: 'var(--surface-elevated)',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                fontSize: 12,
-              }}
-              labelStyle={{ color: 'var(--text)', fontWeight: 600 }}
-              itemStyle={{ color: 'var(--text-muted)' }}
-              labelFormatter={(label) => {
-                const round = Number(label);
-                const point = data.find(d => d.round === round);
-                return point ? `R${round} · ${point.raceName}` : `R${round}`;
-              }}
-            />
-            {/* No recharts <Legend> — the interactive chip legend below is
-                the only one. The built-in legend listed every line (47 names
-                on NASCAR) above the chips it duplicated (audit 2-5). */}
-            {ranked.map(d => {
-              const style = lineStyles.get(d.name)!;
-              return (
-                <Line
-                  key={d.name}
-                  type="monotone"
-                  dataKey={d.name}
-                  stroke={style.stroke}
-                  strokeDasharray={style.dash}
-                  strokeWidth={visible.has(d.name) ? 2 : 0}
-                  // Always-visible point markers at every round (operator
-                  // 2026-06-11); hover grows the active one and rings it in
-                  // the page background so it pops against crossing lines.
-                  dot={{ r: 2.5, strokeWidth: 0, fill: style.stroke }}
-                  activeDot={{ r: 5, stroke: 'var(--bg)', strokeWidth: 2, fill: style.stroke }}
-                  hide={!visible.has(d.name)}
-                  connectNulls
+      <div className="lg:flex lg:items-start lg:gap-6">
+        {/* Renders on every viewport (operator reversal of the 0.18.0
+            desktop-only call): phone-fit height + tight axes. Keeping the
+            container always-displayed also sidesteps the old 0-size
+            ResponsiveContainer measurement bug — it only mis-measured inside
+            display:none parents. min-w-0 keeps the flex-basis measurement
+            honest once the ranked rail sits alongside on lg+. */}
+        <div className="h-64 sm:h-72 md:h-80 lg:flex-1 lg:min-w-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 6, right: 12, bottom: 6, left: 0 }}>
+              <CartesianGrid stroke="var(--border)" vertical={false} />
+              <XAxis
+                dataKey="round"
+                stroke="var(--text-faint)"
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                tickLine={false}
+                minTickGap={14}
+              />
+              {/* tickCount trades the recharts default (5) for a denser scale —
+                  on NASCAR's 0–600+ range five ticks left ~150pt jumps that made
+                  mid-pack lines unreadable against the grid. Integer ticks only;
+                  points are integers in every series we chart. */}
+              <YAxis
+                stroke="var(--text-faint)"
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                tickLine={false}
+                width={28}
+                tickCount={8}
+                allowDecimals={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: 'var(--surface-elevated)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 8,
+                  fontSize: 12,
+                }}
+                labelStyle={{ color: 'var(--text)', fontWeight: 600 }}
+                itemStyle={{ color: 'var(--text-muted)' }}
+                labelFormatter={(label) => {
+                  const round = Number(label);
+                  const point = data.find(d => d.round === round);
+                  return point ? `R${round} · ${point.raceName}` : `R${round}`;
+                }}
+              />
+              {/* No recharts <Legend> — the interactive chip legend below is
+                  the only one. The built-in legend listed every line (47 names
+                  on NASCAR) above the chips it duplicated (audit 2-5). */}
+              {ranked.map(d => {
+                const style = lineStyles.get(d.name)!;
+                return (
+                  <Line
+                    key={d.name}
+                    type="monotone"
+                    dataKey={d.name}
+                    stroke={style.stroke}
+                    strokeDasharray={style.dash}
+                    strokeWidth={visible.has(d.name) ? 2 : 0}
+                    // Always-visible point markers at every round (operator
+                    // 2026-06-11); hover grows the active one and rings it in
+                    // the page background so it pops against crossing lines.
+                    dot={{ r: 2.5, strokeWidth: 0, fill: style.stroke }}
+                    activeDot={{ r: 5, stroke: 'var(--bg)', strokeWidth: 2, fill: style.stroke }}
+                    hide={!visible.has(d.name)}
+                    connectNulls
+                  />
+                );
+              })}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Ranked season points — the chart's companion read-out (every driver,
+            not just the charted top lines). Right rail on lg+, stacked below
+            the chart on smaller viewports; same colour dots as the lines,
+            capped behind a "+N more" expander like the chip legend. */}
+        <div className="mt-3 lg:mt-0 lg:w-60 lg:shrink-0">
+          <h3 className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-text-faint">
+            Points
+          </h3>
+          <ol className="divide-y divide-border/40" aria-label="Season points, ranked">
+            {listRows.map((d, i) => (
+              <li
+                key={d.name}
+                className="flex items-center gap-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
+              >
+                <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                  {i + 1}
+                </span>
+                <span
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{ backgroundColor: lineStyles.get(d.name)!.stroke }}
                 />
-              );
-            })}
-          </LineChart>
-        </ResponsiveContainer>
+                <span className="flex-1 min-w-0 truncate text-sm text-text">
+                  {legendLabel(d.name)}
+                </span>
+                <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">
+                  {totalsByDriver[d.name] ?? 0}
+                </span>
+              </li>
+            ))}
+          </ol>
+          {listHiddenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setListExpanded(true)}
+              className="mt-2 inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+            >
+              Show all {ranked.length}
+              <ChevronDown size={12} />
+            </button>
+          )}
+          {listExpanded && ranked.length > RANKED_LIST_VISIBLE_COUNT && (
+            <button
+              type="button"
+              onClick={() => setListExpanded(false)}
+              className="mt-2 inline-flex items-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-faint hover:text-text transition-colors duration-(--duration-fast)"
+            >
+              Collapse
+            </button>
+          )}
+        </div>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {shown.map(d => {

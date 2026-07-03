@@ -74,7 +74,7 @@ function EmptyState({ message }: { message: string }) {
 
 function ResultRow({ entry }: { entry: RaceResultEntry }) {
   return (
-    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
+    <li className="flex items-baseline gap-3 py-2 break-inside-avoid transition-colors duration-(--duration-fast) hover:bg-surface">
       <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
@@ -181,7 +181,7 @@ function RoundRow({ race, weekendHref }: { race: RaceResult; weekendHref?: strin
 
   return (
     <details className="group">
-      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={`R${race.round}`} />
         <div className="flex-1 min-w-0">
           <RaceTitle name={race.raceName} href={weekendHref} />
@@ -263,7 +263,7 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
   // the trailing points column with the gap-to-leader. Status surfaces only
   // when timing is absent (DNS / DNF entries).
   return (
-    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
+    <li className="flex items-baseline gap-3 py-2 break-inside-avoid transition-colors duration-(--duration-fast) hover:bg-surface">
       <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
@@ -363,7 +363,7 @@ function ImsaRoundClassCard({
     : undefined;
   return (
     <details className="group">
-      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip label={`R${roundNumber}`} />
         <div className="flex-1 min-w-0">
           <RaceTitle name={`${eventName} — ${cls}`} href={weekendHref} />
@@ -468,7 +468,7 @@ function GtWorldResultRow({ entry }: { entry: GtWorldRaceResultEntry }) {
   // No points column — SRO points scale + trend chart deferred to a
   // follow-up (see CHANGELOG 0.12.13 "Won't ship in this PR" section).
   return (
-    <li className="flex items-baseline gap-3 py-2 break-inside-avoid">
+    <li className="flex items-baseline gap-3 py-2 break-inside-avoid transition-colors duration-(--duration-fast) hover:bg-surface">
       <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
         {entry.position}
       </span>
@@ -513,7 +513,7 @@ function GtWorldRoundClassCard({
   // and render unlinked.
   return (
     <details className="group">
-      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors duration-(--duration-fast) hover:bg-surface">
         <RoundChip
           label={race.round ? `R${race.round}` : race.championship === 'endurance' ? 'E' : 'S'}
         />
