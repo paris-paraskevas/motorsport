@@ -7,9 +7,16 @@ import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource, type SnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import {
   driverSeasonForm,
+  namesMatch,
   teamSeasonForm,
   type TeamSeasonForm,
 } from '@/lib/profile-stats';
+import {
+  aggregateTeamsTrend,
+  buildSeasonTrendData,
+  type SeasonTrendData,
+} from '@/lib/season-trend';
+import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
@@ -38,6 +45,32 @@ export async function generateMetadata({
     description,
     ...withSocialMeta({ title: team.name, description, path: `/teams/${slug}` }),
   };
+}
+
+// Aggregate the full-season trend into ONE line for this team by summing its
+// member drivers' cumulative points at each round — mirrors the driver page's
+// trendForDriver (and the compare page's trendForTwo), team-summed via the
+// tested aggregateTeamsTrend. Each curated member name resolves to its
+// results-feed name with namesMatch (drivers.json vs feed drift). null when no
+// member ever appears in the feed. It's combined driver points, NOT the
+// Constructors' championship (a mid-season substitute's points sit outside the
+// curated roster — the aggregateTeamsTrend caveat), so the section labels it so.
+function trendForTeam(
+  full: SeasonTrendData,
+  teamName: string,
+  memberDriverNames: string[],
+): SeasonTrendData | null {
+  const memberNames: string[] = [];
+  let feedTeam: string | undefined;
+  for (const name of memberDriverNames) {
+    const d = full.drivers.find(x => namesMatch(x.name, name));
+    if (d) {
+      memberNames.push(d.name);
+      feedTeam ??= d.team;
+    }
+  }
+  if (memberNames.length === 0) return null;
+  return aggregateTeamsTrend(full, [{ name: teamName, feedTeam, memberNames }]);
 }
 
 // Short "About" bio (Wikipedia intro) + "In the news" mentions. Twins of the
@@ -152,7 +185,11 @@ export default async function TeamPage({
   // Wikipedia bio + series news load in parallel; each independently
   // fail-soft (absent section, never an error).
   const [seasonData, bio, seriesNews] = await Promise.all([
-    (async (): Promise<{ teamForm: TeamSeasonForm | null; source: SnapshotSource | null }> => {
+    (async (): Promise<{
+      teamForm: TeamSeasonForm | null;
+      source: SnapshotSource | null;
+      trend: SeasonTrendData | null;
+    }> => {
       try {
         const series = await loadSeries(team.seriesSlug);
         const source = await loadSnapshotSource(series);
@@ -160,15 +197,26 @@ export default async function TeamPage({
           source && source.showTeams
             ? teamSeasonForm(source.races, source.extras, team.name)
             : null;
-        return { teamForm, source };
+        // Combined-points trajectory only where the feed's per-race points are
+        // championship-canonical (the same pointsExact gate the driver trend
+        // uses); winners-only / derived-points feeds would draw a false line.
+        const trend =
+          source && source.pointsExact
+            ? trendForTeam(
+                buildSeasonTrendData(source.races, source.extras ?? []),
+                team.name,
+                team.drivers.map(d => d.name),
+              )
+            : null;
+        return { teamForm, source, trend };
       } catch {
-        return { teamForm: null, source: null };
+        return { teamForm: null, source: null, trend: null };
       }
     })(),
     fetchWikipediaBio(team.name),
     fetchNews(team.seriesSlug),
   ]);
-  const { teamForm, source } = seasonData;
+  const { teamForm, source, trend } = seasonData;
   const mentions = filterNewsByMention(seriesNews, newsMentionAliases('team', team.name));
 
   const driverRows = team.drivers.map(d => {
@@ -234,6 +282,18 @@ export default async function TeamPage({
           </div>
           <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
             of {teamForm.fieldSize} teams · from race results
+          </div>
+        </section>
+      )}
+
+      {trend && (
+        <section className="mb-8 border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+            Points trajectory
+          </h2>
+          <LazySeasonTrendChart {...trend} />
+          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            Combined driver points by round · from race results
           </div>
         </section>
       )}

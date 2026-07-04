@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.165.0 — 2026-07-04
+
+**Team season points chart.** Team pages now plot the combined points their drivers have scored through the season — the same chart the driver pages show — for series with full scoring data.
+
 ## 0.164.0 — 2026-07-03
 
 **New home widget: Standings movers.** Add it from Customise to see who climbed or fell in the championship since the latest race, for Formula 1, Formula 3 and MotoGP. Off by default — turn it on when you want it.

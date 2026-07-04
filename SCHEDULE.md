@@ -996,6 +996,22 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Sat 2026-07-04 — W4 team pages: points-trajectory chart + imagery program kickoff
+
+Session pickup (inline handoff). Oriented + ESPA'd. Correction surfaced: team pages already exist (form / drivers / bio / news) — W4's real gaps are stat-parity (team trend chart) + imagery. Operator picked **W4**; imagery scope = **portraits + attempt logos**.
+
+Plan:
+- Ship the **team points-trajectory chart** on `/teams/[slug]` — reuse the already-tested `aggregateTeamsTrend`; mirror the driver page's trend (gate on `pointsExact`, `namesMatch` member resolution, `LazySeasonTrendChart`). One PR; browser-verify a real F1 team's line reconciles to its Constructors' total.
+- Scope + kick off the **imagery program** — driver portraits (Wikimedia CC, per-image attribution) across all series + attempt team logos; schema extension + curation dispatch. Wiring into pages = next session.
+
+Won't touch: `buildStandingsAtRound` (no team "Wins" stat this PR — standings blast radius); imagery *wiring* into pages this session; anything outside W4.
+
+Pre-mortem: a curated-name↔feed-name mismatch undercounts a team line — mitigated by `namesMatch` + the `pointsExact` gate + browser verification.
+
+Active: _(awaiting [+Nm] prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
