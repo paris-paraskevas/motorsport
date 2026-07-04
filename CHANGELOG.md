@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.165.0 — 2026-07-04
+
+### Added
+- **Team points-trajectory chart on `/teams/[slug]`** (W4): team pages now draw a season points-trajectory line, mirroring the driver page's chart. Reuses the already-tested `aggregateTeamsTrend` (`lib/season-trend.ts`) — builds the full per-driver trend off the same `loadSnapshotSource`, resolves each curated member driver to its results-feed name via `namesMatch` (drivers.json vs feed drift), and collapses them to one summed line via a page-local `trendForTeam` helper (no premature shared helper — the driver/team pages already duplicate `AboutSection`/`NewsMentions`). Gated on `source.pointsExact` — the same chart==standings invariant series set the driver chart uses; winners-only/derived-points feeds draw no chart. Labelled "Combined driver points by round" (not Constructors' championship) because a mid-season substitute's points sit outside the curated roster (the documented `aggregateTeamsTrend` caveat). No new lib, no new fetch. This makes good on the 0.162.0 public note that implied team pages carried the chart — in 0.162.0 only the driver chart + the `aggregateTeamsTrend` lib layer shipped; the team-page wiring stayed in the ledger until now. Browser-verified: McLaren's line totals **159** == its Constructors' "Season so far" points (P3, 159) == Norris 79 + Piastri 80; 0 console errors.
+
 ## 0.164.0 — 2026-07-03
 
 ### Added
