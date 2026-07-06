@@ -1,3 +1,5 @@
+import type { ChatMessage } from './prompt';
+
 // The swappable model seam. Everything provider-specific lives here, so moving
 // off Gemini's free tier (to an open model, or the paid Vercel AI Gateway) later
 // is a change to THIS file only, not the route or the UI.
@@ -24,9 +26,10 @@ export function isAssistantConfigured(): boolean {
   return Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
 }
 
-/** One grounded generation. `system` carries the guardrails; `user` carries the
- *  corpus + question. Never throws — upstream failures collapse to reason:'error'. */
-export async function askModel(system: string, user: string): Promise<AskResult> {
+/** One grounded generation over a conversation. `system` carries the guardrails
+ *  + corpus; `messages` is the turn history (user/assistant), oldest first, last
+ *  turn being the new question. Never throws — failures collapse to reason:'error'. */
+export async function askModel(system: string, messages: ChatMessage[]): Promise<AskResult> {
   const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!key) return { ok: false, reason: 'unconfigured' };
   const model = process.env.ASSISTANT_MODEL || DEFAULT_MODEL;
@@ -42,7 +45,11 @@ export async function askModel(system: string, user: string): Promise<AskResult>
         signal: controller.signal,
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
-          contents: [{ role: 'user', parts: [{ text: user }] }],
+          // Gemini roles: 'user' and 'model'. Map our assistant turns to 'model'.
+          contents: messages.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+          })),
           // Low temperature: grounded help, not creative writing. Cap output so
           // a runaway generation can't blow the free-tier token budget.
           generationConfig: { temperature: 0.2, maxOutputTokens: 800 },
