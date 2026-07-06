@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.168.3 — 2026-07-06
+
+### Added
+- **F2 + F3 weekend highlights (feature + sprint)**: seeded the official FORMULA 1-channel highlights for F2 Round 7 (British GP — new `content/series/f2/media.json`) and F3 Round 5 (Austrian GP — added to the existing f3 file), each with the Feature-race highlight + the Sprint-race clip. All four oEmbed-verified as the official FORMULA 1 channel + correct series/round. Deliberately skipped IndyCar/NASCAR/MotoGP for now — their official highlights are frequently geo-locked, which can't be machine-verified and would risk the "official + globally available" bar the operator set.
+
 ## 0.168.2 — 2026-07-06
 
 ### Added
