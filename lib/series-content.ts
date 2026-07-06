@@ -58,6 +58,36 @@ export async function loadHistoricTeamColors(
   return file?.teams ?? {};
 }
 
+/** One curated driver portrait: a free-licensed image (Wikimedia Commons) plus
+ * the attribution its licence requires. `by` is the Commons author (sometimes a
+ * username); `license` is the short name (e.g. "CC BY-SA 4.0"); `source` links
+ * the Commons file page. */
+export interface DriverPortrait {
+  src: string;
+  license: string;
+  by: string;
+  source: string;
+}
+
+/** Sidecar shape: slugified-driver-name → portrait. Underscore-prefixed keys
+ * (e.g. `_comment`) are file-level metadata; only `drivers` is read. */
+interface DriverPortraitsFile {
+  drivers?: Record<string, DriverPortrait>;
+}
+
+/** Curated driver portraits (free-licensed Commons images) for /drivers/<slug>.
+ * Returns a slug→entry map (empty when the series has no sidecar). Preferred
+ * over the F1-only OpenF1 headshots, which are F1 official media and not
+ * CC-licensed. */
+export async function loadDriverPortraits(
+  slug: string,
+): Promise<Record<string, DriverPortrait>> {
+  const file = await readJsonIfExists<DriverPortraitsFile>(
+    path.join(SERIES_ROOT, slug, 'portraits.json'),
+  );
+  return file?.drivers ?? {};
+}
+
 export function loadResultsOverrides(
   slug: string,
 ): Promise<ResultsOverridesFile | null> {

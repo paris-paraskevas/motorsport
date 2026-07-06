@@ -12,6 +12,7 @@ import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
 import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
+import { loadDriverPortraits } from '@/lib/series-content';
 import { withSocialMeta } from '@/lib/seo';
 
 // ISR: profile pages edge-cache (was force-dynamic). Season form comes from
@@ -254,11 +255,14 @@ export default async function DriverPage({
   const { form, trend } = seasonData;
   const mentions = filterNewsByMention(seriesNews, newsMentionAliases('driver', driver.name));
 
-  // F1-only headshot (official F1 media via OpenF1 — see lib/openf1/headshots).
-  // KV-cached + fail-soft; absent for non-F1 series or any lookup miss, in which
-  // case the header renders exactly as before (no image).
-  let headshotUrl: string | null = null;
-  if (driver.seriesSlug === 'f1' && driver.number != null) {
+  // Portrait: prefer a curated free-licensed Commons portrait (rendered with
+  // attribution) over the F1-only OpenF1 headshot (F1 official media, not
+  // CC-licensed). The curated sidecar can cover any series; the OpenF1 fallback
+  // stays F1-only. Both fail-soft — no portrait → the header renders exactly as
+  // before (no image).
+  const portrait = (await loadDriverPortraits(driver.seriesSlug))[slug] ?? null;
+  let headshotUrl: string | null = portrait?.src ?? null;
+  if (!headshotUrl && driver.seriesSlug === 'f1' && driver.number != null) {
     const headshots = await f1HeadshotsByNumber();
     headshotUrl = headshots.get(driver.number) ?? null;
   }
@@ -296,7 +300,22 @@ export default async function DriverPage({
                 className="h-32 w-32 md:h-44 md:w-44 rounded-2xl object-cover bg-surface border border-border"
               />
               <figcaption className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-                Photo: Formula 1 via OpenF1
+                {portrait ? (
+                  <>
+                    Photo:{' '}
+                    <a
+                      href={portrait.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 hover:text-text-muted"
+                    >
+                      {portrait.by}
+                    </a>{' '}
+                    · {portrait.license}
+                  </>
+                ) : (
+                  'Photo: Formula 1 via OpenF1'
+                )}
               </figcaption>
             </figure>
           )}

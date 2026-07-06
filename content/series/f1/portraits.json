@@ -1,0 +1,119 @@
+{
+  "_comment": "Curated driver portraits sourced from Wikimedia Commons via the Wikipedia lead-image + Commons imageinfo APIs. Only free licenses kept (CC BY / CC BY-SA / CC0 / Public domain), verified programmatically (LicenseShortName) + HEAD-checked live. Keys are the slugified driver name (see lib/slug.ts / lib/people.ts). Rendered on /drivers/<slug> with per-image attribution (by + license + source link) per the CC terms. `by` is the Commons author (may be a username). Prefer these over the F1-only OpenF1 headshots (which are F1 official media, not CC-licensed).",
+  "drivers": {
+    "kimi-antonelli": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Kimi_Antonelli_at_the_2025_US_Grand_Prix_in_Austin%2C_TX_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Kuyper",
+      "source": "https://commons.wikimedia.org/wiki/File:Kimi_Antonelli_at_the_2025_US_Grand_Prix_in_Austin,_TX_(cropped).jpg"
+    },
+    "lando-norris": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/9/90/2024-08-25_Motorsport%2C_Formel_1%2C_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3968_by_Stepro_%28cropped2%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Original: Steffen Prößdorf; Derivative work: Mb2437",
+      "source": "https://commons.wikimedia.org/wiki/File:2024-08-25_Motorsport,_Formel_1,_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3968_by_Stepro_(cropped2).jpg"
+    },
+    "oscar-piastri": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/e/e5/2026_Chinese_GP_-_Oscar_Piastri_%28cropped%29_%28cropped%29.jpg",
+      "license": "CC BY 4.0",
+      "by": "Liauzh",
+      "source": "https://commons.wikimedia.org/wiki/File:2026_Chinese_GP_-_Oscar_Piastri_(cropped)_(cropped).jpg"
+    },
+    "charles-leclerc": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/7/7b/2024-08-25_Motorsport%2C_Formel_1%2C_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3978_by_Stepro_%28cropped2%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Steffen Prößdorf",
+      "source": "https://commons.wikimedia.org/wiki/File:2024-08-25_Motorsport,_Formel_1,_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3978_by_Stepro_(cropped2).jpg"
+    },
+    "fernando-alonso": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/9/97/Alonso-68_%2824710447098%29.jpg",
+      "license": "CC BY-SA 2.0",
+      "by": "United Autosports",
+      "source": "https://commons.wikimedia.org/wiki/File:Alonso-68_(24710447098).jpg"
+    },
+    "lance-stroll": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/4/4e/2025_Japan_GP_-_Aston_Martin_-_Lance_Stroll_-_Fanzone_Stage_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Liauzh",
+      "source": "https://commons.wikimedia.org/wiki/File:2025_Japan_GP_-_Aston_Martin_-_Lance_Stroll_-_Fanzone_Stage_(cropped).jpg"
+    },
+    "alexander-albon": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Alex_Albon_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "JazzyJoeyD",
+      "source": "https://commons.wikimedia.org/wiki/File:Alex_Albon_(cropped).jpg"
+    },
+    "max-verstappen": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/5/52/2024-08-25_Motorsport%2C_Formel_1%2C_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3973_by_Stepro_%28medium_crop%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Steffen Prößdorf",
+      "source": "https://commons.wikimedia.org/wiki/File:2024-08-25_Motorsport,_Formel_1,_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3973_by_Stepro_(medium_crop).jpg"
+    },
+    "isack-hadjar": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/7/75/Isack_Hadjar_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_%28028A8753%29_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Yu Chu Chin",
+      "source": "https://commons.wikimedia.org/wiki/File:Isack_Hadjar_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_(028A8753)_(cropped).jpg"
+    },
+    "liam-lawson": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/5/53/Liam_Lawson_at_the_Red_Bull_Fan_Zone_%E2%80%93_Crown_Riverwalk%2C_Melbourne_%28028A7793%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Yu Chu Chin",
+      "source": "https://commons.wikimedia.org/wiki/File:Liam_Lawson_at_the_Red_Bull_Fan_Zone_%E2%80%93_Crown_Riverwalk,_Melbourne_(028A7793).jpg"
+    },
+    "arvid-lindblad": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Arvid_Lindblad_at_the_Red_Bull_Fan_Zone_%E2%80%93_Crown_Riverwalk%2C_Melbourne_%28028A7869%29_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Yu Chu Chin",
+      "source": "https://commons.wikimedia.org/wiki/File:Arvid_Lindblad_at_the_Red_Bull_Fan_Zone_%E2%80%93_Crown_Riverwalk,_Melbourne_(028A7869)_(cropped).jpg"
+    },
+    "nico-hulkenberg": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/d/de/2019_Formula_One_tests_Barcelona%2C_Hulkenberg_%2840287128313%29.jpg",
+      "license": "CC BY-SA 2.0",
+      "by": "Marc Alvarado",
+      "source": "https://commons.wikimedia.org/wiki/File:2019_Formula_One_tests_Barcelona,_Hulkenberg_(40287128313).jpg"
+    },
+    "gabriel-bortoleto": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Gabriel_Bortoleto_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "GingerTom14",
+      "source": "https://commons.wikimedia.org/wiki/File:Gabriel_Bortoleto_(cropped).jpg"
+    },
+    "esteban-ocon": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Esteban_Ocon_2024_Suzuka_%28cropped%29.jpg",
+      "license": "CC0",
+      "by": "Rrtb505050",
+      "source": "https://commons.wikimedia.org/wiki/File:Esteban_Ocon_2024_Suzuka_(cropped).jpg"
+    },
+    "oliver-bearman": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/9/9a/2025_Japan_GP_-_Haas_-_Oliver_Bearman_-_Thursday_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Liauzh",
+      "source": "https://commons.wikimedia.org/wiki/File:2025_Japan_GP_-_Haas_-_Oliver_Bearman_-_Thursday_(cropped).jpg"
+    },
+    "pierre-gasly": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/f/fd/2022_French_Grand_Prix_%2852279065728%29_%28midcrop%29.png",
+      "license": "CC BY 2.0",
+      "by": "nabtifal",
+      "source": "https://commons.wikimedia.org/wiki/File:2022_French_Grand_Prix_(52279065728)_(midcrop).png"
+    },
+    "franco-colapinto": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Franco_Colapinto_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_%28028A8704%29_%28cropped%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Yu Chu Chin",
+      "source": "https://commons.wikimedia.org/wiki/File:Franco_Colapinto_at_the_Melbourne_Walk_during_the_2026_Australian_Grand_Prix_(028A8704)_(cropped).jpg"
+    },
+    "sergio-perez": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/5/55/2021_US_GP_driver_parade_%28cropped2%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Grahampurse",
+      "source": "https://commons.wikimedia.org/wiki/File:2021_US_GP_driver_parade_(cropped2).jpg"
+    },
+    "valtteri-bottas": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/2/20/Valtteri_Bottas_at_the_2026_Adelaide_Motorsport_Festival_%28028A7556%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Yu Chu Chin",
+      "source": "https://commons.wikimedia.org/wiki/File:Valtteri_Bottas_at_the_2026_Adelaide_Motorsport_Festival_(028A7556).jpg"
+    }
+  }
+}

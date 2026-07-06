@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.166.0 — 2026-07-06
+
+**Driver photos.** Formula 1 driver pages now show a proper portrait for most of the grid, each credited to its photographer under its Creative Commons licence.
+
 ## 0.165.0 — 2026-07-04
 
 **Team season points chart.** Team pages now plot the combined points their drivers have scored through the season — the same chart the driver pages show — for series with full scoring data.
