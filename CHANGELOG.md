@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.166.0 — 2026-07-06
+
+### Added
+- **F1 driver portraits from Wikimedia Commons** (W4 imagery): `/drivers/<slug>` now shows a free-licensed portrait for 19 of the 22 F1 drivers, each with per-image attribution (author + licence, linking the Commons file page) as the CC terms require. New `content/series/f1/portraits.json` sidecar (mirrors the `historic-team-colors.json` pattern) + `loadDriverPortraits` in `lib/series-content.ts`; the driver page prefers a curated portrait over the F1-only OpenF1 headshot (which is F1 official media, not CC-licensed) and falls back to it when absent. Sourced programmatically via the Wikipedia lead-image + Commons `imageinfo` APIs, filtered to free licences only (CC BY / CC BY-SA / CC0 / public domain — verified against `LicenseShortName`), every URL HEAD-checked live (200 + `image/*`). Browser-verified: Lando Norris renders with "Photo: Steffen Prößdorf… · CC BY-SA 4.0" linking the Commons file, 0 console errors. Not covered: Russell + Sainz (no lead image via the API — need manual sourcing) and Hamilton (OGL 3.0 — a free licence, but held for review rather than auto-included). Known pre-existing quirk (NOT introduced here): `/drivers/max-verstappen` resolves to his ADAC 24h entry (first slug match across series), so the F1 portrait doesn't surface at that URL — logged for a follow-up slug-disambiguation fix. Team logos deferred: most are trademarked / non-free even on Commons (see the run notes).
+
 ## 0.165.0 — 2026-07-04
 
 ### Added
