@@ -1008,7 +1008,15 @@ Won't touch: `buildStandingsAtRound` (no team "Wins" stat this PR — standings 
 
 Pre-mortem: a curated-name↔feed-name mismatch undercounts a team line — mitigated by `namesMatch` + the `pointsExact` gate + browser verification.
 
-Active: _(awaiting [+Nm] prefixes)_
+**Outcomes (mid-session the operator handed off a broader "next 5 batches" unsupervised overnight run, into 2026-07-06):**
+- → done: **W4 team points-trajectory chart** (0.165.0, #401) — prod-verified (McLaren line 159 == its Constructors' points).
+- → done: **W4 F1 driver portraits** from Wikimedia Commons (0.166.0, #402) — 19/22 drivers, free-licences-only + per-image attribution; prod-verified.
+- → audit: the "next 5 batches" were mostly already shipped/obsolete — Champions collapsible ✅, F1 race-page collapsible ✅, historic colours ✅ (12 already curated), AppShell `--tint` ⛔ obsolete (sidebar removed 0.17.0). Only media-seeding was a genuine gap.
+- → done: media.json audit — existing f1/f3/wec clips all official-channel + live (geo concern clean); seeding 12 more series deferred (open-ended research).
+- → deferred (need operator decision): team logos (no free Commons source); Russell/Sainz/Hamilton portraits; the `/drivers/max-verstappen` slug-collision bug (primary-series tiebreak; sitemap/test blast radius).
+- Gate on every PR: tsc + eslint + 750 tests + next build + Playwright anon verify + prod-verify.
+
+Active: _(autonomous overnight run; no `[+Nm]` prefixes)_
 
 ---
 
