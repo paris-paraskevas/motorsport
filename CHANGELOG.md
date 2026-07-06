@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.167.0 — 2026-07-06
+
+### Added
+- **Full F1 portrait set (22/22 drivers)**: added George Russell (CC BY 2.0), Carlos Sainz (CC BY-SA 4.0) and Lewis Hamilton (OGL 3.0 — a free UK-government licence, operator-approved) to `content/series/f1/portraits.json`, completing the grid the 0.166.0 run left at 19/22 (the API had missed their Wikipedia lead image). Each browser-verified to depict the right driver (Sainz's free photo is 2022 Ferrari-era — correct person, dated kit).
+
+### Fixed
+- **Cross-series driver slug collisions** (`lib/people.ts`): a driver racing in more than one series (e.g. Max Verstappen — F1, ADAC Ravenol 24h, NLS) collided on `/drivers/<slug>`; `findDriverBySlug` returned the first match, so `/drivers/max-verstappen` showed his ADAC 24h GT entry, not F1 (and his portrait never surfaced). New `disambiguateDriverSlugs` gives the bare slug to the highest-priority series (F1 first, else series-listing order) and suffixes the rest with their series' last slug token: F1 Verstappen now owns `/drivers/max-verstappen` (portrait surfaces), the 24h entry → `/drivers/max-verstappen-24h`, NLS → `/drivers/max-verstappen-nls`. 3 unit tests (`lib/people.test.ts`). Teams left unchanged (no team-name collisions in current data).
+
 ## 0.166.0 — 2026-07-06
 
 ### Added

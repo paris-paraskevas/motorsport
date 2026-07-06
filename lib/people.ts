@@ -55,8 +55,42 @@ async function collectFromCuratedSeries<T>(
   return lists.flat();
 }
 
-export function loadAllDrivers(): Promise<DriverDetail[]> {
-  return collectFromCuratedSeries<DriverDetail>((series, teams) => {
+// Last hyphen-token of a series slug — the short disambiguator appended to a
+// colliding driver slug (adac-ravenol-24h → "24h", nls → "nls").
+function seriesSlugToken(seriesSlug: string): string {
+  const parts = seriesSlug.split('-');
+  return parts[parts.length - 1];
+}
+
+// Two drivers can slugify to the same /drivers/<slug> across series — e.g. Max
+// Verstappen races both F1 and the ADAC Ravenol 24h. Give the bare slug to the
+// highest-priority series (F1 first, otherwise series-listing order) and suffix
+// the rest with their series' last slug token, so every driver page stays
+// reachable and unambiguous (F1 → /drivers/max-verstappen; the 24h entry →
+// /drivers/max-verstappen-24h). Mutates + returns the list; exported for tests.
+export function disambiguateDriverSlugs(all: DriverDetail[]): DriverDetail[] {
+  const order = [...new Set(all.map(d => d.seriesSlug))];
+  const rank = (seriesSlug: string) =>
+    seriesSlug === 'f1' ? -1 : order.indexOf(seriesSlug);
+  const byBase = new Map<string, DriverDetail[]>();
+  for (const d of all) {
+    const g = byBase.get(d.slug);
+    if (g) g.push(d);
+    else byBase.set(d.slug, [d]);
+  }
+  for (const group of byBase.values()) {
+    if (group.length < 2) continue;
+    const sorted = [...group].sort((a, b) => rank(a.seriesSlug) - rank(b.seriesSlug));
+    // Highest-priority series keeps the base slug; the rest get suffixed.
+    for (let i = 1; i < sorted.length; i++) {
+      sorted[i].slug = `${sorted[i].slug}-${seriesSlugToken(sorted[i].seriesSlug)}`;
+    }
+  }
+  return all;
+}
+
+export async function loadAllDrivers(): Promise<DriverDetail[]> {
+  const all = await collectFromCuratedSeries<DriverDetail>((series, teams) => {
     const out: DriverDetail[] = [];
     for (const team of teams) {
       const teamSlug = slugify(team.name);
@@ -77,6 +111,7 @@ export function loadAllDrivers(): Promise<DriverDetail[]> {
     }
     return out;
   });
+  return disambiguateDriverSlugs(all);
 }
 
 export function loadAllTeams(): Promise<TeamDetail[]> {
