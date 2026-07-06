@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.168.3 — 2026-07-06
+
+**F2 and F3 highlights.** The latest Formula 2 (Britain) and Formula 3 (Austria) weekend pages now carry their official feature- and sprint-race recap videos.
+
 ## 0.168.2 — 2026-07-06
 
 **Every 2026 F1 weekend now has its race highlights.** Filled in the earlier rounds (Australia through Monaco) with their official recap videos.
