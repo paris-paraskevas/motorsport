@@ -6,7 +6,36 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.170.0 · W4 (team chart + 22/22 F1 portraits + slug fix) · overnight audit · per-weekend F1 UPGRADES (weekend + home) · calendar fix — PRs #401–#418
+## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.171.0 · W8 launch program KICKOFF (banner ships dark + checklist + marketing plan) · f1-upgrades widget verified signed-in · design-doc DECISIONS captured — PR #420
+
+**The session in one line:** cleared the two operator-owed gate items (signed-in widget verify + the AI-assistant/feeder decisions), then kicked off **W8 (v1.0 launch program)** — the last thing before 1.0. **main 0.170.0 → 0.171.0, PR #420** (squash-merged; ships dark, so prod is visually unchanged).
+
+**Gate items — DONE:**
+- **f1-upgrades home widget (#418) — signed-in verify PASS.** Enabled it in Customise → renders on `/app` (British GP · 9 new parts, per-team counts, "Full upgrades" → `/series/f1/weekend/9`), 0 console errors, existing layout undisturbed. **NB: it's now enabled on the operator's real account** — hide in Customise if unwanted.
+- **Design-doc DECISIONS (via AskUserQuestion):** **AI assistant** = account-gated (free with a Paddock account), model/provider TBD at build, **build FIRST after W8** (site-help MVP, retrieval-grounded, refuse-when-uncovered per the docs' defaults). **Feeder-series intake** = opaque **tokened link** (no account) for v1. **v1.0** = build the banner now (dark), **flip on launch day**.
+
+**W8 launch program — KICKOFF SHIPPED (0.171.0, #420):**
+- **`LaunchBanner` ships DARK.** New `components/LaunchBanner` at the top of the app content column (prepended into `AppShell`'s `flex-1`, below the fixed header), gated by `LAUNCH_ANNOUNCEMENT` in `lib/site.ts`. `active: false` → renders nothing (merge = no-op). **Launch day = flip `active` → true in the SAME commit that bumps `package.json` to `1.0.0`** (runbook: `docs/launch-checklist.md` §B). Dismissible; dismissal persists in `localStorage` keyed by `id` (bump `id` for a future announcement). **Visual-verified both states on localhost** (flag on → bar renders + dismiss persists across reload; flag off → nothing renders, 0 errors).
+- **`docs/launch-checklist.md`** — go/no-go pre-flight (content · correctness invariants · infra · SEO · perf · legal · security · monitoring) + launch-day runbook + rollback + first-48h watch.
+- **`docs/research/2026-07-06-launch-marketing.md`** — per-channel plan (Reddit/YouTube/IG/X/FB) + first-post drafts + subreddit shortlist + staggered launch week + banner copy options. **Plan only — nothing posted.**
+- **Reframe:** there is **no existing "beta/early access" badge** in the app (grep-verified) — the W8 "out of early access banner" is an announce surface, not a removal.
+
+**Bet-display refinement (stretch) — ATTEMPTED + REVERTED; needs a DECISION before building.** Built a `formatBetEconomics` helper + wired both surfaces, then browser-verification caught the flaw: **`bet.multiplier` is settle-only** (schema `20260622090000` L107 "set at settle"; `settle_market` writes it only on `won`), so **every pending bet reads `multiplier=null`** — a fresh solo bet rendered with no odds ("could win" impossible from the bet alone). `UserBet` also lacks `league_id`, so solo-pending can't be told from pool-pending. No reusable selection→multiplier resolver exists (mapping inlined write-side in `selectionForMarket`; forecast = clamped product). **Reverted** the cosmetic edits (built on a wrong null⟺pool assumption). **Two build paths for the operator (full detail in IDEAS):** (A) persist the fixed multiplier at placement — `place_bet` RPC migration, **prod-gated + betting-critical**; or (B) read-side `odds_json`+`league_id` join into `getUserBets` + per-type compute (no migration). Recommend **A**. (A trivial partial — show real credits on *settled-won* bets — needs zero changes if wanted.)
+
+**Gates at close:** tsc · eslint 0 · **753 tests** (the 1 `sitemap-data` failure is the documented full-suite timeout flake — passes 10/10 isolated) · `next build` exit 0. Tree clean; main 0.171.0.
+
+**Landmines added:** `LAUNCH_ANNOUNCEMENT` in `lib/site.ts` gates the banner — it's DARK (`active:false`); launch = flip it + bump to `1.0.0` in one commit (`docs/launch-checklist.md` §B). Betting `bet.multiplier` is **settle-only** — do NOT build "potential return on a pending bet" assuming it's populated (it isn't); see the bet-display item.
+
+**▶ OPEN / NEEDS YOU (carry-over + new):**
+- **Build AI assistant** (site-help MVP) — the decided next feature after W8; model/provider still to pick at build.
+- **Bet-display** — pick path A (migration) or B (read-side) before building.
+- **W8 remainder:** work the launch checklist to green, then pick a launch day and do the §B flip (banner + 1.0.0).
+- **Feeder intake** — tokened link MVP (needs a prod Supabase migration when built).
+- **Still standing:** F2 go-live (open-markets cron w/ `CRON_SECRET`); F3 rounds.json renumber; grid-market enum migration; rotate `sk_live_*` + `.supabase-pat`; Sentry DSN; 5 IA taste calls; a stray local dev server is running.
+
+---
+
+## ⚡ Next session pickup — 2026-07-06 (earlier) — main 0.170.0 · W4 (team chart + 22/22 F1 portraits + slug fix) · overnight audit · per-weekend F1 UPGRADES (weekend + home) · calendar fix — PRs #401–#418
 
 **The stretch in one line:** started W4 (team pages), the operator handed off an unsupervised overnight run, then a long "keep going" tail. Net: **18 PRs #401–#418, main 0.164.0 → 0.170.0**, all prod-verified except the home-upgrades widget (headless-verified + merged for a signed-in glance).
 
