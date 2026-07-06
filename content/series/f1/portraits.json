@@ -114,6 +114,24 @@
       "license": "CC BY-SA 4.0",
       "by": "Yu Chu Chin",
       "source": "https://commons.wikimedia.org/wiki/File:Valtteri_Bottas_at_the_2026_Adelaide_Motorsport_Festival_(028A7556).jpg"
+    },
+    "george-russell": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/7/7f/KingsLeonSilverstne040724_%2828_of_112%29_%2853838006028%29_%28cropped%29.jpg",
+      "license": "CC BY 2.0",
+      "by": "Raph_PH",
+      "source": "https://commons.wikimedia.org/wiki/File:KingsLeonSilverstne040724_(28_of_112)_(53838006028)_(cropped).jpg"
+    },
+    "carlos-sainz": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Formula1Gabelhofen2022_%2804%29_%28cropped2%29.jpg",
+      "license": "CC BY-SA 4.0",
+      "by": "Dorian Schuster (XaviYuahanda)",
+      "source": "https://commons.wikimedia.org/wiki/File:Formula1Gabelhofen2022_(04)_(cropped2).jpg"
+    },
+    "lewis-hamilton": {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Prime_Minister_Keir_Starmer_meets_Sir_Lewis_Hamilton_%2854566928382%29_%28cropped%29.jpg",
+      "license": "OGL 3",
+      "by": "Number 10",
+      "source": "https://commons.wikimedia.org/wiki/File:Prime_Minister_Keir_Starmer_meets_Sir_Lewis_Hamilton_(54566928382)_(cropped).jpg"
     }
   }
 }

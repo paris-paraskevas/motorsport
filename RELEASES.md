@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.167.0 — 2026-07-06
+
+**Every F1 driver now has a photo**, and we fixed driver links for drivers who race in more than one series — Max Verstappen's Formula 1 page is now at the address you'd expect, with his 24-hour racing entry on its own page.
+
 ## 0.166.0 — 2026-07-06
 
 **Driver photos.** Formula 1 driver pages now show a proper portrait for most of the grid, each credited to its photographer under its Creative Commons licence.
