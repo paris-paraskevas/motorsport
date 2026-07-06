@@ -6,7 +6,43 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-03 (LATEST) — main 0.164.0 · triage build-day + audit fixes + signed-in verifs + batch J (home) — PRs #373–#399
+## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.170.0 · W4 (team chart + 22/22 F1 portraits + slug fix) · overnight audit · per-weekend F1 UPGRADES (weekend + home) · calendar fix — PRs #401–#418
+
+**The stretch in one line:** started W4 (team pages), the operator handed off an unsupervised overnight run, then a long "keep going" tail. Net: **18 PRs #401–#418, main 0.164.0 → 0.170.0**, all prod-verified except the home-upgrades widget (headless-verified + merged for a signed-in glance).
+
+**W4 — the last v1.0 launch gate — SUBSTANTIALLY DONE:**
+- **Team points-trajectory chart** on `/teams/[slug]` (#401) → reworked to plot **ALL constructors**, current team emphasized (#405) — a lone one-team line was pointless (operator). Reuses `aggregateTeamsTrend`; new optional `emphasize` prop on `SeasonTrendChart`/`LazySeasonTrendChart` (backward-compatible).
+- **F1 driver portraits** from Wikimedia Commons (#402 + #404) — **22/22 drivers**, free-licences only (CC BY/BY-SA/CC0 + Hamilton OGL-3.0), per-image attribution, sourced via the Wikipedia + Commons APIs → `content/series/f1/portraits.json` + `loadDriverPortraits`. Driver page prefers a curated portrait over the F1-only OpenF1 headshot.
+- **Cross-series driver slug fix** (#404) — `disambiguateDriverSlugs`: F1 keeps the bare slug, others get a series-token suffix. `/drivers/max-verstappen` = F1 (portrait shows); ADAC 24h → `/drivers/max-verstappen-24h`. 3 tests.
+- **Team LOGOS deferred (operator call = keep the colour-bar identity):** no free Commons source exists (probe returned only building photos). Portraits are the imagery for now.
+
+**Per-weekend F1 UPGRADES — NEW feature, operator-requested, end-to-end:**
+- **Data source found + verified:** the official **FIA "Car Presentation Submissions"** PDF (one per GP). Downloads 200; `pdftotext -layout` parses per-team tables (component / reason / detail). RapidAPI has NO upgrades endpoint (dead); F1.com articles = prose cross-ref; PaddockIntel = proprietary SPA. Full writeup: `docs/research/2026-07-06-f1-upgrades-data-source.md`.
+- **Weekend section** (#415) — `components/weekend/WeekendUpgrades` (collapsible, SSR) on `/series/f1/weekend/[round]`, F1-only, FIA-attributed; `loadF1Upgrades` over `content/series/f1/upgrades.json`.
+- **Curation R1–R9 COMPLETE** (#415 R7–R9, #416 R1–R6) — **251 parts** across the season, all curated from the FIA docs (R1 flagged as launch-spec). Curation-first — NO live PDF scraper (Phase-2 auto-parser path is in the doc, gated on a Vercel datacenter probe of fia.com).
+- **Home widget** (#418, JUST MERGED) — opt-in/default-hidden `f1-upgrades`; lazy `/api/home/upgrades` (latest round's parts-per-team via `loadLatestF1Upgrades`); `HOME_LAYOUT_VERSION` 9→10 (reconcile default-hides). **Headless-verified only (tsc/eslint/753 tests/build + API returns the R9 summary) — NEEDS A SIGNED-IN GLANCE** (enable in Customise → see on /app; confirm existing layouts undisturbed). Playwright disconnected mid-session, hence not visually confirmed.
+- **Media** (#406/#413) — official FORMULA-1-channel highlights seeded for F1 R1–R9 + F2 R7 + F3 R5 (each oEmbed-verified as the official channel; beIN re-uploads rejected). IndyCar/NASCAR/MotoGP skipped (geo-lock risk — can't machine-verify global availability).
+
+**Overnight audit — the big finding:** most "next batches" in IDEAS were ALREADY shipped or obsolete — Champions collapsibles ✅, race-page collapsibles ✅, historic colours ✅ (12 already curated), AppShell `--tint` ⛔ OBSOLETE (the sidebar drawer was removed in 0.17.0). **Treat "open" IDEAS items as suspect until checked against code.**
+
+**Calendar visual fix** (#417) — the series Calendar tab's 2-col grid stretched a past weekend's compact card to a tall neighbour's height (empty box). Added `lg:items-start`. Pre-existing; surfaced when the British GP fell past mid-July next to future rounds.
+
+**Design docs (both /feedback ideas — build-blocked on your decisions):** `docs/research/2026-07-06-feeder-series-intake.md` (self-serve upload → normalize → approve) · `docs/research/2026-07-06-ai-assistant.md` (retrieval-grounded, refuse-when-uncovered; shares the global-search index).
+
+**Gates at close:** tsc · eslint 0 · **753 tests** · `next build` — all clean; tree clean; main 0.170.0.
+
+**▶ OPEN / NEEDS YOU:**
+- **Home-upgrades widget (#418) — signed-in verify** (Customise → enable → renders on /app; existing layouts undisturbed). Only unverified thing shipped this stretch.
+- **AI assistant** + **feeder-series intake** — design docs ready; need decisions before building (assistant: free/gated + model; feeder: auth model + a prod migration).
+- **Upgrades follow-ups:** curate each new FIA doc as it drops (~Thu of each weekend); optional Phase-2 auto-parser (probe fia.com from Vercel first); non-F1 media seeding (geo-check per series).
+- **Feature-request import:** reading the prod feedback DB was denied by the safety layer — the operator pasted the items instead (AI assistant + feeder series filed in IDEAS; upgrades already tracked).
+- **Carry-over from 07-03 still stands:** F2 go-live (open-markets cron), F3 rounds.json renumber, grid market, notif devices/sound variants, author-role gate, IA taste calls (5).
+
+**Landmines added:** `disambiguateDriverSlugs` — F1 owns the bare driver slug; colliding series get `-<seriesToken>` (don't revert; sitemap + `/drivers/<slug>` depend on it). `emphasize` prop on the shared trend chart is optional/backward-compatible. `f1-upgrades` home widget is opt-in/default-hidden (`HOME_LAYOUT_VERSION` 10 — reconcile default-hides; homeLayout tests count the registry). Upgrades data is CURATED from FIA PDFs, not a live scraper — add rounds by editing `upgrades.json`. Calendar grid needs `lg:items-start` (past compact cards balloon without it).
+
+---
+
+## ⚡ Next session pickup — 2026-07-03 — main 0.164.0 · triage build-day + audit fixes + signed-in verifs + batch J (home) — PRs #373–#399
 
 **The day in one line:** ran an evidence-required triage of the full 109-item backlog (`docs/research/2026-07-03-backlog-triage-109.md`), salvaged the wave-1 build batches one at a time (each: commit the agent's WIP → rebase → gates → release notes → PR → merge → prod-verify), audited all 19 PRs and fixed the three that were wrong, verified the signed-in surfaces, then built batch J (home). **main 0.154.0 → 0.164.0, PRs #373–#399.**
 
