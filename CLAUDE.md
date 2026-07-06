@@ -2,177 +2,78 @@
 
 # Paddock — operating manual for Claude
 
-Read this whole file at the start of every session. Then read `IDEAS.md` + `SCHEDULE.md` to know what we're working on this week.
-
 ## Quick context
+- Repo `paris-paraskevas/motorsport`, default branch `main`. Live: https://paddock-tracker.com (Vercel project `motorsport`). Vercel auto-deploys `main` in ~90s — treat every merge as a production event.
+- Stack: Next.js 16 App Router (middleware lives in `proxy.ts`, NOT `middleware.ts`), React 19, Tailwind v4, `@serwist/next` PWA, Clerk Production auth, Vercel KV, Supabase. Public-with-account auth model.
+- Conversational authoring IS the CMS: every editable surface has a file home under `content/`; renderers prefer curated/override files, external APIs are fallbacks. Edits to `content/**/*` are real commits that ship to production.
+- Next.js 16 has breaking changes vs training data — check `node_modules/next/dist/docs/` for current API shapes before writing Next-specific code.
 
-- **Repo:** `paris-paraskevas/motorsport`, default branch `main`. Vercel auto-deploys every push to main; no PR review gate.
-- **Live URL:** https://paddock-tracker.com. Vercel project name: `motorsport`.
-- **Stack:** Next.js 16 App Router (middleware lives in `proxy.ts`, not `middleware.ts`), React 19, Tailwind v4, `@serwist/next` PWA, Clerk Production auth, Vercel KV. Public-with-account auth model.
-- **Authoring model is conversational, not an admin UI.** Edits to `content/**/*` are real commits that ship to production within ~90s.
-
-## Read these before doing anything
-
-**Required at every session start, in this order:**
-
-1. This file (`CLAUDE.md`) — operating manual, ESPA loop, working agreement.
-2. **`docs/HANDOFF.md`** — running operational record: critical landmines, what shipped last session, infra ledger, open design questions. **Always read at session start.** The per-user memory file at `memory/project-paddock-handoff.md` is now a redirect stub pointing here.
-3. `IDEAS.md` — Now / Next queue; what we're working on this week.
-4. `SCHEDULE.md` — today's plan.
-5. `AGENTS.md` (embedded above) — Next.js 16 has breaking changes from training data. Check `node_modules/next/dist/docs/` for current API shapes before writing Next-specific code.
-6. Memory feedback files — every rule there is non-negotiable user-set behaviour. The current set:
-   - `feedback-paddock-debug-with-own-eyes` — visually verify UI in a browser before saying "shipped". Typecheck + curl miss user-facing bugs.
-   - `feedback-paddock-search-for-missing-data` — when upstream feeds are thin, web-search the official source and curate. Don't shrug it off as a "documented limitation".
-   - `feedback-paddock-weather-venue-local` — Open-Meteo lookups go by venue-local date, never UTC.
-   - `feedback-vercel-node-ical` — keep BOTH `serverExternalPackages` AND `outputFileTracingIncludes` in `next.config.ts`.
-   - `feedback-paddock-session-workflow` — the time-plan-at-start / capture-mid-session / triage-at-end loop described below.
-   - `feedback-paddock-release-notes` — every push must update `CHANGELOG.md` + bump `package.json` version. Hard rule.
-   - `feedback-paddock-espa` — Evaluate / Scrutinize / Present / Await before every non-trivial action. Imported from `eshp`. Approvals must be explicit; commits never include Claude attribution.
-   - `feedback-paddock-time-tracking` — per-prompt `[+Nm]` prefix logs active minutes to `SCHEDULE.md`. See the Time tracking section below.
-   - `feedback-paddock-blog-draft-queue` — blog posts NEVER ship as public MDX; always a prod DB draft the operator approves + schedules. See the Blog publishing SOP below.
+## Session start — read in order
+1. This file. 2. `docs/HANDOFF.md` — running ops record (landmines, what shipped, infra ledger, open questions; `memory/project-paddock-handoff.md` is a redirect stub to it). 3. `IDEAS.md` — Now/Next queue. 4. `SCHEDULE.md` — today's plan. 5. Memory `feedback-paddock-*` files — every rule there is non-negotiable user-set behavior; the load-bearing ones are inlined below.
 
 ## ESPA — before every non-trivial action
-
-Non-negotiable. Apply this loop to any change that isn't an obviously trivial edit (typo fix, version bump, accepting a previously-agreed plan).
-
-1. **E — Evaluate** what is being asked — understand intent and context.
-2. **S — Scrutinize** the request — assess whether it's the best approach, even if explicitly instructed. Push back if you see a concrete flaw, risk, or inefficiency.
-3. **P — Present** your opinion as a step-by-step plan the user can analyze.
-4. **A — Await** confirmation before executing.
-
-Approvals are explicit ("yes", "go ahead", "approved", "do it"). Do not infer approval from silence or from a follow-up question.
-
-**Extensions:**
-- **Mid-execution failure recovery.** If a plan fails mid-execution, STOP. Don't push through. Re-evaluate from step 1 with what you now know and present a revised plan.
-- **Senior-engineer self-check.** Before presenting a plan, ask: *"Would a senior engineer approve this?"* If not, fix it first.
-- **Pre-mortem one-liner.** Every plan also states its most likely failure mode in one sentence. Forces the **S** step to do real work instead of rubber-stamping.
-- **Verify the obvious.** When a load-bearing assumption is unverified, verify it before relying on it. "Obviously works" is how silent bugs land (e.g. `lib/rounds.ts` importing `fs/promises` into a client-bundled module was "obviously fine" until the dev server 500'd).
-- **Negative space at plan-time.** Every plan includes a one-line "won't touch this session" — the same scope-discipline rule used in `SCHEDULE.md`, lifted to per-plan scope.
-- **Memory drift check.** Before recommending action based on a remembered fact, verify against current code or `git log`. Memory written last session may be stale; code is authoritative.
-- **Realistic scope, single plan in mind.** Sandbox your ambition to what's actually achievable in the session. When running multiple workstreams in parallel, hold the active plan in mind so a new one doesn't quietly displace it — capture parallel ideas to `IDEAS.md` Inbox, don't context-switch.
-
-## Mode awareness
-
-- **Suggest plan mode** when: task touches 3+ files, involves architectural decisions, is ambiguous, has multiple valid approaches, or the user says "build / redesign / restructure / plan".
-- **Stay in execute mode** when: single-file edit, clear and specific instruction, bug fix with known location, or read-only research.
-- **When unsure:** ask. *"This looks like it needs a plan. Want me to enter plan mode?"*
-
-## Ultracode assessment — state it up front (RULE)
-
-At the **start of every task**, before planning or acting, state in one line whether **ultracode** is needed — and why. Ultracode = defaulting to multi-agent `Workflow` orchestration + adversarial verification (author/run a workflow) instead of a single-agent pass.
-
-- **Needed** when the task is large / ambiguous / high-stakes, or wants **breadth** (many independent sub-tasks in parallel) or **depth** (adversarial verify, multi-source research, wide audits/migrations, loop-until-dry discovery).
-- **Not needed** for single-file edits, known-location fixes, quick lookups, or conversational turns → say "ultracode: not needed" and proceed.
-- It's a **depth/orchestration** choice, not a breadth one: plain parallel worktree agents don't require ultracode — flag when they fit better than full ultracode depth.
-- **Recommend only; the user opts in.** Never launch a workflow without explicit approval.
+Evaluate the ask → Scrutinize it (push back on concrete flaws, risks, inefficiencies — even when explicitly instructed) → Present a step-by-step plan with a one-line pre-mortem and a one-line "won't touch this session" → Await explicit approval ("yes" / "go ahead" / "do it" — never inferred from silence or a follow-up question).
+- Plan fails mid-execution → STOP, re-evaluate from step 1 with what you now know, present a revised plan.
+- Before presenting: "Would a senior engineer approve this?" If not, fix it first. Verify load-bearing assumptions instead of calling them obvious.
+- Plan mode when: 3+ files, architecture, ambiguity, or "build / redesign / restructure / plan". Execute directly for single-file edits, clear instructions, known-location fixes, research. Unsure → ask.
 
 ## Time tracking
-
-Realistic *active* time per session, not wall-clock between prompts. **Per-prompt prefix `[+Nm]`** at the start of a new prompt = `N` active minutes the user spent between the previous prompt and this one.
-
-- Examples: `[+15m] curate IMSA sessions.json`, `[+5m] back, what was the diff?`.
-- Counted: reading, thinking, coding, watching me work, on-task AFK (e.g. checking a real browser).
-- Not counted: idle wall-clock time when the user was away from the project entirely.
-- On seeing `[+Nm]`: append it to today's section in `SCHEDULE.md` under an `Active:` line, maintain a running total. Then respond to the rest of the prompt normally.
-- Forgot the prefix? Reply with just `[+12m]` (no other text) and I'll backfill the previous window.
-- Daily total appears at session end alongside the `→ done` outcomes.
+A `[+Nm]` prefix on a prompt = N active minutes the user spent since the previous prompt (reading, thinking, on-task AFK; not idle time). On seeing it: append to today's `Active:` line in `SCHEDULE.md`, keep a running total, then handle the prompt. A bare `[+12m]` message backfills the previous window. Daily total reported at session end.
 
 ## Session workflow
+- Start: propose a time-plan for the session + an explicit "won't touch this session" line; add to `SCHEDULE.md`; create tasks for the in-scope work.
+- New idea mid-session: acknowledge in one sentence, append one sentence to `IDEAS.md` Inbox, return to the active task. Never derail.
+- End: triage the Inbox (promote to Now/Next, park, or kill with a one-line why); update the handoff; mark the day's plan done/partial/skipped in `SCHEDULE.md`.
 
-The bottleneck on this project is throughput — there are always more ideas than build hours. The workflow exists to make scope discipline explicit, not to make work feel structured.
+## Working agreement — project-specific rules
+- Browser-verify before "shipped": open the affected page in Chrome and click through the user flow. Typecheck + tests + curl prove compilation, not features.
+- Any server-side outbound-network code (`lib/results/*`, `lib/standings/*` parsers): verify on a Vercel preview, not just localhost — datacenter IPs / restricted runtime / TLS fingerprints fail there first (the 0.12.12 NASCAR prod regression shipped exactly this way).
+- Thin upstream data (ICS/scrape/API) is never a "documented limitation" — web-search the official source, curate a sidecar file under `content/series/<slug>/`, ship the patch.
+- Open-Meteo weather lookups go by venue-local date, never UTC.
+- Probing any new external source: fetch `robots.txt` + `sitemap.xml` first (skip if 404) — often surfaces structured endpoints or off-limits paths.
+- Edit tool returns "file modified since read" → Read the file, THEN Edit. Never retry blind — the tool tracks a per-file read checksum; this is a repeated stumble here.
+- No new abstractions without a real second consumer; three similar lines beat a premature helper.
+- Never create new files without permission — state filename, format, purpose; await.
+- Flag mistakes inline immediately ("Correction: …") — never silently fix. State your sources (file:line, memory path, web search).
+- Memory vs current code disagree → trust the code, update the memory.
 
-**At session start:**
-1. Read this file, `IDEAS.md`, and `SCHEDULE.md`.
-2. Propose a time-plan: what we'll achieve this session + an explicit "won't touch this session" line. Add it to `SCHEDULE.md` under the current day.
-3. Open `TaskList` and create concrete tasks for the in-scope work.
-
-**Mid-session — when a new idea surfaces:**
-1. Acknowledge in one sentence.
-2. Append it to `IDEAS.md` Inbox as one sentence — no formatting, no commitment.
-3. Continue the active task. Do not derail.
-
-**At session end:**
-1. Triage the Inbox — promote to Now / Next, move to Parked, or kill with a one-line "why".
-2. Update `memory/project-paddock-handoff.md` with what shipped and what's open.
-3. Update `SCHEDULE.md` — mark the day's plan as done / partial / skipped; sketch tomorrow if known.
-
-## Working agreement
-
-- **Browser-verify before "shipped".** Typecheck + tests + curl prove code compiles, not that features work. Open the affected page in Chrome and click through the user flow.
-- **Search for missing data.** If the upstream ICS / scrape / API is thin, do not declare it a limitation — web-search the official source, curate a sidecar file under `content/series/<slug>/`, ship the patch.
-- **Conversational authoring is the CMS.** Every editable surface has a file home under `content/`. Renderers prefer curated/override files; external APIs are fallbacks. See the handoff's "Authoring model" table for the mapping.
-- **No new abstractions without a real second consumer.** Three similar lines beats a premature helper. No future-proofing for use cases that don't exist yet.
-- **Push back when you see a concrete flaw, risk, or inefficiency.** This is expected and valued, not insubordination. Pairs with the **S** in ESPA above — Scrutinize even when explicitly instructed.
-- **Flag mistakes inline immediately ("Correction: …"). Never silently fix.** If you spot a wrong claim — yours or in code — call it out in the same message; don't quietly rewrite history.
-- **State your sources.** When making claims, name where you got it (memory file path, code line, web search, prior conversation). Lets the user verify.
-- **Never create new files without permission.** State filename, format, and purpose; await before writing. Prefer editing existing files.
-- **Format discipline.** Adapt verbosity to task complexity. Tables only when comparing 3+ items across 3+ attributes (otherwise prose). Code blocks always language-tagged. Heading depth H2/H3 only.
-- **Ask `AskUserQuestion` when scope is unclear.** Better to lose 30s on a confirmation than ship the wrong thing.
-- **Always re-Read a file immediately before each Edit call.** When the Edit tool returns "File has been modified since read, either by the user or by a linter", do NOT retry the Edit with the same precondition — Read the file first, THEN Edit. The tool tracks a per-file read-state checksum; long-lived in-context understanding of a file is not enough. This is a repeated stumble; treat the rule as load-bearing.
-- **Check `robots.txt` + `sitemap.xml` first when probing any new external source.** One fetch each, cheap. Often surfaces structured endpoints or off-limits paths. Skip if 404 or empty. Applies to scrape work in `lib/results/*` and `lib/standings/*`.
-- **Verify on Vercel preview, not just localhost, before declaring "shipped".** Especially for any code path that does outbound network from server-side (any new `lib/results/*` or `lib/standings/*` parser). Localhost runs on residential IP + full Node TLS; Vercel Functions run on datacenter IPs with a restricted runtime — WAF / TLS-fingerprint / runtime-restriction failures only show up on `*.vercel.app`. The 0.12.12 NASCAR prod regression shipped because this check was planned-but-skipped.
-
-## Release notes are mandatory — two files, two audiences
-
-**Every push to `main` must update three things:**
-
-1. **`CHANGELOG.md` (engineering log, git-only).** New section at the top: `## X.Y.Z — YYYY-MM-DD` with `### Fixed` / `### Added` / `### Changed` subsections. This is the detailed record for contributors — file paths, function names, root-cause explanations are fine here.
-2. **`RELEASES.md` (public-facing, rendered at `/changelog`).** Matching `## X.Y.Z — YYYY-MM-DD` section, but **user-facing prose only** — what changed for visitors, not where the diff landed. No file paths, no library names, no commit SHAs. 1–3 sentences per bullet. If a change has no user-visible impact, write one sentence acknowledging it (e.g. "Internal: hardened cron auth").
-3. **`package.json` `"version"` bump.** Patch for bugfix, minor for feature, major for breaking changes.
-
-The `/changelog` page reads `RELEASES.md` directly and shows `package.json.version` as "currently running". A push that skips this lies to users about what's live.
-
-**Why split:** mixing the two leaks the implementation map for free and reads as an immaturity signal to anyone evaluating Paddock (sponsors, contributors, recruiters). Engineering detail belongs in commit messages + `CHANGELOG.md` + `docs/HANDOFF.md`. The public `/changelog` is fan-facing.
-
-If you forget and code is already pushed, push a follow-up commit with both files updated immediately. Don't leave them stale.
+## Release notes — mandatory on every push to main
+1. `CHANGELOG.md` — engineering log (file paths, function names, root causes belong here).
+2. `RELEASES.md` — public, rendered at `/changelog`: user-facing prose ONLY — no file paths, no library names, no SHAs; 1–3 sentences per bullet; internal-only changes get one acknowledging line.
+3. `package.json` version bump — patch/minor/major.
+The `/changelog` page shows `package.json` version as "currently running" — skipping this lies to users. Forgot and already pushed → immediate follow-up commit with both files.
 
 ## Blog publishing SOP — drafts only, operator approves
-
-**Every blog post is created as a DB draft on PROD Supabase. Never ship a post as public MDX** — `content/posts/*.mdx` publishes on merge with no approval step (the 2026-07-03 British GP preview went live without sign-off this way; reverted in #373). MDX is allowed only when the operator explicitly asks for that path.
-
-1. **Create the draft on PROD:** `scripts/draft-post.mts` with the PROD `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + `BLOG_AUTHOR_ID` — or a Management API SQL insert (`.supabase-pat`, browser UA). ⚠️ `.env.local` points at LOCAL Supabase (127.0.0.1); a draft created with default env never reaches prod.
-2. **Leave `publish_at` null.** The operator approves + sets the scheduled time in the `/blog` admin queue (`lib/blog.ts` `createDraft` contract); the publish cron takes it live + fires the push.
-3. **Verify:** the row exists with `status='draft'` on prod, and the post does NOT appear on public `/blog`.
-4. Content itself still follows `feedback-paddock-scrutinise-drafts` — triple-check facts against primary sources before queueing.
+Every post is a DB draft on PROD Supabase; NEVER public MDX (`content/posts/*.mdx` auto-publishes on merge — the 2026-07-03 British GP preview went live unsigned that way; reverted in #373). MDX only when the operator explicitly asks.
+1. Create via `scripts/draft-post.mts` with PROD `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + `BLOG_AUTHOR_ID` (or Management API SQL insert via `.supabase-pat`). ⚠ `.env.local` points at LOCAL Supabase (127.0.0.1) — a draft created with default env never reaches prod.
+2. Leave `publish_at` null — the operator approves + schedules in the `/blog` admin queue (`lib/blog.ts` `createDraft` contract); the publish cron takes it live and fires the push.
+3. Verify: row exists with `status='draft'` on prod AND the post does NOT appear on public `/blog`.
+4. Triple-check content facts against primary sources before queueing.
 
 ## Critical landmines
-
-Detailed rationale in the handoff. Quick-reference:
-
-1. `next.config.ts` needs BOTH `serverExternalPackages: ["node-ical"]` AND `outputFileTracingIncludes` for node-ical. Removing either breaks production fetches.
-2. Middleware file is `proxy.ts` in Next 16, not `middleware.ts`. `clerkMiddleware()` itself unchanged.
-3. KV env vars are unprefixed (`KV_REST_API_URL`, `KV_REST_API_TOKEN`). Do not accept a "STORAGE" custom prefix from the Vercel Marketplace flow.
-4. Clerk publishable key must keep `NEXT_PUBLIC_` prefix exactly. Vercel Marketplace integration auto-creates env-var placeholders but leaves them empty on Production promote — you must paste real values manually.
-5. Notification badge must be monochrome (`public/icons/badge-96.png`). Regenerate via `scripts/gen-badge.py` if changed.
-6. Crons **fail closed**: missing `CRON_SECRET` → 503, wrong secret → 401, correct `Authorization: Bearer $CRON_SECRET` → run. Reversed from fail-open in 0.9.17 (security review); pattern in `lib/cron-auth.ts`. (This line previously described the pre-0.9.17 fail-open behavior — trusting it would have reintroduced the vulnerability; audit 2026-06.)
+1. `next.config.ts` needs BOTH `serverExternalPackages: ["node-ical"]` AND `outputFileTracingIncludes`. Removing either breaks production fetches.
+2. Middleware file is `proxy.ts` in Next 16, not `middleware.ts`; `clerkMiddleware()` itself unchanged.
+3. KV env vars are unprefixed (`KV_REST_API_URL`, `KV_REST_API_TOKEN`) — reject the Vercel Marketplace "STORAGE" prefix.
+4. Clerk publishable key keeps the `NEXT_PUBLIC_` prefix exactly; the Marketplace integration creates empty Production placeholders — paste real values manually.
+5. Notification badge must be monochrome (`public/icons/badge-96.png`; regenerate via `scripts/gen-badge.py`).
+6. Crons fail CLOSED (`lib/cron-auth.ts`): missing `CRON_SECRET` → 503, wrong → 401, `Authorization: Bearer $CRON_SECRET` → run. Never "restore" fail-open — that was the pre-0.9.17 vulnerability (audited 2026-06).
 
 ## Where things live
-
 | Path | Purpose |
 |---|---|
-| `app/` | Next.js App Router routes. `proxy.ts` is middleware. |
-| `components/` | React components. `components/weekend/*` for the race-weekend page. |
-| `lib/` | Pure modules (parsing, grouping, types). Server-only helpers end in `*-loader.ts` to keep client bundles clean. |
-| `content/series/<slug>/` | Per-series curated data (meta, drivers, champions, rounds, sessions overrides, overview, significance, fallback ICS). |
-| `content/posts/*.mdx` | Legacy blog posts. Do NOT add new ones — see the Blog publishing SOP. |
-| `tests/fixtures/` | ICS + JSON test fixtures. |
-| `memory/` (per-user, not in repo) | `project-paddock-handoff.md` is the running ops record; `feedback-*` files are rules. |
-| `IDEAS.md`, `SCHEDULE.md` | Idea ledger + time plan. Read at every session start. |
-| `CHANGELOG.md` | Engineering release log (git-only). Updated on every push with file-path-level detail. |
-| `RELEASES.md` | Public-facing release notes (rendered at `/changelog`). Updated on every push with user-facing prose only. |
+| `app/` | App Router routes (route-groups `(app)` / `(marketing)`); `proxy.ts` is middleware |
+| `components/` | React components; `components/weekend/*` = race-weekend page |
+| `lib/` | Pure modules; server-only helpers end in `*-loader.ts` to keep client bundles clean |
+| `content/series/<slug>/` | Per-series curated data (meta, drivers, champions, rounds, session overrides, fallback ICS) |
+| `content/posts/*.mdx` | Legacy blog posts — do NOT add new ones (see Blog SOP) |
+| `tests/fixtures/` | ICS + JSON fixtures |
+| `IDEAS.md`, `SCHEDULE.md` | Idea ledger + time plan — session-start reads |
+| `CHANGELOG.md` / `RELEASES.md` | Engineering log / public notes at `/changelog` |
+
+## Commands
+`npm run dev` (`next dev --webpack` — webpack forced over Turbopack) · `build` · `lint` · `test` (vitest, `--passWithNoTests`) · `health` / `health:standings` / `health:results` · `indexnow:submit`. Requires `.env.local` / `.clerk` / `.supabase-pat` (present, gitignored).
 
 ## Commit & branch conventions
-
-- Paddock is now a two-person project. **Read `CONTRIBUTING.md`** for the full workflow.
-- Default flow: branch from latest `main` → PR → preview review → squash-merge.
-- Never push directly to `main`. Hot-fix process documented in `CONTRIBUTING.md`.
-- Conventional commits: `feat(scope):`, `fix(scope):`, `docs:`, `chore:`. See `git log --oneline` for prior style.
-- Commit body explains the *why*, not the *what*.
-- **Never include `Co-Authored-By` or any Claude attribution** in commit messages.
-- Bundle related fixes; don't split a single user-facing bug across multiple commits if they share a root cause.
-
-## When in doubt
-
-- Use `AskUserQuestion` to confirm scope or design choice. The cost of asking is 30s; the cost of wrong work is hours.
-- If a memory says one thing and the current code says another, trust the code and update the memory.
-- If a TODO from the handoff is uncertain, check `git log` first — it may already be done.
+- Two-person project — read `CONTRIBUTING.md`. Branch from latest `main` → PR → preview review → squash-merge. Never push directly to `main`.
+- Conventional commits (`feat(scope):`, `fix(scope):`, `docs:`, `chore:`); body explains the why. Bundle fixes sharing a root cause.
+- Never include `Co-Authored-By` or any Claude attribution in commit messages.
