@@ -88,6 +88,37 @@ export async function loadDriverPortraits(
   return file?.drivers ?? {};
 }
 
+/** One declared car upgrade: the component, its primary reason (Performance /
+ * Reliability / Circuit-specific + sub-reason), and a short factual detail. */
+export interface UpgradeItem {
+  component: string;
+  reason: string;
+  detail: string;
+}
+/** A team's upgrade submission for a weekend. */
+export interface TeamUpgrades {
+  team: string;
+  items: UpgradeItem[];
+}
+/** One round's curated upgrades, from the FIA Car Presentation Submissions doc. */
+export interface RoundUpgrades {
+  gp: string;
+  date: string;
+  doc: number;
+  teams: TeamUpgrades[];
+}
+
+/** Curated per-weekend F1 car upgrades (from the official FIA Car Presentation
+ * Submissions PDF; see docs/research/2026-07-06-f1-upgrades-data-source.md).
+ * F1-only. Returns null when the round has no curated entry. */
+export async function loadF1Upgrades(round: number): Promise<RoundUpgrades | null> {
+  const file = await readJsonIfExists<Record<string, RoundUpgrades>>(
+    path.join(SERIES_ROOT, 'f1', 'upgrades.json'),
+  );
+  const entry = file?.[String(round)];
+  return entry && typeof entry === 'object' && Array.isArray(entry.teams) ? entry : null;
+}
+
 export function loadResultsOverrides(
   slug: string,
 ): Promise<ResultsOverridesFile | null> {

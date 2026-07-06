@@ -1,0 +1,131 @@
+{
+  "_comment": "Per-weekend F1 car upgrades, curated from the official FIA 'Car Presentation Submissions' documents (one per GP; the doc teams legally submit declaring new parts). Keyed by round → { gp, date, doc, teams:[{team, items:[{component, reason, detail}]}] }. Only teams that submitted updates are listed; the renderer derives the 'no updates' teams from the F1 roster. `detail` is a short factual summary of the geometric change (not F1.com's editorial prose). Source: fia.com/system/files/decision-document/2026_<gp>_-_car_presentation_submissions.pdf. Curation-first (see docs/research/2026-07-06-f1-upgrades-data-source.md). Rounds 1-6 backfill pending.",
+  "7": {
+    "gp": "Barcelona-Catalunya Grand Prix",
+    "date": "2026-06-12",
+    "doc": 14,
+    "teams": [
+      { "team": "McLaren", "items": [
+        { "component": "Front Wing", "reason": "Performance — Flow Conditioning", "detail": "Revised front wing endplate for improved flow conditioning." }
+      ] },
+      { "team": "Mercedes", "items": [
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "Small winglets added on the centreline to raise upper-wing camber." }
+      ] },
+      { "team": "Red Bull", "items": [
+        { "component": "Front Wing", "reason": "Performance — Local Load & Flow Conditioning", "detail": "Revised element geometries where they meet the endplate." },
+        { "component": "Front Wing (flaps)", "reason": "Balance Range", "detail": "More-cambered flap assembly available for extra local load." }
+      ] },
+      { "team": "Ferrari", "items": [
+        { "component": "Front Wing", "reason": "Performance — Local Load", "detail": "Revised footplate/vanes and endplate diveplane addition." },
+        { "component": "Nose", "reason": "Performance — Local Load", "detail": "New SM mechanism links, revised nose with raised lower surface." },
+        { "component": "Floor (board, edge, body, diffuser)", "reason": "Performance — Local Load", "detail": "Reduced keel volume; redesigned floor leading edge; diffuser reprofiling." },
+        { "component": "Sidepod / Coke", "reason": "Performance — Flow Conditioning", "detail": "Inflated sidepod shoulder and adapted cokeline." }
+      ] },
+      { "team": "Williams", "items": [
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "SM-fairing winglets and third-element trailing-edge extensions." }
+      ] },
+      { "team": "Racing Bulls", "items": [
+        { "component": "Front Wing", "reason": "Circuit specific — Balance Range", "detail": "Extra flap-gurney options for setup range." },
+        { "component": "Diffuser / Rear Crash Structure", "reason": "Performance — Flow Conditioning", "detail": "Updated diffuser profile and integration with the crash structure." }
+      ] },
+      { "team": "Haas", "items": [
+        { "component": "Rear Impact Structure", "reason": "Performance — Local Load", "detail": "Simplified geometry for circuit-specific tuning." }
+      ] },
+      { "team": "Cadillac", "items": [
+        { "component": "Cooling Louvres", "reason": "Performance — Cooling Range", "detail": "Louvres added to the upper rear sidepod surface." },
+        { "component": "Rear Wing", "reason": "Performance — Drag Reduction", "detail": "SLM actuator fairing added to restore a low-drag mode." }
+      ] }
+    ]
+  },
+  "8": {
+    "gp": "Austrian Grand Prix",
+    "date": "2026-06-26",
+    "doc": 14,
+    "teams": [
+      { "team": "McLaren", "items": [
+        { "component": "Rear Corner", "reason": "Performance — Flow Conditioning", "detail": "Revised rear brake duct inlet." },
+        { "component": "Rear Wing", "reason": "Performance — Drag Reduction", "detail": "Alternative straight-line-mode flap position." }
+      ] },
+      { "team": "Mercedes", "items": [
+        { "component": "Front Suspension", "reason": "Performance — Flow Conditioning", "detail": "Leg-fairing angle-of-attack adjustment." },
+        { "component": "Coke / Engine Cover", "reason": "Cooling Range", "detail": "Narrower rear exit to bias cooling flow to the louvres." }
+      ] },
+      { "team": "Red Bull", "items": [
+        { "component": "Sidepod Inlet", "reason": "Reliability", "detail": "Revised inlet geometry extending down and rearwards." },
+        { "component": "Engine Cover", "reason": "Reliability", "detail": "Revised sidepod panels to meet the new inlet geometry." },
+        { "component": "Floor", "reason": "Performance — Local Load", "detail": "Subtle revisions incl. the forward floor and top-body junction." },
+        { "component": "Rear Suspension", "reason": "Performance — Local Load", "detail": "Reprofiled fairings/junctions to the tail and gearbox." },
+        { "component": "Rear Corner", "reason": "Performance — Local Load", "detail": "Revised rear-suspension fairings and winglets." },
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "Revised pylon profiles." },
+        { "component": "Exhaust Tailpipe", "reason": "Performance — Local Load", "detail": "Revised overlap between the tailpipe exit and its bracket." }
+      ] },
+      { "team": "Ferrari", "items": [
+        { "component": "Front Wing Endplate", "reason": "Performance — Local Load", "detail": "Revised endplate with new diveplane and footplate vanes." },
+        { "component": "RV Tail", "reason": "Performance — Local Load (FP test)", "detail": "Removal of the central RV-tail element; correlation item." },
+        { "component": "Floor Board", "reason": "Correlation (FP test)", "detail": "Front floor-board optimisation, single vertical element." },
+        { "component": "Mirror Stay", "reason": "Correlation (FP test)", "detail": "Shorter mirror vertical stay and sidepod connection." }
+      ] },
+      { "team": "Racing Bulls", "items": [
+        { "component": "Exhaust Tailpipe", "reason": "Performance — Flow Conditioning", "detail": "Lowered tailpipe with a new bracket." },
+        { "component": "Diffuser", "reason": "Performance — Flow Conditioning", "detail": "Revised diffuser trailing-edge devices." }
+      ] },
+      { "team": "Haas", "items": [
+        { "component": "Front Corner", "reason": "Performance — Flow Conditioning", "detail": "Revised front brake duct for a smoother flow path." },
+        { "component": "Cooling Louvres", "reason": "Circuit specific — Cooling Range", "detail": "Additional gill/aperture option for cooling." }
+      ] },
+      { "team": "Audi", "items": [
+        { "component": "Front Wing Endplate", "reason": "Performance — Local Load", "detail": "Updated endplate design." },
+        { "component": "Front Corner", "reason": "Performance — Flow Conditioning", "detail": "Updated lower-deflector stay layout." },
+        { "component": "Floor", "reason": "Performance — Local Load", "detail": "Updated rear-floor design." },
+        { "component": "Rear Corner", "reason": "Performance — Flow Conditioning", "detail": "Updated lower-deflector design." },
+        { "component": "Rear Suspension", "reason": "Performance — Local Load", "detail": "Updated for the new rear flow conditions." },
+        { "component": "Beam Wing", "reason": "Performance — Local Load", "detail": "Updated lower beam wing." },
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "Updated rear wing design." }
+      ] },
+      { "team": "Alpine", "items": [
+        { "component": "Front Wing", "reason": "Performance — Local Load", "detail": "New front wing design (in-season development)." },
+        { "component": "Front Wing Endplate", "reason": "Performance — Local Load", "detail": "Redesigned to improve downstream flow control." },
+        { "component": "Nose", "reason": "Performance — Local Load", "detail": "Updated to integrate the new front wing." },
+        { "component": "Front Corner", "reason": "Performance — Flow Conditioning", "detail": "Revised geometry to work with the new front wing." },
+        { "component": "Diffuser", "reason": "Performance — Flow Conditioning", "detail": "Added a winglet for local flow management." }
+      ] },
+      { "team": "Cadillac", "items": [
+        { "component": "Sidepod Inlet", "reason": "Performance — Cooling Range", "detail": "Larger, reprofiled inlet area." },
+        { "component": "Engine Cover", "reason": "Performance — Cooling Range", "detail": "Resurfaced cover and updated fin profile." },
+        { "component": "Sidepod / Coke", "reason": "Performance — Flow Conditioning", "detail": "Resurfaced top deck; increased undercut; redefined coke profile." },
+        { "component": "Cooling Louvres", "reason": "Performance — Cooling Range", "detail": "Updated sidepod top-deck and engine-cover louvres." },
+        { "component": "Mirror Stay", "reason": "Performance — Flow Conditioning", "detail": "Changed incidence and updated stay profiles." },
+        { "component": "Roll Hoop Leg Fairings", "reason": "Performance — Flow Conditioning", "detail": "Reprofiled for stability across yaw angles." },
+        { "component": "Floor Bib / Leading Edge", "reason": "Performance — Local Load", "detail": "Updated bib/keel and reprofiled floor leading-edge devices." }
+      ] }
+    ]
+  },
+  "9": {
+    "gp": "British Grand Prix",
+    "date": "2026-07-03",
+    "doc": 13,
+    "teams": [
+      { "team": "McLaren", "items": [
+        { "component": "Front Corner", "reason": "Performance — Flow Conditioning", "detail": "New front brake duct for improved flow and aero load." },
+        { "component": "Floor Furniture", "reason": "Performance — Flow Conditioning", "detail": "Revised floor board and furniture for better flow physics." }
+      ] },
+      { "team": "Red Bull", "items": [
+        { "component": "Rear Corner", "reason": "Performance — Local Load", "detail": "Revised rear-wheel-bodywork cascade winglets." }
+      ] },
+      { "team": "Ferrari", "items": [
+        { "component": "Rear Corner", "reason": "Performance — Local Load & Cooling", "detail": "Larger cooling inlet/outlet, updated lower deflector, re-optimised winglets." }
+      ] },
+      { "team": "Williams", "items": [
+        { "component": "Front Wing", "reason": "Performance — Flow Conditioning", "detail": "New geometry with updated profiles and endplate surfaces." }
+      ] },
+      { "team": "Racing Bulls", "items": [
+        { "component": "Floor Edge & Diffuser", "reason": "Performance — Local Load", "detail": "Updated floor-corner and diffuser geometry." },
+        { "component": "Rear Corner", "reason": "Performance — Flow Conditioning", "detail": "New forward-deflector geometry." }
+      ] },
+      { "team": "Haas", "items": [
+        { "component": "Rear Wing", "reason": "Performance — Local Load", "detail": "Comprehensively revised rear-wing profiles." },
+        { "component": "Rear Wing Endplate", "reason": "Performance — Flow Conditioning", "detail": "Localised protrusions to promote upwash." }
+      ] }
+    ]
+  }
+}

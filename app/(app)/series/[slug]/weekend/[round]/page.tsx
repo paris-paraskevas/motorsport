@@ -17,6 +17,8 @@ import { withSocialMeta } from '@/lib/seo';
 import { Tv, ArrowUpRight } from 'lucide-react';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { loadMedia, highlightForRound } from '@/lib/media';
+import { loadF1Upgrades } from '@/lib/series-content';
+import { WeekendUpgrades } from '@/components/weekend/WeekendUpgrades';
 
 // ISR: weekend pages edge-cache (was force-dynamic — uncached, slow per hit).
 // Everything here is cacheable — weather (KV), news, and the standings-snapshot
@@ -110,6 +112,9 @@ export default async function WeekendPage({
   // stays ISR-safe. The headline clip shows once the weekend is in the past.
   const media = await loadMedia(slug);
   const raceHighlight = isPast ? highlightForRound(media, round) : undefined;
+  // Per-weekend car upgrades (F1 only) from the curated FIA Car Presentation
+  // data — fs read, ISR-safe. Null when this round has no curated entry.
+  const upgrades = slug === 'f1' ? await loadF1Upgrades(round) : null;
   const watch = series.meta.watch;
   const { title: weekendTitleLabel } = weekendLabel(weekend, round);
   const eventName =
@@ -200,6 +205,8 @@ export default async function WeekendPage({
           )}
         </section>
       )}
+
+      {upgrades && <WeekendUpgrades data={upgrades} />}
 
       {/* Tabs: Schedule (server-rendered timetable + weather, paints with the
           page; each session row links to its result page, and standings sit

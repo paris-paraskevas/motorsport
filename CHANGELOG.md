@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.169.0 — 2026-07-06
+
+### Added
+- **Per-weekend F1 car upgrades** (operator `/feedback` request): the F1 weekend page (`/series/f1/weekend/[round]`) now shows an "Upgrades" section — per team, the new parts declared to the FIA that weekend, each with its component, reason class (Performance / Reliability / Circuit-specific + sub-reason) and a short factual detail. Data **curated** from the official **FIA "Car Presentation Submissions"** documents (the filing teams legally submit — see `docs/research/2026-07-06-f1-upgrades-data-source.md`) into `content/series/f1/upgrades.json`; new `loadF1Upgrades` loader + `WeekendUpgrades` server component (native collapsible, zero client JS, SEO-visible). F1-only; renders only for rounds with a curated entry — **R7–R9 (Barcelona, Austria, Britain)** to start; R1–R6 backfill + a home-page widget are the follow-ups. FIA source-attributed. Verified server-side: renders R7–R9 with every declaring team; absent on non-F1 series + rounds without data; tsc + 753 tests + build clean.
+
 ## 0.168.3 — 2026-07-06
 
 ### Added
