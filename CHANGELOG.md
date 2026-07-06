@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.169.2 — 2026-07-06
+
+### Fixed
+- **Calendar tab: a past weekend rendered as a tall empty box** (operator-reported, British GP): the series Calendar tab's 2-column month grid used the default `align-items: stretch`, so a compact **past** weekend card (collapsed to a date + name row) stretched to the height of a tall **upcoming** card beside it (full session timetable) — ballooning into a big empty bordered box. Added `lg:items-start` to `MonthScopedWeekends` so each card keeps its natural height. Surfaced now that the British GP (3–5 Jul) fell into the past while still sharing July with the upcoming Belgian/Hungarian rounds; not introduced by any recent change. tsc + eslint + `next build` clean; the `items-start` class is confirmed in the rendered grid (visual not screenshot-confirmed — Playwright was disconnected — but this is a deterministic no-stretch fix).
+
 ## 0.169.1 — 2026-07-06
 
 ### Added

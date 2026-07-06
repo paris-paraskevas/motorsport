@@ -66,7 +66,10 @@ export function MonthScopedWeekends({
           Nothing in this month.
         </div>
       ) : (
-        <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
+        // items-start: grid rows must NOT stretch cards to the tallest neighbour
+        // — a compact past weekend beside a tall upcoming one would otherwise
+        // balloon into a tall empty box. Each card keeps its natural height.
+        <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
           {inMonth.map(({ weekend, round }) => (
             <WeekendBlock
               key={weekend.key}
