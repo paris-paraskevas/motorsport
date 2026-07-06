@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.168.1 — 2026-07-06
+
+### Added
+- **F1 weekend highlights for Austria (R8) + Britain (R9)**: seeded `content/series/f1/media.json` with the official FORMULA 1 race-highlight videos so those weekend/race pages now embed the recap (Austria `usP9O0zFVaA`, Britain `rnjmSOUYVp8`). Each verified via YouTube oEmbed to be the official FORMULA 1 channel + correct round — a beIN SPORTS re-upload that out-ranked it in search was rejected. Existing f1/f3/wec clips were oEmbed-audited the same pass (all official-channel + live). Broader multi-series seeding remains a curation pass using the same verified pattern (WebSearch official channel → oEmbed-verify → add).
+
 ## 0.168.0 — 2026-07-06
 
 ### Changed
