@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.170.0 — 2026-07-06
+
+### Added
+- **Home widget: F1 car upgrades** (opt-in, default-hidden): a new home block showing the latest F1 weekend's declared parts per team (sorted by count), linking to that weekend's full Upgrades section. New `/api/home/upgrades` route (edge-cached; reads the curated FIA sidecar via `loadLatestF1Upgrades`) + `f1-upgrades` in the home registry (`HOME_LAYOUT_VERSION` 9→10; reconcile default-hides it for existing users, like every opt-in widget). Defer-fetched only when shown + expanded, so a home that never enables it pays nothing. Enable from Customise. Headless-verified: tsc + eslint + 753 tests + `next build`; the API returns the R9 (British GP) summary. NB: the on-`/app` render is opt-in + signed-in-customisable, so it awaits an in-browser verification pass (Playwright was disconnected this session) — shipped as a review-ready PR.
+
 ## 0.169.2 — 2026-07-06
 
 ### Fixed

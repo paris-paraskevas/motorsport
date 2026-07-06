@@ -130,6 +130,14 @@ interface HomeSpotlightDriver {
   seriesColor: string;
 }
 
+// Mirrors the /api/home/upgrades route export.
+interface HomeUpgradesData {
+  round: number;
+  gp: string;
+  totalParts: number;
+  teams: { team: string; count: number }[];
+}
+
 const NEWS_LIMIT = 10;
 
 /* ── PADDOCK WIRE filter persistence ─────────────────────────────────────
@@ -520,6 +528,28 @@ export function HomeContent({
       alive = false;
     };
   }, [spotlightHidden, spotlightCollapsed]);
+
+  // F1 CAR UPGRADES — opt-in, default-hidden. The latest F1 round's declared
+  // parts per team (from the curated FIA Car Presentation sidecar). Same
+  // defer-fetch shape; undefined = loading, null = nothing curated yet.
+  const [upgrades, setUpgrades] = useState<HomeUpgradesData | null | undefined>(undefined);
+  const upgradesHidden = layout.hidden.includes('f1-upgrades');
+  const upgradesCollapsed = layout.collapsed.includes('f1-upgrades');
+  useEffect(() => {
+    if (upgradesHidden || upgradesCollapsed) return;
+    let alive = true;
+    fetch('/api/home/upgrades')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (alive) setUpgrades(d as HomeUpgradesData | null);
+      })
+      .catch(() => {
+        if (alive) setUpgrades(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [upgradesHidden, upgradesCollapsed]);
 
   // Until followed-series prefs resolve on the client, render a skeleton — never
   // the unfiltered page. /app is statically cached / user-agnostic, so the SSR
@@ -1552,6 +1582,56 @@ export function HomeContent({
                     </div>
                   );
                 })}
+              </div>
+            ))}
+        </section>
+      )}
+      {/* ── F1 CAR UPGRADES — opt-in, default-hidden. The latest F1 weekend's
+             declared parts per team (curated from the FIA Car Presentation doc),
+             linking to the weekend's full Upgrades section. ── */}
+      {!isHidden('f1-upgrades') && (
+        <section aria-label="F1 car upgrades" className="mb-8" style={{ order: orderOf('f1-upgrades') }}>
+          <CollapsibleSectionHead
+            title="F1 car upgrades"
+            sub="latest weekend"
+            collapsed={isCollapsed('f1-upgrades')}
+            onToggle={() => toggleCollapsed('f1-upgrades')}
+          />
+          {!isCollapsed('f1-upgrades') &&
+            (upgrades === undefined ? (
+              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
+                <div className="h-4 w-1/3 animate-pulse bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+              </div>
+            ) : !upgrades ? (
+              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
+                No F1 upgrades to show yet.
+              </p>
+            ) : (
+              <div className="border-y border-border py-4">
+                <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em]">
+                  <span className="font-semibold text-text">{upgrades.gp}</span>
+                  <span className="text-text-faint">
+                    · {upgrades.totalParts} new {upgrades.totalParts === 1 ? 'part' : 'parts'}
+                  </span>
+                </div>
+                <ol className={`divide-y divide-border${dense('f1-upgrades') ? ' [&_li]:py-1.5' : ''}`}>
+                  {upgrades.teams.map(t => (
+                    <li key={t.team} className="flex items-baseline gap-3 py-2 min-w-0">
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-text">{t.team}</span>
+                      <span className="shrink-0 font-mono text-[11px] text-text-faint tnum">
+                        {t.count} {t.count === 1 ? 'part' : 'parts'}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+                <Link
+                  href={`/series/f1/weekend/${upgrades.round}`}
+                  className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+                >
+                  Full upgrades
+                  <ArrowUpRight size={13} />
+                </Link>
               </div>
             ))}
         </section>
