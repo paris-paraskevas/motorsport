@@ -18,6 +18,7 @@ vi.mock('@vercel/kv', () => ({
 }));
 
 import { allowRequest, clientIp } from './rate-limit';
+import { kv } from '@vercel/kv';
 
 describe('allowRequest', () => {
   beforeEach(() => {
@@ -53,6 +54,19 @@ describe('allowRequest', () => {
     expect(await allowRequest('a', 1, 900)).toBe(true);
     expect(await allowRequest('a', 1, 900)).toBe(false);
     expect(await allowRequest('b', 1, 900)).toBe(true);
+  });
+
+  it('fails closed when KV is unconfigured and failClosed=true', async () => {
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
+    expect(await allowRequest('closed:bucket', 2, 900, true)).toBe(false);
+  });
+
+  it('fails closed on a KV error when failClosed=true (still open by default)', async () => {
+    vi.mocked(kv.incr).mockRejectedValueOnce(new Error('kv down'));
+    expect(await allowRequest('err:bucket', 5, 900, true)).toBe(false);
+    vi.mocked(kv.incr).mockRejectedValueOnce(new Error('kv down'));
+    expect(await allowRequest('err:bucket', 5, 900)).toBe(true);
   });
 });
 

@@ -2,9 +2,11 @@ import { kv } from '@vercel/kv';
 
 // Fixed-window KV rate limiter (security audit 2026-06-11). Guards the
 // unauthenticated write surface (/api/contact) and cheap-to-abuse authed
-// writes. Fails OPEN when KV is absent or erroring: for these surfaces,
-// availability beats strictness — the accepted trade is documented in
-// docs/research/security-audit-2026-06-11.md.
+// writes. Fails OPEN by default when KV is absent or erroring: for those
+// surfaces, availability beats strictness — the accepted trade is documented
+// in docs/research/security-audit-2026-06-11.md. Cost-bearing endpoints (the
+// AI assistant) opt into failClosed=true so an unavailable limiter denies
+// rather than letting unbounded spend through.
 
 function isKvConfigured(): boolean {
   return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
@@ -43,8 +45,11 @@ export async function allowRequest(
   bucket: string,
   limit: number,
   windowSeconds: number,
+  failClosed = false,
 ): Promise<boolean> {
-  if (!isKvConfigured()) return true;
+  // failClosed=true → deny when KV is unconfigured or erroring (cost-bearing
+  // endpoints); default false preserves availability-first behaviour.
+  if (!isKvConfigured()) return !failClosed;
   const window = Math.floor(Date.now() / (windowSeconds * 1000));
   const key = `paddock:ratelimit:${bucket}:${window}`;
   try {
@@ -54,6 +59,6 @@ export async function allowRequest(
     }
     return count <= limit;
   } catch {
-    return true;
+    return !failClosed;
   }
 }
