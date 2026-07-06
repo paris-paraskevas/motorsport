@@ -1045,6 +1045,7 @@ Outcomes:
 - → done: **W8 kickoff shipped 0.171.0 (#420)** — `LaunchBanner` (ships dark, flag-gated; visual-verified both states) + `docs/launch-checklist.md` + `docs/research/2026-07-06-launch-marketing.md`. Gates green (tsc / eslint 0 / 753 tests / build).
 - → reverted: **bet-display refinement** (stretch) — attempted, browser-caught that `bet.multiplier` is settle-only (pending bets carry no odds), reverted; needs a data-model decision (persist-at-placement migration vs read-side join). Captured to IDEAS + HANDOFF.
 - → done: **AI site-help assistant MVP shipped 0.172.0 (#422)** — account-gated `/assistant` + `/api/assistant` + `lib/assistant/*`, Gemini Flash free behind a swap seam, grounded in a curated corpus, guardrailed + rate-limited (fail-closed). Ships DARK (no key → 503). Verified localhost (panel + fail-closed limiter); gates green (761 tests). Go-live = operator sets the key + privacy line, verify on prod.
+- → done: **assistant reworked into a floating "Race Engineer" chat widget 0.173.0 (#424)** — operator disliked the page UI; now a persistent launcher + conversational multi-turn panel, replacing the page. Gated on `NEXT_PUBLIC_ASSISTANT_ENABLED=1` (ships dark = no launcher). Verified working state on localhost; dark state NOT eyeballed (Playwright MCP died after a broad node kill — also likely stopped the operator's dev server). Gates green (763 tests).
 
 Active:
 _(no `[+Nm]` prefixes captured)_
