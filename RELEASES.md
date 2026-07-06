@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.169.0 — 2026-07-06
+
+**See what each team upgraded.** F1 weekend pages now list the new parts every team brought to that Grand Prix — component, purpose and a short description — straight from the official FIA car-presentation filings. Live for the most recent rounds, with earlier races and a home-page widget coming next.
+
 ## 0.168.3 — 2026-07-06
 
 **F2 and F3 highlights.** The latest Formula 2 (Britain) and Formula 3 (Austria) weekend pages now carry their official feature- and sprint-race recap videos.
