@@ -1027,6 +1027,23 @@ Active: _(autonomous overnight + follow-ups; no `[+Nm]` prefixes)_
 
 ---
 
+## Week of 2026-07-06
+
+### Mon 2026-07-06 — W8 launch program kickoff
+
+Plan (approved):
+
+1. Gate items first: signed-in verify of the f1-upgrades home widget (#418, Customise → enable → /app); AI-assistant + feeder-intake decisions via AskUserQuestion (answer or defer).
+2. W8 launch program: launch checklist (`docs/launch-checklist.md`) + launch announcement banner (copy + 1.0.0-timing decision — no existing "early access" label exists, this is an announce surface) + marketing-channel plan (`docs/research/2026-07-06-launch-marketing.md`, plan doc only, nothing posted).
+3. Stretch: bet-display refinement (multiplier + credits-to-earn on placed bets).
+
+Won't touch: AI assistant / feeder intake builds (decision-gated), F3 rounds renumber, grid market migration, real-odds adapter, R10 upgrades curation (FIA doc drops ~Thu Jul 16).
+
+Active:
+_(awaiting [+Nm] prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.171.0 — 2026-07-06
+
+**Behind the scenes.** Groundwork for our upcoming 1.0 launch — nothing visible yet.
+
 ## 0.170.0 — 2026-07-06
 
 **New home widget: F1 car upgrades.** Add it from Customise to see, at a glance, how many new parts each team brought to the latest Grand Prix — tap through for the full breakdown. Off by default.

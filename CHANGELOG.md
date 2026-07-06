@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.171.0 — 2026-07-06
+
+### Added
+- **W8 launch program kickoff — v1.0 launch announcement banner (ships DARK).** New `components/LaunchBanner` mounted at the top of the app content column (prepended into `AppShell`'s `flex-1`, below the fixed header). Gated by `LAUNCH_ANNOUNCEMENT` in `lib/site.ts`: `active: false` renders nothing, so merging is a no-op for users. On launch day the operator flips `active` → true in the **same commit** that bumps `package.json` to `1.0.0` (see `docs/launch-checklist.md` §B). Dismissible; dismissal persists in `localStorage` keyed by the announcement `id` (bump the id for a future announcement to re-show it to everyone). Full-width bar matching the header container, brand-accent CTA → `/changelog`. **Visual-verified both states on localhost** (flag → true: bar renders + dismiss persists across reload; flag → false: nothing renders, 0 console errors). NB: there is **no existing "beta/early access" badge** in the app (grep-verified) — this is an announce surface, not a removal.
+- **`docs/launch-checklist.md`** — the v1.0 go/no-go gate: pre-flight sections (content · correctness invariants · infra · SEO · perf · legal · security · monitoring) + launch-day runbook (the flag flip + 1.0.0 bump + IndexNow re-ping + staggered marketing) + rollback + first-48h watch.
+- **`docs/research/2026-07-06-launch-marketing.md`** — per-channel launch plan (Reddit/YouTube/IG/X/FB), first-post drafts, subreddit shortlist, staggered launch-week sequence, measurement, and the in-app banner copy options. **Plan only — nothing posted.**
+
+### Notes
+- Operator decisions captured this session (against the two design docs): **AI assistant** = account-gated (free with a Paddock account), model/provider TBD at build — first build target after W8; **feeder-series intake** = opaque tokened link (no account) for v1; **v1.0** = build the banner now (dark) and flip it on launch day.
+
 ## 0.170.0 — 2026-07-06
 
 ### Added
