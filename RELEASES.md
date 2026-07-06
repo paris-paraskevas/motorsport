@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.168.2 — 2026-07-06
+
+**Every 2026 F1 weekend now has its race highlights.** Filled in the earlier rounds (Australia through Monaco) with their official recap videos.
+
 ## 0.168.1 — 2026-07-06
 
 **More race highlights.** The Austrian and British Grand Prix weekend pages now carry their official race-highlight videos.
