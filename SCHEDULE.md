@@ -1016,7 +1016,14 @@ Pre-mortem: a curated-name↔feed-name mismatch undercounts a team line — miti
 - → deferred (need operator decision): team logos (no free Commons source); Russell/Sainz/Hamilton portraits; the `/drivers/max-verstappen` slug-collision bug (primary-series tiebreak; sitemap/test blast radius).
 - Gate on every PR: tsc + eslint + 750 tests + next build + Playwright anon verify + prod-verify.
 
-Active: _(autonomous overnight run; no `[+Nm]` prefixes)_
+**Continued 07-04 → 07-06 (operator-directed "keep going" tail):**
+- → done: **W4 finished** — F1 portraits completed 22/22 (#402/#404), team chart reworked to all-constructors (#405), cross-series driver-slug fix (#404).
+- → done: **per-weekend F1 UPGRADES** feature — data source found (FIA Car Presentation docs), weekend section + R1–R9 curated (251 parts) + opt-in home widget (#415/#416/#418, merged); media seeds F1/F2/F3 (#406/#413).
+- → done: **calendar grid-stretch fix** (#417); two design docs (feeder intake, AI assistant).
+- → open: home-upgrades widget signed-in glance; AI-assistant + feeder-intake build decisions.
+- Net this stretch: **18 PRs #401–#418, main 0.164.0 → 0.170.0.** Full record in `docs/HANDOFF.md` (2026-07-06 block). Playwright disconnected late → the one unverified item (home widget) shipped headless-verified + prod API confirmed.
+
+Active: _(autonomous overnight + follow-ups; no `[+Nm]` prefixes)_
 
 ---
 
