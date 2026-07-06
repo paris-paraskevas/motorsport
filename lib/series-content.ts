@@ -119,6 +119,27 @@ export async function loadF1Upgrades(round: number): Promise<RoundUpgrades | nul
   return entry && typeof entry === 'object' && Array.isArray(entry.teams) ? entry : null;
 }
 
+/** The most recent curated F1 round that has upgrades (highest round number with
+ *  a non-empty teams list), plus its round number — for the opt-in home widget.
+ *  null when nothing is curated. */
+export async function loadLatestF1Upgrades(): Promise<(RoundUpgrades & { round: number }) | null> {
+  const file = await readJsonIfExists<Record<string, RoundUpgrades>>(
+    path.join(SERIES_ROOT, 'f1', 'upgrades.json'),
+  );
+  if (!file) return null;
+  const rounds = Object.keys(file)
+    .filter(k => /^\d+$/.test(k))
+    .map(Number)
+    .sort((a, b) => b - a);
+  for (const r of rounds) {
+    const e = file[String(r)];
+    if (e && typeof e === 'object' && Array.isArray(e.teams) && e.teams.length > 0) {
+      return { ...e, round: r };
+    }
+  }
+  return null;
+}
+
 export function loadResultsOverrides(
   slug: string,
 ): Promise<ResultsOverridesFile | null> {

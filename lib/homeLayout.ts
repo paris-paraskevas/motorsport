@@ -6,7 +6,7 @@
 //
 // Nav-item and series-tab customization are deferred (phase 2/3).
 
-export const HOME_LAYOUT_VERSION = 9;
+export const HOME_LAYOUT_VERSION = 10;
 
 export type HomeElementId =
   | 'chyron'
@@ -26,7 +26,8 @@ export type HomeElementId =
   | 'latest-decoded'
   | 'where-to-watch'
   | 'next-weather'
-  | 'driver-spotlight';
+  | 'driver-spotlight'
+  | 'f1-upgrades';
 
 export interface HomeElementMeta {
   id: HomeElementId;
@@ -59,6 +60,7 @@ export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'where-to-watch', label: 'Where to watch', hint: 'Broadcast links for your next few upcoming sessions.', collapsible: true },
   { id: 'next-weather', label: 'Next-race weather', hint: 'The forecast for your next followed round.', collapsible: true },
   { id: 'driver-spotlight', label: 'Driver spotlight', hint: 'A rotating driver from your series, with links into Drivers and Teams.', collapsible: true },
+  { id: 'f1-upgrades', label: 'F1 car upgrades', hint: 'What each team brought to the latest F1 weekend, from the official FIA filings.', collapsible: true },
 ];
 
 const ALL_IDS = HOME_ELEMENTS.map(e => e.id);
@@ -140,7 +142,7 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight'];
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
