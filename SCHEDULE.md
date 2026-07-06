@@ -1039,8 +1039,14 @@ Plan (approved):
 
 Won't touch: AI assistant / feeder intake builds (decision-gated), F3 rounds renumber, grid market migration, real-odds adapter, R10 upgrades curation (FIA doc drops ~Thu Jul 16).
 
+Outcomes:
+- → done: **f1-upgrades home widget (#418) signed-in verify** — renders on `/app`, layout undisturbed, 0 console errors (now enabled on the operator's account).
+- → done: **design-doc decisions** captured — AI assistant = account-gated (build first after W8); feeder intake = tokened link; v1.0 = build banner now (dark), flip on launch day.
+- → done: **W8 kickoff shipped 0.171.0 (#420)** — `LaunchBanner` (ships dark, flag-gated; visual-verified both states) + `docs/launch-checklist.md` + `docs/research/2026-07-06-launch-marketing.md`. Gates green (tsc / eslint 0 / 753 tests / build).
+- → reverted: **bet-display refinement** (stretch) — attempted, browser-caught that `bet.multiplier` is settle-only (pending bets carry no odds), reverted; needs a data-model decision (persist-at-placement migration vs read-side join). Captured to IDEAS + HANDOFF.
+
 Active:
-_(awaiting [+Nm] prefixes)_
+_(no `[+Nm]` prefixes captured)_
 
 ---
 
