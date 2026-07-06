@@ -87,7 +87,12 @@ const DEFAULT_VISIBLE_COUNT = 6;
 // behind the same "+N more" expander pattern the chip legend uses.
 const RANKED_LIST_VISIBLE_COUNT = 10;
 
-export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendData) {
+export function SeasonTrendChart({
+  data,
+  drivers,
+  totalsByDriver,
+  emphasize,
+}: SeasonTrendData & { emphasize?: string }) {
   const ranked = useMemo(
     () =>
       [...drivers].sort(
@@ -96,9 +101,13 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
     [drivers, totalsByDriver],
   );
 
-  const [visible, setVisible] = useState<Set<string>>(
-    () => new Set(ranked.slice(0, DEFAULT_VISIBLE_COUNT).map(d => d.name)),
-  );
+  const [visible, setVisible] = useState<Set<string>>(() => {
+    // Default to the top lines, but always include the emphasized line (the
+    // team whose page this is) so its trajectory shows even when it's mid-pack.
+    const init = new Set(ranked.slice(0, DEFAULT_VISIBLE_COUNT).map(d => d.name));
+    if (emphasize) init.add(emphasize);
+    return init;
+  });
   const [legendExpanded, setLegendExpanded] = useState(false);
   const [listExpanded, setListExpanded] = useState(false);
   const lineStyles = useMemo(() => buildLineStyles(ranked), [ranked]);
@@ -192,7 +201,7 @@ export function SeasonTrendChart({ data, drivers, totalsByDriver }: SeasonTrendD
                     dataKey={d.name}
                     stroke={style.stroke}
                     strokeDasharray={style.dash}
-                    strokeWidth={visible.has(d.name) ? 2 : 0}
+                    strokeWidth={visible.has(d.name) ? (d.name === emphasize ? 3.5 : 2) : 0}
                     // Always-visible point markers at every round (operator
                     // 2026-06-11); hover grows the active one and rings it in
                     // the page background so it pops against crossing lines.

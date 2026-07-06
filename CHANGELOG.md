@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.168.0 — 2026-07-06
+
+### Changed
+- **Team page points chart now shows every constructor, not just the one team** (operator: a lone one-team line is pointless): `/teams/[slug]` plots all the series' constructors' cumulative-points trajectories (`aggregateTeamsTrend` over every curated team), so the chart reads as the constructors' championship battle with the current team in context. The current team is emphasized — forced into the chart's default-visible set and drawn thicker (new optional `emphasize` prop on `SeasonTrendChart`/`LazySeasonTrendChart`; backward-compatible, so the driver/compare/standings usages are untouched). Still gated on the `pointsExact` invariant set. Verified in-browser: McLaren's line (179 = Norris 97 + Piastri 82) sits among all 11 F1 teams, Mercedes leading on 333, McLaren stroke visibly thicker.
+
 ## 0.167.0 — 2026-07-06
 
 ### Added

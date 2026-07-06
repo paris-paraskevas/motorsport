@@ -16,6 +16,6 @@ const Chart = dynamic(
   },
 );
 
-export function LazySeasonTrendChart(props: SeasonTrendData) {
+export function LazySeasonTrendChart(props: SeasonTrendData & { emphasize?: string }) {
   return <Chart {...props} />;
 }

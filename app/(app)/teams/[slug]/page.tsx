@@ -17,6 +17,7 @@ import {
   type SeasonTrendData,
 } from '@/lib/season-trend';
 import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
+import { loadCuratedDrivers } from '@/lib/series-content';
 import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
@@ -47,30 +48,33 @@ export async function generateMetadata({
   };
 }
 
-// Aggregate the full-season trend into ONE line for this team by summing its
-// member drivers' cumulative points at each round — mirrors the driver page's
-// trendForDriver (and the compare page's trendForTwo), team-summed via the
-// tested aggregateTeamsTrend. Each curated member name resolves to its
-// results-feed name with namesMatch (drivers.json vs feed drift). null when no
-// member ever appears in the feed. It's combined driver points, NOT the
-// Constructors' championship (a mid-season substitute's points sit outside the
-// curated roster — the aggregateTeamsTrend caveat), so the section labels it so.
-function trendForTeam(
+// Build EVERY constructor's cumulative-points trajectory for the series (via the
+// tested aggregateTeamsTrend), so a team page shows the championship battle with
+// this team in context — a lone one-team line reads as pointless (operator). The
+// chart emphasizes the current team. Each team's curated members resolve to their
+// results-feed names with namesMatch (drivers.json vs feed drift); teams with no
+// feed presence drop out. Sums of member points, not championship countback (the
+// aggregateTeamsTrend caveat) — fine for a trajectory read. null when nothing charts.
+function allTeamsTrend(
   full: SeasonTrendData,
-  teamName: string,
-  memberDriverNames: string[],
+  curatedTeams: Array<{ name: string; drivers: Array<{ name: string }> }>,
 ): SeasonTrendData | null {
-  const memberNames: string[] = [];
-  let feedTeam: string | undefined;
-  for (const name of memberDriverNames) {
-    const d = full.drivers.find(x => namesMatch(x.name, name));
-    if (d) {
-      memberNames.push(d.name);
-      feedTeam ??= d.team;
-    }
-  }
-  if (memberNames.length === 0) return null;
-  return aggregateTeamsTrend(full, [{ name: teamName, feedTeam, memberNames }]);
+  const inputs = curatedTeams
+    .map(t => {
+      const memberNames: string[] = [];
+      let feedTeam: string | undefined;
+      for (const d of t.drivers) {
+        const fd = full.drivers.find(x => namesMatch(x.name, d.name));
+        if (fd) {
+          memberNames.push(fd.name);
+          feedTeam ??= fd.team;
+        }
+      }
+      return { name: t.name, feedTeam, memberNames };
+    })
+    .filter(t => t.memberNames.length > 0);
+  if (inputs.length === 0) return null;
+  return aggregateTeamsTrend(full, inputs);
 }
 
 // Short "About" bio (Wikipedia intro) + "In the news" mentions. Twins of the
@@ -197,17 +201,20 @@ export default async function TeamPage({
           source && source.showTeams
             ? teamSeasonForm(source.races, source.extras, team.name)
             : null;
-        // Combined-points trajectory only where the feed's per-race points are
-        // championship-canonical (the same pointsExact gate the driver trend
-        // uses); winners-only / derived-points feeds would draw a false line.
-        const trend =
-          source && source.pointsExact
-            ? trendForTeam(
-                buildSeasonTrendData(source.races, source.extras ?? []),
-                team.name,
-                team.drivers.map(d => d.name),
-              )
-            : null;
+        // All constructors' trajectories (this team emphasized in the chart),
+        // only where the feed's per-race points are championship-canonical (the
+        // same pointsExact gate the driver trend uses); winners-only /
+        // derived-points feeds would draw a false line.
+        let trend: SeasonTrendData | null = null;
+        if (source && source.pointsExact) {
+          const curated = await loadCuratedDrivers(team.seriesSlug);
+          if (curated) {
+            trend = allTeamsTrend(
+              buildSeasonTrendData(source.races, source.extras ?? []),
+              curated.teams,
+            );
+          }
+        }
         return { teamForm, source, trend };
       } catch {
         return { teamForm: null, source: null, trend: null };
@@ -291,9 +298,9 @@ export default async function TeamPage({
           <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
             Points trajectory
           </h2>
-          <LazySeasonTrendChart {...trend} />
+          <LazySeasonTrendChart {...trend} emphasize={team.name} />
           <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            Combined driver points by round · from race results
+            Constructors&apos; points by round · {team.name} highlighted · from race results
           </div>
         </section>
       )}
