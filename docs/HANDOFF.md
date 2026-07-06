@@ -6,7 +6,23 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.171.0 · W8 launch program KICKOFF (banner ships dark + checklist + marketing plan) · f1-upgrades widget verified signed-in · design-doc DECISIONS captured — PR #420
+## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.172.0 · AI site-help ASSISTANT MVP shipped (ships dark) — PR #422
+
+Continued from the W8 block below. After locking the AI-assistant decisions (Gemini Flash free, accounts-only, donor-escalation), **built the site-help assistant MVP** — the decided next feature. **main 0.171.0 → 0.172.0, PR #422**, ships DARK.
+
+**What shipped (0.172.0, #422):** account-gated `/assistant` + `/api/assistant` + `lib/assistant/*`, grounded ONLY in `content/assistant/site-help.md`. Model behind a one-file swap seam (`lib/assistant/model.ts` — Gemini Flash free via direct REST, env `ASSISTANT_MODEL`). No `GOOGLE_GENERATIVE_AI_API_KEY` → 503 "not available yet" (that's the dark state). Guardrails (`lib/assistant/prompt.ts`, unit-tested): retrieve-or-refuse; NEVER state live data (results/standings/points/times/odds) — point to the page. Cost/abuse: per-user daily cap (20/day) + global per-minute guard (12/min, under Gemini's ~15 RPM), both **fail-closed** via a new `failClosed` option on `allowRequest`. Answer-only, single-turn.
+
+**Verified:** localhost signed-in — page renders, input validation, and the fail-closed limiter denies gracefully when KV is absent (429 → clean message; the only console "error" is the expected 429 network log). tsc · eslint 0 · **761 tests** · `next build` exit 0.
+
+**▶ TO GO LIVE (operator):** set `GOOGLE_GENERATIVE_AI_API_KEY` (+ the current free Flash id in `ASSISTANT_MODEL`) on Vercel; confirm Gemini free-tier data terms + add a `/privacy` line (queries sent to Google); then verify a real answer on prod. Until then it's dark (503). Steps in `docs/launch-checklist.md` (A6).
+
+**Landmines:** `allowRequest(..., failClosed=true)` DENIES when KV is down — the assistant route uses it, so locally (no KV) the assistant always 429s "daily limit" *before* the no-key 503; in prod (KV present) it passes through to the 503 until the key lands. The assistant answers ONLY from `content/assistant/site-help.md` — extend that file to teach it new things; it must never answer live data. Model id is env-overridable (`ASSISTANT_MODEL`) — don't hardcode; set to the current AI-Studio free Flash id.
+
+**Everything else** (W8 launch program #420, bet-display decision, all carry-overs) is unchanged in the block below.
+
+---
+
+## ⚡ Next session pickup — 2026-07-06 (W8 kickoff) — main 0.171.0 · W8 launch program KICKOFF (banner ships dark + checklist + marketing plan) · f1-upgrades widget verified signed-in · design-doc DECISIONS captured — PR #420
 
 **The session in one line:** cleared the two operator-owed gate items (signed-in widget verify + the AI-assistant/feeder decisions), then kicked off **W8 (v1.0 launch program)** — the last thing before 1.0. **main 0.170.0 → 0.171.0, PR #420** (squash-merged; ships dark, so prod is visually unchanged).
 
