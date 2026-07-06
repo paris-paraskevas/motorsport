@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.169.1 — 2026-07-06
+
+### Added
+- **F1 upgrades backfill — all rounds R1–R9**: extended `content/series/f1/upgrades.json` with the remaining rounds (Australia, China, Japan, Miami, Canada, Monaco — 0.169.0 shipped R7–R9), all curated from the official FIA Car Presentation Submissions documents. Every 2026 F1 weekend page now shows its Upgrades section — **251 declared parts across the season** (R1 = the launch-spec cars under the new 2026 regs, flagged as such). Data-only, no code change; verified R4 (Miami, incl. Ferrari's 11-part package) and R1 render server-side.
+
 ## 0.169.0 — 2026-07-06
 
 ### Added

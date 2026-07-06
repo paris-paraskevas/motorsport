@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.169.1 — 2026-07-06
+
+**Upgrades for the whole season.** Every 2026 F1 weekend page now shows the new parts each team brought — all rounds from Australia to Britain, sourced from the official FIA filings.
+
 ## 0.169.0 — 2026-07-06
 
 **See what each team upgraded.** F1 weekend pages now list the new parts every team brought to that Grand Prix — component, purpose and a short description — straight from the official FIA car-presentation filings. Live for the most recent rounds, with earlier races and a home-page widget coming next.
