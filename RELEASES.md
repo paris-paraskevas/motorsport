@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.169.2 — 2026-07-06
+
+**Calendar fix.** A past race weekend no longer shows as a big empty box next to the upcoming rounds — it stays a tidy, compact row.
+
 ## 0.169.1 — 2026-07-06
 
 **Upgrades for the whole season.** Every 2026 F1 weekend page now shows the new parts each team brought — all rounds from Australia to Britain, sourced from the official FIA filings.
