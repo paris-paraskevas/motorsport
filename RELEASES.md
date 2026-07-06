@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.173.1 — 2026-07-06
+
+**Privacy update.** Our privacy policy now notes that the in-app assistant (not switched on yet) sends your questions to Google to generate answers.
+
 ## 0.173.0 — 2026-07-06
 
 **Behind the scenes.** Reworked the in-app help assistant into a chat window you can open from any page — still off until we switch it on.

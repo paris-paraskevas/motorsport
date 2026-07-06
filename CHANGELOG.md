@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.173.1 — 2026-07-06
+
+### Fixed
+- **Assistant default model was stale.** `lib/assistant/model.ts` defaulted to `gemini-2.0-flash` (since retired from AI Studio → would 404 if `ASSISTANT_MODEL` were unset). Changed the default to `gemini-flash-lite-latest` (current, cheapest tier, auto-tracking alias — ample for grounded site-help). Override via `ASSISTANT_MODEL` (e.g. `gemini-flash-latest`) for stronger answers.
+
+### Added
+- **Privacy policy: in-app assistant disclosure** (`content/legal/privacy.md`) — states that assistant questions + recent chat are sent to Google (Gemini API) to generate replies, with a "don't share sensitive info" note; added Google (Gemini API) to the data-sharing table; bumped "Last updated". Lands before the assistant is switched on.
+
 ## 0.173.0 — 2026-07-06
 
 ### Changed

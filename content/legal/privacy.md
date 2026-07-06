@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated: 2026-05-19_
+_Last updated: 2026-07-06_
 
 This Privacy Policy explains what personal data Paddock Tracker collects, how it is used, who it is shared with, how long it is kept, and the rights you have over it. It applies to https://paddock-tracker.com (the "Site").
 
@@ -48,6 +48,9 @@ See Clerk's own privacy policy at https://clerk.com/legal/privacy.
 ### When you submit the contact form
 - Email address (if you provide one), message body, optional category. Stored short-term in Vercel KV and delivered to the operator inbox via Resend.
 
+### When you use the in-app assistant
+- If you open the in-app help assistant ("Race Engineer") and send a question, the text of your question and the recent messages in that chat are sent to **Google** (the Gemini API) to generate a reply. Please don't include sensitive personal information in your questions. The assistant is grounded in our own help content and does not receive your account data. See Google's terms at https://ai.google.dev/gemini-api/terms.
+
 ### When you give cookie consent
 - Your consent decision is captured and stored by **Google's Consent Management Platform** (Funding Choices). Google sets cookies such as `FCCDCF` on `paddock-tracker.com` to remember your choice across visits. We do not maintain a separate consent log on our side.
 
@@ -76,6 +79,7 @@ We do not sell personal data. We share data with the following service providers
 | **Google Analytics** | Anonymised usage events, cookies | Aggregate analytics (only if you grant analytics consent) |
 | **Google AdSense** | Ad-serving requests, cookies | Advertising (only if you grant marketing consent) |
 | **Resend** | Email address, message body (if you use the contact form) | Email delivery |
+| **Google (Gemini API)** | The text of your assistant questions | Generating in-app assistant replies (only if you use the assistant) |
 | **Open-Meteo, Wikipedia, jolpica** | Pseudonymous request metadata | Public-data fetches for weather/championship info |
 
 Each of these third parties has its own privacy policy and acts as an independent or sub-processor depending on the integration.

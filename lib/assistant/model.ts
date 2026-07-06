@@ -14,7 +14,10 @@ import type { ChatMessage } from './prompt';
 //                                   Flash model from AI Studio rather than trust
 //                                   the default.
 
-const DEFAULT_MODEL = 'gemini-2.0-flash';
+// Flash-Lite is plenty for grounded site-help and the cheapest tier; the
+// `-latest` alias auto-tracks Google's current Flash-Lite so it won't go stale.
+// Override with ASSISTANT_MODEL (e.g. gemini-flash-latest) for stronger answers.
+const DEFAULT_MODEL = 'gemini-flash-lite-latest';
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 const TIMEOUT_MS = 12_000;
 
