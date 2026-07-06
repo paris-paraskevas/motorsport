@@ -6,7 +6,17 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.172.0 · AI site-help ASSISTANT MVP shipped (ships dark) — PR #422
+## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.173.0 · AI ASSISTANT MVP (#422) then reworked into a floating "Race Engineer" chat widget (#424) — both ship dark
+
+**UI REWORK (0.173.0, #424) — latest:** operator didn't like the dedicated-page UI, so the assistant is now a **floating "Race Engineer" chat widget** — a persistent launcher (bottom-right, above the mobile bottom bar, every app page) that opens a conversational panel (message bubbles, **multi-turn**, race-engineer greeting). Removed `app/(app)/assistant/page.tsx` + `AssistantPanel.tsx`; added `components/assistant/AssistantWidget.tsx` (mounted in the app layout). `/api/assistant` + model seam now take a `messages[]` conversation (guardrails in the system instruction; history capped to 12 turns via `normalizeConversation`). **Ships DARK twice:** the launcher renders only when `NEXT_PUBLIC_ASSISTANT_ENABLED === '1'` (unset = no launcher), AND the API 503s without the key.
+- **Go-live now needs TWO env vars:** `NEXT_PUBLIC_ASSISTANT_ENABLED=1` (shows the launcher; `NEXT_PUBLIC_*` inlines at build → triggers a redeploy) + `GOOGLE_GENERATIVE_AI_API_KEY` (+ `ASSISTANT_MODEL`).
+- **Verified localhost:** launcher + panel + greeting + multi-turn send + fail-closed limiter (429 when KV absent), 0 JS errors. tsc/eslint 0/763 tests/build clean. **NOT eyeballed:** the dark state (launcher hidden, flag unset) — the **Playwright MCP disconnected** after I ran a broad `taskkill //IM node.exe` (which also killed the MCP servers + likely the operator's other node procs). Standard `NEXT_PUBLIC` early-return; benign worst case (a launcher that says "not available yet"). **Confirm on prod: no launcher should appear** (flag unset). ⚠️ **A dev server may NOT be running** (I killed all node); restart with `npm run dev` if needed.
+
+**The MVP (0.172.0, #422) is unchanged underneath** (route/guardrails/rate-limits/corpus) — the rework only swapped the UI surface + made it multi-turn. Original MVP notes below.
+
+---
+
+## ⚡ Next session pickup — 2026-07-06 (assistant MVP) — main 0.172.0 · AI site-help ASSISTANT MVP shipped (ships dark) — PR #422
 
 Continued from the W8 block below. After locking the AI-assistant decisions (Gemini Flash free, accounts-only, donor-escalation), **built the site-help assistant MVP** — the decided next feature. **main 0.171.0 → 0.172.0, PR #422**, ships DARK.
 
