@@ -46,6 +46,7 @@ The pre-flight gate + launch-day runbook + rollback plan for taking Paddock out 
 - [x] **Cookie consent** — Consent Mode v2 defaults denied; custom `CookieConsent` flips on choice.
 - [ ] **Betting disclaimers** — no-cashout / play-money framing present on `/social` + betting surfaces (marketing must not imply real gambling).
 - [ ] **Contact path works** — `/feedback` + contact form deliver to `pparaskevas.dev@gmail.com`.
+- [ ] **AI assistant (only when enabling it)** — ships dark; to go live, set `GOOGLE_GENERATIVE_AI_API_KEY` (+ confirm the current free Flash id in `ASSISTANT_MODEL`) in Vercel, confirm Gemini free-tier data-use terms, add a privacy-policy line that assistant questions are sent to Google (Gemini), keep the in-UI "don't share sensitive info" note, then verify a real answer on prod.
 
 ### A7 · Security
 - [x] **Security audit done** (`docs/research/security-audit-2026-06-11.md`, re-verified 2026-06-21) — W8 gate satisfied.

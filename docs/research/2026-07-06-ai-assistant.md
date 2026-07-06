@@ -35,13 +35,17 @@ user question
 - **Phase 1 — Site-help assistant (low risk, build first):** grounded in a curated help/FAQ corpus + the about/changelog/settings copy. It explains features and deep-links ("Customise → add the Standings-movers widget"). No live race-data surface → almost no hallucination exposure. High utility, safe MVP.
 - **Phase 2 — Grounded motorsport Q&A:** add retrieval over series data + live loaders. Higher value, higher risk — gated on Phase 1 proving the grounding + refusal behavior holds.
 
-## Open decisions (operator)
+## Decisions (RESOLVED 2026-07-06) + status
 
-1. **Scope for v1** — site-help only, or straight to grounded Q&A? (Recommend site-help MVP first.)
-2. **Free vs account-gated vs paid** — LLM calls cost per query. Options: free w/ tight rate-limit; account-gated (leans on the Clerk model the betting area uses); or a paid tier. A product+cost call.
-3. **Provider/model + budget** — AI Gateway model choice + a per-user/day cap; abuse protection (Turnstile / rate-limit, like the contact form).
-4. **"Answer only" vs "can act"** — pure Q&A, or can it navigate/deep-link/prefill (e.g. open the customise page)? Start answer-only.
-5. **Guardrail acceptance** — confirm the "refuse when uncovered, never guess race facts, always link the source page" contract is the bar (it must be, given the accuracy invariant).
+**MVP BUILT 2026-07-06 — ships DARK until the API key lands (0.172.0).** Site-help assistant: account-gated `/assistant` + `/api/assistant` + `lib/assistant/*` grounded in `content/assistant/site-help.md`, model behind a swappable seam (`lib/assistant/model.ts`).
+
+1. **Scope for v1** — ✅ site-help MVP first (curated-corpus grounding; Phase-2 grounded Q&A later).
+2. **Free vs account-gated vs paid** — ✅ account-gated (free with a Paddock account), Gemini Flash free tier. Escalation if capacity bites: gate to donors — but that needs a donor-identity flag first (Buy-me-a-coffee is external; deferred per operator).
+3. **Provider/model + budget** — ✅ Gemini Flash (free), called direct to stay on the free tier, behind a one-file swap seam; env-configurable model id (`ASSISTANT_MODEL`). Cost control = per-user daily cap (20/day) + global per-minute guard (12/min, under the ~15 RPM ceiling), both **fail-closed**.
+4. **"Answer only" vs "can act"** — ✅ answer-only, single-turn for v1.
+5. **Guardrail acceptance** — ✅ retrieve-or-refuse; NEVER state live data (results/standings/points/times/odds) from memory — point to the page. Locked in `lib/assistant/prompt.ts` + unit-tested.
+
+**Open before go-live:** operator sets `GOOGLE_GENERATIVE_AI_API_KEY` (+ confirm the current free Flash id in `ASSISTANT_MODEL`) in Vercel; confirm Gemini free-tier data terms + add a privacy-policy line (assistant queries are sent to Google); then verify a real answer on prod. Tracked in `docs/launch-checklist.md`.
 
 ## Won't-do / non-goals (v1)
 

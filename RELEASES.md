@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.172.0 — 2026-07-06
+
+**Behind the scenes.** Groundwork for an in-app help assistant — not switched on yet.
+
 ## 0.171.0 — 2026-07-06
 
 **Behind the scenes.** Groundwork for our upcoming 1.0 launch — nothing visible yet.

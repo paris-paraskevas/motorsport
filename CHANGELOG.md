@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.172.0 — 2026-07-06
+
+### Added
+- **AI site-help assistant (MVP, ships DARK).** New account-gated `/assistant` page + `/api/assistant` route that answers "how do I use the site" questions, grounded ONLY in a curated corpus (`content/assistant/site-help.md`) — never from model memory. The model call is isolated behind a swappable seam (`lib/assistant/model.ts`: Gemini Flash free tier via direct REST, env-configurable `ASSISTANT_MODEL`); with no `GOOGLE_GENERATIVE_AI_API_KEY` the route returns 503 and the UI shows "not available yet", so this **merges as a no-op until the operator adds the key**. Guardrails (`lib/assistant/prompt.ts`, unit-tested): retrieve-or-refuse, and NEVER state live data (results / standings / points / times / odds) — point to the page instead, per the chart==standings accuracy bar. Cost/abuse control: per-user daily cap (20/day) + global per-minute guard (12/min, under Gemini's ~15 RPM), both **fail-closed**. Account-gated (401 anon on the route; sign-in teaser on the page). Answer-only, single-turn for v1; embeddings/streaming/a global launcher/donor-gating are deferred. Decisions + go-live steps: `docs/research/2026-07-06-ai-assistant.md`; key + privacy steps: `docs/launch-checklist.md`.
+
+### Changed
+- **`lib/rate-limit.ts` `allowRequest` gains an optional `failClosed` param** (default `false` = unchanged availability-first behaviour) so cost-bearing endpoints (the assistant) deny when KV is unconfigured or erroring instead of letting unbounded LLM spend through. Two new tests cover it.
+
 ## 0.171.0 — 2026-07-06
 
 ### Added
