@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.168.1 — 2026-07-06
+
+**More race highlights.** The Austrian and British Grand Prix weekend pages now carry their official race-highlight videos.
+
 ## 0.168.0 — 2026-07-06
 
 **Team pages show the whole championship.** A team's points chart now plots every constructor's season with that team highlighted, so you can see where they sit in the title fight — not just their own line.
