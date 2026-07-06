@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.168.0 — 2026-07-06
+
+**Team pages show the whole championship.** A team's points chart now plots every constructor's season with that team highlighted, so you can see where they sit in the title fight — not just their own line.
+
 ## 0.167.0 — 2026-07-06
 
 **Every F1 driver now has a photo**, and we fixed driver links for drivers who race in more than one series — Max Verstappen's Formula 1 page is now at the address you'd expect, with his 24-hour racing entry on its own page.
