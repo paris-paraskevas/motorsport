@@ -14,7 +14,7 @@ describe('model seam (no key)', () => {
   });
 
   it('returns reason "unconfigured" without calling the network', async () => {
-    const result = await askModel('system', 'user');
+    const result = await askModel('system', [{ role: 'user', content: 'hi there' }]);
     expect(result).toEqual({ ok: false, reason: 'unconfigured' });
   });
 });

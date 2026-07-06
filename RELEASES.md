@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.173.0 — 2026-07-06
+
+**Behind the scenes.** Reworked the in-app help assistant into a chat window you can open from any page — still off until we switch it on.
+
 ## 0.172.0 — 2026-07-06
 
 **Behind the scenes.** Groundwork for an in-app help assistant — not switched on yet.

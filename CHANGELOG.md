@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.173.0 — 2026-07-06
+
+### Changed
+- **AI assistant reworked into a floating "Race Engineer" chat widget** (operator UI call). Replaces the dedicated `/assistant` page with a persistent launcher (bottom-right, above the mobile bottom bar, on every app page) that opens a conversational panel — message bubbles, multi-turn history, race-engineer persona + greeting. `components/assistant/AssistantWidget.tsx` mounted in the app layout; **removed** `app/(app)/assistant/page.tsx` + `components/assistant/AssistantPanel.tsx`. `/api/assistant` + the model seam now take a `messages[]` conversation (guardrails moved into the system instruction so multi-turn stays grounded; history capped to the last 12 turns via `normalizeConversation`); same auth + fail-closed rate limits (per-user 20/day + global 12/min). **Ships DARK twice over:** the launcher only renders when `NEXT_PUBLIC_ASSISTANT_ENABLED === '1'`, AND the API still 503s without `GOOGLE_GENERATIVE_AI_API_KEY`. Go-live = set both (+ `ASSISTANT_MODEL`) in Vercel. Verified on localhost: widget renders, multi-turn send, fail-closed limiter denies gracefully; tsc/eslint/763 tests/build clean.
+
 ## 0.172.0 — 2026-07-06
 
 ### Added

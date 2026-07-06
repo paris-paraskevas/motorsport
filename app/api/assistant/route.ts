@@ -2,19 +2,21 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { allowRequest } from '@/lib/rate-limit';
 import {
-  answerQuestion,
+  answerConversation,
+  normalizeConversation,
   ASSISTANT_MAX_QUESTION_LEN,
   ASSISTANT_MIN_QUESTION_LEN,
+  type ChatMessage,
 } from '@/lib/assistant';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // Per-user daily question cap — the primary cost + abuse control (bounds spend
-// even if a single account hammers it). Global per-minute guard — keeps the
-// whole app under the model's free-tier RPM ceiling (Gemini Flash ≈ 15/min);
-// kept below it for headroom. Both fail CLOSED (deny if KV is down) since each
-// allowed request is a paid/limited LLM call.
+// even if one account hammers it; each SENT message is one model call). Global
+// per-minute guard — keeps the whole app under the model's free-tier RPM ceiling
+// (Gemini Flash ≈ 15/min), kept below it for headroom. Both fail CLOSED (deny if
+// KV is down) since each allowed request is a paid/limited LLM call.
 const PER_USER_DAILY_CAP = 20;
 const GLOBAL_PER_MINUTE = 12;
 
@@ -24,8 +26,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'sign in to use the assistant' }, { status: 401 });
   }
 
-  // Per-user daily cap first (specific to this account), then the shared
-  // per-minute ceiling. Fail-closed: an unavailable limiter denies.
   const underDaily = await allowRequest(`assistant:user:${userId}`, PER_USER_DAILY_CAP, 86400, true);
   if (!underDaily) {
     return NextResponse.json(
@@ -42,21 +42,27 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { question?: unknown };
+  let body: { messages?: unknown };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'invalid json' }, { status: 400 });
   }
-  const question = typeof body.question === 'string' ? body.question.trim() : '';
-  if (question.length < ASSISTANT_MIN_QUESTION_LEN) {
+
+  const raw = Array.isArray(body.messages) ? (body.messages as ChatMessage[]) : [];
+  const messages = normalizeConversation(raw);
+  const latest = messages[messages.length - 1];
+  if (!latest || latest.role !== 'user') {
+    return NextResponse.json({ error: 'no question' }, { status: 400 });
+  }
+  if (latest.content.length < ASSISTANT_MIN_QUESTION_LEN) {
     return NextResponse.json({ error: 'question too short' }, { status: 400 });
   }
-  if (question.length > ASSISTANT_MAX_QUESTION_LEN) {
+  if (latest.content.length > ASSISTANT_MAX_QUESTION_LEN) {
     return NextResponse.json({ error: 'question too long' }, { status: 400 });
   }
 
-  const result = await answerQuestion(question);
+  const result = await answerConversation(messages);
   if (!result.ok) {
     // unconfigured → the feature ships dark (no API key yet): 503 so the UI can
     // show "not available yet". error → upstream/model failure: 502.

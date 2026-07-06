@@ -1,28 +1,50 @@
-// The assistant's guardrails live here, not in the model. The system prompt is
-// deliberately strict: Paddock's data layer holds itself to "chart == standings"
-// accuracy, so an assistant that invents a race result would be worse than no
-// assistant. The contract: answer ONLY from the provided site-help context;
-// NEVER state live data (results, standings, points, schedules, odds) from
-// model memory; refuse (and point to search/contact) when uncovered.
+// The assistant's guardrails live here, not in the model. Strict by design:
+// Paddock's data layer holds itself to "chart == standings" accuracy, so an
+// assistant that invents a race result would be worse than none. The contract:
+// answer ONLY from the provided site-help context; NEVER state live data
+// (results, standings, points, schedules, odds) from model memory; refuse (and
+// point to search/contact) when uncovered.
 
 export const ASSISTANT_MAX_QUESTION_LEN = 1000;
 export const ASSISTANT_MIN_QUESTION_LEN = 3;
+// Cap how many prior turns we replay to the model — bounds cost/drift on a
+// multi-turn chat (the corpus is re-sent every call via the system prompt).
+export const ASSISTANT_MAX_TURNS = 12;
 
-export const ASSISTANT_SYSTEM_PROMPT = `You are the in-app help assistant for Paddock Tracker, a motorsport companion website.
+export type ChatRole = 'user' | 'assistant';
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
+}
 
-Your job: help people USE the site and answer general "what is this / how do I / where do I find" questions, using ONLY the SITE HELP context provided in the user message.
+// Base guardrails (no corpus). Kept exported so tests lock the contract.
+export const ASSISTANT_SYSTEM_PROMPT = `You are the Race Engineer — the in-app help assistant for Paddock Tracker, a motorsport companion website.
+
+Your job: help people USE the site and answer general "what is this / how do I / where do I find" questions, using ONLY the SITE HELP context provided below.
 
 Hard rules — follow them exactly:
-1. Answer ONLY from the SITE HELP context. If the answer is not in it, say you don't know and suggest using the site's search or the Contact/Feedback page. Do not guess or use outside knowledge to fill gaps.
+1. Answer ONLY from the SITE HELP context. If the answer is not in it, say you don't know and suggest the site's search or the Contact/Feedback page. Do not guess or use outside knowledge to fill gaps.
 2. NEVER state live or time-sensitive data — race results, finishing positions, championship standings, points totals, session dates/times, or betting odds — even if you think you know it. That data lives on the pages and changes constantly. Instead, tell the user which page or tab to open (e.g. "open the Standings tab on that series").
-3. Be concise and friendly. Prefer 1–4 sentences. When useful, name the exact place to go (a nav item, a tab, or a path like /calendar).
+3. Be concise and friendly, and speak plainly like a race engineer on the radio — calm and direct. Prefer 1–4 sentences. When useful, name the exact place to go (a nav item, a tab, or a path like /calendar).
 4. Never invent features, pages, or data that aren't in the SITE HELP context.
 5. If asked to do something you can't (place a bet, change a setting, fetch a live result), explain briefly and point to where the user can do it themselves.
 
 Stay in scope: you help with using Paddock and grounded general questions. You are not a live timing feed, a results service, or a general chatbot.`;
 
-/** Assemble the single user turn: the grounding corpus + the user's question.
- *  Kept separate from the model call so the guardrail contract is unit-testable. */
-export function buildUserContent(corpus: string, question: string): string {
-  return `SITE HELP context (your only factual source):\n"""\n${corpus}\n"""\n\nUser question: ${question}`;
+/** Full system instruction = guardrails + the grounding corpus. Grounding goes
+ *  in the system prompt (not each user turn) so multi-turn chats stay grounded
+ *  without re-pasting the corpus into every message. */
+export function buildSystemPrompt(corpus: string): string {
+  return `${ASSISTANT_SYSTEM_PROMPT}\n\nSITE HELP context (your only factual source):\n"""\n${corpus}\n"""`;
+}
+
+/** Trim a conversation to the last ASSISTANT_MAX_TURNS messages, dropping any
+ *  malformed entries. Pure — unit-testable and reused by the route. */
+export function normalizeConversation(messages: ChatMessage[]): ChatMessage[] {
+  return messages
+    .filter(
+      m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim(),
+    )
+    .map(m => ({ role: m.role, content: m.content.trim() }))
+    .slice(-ASSISTANT_MAX_TURNS);
 }
