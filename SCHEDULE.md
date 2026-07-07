@@ -1066,6 +1066,22 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Tue 2026-07-07 — continued — 4 PRs (blog cadence · PWA fix · F1 results · writer role) + queued 2 prod blog drafts via PAT → main 0.177.0
+
+Long operator-directed build session off the inline handoff:
+- → done: **#437 (0.176.5)** blog-cadence tooling (marquee-event context builder + `.md`→draft parser + playbook + local `/weekend-post` skill); dry-run produced the MotoGP preview draft.
+- → done: **#438 (0.176.6)** PWA post-deploy first-open fix — diagnosed the operator's ~20–30s stall to the SW re-precache hijack; `skipWaiting`/`clientsClaim` → false.
+- → done: **#439 (0.176.7)** faster F1 results (`warm-sessions` */10 + f1 `revalidate` 600).
+- → done: **#440 (0.177.0)** writer role — self-service authoring + rich `MarkdownEditor` (toolbar + server-rendered Write/Preview). Operator sets the Clerk role + verifies signed-in.
+- → done: **queued 2 blog drafts to PROD** (British GP report + MotoGP preview) via `.supabase-pat` Management API — the long-blocked prod-Supabase write path, now proven; fixed the operator-reported "no drafts on /blog".
+- → done: **AdSense diagnosis** ("Low value content" = aggregated/thin content; fix = original content via the cadence); readiness plan logged to IDEAS.
+- → held: B-perf tasks 2–3 (need browser verify); Assistant Phase 2 (design-first); re-schedule feature (IDEAS).
+- → gates: every PR tsc/eslint/**778 tests**/next build green; AUDIT-FIRST caught 3 already-shipped "open" items (/news, NASCAR chart, news-filter).
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
