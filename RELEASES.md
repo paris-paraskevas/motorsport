@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.2 — 2026-07-07
+
+**Assistant polish.** The help assistant now shows a subtle typing animation while it works out your answer.
+
 ## 0.176.1 — 2026-07-07
 
 **Internal:** added a regression check for the help assistant. No user-facing change.

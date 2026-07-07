@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.176.2 — 2026-07-07
+
+### Changed
+- **Assistant: animated typing indicator** (batch D, chosen over streaming). While the Race Engineer is thinking it now shows three bouncing dots (`TypingDots` in `AssistantWidget`) — static under `prefers-reduced-motion` — instead of a plain "…". A lighter, safer "responsive" cue than true streaming, which for our 1–4-sentence answers adds little and would conflict with the markdown-link rendering (partial links flicker mid-stream). Streaming intentionally not pursued; rationale in the PR.
+
 ## 0.176.1 — 2026-07-07
 
 ### Added
