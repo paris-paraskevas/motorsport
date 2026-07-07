@@ -1,22 +1,37 @@
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
-import { isAdmin } from '@/lib/threads';
-import { decidePost, updatePostContent, type PostContentPatch } from '@/lib/blog';
+import { isAdmin, isWriter } from '@/lib/threads';
+import { decidePost, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// POST = moderate a post (admin only): { action: 'approve' | 'reject', publishAt? }.
-// Approve schedules it (publishAt is an ISO string, required); the publish cron
-// makes it live at that time. Reject is terminal.
+// Writer/admin authz for a specific post. Admins act on any post; a writer only
+// on their OWN (post.author_id === userId). The `post` table is service-role-only
+// (no RLS policies), so this ownership check IS the security boundary. Returns the
+// post on success, or the NextResponse to send on failure.
+async function authorizePostActor(id: string, userId: string): Promise<BlogPost | NextResponse> {
+  const post = await getPostById(id);
+  if (!post) return NextResponse.json({ error: 'not found' }, { status: 404 });
+  const user = await currentUser();
+  if (isAdmin(user)) return post;
+  if (isWriter(user) && post.authorId === userId) return post;
+  return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+}
+
+// POST = approve/schedule or reject a post (admin, or the writer who owns it):
+// { action: 'approve' | 'reject', publishAt? }. Approve schedules it (publishAt is
+// an ISO string, required); the publish cron makes it live at that time. Reject is
+// terminal.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isAdmin(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   const { id } = await params;
+  const gate = await authorizePostActor(id, userId);
+  if (gate instanceof NextResponse) return gate;
   let body: { action?: unknown; publishAt?: unknown };
   try {
     body = await req.json();
@@ -37,18 +52,20 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 }
 
-// PATCH = edit a draft/scheduled post's text in place (admin only, same guards
-// as POST): any of { title?, summary?, body? }. Slug, series, hero image and
-// publish time are immutable in this surface (spec
-// docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md). Validation /
-// status domain errors map to 422, mirroring the moderation handler above.
+// PATCH = edit a post's text in place (admin, or the writer who owns it): any of
+// { title?, summary?, body? }. Editable while draft or scheduled — updatePostContent
+// guards status ∈ {draft, approved}, so a writer can revise right up until the post
+// publishes, then it's locked. Slug, series, hero image and publish time are
+// immutable in this surface (spec docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md).
+// Validation / status domain errors map to 422, mirroring the handler above.
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isAdmin(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   const { id } = await params;
+  const gate = await authorizePostActor(id, userId);
+  if (gate instanceof NextResponse) return gate;
   let body: { title?: unknown; summary?: unknown; body?: unknown };
   try {
     body = await req.json();

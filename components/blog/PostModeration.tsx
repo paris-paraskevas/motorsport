@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PostComposer } from './PostComposer';
 
-// Admin blog console on /blog: compose a draft, then work the review queue
-// (approve with a publish_at / reject) and see what's scheduled. Self-hides for
-// signed-out / non-admin users (GET /api/blog 401/403s them). Visible to admins
-// even when the queue is empty, so the pipeline is actually discoverable.
+// Blog console on /blog: compose a draft, then work the queue (approve with a
+// publish_at / reject) and see what's scheduled. Admins see every post; a writer
+// sees only their own — both can act on what they see (the API authorizes each
+// action per-post by ownership). Self-hides for signed-out users and non-writers
+// (GET /api/blog 401/403s them). Visible even when the queue is empty, so it's
+// discoverable.
 
 interface PostRow {
   id: string;

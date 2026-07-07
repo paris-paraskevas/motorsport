@@ -36,6 +36,16 @@ export function isStaff(user: { publicMetadata?: { role?: unknown } } | null | u
   return role === 'admin' || role === 'moderator';
 }
 
+/** Writer = Clerk `publicMetadata.role === 'writer'`. Admins are a superset —
+ *  they keep every writer capability. A writer is a self-service author for
+ *  their OWN blog posts (create, edit until publish, approve + schedule/publish);
+ *  route handlers MUST additionally enforce ownership (post.author_id === userId)
+ *  for anything post-specific — this helper only proves the role. */
+export function isWriter(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
+  const role = user?.publicMetadata?.role;
+  return role === 'writer' || role === 'admin';
+}
+
 function toThread(r: Record<string, unknown>, name: string | null): Thread {
   return {
     id: r.id as string,

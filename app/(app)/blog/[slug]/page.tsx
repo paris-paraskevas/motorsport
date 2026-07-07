@@ -6,7 +6,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { currentUser, clerkClient } from '@clerk/nextjs/server';
 import { listPostSlugs, loadPost } from '@/lib/posts';
 import { getPostBySlug, type BlogPost } from '@/lib/blog';
-import { isAdmin } from '@/lib/threads';
+import { isAdmin, isWriter } from '@/lib/threads';
 import { renderMarkdown } from '@/lib/content';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { DraftEditor } from '@/components/blog/DraftEditor';
@@ -57,7 +57,7 @@ export async function generateMetadata({
   // minutes after 0.160.0). Same visibility rule as the page branch.
   if (db && db.status !== 'published' && !(await loadPost(slug))) {
     const previewable =
-      (db.status === 'approved' || db.status === 'draft') && isAdmin(await safeCurrentUser());
+      (db.status === 'approved' || db.status === 'draft') && (await canPreviewUnpublished(db));
     if (!previewable) notFound();
   }
   const post = db && db.status === 'published' ? dbToPost(db) : await loadPost(slug);
@@ -153,6 +153,16 @@ async function safeCurrentUser() {
   }
 }
 
+// A still-unpublished post (draft/scheduled) is previewable by an admin, or by
+// the writer who OWNS it — so a writer reads/edits their own piece in full,
+// before and after scheduling. Fail-soft: an anonymous/erroring session (null
+// user) sees nothing and the draft 404s.
+async function canPreviewUnpublished(db: BlogPost): Promise<boolean> {
+  const u = await safeCurrentUser();
+  if (isAdmin(u)) return true;
+  return isWriter(u) && db.authorId === u?.id;
+}
+
 export default async function PostPage({
   params,
 }: {
@@ -170,9 +180,9 @@ export default async function PostPage({
     if (db.status === 'published') {
       post = dbToPost(db);
       bodyHtml = await renderMarkdown(db.body);
-    } else if ((db.status === 'approved' || db.status === 'draft') && isAdmin(await safeCurrentUser())) {
-      // Not yet live (scheduled, or still a draft) — only admins may preview it,
-      // so an editor can read the whole piece in full before approving it.
+    } else if ((db.status === 'approved' || db.status === 'draft') && (await canPreviewUnpublished(db))) {
+      // Not yet live (scheduled, or still a draft) — previewable by an admin or
+      // the writer who owns it, so they can read the whole piece before it's live.
       post = dbToPost(db);
       bodyHtml = await renderMarkdown(db.body);
       scheduledAt = db.status === 'approved' ? db.publishAt : null;
