@@ -24,6 +24,7 @@ const TYPE_WEIGHT: Record<SearchType, number> = {
   team: 5,
   series: 5,
   weekend: 3,
+  info: 3,
   blog: 3,
   tab: 2,
   page: 1,

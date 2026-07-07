@@ -69,10 +69,13 @@ describe('buildSitemapEntries', () => {
     }
   });
 
-  it('omits /drivers/* and /teams/* URLs (they 404 today)', async () => {
+  it('omits the top-level /drivers/* and /teams/* profile routes (they 404 today)', async () => {
     const urls = await buildSitemapEntries();
-    expect(urls.some((u) => u.url.includes('/drivers/'))).toBe(false);
-    expect(urls.some((u) => u.url.includes('/teams/'))).toBe(false);
+    // Target the actual top-level profile routes, not any URL containing the
+    // substring — the information hub legitimately has /information/teams/* and
+    // /information/drivers/* pages, which are a different, real route tree.
+    expect(urls.some((u) => u.url.startsWith(`${SITE_URL}/drivers/`))).toBe(false);
+    expect(urls.some((u) => u.url.startsWith(`${SITE_URL}/teams/`))).toBe(false);
   });
 
   it('every URL starts with SITE_URL', async () => {

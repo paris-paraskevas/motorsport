@@ -6,7 +6,27 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-07 (LATEST) — 4 PRs #437–#440 (blog cadence · PWA open fix · faster F1 results · WRITER ROLE) + queued 2 blog drafts to PROD via `.supabase-pat` — main **0.177.0**
+## ⚡ Next session pickup — 2026-07-07 (LATEST) — MOTORSPORT INFORMATION HUB `/information` (577 pages, 51 indexed) on branch `feat/motorsport-information-hub` — NOT pushed — proposed **0.178.0**
+
+**Overnight autonomous build.** New `/information` "questions answered" + reference section. On a LOCAL BRANCH, committed, **NOT pushed** (publishing is your call — production event + it touches the sitemap while AdSense "low value" review is open). tsc 0 · eslint 0 errors · 794 tests · `next build` 213 static pages · curl smoke all pass.
+
+- **The section:** hub `/information` → 10 topic indexes `/information/[topic]` → entries `/information/[topic]/[slug]`. 577 pages total. Nav: new "Answers" header mega-menu + footer link; verified entries added to ⌘K search (`info` type).
+- **The anti-spam control (the key decision):** two-tier trust model in `lib/information/registry.ts`. INDEXABLE (sitemap + no `noindex`) only if `review:'verified' && featured`, capped `INFORMATION_MAX_INDEXED=150`. Today **51 indexed** (safe, all factual+sourced); **526 verified** (searchable, mostly `noindex`); **51 unverified drafts** (`noindex` + excluded from search + "pending review" banner). Scales to hundreds without a Search Console spam risk. Design: `docs/research/2026-07-07-information-hub.md`.
+- **Verified backbone = our own `champions.json`** (all 15 series) → "who won {year}?" per season + "most titles" record pages. Zero fabrication. **15 editorial explainers** (`content/information/answers/*.md`) across all topics = the featured/indexed quality core.
+- **Drafts to fact-check before promoting (RULE #1):** 12 team histories, 38-venue tracks directory (coords verified vs `circuits.json`; Google-Maps link-out, no key), 51-driver feeder rising-stars watchlist. Promote one: set `review:"verified"` (+ `featured:true` to index).
+
+**▶ OWED / NEXT:**
+1. **Operator:** review the branch, decide publish (push → PR → merge). Decide how many pages to index (the 51 default is conservative given AdSense; raise `featured`/cap after re-review).
+2. **Fact-check + promote drafts** (tracks/team-histories/rising-stars) to grow indexed pages.
+3. **Retry the broad tracks dataset** — the research agent stalled twice on large inline output (seeded from `circuits.json` = 38 as the workaround); resume it to write straight to a file, or curate incrementally.
+4. **AdSense readiness:** this hub + the blog cadence + completing `overview.md` stubs are the original-content engine to re-request review with.
+5. Backlog: `docs/research/2026-07-07-information-question-catalog.json` (278 real questions) → editorial pages.
+
+**Landmines added:** indexing is gated by `review:'verified' && featured` + `INFORMATION_MAX_INDEXED` in `lib/information/registry.ts` — do NOT bulk-flip everything to featured (that recreates the spam risk). Unverified = `noindex` + not in search BY DESIGN (RULE #1). `vitest.config.ts` now stubs `server-only` for tests. `sitemap-data.test.ts` asserts no TOP-LEVEL `/drivers/|/teams/` (info's `/information/teams/*` is fine).
+
+---
+
+## ⚡ Next session pickup — 2026-07-07 — 4 PRs #437–#440 (blog cadence · PWA open fix · faster F1 results · WRITER ROLE) + queued 2 blog drafts to PROD via `.supabase-pat` — main **0.177.0**
 
 **Big build session (inline handoff → operator-directed features). main 0.176.4 → 0.177.0, PRs #437–#440 all squash-merged.** The long-blocked prod-Supabase blog writes are also UNBLOCKED via the Management-API PAT.
 

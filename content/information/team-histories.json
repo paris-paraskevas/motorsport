@@ -1,0 +1,149 @@
+{
+  "_comment": "Marquee team histories for the /information/teams hub. DRAFTED FROM WEB RESEARCH by an agent (2026-07-07) and self-verified against Wikipedia/official sources, but NOT yet editor-fact-checked — every entry ships review:'unverified' by default (noindex, excluded from search) until an editor promotes it. To publish one: verify the specific title counts/founding years against a primary source, then add \"review\": \"verified\" and \"featured\": true (featured gates indexing) to that entry. `confidence` is the agent's own self-assessment.",
+  "teams": [
+    {
+      "slug": "scuderia-ferrari-f1-history",
+      "team": "Scuderia Ferrari",
+      "topic": "formula-1",
+      "question": "What is the history of Scuderia Ferrari in Formula 1?",
+      "summary": "Formula 1's oldest and most successful team, founded by Enzo Ferrari in 1929, holder of a record 16 Constructors' and 15 Drivers' titles.",
+      "foundingYear": 1929,
+      "titles": "Record 16 Constructors' + 15 Drivers' championships (F1)",
+      "body": "Scuderia Ferrari is the oldest and most successful team in Formula 1, and the only constructor to have competed in every World Championship season since the series began in 1950.\n\nEnzo Ferrari founded the Scuderia in 1929, initially to race Alfa Romeos before the company began building its own cars in the late 1940s. Ferrari's first Drivers' Championship came with Alberto Ascari in 1952, and further titles followed with champions including Juan Manuel Fangio, Phil Hill, John Surtees, Niki Lauda and Jody Scheckter.\n\nThe team's greatest era arrived in the 2000s, when Michael Schumacher won five consecutive Drivers' Championships (2000-2004) and Ferrari took six straight Constructors' crowns between 1999 and 2004. Kimi Raikkonen delivered the team's most recent Drivers' title in 2007, with its last Constructors' Championship following in 2008.\n\nIn total Ferrari holds a record 16 Constructors' and 15 Drivers' Championships. Based in Maranello, Italy, and known as the Prancing Horse, it remains one of the sport's benchmark and most popular teams, though a title has eluded it since 2008.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Scuderia_Ferrari", "https://en.wikipedia.org/wiki/Grand_Prix_racing_history_of_Scuderia_Ferrari", "https://www.formulaonehistory.com/teams/ferrari/"]
+    },
+    {
+      "slug": "mclaren-f1-history",
+      "team": "McLaren",
+      "topic": "formula-1",
+      "question": "What is the history of McLaren in Formula 1?",
+      "summary": "Founded by Bruce McLaren in 1963, McLaren is one of F1's most successful teams, with 10 Constructors' and 13 Drivers' championships.",
+      "foundingYear": 1963,
+      "titles": "10 Constructors' + 13 Drivers' championships (F1)",
+      "body": "McLaren was founded in 1963 by New Zealand driver Bruce McLaren and entered its first Formula 1 World Championship race in 1966. After Bruce's death in a 1970 testing accident, the team endured and grew into a title-winning force.\n\nIts first Drivers' Championship came with Emerson Fittipaldi in 1974, and the team's 1980s revival under Ron Dennis produced dominant seasons with Niki Lauda, Alain Prost and Ayrton Senna. Mika Hakkinen added back-to-back titles in 1998 and 1999, and Lewis Hamilton won the first of his championships with the team in 2008.\n\nAfter a long drought, McLaren returned to the front in the mid-2020s, winning the Constructors' Championship in 2024 and 2025. Lando Norris's 2025 title was the team's first Drivers' crown since 2008.\n\nIn total McLaren has won 13 Drivers' and 10 Constructors' Championships across eight different champion drivers, making it one of the most successful teams in the sport's history. It is based in Woking, England.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/McLaren", "https://www.mclaren.com/racing/heritage/formula-1/2025-championship/"]
+    },
+    {
+      "slug": "mercedes-f1-history",
+      "team": "Mercedes",
+      "topic": "formula-1",
+      "question": "What is the history of the Mercedes Formula 1 team?",
+      "summary": "The Mercedes works F1 team, reformed in 2010, dominated 2014-2021 with eight straight Constructors' titles and seven Drivers' championships.",
+      "foundingYear": 2010,
+      "titles": "8 Constructors' (2014-2021) + 7 Drivers' championships (F1)",
+      "body": "Mercedes-Benz has a long Formula 1 history. It won the Drivers' Championship with Juan Manuel Fangio in 1954 and 1955, dominating with the W196 before withdrawing from the sport for more than half a century.\n\nThe current works team was formed in 2010, when Mercedes bought the championship-winning Brawn GP squad - itself the successor to the Tyrrell, BAR and Honda teams based in Brackley, England.\n\nSuccess on a historic scale followed the 2014 switch to turbo-hybrid engines. Mercedes won eight consecutive Constructors' Championships from 2014 to 2021, and seven straight Drivers' titles from 2014 to 2020 - six for Lewis Hamilton and one for Nico Rosberg in 2016. It remains the longest run of consecutive title doubles in F1 history.\n\nThe team also supplies power units to several customer teams, and its engines have underpinned much of the modern era. After Hamilton left for Ferrari ahead of the 2025 season, Mercedes began a new chapter around a younger line-up while continuing as one of the grid's leading constructors.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Mercedes-Benz_in_Formula_One", "https://www.mercedesamgf1.com/"]
+    },
+    {
+      "slug": "red-bull-racing-f1-history",
+      "team": "Red Bull Racing",
+      "topic": "formula-1",
+      "question": "What is the history of Red Bull Racing in Formula 1?",
+      "summary": "Formed in 2005, Red Bull Racing has won six Constructors' and eight Drivers' titles across the Vettel and Verstappen eras.",
+      "foundingYear": 2005,
+      "titles": "6 Constructors' + 8 Drivers' championships (F1)",
+      "body": "Red Bull Racing entered Formula 1 in 2005 after the energy-drink company bought the struggling Jaguar team. Within five years it had become a dominant force.\n\nWith cars designed under Adrian Newey and Sebastian Vettel at the wheel, Red Bull won four consecutive Drivers' and Constructors' Championship doubles from 2010 to 2013, making Vettel a four-time champion.\n\nA second dominant era arrived after the 2022 rules reset. Max Verstappen won four straight Drivers' titles from 2021 to 2024, and the team took back-to-back Constructors' Championships in 2022 and 2023. Verstappen's first title, in 2021, came in a controversial season-finale battle with Lewis Hamilton.\n\nIn total the team has won six Constructors' and eight Drivers' Championships. After finishing third in the Constructors' standings in both 2024 and 2025, Red Bull - based in Milton Keynes, England - remains a front-running team. It also established the sister squad now known as Racing Bulls, which serves as a proving ground for young drivers.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Red_Bull_Racing", "https://www.redbullracing.com/"]
+    },
+    {
+      "slug": "williams-f1-history",
+      "team": "Williams",
+      "topic": "formula-1",
+      "question": "What is the history of the Williams Formula 1 team?",
+      "summary": "Founded by Frank Williams and Patrick Head in 1977, Williams won nine Constructors' and seven Drivers' F1 titles, mostly in the 1980s and 90s.",
+      "foundingYear": 1977,
+      "titles": "9 Constructors' + 7 Drivers' championships (F1)",
+      "body": "Williams Grand Prix Engineering was founded in 1977 by Frank Williams and engineer Patrick Head, and quickly grew into one of Formula 1's leading teams.\n\nThe team took its first win in 1979 and its first Drivers' and Constructors' Championships in 1980 with Alan Jones. Through the 1980s and 1990s Williams was a powerhouse, winning titles with Keke Rosberg, Nelson Piquet, Nigel Mansell, Alain Prost, Damon Hill and Jacques Villeneuve, often with dominant Honda- and Renault-powered cars.\n\nIts last championships came in 1997, giving the team nine Constructors' and seven Drivers' titles in total - among the highest tallies in the sport.\n\nThe following decades were far leaner. The founding family sold the team to investment firm Dorilton Capital in 2020, and Frank Williams died in 2021. Now based in Grove, England, and led by team principal James Vowles, Williams competes in the sport's midfield while rebuilding toward the front of the grid.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Williams_Racing", "https://www.williamsf1.com/"]
+    },
+    {
+      "slug": "team-lotus-f1-history",
+      "team": "Team Lotus",
+      "topic": "formula-1",
+      "question": "What is the history of Team Lotus in Formula 1?",
+      "summary": "Colin Chapman's Team Lotus, an F1 innovation pioneer, won seven Constructors' and six Drivers' titles before folding in 1994.",
+      "foundingYear": 1954,
+      "titles": "7 Constructors' + 6 Drivers' championships (F1)",
+      "body": "Team Lotus was the Formula 1 arm of Lotus, founded by British engineer Colin Chapman, who split the racing team from his Lotus car company in 1954. It became one of the most innovative and successful teams in the sport's history.\n\nChapman pioneered technologies that reshaped Formula 1, including the fully stressed monocoque chassis, aerodynamic ground effect, and the widespread use of major commercial sponsorship liveries.\n\nThe team won seven Constructors' Championships (1963, 1965, 1968, 1970, 1972, 1973 and 1978) and six Drivers' titles, with champions Jim Clark, Graham Hill, Jochen Rindt, Emerson Fittipaldi and Mario Andretti. Clark, twice a champion with Lotus, is regarded as one of the greatest drivers of his era, while Rindt became Formula 1's only posthumous champion in 1970.\n\nFollowing Chapman's death in 1982, the team gradually declined and folded at the end of 1994. Later entrants using the Lotus name were not a continuation of the original Team Lotus.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Team_Lotus", "https://en.wikipedia.org/wiki/Colin_Chapman"]
+    },
+    {
+      "slug": "ducati-motogp-history",
+      "team": "Ducati",
+      "topic": "motogp",
+      "question": "What is the history of Ducati in MotoGP?",
+      "summary": "Ducati entered MotoGP in 2003 and now dominates the class, with five riders' titles and seven constructors' championships.",
+      "foundingYear": 2003,
+      "titles": "5 riders' + 7 constructors' championships (MotoGP)",
+      "body": "Ducati, the Italian manufacturer from Borgo Panigale in Bologna, entered MotoGP's premier class in 2003 with the Desmosedici and was competitive almost immediately.\n\nCasey Stoner delivered Ducati's first riders' World Championship in 2007, the same year it took the constructors' title. A lean period followed until a technical resurgence under Gigi Dall'Igna transformed the team into the dominant force in the class.\n\nFrancesco Bagnaia won back-to-back riders' titles in 2022 and 2023, Jorge Martin took the 2024 crown with the satellite Pramac team, and Marc Marquez won the 2025 championship with the factory squad. Ducati also strung together six consecutive constructors' titles from 2020 to 2025, and completed the riders', teams' and constructors' 'Triple Crown' in both 2022 and 2025.\n\nBy the end of 2025 Ducati held five MotoGP riders' titles and seven constructors' championships. Supplying much of the grid with its machinery, it stands as the benchmark manufacturer of the modern MotoGP era.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Ducati_Corse", "https://en.wikipedia.org/wiki/2025_MotoGP_World_Championship"]
+    },
+    {
+      "slug": "toyota-gazoo-racing-endurance-history",
+      "team": "Toyota Gazoo Racing",
+      "topic": "endurance",
+      "question": "What is the history of Toyota Gazoo Racing in endurance racing?",
+      "summary": "Toyota's factory team broke through at Le Mans in 2018 and has won the 24 Hours six times, alongside multiple WEC World Championship titles.",
+      "foundingYear": null,
+      "titles": "6 Le Mans 24 Hours wins (2018-2022, 2026); multiple WEC World titles",
+      "body": "Toyota Gazoo Racing is the Japanese manufacturer's factory sports car team in the FIA World Endurance Championship (WEC). Toyota first contested the Le Mans 24 Hours in the 1980s and endured decades of heartbreak and near-misses, including a famous late failure while leading in 2016.\n\nIts long-awaited first Le Mans victory finally came in 2018, with Fernando Alonso, Sebastien Buemi and Kazuki Nakajima sharing the winning car. The team then won the race five years in a row (2018-2022) with its TS050 and GR010 Hybrid prototypes, and added a further victory at the 2026 edition.\n\nToyota also dominated the WEC's top class for several seasons, taking a run of drivers' and manufacturers' World Championship title doubles before Ferrari ended its championship run in 2025.\n\nOperated largely from Cologne, Germany, and competing under the Le Mans Hypercar rules, Toyota Gazoo Racing remains one of the leading manufacturers in modern endurance racing and a cornerstone of Toyota's broader motorsport identity.",
+      "confidence": "medium",
+      "sources": ["https://en.wikipedia.org/wiki/Toyota_GR010_Hybrid", "https://toyotagazooracing.com/wec/", "https://www.fiawec.com/"]
+    },
+    {
+      "slug": "porsche-endurance-history",
+      "team": "Porsche",
+      "topic": "endurance",
+      "question": "What is the history of Porsche in endurance racing?",
+      "summary": "Porsche is motorsport's most successful endurance marque, holding a record 19 overall wins at the Le Mans 24 Hours.",
+      "foundingYear": 1948,
+      "titles": "Record 19 Le Mans 24 Hours overall wins; numerous sports car titles",
+      "body": "Porsche, the German sports car manufacturer founded in 1948, is the most successful marque in the history of the Le Mans 24 Hours, with a record 19 overall victories.\n\nIts first outright Le Mans win came in 1970 with the legendary 917, followed by a period of dominance that included seven consecutive victories from 1981 to 1987 with the 956 and 962. Porsche returned to the top class in the 2010s and won three straight Le Mans titles from 2015 to 2017 with the 919 Hybrid.\n\nPorsche's motorsport reach extends far beyond Le Mans. It has won countless sports car and GT championships, powered McLaren to Formula 1 titles as the TAG engine badge in the mid-1980s, and competed in categories from Can-Am to Formula E and the Dakar Rally.\n\nThe marque returned to top-flight prototype racing with the 963 for the WEC and North America's IMSA series, continuing one of the deepest and most respected competition legacies in all of motorsport.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Porsche_in_motorsport", "https://en.wikipedia.org/wiki/List_of_24_Hours_of_Le_Mans_winners", "https://www.porsche.com/international/aboutporsche/porschemuseum/successstorylemans/champions/"]
+    },
+    {
+      "slug": "hendrick-motorsports-nascar-history",
+      "team": "Hendrick Motorsports",
+      "topic": "stock-cars",
+      "question": "What is the history of Hendrick Motorsports in NASCAR?",
+      "summary": "Founded by Rick Hendrick in 1984, Hendrick Motorsports is NASCAR's winningest Cup Series team, with a record 15 championships.",
+      "foundingYear": 1984,
+      "titles": "Record 15 NASCAR Cup Series championships",
+      "body": "Hendrick Motorsports was founded in 1984 by North Carolina car dealer Rick Hendrick, originally competing as All-Star Racing. It has grown into the most successful team in NASCAR Cup Series history.\n\nThe organization holds the all-time records for both Cup Series race wins and championships. Its 15 Cup Series titles were won by five different drivers: Jeff Gordon (four), Jimmie Johnson (a record-tying seven), Terry Labonte (1996), Chase Elliott (2020) and Kyle Larson (2021 and 2025).\n\nJimmie Johnson's five consecutive championships from 2006 to 2010 stand as a modern NASCAR record. In May 2021 Hendrick surpassed the legendary Petty Enterprises to become the winningest team in Cup Series history, and has since passed 300 points-paying victories at the sport's top level.\n\nBased in Concord, North Carolina, and fielding Chevrolets, Hendrick Motorsports has run some of the biggest names in the sport and continues to field multiple full-time entries, remaining the benchmark organization in NASCAR's premier series.",
+      "confidence": "high",
+      "sources": ["https://en.wikipedia.org/wiki/Hendrick_Motorsports", "https://en.wikipedia.org/wiki/Hendrick_Motorsports_in_the_NASCAR_Cup_Series", "https://www.hendrickmotorsports.com/about"]
+    },
+    {
+      "slug": "toyota-gazoo-racing-wrc-history",
+      "team": "Toyota Gazoo Racing WRT",
+      "topic": "rally",
+      "question": "What is the history of Toyota in the World Rally Championship?",
+      "summary": "Toyota's works rally team has won nine WRC manufacturers' titles, including five in a row from 2021 to 2025 in the hybrid Rally1 era.",
+      "foundingYear": null,
+      "titles": "9 WRC Manufacturers' titles (1993, 1994, 1999, 2018, 2021-2025)",
+      "body": "Toyota has a long and successful history in the World Rally Championship (WRC). Its works effort traces back to Toyota Team Europe, established in the 1970s and based in Cologne, Germany, which delivered manufacturers' titles in 1993, 1994 and 1999 and drivers' championships for Carlos Sainz, Juha Kankkunen and Didier Auriol.\n\nAfter a long absence from the championship, Toyota returned in 2017 as Toyota Gazoo Racing, led initially by four-time world champion Tommi Makinen and later by Jari-Matti Latvala. The team quickly regained its winning form, taking the manufacturers' title in 2018.\n\nIn the modern hybrid Rally1 era Toyota has been utterly dominant, winning five consecutive manufacturers' titles from 2021 to 2025, along with drivers' championships for Ott Tanak, Sebastien Ogier and Kalle Rovanpera. This brought Toyota's overall total to nine WRC manufacturers' championships.\n\nThe team competes with the GR Yaris Rally1 and remains the sport's benchmark manufacturer, part of the wider Toyota Gazoo Racing program that also spans endurance racing and the Dakar Rally.",
+      "confidence": "medium",
+      "sources": ["https://en.wikipedia.org/wiki/Toyota_Gazoo_Racing_WRT", "https://www.wrc.com/en/teams/toyota-gazoo-racing-world-rally-team", "https://toyotagazooracing.com/wrc/"]
+    },
+    {
+      "slug": "audi-sport-motorsport-history",
+      "team": "Audi Sport",
+      "topic": "endurance",
+      "question": "What is the history of Audi Sport in motorsport?",
+      "summary": "Audi Sport dominated Le Mans in the 2000s-2010s with 13 overall wins, pioneered quattro rally cars, and entered Formula 1 in 2026.",
+      "foundingYear": null,
+      "titles": "13 Le Mans 24 Hours wins (2000-2014); multiple DTM & 1980s WRC titles",
+      "body": "Audi Sport is the motorsport division of German manufacturer Audi, with a competition history spanning rallying, endurance racing, touring cars and, most recently, Formula 1.\n\nAudi first made its name in the early 1980s, when its four-wheel-drive quattro revolutionized the World Rally Championship and won both manufacturers' and drivers' titles. That technology, together with the 'Silver Arrows' heritage of predecessor Auto Union, underpins the brand's racing identity.\n\nAudi's greatest era came at the Le Mans 24 Hours, where it took 13 overall victories between 2000 and 2014 with the R8, the diesel-powered R10 TDI, the R15 and the R18. In 2006 it won Le Mans with a diesel car for the first time, and in 2012 it claimed the first win for a hybrid. Audi also collected numerous DTM touring car titles before withdrawing from top-level prototype racing after 2016.\n\nIn 2026 Audi entered Formula 1 as a full works team, taking over the Sauber operation and opening a new chapter in the brand's motorsport story.",
+      "confidence": "medium",
+      "sources": ["https://en.wikipedia.org/wiki/Audi_in_motorsport", "https://www.audi.com/en/sport/motorsport/motorsport-history/"]
+    }
+  ]
+}

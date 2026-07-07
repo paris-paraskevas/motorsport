@@ -1080,6 +1080,18 @@ Long operator-directed build session off the inline handoff:
 
 Active: _(no `[+Nm]` prefixes captured this session)_
 
+### Tue 2026-07-07 — overnight autonomous — Motorsport Information hub `/information` (branch, NOT pushed) → proposed 0.178.0
+
+Unsupervised overnight build off an operator brief ("questions answered" section, hundreds of pages, careful with the sitemap):
+- → done: `/information` section — hub + 10 topic indexes + entry pages; `lib/information/*` (types/topics/generated/curated/registry), `components/information/InfoUi`, `qaPageLd`, nav ("Answers" menu + footer), ⌘K search (`info` type).
+- → done: **577 pages** — 526 verified (generated from our `champions.json` + 15 editorial explainers) + 51 unverified drafts (12 team histories, 38-venue tracks directory, 51-driver feeder rising-stars watchlist).
+- → done: **two-tier anti-spam gate** — only verified+featured index (cap 150) → **51 indexed** in the sitemap; drafts + long tail are `noindex`; drafts excluded from search. Addresses the sitemap-spam + AdSense constraint.
+- → workaround: tracks research agent stalled twice on large inline output → seeded the directory from verified `content/circuits.json` (38); broad ~150-venue set deferred.
+- → gates: tsc 0 · eslint 0 errors · **794 tests** · `next build` 213 static pages · curl smoke (noindex on drafts, QAPage on indexed, 526 info search docs) all pass.
+- → NOT pushed (operator publish decision); drafts need fact-check before promotion. Docs: `docs/research/2026-07-07-information-hub.md` + question catalog.
+
+Active: _(overnight autonomous run — no interactive time tracked)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

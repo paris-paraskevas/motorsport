@@ -8,13 +8,14 @@ import { searchDocs } from '@/lib/search-match';
 // Module-level cache so re-opening the overlay never re-fetches the static index.
 let INDEX_CACHE: SearchDoc[] | null = null;
 
-const TYPE_ORDER: SearchType[] = ['driver', 'team', 'series', 'weekend', 'tab', 'blog', 'page'];
+const TYPE_ORDER: SearchType[] = ['driver', 'team', 'series', 'weekend', 'tab', 'info', 'blog', 'page'];
 const TYPE_LABEL: Record<SearchType, string> = {
   driver: 'Drivers',
   team: 'Teams',
   series: 'Series',
   weekend: 'Weekends',
   tab: 'Series tabs',
+  info: 'Answers',
   blog: 'Blog',
   page: 'Pages',
 };

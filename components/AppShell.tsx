@@ -124,6 +124,23 @@ export function AppShell({
               />
             </HeaderNavMenu>
 
+            {/* Information hub — the "questions answered" + reference section. */}
+            <HeaderNavMenu
+              label="Answers"
+              href="/information"
+              active={isActive('/information')}
+              panelLabel="Motorsport answers"
+            >
+              <MenuLinkList
+                items={[
+                  { href: '/information/formula-1', label: 'Formula 1 & Open-Wheel', desc: 'Champions, rules & records' },
+                  { href: '/information/feeder-series', label: 'Feeder Series', desc: 'The junior ladder' },
+                  { href: '/information/tracks', label: 'Tracks & Circuits', desc: 'Venues by country' },
+                  { href: '/information/general', label: 'Motorsport 101', desc: 'The basics & big debates' },
+                ]}
+              />
+            </HeaderNavMenu>
+
             {/* Social folded play + friends + leagues (0.84.0); gated on betting env. */}
             {bettingEnabled && (
               <HeaderNavMenu

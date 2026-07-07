@@ -109,6 +109,33 @@ export function sportsEventLd(args: {
   return ld;
 }
 
+// QAPage for a single question + curated answer (the /information/[topic]/[slug]
+// pages). Only emitted on INDEXED entries — noindex pages don't need structured
+// data. `answerText` must be plain text (no markdown), so pass the summary or a
+// stripped body excerpt.
+export function qaPageLd(args: {
+  question: string;
+  answerText: string;
+  url: string;
+  dateModified?: string;
+}): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'QAPage',
+    mainEntity: {
+      '@type': 'Question',
+      name: args.question,
+      url: args.url,
+      ...(args.dateModified ? { dateModified: args.dateModified } : {}),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: args.answerText,
+        url: args.url,
+      },
+    },
+  };
+}
+
 export function articleLd(args: { post: Post; url: string }): object {
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',

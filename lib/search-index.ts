@@ -5,6 +5,8 @@ import { groupByWeekend } from './group';
 import { tabsFor } from './tabs';
 import { loadAllPosts } from './posts';
 import { publishedPosts } from './blog';
+import { INFO_TOPICS, getTopic } from './information/topics';
+import { getSearchableInfoEntries } from './information/registry';
 
 // The global-search index. A flat, JSON-serialisable list of every searchable
 // entity on the site — built at BUILD time (served static via app/api/search)
@@ -15,7 +17,7 @@ import { publishedPosts } from './blog';
 // pages and the sitemap use (groupByWeekend + tabsFor), so a hit never links to
 // a page that 404s.
 
-export type SearchType = 'driver' | 'team' | 'series' | 'tab' | 'weekend' | 'blog' | 'page';
+export type SearchType = 'driver' | 'team' | 'series' | 'tab' | 'weekend' | 'blog' | 'page' | 'info';
 
 export interface SearchDoc {
   type: SearchType;
@@ -36,6 +38,7 @@ const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
   { url: '/calendar', title: 'Calendar', subtitle: 'Every series, one timeline' },
   { url: '/news', title: 'News', subtitle: 'Latest across the grid' },
   { url: '/blog', title: 'Blog', subtitle: 'Analysis & recaps' },
+  { url: '/information', title: 'Information', subtitle: 'Answers, guides & records' },
   { url: '/threads', title: 'Threads', subtitle: 'Fan discussion' },
   { url: '/series', title: 'All series', subtitle: 'Browse every championship' },
   { url: '/f1/compare', title: 'F1 head-to-head', subtitle: 'Compare two drivers' },
@@ -146,6 +149,28 @@ export async function buildSearchIndex(): Promise<SearchDoc[]> {
       subtitle: 'Blog',
       url: `/blog/${p.slug}`,
       keywords: p.seriesSlug ?? '',
+    });
+  }
+
+  // Information hub — topic index pages + every VERIFIED entry (drafts are
+  // excluded, so on-site search never surfaces an unreviewed fact). This is the
+  // "answers show up when someone asks" surface across the whole site.
+  for (const t of INFO_TOPICS) {
+    docs.push({
+      type: 'page',
+      title: `${t.label} — Information`,
+      subtitle: 'Answers & guides',
+      url: `/information/${t.id}`,
+      keywords: 'information answers questions guide',
+    });
+  }
+  for (const e of await getSearchableInfoEntries()) {
+    docs.push({
+      type: 'info',
+      title: e.question,
+      subtitle: getTopic(e.topic)?.label ?? 'Information',
+      url: `/information/${e.topic}/${e.slug}`,
+      keywords: e.keywords.join(' '),
     });
   }
 
