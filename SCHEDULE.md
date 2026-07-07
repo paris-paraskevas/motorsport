@@ -1052,6 +1052,20 @@ _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Tue 2026-07-07 — Race Engineer assistant: go-live (paid Gemini) + full upgrade pass
+
+Diagnosed the "couldn't answer" error to a Google project-level denial (403 on all current models, 429 on the old one) → operator enabled Gemini **paid tier** (billing required for EEA users per Google's terms; free tier is denied + trains on data). Then shipped the researched best-practice upgrades.
+
+Outcomes:
+- → done: **model default fix + privacy 0.173.1 (#426)** — `gemini-2.0-flash` (retired) → `gemini-flash-lite-latest`.
+- → done: **links+bold rendering 0.174.0 (#427)** · **chips + persistence + escape-hatch 0.175.0 (#428)** · **usage insights + 👍/👎 + admin `/settings/assistant` 0.176.0 (#429)** · **eval `npm run assistant:eval` 0.176.1 (#430, 6/6 live)** · **typing indicator 0.176.2 (#431)**.
+- → skipped (recommended): streaming — low value on short answers + flickers partial links.
+- → owed: browser eyeball on prod; watch `/settings/assistant` → expand corpus for common Qs.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**

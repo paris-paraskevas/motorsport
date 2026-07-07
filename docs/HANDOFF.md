@@ -6,7 +6,29 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-06 (LATEST) — main 0.173.0 · AI ASSISTANT MVP (#422) then reworked into a floating "Race Engineer" chat widget (#424) — both ship dark
+## ⚡ Next session pickup — 2026-07-07 (LATEST) — Race Engineer assistant is LIVE (paid Gemini) + fully upgraded — main 0.176.2 (#426–#431)
+
+**The assistant went from dark to LIVE and got the full best-practice upgrade pass.** main 0.173.0 → **0.176.2**.
+
+- **LIVE on prod.** Operator set `NEXT_PUBLIC_ASSISTANT_ENABLED=1` + `GOOGLE_GENERATIVE_AI_API_KEY` + **enabled Google Cloud billing** (added €10 credits). **Why billing was required:** Google's Gemini API terms require **Paid Services** for apps serving EEA/UK/CH users — the free tier is denied (we saw `403 PERMISSION_DENIED` on all models, `429` on the old one) and would also train on prompts (GDPR-incompatible). Paid tier = no training + access. Model = **`gemini-flash-lite-latest`** (cheapest; ~€0.001/question → €10 ≈ ~10k questions; our 20/day + 12/min caps keep it tiny). **Landmine fixed (#426):** the old default `gemini-2.0-flash` is retired from AI Studio (would 404) → default is now `gemini-flash-lite-latest`.
+- **Upgrades shipped (researched best-practices):** links+bold rendering in replies (#427, `lib/assistant/render.ts` `parseInline`, safe — internal→in-app nav, external→new tab, href-whitelisted); **suggestion chips + conversation persistence (localStorage) + Contact escape-hatch** (#428); **usage insights + 👍/👎 feedback** (#429) — KV-backed logging (`lib/assistant/log.ts`, best-effort, no DB migration) + admin page **`/settings/assistant`** (isAdmin-gated, 404 otherwise: top questions / counts / most down-voted / recent / top users) — this is the operator's "see what people ask → build answers" loop; **eval harness** `npm run assistant:eval` (#430, `scripts/assistant-eval.mts`, 6/6 live); **animated typing indicator** (#431, chosen over streaming).
+- **Streaming: intentionally NOT built.** Low value for 1–4-sentence answers + partial markdown links flicker mid-stream + unverifiable now. Typing indicator covers the "responsive" feel.
+- **Privacy** (`content/legal/privacy.md`): discloses assistant queries go to Google (Gemini) + the capped recent-history retention.
+
+**Gates:** tsc + eslint 0 + **771 tests** + build clean throughout; live eval 6/6 (guardrails hold: links, refuses live data → links the page, refuses off-topic → Contact).
+
+**▶ OWED / NEXT:**
+- **Browser eyeball on prod** (signed in): the widget chips, 👍/👎, link rendering, typing dots — all verified by unit tests + the live eval, but NOT visually (Playwright MCP disconnected this session after a broad `node.exe` kill). Sign in on prod, open the launcher (bottom-right), sanity-check.
+- **Watch `/settings/assistant`** as real questions arrive → expand `content/assistant/site-help.md` for common asks → re-run `npm run assistant:eval`.
+- **Phase 2 (grounded live-data Q&A)** — the big one; needs a design pass first (intent-routing over our own loaders + refuse-when-uncertain + evals). Deferred.
+- **Feeder-series intake** — deferred to a later session (operator has an unresolved Supabase issue to solve first).
+- **v1.0 launch (W8)** — parked (operator wants to revisit); banner ships dark (`LAUNCH_ANNOUNCEMENT.active=false`), flip + bump 1.0.0 when ready.
+- **Bet-display refinement** — operator picked **Option A** (persist multiplier at placement → betting migration); build when scheduled.
+- **Landmine:** the `.env.local` may now contain `GOOGLE_GENERATIVE_AI_API_KEY` (operator added it for diagnosis; gitignored). A dev server may not be running (killed all node this session).
+
+---
+
+## ⚡ Next session pickup — 2026-07-06 — main 0.173.0 · AI ASSISTANT MVP (#422) then reworked into a floating "Race Engineer" chat widget (#424) — both ship dark
 
 **UI REWORK (0.173.0, #424) — latest:** operator didn't like the dedicated-page UI, so the assistant is now a **floating "Race Engineer" chat widget** — a persistent launcher (bottom-right, above the mobile bottom bar, every app page) that opens a conversational panel (message bubbles, **multi-turn**, race-engineer greeting). Removed `app/(app)/assistant/page.tsx` + `AssistantPanel.tsx`; added `components/assistant/AssistantWidget.tsx` (mounted in the app layout). `/api/assistant` + model seam now take a `messages[]` conversation (guardrails in the system instruction; history capped to 12 turns via `normalizeConversation`). **Ships DARK twice:** the launcher renders only when `NEXT_PUBLIC_ASSISTANT_ENABLED === '1'` (unset = no launcher), AND the API 503s without the key.
 - **Go-live now needs TWO env vars:** `NEXT_PUBLIC_ASSISTANT_ENABLED=1` (shows the launcher; `NEXT_PUBLIC_*` inlines at build → triggers a redeploy) + `GOOGLE_GENERATIVE_AI_API_KEY` (+ `ASSISTANT_MODEL`).
