@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.174.0 — 2026-07-07
+
+**Assistant answers are now tappable.** When the help assistant points you to a page, it gives you a link you can tap — much better on mobile — instead of plain text.
+
 ## 0.173.1 — 2026-07-06
 
 **Privacy update.** Our privacy policy now notes that the in-app assistant (not switched on yet) sends your questions to Google to generate answers.

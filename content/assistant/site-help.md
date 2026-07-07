@@ -19,22 +19,24 @@ need a free account.
 
 ## Getting around
 
-The top navigation has: Home, Calendar, Series, News, and Social.
-- **Home** (`/app`) — your personalised dashboard: what's live or up next, what
+The top navigation has [Home](/app), [Calendar](/calendar), [Series](/series), [News](/news), and [Social](/social). Always link users to these with markdown links, never bare paths.
+- [Home](/app) — your personalised dashboard: what's live or up next, what
   you just missed, this week's sessions, and any widgets you've enabled.
-- **Calendar** (`/calendar`) — every series' sessions, with Month / Week / Day views.
-- **Series** (`/series`) — the 15 series, grouped by category (formula, motorcycle,
+- [Calendar](/calendar) — every series' sessions, with Month / Week / Day views.
+- [Series](/series) — the 15 series, grouped by category (formula, motorcycle,
   endurance, oval, rally).
-- **News** (`/news`) — cross-series news; the menu also links Blog and Threads.
-- **Social** (`/social`) — the prediction game, leagues, and friends.
+- [News](/news) — cross-series news; the menu also links [Blog](/blog) and [Threads](/threads).
+- [Social](/social) — the prediction game, leagues, and friends.
 There is also a search button (top bar) to jump to a driver, team, series, weekend,
 or page.
 
 ## Series pages and their tabs
 
-Each series (e.g. `/series/f1`) has tabs, which vary by series: Overview/About,
-Standings, Results, Champions (or "Past Winners" for one-off events), Calendar,
-and — for F1 — Tracks. F1 and F2 also have a Bets tab on weekend pages.
+Each series has its own page (e.g. [Formula 1](/series/f1)) with tabs that vary by
+series: Overview/About, Standings, Results, Champions (or "Past Winners" for
+one-off events), Calendar, and — for F1 — Tracks. F1 and F2 also have a Bets tab on
+weekend pages. Link to a specific tab by its path, e.g. [F1 standings](/series/f1/standings)
+or [F1 results](/series/f1/results).
 - **Standings** — the current championship table, with a season trend chart where
   the data supports it.
 - **Results** — past races; click a race to open that weekend.
@@ -56,7 +58,7 @@ notifications from the bell icon and your Account settings.
 
 ## Personalising your home
 
-Signed-in users can customise the home page at `/settings/customize`: show/hide,
+Signed-in users can customise the home page at [Customise](/settings/customize): show/hide,
 reorder, and fold home blocks, and enable extra widgets (e.g. standings snapshot,
 championship leader, next-race weather, circuit map, F1 car upgrades, your bets,
 your leagues). Changes save instantly.

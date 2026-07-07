@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import { Headset, X, Send } from 'lucide-react';
 import type { ChatMessage } from '@/lib/assistant/prompt';
+import { parseInline } from '@/lib/assistant/render';
 
 // Floating "Race Engineer" help chat — a persistent launcher (bottom-right, above
 // the mobile bottom bar) that opens a conversational panel on every app page.
@@ -128,7 +129,11 @@ export function AssistantWidget() {
             )}
             {messages.map((m, i) => (
               <Bubble key={i} role={m.role}>
-                {m.content}
+                {m.role === 'assistant' ? (
+                  <RichText text={m.content} onNavigate={() => setOpen(false)} />
+                ) : (
+                  m.content
+                )}
               </Bubble>
             ))}
             {busy && <Bubble role="assistant">…</Bubble>}
@@ -176,6 +181,37 @@ export function AssistantWidget() {
         </div>
       )}
     </div>
+  );
+}
+
+// Renders assistant text with the two markdown constructs the model uses: links
+// and **bold** (see lib/assistant/render). Internal links navigate in-app and
+// close the panel; external links open a new tab. No HTML is ever injected.
+function RichText({ text, onNavigate }: { text: string; onNavigate: () => void }) {
+  const linkCls = 'underline decoration-brand decoration-2 underline-offset-2 hover:text-brand';
+  return (
+    <>
+      {text.split('\n').map((line, li) => (
+        <span key={li}>
+          {li > 0 && <br />}
+          {parseInline(line).map((t, ti) => {
+            if (t.kind === 'bold') return <strong key={ti}>{t.text}</strong>;
+            if (t.kind === 'link') {
+              return t.external ? (
+                <a key={ti} href={t.href} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                  {t.text}
+                </a>
+              ) : (
+                <Link key={ti} href={t.href} onClick={onNavigate} className={linkCls}>
+                  {t.text}
+                </Link>
+              );
+            }
+            return <span key={ti}>{t.text}</span>;
+          })}
+        </span>
+      ))}
+    </>
   );
 }
 
