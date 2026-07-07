@@ -13,6 +13,13 @@ import { parseInline } from '@/lib/assistant/render';
 // just renders the conversation and its states. Multi-turn: it POSTs the running
 // history each send. Account-gated: signed-out users get a sign-in prompt.
 const MAX_LEN = 1000;
+const CHAT_KEY = 'paddock:assistant:chat';
+const SUGGESTIONS = [
+  'How do I follow a series?',
+  'How does the prediction game work?',
+  'Where are the standings?',
+  'How do I customise my home?',
+];
 
 export function AssistantWidget() {
   const { isSignedIn } = useAuth();
@@ -31,8 +38,27 @@ export function AssistantWidget() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, busy]);
 
-  async function send() {
-    const q = input.trim();
+  // Persist the conversation across reloads/navigation (localStorage; capped).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CHAT_KEY);
+      const stored = raw ? JSON.parse(raw) : null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (Array.isArray(stored)) setMessages(stored as ChatMessage[]);
+    } catch {
+      /* ignore corrupt/blocked storage */
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-40)));
+    } catch {
+      /* ignore */
+    }
+  }, [messages]);
+
+  async function send(preset?: string) {
+    const q = (preset ?? input).trim();
     if (q.length < 3 || busy) return;
     const next: ChatMessage[] = [...messages, { role: 'user', content: q }];
     setMessages(next);
@@ -122,10 +148,24 @@ export function AssistantWidget() {
         ) : (
           <>
             {messages.length === 0 && (
-              <Bubble role="assistant">
-                Box, box. Ask me how to use Paddock — following series, customising your
-                home, the prediction game, finding standings or results.
-              </Bubble>
+              <>
+                <Bubble role="assistant">
+                  Box, box. Ask me how to use Paddock — following series, customising your
+                  home, the prediction game, finding standings or results.
+                </Bubble>
+                <div className="flex flex-wrap gap-2">
+                  {SUGGESTIONS.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => send(s)}
+                      className="rounded-full border border-border bg-surface px-3 py-1.5 text-left text-xs text-text-muted transition-colors duration-(--duration-fast) hover:border-brand hover:text-text"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </>
             )}
             {messages.map((m, i) => (
               <Bubble key={i} role={m.role}>
@@ -166,7 +206,7 @@ export function AssistantWidget() {
             />
             <button
               type="button"
-              onClick={send}
+              onClick={() => send()}
               disabled={input.trim().length < 3 || busy}
               aria-label="Send"
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-bg transition-opacity duration-(--duration-fast) hover:opacity-90 disabled:opacity-40"

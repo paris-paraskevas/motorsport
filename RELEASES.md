@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.175.0 — 2026-07-07
+
+**A more helpful assistant.** The help assistant now suggests things you can ask, remembers your conversation if you reload the page, and always points you to Contact if it can't help.
+
 ## 0.174.0 — 2026-07-07
 
 **Assistant answers are now tappable.** When the help assistant points you to a page, it gives you a link you can tap — much better on mobile — instead of plain text.
