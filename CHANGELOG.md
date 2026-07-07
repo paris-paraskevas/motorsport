@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.177.0 — 2026-07-07
+
+### Added
+- **Writer role — self-service authoring on `/blog`.** A Clerk `publicMetadata.role: "writer"` (new `isWriter` in `lib/threads.ts`; admin is a superset) lets an approved contributor manage their OWN posts end-to-end: create drafts, edit until publish, and approve + schedule/publish themselves — never touching anyone else's. The whole authz boundary is the in-route checks (the `post` table is service-role-only): `POST /api/blog` create → `isWriter`; `GET /api/blog` queue → writers scoped to their own via the latent `authorId` filter (admins unscoped); `POST`/`PATCH /api/blog/[id]` (approve/reject/edit) → a new `authorizePostActor` gate = admin OR (writer AND `post.author_id === userId`), with edits locked once published; the `/blog/[slug]` preview gate extended so a writer previews/edits their own unpublished post. Admins keep everything (they act on all posts).
+- **Rich markdown editor with live preview** (`components/blog/MarkdownEditor.tsx`, shared by the composer + the inline draft editor). A formatting toolbar (bold/italic/H2/H3/quote/list/link — inserts markdown, so `body` stays markdown) + a Write/Preview toggle that renders through the SAME server `renderMarkdown` pipeline via a new writer-gated `POST /api/blog/preview` — byte-identical to publish, no client-side markdown library, no rehype-sanitize drift (the risk the 2026-07-03 inline-edit spec flagged against a client preview). Author byline avatars already resolve from Clerk (`resolveBlogAuthor`), so a writer's profile picture auto-appears. `next build` clean; 778 tests.
+
 ## 0.176.7 — 2026-07-07
 
 ### Changed

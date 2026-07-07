@@ -4,14 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil } from 'lucide-react';
 import { PostHeader, POST_ARTICLE_CLASS, type PostAuthor } from './PostHeader';
+import { MarkdownEditor } from './MarkdownEditor';
 
-// Field limits — mirror lib/blog.ts TITLE_MAX/SUMMARY_MAX/BODY_MAX. Local
-// literals because lib/blog is a server module (Supabase client) and importing
-// it here would drag that graph into the client bundle; the server re-validates
-// on PATCH anyway, so a drift only loosens the soft maxLength hint.
+// Field limits — mirror lib/blog.ts TITLE_MAX/SUMMARY_MAX. Local literals because
+// lib/blog is a server module (Supabase client) and importing it here would drag
+// that graph into the client bundle; the server re-validates on PATCH anyway, so
+// a drift only loosens the soft maxLength hint. (Body length is server-enforced;
+// the MarkdownEditor doesn't cap it client-side.)
 const TITLE_MAX = 140;
 const SUMMARY_MAX = 300;
-const BODY_MAX = 50000;
 
 // Admin-preview branch of /blog/[slug] (spec
 // docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md): owns the
@@ -86,8 +87,8 @@ export function DraftEditor({ id, title, summary, body, bodyHtml, dateLabel, ban
 
   const bannerText =
     banner.kind === 'draft'
-      ? 'Draft preview · not yet scheduled · only admins can see this'
-      : `Scheduled preview · publishes ${banner.label} UTC · only admins can see this`;
+      ? 'Draft preview · not yet scheduled · only you and editors can see this'
+      : `Scheduled preview · publishes ${banner.label} UTC · only you and editors can see this`;
 
   const field =
     'w-full rounded border border-border bg-bg px-3 py-2 text-sm text-text placeholder:text-text-faint';
@@ -135,14 +136,11 @@ export function DraftEditor({ id, title, summary, body, bodyHtml, dateLabel, ban
             aria-label="Summary"
             required
           />
-          <textarea
-            className={`${field} min-h-[60vh] font-mono text-xs leading-relaxed`}
+          <MarkdownEditor
             value={draftBody}
-            onChange={e => setDraftBody(e.target.value)}
-            maxLength={BODY_MAX}
-            placeholder="Body (markdown)"
-            aria-label="Body (markdown)"
-            required
+            onChange={setDraftBody}
+            minHeightClass="min-h-[60vh]"
+            textClassName="font-mono text-xs leading-relaxed"
           />
           {error && <p className="font-mono text-xs text-red-400">{error}</p>}
           <div className="flex gap-2">

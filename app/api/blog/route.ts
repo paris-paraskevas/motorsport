@@ -3,7 +3,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
-import { isAdmin } from '@/lib/threads';
+import { isAdmin, isWriter } from '@/lib/threads';
 import { createDraft, listPosts } from '@/lib/blog';
 import { notifyAdminsDraftReady } from '@/lib/blog-notify';
 import { listSeriesSlugs } from '@/lib/series';
@@ -11,30 +11,40 @@ import { listSeriesSlugs } from '@/lib/series';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// GET = the admin review queues (drafts + scheduled). 401/403 for non-admins, so
-// the client moderation panel self-hides.
+// GET = the blog console queues (drafts + scheduled). Admins see every post; a
+// writer sees only their OWN (the latent authorId filter). 401/403 for everyone
+// else, so the client panel self-hides.
 export async function GET() {
   if (!isBettingConfigured()) return NextResponse.json({ drafts: [], scheduled: [] });
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isAdmin(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  const user = await currentUser();
+  const admin = isAdmin(user);
+  if (!admin && !isWriter(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  // Writers are scoped to their own posts; they can still act on what they see
+  // (the [id] routes authorize each action per-post by ownership).
+  const authorScope = admin ? undefined : userId;
   try {
-    const [drafts, scheduled] = await Promise.all([listPosts('draft'), listPosts('approved')]);
-    return NextResponse.json({ drafts, scheduled });
+    const [drafts, scheduled] = await Promise.all([
+      listPosts('draft', undefined, authorScope),
+      listPosts('approved', undefined, authorScope),
+    ]);
+    return NextResponse.json({ drafts, scheduled, isAdmin: admin });
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
   }
 }
 
-// POST = create a draft post (admin only). Lands `draft`; an admin then approves
-// it with a publish_at and the publish-posts cron flips it live. Fires the
-// "draft ready" admin push off the critical path — covers the hand-authored
-// path (the headless scripts/draft-post path fires it directly).
+// POST = create a draft post (writer or admin). Lands `draft` owned by the
+// creator, who (or an admin) then approves it with a publish_at so the
+// publish-posts cron flips it live. Fires the "draft ready" admin push off the
+// critical path — covers the hand-authored path (the headless scripts/draft-post
+// path fires it directly).
 export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isAdmin(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!isWriter(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   let body: {
     slug?: unknown;

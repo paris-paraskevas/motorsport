@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { MarkdownEditor } from './MarkdownEditor';
 
 // Admin-only draft composer on /blog. POSTs to /api/blog (admin-gated) which
 // creates a `draft`; the parent refetches so it appears in the review queue,
@@ -104,7 +105,7 @@ export function PostComposer({
         required
       />
       <input className={field} value={summary} onChange={e => setSummary(e.target.value)} placeholder="Summary (1–2 sentences)" required maxLength={300} />
-      <textarea className={`${field} font-mono text-xs`} value={body} onChange={e => setBody(e.target.value)} placeholder="Body (markdown)" required rows={8} />
+      <MarkdownEditor value={body} onChange={setBody} rows={8} />
       <div className="flex flex-wrap gap-2">
         <select
           className={`${field} flex-1`}

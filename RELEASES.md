@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.177.0 — 2026-07-07
+
+**Writers.** Approved contributors can now write, format (a rich toolbar with live preview), schedule and publish their own posts — with their profile photo on the byline.
+
 ## 0.176.7 — 2026-07-07
 
 **F1 results appear sooner.** Race, sprint and session results now show up within about 10 minutes of a session ending, instead of up to an hour.
