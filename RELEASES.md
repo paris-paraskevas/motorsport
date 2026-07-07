@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.1 — 2026-07-07
+
+**Internal:** added a regression check for the help assistant. No user-facing change.
+
 ## 0.176.0 — 2026-07-07
 
 **Rate the assistant.** You can now give the help assistant a 👍 or 👎 on its answers to help us improve it. Behind the scenes we keep a limited history of common questions to make it better — see the privacy policy.

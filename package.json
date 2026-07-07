@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.176.0",
+  "version": "0.176.1",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -13,6 +13,7 @@
     "health:standings": "tsx scripts/health-standings.mts",
     "health:results": "tsx scripts/health-results.mts",
     "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts",
+    "assistant:eval": "tsx scripts/assistant-eval.mts",
     "prepare": "husky"
   },
   "dependencies": {
