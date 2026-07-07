@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.6 — 2026-07-07
+
+**Faster app open after updates.** The installed app no longer stalls the first time you open it right after an update — it opens instantly from cache and refreshes quietly in the background (the update takes effect next time you open it).
+
 ## 0.176.5 — 2026-07-07
 
 **Internal:** groundwork for a more regular weekly preview & recap posting rhythm (behind-the-scenes drafting tooling). No user-facing change.
