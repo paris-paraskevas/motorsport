@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.7 — 2026-07-07
+
+**F1 results appear sooner.** Race, sprint and session results now show up within about 10 minutes of a session ending, instead of up to an hour.
+
 ## 0.176.6 — 2026-07-07
 
 **Faster app open after updates.** The installed app no longer stalls the first time you open it right after an update — it opens instantly from cache and refreshes quietly in the background (the update takes effect next time you open it).
