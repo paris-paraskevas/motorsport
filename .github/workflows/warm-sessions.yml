@@ -2,11 +2,13 @@ name: warm sessions
 
 on:
   schedule:
-    # Every 30 minutes — captures recently-ended F1 sessions' classifications
-    # into KV before OpenF1's next live-session lockout can 401 them. A miss
-    # (classification not yet published) is never cached, so the next tick
-    # simply retries; per-run upstream load is capped inside the route.
-    - cron: '*/30 * * * *'
+    # Every 10 minutes — captures recently-ended sessions' classifications into
+    # KV so results surface sooner after a session ends (was */30). The route
+    # self-gates (only sessions ended within the lookback window and >=10 min
+    # old), so idle ticks no-op — safe to run densely. A miss (classification
+    # not yet published) is never cached, so the next tick simply retries;
+    # per-run upstream load is capped inside the route.
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 # Required so the workflow can read CRON_SECRET from repo secrets.

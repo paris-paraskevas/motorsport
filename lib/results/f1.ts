@@ -33,7 +33,11 @@ async function fetchAllPages(baseUrl: string): Promise<RawRace[]> {
   let offset = 0;
   for (let page = 0; page < MAX_PAGES; page++) {
     const res = await fetchUpstream(`${baseUrl}?limit=${PAGE_SIZE}&offset=${offset}`, {
-      next: { revalidate: 3600 },
+      // 10 min (was 1h): race/sprint results + the home podium surface within
+      // ~10 min of a session ending, matching the */10 warm-sessions cadence.
+      // The extra Jolpica reads are bounded and backstopped by withF1LastGood
+      // (KV 21d + Postgres) against 521 outages.
+      next: { revalidate: 600 },
     });
     if (!res.ok) break;
     const json = (await res.json()) as PagedPayload;
@@ -155,7 +159,7 @@ function parseRace(
 
 async function fetchF1LastRaceLive(): Promise<RaceResult | null> {
   try {
-    const res = await fetchUpstream(LAST_RACE_URL, { next: { revalidate: 3600 } });
+    const res = await fetchUpstream(LAST_RACE_URL, { next: { revalidate: 600 } });
     if (!res.ok) return null;
     const json = (await res.json()) as RacePayload;
     const races = json?.MRData?.RaceTable?.Races;

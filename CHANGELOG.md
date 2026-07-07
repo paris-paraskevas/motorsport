@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.176.7 — 2026-07-07
+
+### Changed
+- **F1 results surface faster after a session ends** (the "faster F1 results" batch, T1+T2). Two levers: (1) the `warm-sessions` cron now runs every 10 min (was 30) — it self-gates (only warms sessions ended within the lookback window and ≥10 min old), so idle ticks no-op (`.github/workflows/warm-sessions.yml`); (2) the F1 season-results/sprints + last-race Jolpica fetches drop from a 1h to a 10 min `revalidate` (`lib/results/f1.ts` — `fetchAllPages` + `fetchF1LastRace`), so the Results/Standings tab and the home "just missed" podium refresh within ~10 min of a session instead of up to an hour. Both stay backstopped by `withF1LastGood` (KV 21d + Postgres) against Jolpica 521 outages, and the extra upstream reads are bounded (per shared cache, read-triggered). `warm-results` left at `*/30` (it force-refreshes unconditionally — tripling it would just triple upstream load). `next build` clean; 778 tests. NB the real latency win verifies across a race-weekend session boundary (not observable headless).
+
 ## 0.176.6 — 2026-07-07
 
 ### Fixed
