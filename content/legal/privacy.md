@@ -49,7 +49,7 @@ See Clerk's own privacy policy at https://clerk.com/legal/privacy.
 - Email address (if you provide one), message body, optional category. Stored short-term in Vercel KV and delivered to the operator inbox via Resend.
 
 ### When you use the in-app assistant
-- If you open the in-app help assistant ("Race Engineer") and send a question, the text of your question and the recent messages in that chat are sent to **Google** (the Gemini API) to generate a reply. Please don't include sensitive personal information in your questions. The assistant is grounded in our own help content and does not receive your account data. See Google's terms at https://ai.google.dev/gemini-api/terms.
+- If you open the in-app help assistant ("Race Engineer") and send a question, the text of your question and the recent messages in that chat are sent to **Google** (the Gemini API) to generate a reply. Please don't include sensitive personal information in your questions. The assistant is grounded in our own help content and does not receive your account data. See Google's terms at https://ai.google.dev/gemini-api/terms. We also keep a limited, recent history of assistant questions (and any 👍/👎 rating you give) to see which questions are common and improve the assistant — a capped recent log, not indefinite retention, used only for that purpose.
 
 ### When you give cookie consent
 - Your consent decision is captured and stored by **Google's Consent Management Platform** (Funding Choices). Google sets cookies such as `FCCDCF` on `paddock-tracker.com` to remember your choice across visits. We do not maintain a separate consent log on our side.

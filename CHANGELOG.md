@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.176.0 — 2026-07-07
+
+### Added
+- **Assistant usage insights + 👍/👎 feedback** (batch B; the operator's "see what people ask so I can build answers to common questions" request). Every asked question is now logged best-effort to Vercel KV — a capped recent list + per-question frequency + per-user counts — and never blocks or breaks an answer (`lib/assistant/log.ts`, wired into `/api/assistant`). Each answer shows thumbs up/down (`/api/assistant/feedback` + widget UI) recorded to KV. New **admin-only** page `/settings/assistant` (404s for non-admins via `isAdmin`) surfaces totals, top questions, most down-voted (what to fix), recent questions, and top users — so the corpus can be expanded to cover common asks. `normalizeQuestion` unit-tested; storage is KV (no DB migration, so no dependency on the pending Supabase item). Privacy policy updated to disclose the capped recent-history retention. tsc + eslint 0 + 771 tests + build.
+
 ## 0.175.0 — 2026-07-07
 
 ### Added

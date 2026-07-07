@@ -8,6 +8,7 @@ import {
   ASSISTANT_MIN_QUESTION_LEN,
   type ChatMessage,
 } from '@/lib/assistant';
+import { logQuestion } from '@/lib/assistant/log';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
   }
 
   const result = await answerConversation(messages);
+  await logQuestion(userId, latest.content, result.ok); // best-effort usage log
   if (!result.ok) {
     // unconfigured → the feature ships dark (no API key yet): 503 so the UI can
     // show "not available yet". error → upstream/model failure: 502.

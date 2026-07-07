@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
-import { Headset, X, Send } from 'lucide-react';
+import { Headset, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import type { ChatMessage } from '@/lib/assistant/prompt';
 import { parseInline } from '@/lib/assistant/render';
 
@@ -28,6 +28,7 @@ export function AssistantWidget() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rated, setRated] = useState<Record<number, 'up' | 'down'>>({});
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +82,20 @@ export function AssistantWidget() {
       setError('Network error — please try again.');
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function rate(index: number, rating: 'up' | 'down', question: string) {
+    if (!question || rated[index]) return;
+    setRated(r => ({ ...r, [index]: rating }));
+    try {
+      await fetch('/api/assistant/feedback', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ question, rating }),
+      });
+    } catch {
+      /* best-effort — feedback is fire-and-forget */
     }
   }
 
@@ -168,13 +183,41 @@ export function AssistantWidget() {
               </>
             )}
             {messages.map((m, i) => (
-              <Bubble key={i} role={m.role}>
-                {m.role === 'assistant' ? (
-                  <RichText text={m.content} onNavigate={() => setOpen(false)} />
-                ) : (
-                  m.content
+              <div key={i}>
+                <Bubble role={m.role}>
+                  {m.role === 'assistant' ? (
+                    <RichText text={m.content} onNavigate={() => setOpen(false)} />
+                  ) : (
+                    m.content
+                  )}
+                </Bubble>
+                {m.role === 'assistant' && (
+                  <div className="mt-1 flex items-center gap-2 pl-1">
+                    {rated[i] ? (
+                      <span className="font-mono text-[10px] text-text-faint">thanks for the feedback</span>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => rate(i, 'up', messages[i - 1]?.content ?? '')}
+                          aria-label="Helpful"
+                          className="text-text-faint transition-colors hover:text-emerald-400"
+                        >
+                          <ThumbsUp size={13} aria-hidden />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => rate(i, 'down', messages[i - 1]?.content ?? '')}
+                          aria-label="Not helpful"
+                          className="text-text-faint transition-colors hover:text-red-400"
+                        >
+                          <ThumbsDown size={13} aria-hidden />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 )}
-              </Bubble>
+              </div>
             ))}
             {busy && <Bubble role="assistant">…</Bubble>}
             {error && (
