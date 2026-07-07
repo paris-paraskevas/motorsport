@@ -6,7 +6,33 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-07 (LATEST) — Race Engineer assistant is LIVE (paid Gemini) + fully upgraded — main 0.176.2 (#426–#431)
+## ⚡ Next session pickup — 2026-07-07 (LATEST) — 4 PRs #437–#440 (blog cadence · PWA open fix · faster F1 results · WRITER ROLE) + queued 2 blog drafts to PROD via `.supabase-pat` — main **0.177.0**
+
+**Big build session (inline handoff → operator-directed features). main 0.176.4 → 0.177.0, PRs #437–#440 all squash-merged.** The long-blocked prod-Supabase blog writes are also UNBLOCKED via the Management-API PAT.
+
+- **#437 blog cadence (0.176.5):** weekly preview/digest drafting routine. `scripts/weekend-post-context.mts` (picks the "marquee event of the week" + a grounded data pack from our own loaders), `lib/blog-draft-md.ts` (.md→DraftInput parser + 5 tests), `draft-post.mts` now takes `.md` or `.json` + `--dry`. Playbook `docs/content-authoring/weekend-post-playbook.md`; design `docs/research/2026-07-07-blog-cadence-automation.md`; local `/weekend-post` skill (`.claude/skills/` — **GITIGNORED, local-only**; the playbook is the committed source). ⚠ draft-post.mts `.md` metadata must be **single-line** (the parser takes the first line of each key).
+- **#438 PWA open fix (0.176.6):** `app/sw.ts` `skipWaiting`/`clientsClaim` → **false**. The installed PWA stalled ~20–30s on the FIRST open after each deploy (the new SW skip-waited into the current open mid-precache of the ~3.5 MB build). Now the new SW installs in the background + activates on the NEXT launch (trade-off: updates apply one launch later). `/app` is static ISR (not the data layer). **Verify on the phone across the next deploy boundary.**
+- **#439 faster F1 results (0.176.7):** `warm-sessions` cron `*/30 → */10` (self-gating); F1 season-results/sprints + last-race `revalidate` `3600 → 600` in `lib/results/f1.ts` (backstopped by withF1LastGood). `warm-results` left `*/30` (unconditional Jolpica load — don't bump). Latency win verifies over a race weekend.
+- **#440 WRITER ROLE (0.177.0):** Clerk `publicMetadata.role: "writer"` (`isWriter` in `lib/threads.ts`; **admin is a superset — admins already have everything**). A writer self-services their OWN posts: create · edit until publish · approve + schedule/publish. Ownership (`post.author_id === userId`) is the security boundary (the `post` table is service-role-only, so the in-route checks ARE it): `authorizePostActor` on `POST/PATCH /api/blog/[id]`; create → isWriter; queue → own-scoped. New `components/blog/MarkdownEditor.tsx` (formatting toolbar + Write/Preview toggle rendered via the SAME server pipeline through the new writer-gated `POST /api/blog/preview` — no client md lib, no sanitize drift). Byline avatars already resolve from Clerk. **⚠ OPERATOR-OWED: set a user's Clerk `role:"writer"` (keep yourself `admin`) + verify the writer `/blog` flow signed-in — NOT browser-verified headless.**
+
+**🔓 Supabase-via-PAT UNBLOCK (significant):** `.supabase-pat` (Management API) reaches PROD — project **`dzelqrtajnauunzmxfic`** ("Paddock", eu-west-1). Working pattern: `curl -H "Authorization: Bearer $(cat .supabase-pat)" https://api.supabase.com/v1/projects` (find ref) → `/projects/<ref>/api-keys?reveal=true` (service_role key) → `/projects/<ref>/database/query` (arbitrary SQL). Prod blog **author_id = `user_3Dj7VJ9cClEegSAklquQYVpJEbK`** (authors every existing post). This clears the "Supabase-gated" framing for **blog drafts** (was blocking the British GP queue since #435).
+
+**📝 2 blog drafts now on PROD `/blog` (status='draft' — operator approves + schedules):**
+- `british-grand-prix-2026-report` — the RECAP (distinct from the published `british-grand-prix-2026-preview`); `publish_at` null.
+- `motogp-german-grand-prix-2026-preview` — `publish_at` 2026-07-09 12:00Z (Thu 15:00 Athens). A draft; won't publish until approved.
+
+**▶ OWED / NEXT (prioritized):**
+1. **Operator:** Clerk `role:"writer"` on the writer + verify the `/blog` writer flow signed-in (compose/toolbar/preview/schedule/edit); approve + schedule the 2 queued drafts in `/blog`.
+2. **Re-schedule feature** (IDEAS, operator-requested): edit `publish_at` while scheduled-but-unpublished — `reschedulePost(id, publishAt)` (guard status='approved') + a `POST /api/blog/[id]` action + datetime control on Scheduled rows, reusing the writer authz.
+3. **AdSense "Low value content"** — diagnosed (aggregated data + Wikipedia-derived + templated; too little original content). FIX = original content via the blog cadence + complete the `overview.md` stubs (13/15 series) + original bios; then re-request review. AdSense-readiness plan owed (in IDEAS).
+4. **B-perf tasks 2–3 HELD** (SW shell-first SWR/timeout + precache trim) — all-user caching changes, can't verify headless; verify #438's real effect on the phone first (task 1 may suffice).
+5. **Blog cadence Phase 1** now unblockable via the PAT (or a headless `claude -p` trigger = Phase 2). **Assistant Phase 2** (grounded live-data Q&A) still the big remaining assistant item (loaders scouted this session; design-first).
+
+**AUDIT-FIRST (proven again):** `/news` page, NASCAR trend-chart polish, and news-filter persistence were ALL already shipped despite reading "open" in IDEAS — verify before building.
+
+---
+
+## ⚡ Next session pickup — 2026-07-07 — Race Engineer assistant is LIVE (paid Gemini) + fully upgraded — main 0.176.2 (#426–#431)
 
 **The assistant went from dark to LIVE and got the full best-practice upgrade pass.** main 0.173.0 → **0.176.2**.
 

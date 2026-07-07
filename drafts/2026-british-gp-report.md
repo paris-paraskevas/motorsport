@@ -8,10 +8,7 @@ Suggested metadata:
   title:   Leclerc ends the drought as Silverstone descends into chaos — and Ferrari hit 250
   slug:    british-grand-prix-2026-report
   series:  f1
-  excerpt: Charles Leclerc won a chaotic British Grand Prix that finished behind
-           the Safety Car — Ferrari's 250th F1 win, 75 years after their first at
-           the very same track — as title leader Kimi Antonelli's afternoon fell
-           apart and George Russell stole second at home.
+  excerpt: Charles Leclerc won a chaotic British Grand Prix that finished behind the Safety Car — Ferrari's 250th F1 win, 75 years after their first at the very same track — as title leader Kimi Antonelli's afternoon fell apart and George Russell stole second at home.
 
 Sources (fact-check before queueing): Formula1.com race report + Silverstone lowdown +
 qualifying/sprint reports; The Race; GPFans final classification; total-motorsport;
