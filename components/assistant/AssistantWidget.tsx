@@ -14,6 +14,7 @@ import { parseInline } from '@/lib/assistant/render';
 // history each send. Account-gated: signed-out users get a sign-in prompt.
 const MAX_LEN = 1000;
 const CHAT_KEY = 'paddock:assistant:chat';
+const RATED_KEY = 'paddock:assistant:rated';
 const SUGGESTIONS = [
   'How do I follow a series?',
   'How does the prediction game work?',
@@ -28,7 +29,9 @@ export function AssistantWidget() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [rated, setRated] = useState<Record<number, 'up' | 'down'>>({});
+  // Keyed by answer text (not index) so ratings survive a reload + stay aligned
+  // even if the persisted history is capped/re-indexed.
+  const [rated, setRated] = useState<Record<string, 'up' | 'down'>>({});
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +49,12 @@ export function AssistantWidget() {
       const stored = raw ? JSON.parse(raw) : null;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (Array.isArray(stored)) setMessages(stored as ChatMessage[]);
+      const rawRated = localStorage.getItem(RATED_KEY);
+      const storedRated = rawRated ? JSON.parse(rawRated) : null;
+      if (storedRated && typeof storedRated === 'object' && !Array.isArray(storedRated)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setRated(storedRated as Record<string, 'up' | 'down'>);
+      }
     } catch {
       /* ignore corrupt/blocked storage */
     }
@@ -57,6 +66,13 @@ export function AssistantWidget() {
       /* ignore */
     }
   }, [messages]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(RATED_KEY, JSON.stringify(rated));
+    } catch {
+      /* ignore */
+    }
+  }, [rated]);
 
   async function send(preset?: string) {
     const q = (preset ?? input).trim();
@@ -85,9 +101,9 @@ export function AssistantWidget() {
     }
   }
 
-  async function rate(index: number, rating: 'up' | 'down', question: string) {
-    if (!question || rated[index]) return;
-    setRated(r => ({ ...r, [index]: rating }));
+  async function rate(answer: string, rating: 'up' | 'down', question: string) {
+    if (!question || rated[answer]) return;
+    setRated(r => ({ ...r, [answer]: rating }));
     try {
       await fetch('/api/assistant/feedback', {
         method: 'POST',
@@ -193,13 +209,13 @@ export function AssistantWidget() {
                 </Bubble>
                 {m.role === 'assistant' && (
                   <div className="mt-1 flex items-center gap-2 pl-1">
-                    {rated[i] ? (
+                    {rated[m.content] ? (
                       <span className="font-mono text-[10px] text-text-faint">thanks for the feedback</span>
                     ) : (
                       <>
                         <button
                           type="button"
-                          onClick={() => rate(i, 'up', messages[i - 1]?.content ?? '')}
+                          onClick={() => rate(m.content, 'up', messages[i - 1]?.content ?? '')}
                           aria-label="Helpful"
                           className="text-text-faint transition-colors hover:text-emerald-400"
                         >
@@ -207,7 +223,7 @@ export function AssistantWidget() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => rate(i, 'down', messages[i - 1]?.content ?? '')}
+                          onClick={() => rate(m.content, 'down', messages[i - 1]?.content ?? '')}
                           aria-label="Not helpful"
                           className="text-text-faint transition-colors hover:text-red-400"
                         >

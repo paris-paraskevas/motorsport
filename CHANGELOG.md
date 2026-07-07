@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.176.3 — 2026-07-07
+
+### Fixed
+- **Assistant 👍/👎 feedback didn't survive a refresh** (operator-reported). The "rated" UI state was in-memory and keyed by message index, so a hard refresh — or a capped/re-indexed persisted history — showed the buttons again on already-rated answers. Now keyed by the **answer text** and persisted to `localStorage` (`paddock:assistant:rated`) alongside the conversation, so ratings stick across reloads and stay aligned to the right answer.
+
 ## 0.176.2 — 2026-07-07
 
 ### Changed

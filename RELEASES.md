@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.3 — 2026-07-07
+
+**Assistant fix.** Your 👍/👎 on an assistant answer now sticks after you refresh the page.
+
 ## 0.176.2 — 2026-07-07
 
 **Assistant polish.** The help assistant now shows a subtle typing animation while it works out your answer.
