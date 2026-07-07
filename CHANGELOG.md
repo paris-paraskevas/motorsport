@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.176.5 — 2026-07-07
+
+### Added
+- **Weekend-post drafting cadence — tooling + design (Phase 0; no user-facing change).** Groundwork for a regular weekly marquee-event blog rhythm (a Thursday preview + a Monday digest) that stays approval-gated: the routine only ever produces a **draft**; the operator approves + schedules it in `/blog`, and the existing `publish-posts` cron ships it at `publish_at`. Nothing publishes automatically.
+  - `scripts/weekend-post-context.mts` — read-only context builder. Picks the "marquee event of the week" from our own schedule loaders (`loadSeries` → `groupByWeekend`, a priority order + crown-jewel override + skip-when-none) and emits a grounded data pack — standings leader/top (raw single-leader fetchers) and, for a digest, the latest podium — plus a suggested slug and `publish_at` (Thu/Mon 15:00 Europe/Athens, DST-correct via `Intl`). Mirrors the `health`-script pattern (raw per-series fetchers) to sidestep the `server-only` guards in `overrides.ts`. Verified live: British GP digest + MotoGP German GP preview both ground correctly.
+  - `lib/blog-draft-md.ts` (+ `lib/blog-draft-md.test.ts`, 5 tests) — pure `.md` → `DraftInput` parser (metadata comment block + article body, leading `# H1` dropped, presence + kebab-slug checks; length caps stay enforced by `createDraft`).
+  - `scripts/draft-post.mts` — now accepts a `.md` (weekend-post exemplar format) or a `.json`, plus `--dry` (parse + print, no DB write). One command creates the `status='draft'` row so it lands in the `/blog` admin queue to read/edit/schedule/approve.
+  - Docs: `docs/research/2026-07-07-blog-cadence-automation.md` (runner analysis — GitHub Actions headless recommended, ScheduleWakeup rejected as session-bound; phased 0→1→2; the model never holds the service-role key) and `docs/content-authoring/weekend-post-playbook.md` (the routine's contract: grounded numbers verbatim, fact-check per RULE #1, stop-on-conflict, flag provisional results). A local `/weekend-post` skill wraps the playbook (git-ignored; the playbook is the committed source of truth).
+  - `drafts/motogp-german-grand-prix-2026-preview.md` — a grounded, fact-checked sample produced by the routine as the Phase-0 verification.
+  - **Gated:** landing a draft on the **prod** `/blog` needs the prod Supabase URL + service-role key (the deferred Supabase item) — the same blocker as the British GP draft queue. `tsc` + `eslint` clean; parser tests 5/5.
+
 ## 0.176.4 — 2026-07-07
 
 ### Fixed

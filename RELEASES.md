@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.5 — 2026-07-07
+
+**Internal:** groundwork for a more regular weekly preview & recap posting rhythm (behind-the-scenes drafting tooling). No user-facing change.
+
 ## 0.176.4 — 2026-07-07
 
 **Internal:** lint cleanup. No user-facing change.
