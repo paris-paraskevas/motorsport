@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.176.6 — 2026-07-07
+
+### Fixed
+- **Installed PWA stalled ~20–30s on the first open after a deploy** (operator-reported, mobile wifi). Traced to the service worker: `app/sw.ts` had `skipWaiting: true` + `clientsClaim: true` with a ~218-entry / ~3.5 MB precache, so every deploy made all precache URLs new and the incoming SW `install` ran a full `addAll` over the mobile link **then activated mid-open** (skipWaiting), hijacking the first navigation while `defaultCache`'s NetworkFirst-with-no-timeout wouldn't paint from the already-cached shell. Set `skipWaiting`/`clientsClaim` → **false** so a new SW installs + precaches in the background and activates on the next launch; the old, fully-cached SW serves the current open instantly. Not the data layer — `/app` is a static ISR route (its data runs at build, served from CDN). Trade-off: an update applies one launch later (fine for a content PWA). `next build` clean; behaviour verifies only across a deploy boundary.
+
 ## 0.176.5 — 2026-07-07
 
 ### Added

@@ -28,8 +28,14 @@ const offlineRevision = (() => {
 
 const serwist = new Serwist({
   precacheEntries: [...manifest, { url: OFFLINE_FALLBACK_URL, revision: offlineRevision }],
-  skipWaiting: true,
-  clientsClaim: true,
+  // Let a new SW install + precache in the BACKGROUND and activate on the NEXT
+  // launch, rather than skip-waiting into the current open. Every deploy makes
+  // all ~218 precache entries new; skipWaiting activated that busy SW mid-open,
+  // hijacking the first post-deploy open (~20-30s on mobile wifi). The old,
+  // fully-cached SW keeps serving the current open instantly. Trade-off: an
+  // update applies one launch later — fine for a content PWA.
+  skipWaiting: false,
+  clientsClaim: false,
   navigationPreload: true,
   runtimeCaching: defaultCache,
   fallbacks: {
