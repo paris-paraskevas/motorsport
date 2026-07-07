@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.176.4 — 2026-07-07
+
+**Internal:** lint cleanup. No user-facing change.
+
 ## 0.176.3 — 2026-07-07
 
 **Assistant fix.** Your 👍/👎 on an assistant answer now sticks after you refresh the page.
