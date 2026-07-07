@@ -52,7 +52,6 @@ export function AssistantWidget() {
       const rawRated = localStorage.getItem(RATED_KEY);
       const storedRated = rawRated ? JSON.parse(rawRated) : null;
       if (storedRated && typeof storedRated === 'object' && !Array.isArray(storedRated)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setRated(storedRated as Record<string, 'up' | 'down'>);
       }
     } catch {
