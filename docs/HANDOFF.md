@@ -17,8 +17,13 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 **Gates:** tsc + eslint 0 + **771 tests** + build clean throughout; live eval 6/6 (guardrails hold: links, refuses live data → links the page, refuses off-topic → Contact).
 
+**Post-0.176.2 (same session):** **0.176.3 (#433)** persist 👍/👎 across refresh (was in-memory/index-keyed → now answer-text-keyed + localStorage; operator-reported); **0.176.4 (#434)** lint cleanup. Main = **0.176.4**.
+
+**British GP 2026 race report — DRAFTED (#435), NOT queued.** Full report in `drafts/2026-british-gp-report.md` (Leclerc wins, Ferrari's 250th at the track of their 1951 first, SC finish, Antonelli's lead cut 43→25). Facts triple-checked (F1.com/The Race/GPFans/Sky, 2026-07-07). **To publish:** queue as a PROD DB draft (`publish_at` null) via `scripts/draft-post.mts` + prod creds (or Management API via `.supabase-pat`), approve/schedule in `/blog`. NOT done — prod-Supabase writes are gated by the safety layer (the feedback-DB read was denied earlier) + coupled to the deferred Supabase issue. `.supabase-pat` exists locally; `.env.local` points at LOCAL Supabase (need prod URL+SERVICE_ROLE_KEY).
+
 **▶ OWED / NEXT:**
-- **Browser eyeball on prod** (signed in): the widget chips, 👍/👎, link rendering, typing dots — all verified by unit tests + the live eval, but NOT visually (Playwright MCP disconnected this session after a broad `node.exe` kill). Sign in on prod, open the launcher (bottom-right), sanity-check.
+- **Queue the British GP report** as a prod DB draft (see above) once the Supabase path is unblocked.
+- **Browser eyeball on prod** (signed in): the widget chips, 👍/👎, link rendering, typing dots — all verified by unit tests + the live eval, but NOT visually (Playwright MCP disconnected this session after a broad `node.exe` kill). Sign in on prod, open the launcher (bottom-right), sanity-check. (Operator confirmed the widget renders on prod when reporting the feedback-persist bug.)
 - **Watch `/settings/assistant`** as real questions arrive → expand `content/assistant/site-help.md` for common asks → re-run `npm run assistant:eval`.
 - **Phase 2 (grounded live-data Q&A)** — the big one; needs a design pass first (intent-routing over our own loaders + refuse-when-uncertain + evals). Deferred.
 - **Feeder-series intake** — deferred to a later session (operator has an unresolved Supabase issue to solve first).
