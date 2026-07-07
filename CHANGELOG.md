@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.175.0 — 2026-07-07
+
+### Added
+- **Assistant: suggested starter prompts + conversation memory + a Contact escape hatch** (best-practice pass, batch A of the assistant upgrades). The Race Engineer's empty state now shows tappable suggestion chips (follow a series / prediction game / standings / customise) — closing the "users don't know what to ask" discoverability gap that the research flagged as the #1 chatbot failure; tapping a chip asks it (`send()` now takes an optional preset). The conversation **persists across reloads/navigation** (localStorage, capped at 40 turns, guarded against corrupt data). And on any "I don't know", the prompt now has the assistant link the user to [Contact](/feedback) instead of dead-ending (the "always offer a human escape hatch" rule). tsc + eslint 0 + build clean; parser/prompt units still green.
+
 ## 0.174.0 — 2026-07-07
 
 ### Changed
