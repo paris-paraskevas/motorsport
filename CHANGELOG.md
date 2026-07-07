@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.174.0 — 2026-07-07
+
+### Changed
+- **Assistant replies now render links and bold** (operator feedback: `**series**` showed as literal asterisks, and bare `/paths` are useless on mobile PWA). The Race Engineer is now instructed to point users with tappable markdown links to real paths — e.g. `[F1 standings](/series/f1/standings)` — instead of bare paths or bold nouns, and the help corpus (`content/assistant/site-help.md`) was link-ified so the model copies the style. New `lib/assistant/render.ts` `parseInline` (unit-tested) tokenizes the only two constructs the model uses — `[text](href)` and `**bold**`; `AssistantWidget` renders internal links as in-app navigation (closing the panel) and external links in a new tab. **Safe by construction:** href is whitelisted to `/internal` or `http(s)` only (no `javascript:`/`data:`), and it builds React nodes (never `dangerouslySetInnerHTML`). Verified end-to-end against the live paid Gemini tier — the pipeline now returns e.g. "[F1 standings](/series/f1/standings)". (Browser eyeball still owed — Playwright was disconnected.)
+
 ## 0.173.1 — 2026-07-06
 
 ### Fixed
