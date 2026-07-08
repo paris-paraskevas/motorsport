@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.179.0 — 2026-07-08
+
+### Changed
+- **Information hub — audited content promoted to verified + indexed (indexed set 52 → 221).** After the full 3-lens (facts / sources / skeptic) fact-check of all 138 track profiles, 12 team histories and the 48-driver rising-stars watchlist, every curated dataset is flipped `review:'unverified' → 'verified'` + `featured`, so it now indexes, joins on-site ⌘K search, and drops the "pending review" banner.
+  - `content/information/tracks.json` — 138 tracks `review:'verified' + featured:true` (the `confidence` field is kept as audit metadata; it is not read by the loader).
+  - `content/information/team-histories.json` — 12 teams verified + featured.
+  - `content/information/rising-stars.json` — top-level `review:'verified'` drives the single watchlist page.
+  - `lib/information/curated.ts` — team `featured` is now data-driven (mirrors the tracks loader); the watchlist reads the top-level `review`; the generated per-country and most-famous aggregate pages **derive** their review from their member tracks — verified/indexable only when every member is verified, so a future unverified track keeps its country page a `noindex` draft.
+  - `lib/information/registry.ts` — `INFORMATION_MAX_INDEXED` 150 → 225 (221 indexed, 4 slots headroom; no cap-overflow warning at build).
+  - `lib/information/information.test.ts` — two draft-model tests reframed to assert the durable invariant (`unverified ⇒ noindex`, which holds even at zero drafts) and dataset loading, instead of the now-obsolete "drafts still exist" precondition.
+- Indexed breakdown (221): 138 track profiles + 17 per-country pages + most-famous-circuits + 12 team histories + rising-stars watchlist + the existing 36 champion/record pages + 16 editorial explainers. Gates: 16 info tests green · `tsc` 0 · `eslint` 0 errors · `next build` exit 0 · prerendered HTML spot-checked (no draft banner, `robots:index,follow`, circuit facts + venue lists rendered) · `sitemap.xml` carries 231 `/information/` URLs (157 under `/tracks/`).
+- **AdSense timing:** the deliberate index-count increase the two-tier trust model was built to gate — raising indexed content ~4× ahead of the "low value content" re-review. The gate itself is unchanged: content added later still defaults to `unverified` → `noindex` + out of search until curated.
+
 ## 0.178.0 — 2026-07-07
 
 ### Added
