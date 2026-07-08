@@ -115,6 +115,26 @@ Copy-ready. Grouped for legibility; each numbered line is one task.
 
 **Ultracode recommended for phases C & D** — broad (hundreds of pages) *and* research + fact-check heavy: batched research agents (5–6 items/agent per budget guidance) + an adversarial verify pass, in operator-approved phases. Phases A, B, E are inline or small. Never bulk-flip `featured` — enrichment must land *before* indexing, page by page.
 
+## Track enrichment — locked template & scale-up plan (pilot done 2026-07-08)
+
+Task C6 (track profiles — the biggest thin-content chunk) has a **proven template**. Pilot: Silverstone, Spa-Francorchamps, Daytona, committed on branch `feat/information-track-enrichment` (bodies 192 → ~1,900 chars).
+
+**Locked template — match the series-history voice, not the blog voice:**
+- **Register:** encyclopedic-but-readable (the series-history register).
+- **Structure:** three light `##` subheads — *Origins* / *The circuit* / *Racing at &lt;venue&gt;* — ~250–330 words.
+- **Byline (E-E-A-T):** every curated entry now carries `author` (`types.ts`); the page renders "Curated and fact-checked by Paris Paraskevas. Last updated &lt;date&gt;." Generated champions-derived pages deliberately have **no** byline (never brand a templated stub).
+- **Citations:** the existing bottom **Sources list** is the citation apparatus — no inline `[^n]` footnotes on info pages (they would duplicate the list).
+- **Storage:** the guide lives in an `article` field on the track entry (the loader drops the redundant inline facts line when it is present). **At scale, move `article` to a separate `content/information/track-articles.json` (slug→markdown)** to keep `tracks.json` (facts) clean; loader merges by slug. Not yet built — needs a file-create OK.
+
+**Tiering (not every venue sustains 330 words):**
+- **Tier 1 — marquee (~40–60):** full ~300-word guides (F1 / MotoGP / major endurance / NASCAR / IndyCar venues with real history).
+- **Tier 2 — secondary (~40–50):** ~150-word guides.
+- **Tier 3 — minor / karting / obscure (~30–40):** concise; keep honest, don't pad — candidates to leave as facts-table stubs.
+
+**Batching & budget:** batched research agents, 5–6 tracks/agent (a 153-agent run was killed for cost once), each drafting + fact-checking against primary sources; merge by slug + verify per batch (info test + render). The full run is **multi-session / dedicated-budget** — ~135 remaining × ~330 fact-checked words is well beyond one ~140k session.
+
+**Polish:** the track loader currently hardcodes one `updated` date for all tracks — add per-track `updated` when scaling so "Last updated" reflects real enrichment dates.
+
 ## Guardrails (carry from the two-tier model)
 
 - New content defaults `unverified`→`noindex`; aggregate pages derive review from members.
