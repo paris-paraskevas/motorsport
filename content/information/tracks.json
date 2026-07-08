@@ -1043,8 +1043,7 @@
       "opened": 1986,
       "type": "circuit",
       "categories": [
-        "f1",
-        "motogp"
+        "f1"
       ],
       "summary": "Twisty circuit near Budapest that hosted the first Formula One race behind the Iron Curtain in 1986.",
       "confidence": "high",
@@ -1720,7 +1719,7 @@
       "categories": [
         "f1"
       ],
-      "summary": "Ultra-fast waterfront street circuit in Jeddah, the longest and one of the quickest street tracks on the Formula One calendar.",
+      "summary": "An exceptionally fast street circuit along the Red Sea corniche in Jeddah, Saudi Arabia — billed as the fastest street circuit in Formula 1 and one of the longest, with 27 corners.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Jeddah_Corniche_Circuit"
@@ -2107,9 +2106,10 @@
       "opened": 2005,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "historic"
       ],
-      "summary": "Anti-clockwise circuit on the Asian side of Istanbul, famed for the multi-apex, high-load Turn 8.",
+      "summary": "A modern circuit on the Asian side of Istanbul, Turkey, famous for the multi-apex Turn 8. It hosted the Turkish Grand Prix from 2005 to 2011 and again in 2020-2021; a 2026 agreement returns Formula 1 for 2027-2031.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Istanbul_Park"
