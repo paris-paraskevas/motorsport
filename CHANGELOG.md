@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.180.0 — 2026-07-08
+
+### Added
+- **Information hub — on-page author byline (E-E-A-T) + track circuit-guide template.** Every *curated* info entry (16 editorial explainers, 12 team histories, 138 track profiles, 17 per-country + most-famous aggregates, the rising-stars watchlist — 185 pages) now renders "Curated and fact-checked by Paris Paraskevas. Last updated &lt;date&gt;." Auto-generated champions-derived pages deliberately carry **no** byline (never brand a templated stub). A trust signal aimed squarely at the open AdSense "low value content" review.
+  - `lib/information/types.ts`: optional `author` on `InfoEntry`.
+  - `lib/information/curated.ts`: every curated entry carries the operator byline; a new optional `article` field holds a long-form circuit guide (the loader drops the redundant inline facts line when it is present, since the Circuit-facts table already shows those).
+  - `app/(app)/information/[topic]/[slug]/page.tsx`: byline footer + `formatUpdated` date helper, shown only when an entry has an `author`.
+
+### Changed
+- **First enriched track profiles.** Silverstone, Spa-Francorchamps and Daytona now carry ~300-word, fact-checked circuit guides (history-essay register, light subheads, sourced) — bodies 192 → ~1900 chars. The template, tiering and scale-up plan for the remaining ~135 are recorded in `docs/research/2026-07-08-seo-optimization-plan.md`. Gates: `tsc` 0 · `eslint` 0 errors · 16 info tests · dev render verified (byline on curated pages, absent on generated; subheads render; Sources list once; indexable).
+
 ## 0.179.0 — 2026-07-08
 
 ### Changed
