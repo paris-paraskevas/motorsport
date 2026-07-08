@@ -1,15 +1,17 @@
 ---
 topic: formula-1
-question: What is DRS in F1 and how does it work?
-summary: DRS (Drag Reduction System) opens a flap in the rear wing to cut drag and boost straight-line speed, helping a chasing car overtake — usable only in marked zones when within one second of the car ahead.
+question: What was DRS in F1 and how did it work?
+summary: DRS (Drag Reduction System) was Formula 1's driver-operated overtaking aid from 2011 to 2025 — an adjustable rear-wing flap that cut drag on the straights. It was dropped for 2026 in favour of active aerodynamics and a Manual Override Mode.
 keywords:
   - what is drs
   - drs f1
   - drag reduction system
-  - how does drs work
+  - how did drs work
+  - why was drs removed
+  - drs replaced 2026
 review: verified
 featured: true
-updated: 2026-07-07
+updated: 2026-07-08
 sources:
   - label: Formula 1 — official site
     url: https://www.formula1.com/
@@ -22,12 +24,16 @@ related:
     href: /information/formula-1
 ---
 
-**DRS** stands for **Drag Reduction System**. It is a driver-operated device that opens a flap in the car's rear wing on the straights. With the flap open, the wing creates less aerodynamic drag, so the car reaches a higher top speed — making it easier for a chasing driver to catch and pass the car in front.
+> **Note:** DRS was retired at the end of the 2025 season. This page explains the system as it worked during its 2011–2025 era; for how overtaking works under the current rules, see Manual Override Mode and active aerodynamics.
 
-It can only be used under strict conditions:
+**DRS** stood for **Drag Reduction System** — Formula 1's main overtaking aid from **2011 to 2025**. It was a driver-operated device that opened a flap in the car's rear wing on the straights. With the flap open, the wing created less aerodynamic drag, so the car reached a higher top speed, making it easier for a chasing driver to catch and pass the car in front.
+
+It could only be used under strict conditions:
 
 - Only within designated **DRS zones** marked on each circuit's straights.
-- Only when a driver is **within one second** of the car ahead at a detection point.
-- Not in the opening laps of a race, and not during wet or otherwise unsafe conditions when race control disables it.
+- Only when a driver was **within one second** of the car ahead at a detection point.
+- Not in the opening laps of a race, and not when race control disabled it in wet or otherwise unsafe conditions.
 
-DRS closes automatically the moment the driver brakes. It was introduced in 2011 to promote overtaking, since following closely through corners in modern F1 cars is difficult due to the turbulent air they create.
+DRS closed automatically the moment the driver braked. It was introduced in 2011 to promote overtaking, since following closely through corners in modern F1 cars is difficult due to the turbulent air they create.
+
+**Why it was dropped:** for **2026**, F1 replaced DRS with **active aerodynamics** — movable front and rear wings with a low-drag straight-line mode and a high-downforce cornering mode — combined with an electrical **Manual Override Mode** that gives a chasing driver a battery-powered boost. Together they took over DRS's overtaking-aid role under the new regulations.
