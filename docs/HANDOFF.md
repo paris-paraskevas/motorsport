@@ -6,7 +6,31 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFORMATION HUB **SHIPPED TO PROD** — PR #442 squash-merged, **0.179.0** live; Content (Motorsport-101 + weirdest-regs) deferred
+## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFO-HUB ENRICHMENT: bylines (E-E-A-T) + circuit-guide template LIVE (#443, **0.180.0**); full track run DEFERRED
+
+**Bylines + first enriched circuits shipped to prod.** `main` at `867a2e9` (#443), version **0.180.0**, local `main` synced. Verified live: byline on curated pages, `/changelog` 0.180.0.
+
+**What shipped (#443):**
+- **On-page byline (E-E-A-T) across 185 curated pages** — "Curated and fact-checked by Paris Paraskevas. Last updated &lt;date&gt;." on every editorial explainer, team history, track profile, per-country/most-famous aggregate + watchlist. Generated champions-derived pages get **no** byline (never brand a templated stub). `types.ts` `author?`; `curated.ts` sets it on all curated entries; `page.tsx` byline footer + `formatUpdated`.
+- **Track circuit-guide template (`article` field)** — optional long-form markdown on track entries; loader drops the redundant inline facts line when present (the facts table already shows them).
+- **First 3 enriched circuits** — Silverstone, Spa, Daytona: ~300-word fact-checked guides in the history-essay register (bodies 192 → ~1900 chars).
+
+**AdSense strategy (KEY, operator-decided):** the 221 indexed pages are mostly THIN — measured **166/221 (75%) under 300 chars** (138 track stubs, 17 per-country, 15 champion stubs). Decision: **ENRICH-FIRST, do NOT de-index; HOLD the AdSense re-review until enrichment lands.** Full analysis + flat task list + locked template + scale-up plan live in `docs/research/2026-07-08-seo-optimization-plan.md` (this branch).
+
+**Locked enrichment template:** history-essay register · three light `##` subheads (*Origins* / *The circuit* / *Racing at X*) · ~250–330 words · byline · Sources list as citations (no inline footnotes — they'd duplicate the list) · `article` field. At scale → move articles to a separate `content/information/track-articles.json` (needs a file-create OK); tier marquee/secondary/minor; batched agents 5–6 tracks/agent; multi-session budget.
+
+**▶ OWED / NEXT:**
+1. **Full track enrichment run (~135 tracks)** — the deferred big job: batched research agents, fact-checked, per the template + tiering. Dedicated-budget / multi-session. Raise indexed quality, then — and only then — re-request the AdSense review.
+2. **Enrich the other thin indexed buckets:** 17 per-country intros, thin record pages, who-won season stats (enrich-recent / hold-old policy).
+3. **Content (still deferred):** "weirdest regulations per series" (never built) + Motorsport-101 Q&A (`drivers` / `general`).
+4. **IndexNow** (`npm run indexnow:submit`) — low priority under enrich-first.
+5. Site-wide thin/stub sweep + confirm About/Contact/Privacy are substantial.
+
+**Branch state:** `main` = `867a2e9` (0.180.0, prod live, verified). **`docs/post-442-handoff` = THIS branch, LOCAL/UNPUSHED** (holds this handoff + the SEO plan doc) — operator chose to keep it local, so **main's copy of this handoff is STALE; read this branch's version.** `feat/motorsport-information-hub` (#442) + `feat/information-track-enrichment` (#443) both MERGED.
+
+---
+
+## ⚡ Next session pickup — 2026-07-08 — INFORMATION HUB **SHIPPED TO PROD** — PR #442 squash-merged, **0.179.0** live; Content (Motorsport-101 + weirdest-regs) deferred
 
 **The information hub is LIVE.** Aggressive promotion done + the whole `feat/motorsport-information-hub` branch merged. `main` now at `aa8344b` (#442), version **0.179.0**; local `main` synced. Prod auto-deploys ~90s post-merge.
 
