@@ -70,21 +70,6 @@
       ]
     },
     {
-      "slug": "termas-de-rio-hondo",
-      "name": "Termas de Río Hondo",
-      "country": "Argentina",
-      "countryCode": "AR",
-      "location": {
-        "lat": -27.4836,
-        "lng": -64.8669
-      },
-      "type": "circuit",
-      "categories": [
-        "motogp"
-      ],
-      "summary": "A modern circuit in northern Argentina that has hosted the Argentine motorcycle Grand Prix."
-    },
-    {
       "slug": "adelaide-street-circuit",
       "name": "Adelaide Street Circuit",
       "country": "Australia",
@@ -622,7 +607,7 @@
       "categories": [
         "motogp"
       ],
-      "summary": "Sweeping, hilly circuit near Brno that was a long-standing host of the Czech motorcycle Grand Prix.",
+      "summary": "The Masaryk Circuit at Brno, a flowing, undulating circuit in the Czech Republic (opened 1987). A long-standing host of the Czech motorcycle Grand Prix, it returned to the MotoGP calendar in 2025 after a five-year absence.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Automotodrom_Brno"
