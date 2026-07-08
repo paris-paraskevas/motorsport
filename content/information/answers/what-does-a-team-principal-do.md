@@ -30,4 +30,4 @@ Their responsibilities typically span:
 - **Race weekends** — often present on the pit wall, contributing to strategy decisions and representing the team to the officials.
 - **Commercial & political** — managing sponsors and budgets, and speaking for the team in the sport's governance and media.
 
-Famous examples include figures like Toto Wolff, Christian Horner and, historically, Ron Dennis and Frank Williams — leaders whose decisions shaped the [great teams](/information/teams) they ran.
+Famous examples include Toto Wolff at Mercedes today, and historically Ron Dennis, Frank Williams and Christian Horner — leaders whose decisions shaped the [great teams](/information/teams) they ran.
