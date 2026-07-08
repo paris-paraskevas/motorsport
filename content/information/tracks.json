@@ -859,9 +859,10 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "historic"
       ],
-      "summary": "Forest circuit near Heidelberg, long-time host of the German Grand Prix; its original high-speed straights were replaced by a shorter layout in 2002.",
+      "summary": "A fast circuit in the Rhine valley forests near Heidelberg, Germany, famous for its vast stadium section. It was the long-time home of the German Grand Prix, which it last hosted in 2019, and now headlines the DTM.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Hockenheimring"
@@ -2524,7 +2525,7 @@
     },
     {
       "slug": "gopro-motorplex",
-      "name": "GoPro Motorplex (Trackhouse Motorplex)",
+      "name": "Trackhouse Motorplex (formerly GoPro Motorplex)",
       "country": "United States",
       "countryCode": "US",
       "location": {
@@ -2542,7 +2543,7 @@
       "confidence": "high",
       "sources": [
         "https://trackhousemotorplex.com/",
-        "https://www.tripadvisor.com/Attraction_Review-g49365-d3721352-Reviews-GoPro_Motorplex-Mooresville_North_Carolina.html"
+        "https://www.jayski.com/2023/04/28/trackhouse-entertainment-group-rebrands-north-carolina-kart-racing-motorplex/"
       ]
     },
     {
@@ -2562,7 +2563,7 @@
         "nascar",
         "indycar"
       ],
-      "summary": "Variable-banked 1.5-mile South Florida oval that long hosted NASCAR's season finales.",
+      "summary": "A 1.5-mile oval in Homestead, Florida, whose progressive banking produces wide, multi-groove racing. It hosted NASCAR's season finale from 2002 to 2019, and the Cup Series championship finale is set to return there in 2026 under a new rotating model.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Homestead-Miami_Speedway"
