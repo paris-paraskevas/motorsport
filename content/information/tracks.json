@@ -646,7 +646,7 @@
         "lng": 0.2089
       },
       "lengthKm": 4.185,
-      "turns": 9,
+      "turns": 14,
       "opened": 1965,
       "type": "circuit",
       "categories": [
@@ -1064,9 +1064,10 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "motogp"
+        "motogp",
+        "historic"
       ],
-      "summary": "Circuit near Greater Noida that hosted the Indian Grand Prix from 2011 to 2013 and the Indian MotoGP round from 2023.",
+      "summary": "A modern Hermann Tilke circuit near Delhi, India (opened 2011). It hosted the Formula 1 Indian Grand Prix from 2011 to 2013 and held the inaugural — and to date only — Indian MotoGP round in 2023; neither championship currently races there.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Buddh_International_Circuit"
