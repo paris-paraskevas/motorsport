@@ -744,7 +744,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "historic"
       ],
       "summary": "Le Castellet circuit known for its distinctive blue-and-red run-off; hosted the French Grand Prix and remains a major testing venue.",
       "confidence": "high",
