@@ -18,6 +18,8 @@ sources:
   - label: FIA — Formula 1 regulations
     url: https://www.fia.com/regulation/category/110
 related:
+  - label: What replaced DRS in 2026?
+    href: /information/formula-1/what-replaced-drs-manual-override-mode
   - label: Formula 1
     href: /series/f1
   - label: More Formula 1 answers
