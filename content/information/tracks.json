@@ -1372,9 +1372,10 @@
       "type": "circuit",
       "categories": [
         "motogp",
-        "indycar"
+        "indycar",
+        "historic"
       ],
-      "summary": "Honda-owned Tochigi complex with both a road course and an oval; host of the Japanese motorcycle Grand Prix.",
+      "summary": "The Japanese circuit at Motegi (renamed Mobility Resort Motegi in 2022), a technical stop-and-go road course that hosts the Japanese motorcycle Grand Prix. Its separate superspeedway oval — which held the IndyCar Indy Japan 300 from 1998 to 2011 — has since been decommissioned.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Twin_Ring_Motegi"
@@ -2806,7 +2807,7 @@
         "lat": 43.0206,
         "lng": -88.0086
       },
-      "lengthKm": 1.609,
+      "lengthKm": 1.633,
       "turns": 4,
       "opened": 1903,
       "type": "oval",
