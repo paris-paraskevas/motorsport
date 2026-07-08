@@ -6,7 +6,28 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFORMATION HUB expanded + ALL 138 tracks fact-checked + DRS/MOM; branch `feat/motorsport-information-hub` **24 commits, NOT pushed** — proposed **0.178.0**
+## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFORMATION HUB **SHIPPED TO PROD** — PR #442 squash-merged, **0.179.0** live; Content (Motorsport-101 + weirdest-regs) deferred
+
+**The information hub is LIVE.** Aggressive promotion done + the whole `feat/motorsport-information-hub` branch merged. `main` now at `aa8344b` (#442), version **0.179.0**; local `main` synced. Prod auto-deploys ~90s post-merge.
+
+**What shipped (PR #442):**
+- **Promotion — aggressive tier.** All fact-checked hub content flipped `review:'unverified' → 'verified' + featured`. **Indexed 52 → 221:** 138 circuit profiles + 17 per-country + most-famous + 12 team histories + rising-stars watchlist + existing 36 champion/record + 16 editorial. Sitemap **+231** `/information/` URLs (157 under `/tracks/`).
+- Mechanics: `tracks.json`/`team-histories.json` per-entry `review:'verified'+featured:true`; `rising-stars.json` top-level `review:'verified'`. `curated.ts` — team `featured` now data-driven (mirrors tracks); watchlist reads top-level `review`; per-country + most-famous aggregates **derive** review from member tracks (verified only when EVERY member is verified — self-maintaining). `registry.ts` — `INFORMATION_MAX_INDEXED` 150 → **225** (221 indexed, 4 headroom). `information.test.ts` — 2 draft-model tests reframed to the durable `unverified⇒noindex` invariant + dataset-load (0 unverified now).
+- This merge took the ENTIRE hub (the two blocks below) to prod for the first time.
+
+**Gates:** 16 info tests green · `tsc` 0 · `eslint` 0 errors · `next build` exit 0 (no cap warning) · prerendered HTML spot-checked (no banner, `robots:index,follow`, facts/venues rendered) · sitemap verified (231 info URLs).
+
+**▶ OWED / NEXT:**
+1. **`npm run indexnow:submit`** once prod deploy is confirmed live — ping search engines with the new URLs. **NOT yet run** (outward-facing; awaited operator go).
+2. **Verify prod live** — `/information/tracks/silverstone-circuit` + a per-country page returned **404 immediately post-merge** (deploy still propagating); re-confirm 200 + `robots:index`.
+3. **Content (deferred — operator "talk after"):** build **"weirdest regulations per series"** (requested, never built) + Motorsport-101 editorial Q&A for thin `drivers` + `general` topics. Scope + method (batched-agents/ultracode vs inline) TBD.
+4. Two-tier gate intact — new content still defaults `unverified`→noindex. Index more later via `featured` (+ raise cap if >225).
+
+**Landmines:** AdSense — indexed jumped ~4×; this was the deliberate pre-re-review increase — watch Search Console for "scaled content" signals on the thin per-country pages. Registry memoizes → restart dev to see content changes. Batched agents 5–6 items/agent (cost). Otherwise unchanged from below.
+
+---
+
+## ⚡ Next session pickup — 2026-07-08 — INFORMATION HUB expanded + ALL 138 tracks fact-checked + DRS/MOM; branch `feat/motorsport-information-hub` (now MERGED as #442) — was **0.178.0**
 
 **Continuation of the information-hub branch (below block = its origin). This session: content expansion + a full track-directory fact-check audit. Branch `feat/motorsport-information-hub`, `main`+24, tree clean (only the unrelated `drafts/motogp-*.json` untracked), version 0.178.0, last commit `b6b41f7`. NOTHING PUSHED.**
 
