@@ -6,9 +6,19 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFO-HUB ENRICHMENT: bylines (E-E-A-T) + circuit-guide template LIVE (#443, **0.180.0**); full track run DEFERRED
+## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFO-HUB ENRICHMENT: bylines LIVE (#443, **0.180.0**) + track-guide RUN STARTED (batch 1: 6 circuits verified), PAUSED
 
 **Bylines + first enriched circuits shipped to prod.** `main` at `867a2e9` (#443), version **0.180.0**, local `main` synced. Verified live: byline on curated pages, `/changelog` 0.180.0.
+
+**⏸ TRACK ENRICHMENT RUN — batch 1 done, PAUSED (inherently multi-session).**
+- **TWO GOVERNING RULES (operator, non-negotiable for ALL enrichment):** (1) **facts must be facts** — nothing wrong / hallucinated / misinterpreted; (2) **nothing outdated.**
+- **Process (LOCKED):** batched draft agent (5–6 tracks) → **independently verify EVERY factual claim against primary sources → correct or cut → merge ONLY what's confirmed.** Draft-and-trust is UNSAFE: batch-1 verification caught **4 issues in 6 articles** (Galvez F1 "1971"→**1972**; Fangio's 1956 home win was **shared** with Musso, not four clean wins; Adelaide "Brabham Straight" unverifiable→**cut**; Senna Chicane "renamed 1994" unconfirmed→reworded). Scalable form: draft + independent **skeptic agent** + Claude spot-check of volatile claims (calendars, lap records, "since X", "current").
+- **Batch 1 (committed on branch `feat/information-track-guides`, LOCAL/unpushed):** 6 marquee circuits verified — Galvez, Termas, Adelaide, Albert Park, Calder Park, Mount Panorama.
+- **Remaining: 129 tracks.** Done-set self-describing: a track gains an `article` field once enriched (`!("article" in t)` = remaining). Prioritise **tier 1 marquee** first (categories ∩ {f1,motogp,endurance,nascar,indycar}, non-karting; ~99 left), then tier 2, then tier 3 (karting/minor — shorter or skip).
+- **Cost reality:** ~6–12 verified tracks/session → full run ≈ **10–20 sessions**. No shortcut preserves rules #1/#2 — the verification IS the work.
+- **Storage:** articles live in `tracks.json` `article` field (loader drops the inline facts line when present); at scale move to a separate `content/information/track-articles.json` (needs file-create OK) to keep the facts file clean.
+- **Ship policy:** ACCUMULATE on `feat/information-track-guides`; PR once ~20–40 verified circuits are done (one clean prod event). Enrich-first holds — do NOT re-request the AdSense review until enrichment lands.
+- **NOTED (data-audit follow-up, NOT enrichment):** Termas `motogp` category is stale (MotoGP left after 2025 → should be 'historic'); Galvez `historic` regains MotoGP from 2027.
 
 **What shipped (#443):**
 - **On-page byline (E-E-A-T) across 185 curated pages** — "Curated and fact-checked by Paris Paraskevas. Last updated &lt;date&gt;." on every editorial explainer, team history, track profile, per-country/most-famous aggregate + watchlist. Generated champions-derived pages get **no** byline (never brand a templated stub). `types.ts` `author?`; `curated.ts` sets it on all curated entries; `page.tsx` byline footer + `formatUpdated`.
