@@ -598,9 +598,13 @@
       },
       "type": "circuit",
       "categories": [
-        "motogp"
+        "wsbk"
       ],
-      "summary": "A circuit in the northwest of the Czech Republic used by World Superbikes and other series."
+      "summary": "A circuit in the northwest of the Czech Republic used by World Superbikes and other series.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Autodrom_Most"
+      ],
+      "lengthKm": 4.212
     },
     {
       "slug": "automotodrom-brno",
@@ -1171,7 +1175,7 @@
         "f1",
         "endurance"
       ],
-      "summary": "Classic anti-clockwise circuit at Imola, site of the 1994 tragedies and now host of the Emilia-Romagna Grand Prix.",
+      "summary": "Fast, undulating anti-clockwise circuit at Imola, Italy (opened 1953), scene of the 1994 tragedies that killed Ayrton Senna and Roland Ratzenberger. It returned to Formula 1 in 2020 and hosted the Emilia-Romagna Grand Prix through 2025, before dropping off the calendar for 2026.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Imola_Circuit"
@@ -2342,9 +2346,10 @@
       "type": "oval",
       "categories": [
         "nascar",
-        "indycar"
+        "indycar",
+        "historic"
       ],
-      "summary": "Fast, worn 2-mile D-shaped oval in Fontana, California, long a favorite of drivers for its multiple racing grooves.",
+      "summary": "A fast, abrasive two-mile D-shaped oval in Fontana, California, long a NASCAR favourite for its worn, multi-groove racing. It held its final NASCAR Cup race in 2023 and has since been largely demolished for redevelopment.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Auto_Club_Speedway"
