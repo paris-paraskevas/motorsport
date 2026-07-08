@@ -1,43 +1,3166 @@
 {
-  "_comment": "Tracks directory seed for /information/tracks. Built 2026-07-07 from our OWN content/circuits.json (coordinates are VERIFIED against that curated file; the loader flags coordsVerified=true on match). Country/type/summary were hand-added at high confidence for these well-known venues but are NOT yet editor-fact-checked (length/turns/opened intentionally omitted rather than guessed), so every entry ships review:'unverified' → noindex, excluded from search, shown under a draft banner. WORKAROUND NOTE: the broader ~150-venue worldwide dataset (all countries/disciplines, with lengths + opening years) was researched by an agent that stalled mid-stream twice; regenerating it is a follow-up. To publish a track: verify its facts, add \"review\":\"verified\" (+ \"featured\":true to index it).",
+  "_comment": "Tracks directory for /information/tracks. 139 venues — 38 seeded from our verified content/circuits.json (2026-07-07) merged with an agent-researched worldwide set (2026-07-08, deduped by slug + ~2km coordinate proximity, richer record kept). Coordinates are RE-VERIFIED against circuits.json at load where a venue matches (coordsVerified flag). Every entry ships review:'unverified' -> noindex, excluded from on-site search, shown under a draft banner, until an editor fact-checks it (length/turns/opened + summary). 'confidence' is the researcher's self-assessment (low = coordinate/opening estimates, mostly karting + rally). To publish one: verify + add \"review\":\"verified\" (+ \"featured\":true to index).",
   "tracks": [
-    { "slug": "silverstone", "name": "Silverstone Circuit", "country": "United Kingdom", "countryCode": "GB", "location": { "lat": 52.0786, "lng": -1.0169 }, "type": "circuit", "categories": ["f1"], "summary": "Home of the British Grand Prix and the venue of the very first Formula 1 World Championship race in 1950." },
-    { "slug": "monaco", "name": "Circuit de Monaco", "country": "Monaco", "countryCode": "MC", "location": { "lat": 43.7347, "lng": 7.4206 }, "type": "street", "categories": ["f1"], "summary": "The iconic Monte Carlo street circuit, the most glamorous and demanding race on the Formula 1 calendar." },
-    { "slug": "monza", "name": "Autodromo Nazionale Monza", "country": "Italy", "countryCode": "IT", "location": { "lat": 45.6156, "lng": 9.2811 }, "type": "circuit", "categories": ["f1"], "summary": "The 'Temple of Speed' near Milan, the fastest circuit in Formula 1 and the spiritual home of the Italian Grand Prix." },
-    { "slug": "spa", "name": "Circuit de Spa-Francorchamps", "country": "Belgium", "countryCode": "BE", "location": { "lat": 50.4372, "lng": 5.9714 }, "type": "circuit", "categories": ["f1", "endurance"], "summary": "A long, fast circuit in the Ardennes forest famous for the Eau Rouge–Raidillon complex and changeable weather." },
-    { "slug": "imola", "name": "Autodromo Enzo e Dino Ferrari", "country": "Italy", "countryCode": "IT", "location": { "lat": 44.3439, "lng": 11.7167 }, "type": "circuit", "categories": ["f1"], "summary": "A classic old-school circuit named after Ferrari's founder and his son, host of the Emilia-Romagna Grand Prix." },
-    { "slug": "zandvoort", "name": "Circuit Zandvoort", "country": "Netherlands", "countryCode": "NL", "location": { "lat": 52.3888, "lng": 4.5408 }, "type": "circuit", "categories": ["f1"], "summary": "A sweeping, dune-lined circuit on the Dutch coast, known for its steeply banked corners." },
-    { "slug": "barcelona", "name": "Circuit de Barcelona-Catalunya", "country": "Spain", "countryCode": "ES", "location": { "lat": 41.5708, "lng": 2.2611 }, "type": "circuit", "categories": ["f1"], "summary": "A technical circuit near Barcelona long used for both racing and pre-season testing." },
-    { "slug": "red-bull-ring", "name": "Red Bull Ring", "country": "Austria", "countryCode": "AT", "location": { "lat": 47.2197, "lng": 14.7647 }, "type": "circuit", "categories": ["f1"], "summary": "A short, fast circuit set in the Styrian mountains, host of the Austrian Grand Prix." },
-    { "slug": "hungaroring", "name": "Hungaroring", "country": "Hungary", "countryCode": "HU", "location": { "lat": 47.5786, "lng": 19.2486 }, "type": "circuit", "categories": ["f1"], "summary": "A tight, twisty circuit near Budapest often likened to a go-kart track for its lack of straights." },
-    { "slug": "nurburgring", "name": "Nürburgring", "country": "Germany", "countryCode": "DE", "location": { "lat": 50.3356, "lng": 6.9475 }, "type": "circuit", "categories": ["endurance"], "summary": "Home of the legendary Nordschleife, the fearsome 'Green Hell', and a modern Grand Prix circuit." },
-    { "slug": "le-mans", "name": "Circuit de la Sarthe", "country": "France", "countryCode": "FR", "location": { "lat": 47.9558, "lng": 0.2069 }, "type": "circuit", "categories": ["endurance"], "summary": "The part-public-road circuit that hosts the 24 Hours of Le Mans, endurance racing's greatest event." },
-    { "slug": "sebring", "name": "Sebring International Raceway", "country": "United States", "countryCode": "US", "location": { "lat": 27.4544, "lng": -81.3478 }, "type": "circuit", "categories": ["endurance"], "summary": "A bumpy former airfield circuit in Florida, home of the historic 12 Hours of Sebring." },
-    { "slug": "fuji", "name": "Fuji Speedway", "country": "Japan", "countryCode": "JP", "location": { "lat": 35.3719, "lng": 138.9258 }, "type": "circuit", "categories": ["endurance"], "summary": "A fast circuit in the shadow of Mount Fuji with one of the longest straights in the world." },
-    { "slug": "suzuka", "name": "Suzuka International Racing Course", "country": "Japan", "countryCode": "JP", "location": { "lat": 34.8431, "lng": 136.5413 }, "type": "circuit", "categories": ["f1"], "summary": "A unique figure-of-eight layout beloved by drivers, host of the Japanese Grand Prix." },
-    { "slug": "albert-park", "name": "Albert Park Circuit", "country": "Australia", "countryCode": "AU", "location": { "lat": -37.8497, "lng": 144.9683 }, "type": "street", "categories": ["f1"], "summary": "A parkland street circuit around a Melbourne lake, traditional opener of the Formula 1 season." },
-    { "slug": "interlagos", "name": "Autódromo José Carlos Pace", "country": "Brazil", "countryCode": "BR", "location": { "lat": -23.7036, "lng": -46.6997 }, "type": "circuit", "categories": ["f1"], "summary": "A short, undulating anti-clockwise circuit in São Paulo famous for dramatic, wet Grands Prix." },
-    { "slug": "mexico-city", "name": "Autódromo Hermanos Rodríguez", "country": "Mexico", "countryCode": "MX", "location": { "lat": 19.4042, "lng": -99.0907 }, "type": "circuit", "categories": ["f1"], "summary": "A high-altitude circuit in Mexico City whose thin air challenges cars, ending with a stadium section." },
-    { "slug": "cota", "name": "Circuit of the Americas", "country": "United States", "countryCode": "US", "location": { "lat": 30.1328, "lng": -97.6411 }, "type": "circuit", "categories": ["f1", "motogp"], "summary": "A purpose-built circuit in Austin, Texas, hosting the United States Grand Prix and MotoGP." },
-    { "slug": "montreal", "name": "Circuit Gilles Villeneuve", "country": "Canada", "countryCode": "CA", "location": { "lat": 45.5008, "lng": -73.5228 }, "type": "circuit", "categories": ["f1"], "summary": "A semi-permanent circuit on an island in Montreal, known for its 'Wall of Champions'." },
-    { "slug": "baku", "name": "Baku City Circuit", "country": "Azerbaijan", "countryCode": "AZ", "location": { "lat": 40.3725, "lng": 49.8533 }, "type": "street", "categories": ["f1"], "summary": "A street circuit in Azerbaijan's capital combining a long blast along the seafront with a tight castle section." },
-    { "slug": "marina-bay", "name": "Marina Bay Street Circuit", "country": "Singapore", "countryCode": "SG", "location": { "lat": 1.2914, "lng": 103.8643 }, "type": "street", "categories": ["f1"], "summary": "A demanding, humid night race on the streets of Singapore." },
-    { "slug": "jeddah", "name": "Jeddah Corniche Circuit", "country": "Saudi Arabia", "countryCode": "SA", "location": { "lat": 21.6319, "lng": 39.1044 }, "type": "street", "categories": ["f1"], "summary": "An exceptionally fast street circuit along the Red Sea coast in Jeddah." },
-    { "slug": "bahrain", "name": "Bahrain International Circuit", "country": "Bahrain", "countryCode": "BH", "location": { "lat": 26.0325, "lng": 50.5106 }, "type": "circuit", "categories": ["f1"], "summary": "A desert circuit in Sakhir, often the season opener and a regular night race." },
-    { "slug": "lusail", "name": "Lusail International Circuit", "country": "Qatar", "countryCode": "QA", "location": { "lat": 25.49, "lng": 51.4542 }, "type": "circuit", "categories": ["f1", "motogp"], "summary": "A floodlit circuit near Doha hosting both the Qatar Grand Prix and MotoGP." },
-    { "slug": "yas-marina", "name": "Yas Marina Circuit", "country": "United Arab Emirates", "countryCode": "AE", "location": { "lat": 24.4672, "lng": 54.6031 }, "type": "circuit", "categories": ["f1"], "summary": "A marina-side circuit in Abu Dhabi, traditional season finale with a day-to-night race." },
-    { "slug": "shanghai", "name": "Shanghai International Circuit", "country": "China", "countryCode": "CN", "location": { "lat": 31.3389, "lng": 121.2197 }, "type": "circuit", "categories": ["f1"], "summary": "A modern circuit host of the Chinese Grand Prix, famous for its long, tightening first corner." },
-    { "slug": "miami", "name": "Miami International Autodrome", "country": "United States", "countryCode": "US", "location": { "lat": 25.9581, "lng": -80.2389 }, "type": "street", "categories": ["f1"], "summary": "A temporary circuit around the Hard Rock Stadium in Miami Gardens, Florida." },
-    { "slug": "las-vegas", "name": "Las Vegas Strip Circuit", "country": "United States", "countryCode": "US", "location": { "lat": 36.1147, "lng": -115.1728 }, "type": "street", "categories": ["f1"], "summary": "A high-speed night race down the Las Vegas Strip." },
-    { "slug": "portimao", "name": "Algarve International Circuit", "country": "Portugal", "countryCode": "PT", "location": { "lat": 37.2308, "lng": -8.6267 }, "type": "circuit", "categories": ["motogp"], "summary": "A rollercoaster circuit in Portugal's Algarve with dramatic elevation changes." },
-    { "slug": "mugello", "name": "Mugello Circuit", "country": "Italy", "countryCode": "IT", "location": { "lat": 43.9975, "lng": 11.3719 }, "type": "circuit", "categories": ["motogp"], "summary": "A flowing, fast circuit in the Tuscan hills, a favourite venue for MotoGP." },
-    { "slug": "sachsenring", "name": "Sachsenring", "country": "Germany", "countryCode": "DE", "location": { "lat": 50.7917, "lng": 12.6864 }, "type": "circuit", "categories": ["motogp"], "summary": "A short, twisty circuit in Saxony dominated by left-hand corners, a MotoGP mainstay." },
-    { "slug": "termas-de-rio-hondo", "name": "Termas de Río Hondo", "country": "Argentina", "countryCode": "AR", "location": { "lat": -27.4836, "lng": -64.8669 }, "type": "circuit", "categories": ["motogp"], "summary": "A modern circuit in northern Argentina that has hosted the Argentine motorcycle Grand Prix." },
-    { "slug": "autodrom-most", "name": "Autodrom Most", "country": "Czech Republic", "countryCode": "CZ", "location": { "lat": 50.5189, "lng": 13.6189 }, "type": "circuit", "categories": ["motogp"], "summary": "A circuit in the northwest of the Czech Republic used by World Superbikes and other series." },
-    { "slug": "indianapolis", "name": "Indianapolis Motor Speedway", "country": "United States", "countryCode": "US", "location": { "lat": 39.795, "lng": -86.2347 }, "type": "oval", "categories": ["indycar"], "summary": "The 2.5-mile 'Brickyard' oval, home of the Indianapolis 500, one of motorsport's Triple Crown events." },
-    { "slug": "daytona", "name": "Daytona International Speedway", "country": "United States", "countryCode": "US", "location": { "lat": 29.185, "lng": -81.07 }, "type": "oval", "categories": ["nascar", "endurance"], "summary": "A high-banked Florida superspeedway hosting the Daytona 500 and the Rolex 24 endurance race." },
-    { "slug": "talladega", "name": "Talladega Superspeedway", "country": "United States", "countryCode": "US", "location": { "lat": 33.5664, "lng": -86.0664 }, "type": "oval", "categories": ["nascar"], "summary": "NASCAR's largest and fastest oval, in Alabama, known for huge drafting packs." },
-    { "slug": "charlotte", "name": "Charlotte Motor Speedway", "country": "United States", "countryCode": "US", "location": { "lat": 35.35, "lng": -80.6831 }, "type": "oval", "categories": ["nascar"], "summary": "A North Carolina speedway hosting NASCAR's Coca-Cola 600, the sport's longest race." },
-    { "slug": "dover", "name": "Dover Motor Speedway", "country": "United States", "countryCode": "US", "location": { "lat": 39.1894, "lng": -75.5306 }, "type": "oval", "categories": ["nascar"], "summary": "A high-banked concrete oval in Delaware nicknamed the 'Monster Mile'." }
+    {
+      "slug": "autodromo-oscar-alfredo-galvez",
+      "name": "Autodromo Oscar Alfredo Galvez",
+      "country": "Argentina",
+      "countryCode": "AR",
+      "location": {
+        "lat": -34.6944,
+        "lng": -58.4589
+      },
+      "lengthKm": 4.259,
+      "turns": null,
+      "opened": 1952,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Buenos Aires autodrome, home of the Argentine Grand Prix in the Fangio era and again in the 1970s and 1990s.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Oscar_Alfredo_G%C3%A1lvez"
+      ]
+    },
+    {
+      "slug": "autodromo-termas-de-rio-hondo",
+      "name": "Autodromo Termas de Rio Hondo",
+      "country": "Argentina",
+      "countryCode": "AR",
+      "location": {
+        "lat": -27.5035,
+        "lng": -64.9087
+      },
+      "lengthKm": 4.805,
+      "turns": 14,
+      "opened": 2008,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "Circuit in Santiago del Estero province, rebuilt in 2012 to MotoGP standards and host of the Argentine motorcycle Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Termas_de_R%C3%ADo_Hondo"
+      ]
+    },
+    {
+      "slug": "rally-argentina",
+      "name": "Rally Argentina",
+      "country": "Argentina",
+      "countryCode": "AR",
+      "location": {
+        "lat": -31.4241,
+        "lng": -64.4978
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1980,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "Rough, rocky gravel rally in the Cordoba hills of central Argentina, known for its passionate crowds and the El Condor stage.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_Argentina"
+      ]
+    },
+    {
+      "slug": "termas-de-rio-hondo",
+      "name": "Termas de Río Hondo",
+      "country": "Argentina",
+      "countryCode": "AR",
+      "location": {
+        "lat": -27.4836,
+        "lng": -64.8669
+      },
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "A modern circuit in northern Argentina that has hosted the Argentine motorcycle Grand Prix."
+    },
+    {
+      "slug": "adelaide-street-circuit",
+      "name": "Adelaide Street Circuit",
+      "country": "Australia",
+      "countryCode": "AU",
+      "location": {
+        "lat": -34.925,
+        "lng": 138.6197
+      },
+      "lengthKm": 3.78,
+      "turns": null,
+      "opened": 1985,
+      "type": "street",
+      "categories": [
+        "f1",
+        "supercars",
+        "historic"
+      ],
+      "summary": "Parklands street circuit that hosted the Australian Grand Prix from 1985 to 1995 and now stages a major Supercars round.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Adelaide_Street_Circuit"
+      ]
+    },
+    {
+      "slug": "albert-park-circuit",
+      "name": "Albert Park Circuit",
+      "country": "Australia",
+      "countryCode": "AU",
+      "location": {
+        "lat": -37.8497,
+        "lng": 144.968
+      },
+      "lengthKm": 5.278,
+      "turns": 14,
+      "opened": 1953,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Parkland street circuit around Melbourne's Albert Park lake, frequent opener of the Formula One season since 1996.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Albert_Park_Circuit"
+      ]
+    },
+    {
+      "slug": "calder-park-raceway",
+      "name": "Calder Park Raceway",
+      "country": "Australia",
+      "countryCode": "AU",
+      "location": {
+        "lat": -37.6667,
+        "lng": 144.75
+      },
+      "lengthKm": 1.801,
+      "turns": 4,
+      "opened": 1987,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "historic"
+      ],
+      "summary": "Melbourne facility whose 'Thunderdome' is a NASCAR-style high-banked oval, a rarity in Australian motorsport.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Calder_Park_Raceway"
+      ]
+    },
+    {
+      "slug": "mount-panorama-circuit",
+      "name": "Mount Panorama Circuit",
+      "country": "Australia",
+      "countryCode": "AU",
+      "location": {
+        "lat": -33.45,
+        "lng": 149.5556
+      },
+      "lengthKm": 6.213,
+      "turns": 23,
+      "opened": 1938,
+      "type": "circuit",
+      "categories": [
+        "endurance",
+        "gt",
+        "supercars"
+      ],
+      "summary": "Spectacular public-road mountain circuit at Bathurst, home of the Bathurst 1000 and Bathurst 12 Hour.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mount_Panorama_Circuit"
+      ]
+    },
+    {
+      "slug": "phillip-island-grand-prix-circuit",
+      "name": "Phillip Island Grand Prix Circuit",
+      "country": "Australia",
+      "countryCode": "AU",
+      "location": {
+        "lat": -38.5006,
+        "lng": 145.235
+      },
+      "lengthKm": 4.445,
+      "turns": 12,
+      "opened": 1956,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "endurance"
+      ],
+      "summary": "Scenic coastal circuit south of Melbourne, one of the fastest and most spectacular tracks on the MotoGP calendar.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Phillip_Island_Grand_Prix_Circuit"
+      ]
+    },
+    {
+      "slug": "surfers-paradise-street-circuit",
+      "name": "Surfers Paradise Street Circuit",
+      "country": "Australia",
+      "countryCode": "AU",
+      "location": {
+        "lat": -27.99,
+        "lng": 153.43
+      },
+      "lengthKm": 2.98,
+      "turns": null,
+      "opened": 1991,
+      "type": "street",
+      "categories": [
+        "indycar",
+        "supercars",
+        "historic"
+      ],
+      "summary": "Gold Coast beachfront street circuit that hosted CART/Champ Car races through the 1990s and 2000s and now stages Supercars.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Surfers_Paradise_Street_Circuit"
+      ]
+    },
+    {
+      "slug": "red-bull-ring",
+      "name": "Red Bull Ring",
+      "country": "Austria",
+      "countryCode": "AT",
+      "location": {
+        "lat": 47.2197,
+        "lng": 14.7647
+      },
+      "lengthKm": 4.318,
+      "turns": 10,
+      "opened": 1969,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Short, fast Styrian circuit in the hills at Spielberg; originally the Osterreichring, rebuilt as the A1-Ring and now the Red Bull Ring.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Red_Bull_Ring"
+      ]
+    },
+    {
+      "slug": "salzburgring",
+      "name": "Salzburgring",
+      "country": "Austria",
+      "countryCode": "AT",
+      "location": {
+        "lat": 47.826,
+        "lng": 13.169
+      },
+      "lengthKm": 4.241,
+      "turns": 12,
+      "opened": 1969,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "historic"
+      ],
+      "summary": "Fast Alpine valley circuit east of Salzburg that hosted the Austrian motorcycle Grand Prix from 1971 to 1994.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Salzburgring"
+      ]
+    },
+    {
+      "slug": "baku-city-circuit",
+      "name": "Baku City Circuit",
+      "country": "Azerbaijan",
+      "countryCode": "AZ",
+      "location": {
+        "lat": 40.3725,
+        "lng": 49.8533
+      },
+      "lengthKm": 6.003,
+      "turns": 20,
+      "opened": 2016,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Baku street circuit combining a narrow old-town section past the castle walls with a very long start-finish straight along the Caspian seafront.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Baku_City_Circuit"
+      ]
+    },
+    {
+      "slug": "bahrain-international-circuit",
+      "name": "Bahrain International Circuit",
+      "country": "Bahrain",
+      "countryCode": "BH",
+      "location": {
+        "lat": 26.0325,
+        "lng": 50.5106
+      },
+      "lengthKm": 5.412,
+      "turns": 15,
+      "opened": 2004,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Desert circuit at Sakhir that hosted the first Middle Eastern Grand Prix in 2004 and now often opens the F1 season under lights.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bahrain_International_Circuit"
+      ]
+    },
+    {
+      "slug": "circuit-de-spa-francorchamps",
+      "name": "Circuit de Spa-Francorchamps",
+      "country": "Belgium",
+      "countryCode": "BE",
+      "location": {
+        "lat": 50.4372,
+        "lng": 5.9714
+      },
+      "lengthKm": 7.004,
+      "turns": 19,
+      "opened": 1921,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Fast, undulating Ardennes circuit famed for the Eau Rouge/Raidillon complex; hosts the Belgian Grand Prix and the Spa 24 Hours.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_de_Spa-Francorchamps"
+      ]
+    },
+    {
+      "slug": "circuit-zolder",
+      "name": "Circuit Zolder",
+      "country": "Belgium",
+      "countryCode": "BE",
+      "location": {
+        "lat": 50.9903,
+        "lng": 5.2569
+      },
+      "lengthKm": 4.011,
+      "turns": 10,
+      "opened": 1963,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Limburg circuit that hosted ten Belgian Grands Prix; site of Gilles Villeneuve's fatal crash in 1982.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Zolder"
+      ]
+    },
+    {
+      "slug": "karting-des-fagnes",
+      "name": "Karting des Fagnes",
+      "country": "Belgium",
+      "countryCode": "BE",
+      "location": {
+        "lat": 50.0939,
+        "lng": 4.5003
+      },
+      "lengthKm": 1.366,
+      "turns": null,
+      "opened": 1987,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "The largest outdoor kart circuit in Belgium, at Mariembourg in Wallonia, where several future F1 drivers began their careers.",
+      "confidence": "medium",
+      "sources": [
+        "https://kartingdesfagnes.be/en/",
+        "https://www.go-karting.eu/en/tracks/karting-des-fagnes/"
+      ]
+    },
+    {
+      "slug": "karting-genk",
+      "name": "Karting Genk",
+      "country": "Belgium",
+      "countryCode": "BE",
+      "location": {
+        "lat": 50.998,
+        "lng": 5.54
+      },
+      "lengthKm": 1.36,
+      "turns": 12,
+      "opened": 1983,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Belgian kart circuit nicknamed the 'Home of Champions', where Max Verstappen and other F1 drivers learned their craft; host of Karting World Championships.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Karting_Genk"
+      ]
+    },
+    {
+      "slug": "nivelles-baulers",
+      "name": "Nivelles-Baulers",
+      "country": "Belgium",
+      "countryCode": "BE",
+      "location": {
+        "lat": 50.6003,
+        "lng": 4.3253
+      },
+      "lengthKm": 3.724,
+      "turns": null,
+      "opened": 1971,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Short-lived flat circuit south of Brussels that held the Belgian Grand Prix in 1972 and 1974 before falling out of use.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nivelles-Baulers"
+      ]
+    },
+    {
+      "slug": "autodromo-internacional-nelson-piquet",
+      "name": "Autodromo Internacional Nelson Piquet (Jacarepagua)",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "location": {
+        "lat": -22.975,
+        "lng": -43.395
+      },
+      "lengthKm": 5.031,
+      "turns": null,
+      "opened": 1978,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Flat Rio de Janeiro circuit that hosted the Brazilian Grand Prix through the 1980s; later demolished for the 2016 Olympic Park.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Internacional_Nelson_Piquet"
+      ]
+    },
+    {
+      "slug": "autodromo-jose-carlos-pace",
+      "name": "Autodromo Jose Carlos Pace (Interlagos)",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "location": {
+        "lat": -23.7036,
+        "lng": -46.6997
+      },
+      "lengthKm": 4.309,
+      "turns": 15,
+      "opened": 1940,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Anti-clockwise Sao Paulo circuit, known as Interlagos, that has staged many dramatic Brazilian Grand Prix title deciders.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Jos%C3%A9_Carlos_Pace"
+      ]
+    },
+    {
+      "slug": "canadian-tire-motorsport-park",
+      "name": "Canadian Tire Motorsport Park",
+      "country": "Canada",
+      "countryCode": "CA",
+      "location": {
+        "lat": 44.05,
+        "lng": -78.6742
+      },
+      "lengthKm": 3.957,
+      "turns": 10,
+      "opened": 1961,
+      "type": "circuit",
+      "categories": [
+        "endurance",
+        "historic"
+      ],
+      "summary": "Fast, hilly Ontario road course formerly known as Mosport that hosted the Canadian Grand Prix in the 1960s and 1970s.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Canadian_Tire_Motorsport_Park"
+      ]
+    },
+    {
+      "slug": "circuit-gilles-villeneuve",
+      "name": "Circuit Gilles Villeneuve",
+      "country": "Canada",
+      "countryCode": "CA",
+      "location": {
+        "lat": 45.5,
+        "lng": -73.5228
+      },
+      "lengthKm": 4.361,
+      "turns": 14,
+      "opened": 1978,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Semi-permanent circuit on Ile Notre-Dame in Montreal, home of the Canadian Grand Prix and its infamous 'Wall of Champions'.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Gilles_Villeneuve"
+      ]
+    },
+    {
+      "slug": "circuit-mont-tremblant",
+      "name": "Circuit Mont-Tremblant",
+      "country": "Canada",
+      "countryCode": "CA",
+      "location": {
+        "lat": 46.1889,
+        "lng": -74.6106
+      },
+      "lengthKm": 4.265,
+      "turns": 15,
+      "opened": 1964,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance",
+        "historic"
+      ],
+      "summary": "Picturesque Quebec road course that hosted the Canadian Grand Prix in 1968 and 1970.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Mont-Tremblant"
+      ]
+    },
+    {
+      "slug": "toronto-street-circuit",
+      "name": "Toronto Street Circuit (Exhibition Place)",
+      "country": "Canada",
+      "countryCode": "CA",
+      "location": {
+        "lat": 43.63,
+        "lng": -79.42
+      },
+      "lengthKm": 2.824,
+      "turns": 11,
+      "opened": 1986,
+      "type": "street",
+      "categories": [
+        "indycar"
+      ],
+      "summary": "Temporary circuit around Exhibition Place on the Toronto lakeshore, host of the Honda Indy Toronto since 1986.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Exhibition_Place"
+      ]
+    },
+    {
+      "slug": "shanghai-international-circuit",
+      "name": "Shanghai International Circuit",
+      "country": "China",
+      "countryCode": "CN",
+      "location": {
+        "lat": 31.3389,
+        "lng": 121.22
+      },
+      "lengthKm": 5.451,
+      "turns": 16,
+      "opened": 2004,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Tilke-designed circuit whose layout echoes the Chinese character 'shang'; host of the Chinese Grand Prix with a long back straight.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Shanghai_International_Circuit"
+      ]
+    },
+    {
+      "slug": "autodrom-most",
+      "name": "Autodrom Most",
+      "country": "Czech Republic",
+      "countryCode": "CZ",
+      "location": {
+        "lat": 50.5189,
+        "lng": 13.6189
+      },
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "A circuit in the northwest of the Czech Republic used by World Superbikes and other series."
+    },
+    {
+      "slug": "automotodrom-brno",
+      "name": "Automotodrom Brno",
+      "country": "Czech Republic",
+      "countryCode": "CZ",
+      "location": {
+        "lat": 49.2028,
+        "lng": 16.4467
+      },
+      "lengthKm": 5.403,
+      "turns": 14,
+      "opened": 1987,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "Sweeping, hilly circuit near Brno that was a long-standing host of the Czech motorcycle Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Automotodrom_Brno"
+      ]
+    },
+    {
+      "slug": "rally-finland",
+      "name": "Rally Finland",
+      "country": "Finland",
+      "countryCode": "FI",
+      "location": {
+        "lat": 62.2415,
+        "lng": 25.7209
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1951,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "Fast gravel rally based around Jyvaskyla, famed for huge crests and jumps; often called the 'Grand Prix of rallying'.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_Finland"
+      ]
+    },
+    {
+      "slug": "bugatti-circuit-le-mans",
+      "name": "Bugatti Circuit (Le Mans)",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 47.9472,
+        "lng": 0.2089
+      },
+      "lengthKm": 4.185,
+      "turns": 9,
+      "opened": 1965,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "f1",
+        "historic"
+      ],
+      "summary": "Permanent circuit sharing its start-finish and pits with the Le Mans 24 Hours course; hosts the French motorcycle Grand Prix and held the 1967 F1 French GP.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bugatti_Circuit"
+      ]
+    },
+    {
+      "slug": "circuit-de-nevers-magny-cours",
+      "name": "Circuit de Nevers Magny-Cours",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 46.8642,
+        "lng": 3.1636
+      },
+      "lengthKm": 4.411,
+      "turns": 17,
+      "opened": 1960,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Central French circuit rebuilt in 1991, home of the French Grand Prix from 1991 to 2008.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_de_Nevers_Magny-Cours"
+      ]
+    },
+    {
+      "slug": "circuit-de-pau-ville",
+      "name": "Circuit de Pau-Ville",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 43.2967,
+        "lng": -0.3706
+      },
+      "lengthKm": 2.76,
+      "turns": null,
+      "opened": 1933,
+      "type": "street",
+      "categories": [
+        "f2",
+        "historic"
+      ],
+      "summary": "Classic street circuit through the town of Pau, host of the Pau Grand Prix since 1933 and long a Formula 2 and Formula 3000 fixture.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pau_Grand_Prix"
+      ]
+    },
+    {
+      "slug": "reims-gueux",
+      "name": "Circuit de Reims-Gueux",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 49.2542,
+        "lng": 3.9308
+      },
+      "lengthKm": 8.302,
+      "turns": null,
+      "opened": 1926,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Fast triangular road circuit near Reims that hosted the French Grand Prix several times in the 1950s and early 1960s; its pit buildings still stand.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Reims-Gueux"
+      ]
+    },
+    {
+      "slug": "circuit-paul-ricard",
+      "name": "Circuit Paul Ricard",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 43.2506,
+        "lng": 5.7917
+      },
+      "lengthKm": 5.842,
+      "turns": 15,
+      "opened": 1970,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Le Castellet circuit known for its distinctive blue-and-red run-off; hosted the French Grand Prix and remains a major testing venue.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Paul_Ricard"
+      ]
+    },
+    {
+      "slug": "dijon-prenois",
+      "name": "Dijon-Prenois",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 47.3625,
+        "lng": 4.8992
+      },
+      "lengthKm": 3.801,
+      "turns": null,
+      "opened": 1972,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Short, hilly Burgundy circuit remembered for the 1979 Villeneuve-Arnoux duel; hosted French and Swiss Grands Prix.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dijon-Prenois"
+      ]
+    },
+    {
+      "slug": "rouen-les-essarts",
+      "name": "Rouen-Les-Essarts",
+      "country": "France",
+      "countryCode": "FR",
+      "location": {
+        "lat": 49.3308,
+        "lng": 1.0044
+      },
+      "lengthKm": 6.542,
+      "turns": null,
+      "opened": 1950,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Sweeping downhill road circuit south of Rouen that held the French Grand Prix five times between 1952 and 1968.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rouen-Les-Essarts"
+      ]
+    },
+    {
+      "slug": "avus",
+      "name": "AVUS",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 52.4833,
+        "lng": 13.2667
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1921,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Berlin circuit of two long straights joined by a steeply banked north curve; hosted the 1959 German Grand Prix and is now part of a motorway.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/AVUS"
+      ]
+    },
+    {
+      "slug": "erftlandring-kerpen",
+      "name": "Erftlandring (Kerpen-Manheim)",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 50.872,
+        "lng": 6.548
+      },
+      "lengthKm": 1.107,
+      "turns": null,
+      "opened": 1980,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Historic kart track at Kerpen-Manheim, the home circuit of Michael and Ralf Schumacher, where Senna and Hakkinen also raced as juniors.",
+      "confidence": "low",
+      "sources": [
+        "https://de.wikipedia.org/wiki/Erftlandring"
+      ]
+    },
+    {
+      "slug": "hockenheimring",
+      "name": "Hockenheimring",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 49.3278,
+        "lng": 8.5658
+      },
+      "lengthKm": 4.574,
+      "turns": 17,
+      "opened": 1932,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Forest circuit near Heidelberg, long-time host of the German Grand Prix; its original high-speed straights were replaced by a shorter layout in 2002.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hockenheimring"
+      ]
+    },
+    {
+      "slug": "lausitzring",
+      "name": "Lausitzring",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 51.5347,
+        "lng": 13.9247
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 2000,
+      "type": "oval",
+      "categories": [
+        "gt",
+        "historic"
+      ],
+      "summary": "Multi-purpose German complex combining a tri-oval with infield road courses; site of a fatal 2001 CART crash and now a DTM and test venue.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lausitzring"
+      ]
+    },
+    {
+      "slug": "nurburgring-gp-strecke",
+      "name": "Nurburgring (GP-Strecke)",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 50.3356,
+        "lng": 6.9475
+      },
+      "lengthKm": 5.148,
+      "turns": 15,
+      "opened": 1984,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Modern Grand Prix circuit in the Eifel, opened in 1984 alongside the historic 1927 Nordschleife; host of German and European Grands Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/N%C3%BCrburgring"
+      ]
+    },
+    {
+      "slug": "nurburgring-nordschleife",
+      "name": "Nurburgring Nordschleife",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 50.3564,
+        "lng": 6.9497
+      },
+      "lengthKm": 20.832,
+      "turns": null,
+      "opened": 1927,
+      "type": "circuit",
+      "categories": [
+        "endurance",
+        "f1",
+        "historic"
+      ],
+      "summary": "The 'Green Hell', a 20+ km Eifel loop with over 150 corners; former F1 venue and home of the Nurburgring 24 Hours.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/N%C3%BCrburgring"
+      ]
+    },
+    {
+      "slug": "prokart-raceland-wackersdorf",
+      "name": "ProKart Raceland Wackersdorf",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 49.322,
+        "lng": 12.204
+      },
+      "lengthKm": 1.222,
+      "turns": null,
+      "opened": 1997,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Professional CIK-FIA kart facility in Bavaria with indoor and outdoor tracks; host of FIA Karting World Championship rounds.",
+      "confidence": "low",
+      "sources": [
+        "https://de.wikipedia.org/wiki/ProKart_Raceland_Wackersdorf"
+      ]
+    },
+    {
+      "slug": "rallye-deutschland",
+      "name": "Rallye Deutschland",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 49.75,
+        "lng": 6.64
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1982,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally",
+        "historic"
+      ],
+      "summary": "German WRC round based around Trier, uniquely mixing vineyard tarmac hairpins with the abrasive concrete tracks of the Baumholder military range.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rallye_Deutschland"
+      ]
+    },
+    {
+      "slug": "sachsenring",
+      "name": "Sachsenring",
+      "country": "Germany",
+      "countryCode": "DE",
+      "location": {
+        "lat": 50.79,
+        "lng": 12.6883
+      },
+      "lengthKm": 3.671,
+      "turns": 13,
+      "opened": 1996,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "Compact, anti-clockwise Saxon circuit, home of the German motorcycle Grand Prix; the modern permanent track dates from 1996.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sachsenring"
+      ]
+    },
+    {
+      "slug": "acropolis-rally",
+      "name": "Acropolis Rally",
+      "country": "Greece",
+      "countryCode": "GR",
+      "location": {
+        "lat": 38.9,
+        "lng": 22.43
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1953,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally",
+        "historic"
+      ],
+      "summary": "One of the toughest events in rallying, run on rough, rocky, dusty mountain tracks in the Greek summer heat.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Acropolis_Rally"
+      ]
+    },
+    {
+      "slug": "hungaroring",
+      "name": "Hungaroring",
+      "country": "Hungary",
+      "countryCode": "HU",
+      "location": {
+        "lat": 47.5789,
+        "lng": 19.2486
+      },
+      "lengthKm": 4.381,
+      "turns": 14,
+      "opened": 1986,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Twisty circuit near Budapest that hosted the first Formula One race behind the Iron Curtain in 1986.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Hungaroring"
+      ]
+    },
+    {
+      "slug": "buddh-international-circuit",
+      "name": "Buddh International Circuit",
+      "country": "India",
+      "countryCode": "IN",
+      "location": {
+        "lat": 28.3487,
+        "lng": 77.5331
+      },
+      "lengthKm": 5.125,
+      "turns": 16,
+      "opened": 2011,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Circuit near Greater Noida that hosted the Indian Grand Prix from 2011 to 2013 and the Indian MotoGP round from 2023.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Buddh_International_Circuit"
+      ]
+    },
+    {
+      "slug": "mandalika-international-street-circuit",
+      "name": "Mandalika International Street Circuit",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "location": {
+        "lat": -8.8954,
+        "lng": 116.3042
+      },
+      "lengthKm": 4.32,
+      "turns": 17,
+      "opened": 2021,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "Coastal circuit in the Mandalika resort on Lombok that brought the Indonesian motorcycle Grand Prix back in 2022.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mandalika_International_Street_Circuit"
+      ]
+    },
+    {
+      "slug": "7-laghi-kart",
+      "name": "7 Laghi Kart",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 45.062,
+        "lng": 9.062
+      },
+      "lengthKm": 1.256,
+      "turns": null,
+      "opened": 2002,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "International kart circuit at Castelletto di Branduzzo in the province of Pavia, set within a large lakeside complex.",
+      "confidence": "low",
+      "sources": [
+        "https://7laghikartitalia.it/",
+        "https://www.iame-motorsport.com/tracks_dett.php?id=15"
+      ]
+    },
+    {
+      "slug": "adria-karting-raceway",
+      "name": "Adria Karting Raceway",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 45.0437,
+        "lng": 12.1478
+      },
+      "lengthKm": 1.302,
+      "turns": null,
+      "opened": 2014,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Modern CIK-FIA kart track in the Veneto, part of the Adria International Raceway complex, with wide run-off areas.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Adria_International_Raceway"
+      ]
+    },
+    {
+      "slug": "autodromo-enzo-e-dino-ferrari",
+      "name": "Autodromo Enzo e Dino Ferrari (Imola)",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 44.3439,
+        "lng": 11.7167
+      },
+      "lengthKm": 4.909,
+      "turns": 19,
+      "opened": 1953,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Classic anti-clockwise circuit at Imola, site of the 1994 tragedies and now host of the Emilia-Romagna Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Imola_Circuit"
+      ]
+    },
+    {
+      "slug": "autodromo-nazionale-monza",
+      "name": "Autodromo Nazionale Monza",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 45.6156,
+        "lng": 9.2811
+      },
+      "lengthKm": 5.793,
+      "turns": 11,
+      "opened": 1922,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "One of the oldest purpose-built circuits in the world and the historic 'Temple of Speed' home of the Italian Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Monza_Circuit"
+      ]
+    },
+    {
+      "slug": "circuito-internazionale-napoli-sarno",
+      "name": "Circuito Internazionale Napoli (Sarno)",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 40.808,
+        "lng": 14.607
+      },
+      "lengthKm": 1.7,
+      "turns": null,
+      "opened": 1992,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Long-standing international kart circuit at Sarno near Naples, in the shadow of Mount Vesuvius; a regular CIK-FIA and Italian championship venue.",
+      "confidence": "low",
+      "sources": [
+        "https://www.fiakarting.com/event/2026-circuito-internazionale-napoli-sarno-napoli",
+        "https://www.kartcom.com/en/places/sarno/"
+      ]
+    },
+    {
+      "slug": "franciacorta-karting-track",
+      "name": "Franciacorta Karting Track",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 45.478,
+        "lng": 9.985
+      },
+      "lengthKm": 1.3,
+      "turns": null,
+      "opened": 2020,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "International kart circuit at Castrezzato near Brescia, opened in 2020 alongside the Franciacorta autodrome.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Autodromo_di_Franciacorta",
+        "https://www.iame-motorsport.com/tracks_dett.php?id=20"
+      ]
+    },
+    {
+      "slug": "mugello-circuit",
+      "name": "Mugello Circuit",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 43.9975,
+        "lng": 11.3719
+      },
+      "lengthKm": 5.245,
+      "turns": 15,
+      "opened": 1974,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "endurance"
+      ],
+      "summary": "Flowing, hilly Tuscan circuit owned by Ferrari; a beloved MotoGP venue for the Italian motorcycle Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mugello_Circuit"
+      ]
+    },
+    {
+      "slug": "pescara-circuit",
+      "name": "Pescara Circuit",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 42.4667,
+        "lng": 14.15
+      },
+      "lengthKm": 25.579,
+      "turns": null,
+      "opened": 1924,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Enormous triangular road circuit on the Adriatic coast; at over 25 km the longest track ever to host a World Championship Grand Prix (1957).",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pescara_Circuit"
+      ]
+    },
+    {
+      "slug": "rally-italia-sardegna",
+      "name": "Rally Italia Sardegna",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 40.5589,
+        "lng": 8.32
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 2004,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "Italy's round of the World Rally Championship on the narrow, dusty, technical gravel roads of Sardinia.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_d%27Italia_Sardegna"
+      ]
+    },
+    {
+      "slug": "south-garda-karting",
+      "name": "South Garda Karting",
+      "country": "Italy",
+      "countryCode": "IT",
+      "location": {
+        "lat": 45.459,
+        "lng": 10.484
+      },
+      "lengthKm": 1.2,
+      "turns": null,
+      "opened": 1988,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Prestigious kart circuit at Lonato del Garda that hosts CIK-FIA World Championship rounds; a proving ground for future F1 stars.",
+      "confidence": "low",
+      "sources": [
+        "https://racing.southgardakarting.it/en",
+        "https://www.gardatourism.it/en/south-garda-karting-2/"
+      ]
+    },
+    {
+      "slug": "fuji-speedway",
+      "name": "Fuji Speedway",
+      "country": "Japan",
+      "countryCode": "JP",
+      "location": {
+        "lat": 35.3717,
+        "lng": 138.9267
+      },
+      "lengthKm": 4.563,
+      "turns": 16,
+      "opened": 1966,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "Toyota-owned circuit beneath Mount Fuji with a very long main straight; hosted the Japanese Grand Prix and a round of the World Endurance Championship.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fuji_Speedway"
+      ]
+    },
+    {
+      "slug": "mobility-resort-motegi",
+      "name": "Mobility Resort Motegi (Twin Ring Motegi)",
+      "country": "Japan",
+      "countryCode": "JP",
+      "location": {
+        "lat": 36.5339,
+        "lng": 140.2272
+      },
+      "lengthKm": 4.801,
+      "turns": 14,
+      "opened": 1997,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "indycar"
+      ],
+      "summary": "Honda-owned Tochigi complex with both a road course and an oval; host of the Japanese motorcycle Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Twin_Ring_Motegi"
+      ]
+    },
+    {
+      "slug": "okayama-international-circuit",
+      "name": "Okayama International Circuit",
+      "country": "Japan",
+      "countryCode": "JP",
+      "location": {
+        "lat": 34.915,
+        "lng": 134.2211
+      },
+      "lengthKm": 3.703,
+      "turns": 13,
+      "opened": 1990,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp",
+        "historic"
+      ],
+      "summary": "Technical circuit formerly known as TI Circuit Aida that hosted the Formula One Pacific Grand Prix in 1994 and 1995.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Okayama_International_Circuit"
+      ]
+    },
+    {
+      "slug": "rally-japan",
+      "name": "Rally Japan",
+      "country": "Japan",
+      "countryCode": "JP",
+      "location": {
+        "lat": 35.08,
+        "lng": 137.15
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 2004,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "Japanese WRC round run on twisty, narrow tarmac mountain roads in the Aichi and Gifu region near Toyota City.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_Japan"
+      ]
+    },
+    {
+      "slug": "suzuka-circuit",
+      "name": "Suzuka International Racing Course",
+      "country": "Japan",
+      "countryCode": "JP",
+      "location": {
+        "lat": 34.8431,
+        "lng": 136.5411
+      },
+      "lengthKm": 5.807,
+      "turns": 18,
+      "opened": 1962,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance",
+        "motogp"
+      ],
+      "summary": "Honda-owned figure-eight circuit widely regarded as one of the greatest drivers' tracks; home of the Japanese Grand Prix and Suzuka 8 Hours.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Suzuka_International_Racing_Course"
+      ]
+    },
+    {
+      "slug": "safari-rally",
+      "name": "Safari Rally",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "location": {
+        "lat": -0.7172,
+        "lng": 36.431
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1953,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "Legendary rough, long-distance African rally, historically based around Nairobi and now Naivasha, testing cars against terrain and wildlife.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Safari_Rally"
+      ]
+    },
+    {
+      "slug": "guia-circuit",
+      "name": "Guia Circuit",
+      "country": "Macau",
+      "countryCode": "MO",
+      "location": {
+        "lat": 22.2,
+        "lng": 113.55
+      },
+      "lengthKm": 6.12,
+      "turns": null,
+      "opened": 1954,
+      "type": "street",
+      "categories": [
+        "f3",
+        "gt",
+        "historic"
+      ],
+      "summary": "Narrow, demanding street circuit around Guia Hill, home of the Macau Grand Prix and its famed Formula 3 and touring-car races.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Guia_Circuit"
+      ]
+    },
+    {
+      "slug": "sepang-international-circuit",
+      "name": "Sepang International Circuit",
+      "country": "Malaysia",
+      "countryCode": "MY",
+      "location": {
+        "lat": 2.7608,
+        "lng": 101.7383
+      },
+      "lengthKm": 5.543,
+      "turns": 15,
+      "opened": 1999,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Tilke's first major F1 project, a hot and humid circuit near Kuala Lumpur that hosts the Malaysian motorcycle Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sepang_International_Circuit"
+      ]
+    },
+    {
+      "slug": "autodromo-hermanos-rodriguez",
+      "name": "Autodromo Hermanos Rodriguez",
+      "country": "Mexico",
+      "countryCode": "MX",
+      "location": {
+        "lat": 19.4042,
+        "lng": -99.0907
+      },
+      "lengthKm": 4.304,
+      "turns": 17,
+      "opened": 1959,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "High-altitude Mexico City circuit whose stadium section around the old Peraltada draws huge crowds at the Mexican Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez"
+      ]
+    },
+    {
+      "slug": "circuit-de-monaco",
+      "name": "Circuit de Monaco",
+      "country": "Monaco",
+      "countryCode": "MC",
+      "location": {
+        "lat": 43.7347,
+        "lng": 7.4206
+      },
+      "lengthKm": 3.337,
+      "turns": 19,
+      "opened": 1929,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Tight, glamorous street circuit through Monte Carlo and the crown jewel of the Formula One calendar since 1950.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_de_Monaco"
+      ]
+    },
+    {
+      "slug": "circuit-zandvoort",
+      "name": "Circuit Zandvoort",
+      "country": "Netherlands",
+      "countryCode": "NL",
+      "location": {
+        "lat": 52.3888,
+        "lng": 4.5409
+      },
+      "lengthKm": 4.259,
+      "turns": 14,
+      "opened": 1948,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Seaside dunes circuit that returned to the Formula One calendar in 2021 with banked corners for the Dutch Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Zandvoort"
+      ]
+    },
+    {
+      "slug": "tt-circuit-assen",
+      "name": "TT Circuit Assen",
+      "country": "Netherlands",
+      "countryCode": "NL",
+      "location": {
+        "lat": 52.9592,
+        "lng": 6.5236
+      },
+      "lengthKm": 4.542,
+      "turns": 18,
+      "opened": 1955,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "The 'Cathedral' of motorcycle racing, host of the Dutch TT continuously since the world championship began in 1949.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/TT_Circuit_Assen"
+      ]
+    },
+    {
+      "slug": "algarve-international-circuit",
+      "name": "Algarve International Circuit (Portimao)",
+      "country": "Portugal",
+      "countryCode": "PT",
+      "location": {
+        "lat": 37.2306,
+        "lng": -8.6297
+      },
+      "lengthKm": 4.653,
+      "turns": 15,
+      "opened": 2008,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "f1",
+        "historic"
+      ],
+      "summary": "Undulating roller-coaster circuit at Portimao that hosts the Portuguese motorcycle Grand Prix and held the F1 Portuguese GP in 2020 and 2021.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Algarve_International_Circuit"
+      ]
+    },
+    {
+      "slug": "autodromo-do-estoril",
+      "name": "Autodromo do Estoril",
+      "country": "Portugal",
+      "countryCode": "PT",
+      "location": {
+        "lat": 38.7506,
+        "lng": -9.3939
+      },
+      "lengthKm": 4.182,
+      "turns": 13,
+      "opened": 1972,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp",
+        "historic"
+      ],
+      "summary": "Circuit near Lisbon that hosted the Portuguese Grand Prix from 1984 to 1996, including Ayrton Senna's first F1 win.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_do_Estoril"
+      ]
+    },
+    {
+      "slug": "rally-de-portugal",
+      "name": "Rally de Portugal",
+      "country": "Portugal",
+      "countryCode": "PT",
+      "location": {
+        "lat": 41.18,
+        "lng": -8.7
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1967,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "Fast, sandy gravel rally now based in the north around Matosinhos, one of the best-attended events on the WRC calendar.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_de_Portugal"
+      ]
+    },
+    {
+      "slug": "lusail-international-circuit",
+      "name": "Lusail International Circuit",
+      "country": "Qatar",
+      "countryCode": "QA",
+      "location": {
+        "lat": 25.49,
+        "lng": 51.4542
+      },
+      "lengthKm": 5.38,
+      "turns": 16,
+      "opened": 2004,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Floodlit circuit near Doha built for MotoGP in 2004 that added the Qatar Grand Prix to the Formula One calendar in 2021.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lusail_International_Circuit"
+      ]
+    },
+    {
+      "slug": "jeddah-corniche-circuit",
+      "name": "Jeddah Corniche Circuit",
+      "country": "Saudi Arabia",
+      "countryCode": "SA",
+      "location": {
+        "lat": 21.6319,
+        "lng": 39.1044
+      },
+      "lengthKm": 6.174,
+      "turns": 27,
+      "opened": 2021,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Ultra-fast waterfront street circuit in Jeddah, the longest and one of the quickest street tracks on the Formula One calendar.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jeddah_Corniche_Circuit"
+      ]
+    },
+    {
+      "slug": "marina-bay-street-circuit",
+      "name": "Marina Bay Street Circuit",
+      "country": "Singapore",
+      "countryCode": "SG",
+      "location": {
+        "lat": 1.2914,
+        "lng": 103.864
+      },
+      "lengthKm": 4.94,
+      "turns": 19,
+      "opened": 2008,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Downtown street circuit that hosted Formula One's first night race in 2008; reconfigured to 19 turns from 2023.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit"
+      ]
+    },
+    {
+      "slug": "kyalami-circuit",
+      "name": "Kyalami Circuit",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "location": {
+        "lat": -25.9986,
+        "lng": 28.0736
+      },
+      "lengthKm": 4.522,
+      "turns": 16,
+      "opened": 1961,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance"
+      ],
+      "summary": "High-veld circuit near Johannesburg that hosted the South African Grand Prix and remains the country's premier racing venue.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kyalami"
+      ]
+    },
+    {
+      "slug": "korea-international-circuit",
+      "name": "Korea International Circuit",
+      "country": "South Korea",
+      "countryCode": "KR",
+      "location": {
+        "lat": 34.7333,
+        "lng": 126.4167
+      },
+      "lengthKm": 5.615,
+      "turns": 18,
+      "opened": 2010,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Coastal circuit near Yeongam that held the Korean Grand Prix from 2010 to 2013.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Korea_International_Circuit"
+      ]
+    },
+    {
+      "slug": "circuit-de-barcelona-catalunya",
+      "name": "Circuit de Barcelona-Catalunya",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 41.57,
+        "lng": 2.2611
+      },
+      "lengthKm": 4.657,
+      "turns": 16,
+      "opened": 1991,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Montmelo circuit long used as Formula One's main pre-season testing venue and host of the Spanish Grand Prix and Catalan MotoGP.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_de_Barcelona-Catalunya"
+      ]
+    },
+    {
+      "slug": "circuit-ricardo-tormo",
+      "name": "Circuit Ricardo Tormo",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 39.4858,
+        "lng": -0.6289
+      },
+      "lengthKm": 4.005,
+      "turns": 14,
+      "opened": 1999,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "Stadium-style circuit at Cheste near Valencia that traditionally closes the MotoGP season with the Valencian Community Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Ricardo_Tormo"
+      ]
+    },
+    {
+      "slug": "circuito-de-jerez",
+      "name": "Circuito de Jerez - Angel Nieto",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 36.7086,
+        "lng": -6.0342
+      },
+      "lengthKm": 4.428,
+      "turns": 13,
+      "opened": 1985,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "f1",
+        "historic"
+      ],
+      "summary": "Andalusian circuit that hosts the Spanish motorcycle Grand Prix and staged the Spanish and European F1 Grands Prix in the late 1980s and 1990s.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuito_de_Jerez"
+      ]
+    },
+    {
+      "slug": "circuito-del-jarama",
+      "name": "Circuito del Jarama",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 40.6167,
+        "lng": -3.5853
+      },
+      "lengthKm": 3.85,
+      "turns": null,
+      "opened": 1967,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Tight, twisting circuit north of Madrid that hosted nine Spanish Grands Prix between 1968 and 1981.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuito_del_Jarama"
+      ]
+    },
+    {
+      "slug": "circuito-internacional-de-zuera",
+      "name": "Circuito Internacional de Zuera",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 41.8301,
+        "lng": -0.81
+      },
+      "lengthKm": 1.1,
+      "turns": null,
+      "opened": null,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "International kart circuit north of Zaragoza in Aragon, an FIA Karting venue also used by motorcycles.",
+      "confidence": "medium",
+      "sources": [
+        "https://circuitointernacionaldezuera.es/en/",
+        "https://www.kart-map.com/es/circuits/circuito-internacional-de-zuera"
+      ]
+    },
+    {
+      "slug": "montjuic-circuit",
+      "name": "Montjuic Circuit",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 41.3667,
+        "lng": 2.15
+      },
+      "lengthKm": 3.791,
+      "turns": null,
+      "opened": 1969,
+      "type": "street",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Park street circuit in Barcelona whose fast, dangerous layout hosted the Spanish Grand Prix until a fatal 1975 accident ended F1 racing there.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Montju%C3%AFc_circuit"
+      ]
+    },
+    {
+      "slug": "motorland-aragon",
+      "name": "MotorLand Aragon",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 41.0783,
+        "lng": -0.2075
+      },
+      "lengthKm": 5.077,
+      "turns": 17,
+      "opened": 2009,
+      "type": "circuit",
+      "categories": [
+        "motogp",
+        "wsbk"
+      ],
+      "summary": "Tilke-designed circuit near Alcaniz in Aragon that hosts the Aragon motorcycle Grand Prix and World Superbike rounds.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/MotorLand_Arag%C3%B3n"
+      ]
+    },
+    {
+      "slug": "pedralbes-circuit",
+      "name": "Pedralbes Circuit",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 41.39,
+        "lng": 2.11
+      },
+      "lengthKm": 6.316,
+      "turns": null,
+      "opened": 1946,
+      "type": "street",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Fast street circuit on the wide avenues of Barcelona that held the Spanish Grand Prix in 1951 and 1954.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pedralbes_Circuit"
+      ]
+    },
+    {
+      "slug": "valencia-street-circuit",
+      "name": "Valencia Street Circuit",
+      "country": "Spain",
+      "countryCode": "ES",
+      "location": {
+        "lat": 39.4585,
+        "lng": -0.3319
+      },
+      "lengthKm": 5.419,
+      "turns": 25,
+      "opened": 2008,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Harbourside street circuit that hosted the European Grand Prix from 2008 to 2012, crossing a swing bridge over the marina.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Valencia_Street_Circuit"
+      ]
+    },
+    {
+      "slug": "rally-sweden",
+      "name": "Rally Sweden",
+      "country": "Sweden",
+      "countryCode": "SE",
+      "location": {
+        "lat": 63.8258,
+        "lng": 20.263
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1950,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally"
+      ],
+      "summary": "The only true winter round of the World Rally Championship, run on snow and ice with studded tyres; now based around Umea in the north.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_Sweden"
+      ]
+    },
+    {
+      "slug": "scandinavian-raceway",
+      "name": "Scandinavian Raceway (Anderstorp)",
+      "country": "Sweden",
+      "countryCode": "SE",
+      "location": {
+        "lat": 57.2647,
+        "lng": 13.6011
+      },
+      "lengthKm": 4.031,
+      "turns": null,
+      "opened": 1968,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Circuit at Anderstorp, built partly around an airfield, that hosted the Swedish Grand Prix from 1973 to 1978.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Scandinavian_Raceway"
+      ]
+    },
+    {
+      "slug": "circuit-bremgarten",
+      "name": "Circuit Bremgarten",
+      "country": "Switzerland",
+      "countryCode": "CH",
+      "location": {
+        "lat": 46.9667,
+        "lng": 7.4
+      },
+      "lengthKm": 7.28,
+      "turns": null,
+      "opened": 1931,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp",
+        "historic"
+      ],
+      "summary": "Tree-lined forest circuit near Bern that hosted the Swiss Grand Prix until circuit racing was banned in Switzerland after the 1955 Le Mans disaster.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_Bremgarten"
+      ]
+    },
+    {
+      "slug": "buriram-international-circuit",
+      "name": "Buriram International Circuit (Chang)",
+      "country": "Thailand",
+      "countryCode": "TH",
+      "location": {
+        "lat": 14.9575,
+        "lng": 103.085
+      },
+      "lengthKm": 4.554,
+      "turns": 12,
+      "opened": 2014,
+      "type": "circuit",
+      "categories": [
+        "motogp"
+      ],
+      "summary": "Tilke-designed circuit in Buriram, Thailand's first FIA Grade 1 track and host of the Thailand motorcycle Grand Prix.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Buriram_International_Circuit"
+      ]
+    },
+    {
+      "slug": "istanbul-park",
+      "name": "Istanbul Park",
+      "country": "Turkey",
+      "countryCode": "TR",
+      "location": {
+        "lat": 40.9517,
+        "lng": 29.405
+      },
+      "lengthKm": 5.338,
+      "turns": 14,
+      "opened": 2005,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Anti-clockwise circuit on the Asian side of Istanbul, famed for the multi-apex, high-load Turn 8.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Istanbul_Park"
+      ]
+    },
+    {
+      "slug": "yas-marina-circuit",
+      "name": "Yas Marina Circuit",
+      "country": "United Arab Emirates",
+      "countryCode": "AE",
+      "location": {
+        "lat": 24.4672,
+        "lng": 54.6031
+      },
+      "lengthKm": 5.281,
+      "turns": 16,
+      "opened": 2009,
+      "type": "circuit",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Abu Dhabi circuit on Yas Island, traditional season finale of the Formula One calendar and a day-to-night race.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Yas_Marina_Circuit"
+      ]
+    },
+    {
+      "slug": "aintree-motor-racing-circuit",
+      "name": "Aintree Motor Racing Circuit",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 53.4767,
+        "lng": -2.94
+      },
+      "lengthKm": 4.828,
+      "turns": null,
+      "opened": 1954,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic"
+      ],
+      "summary": "Circuit around the Aintree horse-racing course near Liverpool that hosted the British Grand Prix five times, including Stirling Moss's 1955 home win.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Aintree_Motor_Racing_Circuit"
+      ]
+    },
+    {
+      "slug": "brands-hatch",
+      "name": "Brands Hatch",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 51.3569,
+        "lng": 0.2611
+      },
+      "lengthKm": 3.916,
+      "turns": null,
+      "opened": 1950,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "historic",
+        "endurance"
+      ],
+      "summary": "Kent circuit set in a natural amphitheatre that alternated the British Grand Prix with Silverstone into the 1980s and remains a busy national venue.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Brands_Hatch"
+      ]
+    },
+    {
+      "slug": "pf-international-kart-circuit",
+      "name": "PF International Kart Circuit",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 52.99,
+        "lng": -0.585
+      },
+      "lengthKm": 1.382,
+      "turns": 15,
+      "opened": 1994,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "The UK's premier kart circuit at Brandon near Grantham, and the only British short-circuit track holding a CIK-FIA International A licence.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/PF_International_Kart_Circuit"
+      ]
+    },
+    {
+      "slug": "rally-gb",
+      "name": "Rally GB (Wales)",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 53.207,
+        "lng": -3.03
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1932,
+      "type": "rally",
+      "categories": [
+        "wrc",
+        "rally",
+        "historic"
+      ],
+      "summary": "Britain's round of the World Rally Championship, run on the fast forest gravel stages of Wales; formerly the RAC Rally.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rally_GB"
+      ]
+    },
+    {
+      "slug": "rockingham-motor-speedway-england",
+      "name": "Rockingham Motor Speedway",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 52.51,
+        "lng": -0.63
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 2001,
+      "type": "oval",
+      "categories": [
+        "historic"
+      ],
+      "summary": "Corby oval-and-road complex, one of Europe's few banked speedways, that briefly hosted American CART races before closing to racing in 2018.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rockingham_Motor_Speedway_(England)"
+      ]
+    },
+    {
+      "slug": "rowrah-kart-circuit",
+      "name": "Rowrah Kart Circuit",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 54.552,
+        "lng": -3.437
+      },
+      "lengthKm": 1.03,
+      "turns": null,
+      "opened": null,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Cumbrian kart circuit laid out in a disused quarry, an early proving ground for British F1 drivers including Lewis Hamilton and George Russell.",
+      "confidence": "low",
+      "sources": [
+        "https://www.cumbriakrc.co.uk/circuit",
+        "https://www.motorsportcircuits.co.uk/html/rowrah-cumbria-karting-circuit.html"
+      ]
+    },
+    {
+      "slug": "silverstone-circuit",
+      "name": "Silverstone Circuit",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "location": {
+        "lat": 52.0733,
+        "lng": -1.0147
+      },
+      "lengthKm": 5.891,
+      "turns": 18,
+      "opened": 1948,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp",
+        "endurance"
+      ],
+      "summary": "Former WWII airfield that hosted the first FIA Formula One World Championship race in 1950; permanent home of the British Grand Prix and British MotoGP.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Silverstone_Circuit"
+      ]
+    },
+    {
+      "slug": "atlanta-motor-speedway",
+      "name": "Atlanta Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 33.3856,
+        "lng": -84.3169
+      },
+      "lengthKm": 2.478,
+      "turns": 4,
+      "opened": 1960,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "1.54-mile Georgia quad-oval reprofiled in 2022 with steeper banking to produce superspeedway-style pack racing.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Atlanta_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "auto-club-speedway",
+      "name": "Auto Club Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 34.0889,
+        "lng": -117.5
+      },
+      "lengthKm": 3.219,
+      "turns": 4,
+      "opened": 1997,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "Fast, worn 2-mile D-shaped oval in Fontana, California, long a favorite of drivers for its multiple racing grooves.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Auto_Club_Speedway"
+      ]
+    },
+    {
+      "slug": "barber-motorsports-park",
+      "name": "Barber Motorsports Park",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 33.5314,
+        "lng": -86.6197
+      },
+      "lengthKm": 3.83,
+      "turns": 17,
+      "opened": 2003,
+      "type": "circuit",
+      "categories": [
+        "indycar"
+      ],
+      "summary": "Immaculate, park-like road course near Birmingham, Alabama, adjoining a renowned motorcycle museum; an IndyCar venue.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Barber_Motorsports_Park"
+      ]
+    },
+    {
+      "slug": "bristol-motor-speedway",
+      "name": "Bristol Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 36.5158,
+        "lng": -82.2569
+      },
+      "lengthKm": 0.858,
+      "turns": 4,
+      "opened": 1961,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "Steeply banked half-mile 'bullring' in Tennessee known for its short-track intensity and colosseum-like grandstands.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bristol_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "charlotte-motor-speedway",
+      "name": "Charlotte Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 35.3517,
+        "lng": -80.6828
+      },
+      "lengthKm": 2.414,
+      "turns": 4,
+      "opened": 1960,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "1.5-mile North Carolina quad-oval that hosts the Coca-Cola 600; also runs a NASCAR event on its infield 'roval'.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Charlotte_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "circuit-of-the-americas",
+      "name": "Circuit of the Americas",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 30.1328,
+        "lng": -97.6411
+      },
+      "lengthKm": 5.513,
+      "turns": 20,
+      "opened": 2012,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "motogp"
+      ],
+      "summary": "Purpose-built Austin circuit with a steep uphill Turn 1; hosts the United States Grand Prix and the Grand Prix of the Americas MotoGP round.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Circuit_of_the_Americas"
+      ]
+    },
+    {
+      "slug": "darlington-raceway",
+      "name": "Darlington Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 34.2936,
+        "lng": -79.9058
+      },
+      "lengthKm": 2.198,
+      "turns": 4,
+      "opened": 1950,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "Egg-shaped South Carolina oval, 'the track too tough to tame', where drivers earn the 'Darlington stripe' on the wall.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Darlington_Raceway"
+      ]
+    },
+    {
+      "slug": "daytona-international-speedway",
+      "name": "Daytona International Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 29.185,
+        "lng": -81.07
+      },
+      "lengthKm": 4.023,
+      "turns": 4,
+      "opened": 1959,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "endurance"
+      ],
+      "summary": "High-banked 2.5-mile tri-oval that hosts the Daytona 500 and, on its combined road course, the Rolex 24 sports-car race.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Daytona_International_Speedway"
+      ]
+    },
+    {
+      "slug": "detroit-street-circuit",
+      "name": "Detroit Street Circuit",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 42.33,
+        "lng": -83.04
+      },
+      "lengthKm": null,
+      "turns": null,
+      "opened": 1982,
+      "type": "street",
+      "categories": [
+        "f1",
+        "indycar",
+        "historic"
+      ],
+      "summary": "Detroit street venue that hosted the Formula One Detroit Grand Prix from 1982 to 1988 and later IndyCar races on Belle Isle and a downtown layout.",
+      "confidence": "low",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Detroit_street_circuit"
+      ]
+    },
+    {
+      "slug": "dover-motor-speedway",
+      "name": "Dover Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 39.1897,
+        "lng": -75.53
+      },
+      "lengthKm": 1.609,
+      "turns": 4,
+      "opened": 1969,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "High-banked concrete one-mile Delaware oval nicknamed the 'Monster Mile'.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dover_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "gopro-motorplex",
+      "name": "GoPro Motorplex (Trackhouse Motorplex)",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 35.6404,
+        "lng": -80.7902
+      },
+      "lengthKm": 1.13,
+      "turns": 11,
+      "opened": 2012,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "America's premier outdoor kart track at Mooresville, North Carolina, its layout inspired by Italy's Parma circuit.",
+      "confidence": "high",
+      "sources": [
+        "https://trackhousemotorplex.com/",
+        "https://www.tripadvisor.com/Attraction_Review-g49365-d3721352-Reviews-GoPro_Motorplex-Mooresville_North_Carolina.html"
+      ]
+    },
+    {
+      "slug": "homestead-miami-speedway",
+      "name": "Homestead-Miami Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 25.4519,
+        "lng": -80.4092
+      },
+      "lengthKm": 2.414,
+      "turns": 4,
+      "opened": 1995,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "Variable-banked 1.5-mile South Florida oval that long hosted NASCAR's season finales.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Homestead-Miami_Speedway"
+      ]
+    },
+    {
+      "slug": "indianapolis-motor-speedway",
+      "name": "Indianapolis Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 39.795,
+        "lng": -86.2347
+      },
+      "lengthKm": 4.023,
+      "turns": 4,
+      "opened": 1909,
+      "type": "oval",
+      "categories": [
+        "indycar",
+        "nascar",
+        "f1",
+        "historic"
+      ],
+      "summary": "The 2.5-mile 'Brickyard', home of the Indianapolis 500; its infield road course hosted the United States Grand Prix from 2000 to 2007.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Indianapolis_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "kansas-speedway",
+      "name": "Kansas Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 39.1156,
+        "lng": -94.8306
+      },
+      "lengthKm": 2.414,
+      "turns": 4,
+      "opened": 2001,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "1.5-mile progressive-banking oval near Kansas City hosting NASCAR and, previously, IndyCar races.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kansas_Speedway"
+      ]
+    },
+    {
+      "slug": "las-vegas-strip-circuit",
+      "name": "Las Vegas Strip Circuit",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 36.1147,
+        "lng": -115.1728
+      },
+      "lengthKm": 6.201,
+      "turns": 17,
+      "opened": 2023,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Night street circuit running along the Las Vegas Strip, revived F1 racing in the city in 2023 with a high-speed straight past the casinos.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Las_Vegas_Strip_Circuit"
+      ]
+    },
+    {
+      "slug": "lime-rock-park",
+      "name": "Lime Rock Park",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 41.9278,
+        "lng": -73.3839
+      },
+      "lengthKm": 2.454,
+      "turns": 7,
+      "opened": 1957,
+      "type": "circuit",
+      "categories": [
+        "endurance",
+        "historic"
+      ],
+      "summary": "Short, fast, scenic road course in the hills of northwestern Connecticut, one of America's oldest continuously operating tracks.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lime_Rock_Park"
+      ]
+    },
+    {
+      "slug": "long-beach-street-circuit",
+      "name": "Long Beach Street Circuit",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 33.765,
+        "lng": -118.1889
+      },
+      "lengthKm": 3.167,
+      "turns": 11,
+      "opened": 1975,
+      "type": "street",
+      "categories": [
+        "indycar",
+        "f1",
+        "historic"
+      ],
+      "summary": "Downtown Long Beach street circuit that hosted the United States Grand Prix West from 1976 to 1983 and is now IndyCar's premier street race.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Long_Beach_Grand_Prix"
+      ]
+    },
+    {
+      "slug": "martinsville-speedway",
+      "name": "Martinsville Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 36.6339,
+        "lng": -79.8503
+      },
+      "lengthKm": 0.847,
+      "turns": 4,
+      "opened": 1947,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "The shortest and oldest track on the NASCAR Cup calendar, a paper-clip-shaped half-mile in Virginia.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Martinsville_Speedway"
+      ]
+    },
+    {
+      "slug": "miami-international-autodrome",
+      "name": "Miami International Autodrome",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 25.9581,
+        "lng": -80.2389
+      },
+      "lengthKm": 5.412,
+      "turns": 19,
+      "opened": 2022,
+      "type": "street",
+      "categories": [
+        "f1"
+      ],
+      "summary": "Temporary circuit laid out around Hard Rock Stadium in Miami Gardens, host of the Miami Grand Prix since 2022.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miami_International_Autodrome"
+      ]
+    },
+    {
+      "slug": "michelin-raceway-road-atlanta",
+      "name": "Michelin Raceway Road Atlanta",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 34.1481,
+        "lng": -83.8161
+      },
+      "lengthKm": 4.088,
+      "turns": 12,
+      "opened": 1970,
+      "type": "circuit",
+      "categories": [
+        "endurance"
+      ],
+      "summary": "Undulating Georgia road course near Braselton, home of the Petit Le Mans endurance race.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Road_Atlanta"
+      ]
+    },
+    {
+      "slug": "michigan-international-speedway",
+      "name": "Michigan International Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 42.0664,
+        "lng": -84.2417
+      },
+      "lengthKm": 3.219,
+      "turns": 4,
+      "opened": 1968,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "Wide, fast 2-mile D-shaped oval in Michigan that produces some of NASCAR's highest sustained speeds.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Michigan_International_Speedway"
+      ]
+    },
+    {
+      "slug": "mid-ohio-sports-car-course",
+      "name": "Mid-Ohio Sports Car Course",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 40.6889,
+        "lng": -82.6339
+      },
+      "lengthKm": 3.634,
+      "turns": 13,
+      "opened": 1962,
+      "type": "circuit",
+      "categories": [
+        "indycar",
+        "endurance"
+      ],
+      "summary": "Tight, hilly road course near Lexington, Ohio, a regular stop for IndyCar and sports-car racing.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mid-Ohio_Sports_Car_Course"
+      ]
+    },
+    {
+      "slug": "milwaukee-mile",
+      "name": "Milwaukee Mile",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 43.0206,
+        "lng": -88.0086
+      },
+      "lengthKm": 1.609,
+      "turns": 4,
+      "opened": 1903,
+      "type": "oval",
+      "categories": [
+        "indycar",
+        "nascar",
+        "historic"
+      ],
+      "summary": "Flat one-mile Wisconsin oval reputed to be the oldest continuously operating motor speedway in the world.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Milwaukee_Mile"
+      ]
+    },
+    {
+      "slug": "new-castle-motorsports-park",
+      "name": "New Castle Motorsports Park",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 39.865,
+        "lng": -85.44
+      },
+      "lengthKm": 1.448,
+      "turns": null,
+      "opened": null,
+      "type": "karting",
+      "categories": [
+        "karting"
+      ],
+      "summary": "Major American kart racing facility east of Indianapolis, founded by former IndyCar driver Mark Dismore; host of national karting championships.",
+      "confidence": "low",
+      "sources": [
+        "https://newcastlemotorsportspark.com/"
+      ]
+    },
+    {
+      "slug": "new-hampshire-motor-speedway",
+      "name": "New Hampshire Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 43.3625,
+        "lng": -71.4611
+      },
+      "lengthKm": 1.703,
+      "turns": 4,
+      "opened": 1990,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "Flat one-mile 'Magic Mile' oval in Loudon, the largest sports facility in New England.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/New_Hampshire_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "phoenix-raceway",
+      "name": "Phoenix Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 33.375,
+        "lng": -112.3111
+      },
+      "lengthKm": 1.609,
+      "turns": 4,
+      "opened": 1964,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "Low-banked one-mile Arizona oval with a distinctive dogleg; current host of the NASCAR Cup Series championship finale.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Phoenix_Raceway"
+      ]
+    },
+    {
+      "slug": "pikes-peak-international-hill-climb",
+      "name": "Pikes Peak International Hill Climb",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 38.8406,
+        "lng": -105.0442
+      },
+      "lengthKm": 19.99,
+      "turns": 156,
+      "opened": 1916,
+      "type": "rally",
+      "categories": [
+        "hillclimb"
+      ],
+      "summary": "The 'Race to the Clouds', a paved hill climb up Pikes Peak in Colorado climbing to 4,300 m with 156 corners and no run-off.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pikes_Peak_International_Hill_Climb"
+      ]
+    },
+    {
+      "slug": "pocono-raceway",
+      "name": "Pocono Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 41.0553,
+        "lng": -75.5111
+      },
+      "lengthKm": 4.023,
+      "turns": 3,
+      "opened": 1968,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "Triangular 2.5-mile Pennsylvania 'Tricky Triangle' with three distinct corners each modeled on a different circuit.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pocono_Raceway"
+      ]
+    },
+    {
+      "slug": "richmond-raceway",
+      "name": "Richmond Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 37.5925,
+        "lng": -77.4197
+      },
+      "lengthKm": 1.207,
+      "turns": 4,
+      "opened": 1946,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "Three-quarter-mile D-shaped Virginia oval often called 'America's premier short track' for its side-by-side racing.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Richmond_Raceway"
+      ]
+    },
+    {
+      "slug": "road-america",
+      "name": "Road America",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 43.7981,
+        "lng": -87.9917
+      },
+      "lengthKm": 6.515,
+      "turns": 14,
+      "opened": 1955,
+      "type": "circuit",
+      "categories": [
+        "indycar",
+        "endurance"
+      ],
+      "summary": "Fast, sweeping four-mile natural-terrain road course at Elkhart Lake, Wisconsin.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Road_America"
+      ]
+    },
+    {
+      "slug": "sebring-international-raceway",
+      "name": "Sebring International Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 27.4547,
+        "lng": -81.3483
+      },
+      "lengthKm": 6.019,
+      "turns": 17,
+      "opened": 1950,
+      "type": "circuit",
+      "categories": [
+        "endurance"
+      ],
+      "summary": "Bumpy former WWII airfield circuit in Florida, home of the 12 Hours of Sebring since 1952.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sebring_International_Raceway"
+      ]
+    },
+    {
+      "slug": "sonoma-raceway",
+      "name": "Sonoma Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 38.1611,
+        "lng": -122.4547
+      },
+      "lengthKm": 4.05,
+      "turns": 12,
+      "opened": 1968,
+      "type": "circuit",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "Hilly road course in California wine country, formerly Sears Point, that hosts NASCAR and IndyCar road races.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sonoma_Raceway"
+      ]
+    },
+    {
+      "slug": "streets-of-st-petersburg",
+      "name": "Streets of St. Petersburg",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 27.7683,
+        "lng": -82.6267
+      },
+      "lengthKm": 2.897,
+      "turns": 14,
+      "opened": 2003,
+      "type": "street",
+      "categories": [
+        "indycar"
+      ],
+      "summary": "Florida waterfront street circuit that uses part of an airport runway; traditional season opener for IndyCar.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Streets_of_St._Petersburg"
+      ]
+    },
+    {
+      "slug": "talladega-superspeedway",
+      "name": "Talladega Superspeedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 33.5675,
+        "lng": -86.0661
+      },
+      "lengthKm": 4.281,
+      "turns": 4,
+      "opened": 1969,
+      "type": "oval",
+      "categories": [
+        "nascar"
+      ],
+      "summary": "At 2.66 miles the largest and fastest oval in NASCAR, famous for high-speed pack racing in Alabama.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Talladega_Superspeedway"
+      ]
+    },
+    {
+      "slug": "texas-motor-speedway",
+      "name": "Texas Motor Speedway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 33.0361,
+        "lng": -97.2822
+      },
+      "lengthKm": 2.414,
+      "turns": 4,
+      "opened": 1996,
+      "type": "oval",
+      "categories": [
+        "nascar",
+        "indycar"
+      ],
+      "summary": "High-banked 1.5-mile quad-oval near Fort Worth hosting both NASCAR and IndyCar events.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Texas_Motor_Speedway"
+      ]
+    },
+    {
+      "slug": "virginia-international-raceway",
+      "name": "Virginia International Raceway",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 36.5606,
+        "lng": -79.2069
+      },
+      "lengthKm": 5.263,
+      "turns": 17,
+      "opened": 1957,
+      "type": "circuit",
+      "categories": [
+        "endurance",
+        "gt"
+      ],
+      "summary": "Rolling road course on the Virginia-North Carolina border, a popular sports-car and club-racing venue.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Virginia_International_Raceway"
+      ]
+    },
+    {
+      "slug": "watkins-glen-international",
+      "name": "Watkins Glen International",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 42.3369,
+        "lng": -76.9272
+      },
+      "lengthKm": 5.435,
+      "turns": 11,
+      "opened": 1956,
+      "type": "circuit",
+      "categories": [
+        "f1",
+        "endurance",
+        "nascar",
+        "historic"
+      ],
+      "summary": "Upstate New York road course that hosted the United States Grand Prix from 1961 to 1980 and remains a NASCAR and sports-car venue.",
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Watkins_Glen_International"
+      ]
+    },
+    {
+      "slug": "weathertech-raceway-laguna-seca",
+      "name": "WeatherTech Raceway Laguna Seca",
+      "country": "United States",
+      "countryCode": "US",
+      "location": {
+        "lat": 36.5844,
+        "lng": -121.7531
+      },
+      "lengthKm": 3.602,
+      "turns": 11,
+      "opened": 1957,
+      "type": "circuit",
+      "categories": [
+        "indycar",
+        "motogp",
+        "endurance",
+        "historic"
+      ],
+      "summary": "California circuit near Monterey famed for the plunging, blind 'Corkscrew' esses; former MotoGP and current IndyCar venue.",
+      "confidence": "high",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Laguna_Seca_Raceway"
+      ]
+    }
   ]
 }
