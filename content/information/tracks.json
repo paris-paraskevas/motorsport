@@ -906,9 +906,10 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "historic"
       ],
-      "summary": "Modern Grand Prix circuit in the Eifel, opened in 1984 alongside the historic 1927 Nordschleife; host of German and European Grands Prix.",
+      "summary": "The modern Grand Prix circuit at the Nürburgring in Germany (opened 1984), built alongside the legendary Nordschleife. A former Formula 1 venue — it hosted the German, European and Luxembourg Grands Prix, most recently the 2020 Eifel Grand Prix — and today runs endurance and national racing.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/N%C3%BCrburgring"
