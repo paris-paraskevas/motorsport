@@ -60,10 +60,10 @@
       "opened": 1980,
       "type": "rally",
       "categories": [
-        "wrc",
-        "rally"
+        "rally",
+        "historic"
       ],
-      "summary": "Rough, rocky gravel rally in the Cordoba hills of central Argentina, known for its passionate crowds and the El Condor stage.",
+      "summary": "A fast, scenic gravel rally based around Villa Carlos Paz in the Córdoba hills, famous for the El Cóndor stage. A World Rally Championship round for decades, it last ran as a WRC event in 2019.",
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_Argentina"
@@ -390,8 +390,8 @@
       "country": "Belgium",
       "countryCode": "BE",
       "location": {
-        "lat": 50.998,
-        "lng": 5.54
+        "lat": 50.988,
+        "lng": 5.564
       },
       "lengthKm": 1.36,
       "turns": 12,
@@ -847,7 +847,7 @@
       "categories": [
         "karting"
       ],
-      "summary": "Historic kart track at Kerpen-Manheim, the home circuit of Michael and Ralf Schumacher, where Senna and Hakkinen also raced as juniors.",
+      "summary": "A historic kart circuit at Kerpen-Manheim near Cologne, the home track of the Schumacher brothers, where Ayrton Senna and a young Mika Häkkinen also raced.",
       "confidence": "low",
       "sources": [
         "https://de.wikipedia.org/wiki/Erftlandring"
@@ -982,11 +982,10 @@
       "opened": 1982,
       "type": "rally",
       "categories": [
-        "wrc",
         "rally",
         "historic"
       ],
-      "summary": "German WRC round based around Trier, uniquely mixing vineyard tarmac hairpins with the abrasive concrete tracks of the Baumholder military range.",
+      "summary": "A rally on the tarmac vineyards roads and Baumholder military ranges around Trier. A World Rally Championship round from 2002 to 2019; Germany’s WRC slot is now filled by the Central European Rally.",
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rallye_Deutschland"
@@ -1025,7 +1024,7 @@
       },
       "lengthKm": null,
       "turns": null,
-      "opened": 1953,
+      "opened": 1951,
       "type": "rally",
       "categories": [
         "wrc",
@@ -1206,7 +1205,7 @@
         "lat": 40.808,
         "lng": 14.607
       },
-      "lengthKm": 1.7,
+      "lengthKm": 1.67,
       "turns": null,
       "opened": 1992,
       "type": "karting",
@@ -1217,7 +1216,11 @@
       "confidence": "low",
       "sources": [
         "https://www.fiakarting.com/event/2026-circuito-internazionale-napoli-sarno-napoli",
-        "https://www.kartcom.com/en/places/sarno/"
+        "https://www.kartcom.com/en/places/sarno/",
+        {
+          "label": "Circuito Internazionale Napoli — official site",
+          "url": "https://circuitointernazionalenapoli.com/"
+        }
       ]
     },
     {
@@ -1236,8 +1239,8 @@
       "categories": [
         "karting"
       ],
-      "summary": "International kart circuit at Castrezzato near Brescia, opened in 2020 alongside the Franciacorta autodrome.",
-      "confidence": "low",
+      "summary": "A modern kart circuit at Castrezzato near Brescia, opened in 2020, host of the FIA Karting World Championship (2023 and 2024) and the KZ World Cup (2025). It is a separate facility from the nearby Franciacorta autodrome.",
+      "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Autodromo_di_Franciacorta",
         "https://www.iame-motorsport.com/tracks_dett.php?id=20"
@@ -1422,7 +1425,7 @@
         "wrc",
         "rally"
       ],
-      "summary": "Japanese WRC round run on twisty, narrow tarmac mountain roads in the Aichi and Gifu region near Toyota City.",
+      "summary": "Japan’s round of the World Rally Championship. The event first ran in 2004 on the gravel roads of Hokkaido, and was revived in 2022 as a tarmac rally based in the Aichi and Gifu regions around Toyota City.",
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_Japan"
