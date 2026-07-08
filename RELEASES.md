@@ -2,7 +2,7 @@ What's new in Paddock Tracker. Newest first.
 
 ## 0.178.0 — 2026-07-07
 
-**Motorsport, explained.** A new Information section answers the questions fans actually ask — who won every championship, how the racing works, the great circuits, and the rising stars of the feeder series — with clear, sourced answers that link straight into our live data. Find it under "Answers" in the menu. More answers are on the way as we review and expand the collection.
+**Motorsport, explained.** A new Information section answers the questions fans actually ask — who won every championship, how the racing works, the great circuits, and the rising stars of the feeder series — with clear, sourced answers that link straight into our live data. Find it under "Answers" in the menu. Each series' written history now stands as a proper article too, linked from the new section. More answers are on the way as we review and expand the collection.
 
 ## 0.177.0 — 2026-07-07
 

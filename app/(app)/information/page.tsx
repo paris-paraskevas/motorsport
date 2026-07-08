@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { INFO_TOPICS } from '@/lib/information/topics';
 import { getAllInfoEntries, getIndexedInfoEntries } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
+import { loadAllSeriesMeta } from '@/lib/series';
 import { TopicCard, EntryRow } from '@/components/information/InfoUi';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
@@ -25,10 +26,12 @@ export const metadata: Metadata = {
 };
 
 export default async function InformationHub() {
-  const [all, featured] = await Promise.all([
+  const [all, featured, seriesMeta] = await Promise.all([
     getAllInfoEntries(),
     getIndexedInfoEntries(),
+    loadAllSeriesMeta(),
   ]);
+  const seriesByName = [...seriesMeta].sort((a, b) => a.name.localeCompare(b.name));
 
   // Verified-entry count per topic for the topic-card badges (honest: only
   // reviewed answers are tallied).
@@ -93,6 +96,30 @@ export default async function InformationHub() {
           </div>
         </section>
       )}
+
+      <section className="mb-10">
+        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-1">
+          Series histories
+        </h2>
+        <p className="text-sm text-text-muted mb-4">
+          Original, sourced histories of every championship we cover — origins, defining eras
+          and the moments that shaped each sport.
+        </p>
+        <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+          {seriesByName.map((s) => (
+            <Link
+              key={s.slug}
+              href={`/series/${s.slug}/history`}
+              className="group flex items-baseline gap-2 py-1.5 text-text-muted hover:text-tint transition-colors duration-(--duration-fast)"
+            >
+              <span className="font-medium text-text group-hover:text-tint">{s.name}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint group-hover:text-tint">
+                history →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section className="border-t border-border pt-6">
         <Link

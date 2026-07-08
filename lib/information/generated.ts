@@ -114,6 +114,7 @@ function whoWonEntry(
     sources: seriesSources(meta),
     related: [
       { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
+      { label: `${meta.name} history`, href: `/series/${meta.slug}/history` },
       { label: `${meta.name} home`, href: `/series/${meta.slug}` },
     ],
     review: 'verified',
@@ -173,6 +174,7 @@ function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: stri
     sources: seriesSources(meta),
     related: [
       { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
+      { label: `${meta.name} history`, href: `/series/${meta.slug}/history` },
       { label: `${meta.name} home`, href: `/series/${meta.slug}` },
     ],
     review: 'verified',
@@ -213,6 +215,7 @@ function mostConstructorTitlesEntry(meta: SeriesMeta, champs: Champion[], topic:
     sources: seriesSources(meta),
     related: [
       { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
+      { label: `${meta.name} history`, href: `/series/${meta.slug}/history` },
       { label: `${meta.name} home`, href: `/series/${meta.slug}` },
     ],
     review: 'verified',

@@ -159,3 +159,32 @@ export function articleLd(args: { post: Post; url: string }): object {
   }
   return ld;
 }
+
+// Article schema for a series' curated History essay (/series/<slug>/history).
+// These are the site's strongest ORIGINAL content (hand-written, cited, 750-970
+// words each) — worth marking as proper articles so search engines treat them as
+// such rather than as a generic tab. `date` (from the essay's last-updated
+// frontmatter) is used for both published + modified since we don't track an
+// edit history separately.
+export function historyArticleLd(args: {
+  seriesName: string;
+  url: string;
+  author?: string;
+  date?: string;
+}): object {
+  const ld: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${args.seriesName} — history`,
+    about: args.seriesName,
+    url: args.url,
+    author: { '@type': 'Person', name: args.author || 'Paris Paraskevas' },
+    publisher: { '@id': ORG_ID },
+    isAccessibleForFree: true,
+  };
+  if (args.date) {
+    ld.datePublished = args.date;
+    ld.dateModified = args.date;
+  }
+  return ld;
+}
