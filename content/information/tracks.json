@@ -1515,9 +1515,10 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "motogp"
+        "motogp",
+        "historic"
       ],
-      "summary": "Tilke's first major F1 project, a hot and humid circuit near Kuala Lumpur that hosts the Malaysian motorcycle Grand Prix.",
+      "summary": "Sepang International Circuit near Kuala Lumpur, Malaysia — Hermann Tilke's first major Formula 1 project (opened 1999). It hosted the Malaysian Grand Prix from 1999 to 2017 and today hosts the Malaysian motorcycle Grand Prix (MotoGP).",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Sepang_International_Circuit"
@@ -2974,7 +2975,7 @@
         "indycar",
         "endurance"
       ],
-      "summary": "Fast, sweeping four-mile natural-terrain road course at Elkhart Lake, Wisconsin.",
+      "summary": "A fast, sweeping four-mile natural-terrain road course at Elkhart Lake, Wisconsin (opened 1955) — one of America's classic circuits, home to IndyCar and IMSA sportscar rounds.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Road_America"
