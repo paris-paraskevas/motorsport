@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.180.0 — 2026-07-08
+
+**Bylines and deeper circuit guides.** Every answer, team history and circuit page now shows who curated and fact-checked it, and when — and the first in-depth circuit guides (Silverstone, Spa-Francorchamps and Daytona) are live, with many more on the way.
+
 ## 0.179.0 — 2026-07-08
 
 **The Information section grows up.** Hundreds of fact-checked pages are now live and searchable — profiles of 138 racing circuits worldwide, histories of the sport's great teams, a guide to the tracks in each country, and a rising-stars watchlist for the feeder series — all cross-linked into our live data. More answers still to come.

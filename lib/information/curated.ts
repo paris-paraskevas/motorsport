@@ -109,6 +109,9 @@ interface RawTrack {
   type?: string;
   categories?: string[];
   summary?: string;
+  /** Long-form, fact-checked circuit guide (markdown). Its presence is what
+   *  turns a thin stub into a substantial, index-worthy page. */
+  article?: string;
   sources?: unknown;
   review?: string;
   featured?: boolean;
@@ -152,7 +155,14 @@ async function loadTracks(): Promise<InfoEntry[]> {
     if (track.lengthKm) facts.push(`Length: ${track.lengthKm} km`);
     if (track.turns) facts.push(`Turns: ${track.turns}`);
     if (track.opened) facts.push(`Opened: ${track.opened}`);
-    const body = [t.summary?.trim(), facts.length ? facts.join(' · ') : '']
+    // A rich `article` makes the page substantial; when present, drop the inline
+    // facts line (the Circuit-facts table already renders those on the page).
+    const article = typeof t.article === 'string' ? t.article.trim() : '';
+    const body = [
+      t.summary?.trim(),
+      article,
+      article ? '' : facts.length ? facts.join(' · ') : '',
+    ]
       .filter(Boolean)
       .join('\n\n');
 
@@ -413,5 +423,10 @@ export async function loadCuratedInfoEntries(): Promise<InfoEntry[]> {
     loadTeamHistories(),
     loadRisingStars(),
   ]);
-  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)];
+  // Every curated entry carries the operator byline (E-E-A-T); generated
+  // champions-derived entries deliberately do not (see registry/generated.ts).
+  const AUTHOR = 'Paris Paraskevas';
+  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)].map(
+    (e) => ({ ...e, author: e.author ?? AUTHOR }),
+  );
 }
