@@ -1444,8 +1444,7 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance",
-        "motogp"
+        "endurance"
       ],
       "summary": "Honda-owned figure-eight circuit widely regarded as one of the greatest drivers' tracks; home of the Japanese Grand Prix and Suzuka 8 Hours.",
       "confidence": "high",
@@ -1606,7 +1605,7 @@
       "categories": [
         "motogp"
       ],
-      "summary": "The 'Cathedral' of motorcycle racing, host of the Dutch TT continuously since the world championship began in 1949.",
+      "summary": "TT Circuit Assen in the Netherlands — 'The Cathedral' of motorcycle racing, host of the Dutch TT every year since 1949 bar the COVID-cancelled 2020 round.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/TT_Circuit_Assen"
@@ -3017,10 +3016,9 @@
       "opened": 1968,
       "type": "circuit",
       "categories": [
-        "nascar",
-        "indycar"
+        "nascar"
       ],
-      "summary": "Hilly road course in California wine country, formerly Sears Point, that hosts NASCAR and IndyCar road races.",
+      "summary": "A hilly road course in California's Sonoma wine country, known for its elevation changes and its NASCAR Cup road race; IndyCar also raced here through 2018.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Sonoma_Raceway"
@@ -3081,13 +3079,12 @@
       },
       "lengthKm": 2.414,
       "turns": 4,
-      "opened": 1996,
+      "opened": 1997,
       "type": "oval",
       "categories": [
-        "nascar",
-        "indycar"
+        "nascar"
       ],
-      "summary": "High-banked 1.5-mile quad-oval near Fort Worth hosting both NASCAR and IndyCar events.",
+      "summary": "A high-banked 1.5-mile oval near Fort Worth, Texas, known for fast, multi-groove NASCAR racing. IndyCar also raced here through 2023.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Texas_Motor_Speedway"
