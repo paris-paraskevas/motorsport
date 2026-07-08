@@ -893,7 +893,7 @@
         "gt",
         "historic"
       ],
-      "summary": "Multi-purpose German complex combining a tri-oval with infield road courses; site of a fatal 2001 CART crash and now a DTM and test venue.",
+      "summary": "Multi-purpose German complex combining a tri-oval with infield road courses; site of a near-fatal (Alex Zanardi survived) 2001 CART crash and now a DTM and test venue.",
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Lausitzring"
@@ -1792,7 +1792,8 @@
       "opened": 2010,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "historic"
       ],
       "summary": "Coastal circuit near Yeongam that held the Korean Grand Prix from 2010 to 2013.",
       "confidence": "medium",
