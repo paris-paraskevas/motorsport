@@ -147,7 +147,7 @@
         "nascar",
         "historic"
       ],
-      "summary": "Melbourne facility whose 'Thunderdome' is a NASCAR-style high-banked oval, a rarity in Australian motorsport.",
+      "summary": "The Thunderdome — a high-banked 1.8 km oval opened in 1987 within the Calder Park complex near Melbourne (the wider raceway dates to the early 1960s). It hosted NASCAR and AUSCAR oval racing and is now largely disused.",
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Calder_Park_Raceway"
@@ -1147,7 +1147,11 @@
       "summary": "Modern CIK-FIA kart track in the Veneto, part of the Adria International Raceway complex, with wide run-off areas.",
       "confidence": "medium",
       "sources": [
-        "https://en.wikipedia.org/wiki/Adria_International_Raceway"
+        "https://en.wikipedia.org/wiki/Adria_International_Raceway",
+        {
+          "label": "Adria Karting Raceway — Karting CEE",
+          "url": "https://www.kartingcee.eu/6568/adria-raceway/"
+        }
       ]
     },
     {
@@ -1897,9 +1901,9 @@
         "lat": 41.8301,
         "lng": -0.81
       },
-      "lengthKm": 1.1,
+      "lengthKm": 1.699,
       "turns": null,
-      "opened": null,
+      "opened": 2007,
       "type": "karting",
       "categories": [
         "karting"
@@ -1922,7 +1926,7 @@
       },
       "lengthKm": 3.791,
       "turns": null,
-      "opened": 1969,
+      "opened": 1933,
       "type": "street",
       "categories": [
         "f1",
@@ -2221,11 +2225,10 @@
       "opened": 1932,
       "type": "rally",
       "categories": [
-        "wrc",
         "rally",
         "historic"
       ],
-      "summary": "Britain's round of the World Rally Championship, run on the fast forest gravel stages of Wales; formerly the RAC Rally.",
+      "summary": "Britain’s round of the World Rally Championship until 2019, run on the forest gravel of Wales. Descended from the historic RAC Rally, one of the sport’s oldest events.",
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_GB"
@@ -2264,7 +2267,7 @@
       },
       "lengthKm": 1.03,
       "turns": null,
-      "opened": null,
+      "opened": 1963,
       "type": "karting",
       "categories": [
         "karting"
@@ -2494,10 +2497,9 @@
       "type": "street",
       "categories": [
         "f1",
-        "indycar",
         "historic"
       ],
-      "summary": "Detroit street venue that hosted the Formula One Detroit Grand Prix from 1982 to 1988 and later IndyCar races on Belle Isle and a downtown layout.",
+      "summary": "A tight downtown street circuit in Detroit, Michigan that hosted the United States Grand Prix from 1982 to 1988. (Later Detroit races moved to Belle Isle, and from 2023 to a separate downtown IndyCar circuit.)",
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Detroit_street_circuit"
@@ -2834,7 +2836,7 @@
       },
       "lengthKm": 1.448,
       "turns": null,
-      "opened": null,
+      "opened": 2004,
       "type": "karting",
       "categories": [
         "karting"
