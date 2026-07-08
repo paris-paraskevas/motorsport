@@ -3,6 +3,8 @@ import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
 import { tabsFor } from './tabs';
 import { SITE_URL } from './site';
+import { INFO_TOPICS } from './information/topics';
+import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
 // entirely; `lastmod` is the only acted-upon hint, and only when its accuracy
@@ -70,5 +72,23 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     }),
   );
 
-  return [...staticUrls, ...seriesUrls, ...weekendChunks.flat()];
+  // Information hub — GATED. Only verified + featured entries (already capped in
+  // the registry) reach the sitemap; the hub and any topic index holding ≥1
+  // verified entry are included. The all-draft tracks directory + every
+  // noindex draft/long-tail page are deliberately left out, so a section that
+  // can hold hundreds of pages contributes only a controlled, high-quality set
+  // to Google (the anti-"scaled content" control).
+  const indexedInfo = await getIndexedInfoEntries();
+  const topicIndexable = await Promise.all(
+    INFO_TOPICS.map(async (t) => ({ id: t.id, ok: await isTopicIndexable(t.id) })),
+  );
+  const infoUrls: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/information` },
+    ...topicIndexable
+      .filter((t) => t.ok)
+      .map((t) => ({ url: `${SITE_URL}/information/${t.id}` })),
+    ...indexedInfo.map((e) => ({ url: `${SITE_URL}/information/${e.topic}/${e.slug}` })),
+  ];
+
+  return [...staticUrls, ...seriesUrls, ...weekendChunks.flat(), ...infoUrls];
 }

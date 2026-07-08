@@ -109,6 +109,33 @@ export function sportsEventLd(args: {
   return ld;
 }
 
+// QAPage for a single question + curated answer (the /information/[topic]/[slug]
+// pages). Only emitted on INDEXED entries — noindex pages don't need structured
+// data. `answerText` must be plain text (no markdown), so pass the summary or a
+// stripped body excerpt.
+export function qaPageLd(args: {
+  question: string;
+  answerText: string;
+  url: string;
+  dateModified?: string;
+}): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'QAPage',
+    mainEntity: {
+      '@type': 'Question',
+      name: args.question,
+      url: args.url,
+      ...(args.dateModified ? { dateModified: args.dateModified } : {}),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: args.answerText,
+        url: args.url,
+      },
+    },
+  };
+}
+
 export function articleLd(args: { post: Post; url: string }): object {
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -129,6 +156,35 @@ export function articleLd(args: { post: Post; url: string }): object {
   };
   if (args.post.frontmatter.heroImage) {
     ld.image = args.post.frontmatter.heroImage;
+  }
+  return ld;
+}
+
+// Article schema for a series' curated History essay (/series/<slug>/history).
+// These are the site's strongest ORIGINAL content (hand-written, cited, 750-970
+// words each) — worth marking as proper articles so search engines treat them as
+// such rather than as a generic tab. `date` (from the essay's last-updated
+// frontmatter) is used for both published + modified since we don't track an
+// edit history separately.
+export function historyArticleLd(args: {
+  seriesName: string;
+  url: string;
+  author?: string;
+  date?: string;
+}): object {
+  const ld: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${args.seriesName} — history`,
+    about: args.seriesName,
+    url: args.url,
+    author: { '@type': 'Person', name: args.author || 'Paris Paraskevas' },
+    publisher: { '@id': ORG_ID },
+    isAccessibleForFree: true,
+  };
+  if (args.date) {
+    ld.datePublished = args.date;
+    ld.dateModified = args.date;
   }
   return ld;
 }

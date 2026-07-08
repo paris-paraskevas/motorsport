@@ -2,6 +2,20 @@ import path from 'path';
 import { Series } from '@/lib/types';
 import { loadMarkdownWithFrontmatter } from '@/lib/content';
 import { PlaceholderTab } from './PlaceholderTab';
+import { JsonLd } from '@/components/JsonLd';
+import { historyArticleLd } from '@/lib/json-ld';
+import { SITE_URL } from '@/lib/site';
+
+// gray-matter may parse `last-updated` as a Date or a string; normalise to ISO.
+function isoDate(value: unknown): string | undefined {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+    return value.slice(0, 10);
+  }
+  return undefined;
+}
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -43,6 +57,14 @@ export async function HistoryTab({ series }: { series: Series }) {
 
   return (
     <article className="border-y border-border py-5 md:py-6">
+      <JsonLd
+        data={historyArticleLd({
+          seriesName: series.meta.name,
+          url: `${SITE_URL}/series/${series.meta.slug}/history`,
+          author: author ?? undefined,
+          date: isoDate(frontmatter['last-updated']),
+        })}
+      />
       <header className="mb-4">
         <h2 className="text-text text-xl font-bold tracking-tight">History</h2>
       </header>

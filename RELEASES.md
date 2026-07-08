@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.179.0 — 2026-07-08
+
+**The Information section grows up.** Hundreds of fact-checked pages are now live and searchable — profiles of 138 racing circuits worldwide, histories of the sport's great teams, a guide to the tracks in each country, and a rising-stars watchlist for the feeder series — all cross-linked into our live data. More answers still to come.
+
+## 0.178.0 — 2026-07-07
+
+**Motorsport, explained.** A new Information section answers the questions fans actually ask — who won every championship, how the racing works, the great circuits, and the rising stars of the feeder series — with clear, sourced answers that link straight into our live data. Find it under "Answers" in the menu. Each series' written history now stands as a proper article too, linked from the new section. More answers are on the way as we review and expand the collection.
+
 ## 0.177.0 — 2026-07-07
 
 **Writers.** Approved contributors can now write, format (a rich toolbar with live preview), schedule and publish their own posts — with their profile photo on the byline.
