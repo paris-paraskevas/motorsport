@@ -92,17 +92,26 @@ export default async function TopicPage({
 
       {topic === 'tracks' ? (
         <>
-          {verified.filter((e) => e.kind !== 'track').length > 0 && (
+          {entries.filter((e) => e.kind !== 'track').length > 0 && (
             <section className="mb-10">
+              <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+                Guides &amp; tracks by country
+              </h2>
               <div className="divide-y divide-border/60">
-                {verified
+                {entries
                   .filter((e) => e.kind !== 'track')
+                  .sort(
+                    (a, b) =>
+                      Number(b.featured) - Number(a.featured) ||
+                      a.question.localeCompare(b.question),
+                  )
                   .map((e) => (
                     <EntryRow
                       key={entryHref(e)}
                       href={entryHref(e)}
                       question={e.question}
                       summary={e.summary}
+                      draft={e.review === 'unverified'}
                     />
                   ))}
               </div>

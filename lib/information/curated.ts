@@ -5,6 +5,7 @@ import matter from 'gray-matter';
 import { slugify } from '../slug';
 import { matchCircuit } from '../circuits';
 import { isTopicId } from './topics';
+import { entryHref } from './types';
 import type { InfoEntry, InfoLink, InfoReview, InfoSource, TrackFacts } from './types';
 
 // Hand-curated + web-researched content for the information hub, loaded from
@@ -302,8 +303,103 @@ async function loadRisingStars(): Promise<InfoEntry[]> {
   ];
 }
 
+// ── Generated aggregate pages from the tracks data ──────────────────────────
+// "What racing tracks are in <country>?" (per country) + "Which are the most
+// famous racing circuits in the world?". Derived from the track entries, so they
+// inherit their unverified status (noindex) until the tracks are fact-checked.
+const MARQUEE_CATEGORIES = ['f1', 'motogp', 'endurance', 'nascar', 'indycar'];
+
+function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
+  const out: InfoEntry[] = [];
+
+  const byCountry = new Map<string, InfoEntry[]>();
+  for (const t of tracks) {
+    const c = t.track?.country;
+    if (!c) continue;
+    (byCountry.get(c) ?? byCountry.set(c, []).get(c)!).push(t);
+  }
+
+  // Per-country pages — only where there are ≥2 venues (a 1-item list is thin).
+  for (const [country, listRaw] of [...byCountry.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    if (listRaw.length < 2) continue;
+    const list = [...listRaw].sort((a, b) => a.question.localeCompare(b.question));
+    const body = [
+      `There are **${list.length}** notable racing venues in ${country} in our directory:`,
+      '',
+      ...list.map(
+        (t) =>
+          `- [${t.question}](${entryHref(t)})` +
+          (t.track?.type ? ` — ${t.track.type}` : '') +
+          (t.track?.lengthKm ? `, ${t.track.lengthKm} km` : ''),
+      ),
+    ].join('\n');
+    out.push({
+      kind: 'qa',
+      topic: 'tracks',
+      slug: slugify(`racing-tracks-in-${country}`),
+      question: `What racing tracks are in ${country}?`,
+      summary: `${country} is home to ${list.length} notable racing venues, including ${list.slice(0, 3).map((t) => t.question).join(', ')}.`,
+      keywords: [
+        `race tracks in ${country}`,
+        `racing circuits in ${country}`,
+        `${country} motorsport venues`,
+        `how many race tracks in ${country}`,
+      ],
+      bodyMarkdown: body,
+      sources: [{ label: 'Paddock tracks directory' }],
+      related: [
+        { label: 'All tracks & circuits', href: '/information/tracks' },
+        { label: 'Most famous circuits in the world', href: '/information/tracks/most-famous-racing-circuits-in-the-world' },
+      ],
+      review: 'unverified',
+      featured: false,
+      updated: FALLBACK_DATE,
+    });
+  }
+
+  // "Most famous circuits" — marquee venues (F1/MotoGP/endurance/oval), no karting.
+  const famous = tracks
+    .filter((t) => {
+      const cats = t.track?.categories ?? [];
+      return t.track?.type !== 'karting' && MARQUEE_CATEGORIES.some((c) => cats.includes(c));
+    })
+    .sort((a, b) => (a.track?.country ?? '').localeCompare(b.track?.country ?? '') || a.question.localeCompare(b.question));
+  if (famous.length > 0) {
+    out.push({
+      kind: 'qa',
+      topic: 'tracks',
+      slug: 'most-famous-racing-circuits-in-the-world',
+      question: 'Which are the most famous racing circuits in the world?',
+      summary:
+        'A guide to the world’s most famous racing circuits — from Monaco and Monza to Spa, Suzuka, Le Mans and the Nürburgring.',
+      keywords: [
+        'most famous race tracks',
+        'famous racing circuits',
+        'iconic race tracks in the world',
+        'best circuits in the world',
+      ],
+      bodyMarkdown: [
+        'Some circuits are known the world over for their history, their challenge, and the great races they have staged. Among the most famous venues in our directory:',
+        '',
+        ...famous.map((t) => `- [${t.question}](${entryHref(t)}) — ${t.track?.country}${t.track?.type ? ` (${t.track.type})` : ''}`),
+      ].join('\n'),
+      sources: [{ label: 'Paddock tracks directory' }],
+      related: [
+        { label: 'All tracks & circuits', href: '/information/tracks' },
+        { label: 'What makes a race track great?', href: '/information/tracks/what-makes-a-race-track-great' },
+      ],
+      review: 'unverified',
+      featured: false,
+      updated: FALLBACK_DATE,
+    });
+  }
+
+  return out;
+}
+
 /** All curated + web-researched entries (editorial answers, tracks, team
- *  histories, rising stars). Order is stable within each source. */
+ *  histories, rising stars) plus generated track-aggregate pages (per-country +
+ *  most-famous). Order is stable within each source. */
 export async function loadCuratedInfoEntries(): Promise<InfoEntry[]> {
   const [answers, tracks, teams, stars] = await Promise.all([
     loadEditorialAnswers(),
@@ -311,5 +407,5 @@ export async function loadCuratedInfoEntries(): Promise<InfoEntry[]> {
     loadTeamHistories(),
     loadRisingStars(),
   ]);
-  return [...answers, ...tracks, ...teams, ...stars];
+  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)];
 }
