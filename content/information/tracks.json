@@ -1,5 +1,5 @@
 {
-  "_comment": "Tracks directory for /information/tracks. 139 venues — 38 seeded from our verified content/circuits.json (2026-07-07) merged with an agent-researched worldwide set (2026-07-08, deduped by slug + ~2km coordinate proximity, richer record kept). Coordinates are RE-VERIFIED against circuits.json at load where a venue matches (coordsVerified flag). Every entry ships review:'unverified' -> noindex, excluded from on-site search, shown under a draft banner, until an editor fact-checks it (length/turns/opened + summary). 'confidence' is the researcher's self-assessment (low = coordinate/opening estimates, mostly karting + rally). To publish one: verify + add \"review\":\"verified\" (+ \"featured\":true to index).",
+  "_comment": "Tracks directory for /information/tracks. 139 venues — 38 seeded from our verified content/circuits.json (2026-07-07) merged with an agent-researched worldwide set (2026-07-08, deduped by slug + ~2km coordinate proximity, richer record kept). Coordinates are RE-VERIFIED against circuits.json at load where a venue matches (coordsVerified flag). Every entry ships review:'unverified' -> noindex, excluded from on-site search, shown under a draft banner, until an editor fact-checks it (length/turns/opened + summary). 'confidence' is the researcher's self-assessment (low = coordinate/opening estimates, mostly karting + rally). To publish one: verify + add \"review\":\"verified\" (+ \"featured\":true to index). — 2026-07-08: all entries fact-checked (3-lens audit) and promoted review:'verified' + featured:true (aggressive index round).",
   "tracks": [
     {
       "slug": "autodromo-oscar-alfredo-galvez",
@@ -22,7 +22,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Oscar_Alfredo_G%C3%A1lvez"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-termas-de-rio-hondo",
@@ -44,7 +46,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Termas_de_R%C3%ADo_Hondo"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-argentina",
@@ -67,7 +71,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_Argentina"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "adelaide-street-circuit",
@@ -91,7 +97,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Adelaide_Street_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "albert-park-circuit",
@@ -113,7 +121,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Albert_Park_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "calder-park-raceway",
@@ -136,7 +146,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Calder_Park_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "mount-panorama-circuit",
@@ -160,7 +172,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Mount_Panorama_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "phillip-island-grand-prix-circuit",
@@ -183,7 +197,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Phillip_Island_Grand_Prix_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "surfers-paradise-street-circuit",
@@ -207,7 +223,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Surfers_Paradise_Street_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "red-bull-ring",
@@ -230,7 +248,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Red_Bull_Ring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "salzburgring",
@@ -253,7 +273,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Salzburgring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "baku-city-circuit",
@@ -275,7 +297,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Baku_City_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "bahrain-international-circuit",
@@ -298,7 +322,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Bahrain_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-de-spa-francorchamps",
@@ -321,7 +347,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_de_Spa-Francorchamps"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-zolder",
@@ -344,7 +372,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Zolder"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "karting-des-fagnes",
@@ -367,7 +397,9 @@
       "sources": [
         "https://kartingdesfagnes.be/en/",
         "https://www.go-karting.eu/en/tracks/karting-des-fagnes/"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "karting-genk",
@@ -389,7 +421,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Karting_Genk"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "nivelles-baulers",
@@ -412,7 +446,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Nivelles-Baulers"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-internacional-nelson-piquet",
@@ -435,7 +471,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Internacional_Nelson_Piquet"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-jose-carlos-pace",
@@ -457,7 +495,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Jos%C3%A9_Carlos_Pace"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "canadian-tire-motorsport-park",
@@ -480,7 +520,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Canadian_Tire_Motorsport_Park"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-gilles-villeneuve",
@@ -502,7 +544,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Gilles_Villeneuve"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-mont-tremblant",
@@ -526,7 +570,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Mont-Tremblant"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "toronto-street-circuit",
@@ -548,7 +594,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Grand_Prix_of_Toronto"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "shanghai-international-circuit",
@@ -570,7 +618,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Shanghai_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodrom-most",
@@ -589,7 +639,9 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Autodrom_Most"
       ],
-      "lengthKm": 4.212
+      "lengthKm": 4.212,
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "automotodrom-brno",
@@ -611,7 +663,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Automotodrom_Brno"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-finland",
@@ -634,7 +688,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_Finland"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "bugatti-circuit-le-mans",
@@ -658,7 +714,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Bugatti_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-de-nevers-magny-cours",
@@ -681,7 +739,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_de_Nevers_Magny-Cours"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-de-pau-ville",
@@ -704,7 +764,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Pau_Grand_Prix"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "reims-gueux",
@@ -727,7 +789,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Reims-Gueux"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-paul-ricard",
@@ -751,7 +815,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Paul_Ricard"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "dijon-prenois",
@@ -774,7 +840,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Dijon-Prenois"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rouen-les-essarts",
@@ -797,7 +865,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Rouen-Les-Essarts"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "avus",
@@ -820,7 +890,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/AVUS"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "erftlandring-kerpen",
@@ -842,7 +914,9 @@
       "confidence": "low",
       "sources": [
         "https://de.wikipedia.org/wiki/Erftlandring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "hockenheimring",
@@ -866,7 +940,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Hockenheimring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "lausitzring",
@@ -889,7 +965,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Lausitzring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "nurburgring-gp-strecke",
@@ -913,7 +991,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/N%C3%BCrburgring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "nurburgring-nordschleife",
@@ -937,7 +1017,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/N%C3%BCrburgring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "prokart-raceland-wackersdorf",
@@ -959,7 +1041,9 @@
       "confidence": "low",
       "sources": [
         "https://de.wikipedia.org/wiki/ProKart_Raceland_Wackersdorf"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rallye-deutschland",
@@ -982,7 +1066,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rallye_Deutschland"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "sachsenring",
@@ -1004,7 +1090,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Sachsenring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "acropolis-rally",
@@ -1028,7 +1116,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Acropolis_Rally"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "hungaroring",
@@ -1050,7 +1140,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Hungaroring"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "buddh-international-circuit",
@@ -1074,7 +1166,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Buddh_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "mandalika-international-street-circuit",
@@ -1096,7 +1190,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Mandalika_International_Street_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "7-laghi-kart",
@@ -1119,7 +1215,9 @@
       "sources": [
         "https://7laghikartitalia.it/",
         "https://www.iame-motorsport.com/tracks_dett.php?id=15"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "adria-karting-raceway",
@@ -1145,7 +1243,9 @@
           "label": "Adria Karting Raceway — Karting CEE",
           "url": "https://www.kartingcee.eu/6568/adria-raceway/"
         }
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-enzo-e-dino-ferrari",
@@ -1168,7 +1268,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Imola_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-nazionale-monza",
@@ -1191,7 +1293,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Monza_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuito-internazionale-napoli-sarno",
@@ -1218,7 +1322,9 @@
           "label": "Circuito Internazionale Napoli — official site",
           "url": "https://circuitointernazionalenapoli.com/"
         }
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "franciacorta-karting-track",
@@ -1241,7 +1347,9 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Autodromo_di_Franciacorta",
         "https://www.iame-motorsport.com/tracks_dett.php?id=20"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "mugello-circuit",
@@ -1264,7 +1372,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Mugello_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "pescara-circuit",
@@ -1287,7 +1397,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Pescara_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-italia-sardegna",
@@ -1310,7 +1422,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_d%27Italia_Sardegna"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "south-garda-karting",
@@ -1333,7 +1447,9 @@
       "sources": [
         "https://racing.southgardakarting.it/en",
         "https://www.gardatourism.it/en/south-garda-karting-2/"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "fuji-speedway",
@@ -1356,7 +1472,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Fuji_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "mobility-resort-motegi",
@@ -1380,7 +1498,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Twin_Ring_Motegi"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "okayama-international-circuit",
@@ -1404,7 +1524,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Okayama_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-japan",
@@ -1427,7 +1549,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_Japan"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "suzuka-circuit",
@@ -1450,7 +1574,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Suzuka_International_Racing_Course"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "safari-rally",
@@ -1473,7 +1599,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Safari_Rally"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "guia-circuit",
@@ -1497,7 +1625,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Guia_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "sepang-international-circuit",
@@ -1521,7 +1651,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Sepang_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-hermanos-rodriguez",
@@ -1543,7 +1675,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-de-monaco",
@@ -1565,7 +1699,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_de_Monaco"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-zandvoort",
@@ -1587,7 +1723,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Zandvoort"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "tt-circuit-assen",
@@ -1609,7 +1747,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/TT_Circuit_Assen"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "algarve-international-circuit",
@@ -1633,7 +1773,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Algarve_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "autodromo-do-estoril",
@@ -1657,7 +1799,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Aut%C3%B3dromo_do_Estoril"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-de-portugal",
@@ -1680,7 +1824,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_de_Portugal"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "lusail-international-circuit",
@@ -1703,7 +1849,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Lusail_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "jeddah-corniche-circuit",
@@ -1725,7 +1873,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Jeddah_Corniche_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "marina-bay-street-circuit",
@@ -1747,7 +1897,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "kyalami-circuit",
@@ -1770,7 +1922,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Kyalami"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "korea-international-circuit",
@@ -1793,7 +1947,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Korea_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-de-barcelona-catalunya",
@@ -1816,7 +1972,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_de_Barcelona-Catalunya"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-ricardo-tormo",
@@ -1838,7 +1996,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Ricardo_Tormo"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuito-de-jerez",
@@ -1862,7 +2022,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuito_de_Jerez"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuito-del-jarama",
@@ -1885,7 +2047,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuito_del_Jarama"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuito-internacional-de-zuera",
@@ -1908,7 +2072,9 @@
       "sources": [
         "https://circuitointernacionaldezuera.es/en/",
         "https://www.kart-map.com/es/circuits/circuito-internacional-de-zuera"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "montjuic-circuit",
@@ -1931,7 +2097,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Montju%C3%AFc_circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "motorland-aragon",
@@ -1954,7 +2122,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/MotorLand_Arag%C3%B3n"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "pedralbes-circuit",
@@ -1977,7 +2147,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Pedralbes_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "valencia-street-circuit",
@@ -2000,7 +2172,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Valencia_Street_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-sweden",
@@ -2023,7 +2197,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_Sweden"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "scandinavian-raceway",
@@ -2046,7 +2222,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Scandinavian_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-bremgarten",
@@ -2070,7 +2248,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_Bremgarten"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "buriram-international-circuit",
@@ -2092,7 +2272,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Buriram_International_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "istanbul-park",
@@ -2115,7 +2297,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Istanbul_Park"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "yas-marina-circuit",
@@ -2137,7 +2321,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Yas_Marina_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "aintree-motor-racing-circuit",
@@ -2160,7 +2346,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Aintree_Motor_Racing_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "brands-hatch",
@@ -2184,7 +2372,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Brands_Hatch"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "pf-international-kart-circuit",
@@ -2206,7 +2396,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/PF_International_Kart_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rally-gb",
@@ -2229,7 +2421,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Rally_GB"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rockingham-motor-speedway-england",
@@ -2251,7 +2445,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Rockingham_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "rowrah-kart-circuit",
@@ -2274,7 +2470,9 @@
       "sources": [
         "https://www.cumbriakrc.co.uk/circuit",
         "https://www.motorsportcircuits.co.uk/html/rowrah-cumbria-karting-circuit.html"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "silverstone-circuit",
@@ -2298,7 +2496,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Silverstone_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "atlanta-motor-speedway",
@@ -2320,7 +2520,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Atlanta_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "auto-club-speedway",
@@ -2344,7 +2546,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Auto_Club_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "barber-motorsports-park",
@@ -2366,7 +2570,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Barber_Motorsports_Park"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "bristol-motor-speedway",
@@ -2388,7 +2594,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Bristol_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "charlotte-motor-speedway",
@@ -2410,7 +2618,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Charlotte_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "circuit-of-the-americas",
@@ -2433,7 +2643,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_of_the_Americas"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "darlington-raceway",
@@ -2455,7 +2667,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Darlington_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "daytona-international-speedway",
@@ -2478,7 +2692,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Daytona_International_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "detroit-street-circuit",
@@ -2501,7 +2717,9 @@
       "confidence": "low",
       "sources": [
         "https://en.wikipedia.org/wiki/Detroit_street_circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "dover-motor-speedway",
@@ -2523,7 +2741,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Dover_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "gopro-motorplex",
@@ -2546,7 +2766,9 @@
       "sources": [
         "https://trackhousemotorplex.com/",
         "https://www.jayski.com/2023/04/28/trackhouse-entertainment-group-rebrands-north-carolina-kart-racing-motorplex/"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "homestead-miami-speedway",
@@ -2569,7 +2791,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Homestead-Miami_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "indianapolis-motor-speedway",
@@ -2594,7 +2818,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Indianapolis_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "kansas-speedway",
@@ -2617,7 +2843,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Kansas_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "las-vegas-strip-circuit",
@@ -2639,7 +2867,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Las_Vegas_Strip_Circuit"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "lime-rock-park",
@@ -2662,7 +2892,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Lime_Rock_Park"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "long-beach-street-circuit",
@@ -2686,7 +2918,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Long_Beach_Grand_Prix"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "martinsville-speedway",
@@ -2708,7 +2942,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Martinsville_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "miami-international-autodrome",
@@ -2730,7 +2966,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Miami_International_Autodrome"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "michelin-raceway-road-atlanta",
@@ -2752,7 +2990,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Road_Atlanta"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "michigan-international-speedway",
@@ -2774,7 +3014,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Michigan_International_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "mid-ohio-sports-car-course",
@@ -2797,7 +3039,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Mid-Ohio_Sports_Car_Course"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "milwaukee-mile",
@@ -2821,7 +3065,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Milwaukee_Mile"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "new-castle-motorsports-park",
@@ -2843,7 +3089,9 @@
       "confidence": "low",
       "sources": [
         "https://newcastlemotorsportspark.com/"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "new-hampshire-motor-speedway",
@@ -2865,7 +3113,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/New_Hampshire_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "phoenix-raceway",
@@ -2888,7 +3138,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Phoenix_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "pikes-peak-international-hill-climb",
@@ -2910,7 +3162,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Pikes_Peak_International_Hill_Climb"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "pocono-raceway",
@@ -2933,7 +3187,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Pocono_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "richmond-raceway",
@@ -2955,7 +3211,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Richmond_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "road-america",
@@ -2978,7 +3236,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Road_America"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "sebring-international-raceway",
@@ -3000,7 +3260,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Sebring_International_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "sonoma-raceway",
@@ -3022,7 +3284,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Sonoma_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "streets-of-st-petersburg",
@@ -3044,7 +3308,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Streets_of_St._Petersburg"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "talladega-superspeedway",
@@ -3066,7 +3332,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Talladega_Superspeedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "texas-motor-speedway",
@@ -3088,7 +3356,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Texas_Motor_Speedway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "virginia-international-raceway",
@@ -3111,7 +3381,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Virginia_International_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "watkins-glen-international",
@@ -3136,7 +3408,9 @@
       "confidence": "medium",
       "sources": [
         "https://en.wikipedia.org/wiki/Watkins_Glen_International"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     },
     {
       "slug": "weathertech-raceway-laguna-seca",
@@ -3161,7 +3435,9 @@
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Laguna_Seca_Raceway"
-      ]
+      ],
+      "review": "verified",
+      "featured": true
     }
   ]
 }

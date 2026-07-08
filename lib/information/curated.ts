@@ -191,6 +191,7 @@ interface RawTeamHistory {
   body: string;
   sources?: unknown;
   review?: string;
+  featured?: boolean;
 }
 
 async function loadTeamHistories(): Promise<InfoEntry[]> {
@@ -223,7 +224,7 @@ async function loadTeamHistories(): Promise<InfoEntry[]> {
         { label: 'Browse every series', href: '/series' },
       ],
       review,
-      featured: false,
+      featured: t.featured === true && review === 'verified',
       updated: FALLBACK_DATE,
     });
   }
@@ -247,6 +248,8 @@ async function loadRisingStars(): Promise<InfoEntry[]> {
   const raw = await readJson<RawStar[] | { drivers?: RawStar[]; review?: string }>('rising-stars.json');
   const list = Array.isArray(raw) ? raw : raw?.drivers;
   if (!Array.isArray(list) || list.length === 0) return [];
+  const review: InfoReview =
+    !Array.isArray(raw) && raw?.review === 'verified' ? 'verified' : 'unverified';
 
   // Group by ladder for a legible watchlist.
   const byLadder = new Map<string, RawStar[]>();
@@ -296,8 +299,8 @@ async function loadRisingStars(): Promise<InfoEntry[]> {
         { label: 'Formula 2', href: '/series/f2' },
         { label: 'Formula 3', href: '/series/f3' },
       ],
-      review: 'unverified',
-      featured: false,
+      review,
+      featured: review === 'verified',
       updated: FALLBACK_DATE,
     },
   ];
@@ -306,7 +309,8 @@ async function loadRisingStars(): Promise<InfoEntry[]> {
 // ── Generated aggregate pages from the tracks data ──────────────────────────
 // "What racing tracks are in <country>?" (per country) + "Which are the most
 // famous racing circuits in the world?". Derived from the track entries, so they
-// inherit their unverified status (noindex) until the tracks are fact-checked.
+// inherit their review status — verified/indexable only when every member track
+// is verified (a single unverified track keeps the aggregate a noindex draft).
 const MARQUEE_CATEGORIES = ['f1', 'motogp', 'endurance', 'nascar', 'indycar'];
 
 function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
@@ -323,6 +327,7 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
   for (const [country, listRaw] of [...byCountry.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
     if (listRaw.length < 2) continue;
     const list = [...listRaw].sort((a, b) => a.question.localeCompare(b.question));
+    const review: InfoReview = list.every((t) => t.review === 'verified') ? 'verified' : 'unverified';
     const body = [
       `There are **${list.length}** notable racing venues in ${country} in our directory:`,
       '',
@@ -351,8 +356,8 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
         { label: 'All tracks & circuits', href: '/information/tracks' },
         { label: 'Most famous circuits in the world', href: '/information/tracks/most-famous-racing-circuits-in-the-world' },
       ],
-      review: 'unverified',
-      featured: false,
+      review,
+      featured: review === 'verified',
       updated: FALLBACK_DATE,
     });
   }
@@ -365,6 +370,7 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
     })
     .sort((a, b) => (a.track?.country ?? '').localeCompare(b.track?.country ?? '') || a.question.localeCompare(b.question));
   if (famous.length > 0) {
+    const review: InfoReview = famous.every((t) => t.review === 'verified') ? 'verified' : 'unverified';
     out.push({
       kind: 'qa',
       topic: 'tracks',
@@ -388,8 +394,8 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
         { label: 'All tracks & circuits', href: '/information/tracks' },
         { label: 'What makes a race track great?', href: '/information/tracks/what-makes-a-race-track-great' },
       ],
-      review: 'unverified',
-      featured: false,
+      review,
+      featured: review === 'verified',
       updated: FALLBACK_DATE,
     });
   }

@@ -113,16 +113,22 @@ describe('registry — merge + indexing gates', () => {
     expect(searchable.every((e) => e.review === 'verified')).toBe(true);
   });
 
-  it('never indexes an unverified draft', async () => {
+  it('never indexes an unverified entry (gate holds even at zero drafts)', async () => {
+    // Every indexed entry is verified — the primary invariant.
+    const indexed = await getIndexedInfoEntries();
+    expect(indexed.every((e) => e.review === 'verified')).toBe(true);
+    // And from the draft side: any unverified entry (none right now — the current
+    // round promoted them all — but the gate must hold for future drafts) is never
+    // in the indexed set.
     const all = await getAllInfoEntries();
-    const drafts = all.filter((e) => e.review === 'unverified');
-    expect(drafts.length).toBeGreaterThan(0); // team histories + rising stars ship as drafts
-    for (const d of drafts) expect(await isEntryIndexed(d)).toBe(false);
+    for (const d of all.filter((e) => e.review === 'unverified')) {
+      expect(await isEntryIndexed(d)).toBe(false);
+    }
   });
 
-  it('loads the curated datasets as unverified drafts', async () => {
+  it('loads the curated datasets (team histories + rising-stars watchlist)', async () => {
     const all = await getAllInfoEntries();
-    expect(all.some((e) => e.topic === 'teams' && e.review === 'unverified')).toBe(true);
+    expect(all.some((e) => e.topic === 'teams')).toBe(true);
     expect(all.some((e) => e.kind === 'watchlist')).toBe(true);
   });
 

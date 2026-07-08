@@ -15,7 +15,10 @@ import { entryKey, type InfoEntry } from './types';
 //     (if unverified) out of on-site search too.
 // Raising the cap / flipping more `featured` flags is a deliberate editorial
 // act — do it as curated content proves out and after AdSense re-review.
-export const INFORMATION_MAX_INDEXED = 150;
+// 2026-07-08: raised 150 → 225 to index the fact-checked tracks + per-country and
+// most-famous aggregates + team histories + rising-stars watchlist (aggressive
+// promotion round; ~221 entries indexed).
+export const INFORMATION_MAX_INDEXED = 225;
 
 interface RegistryState {
   all: InfoEntry[];
