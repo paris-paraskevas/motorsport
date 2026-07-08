@@ -562,7 +562,7 @@
       "summary": "Temporary circuit around Exhibition Place on the Toronto lakeshore, host of the Honda Indy Toronto since 1986.",
       "confidence": "medium",
       "sources": [
-        "https://en.wikipedia.org/wiki/Exhibition_Place"
+        "https://en.wikipedia.org/wiki/Grand_Prix_of_Toronto"
       ]
     },
     {
@@ -1999,7 +1999,8 @@
       "opened": 2008,
       "type": "street",
       "categories": [
-        "f1"
+        "f1",
+        "historic"
       ],
       "summary": "Harbourside street circuit that hosted the European Grand Prix from 2008 to 2012, crossing a swing bridge over the marina.",
       "confidence": "medium",
