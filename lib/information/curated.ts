@@ -423,5 +423,10 @@ export async function loadCuratedInfoEntries(): Promise<InfoEntry[]> {
     loadTeamHistories(),
     loadRisingStars(),
   ]);
-  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)];
+  // Every curated entry carries the operator byline (E-E-A-T); generated
+  // champions-derived entries deliberately do not (see registry/generated.ts).
+  const AUTHOR = 'Paris Paraskevas';
+  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)].map(
+    (e) => ({ ...e, author: e.author ?? AUTHOR }),
+  );
 }
