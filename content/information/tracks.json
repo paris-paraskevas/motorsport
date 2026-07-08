@@ -674,7 +674,8 @@
       "opened": 1960,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "historic"
       ],
       "summary": "Central French circuit rebuilt in 1991, home of the French Grand Prix from 1991 to 2008.",
       "confidence": "high",
@@ -1801,14 +1802,14 @@
         "lng": 2.2611
       },
       "lengthKm": 4.657,
-      "turns": 16,
+      "turns": 14,
       "opened": 1991,
       "type": "circuit",
       "categories": [
         "f1",
         "motogp"
       ],
-      "summary": "Montmelo circuit long used as Formula One's main pre-season testing venue and host of the Spanish Grand Prix and Catalan MotoGP.",
+      "summary": "A modern circuit near Barcelona and long the home of the Spanish Grand Prix — renamed the Barcelona-Catalunya Grand Prix for 2026, with the Spanish GP title moving to Madrid. For years it was also Formula 1's main pre-season testing venue, before testing moved to Bahrain.",
       "confidence": "high",
       "sources": [
         "https://en.wikipedia.org/wiki/Circuit_de_Barcelona-Catalunya"
