@@ -6,7 +6,33 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-07 (LATEST) — MOTORSPORT INFORMATION HUB `/information` (577 pages, 51 indexed) on branch `feat/motorsport-information-hub` — NOT pushed — proposed **0.178.0**
+## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFORMATION HUB expanded + ALL 138 tracks fact-checked + DRS/MOM; branch `feat/motorsport-information-hub` **24 commits, NOT pushed** — proposed **0.178.0**
+
+**Continuation of the information-hub branch (below block = its origin). This session: content expansion + a full track-directory fact-check audit. Branch `feat/motorsport-information-hub`, `main`+24, tree clean (only the unrelated `drafts/motogp-*.json` untracked), version 0.178.0, last commit `b6b41f7`. NOTHING PUSHED.**
+
+**What shipped this session (all committed, unpushed):**
+- **DRS → historical.** Operator confirmed DRS isn't used under 2026 regs. `content/information/answers/what-is-drs-in-f1.md` reworded to past tense (2011–2025) + note of the replacement. **New page** `what-replaced-drs-manual-override-mode.md` (Overtake/MOM electrical boost + active-aero X/Z-mode, per-circuit Activation Zones; sourced F1.com/FIA; per-track MOM data intentionally NOT enumerated — FIA issues zones ~4wks out, not public). Cross-linked.
+- **Generated track aggregate pages** (`lib/information/curated.ts` `trackAggregates()`): **17 per-country "What racing tracks are in <country>?" pages + a "most famous circuits" page**, from the tracks data. Surfaced in a "Guides & tracks by country" section on `/information/tracks`. Answers the operator's "which tracks in country X / most well-known" asks. Inherit tracks' unverified/noindex until promoted.
+- **FULL 138-track fact-check audit — COMPLETE.** Every track in `content/information/tracks.json` run through a **3-lens batched agent audit** (facts / sources / skeptic; 5–6 tracks per agent, sonnet/opus). ~40+ fixes committed across ~24 batch commits. Systematic findings: (1) **stale "current" tags on former venues** → former-F1 venues now consistently `["f1","historic"]` + past-tense summaries (Korea, Valencia, Imola-off-2026, Istanbul+2027-return, Hockenheim, Paul Ricard, Magny-Cours, Sepang, Nürburgring-GP, Detroit, Buddh, etc.); dropped-series tags removed (Suzuka/Hungaroring motogp, Sonoma/Texas indycar → NASCAR-only); (2) **broken/weak source URLs** fixed (Rockingham 404, Toronto→Grand_Prix_of_Toronto, Adria wrong-facility, Most missing, GoPro→Trackhouse rename+TripAdvisor swap); (3) **1 duplicate removed** (Termas seed → 139→138); (4) field slips (Bugatti turns 9→14, Barcelona 16→14, Milwaukee 1.633, Acropolis 1951, Lausitzring "fatal"→Zanardi-survived). Reports NOT written per-batch (fixes applied directly + committed).
+- **Draft datasets fact-checked (earlier this session):** team-histories (12 — 2 wording fixes) + rising-stars (48 — 5 factual fixes) corrected; reports `docs/research/2026-07-08-verify-team-histories.md` + `-rising-stars.md`.
+
+**Gates (held all session):** `tsc` 0 · `eslint` 0 · **16 info tests** green after every batch · `next build` (earlier) 213 pages · curl smoke (noindex on drafts, QAPage on indexed, historic DRS, MOM live). No full `next build` since the track edits — data-only JSON, loads clean via the info test each time; **run `next build` before pushing.**
+
+**▶ OWED / NEXT (operator decisions):**
+1. **PROMOTE the audited content** — the whole tracks directory + 17 per-country pages + most-famous page (~155 pages), + the 12 team-histories + rising-stars watchlist, are now **fact-checked but still `review:'unverified'` → noindex**. Flip to `verified` (+ `featured` to index) to make them live/indexable. This is the AdSense-relevant payoff. **Not auto-promoted** — operator's call on indexing scale (currently only ~51 indexed; raising it is the AdSense re-review timing decision). To promote tracks: set `review:"verified"` on entries in `tracks.json` (loader reads per-entry `review`; a file-level default could be added if wanted).
+2. **Thin topics** — `drivers` + `general`(Motorsport 101) need editorial Q&A (operator flagged). **"Weirdest regulations per series"** requested but NOT built (research agent was killed for cost).
+3. **Deploy** — branch is 24 commits unpushed. push → PR → merge = production event (touches sitemap; only ~51 indexed today). Update `CHANGELOG.md`/`RELEASES.md` (0.178.0 entries exist; track-audit refinements not individually logged — add a summary line) before push.
+
+**Landmines / mechanics:**
+- **tracks.json review model:** `unverified` → `noindex` + out of on-site search + "pending review" banner; `verified`+`featured` → indexed (capped `INFORMATION_MAX_INDEXED=150`). Former-venue convention: `["f1","historic"]` = former F1; bare `["f1"]` = current.
+- **Registry memoizes** (`lib/information/registry.ts` module cache) — the running dev server serves STALE content after a `tracks.json`/`.md` edit; **restart dev to see changes.**
+- **Dev server** likely still running (bg `bw36w56tx`) on `:3000`; kill by PID via port (never image-name).
+- **Budget:** operator on Team premium seat (~140k tokens/5h-session). Be frugal: **batched agents (5–6 items/agent), NOT one-per-item** (a 153-agent parallel workflow was killed for cost); default/sonnet fine for audits; skip re-auditing the champion-generated pages (data-derived from vetted `champions.json`).
+- The 138 audited-track slugs were tracked via a hardcoded done-set in the extract scripts — audit is COMPLETE, no more batches needed.
+
+---
+
+## ⚡ Next session pickup — 2026-07-07 — MOTORSPORT INFORMATION HUB `/information` (577 pages, 51 indexed) on branch `feat/motorsport-information-hub` — NOT pushed — proposed **0.178.0**
 
 **Overnight autonomous build.** New `/information` "questions answered" + reference section. On a LOCAL BRANCH, committed, **NOT pushed** (publishing is your call — production event + it touches the sitemap while AdSense "low value" review is open). tsc 0 · eslint 0 errors · 794 tests · `next build` 213 static pages · curl smoke all pass.
 
