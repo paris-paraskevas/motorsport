@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.181.4 — 2026-07-09
+
+### Changed
+- **Blog post pages get the answer-detail layout — a readable column + sticky sidebar, no more full-bleed prose.** `app/(app)/blog/[slug]/page.tsx` now mirrors `information/[topic]/[slug]`: a `max-w-2xl lg:max-w-6xl` container with a `lg:grid-cols-[minmax(0,1fr)_18rem]` split — the article in a `max-w-3xl` column and a sticky `<aside>` alongside carrying **On this page** (ToC), **Share**, **More from the blog** (recent posts, merged DB + MDX), and a **More on {Series}** link when the post is series-tagged. The admin draft/scheduled `DraftEditor` preview branch is untouched.
+
+### Added
+- **Blog table of contents + heading anchors.** New `lib/toc.ts` — `slugify`, `injectHeadingIds` (injects ids into DB posts' already-sanitised HTML) and `tocFromMarkdown` (parses the ToC from MDX source). MDX headings get matching ids via new `h2`/`h3` components in `components/mdx/mdx-components.tsx`, so anchors resolve for both post types. `prose-headings:scroll-mt-24` on `POST_ARTICLE_CLASS` clears the fixed header on jump.
+- **Blog share controls** — `components/blog/BlogShare.tsx` (client island): copy-link, X intent, and Web Share where available.
+
+Verified in-browser (MDX post) at 1920 + 390 px — two-column on desktop, stacked on mobile, all 8 ToC anchors resolve, no horizontal overflow; `tsc` clean. DB-post path verified via unit-probe of `injectHeadingIds` + typecheck (visually confirm on preview with the live Belgian-GP post).
+
 ## 0.181.3 — 2026-07-09
 
 ### Changed

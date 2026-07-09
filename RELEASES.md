@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.4 — 2026-07-09
+
+**Blog posts, redesigned to read.** Articles now sit in a comfortable reading column with a sticky sidebar alongside — a table of contents to jump between sections, share buttons, and links to more posts — instead of one narrow column. On phones it all stacks into a single clean flow.
+
 ## 0.181.3 — 2026-07-09
 
 **Pages now fill your screen.** Every page's width follows your screen continuously instead of jumping between a few fixed sizes and leaving big empty margins — so the calendar, series, news, standings and other pages use the space you have, at any window size. Reading pages such as articles, legal text and settings keep a comfortable column width. We also gave the whole app a slimmer, tidier scrollbar.

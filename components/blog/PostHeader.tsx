@@ -14,7 +14,7 @@ export interface PostAuthor {
  *  editor's view mode can't drift apart. */
 export const POST_ARTICLE_CLASS =
   `prose dark:prose-invert prose-zinc max-w-none
-   prose-headings:tracking-tight
+   prose-headings:tracking-tight prose-headings:scroll-mt-24
    prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
    prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
    prose-p:leading-relaxed
