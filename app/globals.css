@@ -251,6 +251,37 @@ body {
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { scrollbar-width: none; }
 
+/* App-wide custom scrollbar — desktop pointers only (touch devices keep their
+   auto-hiding overlay bars). A slim, rounded thumb in the border tone that
+   floats inset from the track via a transparent border (background-clip keeps
+   the fill off it, so it reads right on any surface) and lightens on hover.
+   `.scrollbar-none` above still wins for tab strips (higher specificity). */
+@media (pointer: fine) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4a4a5a;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
 /* Wikipedia tables (Rules / History / etc.) — token-driven. */
 .wiki-table-scroll {
   overflow-x: auto;

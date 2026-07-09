@@ -1,3 +1,5 @@
+import { PAGE_WIDE } from '@/lib/site';
+
 // Route-segment skeleton for /series/[slug] (the calendar landing): mirrors
 // SeriesPageView's shape — accent rule + title block, sticky tab rail, then
 // content rows (same blocks as its in-page TabLoading) — so the swap to real
@@ -6,7 +8,7 @@ export default function Loading() {
   return (
     <div
       aria-busy="true"
-      className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={PAGE_WIDE}
     >
       <div className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-surface animate-pulse" />

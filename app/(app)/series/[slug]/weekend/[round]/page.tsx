@@ -13,7 +13,7 @@ import { BETTABLE_SERIES } from '@/lib/betting/constants';
 import { NEWS_SLUG_MAP } from '@/lib/news';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { Tv, ArrowUpRight } from 'lucide-react';
 import { VideoEmbed } from '@/components/VideoEmbed';
@@ -153,7 +153,7 @@ export default async function WeekendPage({
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={{
         '--tint': color,
         ['--series-color' as string]: color,

@@ -4,7 +4,7 @@ import { publishedPosts } from '@/lib/blog';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { PostModeration } from '@/components/blog/PostModeration';
 
 export const revalidate = 300;
@@ -68,7 +68,7 @@ export default async function BlogIndexPage() {
   );
 
   return (
-    <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className={PAGE_WIDE}>
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },

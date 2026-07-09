@@ -5,6 +5,7 @@ import { dateRangeLabel } from '@/lib/rounds';
 import { withSocialMeta } from '@/lib/seo';
 import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
 import type { SeriesRoundEntry } from '@/lib/types';
+import { PAGE_WIDE } from '@/lib/site';
 
 // Schedule-based, not data-based: this page enumerates the F1 calendar and
 // links to per-session telemetry surfaces — it does NOT fetch any OpenF1 data
@@ -55,7 +56,7 @@ export default async function F1AnalysisPage() {
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       {/* Series-color hairline — the app-wide on-language accent. */}

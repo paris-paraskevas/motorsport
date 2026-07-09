@@ -4,7 +4,7 @@ import { CalendarView } from '@/components/calendar/CalendarView';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -49,7 +49,7 @@ export default async function CalendarPage() {
   for (const [k, v] of roundLookup) roundByKey[k] = v;
 
   return (
-    <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className={PAGE_WIDE}>
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },

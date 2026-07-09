@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.181.3 — 2026-07-09
+
+### Changed
+- **App-wide fluid page width — the column now tracks the viewport instead of stepping at breakpoints.** The old shared ladder (`max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]`) pinned each page to a fixed width between breakpoints, growing dead-space margins (measured: a 1450 px viewport pinned content to 1280 px — 85 px empty each side). Replaced with two tokens in `lib/site.ts`: `PAGE_WIDE` (`w-full`, no max cap — data / dashboard / hub pages fill the viewport minus gutters at any width incl. ultrawide) and `PAGE_READ` (`w-full max-w-4xl mx-auto` — prose + forms stay a readable measure). Applied to 43 `app/(app)` page bodies + `components/SeriesPageView.tsx`; the nav (`components/AppShell.tsx`), `Footer.tsx` and `LaunchBanner.tsx` also go full-width with horizontal gutters matched to the page scale (`px-4 md:px-6 lg:px-8`) so chrome aligns with the body. Left as-is (bespoke): `error.tsx` / `not-found.tsx` (centered states) and the answer/track detail sidebar layout (`information/[topic]/[slug]`). Operator decision (2026-07-09): fully fluid, no cap, app-wide via one shared token. Verified in-browser at 375 / 1450 / 1920 / 2560 px (fills with no dead-space; prose capped at 896; no mobile overflow; nav/content/footer left edges aligned); `tsc` clean. Supersedes the stepped `feat/ui-width-more` branch.
+- **Custom app-wide scrollbar.** Replaced the default browser scrollbar with a slim 10 px rounded thumb in the `--border-strong` tone that lightens on hover, inset from the track via a transparent border + `background-clip: padding-box` (so it reads correctly on any surface). Desktop pointers only (`@media (pointer: fine)`) — touch devices keep their auto-hiding overlay bars; `.scrollbar-none` tab strips still win on specificity. `app/globals.css`.
+
 ## 0.181.2 — 2026-07-09
 
 ### Changed

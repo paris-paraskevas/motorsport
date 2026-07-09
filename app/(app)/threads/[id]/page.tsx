@@ -5,13 +5,14 @@ import { ArrowLeft } from 'lucide-react';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getThread, isAdmin } from '@/lib/threads';
+import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Thread', robots: { index: false, follow: false } };
 
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className={PAGE_READ}>
       <Link
         href="/threads"
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"

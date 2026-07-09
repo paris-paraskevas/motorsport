@@ -8,12 +8,13 @@ import { ensureBettingUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { getLeagueDetail } from '@/lib/betting/leagues';
 import { LeagueDetailView } from '@/components/betting/LeagueDetailView';
+import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'League', robots: { index: false, follow: false } };
 
 function frame(children: ReactNode) {
-  return <div className="mx-auto max-w-2xl p-4 pb-16 md:p-6 lg:p-8">{children}</div>;
+  return <div className={PAGE_READ}>{children}</div>;
 }
 
 export default async function LeaguePage({ params }: { params: Promise<{ id: string }> }) {

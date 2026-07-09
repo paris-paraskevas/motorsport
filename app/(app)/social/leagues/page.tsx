@@ -7,6 +7,7 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureBettingUser } from '@/lib/betting/credits';
 import { getUserLeagues, getLeaderboardsForLeagues } from '@/lib/betting/leagues';
 import { LeaguesPanel } from '@/components/betting/LeaguesPanel';
+import { PAGE_WIDE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Leagues', robots: { index: false, follow: false } };
@@ -17,7 +18,7 @@ export const metadata: Metadata = { title: 'Leagues', robots: { index: false, fo
 // + join (/social/leagues/join/[token]) keep their own routes.
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className={PAGE_WIDE}>
       <Link
         href="/social"
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"

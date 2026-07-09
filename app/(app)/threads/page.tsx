@@ -7,6 +7,7 @@ import { listThreads, isAdmin } from '@/lib/threads';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { ThreadComposer } from '@/components/threads/ThreadComposer';
 import { ThreadModeration } from '@/components/threads/ThreadModeration';
+import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className={PAGE_READ}>
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
