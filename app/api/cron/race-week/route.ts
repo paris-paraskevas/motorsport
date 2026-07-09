@@ -3,7 +3,7 @@ import { kv } from '@vercel/kv';
 import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
-import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs, isQuietNow } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import type { Session } from '@/lib/types';
 
@@ -81,7 +81,7 @@ export async function GET(req: Request) {
 
     const userCache = new Map<
       string,
-      { followed: string[] | null; raceWeekOn: boolean; soundOn: boolean; muted: Set<string> }
+      { followed: string[] | null; raceWeekOn: boolean; soundOn: boolean; muted: Set<string>; quiet: boolean }
     >();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
@@ -95,6 +95,7 @@ export async function GET(req: Request) {
         raceWeekOn: prefs.raceWeek,
         soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
+        quiet: isQuietNow(prefs, now),
       };
       userCache.set(userId, state);
       return state;
@@ -124,6 +125,10 @@ export async function GET(req: Request) {
         continue;
       }
       const state = await getUserState(userId);
+      if (state.quiet) {
+        skipped++;
+        continue;
+      }
       if (!state.raceWeekOn) {
         skipped++;
         continue;

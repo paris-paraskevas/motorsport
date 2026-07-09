@@ -56,6 +56,27 @@ export async function PUT(request: Request) {
     if (typeof src.race === 'boolean') st.race = src.race;
     if (Object.keys(st).length > 0) patch.sessionTypes = st;
   }
+  // Quiet-hours window. Accept only a well-formed object: enabled boolean,
+  // start + end whole hours 0–23, tz a non-empty string (IANA id from the
+  // browser). Anything malformed is ignored rather than partially stored.
+  if (body.prefs.quietHours && typeof body.prefs.quietHours === 'object') {
+    // Typed as QuietHours but sourced from untrusted JSON — the checks below
+    // (asHour range, typeof, length) still validate at runtime.
+    const q = body.prefs.quietHours;
+    const asHour = (v: unknown) =>
+      typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 23 ? v : null;
+    const start = asHour(q.start);
+    const end = asHour(q.end);
+    if (
+      typeof q.enabled === 'boolean' &&
+      start !== null &&
+      end !== null &&
+      typeof q.tz === 'string' &&
+      q.tz.length > 0
+    ) {
+      patch.quietHours = { enabled: q.enabled, start, end, tz: q.tz };
+    }
+  }
   try {
     const next = await setUserNotifPrefs(userId, patch);
     return NextResponse.json({ prefs: next });

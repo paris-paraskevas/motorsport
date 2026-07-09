@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
 import { loadAllSeries } from '@/lib/series';
-import { listSubscriptions, deleteSubscription, type StoredSubscription } from '@/lib/push-store';
+import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
 import { recordSent } from '@/lib/push-history';
-import { getUserFollowed, getUserNotifPrefs, sessionTypeAllowed, type SessionTypePrefs } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs, isQuietNow, type SessionTypePrefs } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import {
   wasNotified,
   markNotified,
   unmarkNotified,
-  shouldRetryAfterTotalFailure,
-  type NotifyKind,
 } from '@/lib/notify-ledger';
 import {
   looksLikeRaceSession,
@@ -19,6 +17,12 @@ import {
 } from '@/lib/results-ready';
 import { buildRoundLookup, roundFor, sessionSlug, deriveTitleHint } from '@/lib/weekend';
 import type { Series } from '@/lib/types';
+import {
+  eligibleForNotify,
+  coalescedPayload,
+  type CandidateSession,
+  type QueuedNotification,
+} from '@/lib/notify-coalesce';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -48,22 +52,6 @@ const ANALYSIS_QUALI_RE = /qualifying|superpole|shootout/i;
 const ANALYSIS_RACE_RE = /grand prix|^race$|\brace\b/i;
 const ANALYSIS_SPRINT_RE = /sprint/i;
 const MAX_NOTIFICATIONS_PER_RUN = 6;
-
-interface CandidateSession {
-  uid: string;
-  title: string;
-  start: Date;
-  end: Date;
-  seriesSlug: string;
-  seriesName: string;
-  seriesColor: string;
-}
-
-interface QueuedNotification {
-  kind: NotifyKind;
-  session: CandidateSession;
-  payload: PushPayload;
-}
 
 function minutesUntil(date: Date, now: Date): number {
   return (date.getTime() - now.getTime()) / 60000;
@@ -280,7 +268,7 @@ export async function GET(req: Request) {
     const batch = queue.slice(0, MAX_NOTIFICATIONS_PER_RUN);
 
     // Per-user followed + notif-prefs cache (avoid re-fetching for the same userId)
-    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string>; sessionTypes: SessionTypePrefs | undefined }>();
+    const userCache = new Map<string, { followed: string[] | null; sessionsOn: boolean; soundOn: boolean; muted: Set<string>; sessionTypes: SessionTypePrefs | undefined; quiet: boolean }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -294,102 +282,81 @@ export async function GET(req: Request) {
         soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
         sessionTypes: prefs.sessionTypes,
+        quiet: isQuietNow(prefs, now),
       };
       userCache.set(userId, state);
       return state;
     };
 
-    const sendToAll = async (
-      kind: NotifyKind,
-      payload: PushPayload,
-      seriesSlug: string,
-      subsList: StoredSubscription[],
-      // Raw session title — lets the pre-session reminder kinds apply the
-      // user's per-session-type toggles (skip practice etc.). Other kinds
-      // (results/analysis) ignore it: an opted-in race fan still wants the
-      // results push even with practice reminders off.
-      sessionTitle?: string,
-    ) => {
-      let sent = 0;
-      let evicted = 0;
-      let skipped = 0;
-      let errored = 0;
-      // One history row per user, even with several push subscriptions.
-      const recorded = new Set<string>();
-      for (const { subscription, userId } of subsList) {
-        let silent = false;
-        if (userId) {
-          const state = await getUserState(userId);
-          if (!state.sessionsOn) {
-            skipped++;
-            continue;
-          }
-          if (
-            (kind === 't30' || kind === 't10') &&
-            sessionTitle !== undefined &&
-            !sessionTypeAllowed(state.sessionTypes, sessionTitle)
-          ) {
-            skipped++;
-            continue;
-          }
-          if (state.followed !== null && !state.followed.includes(seriesSlug)) {
-            skipped++;
-            continue;
-          }
-          if (state.muted.has(seriesSlug)) {
-            skipped++;
-            continue;
-          }
-          silent = !state.soundOn;
-        }
-        const result = await sendPushTo(
-          subscription,
-          silent ? { ...payload, silent: true } : payload,
-        );
-        if (result.ok) {
-          sent++;
-          // Record to the signed-in user's sent-history (fail-soft, once per
-          // user per notification — anon subs have no owner to scope to).
-          if (userId && !recorded.has(userId)) {
-            recorded.add(userId);
-            await recordSent(userId, {
-              kind,
-              title: payload.title,
-              body: payload.body,
-              url: payload.url ?? '/app',
-              ts: Date.now(),
-              seriesSlug,
-            });
-          }
-        } else if (result.gone) {
-          await deleteSubscription(subscription.endpoint);
-          evicted++;
-        } else {
-          // Real (non-gone) send error — a transient push-service/network blip.
-          errored++;
-        }
-      }
-      return { sent, evicted, skipped, errored };
-    };
+    // Mark every queued item as handled BEFORE sending: a crash mid-fanout must
+    // not re-spam every subscriber next tick (one missed beats one doubled).
+    for (const item of batch) {
+      await markNotified(item.kind, item.session.uid);
+    }
 
+    // Coalesce per subscription: gather the items this subscriber is eligible
+    // for, then send ONE summary if ≥2, the single payload if exactly 1, nothing
+    // if 0 — this kills the "several buzzes in one minute" burst (operator
+    // 2026-07-09). Anonymous subs (no account → no prefs, no followed series to
+    // honour) get nothing; push now requires sign-in. A subscriber in quiet
+    // hours is skipped for this tick.
     let sent = 0;
     let evicted = 0;
     let skipped = 0;
-    for (const item of batch) {
-      // Mark BEFORE sending: a crash mid-fanout must not re-spam every
-      // subscriber on the next tick. Worst case is one missed notification,
-      // which beats a doubled one.
-      await markNotified(item.kind, item.session.uid);
-      const r = await sendToAll(item.kind, item.payload, item.session.seriesSlug, subs, item.session.title);
-      sent += r.sent;
-      evicted += r.evicted;
-      skipped += r.skipped;
-      // Transient TOTAL failure (zero delivered, ≥1 real error): undo the mark
-      // so the next tick retries. Safe against duplicates — this runs only after
-      // a completed loop with zero successes, so anyone already notified keeps
-      // the mark. Terminal outcomes (some sent, only gone-evictions, or simply
-      // no eligible subscribers) stay marked.
-      if (shouldRetryAfterTotalFailure(r)) {
+    let errored = 0;
+    const recorded = new Set<string>();
+    for (const { subscription, userId } of subs) {
+      if (!userId) {
+        skipped++;
+        continue;
+      }
+      const state = await getUserState(userId);
+      if (state.quiet) {
+        skipped++;
+        continue;
+      }
+      const mine = batch.filter(item => eligibleForNotify(state, item));
+      if (mine.length === 0) {
+        skipped++;
+        continue;
+      }
+      const silent = !state.soundOn;
+      const payload =
+        mine.length === 1
+          ? silent
+            ? { ...mine[0].payload, silent: true }
+            : mine[0].payload
+          : coalescedPayload(mine, silent);
+      const result = await sendPushTo(subscription, payload);
+      if (result.ok) {
+        sent++;
+        // Record every delivered item to the user's history (the bell shows them
+        // all even when the push itself was coalesced) — once per user per tick.
+        if (!recorded.has(userId)) {
+          recorded.add(userId);
+          for (const item of mine) {
+            await recordSent(userId, {
+              kind: item.kind,
+              title: item.payload.title,
+              body: item.payload.body,
+              url: item.payload.url ?? '/app',
+              ts: Date.now(),
+              seriesSlug: item.session.seriesSlug,
+            });
+          }
+        }
+      } else if (result.gone) {
+        await deleteSubscription(subscription.endpoint);
+        evicted++;
+      } else {
+        errored++;
+      }
+    }
+
+    // Batch-level retry: the whole tick delivered nothing but hit real (non-gone)
+    // errors → unmark every item so the next tick retries the transient blip.
+    if (sent === 0 && errored > 0) {
+      for (const item of batch) {
         await unmarkNotified(item.kind, item.session.uid);
       }
     }

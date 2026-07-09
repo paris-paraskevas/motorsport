@@ -9,6 +9,13 @@ interface SessionTypePrefs {
   race: boolean;
 }
 
+interface QuietHours {
+  enabled: boolean;
+  start: number;
+  end: number;
+  tz: string;
+}
+
 interface NotifPrefs {
   sessions: boolean;
   news: boolean;
@@ -17,6 +24,7 @@ interface NotifPrefs {
   blog: boolean;
   sound: boolean;
   sessionTypes: SessionTypePrefs;
+  quietHours?: QuietHours;
 }
 
 const SESSION_TYPE_ROWS: Array<{ key: keyof SessionTypePrefs; label: string }> = [
@@ -26,7 +34,7 @@ const SESSION_TYPE_ROWS: Array<{ key: keyof SessionTypePrefs; label: string }> =
 ];
 
 const ROWS: Array<{
-  key: Exclude<keyof NotifPrefs, 'sessionTypes'>;
+  key: Exclude<keyof NotifPrefs, 'sessionTypes' | 'quietHours'>;
   label: string;
   description: string;
 }> = [
@@ -117,7 +125,7 @@ export function NotifPrefsSection() {
     }
   };
 
-  const toggle = (key: Exclude<keyof NotifPrefs, 'sessionTypes'>) => {
+  const toggle = (key: Exclude<keyof NotifPrefs, 'sessionTypes' | 'quietHours'>) => {
     if (!prefs) return;
     const next: NotifPrefs = { ...prefs, [key]: !prefs[key] };
     void save(next, { [key]: next[key] });
@@ -127,6 +135,30 @@ export function NotifPrefsSection() {
     if (!prefs) return;
     const sessionTypes = { ...prefs.sessionTypes, [key]: !prefs.sessionTypes[key] };
     void save({ ...prefs, sessionTypes }, { sessionTypes: { [key]: sessionTypes[key] } });
+  };
+
+  // Quiet hours. The user's timezone is captured from the browser (the server
+  // cron evaluates the window in it) — re-captured on every change so a moved
+  // device stays correct. Defaults to a 22:00→07:00 overnight window on enable.
+  const browserTz = () => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    } catch {
+      return 'UTC';
+    }
+  };
+  const toggleQuiet = () => {
+    if (!prefs) return;
+    const cur = prefs.quietHours;
+    const quietHours: QuietHours = cur
+      ? { ...cur, enabled: !cur.enabled, tz: browserTz() }
+      : { enabled: true, start: 22, end: 7, tz: browserTz() };
+    void save({ ...prefs, quietHours }, { quietHours });
+  };
+  const setQuietWindow = (start: number, end: number) => {
+    if (!prefs?.quietHours) return;
+    const quietHours: QuietHours = { ...prefs.quietHours, start, end, tz: browserTz() };
+    void save({ ...prefs, quietHours }, { quietHours });
   };
 
   return (
@@ -186,10 +218,74 @@ export function NotifPrefsSection() {
               )}
             </div>
           ))}
+
+          {/* Quiet hours — pause ALL push during a nightly window, evaluated in
+              the user's own timezone (captured from the browser on enable). */}
+          <div>
+            <label className="flex items-start gap-3 p-3 border border-border bg-surface/40 cursor-pointer hover:bg-surface transition-colors">
+              <div className="flex-1 min-w-0">
+                <div className="text-text text-sm font-medium">Quiet hours</div>
+                <p className="text-xs text-text-faint mt-0.5 leading-relaxed">
+                  Pause all notifications overnight (your local time).
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={!!prefs.quietHours?.enabled}
+                onChange={toggleQuiet}
+                disabled={saving}
+                className="w-5 h-5 rounded accent-brand cursor-pointer disabled:cursor-not-allowed mt-0.5 shrink-0"
+              />
+            </label>
+            {prefs.quietHours?.enabled && (
+              <div className="mt-1 ml-3 border-l border-border pl-3 py-2 flex flex-wrap items-center gap-2 text-xs text-text-muted">
+                <span>From</span>
+                <HourSelect
+                  value={prefs.quietHours.start}
+                  disabled={saving}
+                  onChange={h => setQuietWindow(h, prefs.quietHours!.end)}
+                />
+                <span>to</span>
+                <HourSelect
+                  value={prefs.quietHours.end}
+                  disabled={saving}
+                  onChange={h => setQuietWindow(prefs.quietHours!.start, h)}
+                />
+                <span className="text-text-faint">· {prefs.quietHours.tz}</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
         </>
       )}
     </div>
+  );
+}
+
+// 0–23 hour picker for the quiet-hours window, rendered "HH:00".
+function HourSelect({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: number;
+  onChange: (h: number) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={e => onChange(Number(e.target.value))}
+      disabled={disabled}
+      aria-label="Hour"
+      className="rounded border border-border bg-surface px-2 py-1 text-text tabular-nums disabled:cursor-not-allowed"
+    >
+      {Array.from({ length: 24 }, (_, h) => (
+        <option key={h} value={h}>
+          {String(h).padStart(2, '0')}:00
+        </option>
+      ))}
+    </select>
   );
 }

@@ -64,6 +64,17 @@ export const DEFAULT_SESSION_TYPE_PREFS: SessionTypePrefs = {
   race: true,
 };
 
+// Do-not-disturb window. `start`/`end` are whole hours 0–23 in the user's own
+// timezone (`tz`, an IANA id captured from the browser when they enable it).
+// A window that wraps past midnight (start > end, e.g. 22→7) is supported.
+// Absent or `enabled:false` = no quiet hours (the default — opt-in only).
+export interface QuietHours {
+  enabled: boolean;
+  start: number;
+  end: number;
+  tz: string;
+}
+
 export interface NotifPrefs {
   sessions: boolean;   // ~30 min before each session
   news: boolean;       // new article from a followed series
@@ -73,6 +84,7 @@ export interface NotifPrefs {
   sound: boolean;      // play the OS default notification sound (off = silent)
   mutedSeries?: string[];  // per-series mute (independent of follow state)
   sessionTypes?: SessionTypePrefs; // sessions-kind granularity; absent (pre-0.159 rows) = all true
+  quietHours?: QuietHours; // do-not-disturb window; absent = off (0.182.2)
 }
 
 // Stored/patch shape: everything optional, and sessionTypes itself may be
@@ -121,6 +133,27 @@ export function sessionTypeAllowed(
   const kind = classifySession(sessionTitle);
   if (kind === 'other') return true;
   return { ...DEFAULT_SESSION_TYPE_PREFS, ...(sessionTypes ?? {}) }[kind] !== false;
+}
+
+// Whether `now` falls inside the user's quiet-hours window, evaluated in their
+// own timezone. Pure + fail-open: a disabled window, a zero-width window, or an
+// unparseable tz all return false (never suppress a push by accident). A window
+// that wraps past midnight (start > end, e.g. 22→7) is handled. The hour is
+// normalised %24 so ICU's "24" for midnight collapses to 0.
+export function isQuietNow(prefs: Pick<NotifPrefs, 'quietHours'>, now: Date = new Date()): boolean {
+  const q = prefs.quietHours;
+  if (!q || !q.enabled || q.start === q.end) return false;
+  let hour: number;
+  try {
+    hour =
+      Number(
+        new Intl.DateTimeFormat('en-US', { timeZone: q.tz, hour: 'numeric', hour12: false }).format(now),
+      ) % 24;
+  } catch {
+    return false;
+  }
+  if (Number.isNaN(hour)) return false;
+  return q.start < q.end ? hour >= q.start && hour < q.end : hour >= q.start || hour < q.end;
 }
 
 export async function addMutedSeries(userId: string, slug: string): Promise<NotifPrefs> {

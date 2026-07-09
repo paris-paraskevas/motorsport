@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { listSubscriptions, deleteSubscription, type StoredSubscription } from '@/lib/push-store';
 import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
 import { recordSent } from '@/lib/push-history';
-import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs, isQuietNow } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { wasNotified, markNotified, unmarkNotified, shouldRetryAfterTotalFailure } from '@/lib/notify-ledger';
 import { isBettingConfigured, betDb } from '@/lib/betting/client';
@@ -80,6 +80,7 @@ export async function GET(req: Request) {
     const seriesColor = (slug: string) => metaBySlug.get(slug)?.color;
 
     const now = Date.now();
+    const nowDate = new Date(now);
     const db = betDb();
     const queue: RoundNotification[] = [];
 
@@ -169,7 +170,7 @@ export async function GET(req: Request) {
     // `betting` pref instead of `sessions`.
     const userCache = new Map<
       string,
-      { followed: string[] | null; bettingOn: boolean; soundOn: boolean; muted: Set<string> }
+      { followed: string[] | null; bettingOn: boolean; soundOn: boolean; muted: Set<string>; quiet: boolean }
     >();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
@@ -183,6 +184,7 @@ export async function GET(req: Request) {
         bettingOn: prefs.betting !== false,
         soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
+        quiet: isQuietNow(prefs, nowDate),
       };
       userCache.set(userId, state);
       return state;
@@ -202,23 +204,28 @@ export async function GET(req: Request) {
       const recorded = new Set<string>();
       for (const { subscription, userId } of subsList) {
         try {
-          let silent = false;
-          if (userId) {
-            const state = await getUserState(userId);
-            if (!state.bettingOn) {
-              skipped++;
-              continue;
-            }
-            if (state.followed !== null && !state.followed.includes(slug)) {
-              skipped++;
-              continue;
-            }
-            if (state.muted.has(slug)) {
-              skipped++;
-              continue;
-            }
-            silent = !state.soundOn;
+          if (!userId) {
+            skipped++;
+            continue;
           }
+          const state = await getUserState(userId);
+          if (state.quiet) {
+            skipped++;
+            continue;
+          }
+          if (!state.bettingOn) {
+            skipped++;
+            continue;
+          }
+          if (state.followed !== null && !state.followed.includes(slug)) {
+            skipped++;
+            continue;
+          }
+          if (state.muted.has(slug)) {
+            skipped++;
+            continue;
+          }
+          const silent = !state.soundOn;
           const result = await sendPushTo(
             subscription,
             silent ? { ...payload, silent: true } : payload,
