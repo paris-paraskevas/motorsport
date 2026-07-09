@@ -6,7 +6,100 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFORMATION HUB expanded + ALL 138 tracks fact-checked + DRS/MOM; branch `feat/motorsport-information-hub` **24 commits, NOT pushed** — proposed **0.178.0**
+## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT COMPLETE 138/138 + Belgian-GP blog POSTED + SEO structured-data fix. NEXT: operator approves blog; review/merge 3 branches; CLS perf pass
+
+**Enrichment is DONE (138/138), the Belgian-GP blog is POSTED to prod (awaiting operator approval), and a QAPage/SportsEvent structured-data fix landed on a new branch.** Three local branches now await review + merge; the only queued *build* work is a CLS perf pass (data logged in `docs/perf-baselines.md`, 2026-07-09).
+
+### Track enrichment — COMPLETE, 138/138, all verified · branch `feat/information-track-guides` (LOCAL/unpushed)
+All 138 tracks now carry a fact-checked `article` (batches 1–23; the final 8 batches ran this session, 93→138). Process (LOCKED): batched draft → verify EVERY claim vs primary sources (2026 WRC / NASCAR-Cup / IndyCar / WSBK calendars + Wikipedia/official) → correct or cut → merge by-slug via a scratchpad node script → `npx vitest run lib/information/information.test.ts` (16 green) → one commit per batch. Verification caught real errors every batch — the two rules (facts / nothing-outdated) were necessary.
+- *Current-status catches (this session):* NASCAR Cup finale moved Phoenix→Homestead (Phoenix now opens Round of 8; New Hampshire dropped from the playoffs); IndyCar returned to Phoenix, Texas/Pocono no longer IndyCar; Laguna Seca = 2026 IndyCar finale; Rally Argentina last 2019 / Germany last 2019; Macau switched F3→FIA FR World Cup; Rockingham closed 2018→vehicle storage; Lausitzring now a DEKRA test site (DTM still annual).
+- *Data-tag NOTEDs (non-blocking, later audit):* Termas `motogp`→historic; Okayama `motogp` never hosted world bikes; Mosport/CTMP omit `f1` despite 8 past F1 GPs.
+- **NEXT: no content work left** — the run is done. Open the PR from `feat/information-track-guides`.
+
+### SEO structured-data fix — branch `fix/structured-data-jsonld` (off `main`, LOCAL/unpushed, commit `fc5a889`)
+Prompted by two Search Console reports (QAPage + SportsEvent). One-branch fix to `lib/json-ld.ts` (+ `circuits.ts`, both pages, `circuits.json`, new `lib/json-ld.test.ts`):
+- **QAPage** (1 error + 8 warnings): `qaPageLd` now emits `answerCount`/`text`/`author`/`datePublished` + `acceptedAnswer` `author`/`datePublished`/`upvoteCount`, and normalises `dateModified` to a timezoned ISO datetime. **Scoped QAPage to `qa`-kind entries only** — track pages no longer emit it (they aren't questions).
+- **SportsEvent** (6 warnings): added `description`, `organizer.url`, `performer` (curated teams), `image` (brand logo — a dynamic-OG URL was deliberately avoided in structured data), and `location` `address`+`geo` via a new `countryCode` on the 38 `circuits.json` entries (sourced from `tracks.json`, verified).
+- **Verified:** `tsc --noEmit` clean; 23 tests; dev-server curl confirmed all fields render (qa page QAPage, track page omits it, weekend page 11 performers + `GB` address + geo). **GSC "Validate fix" pending deploy.**
+
+### Perf — CLS is the next target (data logged)
+Two Vercel RES dashboards (2026-07-09) appended to `docs/perf-baselines.md`. RES up (D 98 / M 81 vs May 95 / 76) and mobile TTFB fixed (3.17→1.55 s), but **CLS regressed on both platforms (D 0.12 / M 0.16, both > 0.1)** → the one systemic Core Web Vital left. Next-session CLS hunt: images without dimensions, late-injected UI (chat launcher/banners), font swap; grab PSI lab first. Most "Poor" routes are tiny-sample noise.
+
+### Blog — Belgian GP preview POSTED to prod 2026-07-09 · awaiting operator approval
+- **Draft:** `drafts/belgian-grand-prix-2026-preview.json` (untracked; post.json shape — slug/title/summary/body/seriesSlug=f1/heroImage=null/publishAt=null). ~462 words, F1 house voice, sources **linked inline not pasted**, every fact verified as of 2026-07-09. Chose a *preview* of the next race (Belgian GP, Spa, Sun 19 Jul) because the British GP recap was already queued for the 5 Jul race. Facts CUT for failing rule #1: a source's false "Round 12" + stale pre-British standings + "Hamilton record 6 Spa wins" (that's Schumacher's).
+- **`.env.blog` (gitignored) is wired** with prod Supabase URL (`dzelqrtajnauunzmxfic`), service-role key (from `.supabase-pat` reveal — never printed), and `BLOG_AUTHOR_ID=user_3Dj7VJ9cClEegSAklquQYVpJEbK`. **DO NOT repoint `.env.local`** — it must stay on 127.0.0.1 (dev/test/seed footgun).
+- **DONE (2026-07-09): inserted to prod** via `draft-post.mts --env-file=.env.blog`. Row `id=514448ce-7386-4287-a600-b96a32c9c736`, `status='draft'`, `publish_at`/`published_at` null; verified absent from public `/blog` (post URL 404 + not in listing). **Re-verified every volatile fact live before posting** (F1.com / Wikipedia / Sky) and corrected one error ("first"→"second pointless weekend" — Barcelona R7 was Antonelli's 1st non-score of 2026). NB the prod table is `post` (singular), not `posts`. **Operator: approve + schedule in the `/blog` admin queue** (publish cron then takes it live). Admin push no-op'd — no KV/Clerk/VAPID in `.env.blog`.
+
+### ⚠ Constraints carried in
+- **Org hit its MONTHLY SPEND LIMIT** mid-session (a batch-15 skeptic *agent* aborted). My own WebSearch/WebFetch/Bash still worked; agent-heavy verification may need the cap raised (`/usage-credits`) or the skeptic pass run as direct tool calls.
+- Prod-Supabase access is classifier-gated (operator approves, or run yourself).
+
+### Branch state — 3 LOCAL branches await review + merge (nothing pushed)
+- `main` = `867a2e9` (**0.180.0**, prod live). *This `docs/post-442-handoff` branch predates #443, so its checked-out code reads 0.179.0 / no-byline — expected, ignore.*
+- `feat/information-track-guides` — track enrichment COMPLETE (138/138, batches 1–23) + byline/E-E-A-T infra + IDEAS. **PR-ready.**
+- `fix/structured-data-jsonld` (off `main`) — the QAPage/SportsEvent fix (`fc5a889`). **PR-ready.** Independent of the enrichment (touches `json-ld.ts`/`circuits.json`/pages, not tracks.json article data) — merges cleanly alongside.
+- `docs/post-442-handoff` = THIS branch — handoff + SEO plan + perf-baselines.
+- **Owed at each merge to `main`:** CHANGELOG + RELEASES + `package.json` version bump (deliberately NOT done per-branch to avoid version-collision across the 3). Coordinate versions at merge.
+- Untracked, persist across branches: `drafts/belgian-grand-prix-2026-preview.json` (already on prod), `drafts/motogp-german-grand-prix-2026-preview.json` (leftover), `.env.blog` (gitignored, prod creds).
+
+---
+
+## Next session pickup — 2026-07-08 — INFO-HUB ENRICHMENT: bylines LIVE (#443, **0.180.0**) + track-guide RUN STARTED (batch 1: 6 circuits verified), PAUSED
+
+**Bylines + first enriched circuits shipped to prod.** `main` at `867a2e9` (#443), version **0.180.0**, local `main` synced. Verified live: byline on curated pages, `/changelog` 0.180.0.
+
+**⏸ TRACK ENRICHMENT RUN — batch 1 done, PAUSED (inherently multi-session).**
+- **TWO GOVERNING RULES (operator, non-negotiable for ALL enrichment):** (1) **facts must be facts** — nothing wrong / hallucinated / misinterpreted; (2) **nothing outdated.**
+- **Process (LOCKED):** batched draft agent (5–6 tracks) → **independently verify EVERY factual claim against primary sources → correct or cut → merge ONLY what's confirmed.** Draft-and-trust is UNSAFE: batch-1 verification caught **4 issues in 6 articles** (Galvez F1 "1971"→**1972**; Fangio's 1956 home win was **shared** with Musso, not four clean wins; Adelaide "Brabham Straight" unverifiable→**cut**; Senna Chicane "renamed 1994" unconfirmed→reworded). Scalable form: draft + independent **skeptic agent** + Claude spot-check of volatile claims (calendars, lap records, "since X", "current").
+- **Batch 1 (committed on branch `feat/information-track-guides`, LOCAL/unpushed):** 6 marquee circuits verified — Galvez, Termas, Adelaide, Albert Park, Calder Park, Mount Panorama.
+- **Remaining: 129 tracks.** Done-set self-describing: a track gains an `article` field once enriched (`!("article" in t)` = remaining). Prioritise **tier 1 marquee** first (categories ∩ {f1,motogp,endurance,nascar,indycar}, non-karting; ~99 left), then tier 2, then tier 3 (karting/minor — shorter or skip).
+- **Cost reality:** ~6–12 verified tracks/session → full run ≈ **10–20 sessions**. No shortcut preserves rules #1/#2 — the verification IS the work.
+- **Storage:** articles live in `tracks.json` `article` field (loader drops the inline facts line when present); at scale move to a separate `content/information/track-articles.json` (needs file-create OK) to keep the facts file clean.
+- **Ship policy:** ACCUMULATE on `feat/information-track-guides`; PR once ~20–40 verified circuits are done (one clean prod event). Enrich-first holds — do NOT re-request the AdSense review until enrichment lands.
+- **NOTED (data-audit follow-up, NOT enrichment):** Termas `motogp` category is stale (MotoGP left after 2025 → should be 'historic'); Galvez `historic` regains MotoGP from 2027.
+
+**What shipped (#443):**
+- **On-page byline (E-E-A-T) across 185 curated pages** — "Curated and fact-checked by Paris Paraskevas. Last updated &lt;date&gt;." on every editorial explainer, team history, track profile, per-country/most-famous aggregate + watchlist. Generated champions-derived pages get **no** byline (never brand a templated stub). `types.ts` `author?`; `curated.ts` sets it on all curated entries; `page.tsx` byline footer + `formatUpdated`.
+- **Track circuit-guide template (`article` field)** — optional long-form markdown on track entries; loader drops the redundant inline facts line when present (the facts table already shows them).
+- **First 3 enriched circuits** — Silverstone, Spa, Daytona: ~300-word fact-checked guides in the history-essay register (bodies 192 → ~1900 chars).
+
+**AdSense strategy (KEY, operator-decided):** the 221 indexed pages are mostly THIN — measured **166/221 (75%) under 300 chars** (138 track stubs, 17 per-country, 15 champion stubs). Decision: **ENRICH-FIRST, do NOT de-index; HOLD the AdSense re-review until enrichment lands.** Full analysis + flat task list + locked template + scale-up plan live in `docs/research/2026-07-08-seo-optimization-plan.md` (this branch).
+
+**Locked enrichment template:** history-essay register · three light `##` subheads (*Origins* / *The circuit* / *Racing at X*) · ~250–330 words · byline · Sources list as citations (no inline footnotes — they'd duplicate the list) · `article` field. At scale → move articles to a separate `content/information/track-articles.json` (needs a file-create OK); tier marquee/secondary/minor; batched agents 5–6 tracks/agent; multi-session budget.
+
+**▶ OWED / NEXT:**
+1. **Full track enrichment run (~135 tracks)** — the deferred big job: batched research agents, fact-checked, per the template + tiering. Dedicated-budget / multi-session. Raise indexed quality, then — and only then — re-request the AdSense review.
+2. **Enrich the other thin indexed buckets:** 17 per-country intros, thin record pages, who-won season stats (enrich-recent / hold-old policy).
+3. **Content (still deferred):** "weirdest regulations per series" (never built) + Motorsport-101 Q&A (`drivers` / `general`).
+4. **IndexNow** (`npm run indexnow:submit`) — low priority under enrich-first.
+5. Site-wide thin/stub sweep + confirm About/Contact/Privacy are substantial.
+
+**Branch state:** `main` = `867a2e9` (0.180.0, prod live, verified). **`docs/post-442-handoff` = THIS branch, LOCAL/UNPUSHED** (holds this handoff + the SEO plan doc) — operator chose to keep it local, so **main's copy of this handoff is STALE; read this branch's version.** `feat/motorsport-information-hub` (#442) + `feat/information-track-enrichment` (#443) both MERGED.
+
+---
+
+## ⚡ Next session pickup — 2026-07-08 — INFORMATION HUB **SHIPPED TO PROD** — PR #442 squash-merged, **0.179.0** live; Content (Motorsport-101 + weirdest-regs) deferred
+
+**The information hub is LIVE.** Aggressive promotion done + the whole `feat/motorsport-information-hub` branch merged. `main` now at `aa8344b` (#442), version **0.179.0**; local `main` synced. Prod auto-deploys ~90s post-merge.
+
+**What shipped (PR #442):**
+- **Promotion — aggressive tier.** All fact-checked hub content flipped `review:'unverified' → 'verified' + featured`. **Indexed 52 → 221:** 138 circuit profiles + 17 per-country + most-famous + 12 team histories + rising-stars watchlist + existing 36 champion/record + 16 editorial. Sitemap **+231** `/information/` URLs (157 under `/tracks/`).
+- Mechanics: `tracks.json`/`team-histories.json` per-entry `review:'verified'+featured:true`; `rising-stars.json` top-level `review:'verified'`. `curated.ts` — team `featured` now data-driven (mirrors tracks); watchlist reads top-level `review`; per-country + most-famous aggregates **derive** review from member tracks (verified only when EVERY member is verified — self-maintaining). `registry.ts` — `INFORMATION_MAX_INDEXED` 150 → **225** (221 indexed, 4 headroom). `information.test.ts` — 2 draft-model tests reframed to the durable `unverified⇒noindex` invariant + dataset-load (0 unverified now).
+- This merge took the ENTIRE hub (the two blocks below) to prod for the first time.
+
+**Gates:** 16 info tests green · `tsc` 0 · `eslint` 0 errors · `next build` exit 0 (no cap warning) · prerendered HTML spot-checked (no banner, `robots:index,follow`, facts/venues rendered) · sitemap verified (231 info URLs).
+
+**▶ OWED / NEXT:**
+1. **`npm run indexnow:submit`** once prod deploy is confirmed live — ping search engines with the new URLs. **NOT yet run** (outward-facing; awaited operator go).
+2. **Verify prod live** — `/information/tracks/silverstone-circuit` + a per-country page returned **404 immediately post-merge** (deploy still propagating); re-confirm 200 + `robots:index`.
+3. **Content (deferred — operator "talk after"):** build **"weirdest regulations per series"** (requested, never built) + Motorsport-101 editorial Q&A for thin `drivers` + `general` topics. Scope + method (batched-agents/ultracode vs inline) TBD.
+4. Two-tier gate intact — new content still defaults `unverified`→noindex. Index more later via `featured` (+ raise cap if >225).
+
+**Landmines:** AdSense — indexed jumped ~4×; this was the deliberate pre-re-review increase — watch Search Console for "scaled content" signals on the thin per-country pages. Registry memoizes → restart dev to see content changes. Batched agents 5–6 items/agent (cost). Otherwise unchanged from below.
+
+---
+
+## ⚡ Next session pickup — 2026-07-08 — INFORMATION HUB expanded + ALL 138 tracks fact-checked + DRS/MOM; branch `feat/motorsport-information-hub` (now MERGED as #442) — was **0.178.0**
 
 **Continuation of the information-hub branch (below block = its origin). This session: content expansion + a full track-directory fact-check audit. Branch `feat/motorsport-information-hub`, `main`+24, tree clean (only the unrelated `drafts/motogp-*.json` untracked), version 0.178.0, last commit `b6b41f7`. NOTHING PUSHED.**
 
