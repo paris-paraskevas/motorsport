@@ -1,8 +1,10 @@
+import { PAGE_WIDE } from '@/lib/site';
+
 // Route-segment skeleton for /news: header (accent rule + title) + story
 // rows, matching NewsPage's container and rough rhythm.
 export default function Loading() {
   return (
-    <div aria-busy="true" className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div aria-busy="true" className={PAGE_WIDE}>
       <div className="mb-6 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-surface animate-pulse" />
         <div className="space-y-2">

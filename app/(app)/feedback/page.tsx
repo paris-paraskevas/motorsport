@@ -4,6 +4,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isStaff, isAdmin } from '@/lib/threads';
 import { FeedbackBoard } from '@/components/feedback/FeedbackBoard';
+import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 // Private staff page — keep it out of search + the sitemap.
@@ -17,7 +18,7 @@ export default async function FeedbackPage() {
   if (!isStaff(user)) notFound();
 
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className={PAGE_READ}>
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">

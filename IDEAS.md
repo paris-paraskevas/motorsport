@@ -31,6 +31,7 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 ## Inbox (unfiltered, append-only)
 
 - 2026-07-09 Add a tracks map — a world map pinpointing all 138 circuit venues with a search bar, in the /information tracks area (leverages the enriched track data + coordsVerified coordinates).
+- 2026-07-09 Tracks map — RICHER VISION (operator): with OSM, paint per-circuit sector boundaries + start/finish line + "mom zones" (marshalling zones) on F1 tracks, plus map filters by category (karting / feeder / F1 / IndyCar / NASCAR …) and by overlay type (sectors / start-finish / mom zones …) — extends the base all-138-pins map in QUEUED #3.
 - 2026-07-09 Page-width fix — /news, /information (Answers) and /social render in a narrow centred column with large empty side margins; port the full-device-width container that /calendar, /series and home already use to these pages.
 - 2026-07-09 AI-assistant bubble polish — make the Race Engineer chat launcher larger on bigger screens and swap the headset icon for a race-engineer/person figure (preferred) or a wrench.
 - 2026-07-09 Enrich the 43 thin INDEXED /information pages found in the hub-wide audit — ~36 generated champions Q&A (who-won / most-X / most-successful-team) + 7 sparse per-country track-list pages — via a generated.ts change (add runner-up/team/margin/history context), or de-index them.

@@ -7,7 +7,7 @@ import { seriesWithThreads } from '@/lib/threads';
 import { resolveTab, labelForTab, describeTab, type TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
@@ -107,7 +107,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={
         {
           '--tint': color,

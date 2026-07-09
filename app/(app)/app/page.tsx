@@ -7,6 +7,7 @@ import { matchCircuit } from '@/lib/circuits';
 import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
 import { circuitLayoutFor, type CircuitLayout } from '@/lib/circuit-layout';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
+import { PAGE_WIDE } from '@/lib/site';
 
 export const revalidate = 300;
 
@@ -141,7 +142,7 @@ export default async function Home() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className={PAGE_WIDE}>
       <HomeContent
         items={homeItems}
         news={news}

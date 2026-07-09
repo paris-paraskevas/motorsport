@@ -14,6 +14,7 @@ import {
   clerkDisplayName,
 } from '@/lib/betting/friends';
 import { FriendsPanel } from '@/components/betting/FriendsPanel';
+import { PAGE_WIDE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Friends', robots: { index: false, follow: false } };
@@ -24,7 +25,7 @@ export const metadata: Metadata = { title: 'Friends', robots: { index: false, fo
 // keeps its own /social/friends/add/[id] route. Mirrors /social/leagues.
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className={PAGE_WIDE}>
       <Link
         href="/social"
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"

@@ -1,3 +1,5 @@
+import { PAGE_WIDE } from '@/lib/site';
+
 // Route-segment skeleton for /drivers/[slug]: profile pages generate
 // on-demand (no build-time prerender), so first hits render this shape —
 // name block, stat row (Season so far), then content rows.
@@ -5,7 +7,7 @@ export default function Loading() {
   return (
     <div
       aria-busy="true"
-      className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={PAGE_WIDE}
     >
       <div className="mb-8 space-y-3">
         <div className="h-3 w-36 bg-surface/70 animate-pulse" />

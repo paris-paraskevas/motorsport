@@ -10,6 +10,7 @@ import { withSocialMeta } from '@/lib/seo';
 import type { RaceResult } from '@/lib/types';
 import { AnalysisGate } from '@/components/f1/AnalysisGate';
 import { auth } from '@clerk/nextjs/server';
+import { PAGE_WIDE } from '@/lib/site';
 
 // F1 driver head-to-head. Reuses the SAME season-form + trend cumulation the
 // driver pages and weekend snapshots use (lib/profile-stats + lib/season-trend
@@ -179,7 +180,7 @@ export default async function F1ComparePage({
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       <div

@@ -47,7 +47,7 @@ export function LaunchBanner() {
       aria-label="Announcement"
       className="border-b border-border bg-surface-elevated"
     >
-      <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto flex items-center gap-3 px-3 md:px-4 py-2.5">
+      <div className="w-full flex items-center gap-3 px-4 md:px-6 lg:px-8 py-2.5">
         <span aria-hidden className="h-3.5 w-[3px] shrink-0 bg-brand" />
         <p className="min-w-0 flex-1 text-sm text-text">
           <span>{LAUNCH_ANNOUNCEMENT.message}</span>{' '}

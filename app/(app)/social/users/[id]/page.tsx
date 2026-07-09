@@ -7,13 +7,14 @@ import { isBettingConfigured } from '@/lib/betting/client';
 import { getUserProfile } from '@/lib/betting/account';
 import type { FriendState } from '@/lib/betting/friends';
 import { ProfileActions } from '@/components/betting/ProfileActions';
+import { PAGE_WIDE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Profile', robots: { index: false, follow: false } };
 
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className={PAGE_WIDE}>
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">

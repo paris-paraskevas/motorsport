@@ -22,6 +22,7 @@ import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
+import { PAGE_WIDE } from '@/lib/site';
 
 // ISR: team pages edge-cache (was force-dynamic). Same cached snapshot feeds
 // as driver pages (WEC excluded → no no-store).
@@ -234,7 +235,7 @@ export default async function TeamPage({
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={{ '--tint': accent } as React.CSSProperties}
     >
       <div

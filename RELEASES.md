@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.3 — 2026-07-09
+
+**Pages now fill your screen.** Every page's width follows your screen continuously instead of jumping between a few fixed sizes and leaving big empty margins — so the calendar, series, news, standings and other pages use the space you have, at any window size. Reading pages such as articles, legal text and settings keep a comfortable column width. We also gave the whole app a slimmer, tidier scrollbar.
+
 ## 0.181.2 — 2026-07-09
 
 **Wider answer pages.** Individual answer and circuit pages now use the width of your screen — the article in a readable column with its sources and links alongside — rather than a narrow centred column.

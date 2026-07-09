@@ -5,6 +5,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { ArrowLeft } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { readInsights } from '@/lib/assistant/log';
+import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export default async function AssistantInsightsPage() {
   const d = await readInsights();
 
   return (
-    <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className={PAGE_READ}>
       <Link
         href="/settings"
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"

@@ -8,7 +8,7 @@ import { loadAllSeriesMeta } from '@/lib/series';
 import { TopicCard, EntryRow } from '@/components/information/InfoUi';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 
 // The hub is curated + indexable. Entries revalidate hourly (new champions,
@@ -45,7 +45,7 @@ export default async function InformationHub() {
   const featuredQa = featured.filter((e) => e.kind === 'qa').slice(0, 10);
 
   return (
-    <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className={PAGE_WIDE}>
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },

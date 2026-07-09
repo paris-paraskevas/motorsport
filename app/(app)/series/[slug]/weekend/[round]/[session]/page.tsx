@@ -59,6 +59,7 @@ import { OvertakesBoard } from '@/components/f1/OvertakesBoard';
 import { buildPracticeAnalysis, type PracticeAnalysis as PracticeData } from '@/lib/openf1/practice';
 import { PracticeAnalysis } from '@/components/f1/PracticeAnalysis';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
+import { PAGE_WIDE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -680,7 +681,7 @@ export default async function SessionPage({
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       <div

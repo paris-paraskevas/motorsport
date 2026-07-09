@@ -14,6 +14,7 @@ import type { NewsItem } from '@/lib/types';
 import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
 import { loadDriverPortraits } from '@/lib/series-content';
 import { withSocialMeta } from '@/lib/seo';
+import { PAGE_WIDE } from '@/lib/site';
 
 // ISR: profile pages edge-cache (was force-dynamic). Season form comes from
 // the cached results fetchers (loadSnapshotSource excludes WEC's no-store).
@@ -269,7 +270,7 @@ export default async function DriverPage({
 
   return (
     <div
-      className="relative max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16"
+      className={`relative ${PAGE_WIDE}`}
       style={{
         '--tint': driver.seriesColor,
         ['--series-color' as string]: driver.seriesColor,
