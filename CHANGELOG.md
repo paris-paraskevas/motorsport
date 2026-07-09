@@ -7,7 +7,10 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 ## 0.182.3 — 2026-07-09
 
 ### Changed
-- **Reshaped the search overlay** (operator: the search bar looked unpolished). `components/search/SearchOverlay.tsx` — the panel gains a `rounded-2xl` corner + a subtle ring (was a sharp-cornered rectangle), a wider `max-w-2xl`, a roomier input row (`py-4`, 15px), a hover-affordance close button, and friendlier empty / no-match states (a centered search icon + normal-case prompt, replacing the bare uppercase-mono line). The frosted backdrop (0.182.1) is unchanged. Verified in-browser on `/calendar`.
+- **Reshaped the search overlay** (operator: "really bad job with the search bar"). `components/search/SearchOverlay.tsx` — the panel gains a `rounded-2xl` corner + a subtle ring (was a sharp-cornered rectangle), a wider `max-w-2xl`, a roomier input row (`py-4`, 15px), a hover-affordance close button, and friendlier empty / no-match states (a centered search icon + normal-case prompt, replacing the bare uppercase-mono line).
+
+### Fixed
+- **Search backdrop now frosts the whole page, not just the nav** (operator: "it only blurs the nav bar, the rest is clear"). The trigger lives in the fixed nav header, so rendering the overlay inline trapped its `backdrop-blur` inside the header's stacking context — only the nav blurred. `components/search/SearchTrigger.tsx` now renders the overlay via `createPortal(…, document.body)`, placing it in the root stacking context so the blur covers the entire page. Verified in-browser on `/changelog`.
 
 ## 0.182.2 — 2026-07-09
 
