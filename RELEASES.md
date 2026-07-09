@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.183.6 — 2026-07-09
+
+**Tidier "Keep exploring" links.** A couple of related-answer links pointed to a section hub instead of the specific answer they named — now they go where the label says.
+
 ## 0.183.5 — 2026-07-09
 
 **Bigger help button.** The Race Engineer chat launcher is now larger and easier to spot, especially on desktop.

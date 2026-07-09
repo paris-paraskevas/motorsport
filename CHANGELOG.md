@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.183.6 — 2026-07-09
+
+### Fixed
+- **"Keep exploring" links no longer mislead** (operator). Two curated answers pointed a specific-question label at a topic HUB instead of the actual answer page: `content/information/answers/what-is-the-24-hours-of-le-mans.md` ("What are the classes at Le Mans?" → `/information/endurance` → now `/information/endurance/classes-at-le-mans`, which exists) and `how-the-f1-points-system-works.md` ("What is an F1 sprint race?" → the F1 hub, but no sprint answer exists → relabelled "More Formula 1 answers"). Audited all 35 related links across the 16 curated answer files — these were the only two mismatches; the generated champions-Q&A related links are template-built and correct by construction.
+
 ## 0.183.5 — 2026-07-09
 
 ### Changed

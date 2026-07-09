@@ -19,7 +19,7 @@ related:
   - label: World Endurance Championship
     href: /series/wec
   - label: What are the classes at Le Mans?
-    href: /information/endurance
+    href: /information/endurance/classes-at-le-mans
 ---
 
 The **24 Hours of Le Mans** is the world's oldest and most prestigious endurance sports car race, held almost every year since **1923** on the **Circuit de la Sarthe** near the town of Le Mans in France. Part of the roughly **13.6 km** lap runs on closed public roads.
