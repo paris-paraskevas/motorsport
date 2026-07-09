@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.2 — 2026-07-09
+
+**Wider answer pages.** Individual answer and circuit pages now use the width of your screen — the article in a readable column with its sources and links alongside — rather than a narrow centred column.
+
 ## 0.181.1 — 2026-07-09
 
 **Roomier pages + a clearer helper button.** The News, Answers and Social sections now use the full width of your screen — like the Calendar and Series pages — instead of a narrow centred column. The floating Race Engineer help button is also larger on desktop, with a clearer icon.
