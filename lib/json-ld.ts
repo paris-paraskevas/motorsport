@@ -79,6 +79,14 @@ export function sportsEventLd(args: {
   title: string;
   startDate: Date;
   endDate: Date;
+  description?: string;
+  organizerUrl?: string;
+  /** Competing team names → SportsTeam[] performers. */
+  performers?: string[];
+  /** ISO 3166-1 alpha-2 — from the matched circuit; → Place.address. */
+  addressCountry?: string;
+  /** Matched circuit coordinates → Place.geo. */
+  geo?: { lat: number; lon: number };
 }): object {
   const url = `${SITE_URL}/series/${args.slug}/weekend/${args.round}`;
   const location = args.weekend.sessions.find((s) => s.location)?.location;
@@ -92,45 +100,81 @@ export function sportsEventLd(args: {
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
     sport: args.series.meta.name,
+    // Stable brand image — a per-event OG image would be nicer, but its
+    // hashed dynamic URL isn't safe to hard-reference in structured data.
+    image: LOGO_URL,
     organizer: {
       '@type': 'Organization',
       name: args.series.meta.name,
+      ...(args.organizerUrl ? { url: args.organizerUrl } : {}),
     },
   };
-  // location is required by Schema.org for Event, but Place.address would
-  // need circuit data we don't have. Place with `name` only is spec-valid;
-  // Rich Results Test may warn but the schema still validates.
+  if (args.description) ld.description = args.description;
+  if (args.performers && args.performers.length > 0) {
+    ld.performer = args.performers.map((name) => ({ '@type': 'SportsTeam', name }));
+  }
+  // location: Place. When the venue matches our curated circuits.json we enrich
+  // it with a PostalAddress (country) + GeoCoordinates; otherwise name-only,
+  // which is still spec-valid.
   if (location) {
-    ld.location = {
-      '@type': 'Place',
-      name: location,
-    };
+    const place: Record<string, unknown> = { '@type': 'Place', name: location };
+    if (args.addressCountry) {
+      place.address = { '@type': 'PostalAddress', addressCountry: args.addressCountry };
+    }
+    if (args.geo) {
+      place.geo = {
+        '@type': 'GeoCoordinates',
+        latitude: args.geo.lat,
+        longitude: args.geo.lon,
+      };
+    }
+    ld.location = place;
   }
   return ld;
 }
 
+// Coerce a bare YYYY-MM-DD into a full ISO-8601 datetime with an explicit UTC
+// offset. QAPage date fields are DateTime in Schema.org, and Google's Rich
+// Results test rejects a bare date as "missing a timezone" / "invalid datetime".
+function toIsoDateTime(d?: string): string | undefined {
+  if (!d) return undefined;
+  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T00:00:00+00:00` : d;
+}
+
 // QAPage for a single question + curated answer (the /information/[topic]/[slug]
-// pages). Only emitted on INDEXED entries — noindex pages don't need structured
-// data. `answerText` must be plain text (no markdown), so pass the summary or a
-// stripped body excerpt.
+// pages). Only emitted on INDEXED `qa` entries — a track profile isn't a Q&A, so
+// its page omits this (avoids a structured-data-vs-content mismatch). `answerText`
+// must be plain text (no markdown). Google requires `answerCount` and recommends
+// author/text/datePublished/upvoteCount — all populated so the markup validates
+// for rich results.
 export function qaPageLd(args: {
   question: string;
   answerText: string;
   url: string;
   dateModified?: string;
+  author?: string;
 }): object {
+  const iso = toIsoDateTime(args.dateModified);
+  const author = { '@type': 'Person', name: args.author || 'Paris Paraskevas' };
+  const dates = iso ? { datePublished: iso, dateModified: iso } : {};
   return {
     '@context': 'https://schema.org',
     '@type': 'QAPage',
     mainEntity: {
       '@type': 'Question',
       name: args.question,
+      text: args.question,
       url: args.url,
-      ...(args.dateModified ? { dateModified: args.dateModified } : {}),
+      answerCount: 1,
+      author,
+      ...dates,
       acceptedAnswer: {
         '@type': 'Answer',
         text: args.answerText,
         url: args.url,
+        upvoteCount: 0,
+        author,
+        ...(iso ? { datePublished: iso } : {}),
       },
     },
   };

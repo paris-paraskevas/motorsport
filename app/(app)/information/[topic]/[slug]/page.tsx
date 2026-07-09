@@ -131,8 +131,10 @@ export default async function InfoEntryPage({
           { name: entry.question, url },
         ])}
       />
-      {/* QAPage structured data only where the page is actually indexable. */}
-      {indexed && (
+      {/* QAPage structured data only on indexable, genuine Q&A entries — a
+          track profile is not a question, so it omits this (avoids the
+          structured-data-vs-content mismatch flagged in Search Console). */}
+      {indexed && entry.kind === 'qa' && (
         <JsonLd
           data={qaPageLd({
             question: entry.question,
