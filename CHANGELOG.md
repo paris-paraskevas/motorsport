@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.182.3 — 2026-07-09
+
+### Changed
+- **Reshaped the search overlay** (operator: the search bar looked unpolished). `components/search/SearchOverlay.tsx` — the panel gains a `rounded-2xl` corner + a subtle ring (was a sharp-cornered rectangle), a wider `max-w-2xl`, a roomier input row (`py-4`, 15px), a hover-affordance close button, and friendlier empty / no-match states (a centered search icon + normal-case prompt, replacing the bare uppercase-mono line). The frosted backdrop (0.182.1) is unchanged. Verified in-browser on `/calendar`.
+
 ## 0.182.2 — 2026-07-09
 
 ### Fixed
