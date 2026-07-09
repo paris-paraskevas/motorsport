@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.184.0 — 2026-07-10
+
+**Manage your notification devices.** A new "Your devices" list in Settings → Notifications shows every browser and device where you've turned notifications on — send a test to a single one, or remove any you don't use anymore.
+
 ## 0.183.6 — 2026-07-09
 
 **Tidier "Keep exploring" links.** A couple of related-answer links pointed to a section hub instead of the specific answer they named — now they go where the label says.

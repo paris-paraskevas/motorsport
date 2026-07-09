@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { EnableNotifications } from '@/components/EnableNotifications';
+import { YourDevices } from '@/components/YourDevices';
 import { NotifPrefsSection } from '@/components/NotifPrefsSection';
 import { PAGE_READ } from '@/lib/site';
 
@@ -28,6 +29,7 @@ export default function NotificationsPage() {
         </h1>
       </header>
       <EnableNotifications />
+      <YourDevices />
       <NotifPrefsSection />
     </div>
   );

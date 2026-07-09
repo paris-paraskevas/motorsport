@@ -8,6 +8,8 @@ export interface StoredSubscription {
   subscription: PushSubscription;
   userId: string | null;
   createdAt: number;
+  /** Human-readable device label (e.g. "Chrome on Windows"), set at subscribe. */
+  label?: string;
 }
 
 function isKvConfigured(): boolean {
@@ -19,12 +21,18 @@ function isKvConfigured(): boolean {
 export async function saveSubscription(
   sub: PushSubscription,
   userId: string | null = null,
+  label?: string,
 ): Promise<void> {
   if (!isKvConfigured()) {
     throw new Error('Vercel KV is not configured. Connect KV in the Vercel Storage tab.');
   }
   const id = endpointHash(sub.endpoint);
-  const value: StoredSubscription = { subscription: sub, userId, createdAt: Date.now() };
+  const value: StoredSubscription = {
+    subscription: sub,
+    userId,
+    createdAt: Date.now(),
+    ...(label ? { label } : {}),
+  };
   await kv.set(`${KEY_PREFIX}${id}`, value);
 }
 
@@ -75,6 +83,19 @@ export async function listSubscriptions(): Promise<StoredSubscription[]> {
     console.warn(`listSubscriptions: skipped ${dropped} off-allowlist push endpoint(s)`);
   }
   return allowed;
+}
+
+/** The signed-in user's stored devices (subscriptions), newest first — powers
+ *  the Settings "Your devices" list. Endpoint is the per-device id the test /
+ *  unsubscribe routes key on (both ownership-checked server-side). */
+export async function listUserSubscriptions(
+  userId: string,
+): Promise<Array<{ endpoint: string; label: string | null; createdAt: number }>> {
+  const all = await listSubscriptions();
+  return all
+    .filter(s => s.userId === userId)
+    .map(s => ({ endpoint: s.subscription.endpoint, label: s.label ?? null, createdAt: s.createdAt }))
+    .sort((a, b) => b.createdAt - a.createdAt);
 }
 
 /** Parse a stored endpoint string and test it against the push-host allowlist.

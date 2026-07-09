@@ -12,6 +12,8 @@ interface SubscribeBody {
     keys: { p256dh: string; auth: string };
     expirationTime?: number | null;
   };
+  /** Optional human-readable device label (e.g. "Chrome on Windows"). */
+  label?: string;
 }
 
 export async function POST(req: Request) {
@@ -61,6 +63,10 @@ export async function POST(req: Request) {
     userId = null;
   }
 
+  // Freeform, client-derived — cap it so a hostile client can't bloat the KV row.
+  const label =
+    typeof body.label === 'string' && body.label.trim() ? body.label.trim().slice(0, 60) : undefined;
+
   try {
     await saveSubscription(
       {
@@ -68,6 +74,7 @@ export async function POST(req: Request) {
         keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
       },
       userId,
+      label,
     );
     return NextResponse.json({ ok: true });
   } catch (err) {

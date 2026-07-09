@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.184.0 — 2026-07-10
+
+### Added
+- **Settings → "Your devices" push-device list.** A signed-in user can now see every browser/device they've enabled notifications on, send a test to just one, and remove any of them. New `components/YourDevices.tsx` + `GET /api/push/devices` (new `listUserSubscriptions` in `lib/push-store` — per-user filter, newest-first). Subscriptions now carry a client-derived `label` ("Chrome on Windows", capped 60 chars, set at subscribe via `lib/pushClient.deviceLabel()` + the subscribe route). The test route takes an optional `{ endpoint }` to target one device (bodyless POST = all devices, as before); Remove reuses the ownership-checked `/api/push/unsubscribe` (the current device fully unsubscribes browser+server, others drop the server row and self-prune on the next 404/410 send). Mounted between Enable and notif-prefs on `/settings/notifications`.
+
 ## 0.183.6 — 2026-07-09
 
 ### Fixed
