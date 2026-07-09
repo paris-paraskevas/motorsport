@@ -19,7 +19,7 @@ sources:
 related:
   - label: Formula 1 standings & results
     href: /series/f1
-  - label: What is an F1 sprint race?
+  - label: More Formula 1 answers
     href: /information/formula-1
 ---
 
