@@ -6,7 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT COMPLETE 138/138 + Belgian-GP blog POSTED + SEO structured-data fix. NEXT: operator approves blog; review/merge 3 branches; CLS perf pass
+## ⚡ Next session pickup — 2026-07-09 (LATEST, session 2) — QA/fix marathon: shipped 0.180.1→0.181.2; a WIP width branch + a map + 5 more items QUEUED
+
+**Long session. A lot shipped to prod; a QA backlog opened. The QUEUED list below IS the next-session worklist — every operator item this session is captured there.**
+
+### ✅ SHIPPED to prod (main `0.180.1 → 0.181.2`, 5 squash-merges)
+- **Blog** — Belgian GP preview posted → operator approved+scheduled → **published live** 2026-07-09 13:31 EEST at `/blog/belgian-grand-prix-2026-preview` (verified). The publish cron polls (~30-min latency), so a scheduled post goes live shortly *after* its minute — not a bug. `.env.blog` (gitignored) holds prod Supabase creds for `scripts/draft-post.mts`.
+- **Enrichment COMPLETE** (#445, 0.181.0) — all **138** track guides + generated champions Q&A / per-country pages deepened (`generated.ts` tie-aware records + `curated.ts`); hub thin+indexed 43→26 (residual = data-sparse-but-complete Q&A; only richer `champions.json` would lengthen them).
+- **SEO structured data** (#444, 0.180.1) — QAPage (all 9 GSC issues fixed, scoped to `qa` entries) + SportsEvent (description/organizer.url/performer/image/address+geo via a new `countryCode` on `circuits.json`). **⏳ OWED: run GSC "Validate fix" now it's deployed.**
+- **Width v1** (#447, 0.181.1) — news / social / information hub+topic + the assistant bubble (bigger on desktop, headset→`UserCog` engineer icon).
+- **Width v2** (#448, 0.181.2) — answer/track **detail** pages → main article column + sticky sidebar (Sources/Keep-exploring).
+
+### 🔧 WIP branches (pushed, NOT merged — verify first)
+- **`feat/ui-width-more`** — the **shared-width pass**: changelog, blog(list), drivers/[slug], f1/analysis, social → wide; feedback + all 5 settings pages → moderate `xl:max-w-5xl`. `tsc` clean but **NOT browser-verified across the 11 pages** → verify at 1920px + mobile, then PR+merge as **0.181.3**. (Widths are inline strings; extracting a DRY `PAGE_WIDE`/`PAGE_FORM` into `lib/site.ts` is a cleanup. Nav at `AppShell.tsx:63` already uses the wide pattern = the reference the pages now match.)
+- **`feat/tracks-map`** — `leaflet` + `react-leaflet` installed (committed). Map NOT built.
+
+### 📋 QUEUED — next-session worklist (all operator items this session)
+1. **Verify + ship `feat/ui-width-more`** (shared width). Then the app is width-consistent (calendar/series/weekend/home already wide; nav already wide).
+2. **blog/[slug] (blog POST) width** — still `max-w-3xl`; give it the answer-detail treatment (readable main + sidebar), NOT full-bleed prose.
+3. **Tracks map** — operator wants ONE big global map of all 138 circuits (data ready: 138/138 have coords). **Decided: Leaflet + OpenStreetMap** (free, no key; Google Maps is free at our traffic ~10k loads/mo cap but needs operator billing+key — swappable later). Route: **`/information/map`** (static segment beats the `[topic]` dynamic route). Client component, `dynamic(ssr:false)` (leaflet needs `window`), markers + search (filter/fly-to) + marker→track page; link from `/information/tracks`; reserve container height (CLS). Deps on `feat/tracks-map`.
+4. **Mobile has no Answers access** — **decided: a "More" overflow tab** in the mobile bottom bar (`components/BottomBar.tsx`) → sheet with Answers, Social, Settings, etc.
+5. **"Keep exploring" mislabeled links** — on answer pages a related link labelled *"What is an F1 sprint race?"* points to the topic index `/information/formula-1` (and "Formula 1 standings & results"→`/series/f1`). Audit + fix `related` frontmatter in `content/information/answers/*.md` — labels must match destinations (relabel, or create the missing answer).
+6. **Weekend circuit-map "messed up"** — operator flagged the circuit-map hero on `/series/f1/weekend/[round]/[session]`. **I did NOT touch that page/component** (my only weekend change was SEO metadata) → verify with own eyes; likely pre-existing, fix if real.
+7. **CLS perf pass** — RES snapshot appended to `docs/perf-baselines.md` (2026-07-09): CLS regressed (D 0.12 / M 0.16, both >0.1) = the one systemic Core Web Vital. Grab PSI lab first; suspects: images w/o dimensions, late-injected UI, font swap.
+
+### Notes / constraints
+- PR → squash-merge only; every merge to main = CHANGELOG + RELEASES + `package.json` bump (all 5 ships followed this).
+- Org monthly spend cap was hit earlier (agent-heavy work may need `/usage-credits`); direct tool calls still work.
+- Untracked, persist across branches: `drafts/*.json`, `.env.blog` (gitignored, prod blog creds).
+
+---
+
+## Next session pickup — 2026-07-09 (session 1) — ENRICHMENT COMPLETE 138/138 + Belgian-GP blog POSTED + SEO structured-data fix
 
 **Enrichment is DONE (138/138), the Belgian-GP blog is POSTED to prod (awaiting operator approval), and a QAPage/SportsEvent structured-data fix landed on a new branch.** Three local branches now await review + merge; the only queued *build* work is a CLS perf pass (data logged in `docs/perf-baselines.md`, 2026-07-09).
 
