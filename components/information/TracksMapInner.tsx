@@ -60,7 +60,10 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
       else next.add(c);
       return next;
     });
-  const resetCategories = () => setActive(new Set(categories));
+  // Select-all / clear toggle (mirrors the calendar filters): one click flips
+  // between every category and none, so isolating one category is clear-then-pick
+  // instead of unticking the rest.
+  const toggleAll = () => setActive(allActive ? new Set() : new Set(categories));
 
   const visible = useMemo(
     () => tracks.filter((t) => t.categories.some((c) => active.has(c))),
@@ -150,6 +153,15 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
 
       {/* Category filter chips */}
       <div className="flex flex-wrap items-center gap-1.5">
+        <button
+          type="button"
+          onClick={toggleAll}
+          aria-pressed={allActive}
+          className="inline-flex items-center rounded-full border border-border-strong px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          {allActive ? 'Clear' : 'Select all'}
+        </button>
+        <span aria-hidden="true" className="mx-0.5 h-4 w-px shrink-0 bg-border" />
         {categories.map((c) => {
           const on = active.has(c);
           return (
@@ -171,15 +183,6 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
             </button>
           );
         })}
-        {!allActive && (
-          <button
-            type="button"
-            onClick={resetCategories}
-            className="ml-1 font-mono text-[11px] uppercase tracking-[0.1em] text-text-muted transition-colors hover:text-text"
-          >
-            Reset
-          </button>
-        )}
       </div>
 
       {/* Map */}

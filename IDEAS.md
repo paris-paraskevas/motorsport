@@ -30,6 +30,7 @@ _Triage 2026-06-11 (operator 15-item batch organized into waves W1–W8; sequenc
 
 ## Inbox (unfiltered, append-only)
 
+- 2026-07-09 Map filters + F1-track scoping (operator): make the map's category filters multi-select with a "select all" toggle like the calendar filters (instead of the current single-select), and scope the "F1" pin set to only circuits on the current F1 calendar or that have historically hosted an F1 race — venues that also belong to other categories (e.g. a GT3 track) should surface under those categories too.
 - 2026-07-09 Add a tracks map — a world map pinpointing all 138 circuit venues with a search bar, in the /information tracks area (leverages the enriched track data + coordsVerified coordinates).
 - 2026-07-09 Tracks map — RICHER VISION (operator): with OSM, paint per-circuit sector boundaries + start/finish line + "mom zones" (marshalling zones) on F1 tracks, plus map filters by category (karting / feeder / F1 / IndyCar / NASCAR …) and by overlay type (sectors / start-finish / mom zones …) — extends the base all-138-pins map in QUEUED #3.
 - 2026-07-09 Blog notifications don't fire on publish (operator, BUG) — a post going live should immediately push/notify followers; right now it doesn't. Investigate the publish path (publish-posts cron / status→published) + notification fan-out (lib/push, notify crons) and wire blog-release → notification. Queued after #2.

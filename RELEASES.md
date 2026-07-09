@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.183.1 — 2026-07-09
+
+**One-tap map filtering.** The circuit map's category filter now has a "Select all / Clear" toggle — clear everything and pick just the category you want in one tap, instead of switching the others off one by one.
+
 ## 0.183.0 — 2026-07-09
 
 **Calmer notifications + quiet hours.** When several updates land at once they now arrive as one summary instead of a burst of separate buzzes, and you can set **quiet hours** to pause notifications overnight (Settings → Notifications, in your local time). Push notifications now require an account so they always match the series you follow.
