@@ -4,6 +4,14 @@ What's new in Paddock Tracker. Newest first.
 
 **Calmer notifications + quiet hours.** When several updates land at once they now arrive as one summary instead of a burst of separate buzzes, and you can set **quiet hours** to pause notifications overnight (Settings → Notifications, in your local time). Push notifications now require an account so they always match the series you follow.
 
+## 0.182.4 — 2026-07-09
+
+**Find the circuit map faster.** The new world map of every circuit is now a click away — from the "Answers" menu on desktop and a new "Answers" tab in the mobile bar (which also opens up the rest of the Answers section on phones for the first time).
+
+## 0.182.3 — 2026-07-09
+
+**Nicer search.** The search box has a cleaner, rounder look with a friendlier prompt when it's empty — and opening it now gently blurs the whole page behind it (it used to only dim the top bar).
+
 ## 0.182.2 — 2026-07-09
 
 **Build fix.** Restored a dependency a merge had dropped so updates can ship again — no user-facing change.

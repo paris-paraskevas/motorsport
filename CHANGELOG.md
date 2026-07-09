@@ -15,6 +15,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 Verified: `isQuietNow` + eligibility unit-tested (`lib/userPrefs.test.ts` + `lib/notify-coalesce.test.ts`, 22 green); `tsc` + full `next build` green. End-to-end push (KV subscriptions + GitHub Actions crons) is observable only on production — watch a busy tick after deploy.
 
+## 0.182.4 — 2026-07-09
+
+### Changed
+- **Clear navigation to the circuit map, desktop + mobile** (operator). Added **"Circuit Map" → `/information/map`** to the desktop "Answers" nav menu (`components/AppShell.tsx`), and — because the mobile bottom bar had **no Answers entry at all**, leaving the whole `/information` section (and the map) unreachable on phones — a new **"Answers" tab** in `components/BottomBar.tsx` (`→ /information`, Compass icon; grid widens to 5/6 cols). Verified in-browser: mobile bar shows Home / Calendar / Series / Answers / Social / Account; desktop menu lists Circuit Map. (Follow-up: a fuller mobile "More" overflow sheet per the queued IA item; and surfacing the map on the `/information` hub for a 1-tap mobile path.)
+
+## 0.182.3 — 2026-07-09
+
+### Changed
+- **Reshaped the search overlay** (operator: "really bad job with the search bar"). `components/search/SearchOverlay.tsx` — the panel gains a `rounded-2xl` corner + a subtle ring (was a sharp-cornered rectangle), a wider `max-w-2xl`, a roomier input row (`py-4`, 15px), a hover-affordance close button, and friendlier empty / no-match states (a centered search icon + normal-case prompt, replacing the bare uppercase-mono line).
+
+### Fixed
+- **Search backdrop now frosts the whole page, not just the nav** (operator: "it only blurs the nav bar, the rest is clear"). The trigger lives in the fixed nav header, so rendering the overlay inline trapped its `backdrop-blur` inside the header's stacking context — only the nav blurred. `components/search/SearchTrigger.tsx` now renders the overlay via `createPortal(…, document.body)`, placing it in the root stacking context so the blur covers the entire page. Verified in-browser on `/changelog`.
+
 ## 0.182.2 — 2026-07-09
 
 ### Fixed
