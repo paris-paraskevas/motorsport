@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
-import { NEWS_SLUG_MAP, fetchNews } from '@/lib/news';
+import { NEWS_SLUG_MAP, fetchNews, articleKey, isRecentArticle } from '@/lib/news';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
@@ -53,9 +53,13 @@ export async function GET(req: Request) {
 
     let coldStart = 0;
     let unchanged = 0;
+    let stale = 0;
+    let duplicate = 0;
     let sent = 0;
     let evicted = 0;
     let skipped = 0;
+    const now = new Date();
+    const queuedKeys = new Set<string>();
     const newArticles: Array<{ slug: string; title: string; link: string }> = [];
 
     for (const [slug, motorsportSlug] of Object.entries(NEWS_SLUG_MAP)) {
@@ -81,8 +85,28 @@ export async function GET(req: Request) {
         continue;
       }
 
-      // Genuinely new article — record and queue notification
+      // New top link. Record it as seen regardless of whether we push (so it's
+      // not re-evaluated next run), then apply two gates before queuing.
       await kv.set(key, top.link);
+
+      // Cross-post dedup: motorsport.com syndicates one story to several series
+      // feeds; articleKey is its stable identity across them. Without this the
+      // same story pushed once per series, at odd intervals.
+      const storyKey = articleKey(top.link);
+      if (queuedKeys.has(storyKey)) {
+        duplicate++;
+        continue;
+      }
+
+      // Freshness gate: only push recently-published articles. Suppresses an old
+      // story resurfacing to feed-top, which otherwise fired a push at a random
+      // hour (operator 2026-07-09).
+      if (!isRecentArticle(top.pubDate, now)) {
+        stale++;
+        continue;
+      }
+
+      queuedKeys.add(storyKey);
       newArticles.push({ slug, title: top.title, link: top.link });
     }
 
@@ -91,6 +115,8 @@ export async function GET(req: Request) {
         ok: true,
         coldStart,
         unchanged,
+        stale,
+        duplicate,
         sent: 0,
         skipped: 0,
         evicted: 0,
@@ -148,6 +174,8 @@ export async function GET(req: Request) {
       ok: true,
       coldStart,
       unchanged,
+      stale,
+      duplicate,
       newArticles: newArticles.length,
       sent,
       skipped,

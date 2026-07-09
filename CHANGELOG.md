@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.181.5 — 2026-07-09
+
+### Fixed
+- **News push notifications no longer fire at random times or duplicate across series** (operator: "appear at random times throughout the day for motorsport.com news"). `app/api/cron/news/route.ts` now applies two gates before queuing a push: a **freshness gate** (`isRecentArticle`, 2h window in `lib/news.ts`) so an old story resurfacing to feed-top — motorsport.com reorders / re-timestamps its feed — no longer fires at a random hour; and **cross-post dedup** (`articleKey`) so a story syndicated to several category feeds pushes once, not once per series. The last-seen link is still recorded when a push is suppressed, so genuinely-new articles still notify. Unit-tested (`lib/news.test.ts`, +6 cases).
+
+### Changed
+- **News cron split off the notify tick to reduce the "all in one minute" burst** (operator). Moved the `/api/cron/news` ping out of `notify.yml` into a new `.github/workflows/news.yml` on an offset schedule (`7,22,37,52 * * * *`), so news pushes no longer land in the same minute as the session / results / analysis reminders `notify.yml` sends.
+
+> End-to-end push behaviour (KV subscriptions + GitHub Actions crons hitting prod) can only be observed on production — verified here by unit tests + `tsc`; watch the next news cycle live. Still open (deeper, not in this change): per-tick summary-coalescing for the session burst, quiet hours, and anonymous subscriptions bypassing preference filters.
+
 ## 0.181.4 — 2026-07-09
 
 ### Changed
