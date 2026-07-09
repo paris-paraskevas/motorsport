@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.182.1 — 2026-07-09
+
+**Search comes forward.** Opening search now gently blurs the rest of the page so the search box stands out — click anywhere outside it to close.
+
 ## 0.182.0 — 2026-07-09
 
 **A world map of every circuit.** Explore all 138 racing venues on one interactive map — search for a track, filter by series, switch between map / satellite / terrain views, and open any marker to jump straight to its circuit guide.
