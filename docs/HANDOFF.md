@@ -6,16 +6,24 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT 93/138 (batches 1–15, all verified) + Belgian-GP blog draft POSTED to prod. NEXT: finish ~8 batches (operator approves the blog draft)
+## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT COMPLETE 138/138 + Belgian-GP blog POSTED + SEO structured-data fix. NEXT: operator approves blog; review/merge 3 branches; CLS perf pass
 
-**Blog draft is POSTED to the prod queue (awaiting operator approval in `/blog`); the remaining next-session work is enriching the last 45 tracks.** Big enrichment run this session + a scheduled blog draft (now a prod draft row). Enrichment lives on a LOCAL branch (unpushed).
+**Enrichment is DONE (138/138), the Belgian-GP blog is POSTED to prod (awaiting operator approval), and a QAPage/SportsEvent structured-data fix landed on a new branch.** Three local branches now await review + merge; the only queued *build* work is a CLS perf pass (data logged in `docs/perf-baselines.md`, 2026-07-09).
 
-### Track enrichment — 93/138 done, ALL verified · branch `feat/information-track-guides` (LOCAL/unpushed)
-Batches 1–15 complete via **draft → independent adversarial skeptic → Claude spot-check of volatile claims → merge → `vitest` → commit** (one commit per batch = durable checkpoint). Rules held throughout: **#1 facts must be facts (no hallucination/misinterpretation), #2 nothing outdated.** The skeptic caught real errors in nearly every batch — proving the process necessary:
-- *Outdated-2026 corrections:* Bahrain/Jeddah GPs status, Toronto→Markham move, Charlotte roval dropped, Dover no 2026 points race, Zandvoort last Dutch GP, Barcelona→Madrid, plus the batch-15 winners (Palou/Antonelli/Elliott/Hamlin) all re-checked live.
-- *Historical corrections:* Hungaroring count, Fangio 1956 shared drive, Monza pack finishes, Indy brickyard year, a cross-batch Zolder/Hugenholtz mixup.
-- **NEXT: finish the remaining 45 tracks (~8 batches of 6).** Done-set is **self-describing** — remaining = tracks with no `article` field in `content/information/tracks.json` (`!("article" in t)`). Tail is tier-2/3 (secondary categories + karting/minor venues) → shorter guides fine for genuinely minor venues. Reuse the exact process above; merge via a by-slug node script in scratchpad (avoids JSON-escaping the big file), then `npx vitest run lib/information/information.test.ts` (16 tests) before each commit.
-- *Data-tag NOTEDs (non-blocking, later audit):* Termas `motogp`→historic (gone after 2025); Okayama `motogp` never hosted world bikes; Mosport/CTMP omit `f1` despite 8 past F1 GPs.
+### Track enrichment — COMPLETE, 138/138, all verified · branch `feat/information-track-guides` (LOCAL/unpushed)
+All 138 tracks now carry a fact-checked `article` (batches 1–23; the final 8 batches ran this session, 93→138). Process (LOCKED): batched draft → verify EVERY claim vs primary sources (2026 WRC / NASCAR-Cup / IndyCar / WSBK calendars + Wikipedia/official) → correct or cut → merge by-slug via a scratchpad node script → `npx vitest run lib/information/information.test.ts` (16 green) → one commit per batch. Verification caught real errors every batch — the two rules (facts / nothing-outdated) were necessary.
+- *Current-status catches (this session):* NASCAR Cup finale moved Phoenix→Homestead (Phoenix now opens Round of 8; New Hampshire dropped from the playoffs); IndyCar returned to Phoenix, Texas/Pocono no longer IndyCar; Laguna Seca = 2026 IndyCar finale; Rally Argentina last 2019 / Germany last 2019; Macau switched F3→FIA FR World Cup; Rockingham closed 2018→vehicle storage; Lausitzring now a DEKRA test site (DTM still annual).
+- *Data-tag NOTEDs (non-blocking, later audit):* Termas `motogp`→historic; Okayama `motogp` never hosted world bikes; Mosport/CTMP omit `f1` despite 8 past F1 GPs.
+- **NEXT: no content work left** — the run is done. Open the PR from `feat/information-track-guides`.
+
+### SEO structured-data fix — branch `fix/structured-data-jsonld` (off `main`, LOCAL/unpushed, commit `fc5a889`)
+Prompted by two Search Console reports (QAPage + SportsEvent). One-branch fix to `lib/json-ld.ts` (+ `circuits.ts`, both pages, `circuits.json`, new `lib/json-ld.test.ts`):
+- **QAPage** (1 error + 8 warnings): `qaPageLd` now emits `answerCount`/`text`/`author`/`datePublished` + `acceptedAnswer` `author`/`datePublished`/`upvoteCount`, and normalises `dateModified` to a timezoned ISO datetime. **Scoped QAPage to `qa`-kind entries only** — track pages no longer emit it (they aren't questions).
+- **SportsEvent** (6 warnings): added `description`, `organizer.url`, `performer` (curated teams), `image` (brand logo — a dynamic-OG URL was deliberately avoided in structured data), and `location` `address`+`geo` via a new `countryCode` on the 38 `circuits.json` entries (sourced from `tracks.json`, verified).
+- **Verified:** `tsc --noEmit` clean; 23 tests; dev-server curl confirmed all fields render (qa page QAPage, track page omits it, weekend page 11 performers + `GB` address + geo). **GSC "Validate fix" pending deploy.**
+
+### Perf — CLS is the next target (data logged)
+Two Vercel RES dashboards (2026-07-09) appended to `docs/perf-baselines.md`. RES up (D 98 / M 81 vs May 95 / 76) and mobile TTFB fixed (3.17→1.55 s), but **CLS regressed on both platforms (D 0.12 / M 0.16, both > 0.1)** → the one systemic Core Web Vital left. Next-session CLS hunt: images without dimensions, late-injected UI (chat launcher/banners), font swap; grab PSI lab first. Most "Poor" routes are tiny-sample noise.
 
 ### Blog — Belgian GP preview POSTED to prod 2026-07-09 · awaiting operator approval
 - **Draft:** `drafts/belgian-grand-prix-2026-preview.json` (untracked; post.json shape — slug/title/summary/body/seriesSlug=f1/heroImage=null/publishAt=null). ~462 words, F1 house voice, sources **linked inline not pasted**, every fact verified as of 2026-07-09. Chose a *preview* of the next race (Belgian GP, Spa, Sun 19 Jul) because the British GP recap was already queued for the 5 Jul race. Facts CUT for failing rule #1: a source's false "Round 12" + stale pre-British standings + "Hamilton record 6 Spa wins" (that's Schumacher's).
@@ -26,11 +34,13 @@ Batches 1–15 complete via **draft → independent adversarial skeptic → Clau
 - **Org hit its MONTHLY SPEND LIMIT** mid-session (a batch-15 skeptic *agent* aborted). My own WebSearch/WebFetch/Bash still worked; agent-heavy verification may need the cap raised (`/usage-credits`) or the skeptic pass run as direct tool calls.
 - Prod-Supabase access is classifier-gated (operator approves, or run yourself).
 
-### Branch state (all enrichment/handoff work is LOCAL — nothing pushed)
-- `main` = `867a2e9` (**0.180.0**, prod live). *Note: this `docs/post-442-handoff` branch predates #443, so its checked-out `package.json`/`page.tsx`/`curated.ts` read 0.179.0 / no-byline — expected, ignore.*
-- `feat/information-track-guides` — batches 1–15 (93 circuits) + byline/E-E-A-T infra + IDEAS capture. Enrichment continues here; PR when the run completes (or at a sensible chunk).
-- `docs/post-442-handoff` = THIS branch — handoff + SEO plan (`docs/research/2026-07-08-seo-optimization-plan.md`). **`main`'s handoff copy is stale — read this branch.**
-- Untracked, persist across branch switches: `drafts/belgian-grand-prix-2026-preview.json`, `drafts/motogp-german-grand-prix-2026-preview.json`, `.env.blog` (gitignored).
+### Branch state — 3 LOCAL branches await review + merge (nothing pushed)
+- `main` = `867a2e9` (**0.180.0**, prod live). *This `docs/post-442-handoff` branch predates #443, so its checked-out code reads 0.179.0 / no-byline — expected, ignore.*
+- `feat/information-track-guides` — track enrichment COMPLETE (138/138, batches 1–23) + byline/E-E-A-T infra + IDEAS. **PR-ready.**
+- `fix/structured-data-jsonld` (off `main`) — the QAPage/SportsEvent fix (`fc5a889`). **PR-ready.** Independent of the enrichment (touches `json-ld.ts`/`circuits.json`/pages, not tracks.json article data) — merges cleanly alongside.
+- `docs/post-442-handoff` = THIS branch — handoff + SEO plan + perf-baselines.
+- **Owed at each merge to `main`:** CHANGELOG + RELEASES + `package.json` version bump (deliberately NOT done per-branch to avoid version-collision across the 3). Coordinate versions at merge.
+- Untracked, persist across branches: `drafts/belgian-grand-prix-2026-preview.json` (already on prod), `drafts/motogp-german-grand-prix-2026-preview.json` (leftover), `.env.blog` (gitignored, prod creds).
 
 ---
 

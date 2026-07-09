@@ -112,6 +112,32 @@ The race-weekend page (`/series/[slug]/weekend/[round]`, `● ISR`) was server-r
 
 Net: a cold weekend page sheds ~**3–4 s** of upstream fan-out off its render path; the page stays ISR-cacheable and the deferred APIs are independently CDN-cached. **Field numbers pending** — capture PSI + Vercel SI ≥24 h post-deploy and append.
 
+## 2026-07-09 — field re-baseline (Vercel Speed Insights, last 7 days Jul 2–9)
+
+First field snapshot since the caching + defer work landed. **Both platforms improved on RES and TTFB vs the 2026-05-19 baseline, but CLS regressed on both and is now the primary systemic issue.**
+
+| Metric | Desktop | Mobile | vs 2026-05-19 |
+|---|---|---|---|
+| **RES** | **98** (Great) | **81** (Needs Improvement) | ↑ from 95 / 76 |
+| FCP | 1.35 s | 2.22 s | ↑ both |
+| LCP | 1.91 s | 3.58 s | mobile still > 2.5 s target |
+| INP | 40 ms | 72 ms | passing |
+| **CLS** | **0.12** | **0.16** | ↓ **regressed** (was 0.06 / 0.11) — both now > 0.1 |
+| FID | 3 ms | 31 ms | passing |
+| TTFB | 0.59 s | 1.55 s | ↑↑ big win (was 1.63 / 3.17 s) |
+
+**Headline:** the mobile TTFB collapse (3.17 → 1.55 s) validates the ISR/caching work. **CLS is the new offender — 0.12 desktop / 0.16 mobile, both above the 0.1 threshold and both worse than May.** It is the single systemic Core Web Vital to attack next.
+
+**Routes — desktop:** Great: `/` 100 (141), `/blog` 100 (44), `/changelog` 100 (34), `/app` 94 (126), `/settings` 99 (15), `/series/[slug]/weekend/[round]` 96 (11), `/about` 100 (7). Needs Improvement: `/series/[slug]` 88 (21), `/calendar` 84 (6), `/settings/customize` 79 (9), `/settings/series` 75 (5), `/series/[slug]/[tab]` 55 (12). Poor: `/blog/[slug]` 48 (16), `/series/[slug]/weekend/[round]/[session]` 38 (8), `/social` 30 (10), `/sign-in` 30 (8), `/settings/notifications` 25 (3), `/drivers/[slug]` **1** (3 visits — outlier).
+
+**Routes — mobile:** Great: `/changelog` 100 (25), `/` 97 (17), `/blog/[slug]` 100 (6), `/series/[slug]` 100 (4). Needs Improvement: `/app` 85 (56), `/drivers/[slug]` 88 (11), `/play` 78 (9), `/blog` 75 (8), `/series/[slug]/[tab]` 64 (14), `/series/[slug]/weekend/[round]` 55 (18), `.../[session]` 70 (7). Poor: `/feedback` 40 (7).
+
+**Countries:** desktop — China 80 (3). Mobile — China 48 (6, Poor).
+
+**Sample-size caveat:** the scary desktop "Poor" routes all have 3–16 visits, so one slow load skews them (`/drivers/[slug]` = 1 from 3 visits, yet mobile is 88). Reliable systemic signals: **CLS (both)** and secondarily **mobile LCP 3.58 s / TTFB 1.55 s**.
+
+**→ NEXT-SESSION CLS hunt (queued).** CLS regressed since May. Suspects: (a) images/embeds without reserved `width`/`height` (May plan already flagged the Wikipedia History-tab `<img>`, rank 5); (b) late-injected UI shifting content — the Race Engineer chat launcher, banners; (c) web-font swap; (d) recently-added on-page bylines / enriched blocks. **PSI lab not captured this snapshot** — grab PSI desktop+mobile at the start of the CLS session for layout-shift attribution.
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |
