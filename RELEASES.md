@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.182.4 — 2026-07-09
+
+**Find the circuit map faster.** The new world map of every circuit is now a click away — from the "Answers" menu on desktop and a new "Answers" tab in the mobile bar (which also opens up the rest of the Answers section on phones for the first time).
+
 ## 0.182.2 — 2026-07-09
 
 **Build fix.** Restored a dependency a merge had dropped so updates can ship again — no user-facing change.

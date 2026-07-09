@@ -1,5 +1,5 @@
 'use client';
-import { CalendarDays, CircleUser, Flag, House, Users } from 'lucide-react';
+import { CalendarDays, CircleUser, Compass, Flag, House, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth, useUser } from '@clerk/nextjs';
@@ -22,7 +22,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
       aria-label="Primary"
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated/90 backdrop-blur-xl border-t border-border pb-[env(safe-area-inset-bottom)]"
     >
-      <div className={`grid ${bettingEnabled ? 'grid-cols-5' : 'grid-cols-4'} h-14 max-w-2xl mx-auto`}>
+      <div className={`grid ${bettingEnabled ? 'grid-cols-6' : 'grid-cols-5'} h-14 max-w-2xl mx-auto`}>
         <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} />
         <BarLink
           href="/calendar"
@@ -36,6 +36,14 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
           label="Series"
           Icon={Flag}
           dataTour="series"
+        />
+        {/* Answers hub (incl. the circuit map) — the section had no mobile entry
+            before, so /information + /information/map were unreachable on phones. */}
+        <BarLink
+          href="/information"
+          active={pathname === '/information' || pathname.startsWith('/information/')}
+          label="Answers"
+          Icon={Compass}
         />
         {/* Play folded into Social (0.84.0): Social is the play/friends/community hub. */}
         {bettingEnabled && (

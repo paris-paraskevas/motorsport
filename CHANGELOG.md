@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.182.4 — 2026-07-09
+
+### Changed
+- **Clear navigation to the circuit map, desktop + mobile** (operator). Added **"Circuit Map" → `/information/map`** to the desktop "Answers" nav menu (`components/AppShell.tsx`), and — because the mobile bottom bar had **no Answers entry at all**, leaving the whole `/information` section (and the map) unreachable on phones — a new **"Answers" tab** in `components/BottomBar.tsx` (`→ /information`, Compass icon; grid widens to 5/6 cols). Verified in-browser: mobile bar shows Home / Calendar / Series / Answers / Social / Account; desktop menu lists Circuit Map. (Follow-up: a fuller mobile "More" overflow sheet per the queued IA item; and surfacing the map on the `/information` hub for a 1-tap mobile path.)
+
 ## 0.182.2 — 2026-07-09
 
 ### Fixed

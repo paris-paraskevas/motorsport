@@ -136,6 +136,7 @@ export function AppShell({
                   { href: '/information/formula-1', label: 'Formula 1 & Open-Wheel', desc: 'Champions, rules & records' },
                   { href: '/information/feeder-series', label: 'Feeder Series', desc: 'The junior ladder' },
                   { href: '/information/tracks', label: 'Tracks & Circuits', desc: 'Venues by country' },
+                  { href: '/information/map', label: 'Circuit Map', desc: 'All 138 venues on one map' },
                   { href: '/information/general', label: 'Motorsport 101', desc: 'The basics & big debates' },
                 ]}
               />
