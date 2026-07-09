@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ArrowRight } from 'lucide-react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { currentUser, clerkClient } from '@clerk/nextjs/server';
-import { listPostSlugs, loadPost } from '@/lib/posts';
-import { getPostBySlug, type BlogPost } from '@/lib/blog';
+import { listPostSlugs, loadPost, loadAllPosts } from '@/lib/posts';
+import { getPostBySlug, publishedPosts, type BlogPost } from '@/lib/blog';
 import { isAdmin, isWriter } from '@/lib/threads';
 import { renderMarkdown } from '@/lib/content';
 import { mdxComponents } from '@/components/mdx/mdx-components';
@@ -14,8 +14,11 @@ import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
-import { SITE_URL, PAGE_READ } from '@/lib/site';
+import { SITE_URL } from '@/lib/site';
 import type { Post } from '@/lib/types';
+import { loadSeriesMeta } from '@/lib/series';
+import { injectHeadingIds, tocFromMarkdown, type TocItem } from '@/lib/toc';
+import { BlogShare } from '@/components/blog/BlogShare';
 
 // Force-dynamic: required for the admin scheduled-preview branch (currentUser),
 // and DB posts render at request time anyway. generateStaticParams stays
@@ -163,6 +166,34 @@ async function canPreviewUnpublished(db: BlogPost): Promise<boolean> {
   return isWriter(u) && db.authorId === u?.id;
 }
 
+interface RecentPost {
+  slug: string;
+  title: string;
+  publishedAt: string;
+}
+
+// Sidebar "More from the blog" — merged DB + MDX posts, newest first, the
+// current post excluded. Fail-soft: a Supabase/file hiccup just yields fewer
+// (or no) items, never a 500 on the post route.
+async function loadRecentPosts(excludeSlug: string, limit = 5): Promise<RecentPost[]> {
+  const [dbPosts, mdxPosts] = await Promise.all([
+    publishedPosts().catch(() => []),
+    loadAllPosts().catch(() => []),
+  ]);
+  const bySlug = new Map<string, RecentPost>();
+  for (const p of mdxPosts) {
+    bySlug.set(p.slug, { slug: p.slug, title: p.frontmatter.title, publishedAt: p.frontmatter.publishedAt });
+  }
+  for (const p of dbPosts) {
+    // DB wins on slug collision (matches the /blog list merge).
+    bySlug.set(p.slug, { slug: p.slug, title: p.title, publishedAt: p.publishedAt ?? p.createdAt });
+  }
+  bySlug.delete(excludeSlug);
+  return [...bySlug.values()]
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    .slice(0, limit);
+}
+
 export default async function PostPage({
   params,
 }: {
@@ -202,8 +233,26 @@ export default async function PostPage({
 
   const postUrl = `${SITE_URL}/blog/${slug}`;
 
+  // Table of contents + anchor ids for the sidebar. DB posts carry rendered
+  // HTML (inject ids into it); MDX posts derive the ToC from their markdown
+  // source (mdx-components adds matching ids at render).
+  let articleHtml = bodyHtml;
+  let toc: TocItem[] = [];
+  if (bodyHtml !== null) {
+    const injected = injectHeadingIds(bodyHtml);
+    articleHtml = injected.html;
+    toc = injected.toc;
+  } else if (post.source) {
+    toc = tocFromMarkdown(post.source);
+  }
+
+  const series = post.frontmatter.seriesSlug
+    ? await loadSeriesMeta(post.frontmatter.seriesSlug).catch(() => null)
+    : null;
+  const recent = await loadRecentPosts(slug);
+
   return (
-    <div className={PAGE_READ}>
+    <div className="max-w-2xl lg:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
@@ -240,7 +289,8 @@ export default async function PostPage({
           author={author}
         />
       ) : (
-        <>
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12 lg:items-start">
+          <div className="min-w-0 max-w-3xl">
       <header className="mb-8">
         <div className="flex items-baseline gap-3 mb-3 flex-wrap">
           <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
@@ -282,13 +332,75 @@ export default async function PostPage({
       </header>
 
       <article className={POST_ARTICLE_CLASS}>
-        {bodyHtml !== null ? (
-          <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+        {articleHtml !== null ? (
+          <div dangerouslySetInnerHTML={{ __html: articleHtml }} />
         ) : (
           <MDXRemote source={post.source} components={mdxComponents} />
         )}
       </article>
-        </>
+          </div>
+
+          <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">
+            {toc.length >= 2 && (
+              <nav aria-label="On this page">
+                <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                  On this page
+                </h2>
+                <ul className="space-y-1.5 border-l border-border">
+                  {toc.map(item => (
+                    <li key={item.id} className={item.level === 3 ? 'pl-7' : 'pl-3'}>
+                      <a
+                        href={`#${item.id}`}
+                        className="block text-sm text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                      >
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
+
+            <BlogShare url={postUrl} title={post.frontmatter.title} />
+
+            {recent.length > 0 && (
+              <section className="border-t border-border pt-4">
+                <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                  More from the blog
+                </h2>
+                <ul className="space-y-3">
+                  {recent.map(p => (
+                    <li key={p.slug}>
+                      <Link href={`/blog/${p.slug}`} className="group block">
+                        <span className="block text-sm font-medium leading-snug text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
+                          {p.title}
+                        </span>
+                        <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.14em] tabular-nums text-text-faint">
+                          {formatDate(p.publishedAt)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {series && (
+              <section className="border-t border-border pt-4">
+                <Link
+                  href={`/series/${series.slug}`}
+                  className="group inline-flex items-center gap-1.5 text-sm font-medium text-text transition-colors duration-(--duration-fast) hover:text-tint"
+                >
+                  <ArrowRight
+                    size={14}
+                    className="text-text-faint transition-all duration-(--duration-fast) group-hover:translate-x-0.5 group-hover:text-tint"
+                  />
+                  More on {series.name}
+                </Link>
+              </section>
+            )}
+          </aside>
+        </div>
       )}
     </div>
   );
