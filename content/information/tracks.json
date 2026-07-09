@@ -198,7 +198,8 @@
       "type": "circuit",
       "categories": [
         "motogp",
-        "endurance"
+        "endurance",
+        "wsbk"
       ],
       "summary": "Scenic coastal circuit south of Melbourne, one of the fastest and most spectacular tracks on the MotoGP calendar.",
       "confidence": "high",
@@ -251,7 +252,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "motogp"
+        "motogp",
+        "gt"
       ],
       "summary": "Short, fast Styrian circuit in the hills at Spielberg; originally the Osterreichring, rebuilt as the A1-Ring and now the Red Bull Ring.",
       "confidence": "high",
@@ -354,7 +356,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "Fast, undulating Ardennes circuit famed for the Eau Rouge/Raidillon complex; hosts the Belgian Grand Prix and the Spa 24 Hours.",
       "confidence": "high",
@@ -508,7 +511,8 @@
       "opened": 1940,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "endurance"
       ],
       "summary": "Anti-clockwise Sao Paulo circuit, known as Interlagos, that has staged many dramatic Brazilian Grand Prix title deciders.",
       "confidence": "high",
@@ -534,7 +538,8 @@
       "type": "circuit",
       "categories": [
         "endurance",
-        "historic"
+        "historic",
+        "f1"
       ],
       "summary": "Fast, hilly Ontario road course formerly known as Mosport that hosted the Canadian Grand Prix in the 1960s and 1970s.",
       "confidence": "high",
@@ -636,7 +641,8 @@
       "opened": 2004,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "gt"
       ],
       "summary": "Tilke-designed circuit whose layout echoes the Chinese character 'shang'; host of the Chinese Grand Prix with a long back straight.",
       "confidence": "high",
@@ -736,7 +742,8 @@
       "categories": [
         "motogp",
         "f1",
-        "historic"
+        "historic",
+        "endurance"
       ],
       "summary": "Permanent circuit sharing its start-finish and pits with the Le Mans 24 Hours course; hosts the French motorcycle Grand Prix and held the 1967 F1 French GP.",
       "confidence": "high",
@@ -762,7 +769,9 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "historic"
+        "historic",
+        "gt",
+        "wsbk"
       ],
       "summary": "Central French circuit rebuilt in 1991, home of the French Grand Prix from 1991 to 2008.",
       "confidence": "high",
@@ -841,7 +850,8 @@
       "categories": [
         "f1",
         "endurance",
-        "historic"
+        "historic",
+        "gt"
       ],
       "summary": "Le Castellet circuit known for its distinctive blue-and-red run-off; hosted the French Grand Prix and remains a major testing venue.",
       "confidence": "high",
@@ -971,7 +981,8 @@
       "categories": [
         "f1",
         "endurance",
-        "historic"
+        "historic",
+        "gt"
       ],
       "summary": "A fast circuit in the Rhine valley forests near Heidelberg, Germany, famous for its vast stadium section. It was the long-time home of the German Grand Prix, which it last hosted in 2019, and now headlines the DTM.",
       "confidence": "high",
@@ -1024,7 +1035,8 @@
       "categories": [
         "f1",
         "endurance",
-        "historic"
+        "historic",
+        "gt"
       ],
       "summary": "The modern Grand Prix circuit at the Nürburgring in Germany (opened 1984), built alongside the legendary Nordschleife. A former Formula 1 venue — it hosted the German, European and Luxembourg Grands Prix, most recently the 2020 Eifel Grand Prix — and today runs endurance and national racing.",
       "confidence": "high",
@@ -1051,7 +1063,8 @@
       "categories": [
         "endurance",
         "f1",
-        "historic"
+        "historic",
+        "gt"
       ],
       "summary": "The 'Green Hell', a 20+ km Eifel loop with over 150 corners; former F1 venue and home of the Nurburgring 24 Hours.",
       "confidence": "high",
@@ -1127,7 +1140,8 @@
       "opened": 1996,
       "type": "circuit",
       "categories": [
-        "motogp"
+        "motogp",
+        "gt"
       ],
       "summary": "Compact, anti-clockwise Saxon circuit, home of the German motorcycle Grand Prix; the modern permanent track dates from 1996.",
       "confidence": "high",
@@ -1231,7 +1245,9 @@
       "opened": 2021,
       "type": "circuit",
       "categories": [
-        "motogp"
+        "motogp",
+        "gt",
+        "wsbk"
       ],
       "summary": "Coastal circuit in the Mandalika resort on Lombok that brought the Indonesian motorcycle Grand Prix back in 2022.",
       "confidence": "high",
@@ -1312,7 +1328,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "wsbk"
       ],
       "summary": "Fast, undulating anti-clockwise circuit at Imola, Italy (opened 1953), scene of the 1994 tragedies that killed Ayrton Senna and Roland Ratzenberger. It returned to Formula 1 in 2020 and hosted the Emilia-Romagna Grand Prix through 2025, before dropping off the calendar for 2026.",
       "confidence": "high",
@@ -1338,7 +1355,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "One of the oldest purpose-built circuits in the world and the historic 'Temple of Speed' home of the Italian Grand Prix.",
       "confidence": "high",
@@ -1420,7 +1438,8 @@
       "type": "circuit",
       "categories": [
         "motogp",
-        "endurance"
+        "endurance",
+        "f1"
       ],
       "summary": "Flowing, hilly Tuscan circuit owned by Ferrari; a beloved MotoGP venue for the Italian motorcycle Grand Prix.",
       "confidence": "high",
@@ -1524,7 +1543,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "Toyota-owned circuit beneath Mount Fuji with a very long main straight; hosted the Japanese Grand Prix and a round of the World Endurance Championship.",
       "confidence": "high",
@@ -1551,7 +1571,8 @@
       "categories": [
         "motogp",
         "indycar",
-        "historic"
+        "historic",
+        "gt"
       ],
       "summary": "The Japanese circuit at Motegi (renamed Mobility Resort Motegi in 2022), a technical stop-and-go road course that hosts the Japanese motorcycle Grand Prix. Its separate superspeedway oval — which held the IndyCar Indy Japan 300 from 1998 to 2011 — has since been decommissioned.",
       "confidence": "high",
@@ -1578,7 +1599,8 @@
       "categories": [
         "f1",
         "motogp",
-        "historic"
+        "historic",
+        "gt"
       ],
       "summary": "Technical circuit formerly known as TI Circuit Aida that hosted the Formula One Pacific Grand Prix in 1994 and 1995.",
       "confidence": "high",
@@ -1630,7 +1652,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "Honda-owned figure-eight circuit widely regarded as one of the greatest drivers' tracks; home of the Japanese Grand Prix and Suzuka 8 Hours.",
       "confidence": "high",
@@ -1710,7 +1733,9 @@
       "categories": [
         "f1",
         "motogp",
-        "historic"
+        "historic",
+        "gt",
+        "endurance"
       ],
       "summary": "Sepang International Circuit near Kuala Lumpur, Malaysia — Hermann Tilke's first major Formula 1 project (opened 1999). It hosted the Malaysian Grand Prix from 1999 to 2017 and today hosts the Malaysian motorcycle Grand Prix (MotoGP).",
       "confidence": "high",
@@ -1785,7 +1810,8 @@
       "opened": 1948,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "gt"
       ],
       "summary": "Seaside dunes circuit that returned to the Formula One calendar in 2021 with banked corners for the Dutch Grand Prix.",
       "confidence": "high",
@@ -1810,7 +1836,8 @@
       "opened": 1955,
       "type": "circuit",
       "categories": [
-        "motogp"
+        "motogp",
+        "wsbk"
       ],
       "summary": "TT Circuit Assen in the Netherlands — 'The Cathedral' of motorcycle racing, host of the Dutch TT every year since 1949 bar the COVID-cancelled 2020 round.",
       "confidence": "high",
@@ -1837,7 +1864,10 @@
       "categories": [
         "motogp",
         "f1",
-        "historic"
+        "historic",
+        "gt",
+        "endurance",
+        "wsbk"
       ],
       "summary": "Undulating roller-coaster circuit at Portimao that hosts the Portuguese motorcycle Grand Prix and held the F1 Portuguese GP in 2020 and 2021.",
       "confidence": "high",
@@ -1864,7 +1894,8 @@
       "categories": [
         "f1",
         "motogp",
-        "historic"
+        "historic",
+        "wsbk"
       ],
       "summary": "Circuit near Lisbon that hosted the Portuguese Grand Prix from 1984 to 1996, including Ayrton Senna's first F1 win.",
       "confidence": "medium",
@@ -1916,7 +1947,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "motogp"
+        "motogp",
+        "endurance"
       ],
       "summary": "Floodlit circuit near Doha built for MotoGP in 2004 that added the Qatar Grand Prix to the Formula One calendar in 2021.",
       "confidence": "high",
@@ -1941,7 +1973,8 @@
       "opened": 2021,
       "type": "street",
       "categories": [
-        "f1"
+        "f1",
+        "gt"
       ],
       "summary": "An exceptionally fast street circuit along the Red Sea corniche in Jeddah, Saudi Arabia — billed as the fastest street circuit in Formula 1 and one of the longest, with 27 corners.",
       "confidence": "high",
@@ -1992,7 +2025,8 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "High-veld circuit near Johannesburg that hosted the South African Grand Prix and remains the country's premier racing venue.",
       "confidence": "medium",
@@ -2044,7 +2078,10 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "motogp"
+        "motogp",
+        "gt",
+        "endurance",
+        "wsbk"
       ],
       "summary": "A modern circuit near Barcelona and long the home of the Spanish Grand Prix — renamed the Barcelona-Catalunya Grand Prix for 2026, with the Spanish GP title moving to Madrid. For years it was also Formula 1's main pre-season testing venue, before testing moved to Bahrain.",
       "confidence": "high",
@@ -2069,7 +2106,8 @@
       "opened": 1999,
       "type": "circuit",
       "categories": [
-        "motogp"
+        "motogp",
+        "gt"
       ],
       "summary": "Stadium-style circuit at Cheste near Valencia that traditionally closes the MotoGP season with the Valencian Community Grand Prix.",
       "confidence": "high",
@@ -2096,7 +2134,8 @@
       "categories": [
         "motogp",
         "f1",
-        "historic"
+        "historic",
+        "wsbk"
       ],
       "summary": "Andalusian circuit that hosts the Spanish motorcycle Grand Prix and staged the Spanish and European F1 Grands Prix in the late 1980s and 1990s.",
       "confidence": "high",
@@ -2200,7 +2239,8 @@
       "type": "circuit",
       "categories": [
         "motogp",
-        "wsbk"
+        "wsbk",
+        "endurance"
       ],
       "summary": "Tilke-designed circuit near Alcaniz in Aragon that hosts the Aragon motorcycle Grand Prix and World Superbike rounds.",
       "confidence": "high",
@@ -2356,7 +2396,8 @@
       "opened": 2014,
       "type": "circuit",
       "categories": [
-        "motogp"
+        "motogp",
+        "gt"
       ],
       "summary": "Tilke-designed circuit in Buriram, Thailand's first FIA Grade 1 track and host of the Thailand motorcycle Grand Prix.",
       "confidence": "high",
@@ -2407,7 +2448,9 @@
       "opened": 2009,
       "type": "circuit",
       "categories": [
-        "f1"
+        "f1",
+        "gt",
+        "endurance"
       ],
       "summary": "Abu Dhabi circuit on Yas Island, traditional season finale of the Formula One calendar and a day-to-night race.",
       "confidence": "high",
@@ -2460,7 +2503,8 @@
       "categories": [
         "f1",
         "historic",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "Kent circuit set in a natural amphitheatre that alternated the British Grand Prix with Silverstone into the 1980s and remains a busy national venue.",
       "confidence": "medium",
@@ -2666,7 +2710,8 @@
       "opened": 2003,
       "type": "circuit",
       "categories": [
-        "indycar"
+        "indycar",
+        "gt"
       ],
       "summary": "Immaculate, park-like road course near Birmingham, Alabama, adjoining a renowned motorcycle museum; an IndyCar venue.",
       "confidence": "high",
@@ -2742,7 +2787,9 @@
       "type": "circuit",
       "categories": [
         "f1",
-        "motogp"
+        "motogp",
+        "gt",
+        "endurance"
       ],
       "summary": "Purpose-built Austin circuit with a steep uphill Turn 1; hosts the United States Grand Prix and the Grand Prix of the Americas MotoGP round.",
       "confidence": "high",
@@ -2819,7 +2866,8 @@
       "type": "street",
       "categories": [
         "f1",
-        "historic"
+        "historic",
+        "endurance"
       ],
       "summary": "A tight downtown street circuit in Detroit, Michigan that hosted the United States Grand Prix from 1982 to 1988. (Later Detroit races moved to Belle Isle, and from 2023 to a separate downtown IndyCar circuit.)",
       "confidence": "low",
@@ -2924,7 +2972,9 @@
         "indycar",
         "nascar",
         "f1",
-        "historic"
+        "historic",
+        "gt",
+        "endurance"
       ],
       "summary": "The 2.5-mile 'Brickyard', home of the Indianapolis 500; its infield road course hosted the United States Grand Prix from 2000 to 2007.",
       "confidence": "high",
@@ -3028,7 +3078,8 @@
       "categories": [
         "indycar",
         "f1",
-        "historic"
+        "historic",
+        "endurance"
       ],
       "summary": "Downtown Long Beach street circuit that hosted the United States Grand Prix West from 1976 to 1983 and is now IndyCar's premier street race.",
       "confidence": "medium",
@@ -3359,7 +3410,8 @@
       "type": "circuit",
       "categories": [
         "indycar",
-        "endurance"
+        "endurance",
+        "gt"
       ],
       "summary": "A fast, sweeping four-mile natural-terrain road course at Elkhart Lake, Wisconsin (opened 1955) — one of America's classic circuits, home to IndyCar and IMSA sportscar rounds.",
       "confidence": "high",
@@ -3384,7 +3436,9 @@
       "opened": 1950,
       "type": "circuit",
       "categories": [
-        "endurance"
+        "endurance",
+        "f1",
+        "gt"
       ],
       "summary": "Bumpy former WWII airfield circuit in Florida, home of the 12 Hours of Sebring since 1952.",
       "confidence": "high",
@@ -3409,7 +3463,8 @@
       "opened": 1968,
       "type": "circuit",
       "categories": [
-        "nascar"
+        "nascar",
+        "gt"
       ],
       "summary": "A hilly road course in California's Sonoma wine country, known for its elevation changes and its NASCAR Cup road race; IndyCar also raced here through 2018.",
       "confidence": "high",
