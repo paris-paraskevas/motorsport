@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory, type GroupedSeries } from '@/lib/categories';
 import { BottomBar } from './BottomBar';
@@ -53,6 +53,46 @@ export function AppShell({
     return () => {
       clearTimeout(t);
       mq.removeEventListener('change', detect);
+    };
+  }, []);
+
+  // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
+  // highlight where the mouse is. Desktop-mouse only and off under reduced
+  // motion; pointer-events:none so it never intercepts a click. Driven by a ref
+  // + rAF (no React state) so mousemove costs no re-render.
+  const glowRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const el = glowRef.current;
+    if (!el || !finePointer || reducedMotion) return;
+    let raf = 0;
+    let x = 0;
+    let y = 0;
+    let shown = false;
+    const onMove = (e: MouseEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        el.style.transform = `translate3d(${x - 160}px, ${y - 160}px, 0)`;
+        if (!shown) {
+          el.style.opacity = '1';
+          shown = true;
+        }
+      });
+    };
+    const onLeave = () => {
+      el.style.opacity = '0';
+      shown = false;
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseleave', onLeave);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseleave', onLeave);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -180,6 +220,19 @@ export function AppShell({
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
       <PushSoundPlayer />
+
+      {/* Cursor glow — see the effect above. Always rendered; only animated
+          (and only visible) when gated in, otherwise it stays at opacity 0. */}
+      <div
+        ref={glowRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed left-0 top-0 z-[60] h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-300 will-change-transform"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(255,180,0,0.14), rgba(255,180,0,0.05) 45%, transparent 70%)',
+          mixBlendMode: 'screen',
+        }}
+      />
     </>
   );
 }
