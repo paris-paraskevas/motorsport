@@ -125,12 +125,12 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl border border-border bg-surface-elevated shadow-2xl"
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-surface-elevated shadow-2xl ring-1 ring-white/5"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={onKeyDown}
       >
-        <div className="flex items-center gap-2 border-b border-border px-3">
-          <Search size={16} className="shrink-0 text-text-faint" aria-hidden />
+        <div className="flex items-center gap-3 border-b border-border px-4">
+          <Search size={18} className="shrink-0 text-text-muted" aria-hidden />
           <input
             ref={inputRef}
             type="text"
@@ -141,9 +141,14 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
             role="combobox"
             aria-expanded
             aria-controls="search-results"
-            className="min-w-0 flex-1 bg-transparent py-3 text-sm text-text placeholder:text-text-faint outline-none"
+            className="min-w-0 flex-1 bg-transparent py-4 text-[15px] text-text placeholder:text-text-faint outline-none"
           />
-          <button type="button" onClick={onClose} aria-label="Close search" className="text-text-muted hover:text-text">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close search"
+            className="shrink-0 rounded-md p-1 text-text-faint transition-colors hover:bg-surface hover:text-text"
+          >
             <X size={16} />
           </button>
         </div>
@@ -178,13 +183,15 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
           {docs === null ? (
             <p className="px-4 py-6 text-center font-mono text-xs uppercase tracking-[0.14em] text-text-faint">Loading…</p>
           ) : query.trim() === '' ? (
-            <p className="px-4 py-6 text-center font-mono text-xs uppercase tracking-[0.14em] text-text-faint">
-              Type to search drivers, teams, weekends, series &amp; more
-            </p>
+            <div className="flex flex-col items-center gap-2 px-4 py-12 text-center">
+              <Search size={22} className="text-text-faint/60" aria-hidden />
+              <p className="text-sm text-text-faint">Search drivers, teams, weekends, series &amp; more</p>
+            </div>
           ) : flat.length === 0 ? (
-            <p className="px-4 py-6 text-center font-mono text-xs uppercase tracking-[0.14em] text-text-faint">
-              No matches for “{query.trim()}”
-            </p>
+            <div className="flex flex-col items-center gap-1.5 px-4 py-12 text-center">
+              <p className="text-sm text-text-muted">No matches for “{query.trim()}”</p>
+              <p className="text-xs text-text-faint">Try a driver, team, series or circuit name.</p>
+            </div>
           ) : (
             groups.map((g) => (
               <div key={g.type}>

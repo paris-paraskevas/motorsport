@@ -1,6 +1,7 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Search } from 'lucide-react';
 
 // The overlay (+ the matcher + the fetched index) load ONLY when search opens —
@@ -45,7 +46,12 @@ export function SearchTrigger() {
         <Search size={15} aria-hidden />
         <span className="hidden xl:inline font-mono text-[10px] uppercase tracking-[0.14em]">Search</span>
       </button>
-      {open && <SearchOverlay onClose={() => setOpen(false)} />}
+      {/* Portal to <body>: the trigger lives in the fixed nav header (its own
+          stacking context), so an inline overlay's backdrop-blur only frosts
+          the nav. Rendered at the document root, the blur covers the whole page
+          (operator 2026-07-09). `open` only flips client-side, so document.body
+          is always present when this runs. */}
+      {open && createPortal(<SearchOverlay onClose={() => setOpen(false)} />, document.body)}
     </>
   );
 }

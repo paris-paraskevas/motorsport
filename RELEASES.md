@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.182.3 — 2026-07-09
+
+**Nicer search.** The search box has a cleaner, rounder look with a friendlier prompt when it's empty — and opening it now gently blurs the whole page behind it (it used to only dim the top bar).
+
 ## 0.182.2 — 2026-07-09
 
 **Build fix.** Restored a dependency a merge had dropped so updates can ship again — no user-facing change.
