@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function NotificationsPage() {
   return (
-    <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className="max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <Link
         href="/settings"
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
