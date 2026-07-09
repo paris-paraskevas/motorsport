@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ChevronLeft } from 'lucide-react';
+import { ArrowRight, ChevronLeft, MapPinned } from 'lucide-react';
 import { INFO_TOPICS, getTopic } from '@/lib/information/topics';
 import { getTopicEntries, isTopicIndexable } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
@@ -92,6 +92,17 @@ export default async function TopicPage({
 
       {topic === 'tracks' ? (
         <>
+          <Link
+            href="/information/map"
+            className="group mb-6 inline-flex items-center gap-2 rounded-lg border border-border-strong bg-surface px-4 py-2.5 text-sm font-semibold text-text transition-colors duration-(--duration-fast) hover:text-tint"
+          >
+            <MapPinned size={16} />
+            View all circuits on the map
+            <ArrowRight
+              size={15}
+              className="transition-transform duration-(--duration-fast) group-hover:translate-x-0.5"
+            />
+          </Link>
           {entries.filter((e) => e.kind !== 'track').length > 0 && (
             <section className="mb-10">
               <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
