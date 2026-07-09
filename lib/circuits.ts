@@ -3,6 +3,9 @@ import path from 'path';
 
 export interface Circuit {
   name: string;
+  /** ISO 3166-1 alpha-2 country code — powers the SportsEvent PostalAddress
+   *  in lib/json-ld.ts. Optional; absent → event location stays name-only. */
+  countryCode?: string;
   lat: number;
   lon: number;
   aliases: string[];
