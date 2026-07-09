@@ -122,7 +122,7 @@ export default async function InfoEntryPage({
   const lastUpdated = entry.author ? formatUpdated(entry.updated) : null;
 
   return (
-    <div className="max-w-2xl lg:max-w-3xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className="max-w-2xl lg:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
@@ -153,6 +153,10 @@ export default async function InfoEntryPage({
         {t?.label ?? 'Back'}
       </Link>
 
+      {/* Article in a readable main column + a sidebar (facts, sources, related)
+          so the page fills wide screens without stretching the prose. */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12 lg:items-start">
+        <div className="min-w-0 max-w-3xl">
       {entry.review === 'unverified' && (
         <div className="mb-6 border border-border bg-surface rounded-md p-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-text-faint mb-1">
@@ -188,7 +192,9 @@ export default async function InfoEntryPage({
           {lastUpdated ? ` Last updated ${lastUpdated}.` : ''}
         </p>
       )}
+        </div>
 
+        <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">
       {entry.sources.length > 0 && (
         <section className="mt-8 border-t border-border pt-4">
           <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint mb-2">
@@ -236,6 +242,8 @@ export default async function InfoEntryPage({
           </ul>
         </section>
       )}
+        </aside>
+      </div>
     </div>
   );
 }
