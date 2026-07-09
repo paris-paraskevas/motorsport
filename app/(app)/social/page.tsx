@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 // 2026-07-03). No per-user data loads here.
 function frame(children: ReactNode) {
   return (
-    <div className="mx-auto max-w-2xl lg:max-w-4xl p-4 pb-16 md:p-6 lg:p-8">
+    <div className="mx-auto max-w-2xl lg:max-w-4xl xl:max-w-6xl p-4 pb-16 md:p-6 lg:p-8">
       <header className="mb-5 flex items-stretch gap-3">
         <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">

@@ -45,7 +45,7 @@ export default async function InformationHub() {
   const featuredQa = featured.filter((e) => e.kind === 'qa').slice(0, 10);
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
@@ -71,7 +71,7 @@ export default async function InformationHub() {
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
           Browse by topic
         </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {INFO_TOPICS.map((t) => (
             <TopicCard
               key={t.id}
@@ -89,7 +89,7 @@ export default async function InformationHub() {
           <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-2">
             Popular answers
           </h2>
-          <div className="divide-y divide-border/60">
+          <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
             {featuredQa.map((e) => (
               <EntryRow key={entryHref(e)} href={entryHref(e)} question={e.question} summary={e.summary} />
             ))}
@@ -105,7 +105,7 @@ export default async function InformationHub() {
           Original, sourced histories of every championship we cover — origins, defining eras
           and the moments that shaped each sport.
         </p>
-        <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {seriesByName.map((s) => (
             <Link
               key={s.slug}

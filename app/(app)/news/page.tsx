@@ -62,7 +62,7 @@ export default async function NewsPage() {
   const now = new Date();
 
   return (
-    <div className="max-w-2xl lg:max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
