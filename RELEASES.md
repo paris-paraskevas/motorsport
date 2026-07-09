@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.183.5 — 2026-07-09
+
+**Bigger help button.** The Race Engineer chat launcher is now larger and easier to spot, especially on desktop.
+
 ## 0.183.4 — 2026-07-09
 
 **Blog posts notify the moment they go live.** When a post is approved to publish right away, its notification now goes out immediately instead of waiting for the next scheduled check.

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.183.5 — 2026-07-09
+
+### Changed
+- **Race Engineer launcher is bigger** (operator). `components/assistant/AssistantWidget.tsx` — the floating chat launcher grows from 48→56px on mobile and 64→72px on desktop (icon 20→24 / 28→36px) so it reads clearly on larger screens. Icon kept as the person-engineer figure (`UserCog`) — it's already a "race-engineer/person figure", NOT a headset (the operator's "swap the headset" premise was stale); a different glyph (e.g. wrench) is a one-line swap if wanted.
+
 ## 0.183.4 — 2026-07-09
 
 ### Fixed
