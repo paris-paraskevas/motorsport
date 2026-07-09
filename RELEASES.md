@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.182.2 — 2026-07-09
+
+**Build fix.** Restored a dependency a merge had dropped so updates can ship again — no user-facing change.
+
 ## 0.182.1 — 2026-07-09
 
 **Search comes forward.** Opening search now gently blurs the rest of the page so the search box stands out — click anywhere outside it to close.
