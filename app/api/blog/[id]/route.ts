@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isAdmin, isWriter } from '@/lib/threads';
-import { decidePost, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
+import { isPushConfigured } from '@/lib/push';
+import { decidePost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
+import { announcePublishedPosts } from '@/lib/notify-blog';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -44,6 +47,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const publishAt = typeof body.publishAt === 'string' ? body.publishAt : undefined;
   try {
     await decidePost(id, userId, body.action === 'approve', publishAt);
+    // If this approval made a post due now (publish_at already passed), publish +
+    // notify it immediately instead of waiting for the GitHub-Actions-throttled
+    // publish cron (which can lag ~2h). publishDuePosts is the status-guarded
+    // once-ever flip, so the cron won't re-announce an already-published post.
+    // Best-effort: the approve already succeeded and the cron is the backstop —
+    // never fail the request on a publish/push hiccup.
+    if (body.action === 'approve') {
+      try {
+        const published = await publishDuePosts(new Date());
+        if (published.length > 0) {
+          revalidatePath('/blog');
+          for (const p of published) revalidatePath(`/blog/${p.slug}`);
+          if (isPushConfigured()) await announcePublishedPosts(published);
+        }
+      } catch (e) {
+        console.error('inline publish-on-approve failed (cron will retry):', e);
+      }
+    }
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
