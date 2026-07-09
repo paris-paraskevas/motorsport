@@ -339,14 +339,19 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
     const list = [...listRaw].sort((a, b) => a.question.localeCompare(b.question));
     const review: InfoReview = list.every((t) => t.review === 'verified') ? 'verified' : 'unverified';
     const body = [
-      `There are **${list.length}** notable racing venues in ${country} in our directory:`,
+      `${country} is home to **${list.length}** notable racing venues in our directory — here is each, with a note on what it is known for:`,
       '',
-      ...list.map(
-        (t) =>
-          `- [${t.question}](${entryHref(t)})` +
-          (t.track?.type ? ` — ${t.track.type}` : '') +
-          (t.track?.lengthKm ? `, ${t.track.lengthKm} km` : ''),
-      ),
+      ...list.map((t) => {
+        const facts = [
+          t.track?.type,
+          t.track?.lengthKm ? `${t.track.lengthKm} km` : null,
+          t.track?.opened ? `opened ${t.track.opened}` : null,
+        ]
+          .filter(Boolean)
+          .join(', ');
+        const note = t.summary ? ` ${t.summary}` : '';
+        return `- **[${t.question}](${entryHref(t)})**${facts ? ` — ${facts}.` : ''}${note}`;
+      }),
     ].join('\n');
     out.push({
       kind: 'qa',
