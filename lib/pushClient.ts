@@ -36,6 +36,28 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return out;
 }
 
+// A short, human-readable label for THIS device (browser + OS) from the UA.
+// Best-effort — a legibility hint for the "Your devices" list; never trusted
+// server-side beyond a length cap. Order matters (Edge/Opera/Samsung UAs also
+// contain "Chrome"; Chrome contains "Safari").
+function deviceLabel(): string {
+  const ua = navigator.userAgent;
+  let browser = 'Browser';
+  if (/Edg\//.test(ua)) browser = 'Edge';
+  else if (/OPR\/|Opera/.test(ua)) browser = 'Opera';
+  else if (/SamsungBrowser\//.test(ua)) browser = 'Samsung Internet';
+  else if (/Chrome\//.test(ua)) browser = 'Chrome';
+  else if (/Firefox\//.test(ua)) browser = 'Firefox';
+  else if (/Safari\//.test(ua)) browser = 'Safari';
+  let os = '';
+  if (/Windows/.test(ua)) os = 'Windows';
+  else if (/Android/.test(ua)) os = 'Android';
+  else if (/iPhone|iPad|iPod/.test(ua)) os = 'iOS';
+  else if (/Mac OS X|Macintosh/.test(ua)) os = 'macOS';
+  else if (/Linux/.test(ua)) os = 'Linux';
+  return os ? `${browser} on ${os}` : browser;
+}
+
 export async function subscribeToPush(): Promise<void> {
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') {
@@ -49,7 +71,7 @@ export async function subscribeToPush(): Promise<void> {
   const res = await fetch('/api/push/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ subscription }),
+    body: JSON.stringify({ subscription, label: deviceLabel() }),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => null);
@@ -77,5 +99,17 @@ export async function getPushSubscriptionState(): Promise<'subscribed' | 'idle' 
     return existing ? 'subscribed' : 'idle';
   } catch {
     return 'idle';
+  }
+}
+
+/** This browser's current push endpoint (the per-device id), or null. Lets the
+ *  "Your devices" list mark which row is the device you're on. */
+export async function getCurrentPushEndpoint(): Promise<string | null> {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    return sub?.endpoint ?? null;
+  } catch {
+    return null;
   }
 }
