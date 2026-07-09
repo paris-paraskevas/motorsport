@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.1 — 2026-07-09
+
+**Roomier pages + a clearer helper button.** The News, Answers and Social sections now use the full width of your screen — like the Calendar and Series pages — instead of a narrow centred column. The floating Race Engineer help button is also larger on desktop, with a clearer icon.
+
 ## 0.181.0 — 2026-07-09
 
 **Every circuit, in depth.** All 138 racing venues in our directory now have an in-depth, fact-checked guide to their history, layout and character — and the "who won" and "most titles" answers across every series now come with real context: records, title tallies, and how each championship has been shared out over the years.
