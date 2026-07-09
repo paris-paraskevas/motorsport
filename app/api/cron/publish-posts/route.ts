@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
 import { recordSent } from '@/lib/push-history';
-import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs, isQuietNow } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { markNotified, unmarkNotified, shouldRetryAfterTotalFailure } from '@/lib/notify-ledger';
 import { isBettingConfigured } from '@/lib/betting/client';
@@ -56,6 +56,7 @@ export async function GET(req: Request) {
     }
 
     const subs = await listSubscriptions();
+    const now = new Date();
     const metas = await loadAllSeriesMeta();
     const colorBySlug = new Map(metas.map(m => [m.slug, m.color] as const));
 
@@ -63,7 +64,7 @@ export async function GET(req: Request) {
     // the `blog` pref instead of `betting`).
     const userCache = new Map<
       string,
-      { followed: string[] | null; blogOn: boolean; soundOn: boolean; muted: Set<string> }
+      { followed: string[] | null; blogOn: boolean; soundOn: boolean; muted: Set<string>; quiet: boolean }
     >();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
@@ -74,6 +75,7 @@ export async function GET(req: Request) {
         blogOn: prefs.blog !== false,
         soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
+        quiet: isQuietNow(prefs, now),
       };
       userCache.set(userId, state);
       return state;
@@ -98,26 +100,31 @@ export async function GET(req: Request) {
       const recorded = new Set<string>();
       for (const { subscription, userId } of subs) {
         try {
-          let silent = false;
-          if (userId) {
-            const state = await getUserState(userId);
-            if (!state.blogOn) {
+          if (!userId) {
+            skipped++;
+            continue;
+          }
+          const state = await getUserState(userId);
+          if (state.quiet) {
+            skipped++;
+            continue;
+          }
+          if (!state.blogOn) {
+            skipped++;
+            continue;
+          }
+          // Series-tagged → followers only (+ honour mute); untagged → everyone.
+          if (post.seriesSlug) {
+            if (state.followed !== null && !state.followed.includes(post.seriesSlug)) {
               skipped++;
               continue;
             }
-            // Series-tagged → followers only (+ honour mute); untagged → everyone.
-            if (post.seriesSlug) {
-              if (state.followed !== null && !state.followed.includes(post.seriesSlug)) {
-                skipped++;
-                continue;
-              }
-              if (state.muted.has(post.seriesSlug)) {
-                skipped++;
-                continue;
-              }
+            if (state.muted.has(post.seriesSlug)) {
+              skipped++;
+              continue;
             }
-            silent = !state.soundOn;
           }
+          const silent = !state.soundOn;
           const res = await sendPushTo(subscription, silent ? { ...payload, silent: true } : payload);
           if (res.ok) {
             sent++;

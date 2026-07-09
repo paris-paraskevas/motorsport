@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.183.0 — 2026-07-09
+
+### Added
+- **Quiet hours** — a per-user do-not-disturb window that pauses ALL push during a nightly range, evaluated in the user's own timezone (captured from the browser on enable). New `quietHours` on `NotifPrefs` (default off) + `isQuietNow()` in `lib/userPrefs.ts` (overnight-wrap aware; fails open on an unparseable tz), a control in `components/NotifPrefsSection.tsx`, and `quietHours` validation in the notif-prefs `PUT`. Every push cron skips a subscriber who's in quiet hours.
+
+### Changed
+- **Notification burst coalesced** (operator: "spam all in one minute"). `app/api/cron/notify/route.ts` now fans out per-subscriber: it gathers the tick's queued items each subscriber is eligible for and sends ONE summary push when ≥2 (the single payload for 1, nothing for 0), so a busy 15-min tick lands as one buzz, not up to six. Eligibility + digest are pure, unit-tested `eligibleForNotify` / `coalescedPayload` in `lib/notify-coalesce.ts` — kept out of the route so Next 16's route-type validator only sees the handler.
+- **Anonymous subscriptions no longer receive the firehose** — subs with no account (no followed series / prefs to honour) are skipped across all push crons (notify, news, betting, publish-posts, race-week); push now requires sign-in. Fixes anon devices getting every series' notifications unfiltered.
+
+Verified: `isQuietNow` + eligibility unit-tested (`lib/userPrefs.test.ts` + `lib/notify-coalesce.test.ts`, 22 green); `tsc` + full `next build` green. End-to-end push (KV subscriptions + GitHub Actions crons) is observable only on production — watch a busy tick after deploy.
+
 ## 0.182.2 — 2026-07-09
 
 ### Fixed

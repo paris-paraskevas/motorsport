@@ -4,7 +4,7 @@ import { NEWS_SLUG_MAP, fetchNews, articleKey, isRecentArticle } from '@/lib/new
 import { loadAllSeriesMeta } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo } from '@/lib/push';
-import { getUserFollowed, getUserNotifPrefs } from '@/lib/userPrefs';
+import { getUserFollowed, getUserNotifPrefs, isQuietNow } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 
 export const runtime = 'nodejs';
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     const subs = await listSubscriptions();
 
     // Per-user followed + notif-prefs cache for this cron run
-    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean; soundOn: boolean; muted: Set<string> }>();
+    const userCache = new Map<string, { followed: string[] | null; newsOn: boolean; soundOn: boolean; muted: Set<string>; quiet: boolean }>();
     const getUserState = async (userId: string) => {
       const cached = userCache.get(userId);
       if (cached) return cached;
@@ -46,6 +46,7 @@ export async function GET(req: Request) {
         newsOn: prefs.news,
         soundOn: prefs.sound !== false,
         muted: new Set(prefs.mutedSeries ?? []),
+        quiet: isQuietNow(prefs, now),
       };
       userCache.set(userId, state);
       return state;
@@ -140,23 +141,28 @@ export async function GET(req: Request) {
         data: { seriesSlug: article.slug },
       };
       for (const { subscription, userId } of subs) {
-        let silent = false;
-        if (userId) {
-          const state = await getUserState(userId);
-          if (!state.newsOn) {
-            skipped++;
-            continue;
-          }
-          if (state.followed !== null && !state.followed.includes(article.slug)) {
-            skipped++;
-            continue;
-          }
-          if (state.muted.has(article.slug)) {
-            skipped++;
-            continue;
-          }
-          silent = !state.soundOn;
+        if (!userId) {
+          skipped++;
+          continue;
         }
+        const state = await getUserState(userId);
+        if (state.quiet) {
+          skipped++;
+          continue;
+        }
+        if (!state.newsOn) {
+          skipped++;
+          continue;
+        }
+        if (state.followed !== null && !state.followed.includes(article.slug)) {
+          skipped++;
+          continue;
+        }
+        if (state.muted.has(article.slug)) {
+          skipped++;
+          continue;
+        }
+        const silent = !state.soundOn;
         const result = await sendPushTo(
           subscription,
           silent ? { ...payload, silent: true } : payload,

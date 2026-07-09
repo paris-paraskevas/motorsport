@@ -7,6 +7,7 @@ vi.mock('@vercel/kv', () => ({ kv: {} }));
 import {
   mergeNotifPrefs,
   sessionTypeAllowed,
+  isQuietNow,
   DEFAULT_NOTIF_PREFS,
   DEFAULT_SESSION_TYPE_PREFS,
 } from './userPrefs';
@@ -99,5 +100,35 @@ describe('sessionTypeAllowed', () => {
     expect(sessionTypeAllowed(only('race'), 'Grand Prix')).toBe(true);
     expect(sessionTypeAllowed(only('race'), 'Qualifying')).toBe(false);
     expect(sessionTypeAllowed(only('race'), 'Practice 3')).toBe(false);
+  });
+});
+
+describe('isQuietNow', () => {
+  // A fixed instant (summer DST): 23:30 UTC → Athens 02:30 (UTC+3), New York
+  // 19:30 (UTC-4). Passed explicitly so the test is clock-independent.
+  const now = new Date('2026-07-09T23:30:00Z');
+
+  it('is off when the window is absent, disabled, or zero-width', () => {
+    expect(isQuietNow({}, now)).toBe(false);
+    expect(isQuietNow({ quietHours: { enabled: false, start: 22, end: 7, tz: 'UTC' } }, now)).toBe(false);
+    expect(isQuietNow({ quietHours: { enabled: true, start: 5, end: 5, tz: 'UTC' } }, now)).toBe(false);
+  });
+
+  it('evaluates an overnight (wrapping) window in the user timezone', () => {
+    // Athens local 02:30 is inside 22:00→07:00.
+    expect(isQuietNow({ quietHours: { enabled: true, start: 22, end: 7, tz: 'Europe/Athens' } }, now)).toBe(true);
+    // New York local 19:30 is not.
+    expect(isQuietNow({ quietHours: { enabled: true, start: 22, end: 7, tz: 'America/New_York' } }, now)).toBe(false);
+    // UTC local 23:30 is inside 22:00→07:00.
+    expect(isQuietNow({ quietHours: { enabled: true, start: 22, end: 7, tz: 'UTC' } }, now)).toBe(true);
+  });
+
+  it('evaluates a same-day window', () => {
+    // UTC 23:30 is outside 09:00→17:00.
+    expect(isQuietNow({ quietHours: { enabled: true, start: 9, end: 17, tz: 'UTC' } }, now)).toBe(false);
+  });
+
+  it('fails open (not quiet) on an unparseable timezone', () => {
+    expect(isQuietNow({ quietHours: { enabled: true, start: 22, end: 7, tz: 'Not/AZone' } }, now)).toBe(false);
   });
 });
