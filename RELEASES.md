@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.183.3 — 2026-07-09
+
+**Sharper map filters.** The circuit map's category filters are now more accurate: "F1" covers every venue that has hosted a Grand Prix (current or historic), and circuits that also host GT3, endurance (WEC / IMSA / Le Mans) or World Superbikes now appear under those filters too — so picking a series reveals every track it visits.
+
 ## 0.183.2 — 2026-07-09
 
 **A glow that follows your cursor.** On desktop, a soft amber halo now trails your mouse to highlight where you're pointing. It's purely cosmetic, never blocks a click, and automatically stays off on touchscreens and if you've asked for reduced motion.
