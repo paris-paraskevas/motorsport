@@ -6,9 +6,9 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT 93/138 (batches 1–15, all verified) + Belgian-GP blog draft staged. NEXT: insert blog, finish ~8 batches
+## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT 93/138 (batches 1–15, all verified) + Belgian-GP blog draft POSTED to prod. NEXT: finish ~8 batches (operator approves the blog draft)
 
-**Two things queued for next session: (1) land the staged Belgian-GP blog draft on the prod queue, (2) enrich the remaining 45 tracks.** Big enrichment run this session + a scheduled blog draft, both on LOCAL branches (unpushed).
+**Blog draft is POSTED to the prod queue (awaiting operator approval in `/blog`); the remaining next-session work is enriching the last 45 tracks.** Big enrichment run this session + a scheduled blog draft (now a prod draft row). Enrichment lives on a LOCAL branch (unpushed).
 
 ### Track enrichment — 93/138 done, ALL verified · branch `feat/information-track-guides` (LOCAL/unpushed)
 Batches 1–15 complete via **draft → independent adversarial skeptic → Claude spot-check of volatile claims → merge → `vitest` → commit** (one commit per batch = durable checkpoint). Rules held throughout: **#1 facts must be facts (no hallucination/misinterpretation), #2 nothing outdated.** The skeptic caught real errors in nearly every batch — proving the process necessary:
@@ -17,10 +17,10 @@ Batches 1–15 complete via **draft → independent adversarial skeptic → Clau
 - **NEXT: finish the remaining 45 tracks (~8 batches of 6).** Done-set is **self-describing** — remaining = tracks with no `article` field in `content/information/tracks.json` (`!("article" in t)`). Tail is tier-2/3 (secondary categories + karting/minor venues) → shorter guides fine for genuinely minor venues. Reuse the exact process above; merge via a by-slug node script in scratchpad (avoids JSON-escaping the big file), then `npx vitest run lib/information/information.test.ts` (16 tests) before each commit.
 - *Data-tag NOTEDs (non-blocking, later audit):* Termas `motogp`→historic (gone after 2025); Okayama `motogp` never hosted world bikes; Mosport/CTMP omit `f1` despite 8 past F1 GPs.
 
-### Blog — Belgian GP preview drafted + prod creds wired · INSERT DEFERRED to next session
+### Blog — Belgian GP preview POSTED to prod 2026-07-09 · awaiting operator approval
 - **Draft:** `drafts/belgian-grand-prix-2026-preview.json` (untracked; post.json shape — slug/title/summary/body/seriesSlug=f1/heroImage=null/publishAt=null). ~462 words, F1 house voice, sources **linked inline not pasted**, every fact verified as of 2026-07-09. Chose a *preview* of the next race (Belgian GP, Spa, Sun 19 Jul) because the British GP recap was already queued for the 5 Jul race. Facts CUT for failing rule #1: a source's false "Round 12" + stale pre-British standings + "Hamilton record 6 Spa wins" (that's Schumacher's).
 - **`.env.blog` (gitignored) is wired** with prod Supabase URL (`dzelqrtajnauunzmxfic`), service-role key (from `.supabase-pat` reveal — never printed), and `BLOG_AUTHOR_ID=user_3Dj7VJ9cClEegSAklquQYVpJEbK`. **DO NOT repoint `.env.local`** — it must stay on 127.0.0.1 (dev/test/seed footgun).
-- **NEXT: insert it** → `npx tsx --env-file=.env.blog scripts/draft-post.mts drafts/belgian-grand-prix-2026-preview.json`. Then verify: row on prod with `status='draft'`, `publish_at` null, NOT on public `/blog`. Operator approves + schedules in `/blog` admin queue; publish cron takes it live. (Admin push ping no-ops without KV/Clerk/VAPID prod env — draft still lands.)
+- **DONE (2026-07-09): inserted to prod** via `draft-post.mts --env-file=.env.blog`. Row `id=514448ce-7386-4287-a600-b96a32c9c736`, `status='draft'`, `publish_at`/`published_at` null; verified absent from public `/blog` (post URL 404 + not in listing). **Re-verified every volatile fact live before posting** (F1.com / Wikipedia / Sky) and corrected one error ("first"→"second pointless weekend" — Barcelona R7 was Antonelli's 1st non-score of 2026). NB the prod table is `post` (singular), not `posts`. **Operator: approve + schedule in the `/blog` admin queue** (publish cron then takes it live). Admin push no-op'd — no KV/Clerk/VAPID in `.env.blog`.
 
 ### ⚠ Constraints carried in
 - **Org hit its MONTHLY SPEND LIMIT** mid-session (a batch-15 skeptic *agent* aborted). My own WebSearch/WebFetch/Bash still worked; agent-heavy verification may need the cap raised (`/usage-credits`) or the skeptic pass run as direct tool calls.
