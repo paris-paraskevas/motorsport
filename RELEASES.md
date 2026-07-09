@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.180.1 — 2026-07-09
+
+**Richer search results.** Tidied the behind-the-scenes data that lets Google show enhanced results for our answer pages and race-weekend pages — including event details like the teams competing and where each round is held.
+
 ## 0.180.0 — 2026-07-08
 
 **Bylines and deeper circuit guides.** Every answer, team history and circuit page now shows who curated and fact-checked it, and when — and the first in-depth circuit guides (Silverstone, Spa-Francorchamps and Daytona) are live, with many more on the way.

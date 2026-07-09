@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.180.1 — 2026-07-09
+
+### Fixed
+- **Information-hub structured data — QAPage + SportsEvent now valid for rich results.** Search Console flagged the `QAPage` markup (1 error: missing `answerCount`; 8 recommended-field warnings) and the `SportsEvent` markup (6 warnings). `lib/json-ld.ts` `qaPageLd` now emits `answerCount`, question `text`/`author`/`datePublished`, and `acceptedAnswer` `author`/`datePublished`/`upvoteCount`, and normalises `dateModified` to a timezoned ISO datetime. QAPage is now emitted **only on `qa`-kind entries** — a track profile is not a question, so `app/(app)/information/[topic]/[slug]/page.tsx` drops the content-vs-markup mismatch. `sportsEventLd` gains `description`, `organizer.url`, `performer` (curated teams), `image` (brand logo), and `location` `address`+`geo`, resolved from a new `countryCode` on the 38 `content/circuits.json` entries (sourced from `tracks.json` + verified; `lib/circuits.ts` `Circuit.countryCode`). New `lib/json-ld.test.ts` (7 shape tests). Gates: `tsc` 0 · 23 tests · dev-render curl confirmed QAPage on a qa page, absent on a track page, SportsEvent with performers + address + geo on a weekend page. GSC "Validate fix" pending deploy.
+
 ## 0.180.0 — 2026-07-08
 
 ### Added
