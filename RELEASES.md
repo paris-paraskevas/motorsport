@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.182.0 — 2026-07-09
+
+**A world map of every circuit.** Explore all 138 racing venues on one interactive map — search for a track, filter by series, switch between map / satellite / terrain views, and open any marker to jump straight to its circuit guide.
+
 ## 0.181.5 — 2026-07-09
 
 **Calmer, better-timed news alerts.** News notifications no longer repeat the same story across different series, and they stop resurfacing older articles at odd hours — plus they're spaced apart from your session reminders instead of all arriving in the same minute.

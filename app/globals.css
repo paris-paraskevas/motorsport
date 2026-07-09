@@ -282,6 +282,38 @@ body {
   }
 }
 
+/* Leaflet map chrome (tracks map) — themed to the dark app. Leaflet ships a
+   white popup bubble and blue links, so the app's light popup text rendered
+   invisible and the "View circuit" link showed Leaflet-blue (operator
+   2026-07-09). Popup name/country use text-text / text-muted, now readable on
+   the dark surface; the link is bumped to --tint via a 2-class selector so it
+   beats Leaflet's `.leaflet-container a` default without !important. */
+/* !important because leaflet.css is component-imported (loads after globals in
+   the cascade), so an equal-specificity override loses. */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--surface-elevated) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.45) !important;
+}
+.leaflet-popup-content {
+  margin: 0.7rem 0.85rem;
+}
+.leaflet-popup-content-wrapper a {
+  color: var(--tint) !important;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--text-faint) !important;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--text) !important;
+  background: transparent;
+}
+
 /* Wikipedia tables (Rules / History / etc.) — token-driven. */
 .wiki-table-scroll {
   overflow-x: auto;

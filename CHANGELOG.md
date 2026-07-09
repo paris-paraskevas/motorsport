@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.182.0 — 2026-07-09
+
+### Added
+- **Global circuit map at `/information/map`.** One interactive world map of all 138 curated circuits (Leaflet + OpenStreetMap, no API key). A `CircleMarker` per venue coloured by its primary category (series accents reused from `content/series/<slug>/meta.json`); popup links to the full circuit guide; a search box (name/country → `flyTo`); category-filter chips; and a **base-layer switcher** (Map / Satellite via Esri World Imagery / Terrain via OpenTopoMap — all key-less). Client-only via `next/dynamic` `ssr:false` behind a `'use client'` wrapper (Leaflet needs `window`; Next 16 disallows `ssr:false` in a Server Component); map height reserved to avoid CLS. Linked from `/information/tracks`. New `app/(app)/information/map/page.tsx`, `components/information/TracksMap.tsx` + `TracksMapInner.tsx`; deps `leaflet` + `react-leaflet`. Leaflet's popup chrome is themed to the dark app in `globals.css` (its default white bubble hid the light popup text — operator-caught). Verified in-browser at 1440 px: 138 markers + OSM tiles render, search surfaces matches, popup readable, satellite/terrain layers switch, 0 console errors. Richer overlays (sector boundaries, marshalling zones, start-finish lines) remain a future iteration (IDEAS.md).
+
 ## 0.181.5 — 2026-07-09
 
 ### Fixed
