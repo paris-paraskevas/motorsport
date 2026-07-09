@@ -42,6 +42,13 @@ function secondTitleLabel(meta: SeriesMeta): string {
 const driversTitleWord = (meta: SeriesMeta) =>
   meta.category === 'motorcycle' ? 'riders’' : 'drivers’';
 
+// 1 → "1st", 2 → "2nd", 3 → "3rd", 11 → "11th"…
+function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
+}
+
 // Sources shared by every generated entry for a series: our curated records +
 // the series' own Wikipedia champions page + official site. All from meta.json,
 // so never fabricated.
@@ -71,8 +78,10 @@ function whoWonEntry(
 
   const lines: string[] = [];
   const teamRacing = champ.constructor ? `, racing for **${champ.constructor}**` : '';
+  const pointsClause =
+    typeof champ.points === 'number' ? `, clinching the title on **${champ.points}** points` : '';
   lines.push(
-    `**${champ.driver}** won the ${champ.year} ${name} ${driversTitleWord(meta)} championship${teamRacing}.`,
+    `**${champ.driver}** won the ${champ.year} ${name} ${driversTitleWord(meta)} championship${teamRacing}${pointsClause}.`,
   );
   if (champ.constructorChampion) {
     const label = secondTitleLabel(meta);
@@ -88,13 +97,23 @@ function whoWonEntry(
       `In the ${champ.secondaryLabel ?? 'secondary championship'}, **${champ.secondaryDriver}**${sTeam} was champion.`,
     );
   }
-  // Title tally for this driver within this series (exact-name match on our
-  // curated data). Only stated when > 1, so it's always a true multi-title fact.
-  const sameDriver = all.filter((c) => c.driver === champ.driver);
-  if (sameDriver.length > 1) {
-    const years = sameDriver.map((c) => c.year).sort((a, b) => a - b).join(', ');
+  // Title context for this driver — which number title this was, and how it sits
+  // against the all-time series record. All exact-name matches on our curated
+  // data, so every claim is a true, sourced fact.
+  const driverYears = all
+    .filter((c) => c.driver === champ.driver)
+    .map((c) => c.year)
+    .sort((a, b) => a - b);
+  const nth = driverYears.indexOf(champ.year) + 1;
+  lines.push(
+    driverYears.length > 1
+      ? `It was **${champ.driver}**’s ${ordinal(nth)} of ${driverYears.length} ${name} titles (${driverYears.join(', ')}).`
+      : `It was **${champ.driver}**’s first ${name} title.`,
+  );
+  const driverRecord = topHolders(rankTitles(all, (c) => c.driver));
+  if (driverRecord.count >= 2) {
     lines.push(
-      `It was one of **${champ.driver}**’s ${sameDriver.length} ${name} titles (${years}).`,
+      `The all-time ${name} ${driversTitleWord(meta)} record is **${driverRecord.count}** titles, ${driverRecord.names.length > 1 ? 'shared by' : 'held by'} **${joinNames(driverRecord.names)}**.`,
     );
   }
 
@@ -138,6 +157,18 @@ function span(champs: Champion[]): string {
   return `${Math.min(...years)}–${Math.max(...years)}`;
 }
 
+// Everyone tied at the top of a ranking — so shared records are stated honestly
+// (e.g. Hamilton AND Schumacher on 7 F1 titles, not just the first alphabetically).
+function topHolders(ranked: Array<[string, number]>): { names: string[]; count: number } {
+  if (ranked.length === 0) return { names: [], count: 0 };
+  const count = ranked[0][1];
+  return { names: ranked.filter(([, n]) => n === count).map(([n]) => n), count };
+}
+function joinNames(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? '';
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
+
 // "Who has won the most X championships?" — only when the record-holder has ≥2
 // (otherwise the page is meaningless, e.g. endurance crews that never repeat).
 function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: string): InfoEntry | null {
@@ -149,21 +180,30 @@ function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: stri
     ? ''
     : ' (including its predecessor series)';
 
+  const who = meta.category === 'motorcycle' ? 'riders' : 'drivers';
+  const distinct = new Set(champs.map((c) => c.driver)).size;
+  const rec = topHolders(ranked);
   const lines = [
-    `**${topName}** has won the most ${meta.name} ${driversTitleWord(meta)} titles, with **${topN}**${predecessorNote}.`,
+    rec.names.length > 1
+      ? `**${joinNames(rec.names)}** share the record for the most ${meta.name} ${driversTitleWord(meta)} titles, with **${topN}** each${predecessorNote}.`
+      : `**${topName}** has won the most ${meta.name} ${driversTitleWord(meta)} titles, with **${topN}**${predecessorNote}.`,
+    `Across ${span(champs)}, ${distinct} different ${who} have been crowned ${meta.name} champion.`,
   ];
   if (multi.length > 1) {
     lines.push('Drivers with multiple titles:');
     lines.push(multi.map(([n, c]) => `- **${n}** — ${c}`).join('\n'));
   }
-  lines.push(`Based on ${meta.name} champions ${span(champs)}.`);
+  lines.push(`Based on our curated ${meta.name} champions, ${span(champs)}.`);
 
   return {
     kind: 'qa',
     topic,
     slug: slugify(`most-${meta.name}-championships`),
     question: `Who has won the most ${meta.name} championships?`,
-    summary: `${topName} holds the record with ${topN} ${meta.name} titles.`,
+    summary:
+      rec.names.length > 1
+        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} titles each.`
+        : `${topName} holds the record with ${topN} ${meta.name} titles.`,
     keywords: [
       `most ${meta.name} titles`,
       `most ${meta.name} championships`,
@@ -190,21 +230,29 @@ function mostConstructorTitlesEntry(meta: SeriesMeta, champs: Champion[], topic:
   const label = secondTitleLabel(meta).replace('’', '');
   const multi = ranked.filter(([, n]) => n > 1).slice(0, 8);
 
+  const distinct = new Set(champs.map((c) => c.constructorChampion).filter(Boolean)).size;
+  const rec = topHolders(ranked);
   const lines = [
-    `**${topName}** has won the most ${meta.name} ${label} championships, with **${topN}**.`,
+    rec.names.length > 1
+      ? `**${joinNames(rec.names)}** share the record for the most ${meta.name} ${label} championships, with **${topN}** each.`
+      : `**${topName}** has won the most ${meta.name} ${label} championships, with **${topN}**.`,
+    `Across ${span(champs)}, the ${meta.name} ${label} title has gone to ${distinct} different ${label}.`,
   ];
   if (multi.length > 1) {
     lines.push('Most successful:');
     lines.push(multi.map(([n, c]) => `- **${n}** — ${c}`).join('\n'));
   }
-  lines.push(`Based on ${meta.name} ${label} champions ${span(champs)}.`);
+  lines.push(`Based on our curated ${meta.name} ${label} champions, ${span(champs)}.`);
 
   return {
     kind: 'qa',
     topic,
     slug: slugify(`most-successful-${meta.name}-team`),
     question: `Which team has won the most ${meta.name} titles?`,
-    summary: `${topName} leads with ${topN} ${meta.name} ${label} titles.`,
+    summary:
+      rec.names.length > 1
+        ? `${joinNames(rec.names)} share the record with ${topN} ${meta.name} ${label} titles each.`
+        : `${topName} leads with ${topN} ${meta.name} ${label} titles.`,
     keywords: [
       `most successful ${meta.name} team`,
       `${meta.name} constructors record`,

@@ -109,6 +109,9 @@ interface RawTrack {
   type?: string;
   categories?: string[];
   summary?: string;
+  /** Long-form, fact-checked circuit guide (markdown). Its presence is what
+   *  turns a thin stub into a substantial, index-worthy page. */
+  article?: string;
   sources?: unknown;
   review?: string;
   featured?: boolean;
@@ -152,7 +155,14 @@ async function loadTracks(): Promise<InfoEntry[]> {
     if (track.lengthKm) facts.push(`Length: ${track.lengthKm} km`);
     if (track.turns) facts.push(`Turns: ${track.turns}`);
     if (track.opened) facts.push(`Opened: ${track.opened}`);
-    const body = [t.summary?.trim(), facts.length ? facts.join(' · ') : '']
+    // A rich `article` makes the page substantial; when present, drop the inline
+    // facts line (the Circuit-facts table already renders those on the page).
+    const article = typeof t.article === 'string' ? t.article.trim() : '';
+    const body = [
+      t.summary?.trim(),
+      article,
+      article ? '' : facts.length ? facts.join(' · ') : '',
+    ]
       .filter(Boolean)
       .join('\n\n');
 
@@ -329,14 +339,19 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
     const list = [...listRaw].sort((a, b) => a.question.localeCompare(b.question));
     const review: InfoReview = list.every((t) => t.review === 'verified') ? 'verified' : 'unverified';
     const body = [
-      `There are **${list.length}** notable racing venues in ${country} in our directory:`,
+      `${country} is home to **${list.length}** notable racing venues in our directory — here is each, with a note on what it is known for:`,
       '',
-      ...list.map(
-        (t) =>
-          `- [${t.question}](${entryHref(t)})` +
-          (t.track?.type ? ` — ${t.track.type}` : '') +
-          (t.track?.lengthKm ? `, ${t.track.lengthKm} km` : ''),
-      ),
+      ...list.map((t) => {
+        const facts = [
+          t.track?.type,
+          t.track?.lengthKm ? `${t.track.lengthKm} km` : null,
+          t.track?.opened ? `opened ${t.track.opened}` : null,
+        ]
+          .filter(Boolean)
+          .join(', ');
+        const note = t.summary ? ` ${t.summary}` : '';
+        return `- **[${t.question}](${entryHref(t)})**${facts ? ` — ${facts}.` : ''}${note}`;
+      }),
     ].join('\n');
     out.push({
       kind: 'qa',
@@ -413,5 +428,10 @@ export async function loadCuratedInfoEntries(): Promise<InfoEntry[]> {
     loadTeamHistories(),
     loadRisingStars(),
   ]);
-  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)];
+  // Every curated entry carries the operator byline (E-E-A-T); generated
+  // champions-derived entries deliberately do not (see registry/generated.ts).
+  const AUTHOR = 'Paris Paraskevas';
+  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)].map(
+    (e) => ({ ...e, author: e.author ?? AUTHOR }),
+  );
 }

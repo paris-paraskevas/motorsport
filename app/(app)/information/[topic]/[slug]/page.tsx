@@ -43,6 +43,19 @@ export async function generateMetadata({
   };
 }
 
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** "2026-07-08" → "8 July 2026" (or null if not a valid ISO date). */
+function formatUpdated(iso: string): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return null;
+  const monthIndex = parseInt(m[2], 10) - 1;
+  return MONTHS[monthIndex] ? `${parseInt(m[3], 10)} ${MONTHS[monthIndex]} ${m[1]}` : null;
+}
+
 function TrackFactsBlock({ entry }: { entry: InfoEntry }) {
   const t = entry.track;
   if (!t) return null;
@@ -106,6 +119,7 @@ export default async function InfoEntryPage({
     isEntryIndexed(entry),
   ]);
   const url = `${SITE_URL}/information/${topic}/${slug}`;
+  const lastUpdated = entry.author ? formatUpdated(entry.updated) : null;
 
   return (
     <div className="max-w-2xl lg:max-w-3xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
@@ -117,8 +131,10 @@ export default async function InfoEntryPage({
           { name: entry.question, url },
         ])}
       />
-      {/* QAPage structured data only where the page is actually indexable. */}
-      {indexed && (
+      {/* QAPage structured data only on indexable, genuine Q&A entries — a
+          track profile is not a question, so it omits this (avoids the
+          structured-data-vs-content mismatch flagged in Search Console). */}
+      {indexed && entry.kind === 'qa' && (
         <JsonLd
           data={qaPageLd({
             question: entry.question,
@@ -164,6 +180,13 @@ export default async function InfoEntryPage({
         <article className={POST_ARTICLE_CLASS}>
           <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
         </article>
+      )}
+
+      {entry.author && (
+        <p className="mt-6 text-xs text-text-faint">
+          Curated and fact-checked by {entry.author}.
+          {lastUpdated ? ` Last updated ${lastUpdated}.` : ''}
+        </p>
       )}
 
       {entry.sources.length > 0 && (

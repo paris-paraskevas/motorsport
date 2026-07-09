@@ -4,6 +4,7 @@ import { loadSeries } from '@/lib/series';
 import { weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
+import { matchCircuitEntry } from '@/lib/circuits';
 import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendTabs } from '@/components/weekend/WeekendTabs';
@@ -17,7 +18,7 @@ import { withSocialMeta } from '@/lib/seo';
 import { Tv, ArrowUpRight } from 'lucide-react';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { loadMedia, highlightForRound } from '@/lib/media';
-import { loadF1Upgrades } from '@/lib/series-content';
+import { loadF1Upgrades, loadCuratedDrivers } from '@/lib/series-content';
 import { WeekendUpgrades } from '@/components/weekend/WeekendUpgrades';
 
 // ISR: weekend pages edge-cache (was force-dynamic — uncached, slow per hit).
@@ -138,6 +139,18 @@ export default async function WeekendPage({
     weekendTitleLabel,
   );
 
+  // SportsEvent structured-data enrichment (SEO): resolve the venue's circuit
+  // (address/geo) and the series' curated teams (performers). Both fs reads,
+  // ISR-safe; gracefully partial when a venue or roster isn't curated.
+  const venueLocation = weekend.sessions.find(s => s.location)?.location;
+  const circuitMatch = await matchCircuitEntry(venueLocation, weekendTitleLabel);
+  const roster = await loadCuratedDrivers(slug);
+  const eventDescription =
+    `Round ${round} of the ${series.meta.season} ${series.meta.name} season` +
+    (weekend.roundName ? ` — the ${weekend.roundName}` : '') +
+    (venueLocation ? ` at ${venueLocation}` : '') +
+    '.';
+
   return (
     <div
       className="relative max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16"
@@ -165,6 +178,13 @@ export default async function WeekendPage({
           title: eventName,
           startDate: start,
           endDate: end,
+          description: eventDescription,
+          organizerUrl: series.meta.officialSite ?? `${SITE_URL}/series/${slug}`,
+          performers: roster?.teams.map(t => t.name) ?? [],
+          addressCountry: circuitMatch?.circuit.countryCode,
+          geo: circuitMatch
+            ? { lat: circuitMatch.circuit.lat, lon: circuitMatch.circuit.lon }
+            : undefined,
         })}
       />
       {/* Radial wash retired with the rest of the app's (2c-3 precedent);

@@ -1,5 +1,17 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.0 — 2026-07-09
+
+**Every circuit, in depth.** All 138 racing venues in our directory now have an in-depth, fact-checked guide to their history, layout and character — and the "who won" and "most titles" answers across every series now come with real context: records, title tallies, and how each championship has been shared out over the years.
+
+## 0.180.1 — 2026-07-09
+
+**Richer search results.** Tidied the behind-the-scenes data that lets Google show enhanced results for our answer pages and race-weekend pages — including event details like the teams competing and where each round is held.
+
+## 0.180.0 — 2026-07-08
+
+**Bylines and deeper circuit guides.** Every answer, team history and circuit page now shows who curated and fact-checked it, and when — and the first in-depth circuit guides (Silverstone, Spa-Francorchamps and Daytona) are live, with many more on the way.
+
 ## 0.179.0 — 2026-07-08
 
 **The Information section grows up.** Hundreds of fact-checked pages are now live and searchable — profiles of 138 racing circuits worldwide, histories of the sport's great teams, a guide to the tracks in each country, and a rising-stars watchlist for the feeder series — all cross-linked into our live data. More answers still to come.

@@ -76,6 +76,11 @@ export interface InfoEntry {
   featured: boolean;
   /** ISO date (YYYY-MM-DD) of last curation. */
   updated: string;
+  /** Byline for authored/curated content (an E-E-A-T trust signal). Set on the
+   *  curated datasets; absent on auto-generated champions-derived entries, which
+   *  are data-derived rather than written — so we never slap a byline on a
+   *  templated stub. */
+  author?: string;
   /** Present only when kind === 'track'. */
   track?: TrackFacts;
 }
