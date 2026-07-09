@@ -6,7 +6,29 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-09/10 (LATEST, session 4) — merged the 3 open PRs + a 5-item batch; `main` = 0.183.4
+## ⚡ Next session pickup — 2026-07-10 (LATEST, session 4 cont. — batch 2) — `main` = 0.183.6
+
+**Continuation of session 4.** Verified all 5 batch-1 deploys (0.183.0–0.183.4) READY on prod, then ran a 2nd operator-approved batch. `main` = 0.183.6, all green, ZERO open PRs.
+
+### ✅ MERGED (0.183.5 → 0.183.6)
+- **#465 (0.183.5)** Race Engineer launcher enlarged — 48→56px mobile, 64→72px desktop (icon 20→24 / 28→36). Icon kept `UserCog` — it's already a person/engineer figure, NOT a headset (operator's "swap the headset" premise was stale). A different glyph (wrench/hard-hat) is a 1-line swap if the operator names one.
+- **#466 (0.183.6)** fixed 2 mislabeled "Keep exploring" links — `what-is-the-24-hours-of-le-mans` ("classes at Le Mans" now → the real `/information/endurance/classes-at-le-mans`) + `how-the-f1-points-system-works` ("F1 sprint race" relabelled "More Formula 1 answers"; no sprint answer exists). Audited all 35 related links across 16 answer files — only these 2 mismatched; generated champions-Q&A links are template-built + correct.
+
+### 🔎 SportsEvent JSON-LD (GSC "34 events missing fields") — ALREADY ENRICHED, no code needed
+Live weekend pages across F1/MotoGP/WEC/IndyCar/NASCAR already emit `image` + `description` + `organizer.url` + `performer` (teams) + `location.address` (where the venue matches a circuit). GSC flags `image` as missing, but it's ALWAYS emitted → the report is STALE (crawled before the enrichment shipped) → the OWED "Validate fix" clears it. Residuals (optional, NOT built): `location.address` is absent where the venue isn't in `content/circuits.json` (broadening the match to the 138-entry `tracks.json` = a matching-curation task with false-positive risk); `offers` can't be added (no ticket data — RULE #1).
+
+### ⏳ OWED — operator actions (KEEP — still open)
+1. **External cron pinger** (Hobby) for reliable blog notifications: cron-job.org → `GET /api/cron/publish-posts` every 15 min, header `Authorization: Bearer <CRON_SECRET>`.
+2. **GSC "Validate fix"** on QAPage + SportsEvent — now high-value (SportsEvent is fully enriched; validating clears the 34-event flag).
+3. **#456 notify prod-watch** — coalescing/quiet-hours only observable on a busy prod cron tick.
+4. **SportsEvent address coverage** (optional) — broaden venue→address matching to `tracks.json` so more events get `location.address`.
+
+### 📋 STILL QUEUED (unchanged)
+`/about` (needs operator bio) · map richer overlays (needs geometry) · W4 profiles · mobile "More" sheet · weekend circuit-map verify · CLS pass · enrich 43 thin /information pages · assistant→information-hub grounding.
+
+---
+
+## ⚡ Next session pickup — 2026-07-09/10 (session 4) — merged the 3 open PRs + a 5-item batch; `main` = 0.183.4
 
 **Long session. `main` is 0.183.4, all deploys green, ZERO open PRs.** Cleared session-3's open queue then ran an operator-approved batch. Two OWED operator actions below are load-bearing for blog notifications + SEO.
 
