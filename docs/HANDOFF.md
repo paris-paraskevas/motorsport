@@ -6,6 +6,40 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-07-09/10 (LATEST, session 4) — merged the 3 open PRs + a 5-item batch; `main` = 0.183.4
+
+**Long session. `main` is 0.183.4, all deploys green, ZERO open PRs.** Cleared session-3's open queue then ran an operator-approved batch. Two OWED operator actions below are load-bearing for blog notifications + SEO.
+
+### ✅ MERGED to `main` (0.182.3 → 0.183.4)
+- **#457 (0.182.3)** search overlay reshape · **#458 (0.182.4)** circuit-map nav (desktop Answers menu + mobile Answers tab) · **#456 (0.183.0)** notify coalescing + quiet-hours + anon-gate · **#459** session-3 handoff docs. *(The DO-FIRST from session 3 — union-resolved package.json/CHANGELOG/RELEASES cleanly; leaflet survived every resolve.)*
+- **#460 (0.183.1)** map filter **select-all/clear toggle** (`TracksMapInner`, mirrors `CalendarFilters` `toggleAll`). Browser-verified.
+- **#461 (0.183.2)** **cursor glow** — signal-amber halo trails the pointer, `pointer-events:none`, gated `(pointer:fine)` + not `prefers-reduced-motion`; in `AppShell` via ref+rAF (no re-render). Chequered-flag cursor image deliberately skipped (hides click point).
+- **#462 (0.183.3)** **circuit category curation** — verified all 63 `f1` tags legit (0 false positives), +3 missing historic F1 hosts (Mugello/Mosport/Sebring), + cross-tags from primary-source per-series calendars: +31 `gt`, +12 `endurance`, +9 `wsbk`. 55 additive tags, none removed (marker colours = `categories[0]`, unchanged). 4 research subagents.
+- **#463 (0.183.4)** **blog publish→notify fix** — see below.
+
+### 🔎 Findings / corrections (don't re-litigate)
+- **Page-width item was ALREADY DONE** by 0.181.3 (`PAGE_WIDE` on /news, /information, /social) — measured full-width on prod at 1440px. No PR needed. The Inbox report predated 0.181.3.
+- **"f1 over-tagged" was WRONG** — all 63 f1-tagged circuits are genuine F1 WC hosts (current + historic), which matches the operator's own "current-or-historic" rule. My earlier "63 vs 24-calendar" framing was the error. Nothing trimmed.
+- **Blog notifications WERE wired** (publish-posts cron fans out a `blog-publish` push). Root cause of "doesn't fire": **GitHub Actions throttles the `*/15` cron to ~2h in practice** (today's runs were ~2h apart). Operator confirmed **Hobby plan** → Vercel native cron (daily cap) can't help.
+- **CRLF gotcha** (for future scripted edits): JS regex `$` matches *before* `\r`, so an exact-string line match on conflict markers silently misses CRLF-suffixed lines while the regex assert passes. Use `\r?\n`-aware patterns.
+
+### #463 blog-notify fix — what shipped + what's still owed
+Extracted the push fan-out to **`lib/notify-blog.ts`** (`announcePublishedPosts` — Next 16 bars non-handler exports from a `route.ts`), and call it **inline from the approve handler** (`app/api/blog/[id]`): approving a post whose `publish_at` has passed publishes + pushes **immediately** (best-effort; `publishDuePosts`' status-flip is the once-ever guard so the cron can't double-announce). Cron behaviour unchanged. `next build` + 817 tests green. **Inline only covers "publish now"** — future-scheduled posts still ride the throttled cron.
+
+### ⏳ OWED — operator actions (load-bearing)
+1. **External cron pinger for reliable blog notifications** (Hobby workaround): create a free **cron-job.org** (or EasyCron) job → `GET https://paddock-tracker.com/api/cron/publish-posts`, every **15 min**, header `Authorization: Bearer <CRON_SECRET>` (same secret the GH Actions use). Makes future-scheduled posts notify within 15 min instead of ~2h. Can point it at other throttled crons too.
+2. **SportsEvent structured-data enrichment** (NEW, GSC screenshot): the Events rich result has **34 items** flagged "Improve item appearance" for missing RECOMMENDED fields — `image`, `description`, `offers`, `performer`, `location.address`, `organizer.url`. Enrich the SportsEvent JSON-LD (`lib/json-ld.ts` + emit sites). In `IDEAS.md` Inbox.
+3. **#456 notify prod-watch** — coalescing/quiet-hours only observable on a busy prod cron tick.
+4. **GSC "Validate fix"** on QAPage + SportsEvent (carried from session 3).
+
+### 📋 STILL QUEUED (unchanged from session 3)
+`/about` rewrite (BLOCKED: needs operator bio) · map richer overlays (BLOCKED: needs geometry/GeoJSON) · W4 driver/team profile pages (last v1.0 gate) · mobile "More" overflow sheet · "Keep exploring" mislabeled links · weekend circuit-map verify · CLS pass (D 0.12 / M 0.16).
+
+### State
+On `main` (0.183.4), clean tree, dev server stopped. Two untracked `drafts/*.json` remain (not mine to commit). Old stash entries untouched (operator-owed drop).
+
+---
+
 ## ⚡ Next session pickup — 2026-07-09 (LATEST, session 3) — UI/feature marathon: 6 PRs MERGED (0.181.3→0.182.2) + 3 OPEN, a prod build-break caught & fixed, notifications deepened
 
 **Very long session. `main` is 0.182.2 (deploying). Three PRs are open + Vercel-green awaiting merge; several operator asks remain queued. The MERGE-ORDER caveat below is load-bearing.**
