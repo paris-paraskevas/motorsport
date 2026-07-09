@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.182.2 — 2026-07-09
+
+### Fixed
+- **Restored `leaflet` / `react-leaflet` / `@types/leaflet` to `package.json`** — the 0.182.1 production build failed with `Module not found: Can't resolve 'react-leaflet'`. Root cause: the search PR (#454) branched off `main` before the tracks map (#453) added leaflet; when rebased, its `package.json` conflict was resolved with a wholesale `--theirs`, dropping the map's deps from `package.json` while the lockfile kept them, so Vercel's `npm install` reconciled to `package.json` and stripped them. Re-added all three; `next build` green. **Process note:** when stacking PRs, resolve `package.json`/`package-lock.json` conflicts by UNION, never blind `--theirs`.
+
 ## 0.182.1 — 2026-07-09
 
 ### Changed
