@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.183.4 — 2026-07-09
+
+### Fixed
+- **Blog posts notify on publish without waiting for the throttled cron** (operator: "blog notifications don't fire on publish"). The publish→push was already wired in `app/api/cron/publish-posts`, but GitHub Actions throttles that `*/15` schedule to ~2h in practice, so the push lagged badly. Extracted the fan-out to `lib/notify-blog.ts` (`announcePublishedPosts` — Next 16 forbids non-handler exports from a `route.ts`) and now call it inline from the approve handler (`app/api/blog/[id]`): approving a post whose `publish_at` has already passed publishes + pushes it immediately. `publishDuePosts` is the status-guarded once-ever flip, so the cron can't re-announce an already-published post; the inline call is best-effort (the cron stays the backstop). Genuinely future-scheduled posts still ride the cron — for reliable sub-daily timing on the current Hobby plan, point an external pinger (e.g. cron-job.org) at the endpoint (see `docs/HANDOFF.md`).
+
 ## 0.183.3 — 2026-07-09
 
 ### Changed

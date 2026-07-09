@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.183.4 — 2026-07-09
+
+**Blog posts notify the moment they go live.** When a post is approved to publish right away, its notification now goes out immediately instead of waiting for the next scheduled check.
+
 ## 0.183.3 — 2026-07-09
 
 **Sharper map filters.** The circuit map's category filters are now more accurate: "F1" covers every venue that has hosted a Grand Prix (current or historic), and circuits that also host GT3, endurance (WEC / IMSA / Le Mans) or World Superbikes now appear under those filters too — so picking a series reveals every track it visits.
