@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.181.0 — 2026-07-09
+
+### Added
+- **Information hub — every circuit guide complete.** All 138 track profiles now carry a ~200–300-word, fact-checked circuit guide (batches 1–23; `content/information/tracks.json` `article` field, rendered by `lib/information/curated.ts`). Current-status verified against live 2026 calendars (WRC / NASCAR Cup / IndyCar / WSBK) — e.g. NASCAR's Cup finale moving Phoenix→Homestead, Macau switching from the F3 to the FR World Cup, Rockingham's closure, Lausitzring now a DEKRA test site.
+
+### Changed
+- **Generated Q&A + per-country pages deepened** (`lib/information/generated.ts`, `curated.ts`) so no indexed page is a thin stub (hub audit: 43 → 26 thin, the rest data-sparse-but-complete). Champions Q&A now carry data-derived context — title number + full year list, the all-time series record stated **tie-aware** (e.g. Hamilton *and* Schumacher on 7), points where curated, and distinct-champion counts on the record pages. Per-country track pages list each venue with its facts + summary instead of a bare name. Every fact derives from curated data (zero fabrication); 16 info tests green, `tsc` 0.
+
 ## 0.180.1 — 2026-07-09
 
 ### Fixed

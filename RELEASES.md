@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.0 — 2026-07-09
+
+**Every circuit, in depth.** All 138 racing venues in our directory now have an in-depth, fact-checked guide to their history, layout and character — and the "who won" and "most titles" answers across every series now come with real context: records, title tallies, and how each championship has been shared out over the years.
+
 ## 0.180.1 — 2026-07-09
 
 **Richer search results.** Tidied the behind-the-scenes data that lets Google show enhanced results for our answer pages and race-weekend pages — including event details like the teams competing and where each round is held.
