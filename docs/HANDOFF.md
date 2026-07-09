@@ -6,6 +6,42 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-07-09 (LATEST, session 3) — UI/feature marathon: 6 PRs MERGED (0.181.3→0.182.2) + 3 OPEN, a prod build-break caught & fixed, notifications deepened
+
+**Very long session. `main` is 0.182.2 (deploying). Three PRs are open + Vercel-green awaiting merge; several operator asks remain queued. The MERGE-ORDER caveat below is load-bearing.**
+
+### ✅ MERGED to `main` today (0.181.3 → 0.182.2)
+- **#450 (0.181.3)** app-wide fluid page width + custom scrollbar — two tokens in `lib/site.ts` (`PAGE_WIDE` fully-fluid, `PAGE_READ` capped); 43 `(app)` bodies + `SeriesPageView` + nav/Footer/LaunchBanner. Operator decision: fully fluid, no cap.
+- **#451 (0.181.4)** blog post → answer-detail layout (readable column + sticky sidebar: ToC via new `lib/toc.ts`, Share, More-from-blog, series link). MDX + DB paths.
+- **#452 (0.181.5)** notification timing v1 — news **freshness gate** + **cross-post dedup** (`lib/news.ts`), and split `/api/cron/news` into its own `news.yml` (offset `7,22,37,52`) off the notify tick.
+- **#453 (0.182.0)** global circuit map `/information/map` — Leaflet+OSM, 138 CircleMarkers by category, search/fly-to, category filter, **Map/Satellite/Terrain** base-layer switcher, dark-themed popup (`globals.css`). Deps `leaflet`+`react-leaflet`.
+- **#454 (0.182.1)** search overlay **frost** (backdrop-blur) + click-to-close.
+- **#455 (0.182.2)** 🔥 **build hotfix** — restored `leaflet`/`react-leaflet` to `package.json`.
+
+### 🔥 THE INCIDENT + LESSON (do not repeat)
+#454 (search) branched off `main` **before** #453 (map) added leaflet. Rebasing #454 resolved its `package.json` conflict with a wholesale **`git checkout --theirs`**, which **dropped the map's deps from `package.json`** while the lockfile kept them → Vercel `npm install` stripped them → **prod build failed** (`Can't resolve 'react-leaflet'`). Fixed in #455. **LESSON: when stacking PRs, resolve `package.json`/`package-lock.json` conflicts by UNION (keep every dep), NEVER blind `--theirs`.** Second lesson: **`tsc --noEmit` is NOT the gate — `next build` is** (it caught a `QuietHours as Record` cast error + a route-export error that `tsc` passed). Run `next build` before shipping route/build-sensitive changes.
+
+### 🔧 OPEN PRs — Vercel-green, awaiting merge (⚠ MERGE IN VERSION ORDER)
+All three branched off `main` 0.182.2, so **whichever merges 2nd/3rd will conflict on `package.json` + `CHANGELOG` + `RELEASES`** — resolve by **UNION** (keep both entries, newest on top, highest version). Recommended order:
+1. **#457 (0.182.3)** — search overlay reshape (rounded/wider/friendlier empty state).
+2. **#458 (0.182.4)** — circuit-map navigation: "Circuit Map" in desktop Answers menu + new **"Answers" tab** in the mobile bottom bar (phones had NO `/information` entry before). 6 tabs when betting-on.
+3. **#456 (0.183.0)** — notifications **deeper layer** (minor): per-subscriber **coalescing** (one summary push, not 6), **quiet hours** (opt-in, user-tz, `isQuietNow`), **anon-gate** (no-account subs skipped across all 5 crons). 22 unit tests; `next build` green. ⚠ **push behaviour only observable on PROD — watch a busy cron tick after merge.**
+
+### 📋 QUEUED — operator asks NOT yet done
+1. **Custom cursor** — chequered-flag / yellow hover glow (site-wide; gate `pointer:fine` + `prefers-reduced-motion`). Ready to build.
+2. **Rewrite `/about`** → strip the archaic API-list, make it an about-Paris page. **BLOCKED on operator bio** (no fabrication — RULE #1). Scaffold ready.
+3. **Map richer overlays** — sector boundaries, marshalling ("mom") zones, start-finish lines, per-overlay filters. **BLOCKED: not open data** — needs a geometry source (operator GeoJSON) or descope. Can't build faithfully without it.
+4. **W4 driver/team profile pages** — the last v1.0 launch gate. Multi-session; recheck drivers.json coverage first.
+5. Fuller **mobile "More" overflow sheet** (IA) if the 6-tab bar feels tight; surface the map on the `/information` hub for a 1-tap mobile path.
+6. Carried from session 2 (still open): **"Keep exploring" mislabeled links** (audit `content/information/answers/*.md` `related`), **weekend circuit-map "messed up"** (verify/fix), **CLS perf pass** (D 0.12 / M 0.16).
+7. ⏳ OWED (operator action): **GSC "Validate fix"** on QAPage + SportsEvent (live since 0.180.1); **notifications e2e** watch on prod.
+
+### Notes
+- Custom-cursor + map-overlays-vision + blog-notification-bug all captured in `IDEAS.md` Inbox.
+- Local dev screenshots (`*.png`) + `.playwright-mcp/` are gitignored — safe.
+
+---
+
 ## ⚡ Next session pickup — 2026-07-09 (LATEST, session 2) — QA/fix marathon: shipped 0.180.1→0.181.2; a WIP width branch + a map + 5 more items QUEUED
 
 **Long session. A lot shipped to prod; a QA backlog opened. The QUEUED list below IS the next-session worklist — every operator item this session is captured there.**
