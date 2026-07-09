@@ -6,7 +6,35 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-08 (LATEST) — INFO-HUB ENRICHMENT: bylines LIVE (#443, **0.180.0**) + track-guide RUN STARTED (batch 1: 6 circuits verified), PAUSED
+## ⚡ Next session pickup — 2026-07-09 (LATEST) — ENRICHMENT 93/138 (batches 1–15, all verified) + Belgian-GP blog draft staged. NEXT: insert blog, finish ~8 batches
+
+**Two things queued for next session: (1) land the staged Belgian-GP blog draft on the prod queue, (2) enrich the remaining 45 tracks.** Big enrichment run this session + a scheduled blog draft, both on LOCAL branches (unpushed).
+
+### Track enrichment — 93/138 done, ALL verified · branch `feat/information-track-guides` (LOCAL/unpushed)
+Batches 1–15 complete via **draft → independent adversarial skeptic → Claude spot-check of volatile claims → merge → `vitest` → commit** (one commit per batch = durable checkpoint). Rules held throughout: **#1 facts must be facts (no hallucination/misinterpretation), #2 nothing outdated.** The skeptic caught real errors in nearly every batch — proving the process necessary:
+- *Outdated-2026 corrections:* Bahrain/Jeddah GPs status, Toronto→Markham move, Charlotte roval dropped, Dover no 2026 points race, Zandvoort last Dutch GP, Barcelona→Madrid, plus the batch-15 winners (Palou/Antonelli/Elliott/Hamlin) all re-checked live.
+- *Historical corrections:* Hungaroring count, Fangio 1956 shared drive, Monza pack finishes, Indy brickyard year, a cross-batch Zolder/Hugenholtz mixup.
+- **NEXT: finish the remaining 45 tracks (~8 batches of 6).** Done-set is **self-describing** — remaining = tracks with no `article` field in `content/information/tracks.json` (`!("article" in t)`). Tail is tier-2/3 (secondary categories + karting/minor venues) → shorter guides fine for genuinely minor venues. Reuse the exact process above; merge via a by-slug node script in scratchpad (avoids JSON-escaping the big file), then `npx vitest run lib/information/information.test.ts` (16 tests) before each commit.
+- *Data-tag NOTEDs (non-blocking, later audit):* Termas `motogp`→historic (gone after 2025); Okayama `motogp` never hosted world bikes; Mosport/CTMP omit `f1` despite 8 past F1 GPs.
+
+### Blog — Belgian GP preview drafted + prod creds wired · INSERT DEFERRED to next session
+- **Draft:** `drafts/belgian-grand-prix-2026-preview.json` (untracked; post.json shape — slug/title/summary/body/seriesSlug=f1/heroImage=null/publishAt=null). ~462 words, F1 house voice, sources **linked inline not pasted**, every fact verified as of 2026-07-09. Chose a *preview* of the next race (Belgian GP, Spa, Sun 19 Jul) because the British GP recap was already queued for the 5 Jul race. Facts CUT for failing rule #1: a source's false "Round 12" + stale pre-British standings + "Hamilton record 6 Spa wins" (that's Schumacher's).
+- **`.env.blog` (gitignored) is wired** with prod Supabase URL (`dzelqrtajnauunzmxfic`), service-role key (from `.supabase-pat` reveal — never printed), and `BLOG_AUTHOR_ID=user_3Dj7VJ9cClEegSAklquQYVpJEbK`. **DO NOT repoint `.env.local`** — it must stay on 127.0.0.1 (dev/test/seed footgun).
+- **NEXT: insert it** → `npx tsx --env-file=.env.blog scripts/draft-post.mts drafts/belgian-grand-prix-2026-preview.json`. Then verify: row on prod with `status='draft'`, `publish_at` null, NOT on public `/blog`. Operator approves + schedules in `/blog` admin queue; publish cron takes it live. (Admin push ping no-ops without KV/Clerk/VAPID prod env — draft still lands.)
+
+### ⚠ Constraints carried in
+- **Org hit its MONTHLY SPEND LIMIT** mid-session (a batch-15 skeptic *agent* aborted). My own WebSearch/WebFetch/Bash still worked; agent-heavy verification may need the cap raised (`/usage-credits`) or the skeptic pass run as direct tool calls.
+- Prod-Supabase access is classifier-gated (operator approves, or run yourself).
+
+### Branch state (all enrichment/handoff work is LOCAL — nothing pushed)
+- `main` = `867a2e9` (**0.180.0**, prod live). *Note: this `docs/post-442-handoff` branch predates #443, so its checked-out `package.json`/`page.tsx`/`curated.ts` read 0.179.0 / no-byline — expected, ignore.*
+- `feat/information-track-guides` — batches 1–15 (93 circuits) + byline/E-E-A-T infra + IDEAS capture. Enrichment continues here; PR when the run completes (or at a sensible chunk).
+- `docs/post-442-handoff` = THIS branch — handoff + SEO plan (`docs/research/2026-07-08-seo-optimization-plan.md`). **`main`'s handoff copy is stale — read this branch.**
+- Untracked, persist across branch switches: `drafts/belgian-grand-prix-2026-preview.json`, `drafts/motogp-german-grand-prix-2026-preview.json`, `.env.blog` (gitignored).
+
+---
+
+## Next session pickup — 2026-07-08 — INFO-HUB ENRICHMENT: bylines LIVE (#443, **0.180.0**) + track-guide RUN STARTED (batch 1: 6 circuits verified), PAUSED
 
 **Bylines + first enriched circuits shipped to prod.** `main` at `867a2e9` (#443), version **0.180.0**, local `main` synced. Verified live: byline on curated pages, `/changelog` 0.180.0.
 
