@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
-import { Headset, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { UserCog, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import type { ChatMessage } from '@/lib/assistant/prompt';
 import { parseInline } from '@/lib/assistant/render';
 
@@ -130,9 +130,9 @@ export function AssistantWidget() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open the Race Engineer help chat"
-        className={`${anchor} inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand text-bg shadow-lg transition-transform duration-(--duration-fast) hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
+        className={`${anchor} inline-flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full bg-brand text-bg shadow-lg transition-transform duration-(--duration-fast) hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
       >
-        <Headset size={20} aria-hidden />
+        <UserCog className="size-5 lg:size-7" aria-hidden />
       </button>
     );
   }
@@ -148,7 +148,7 @@ export function AssistantWidget() {
     >
       <header className="flex items-center gap-2 border-b border-border px-4 py-3">
         <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand/15 text-brand">
-          <Headset size={15} />
+          <UserCog size={15} />
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-display text-sm font-bold uppercase tracking-wide text-text">Race Engineer</div>
