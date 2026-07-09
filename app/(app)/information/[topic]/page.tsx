@@ -66,7 +66,7 @@ export default async function TopicPage({
   const drafts = entries.filter((e) => e.review === 'unverified');
 
   return (
-    <div className="max-w-3xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
+    <div className="max-w-2xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl 3xl:max-w-[2000px]! mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
@@ -97,7 +97,7 @@ export default async function TopicPage({
               <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
                 Guides &amp; tracks by country
               </h2>
-              <div className="divide-y divide-border/60">
+              <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
                 {entries
                   .filter((e) => e.kind !== 'track')
                   .sort(
@@ -123,7 +123,7 @@ export default async function TopicPage({
         <>
           {verified.length > 0 && (
             <section className="mb-10">
-              <div className="divide-y divide-border/60">
+              <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
                 {verified.map((e) => (
                   <EntryRow
                     key={entryHref(e)}
@@ -142,7 +142,7 @@ export default async function TopicPage({
                 Drafts
               </h2>
               <DraftNotice label="These entries are drafted from web research and awaiting an editor’s fact-check. They are not shown in search or submitted to Google yet." />
-              <div className="divide-y divide-border/60">
+              <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
                 {drafts.map((e) => (
                   <EntryRow
                     key={entryHref(e)}
@@ -190,7 +190,7 @@ function TrackDirectory({
           <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-tint mb-2">
             {country}
           </h2>
-          <div className="divide-y divide-border/60">
+          <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
             {byCountry.get(country)!.map((e) => (
               <EntryRow
                 key={entryHref(e)}
