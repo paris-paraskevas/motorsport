@@ -118,7 +118,7 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 p-4 pt-[12vh]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-md p-4 pt-[12vh]"
       role="dialog"
       aria-modal="true"
       aria-label="Search"

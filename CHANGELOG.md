@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.182.1 — 2026-07-09
+
+### Changed
+- **Search overlay frosts the page behind it.** The nav search backdrop (`components/search/SearchOverlay.tsx`) gains `backdrop-blur-md` over a lighter dim (`bg-black/70` → `bg-black/50`), so opening search blurs/clouds the rest of the app instead of only darkening it — the search box comes forward. Click-outside-to-close already existed (backdrop `onClick={onClose}` + inner-panel `stopPropagation`); verified it still closes on a backdrop click. Verified in-browser on `/calendar`.
+
 ## 0.182.0 — 2026-07-09
 
 ### Added
