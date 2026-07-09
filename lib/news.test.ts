@@ -4,6 +4,9 @@ import {
   fetchAggregatedNews,
   filterNewsByMention,
   newsMentionAliases,
+  articleKey,
+  isRecentArticle,
+  NEWS_FRESH_WINDOW_MS,
 } from './news';
 import type { NewsItem } from './types';
 
@@ -196,5 +199,41 @@ describe('fetchAggregatedNews', () => {
     const shared = items.filter(i => i.title === 'Shared cross-post');
     expect(shared).toHaveLength(1);
     expect(shared[0].seriesSlug).toBe('f1'); // first in NEWS_SLUG_MAP order
+  });
+});
+
+describe('articleKey', () => {
+  it('extracts the stable slug so cross-posts across category feeds match', () => {
+    // Same story, two category URLs → same key (this is what the news cron
+    // dedupes on so a syndicated story pushes once, not once per series).
+    expect(articleKey('https://www.motorsport.com/f1/news/shared-story/')).toBe('shared-story');
+    expect(articleKey('https://www.motorsport.com/f1/news/shared-story/')).toBe(
+      articleKey('https://www.motorsport.com/wec/news/shared-story/'),
+    );
+  });
+
+  it('falls back to the raw string for an unparseable link', () => {
+    expect(articleKey('not a url')).toBe('not a url');
+  });
+});
+
+describe('isRecentArticle', () => {
+  const now = new Date('2026-07-09T12:00:00Z');
+
+  it('accepts an article published within the window', () => {
+    expect(isRecentArticle(new Date('2026-07-09T11:00:00Z'), now)).toBe(true); // 1h ago
+  });
+
+  it('rejects a resurfaced article older than the window', () => {
+    expect(isRecentArticle(new Date('2026-07-09T09:00:00Z'), now)).toBe(false); // 3h ago
+  });
+
+  it('treats a future-dated item (clock skew) as fresh', () => {
+    expect(isRecentArticle(new Date('2026-07-09T12:30:00Z'), now)).toBe(true);
+  });
+
+  it('uses NEWS_FRESH_WINDOW_MS as the default window edge', () => {
+    expect(isRecentArticle(new Date(now.getTime() - NEWS_FRESH_WINDOW_MS + 1000), now)).toBe(true);
+    expect(isRecentArticle(new Date(now.getTime() - NEWS_FRESH_WINDOW_MS - 1000), now)).toBe(false);
   });
 });

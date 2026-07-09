@@ -68,13 +68,31 @@ export interface AggregatedNewsItem extends NewsItem {
 // category-specific URL (`/f1/news/<slug>/` vs `/wec/news/<slug>/`). The article
 // SLUG (last path segment) is its canonical identity across categories — keying
 // on the full link misses the duplicate because the category path differs.
-function articleKey(link: string): string {
+export function articleKey(link: string): string {
   try {
     const segs = new URL(link).pathname.split('/').filter(Boolean);
     return segs.length ? segs[segs.length - 1] : link;
   } catch {
     return link;
   }
+}
+
+// News push notifications only fire for genuinely-fresh articles. motorsport.com
+// re-orders and re-timestamps its feed and cross-posts one story to several
+// category feeds; without a freshness gate an OLD story resurfacing to feed-top
+// fired a push at a random hour of the day (operator 2026-07-09). An article's
+// RSS pubDate is its original publish time (unchanged on reorder), so gating on
+// age suppresses resurfaces. 2h comfortably covers the detection lag — 15-min
+// cron + 30-min RSS revalidate + GitHub Actions scheduling delay — while killing
+// day-old refires. A future-dated item (clock skew) counts as fresh.
+export const NEWS_FRESH_WINDOW_MS = 2 * 60 * 60 * 1000;
+
+export function isRecentArticle(
+  pubDate: Date,
+  now: Date = new Date(),
+  windowMs: number = NEWS_FRESH_WINDOW_MS,
+): boolean {
+  return now.getTime() - pubDate.getTime() <= windowMs;
 }
 
 /**

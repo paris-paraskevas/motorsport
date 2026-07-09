@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.181.5 — 2026-07-09
+
+**Calmer, better-timed news alerts.** News notifications no longer repeat the same story across different series, and they stop resurfacing older articles at odd hours — plus they're spaced apart from your session reminders instead of all arriving in the same minute.
+
 ## 0.181.4 — 2026-07-09
 
 **Blog posts, redesigned to read.** Articles now sit in a comfortable reading column with a sticky sidebar alongside — a table of contents to jump between sections, share buttons, and links to more posts — instead of one narrow column. On phones it all stacks into a single clean flow.

@@ -32,20 +32,6 @@ jobs:
           echo ""
           test "$STATUS" = "200"
 
-      - name: Ping /api/cron/news (articles)
-        env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
-          set -e
-          AUTH_HEADER=""
-          if [ -n "$CRON_SECRET" ]; then
-            AUTH_HEADER="Authorization: Bearer $CRON_SECRET"
-          fi
-          STATUS=$(curl -sS -o /tmp/news.json -w "%{http_code}" \
-            -H "$AUTH_HEADER" \
-            https://paddock-tracker.com/api/cron/news)
-          echo "Status: $STATUS"
-          cat /tmp/news.json
-          echo ""
-          # 503 (kv not configured) is acceptable while KV is being provisioned
-          test "$STATUS" = "200" -o "$STATUS" = "503"
+# News moved to its own workflow (.github/workflows/news.yml) on an offset
+# schedule so its pushes don't land in the same minute as the session/results
+# reminders this job sends (operator 2026-07-09).
