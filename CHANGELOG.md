@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.184.1 — 2026-07-10
+
+### Added
+- **Series overviews for the 13 remaining championships** (operator; AdSense original-content program). Authored `content/series/<slug>/overview.md` for motogp, wsbk, nascar-cup, dtm, wrc, f2, f3, formula-e, indycar, wec, imsa, gt-world and nls (F1 + ADAC were already done) — matching the F1 template's voice + structure (lead + race-weekend shape + points + "what to watch for in 2026"), rendered on each series' About tab. Every factual claim (points scales, formats, 2026 calendars/entrants) was researched against primary sources by per-series agents, then **adversarially audited** against those sources; the audit caught + fixed real errors before shipping — DTM opens "in Austria" (not the first non-German opener; Portimão 2022), IndyCar's Canadian round relocates Toronto→Markham (not a "return"), NLS runs the combined GP+Nordschleife layout / drops best-8-of-10 for 2026 / allows a solo driver in the 4h races, and Formula E's Miami is a returning stop. `[UNVERIFIED]` facts (e.g. IMSA per-position season points) were omitted rather than guessed.
+
 ## 0.184.0 — 2026-07-10
 
 ### Added
