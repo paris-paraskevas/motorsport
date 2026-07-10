@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.185.1 — 2026-07-10
+
+### Changed
+- **Surfaced the F1 head-to-head (`/f1/compare`)** (operator). Previously reachable only from the F1 Analysis page + ⌘K search. Added a pre-filled cross-link on every F1 driver page (`app/(app)/drivers/[slug]/page.tsx` → `/f1/compare?a=<slug>`, F1-gated) and an "F1 Head-to-head" item in the Series mega-menu beside F1 Analysis (`components/AppShell.tsx`). Verified: driver-page link SSR-present on an F1 driver / absent on a non-F1 driver; nav link renders in the opened Series dropdown (Playwright). Part of the broader IA rethink (series editorial content → discoverable links).
+
 ## 0.185.0 — 2026-07-10
 
 ### Added
