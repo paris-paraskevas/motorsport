@@ -265,4 +265,425 @@
     "lon": 13.6189,
     "aliases": ["Autodrom Most", "Czech Round", "Most"]
   }
+,
+  "atlanta": {
+    "name": "Atlanta Motor Speedway",
+    "countryCode": "US",
+    "lat": 33.3835,
+    "lon": -84.3179,
+    "aliases": ["Atlanta Motor Speedway", "Atlanta"]
+  },
+  "bristol": {
+    "name": "Bristol Motor Speedway",
+    "countryCode": "US",
+    "lat": 36.5156,
+    "lon": -82.2569,
+    "aliases": ["Bristol Motor Speedway", "Bristol"]
+  },
+  "bowman-gray": {
+    "name": "Bowman Gray Stadium",
+    "countryCode": "US",
+    "lat": 36.0828,
+    "lon": -80.2222,
+    "aliases": ["Bowman Gray Stadium", "Bowman Gray"]
+  },
+  "darlington": {
+    "name": "Darlington Raceway",
+    "countryCode": "US",
+    "lat": 34.2956,
+    "lon": -79.906,
+    "aliases": ["Darlington Raceway", "Darlington"]
+  },
+  "chicagoland": {
+    "name": "Chicagoland Speedway",
+    "countryCode": "US",
+    "lat": 41.4747,
+    "lon": -88.0572,
+    "aliases": ["Chicagoland Speedway", "Chicagoland"]
+  },
+  "iowa": {
+    "name": "Iowa Speedway",
+    "countryCode": "US",
+    "lat": 41.6778,
+    "lon": -93.0144,
+    "aliases": ["Iowa Speedway"]
+  },
+  "kansas": {
+    "name": "Kansas Speedway",
+    "countryCode": "US",
+    "lat": 39.1158,
+    "lon": -94.8311,
+    "aliases": ["Kansas Speedway"]
+  },
+  "martinsville": {
+    "name": "Martinsville Speedway",
+    "countryCode": "US",
+    "lat": 36.6339,
+    "lon": -79.8511,
+    "aliases": ["Martinsville Speedway", "Martinsville"]
+  },
+  "michigan": {
+    "name": "Michigan International Speedway",
+    "countryCode": "US",
+    "lat": 42.0664,
+    "lon": -84.2414,
+    "aliases": ["Michigan International Speedway"]
+  },
+  "nashville": {
+    "name": "Nashville Superspeedway",
+    "countryCode": "US",
+    "lat": 36.0444,
+    "lon": -86.4126,
+    "aliases": ["Nashville Superspeedway"]
+  },
+  "coronado": {
+    "name": "Naval Base Coronado",
+    "countryCode": "US",
+    "lat": 32.6992,
+    "lon": -117.2153,
+    "aliases": ["Naval Base Coronado", "NAS North Island"]
+  },
+  "new-hampshire": {
+    "name": "New Hampshire Motor Speedway",
+    "countryCode": "US",
+    "lat": 43.3623,
+    "lon": -71.4613,
+    "aliases": ["New Hampshire Motor Speedway", "Loudon"]
+  },
+  "north-wilkesboro": {
+    "name": "North Wilkesboro Speedway",
+    "countryCode": "US",
+    "lat": 36.1422,
+    "lon": -81.0725,
+    "aliases": ["North Wilkesboro Speedway", "North Wilkesboro"]
+  },
+  "phoenix": {
+    "name": "Phoenix Raceway",
+    "countryCode": "US",
+    "lat": 33.3748,
+    "lon": -112.3112,
+    "aliases": ["Phoenix Raceway"]
+  },
+  "pocono": {
+    "name": "Pocono Raceway",
+    "countryCode": "US",
+    "lat": 41.0611,
+    "lon": -75.5084,
+    "aliases": ["Pocono Raceway", "Pocono"]
+  },
+  "richmond": {
+    "name": "Richmond Raceway",
+    "countryCode": "US",
+    "lat": 37.5917,
+    "lon": -77.4209,
+    "aliases": ["Richmond Raceway"]
+  },
+  "sonoma": {
+    "name": "Sonoma Raceway",
+    "countryCode": "US",
+    "lat": 38.1608,
+    "lon": -122.455,
+    "aliases": ["Sonoma Raceway", "Sonoma"]
+  },
+  "texas": {
+    "name": "Texas Motor Speedway",
+    "countryCode": "US",
+    "lat": 33.0375,
+    "lon": -97.2847,
+    "aliases": ["Texas Motor Speedway"]
+  },
+  "watkins-glen": {
+    "name": "Watkins Glen International",
+    "countryCode": "US",
+    "lat": 42.337,
+    "lon": -76.927,
+    "aliases": ["Watkins Glen International", "Watkins Glen"]
+  },
+  "gateway": {
+    "name": "World Wide Technology Raceway at Gateway",
+    "countryCode": "US",
+    "lat": 38.6508,
+    "lon": -90.1354,
+    "aliases": ["World Wide Technology Raceway", "WWT Raceway", "Gateway Motorsports Park"]
+  },
+  "barber-motorsports-park": {
+    "name": "Barber Motorsports Park",
+    "countryCode": "US",
+    "lat": 33.5325,
+    "lon": -86.6189,
+    "aliases": ["Barber Motorsports Park", "Barber Motorsport Park"]
+  },
+  "milwaukee-mile": {
+    "name": "Milwaukee Mile",
+    "countryCode": "US",
+    "lat": 43.02,
+    "lon": -88.01,
+    "aliases": ["Milwaukee Mile"]
+  },
+  "road-america": {
+    "name": "Road America",
+    "countryCode": "US",
+    "lat": 43.7975,
+    "lon": -87.9939,
+    "aliases": ["Road America"]
+  },
+  "streets-of-arlington": {
+    "name": "Streets of Arlington",
+    "countryCode": "US",
+    "lat": 32.7478,
+    "lon": -97.0928,
+    "aliases": ["Streets of Arlington", "Arlington Street Circuit", "Grand Prix of Arlington"]
+  },
+  "detroit-street-circuit": {
+    "name": "Detroit Street Circuit",
+    "countryCode": "US",
+    "lat": 42.3298,
+    "lon": -83.0401,
+    "aliases": ["Detroit Street Circuit", "Streets of Detroit"]
+  },
+  "long-beach-street-circuit": {
+    "name": "Long Beach Street Circuit",
+    "countryCode": "US",
+    "lat": 33.7664,
+    "lon": -118.1928,
+    "aliases": ["Long Beach Street Circuit", "Streets of Long Beach", "Grand Prix of Long Beach"]
+  },
+  "streets-of-st-petersburg": {
+    "name": "Streets of St. Petersburg",
+    "countryCode": "US",
+    "lat": 27.7664,
+    "lon": -82.6292,
+    "aliases": ["Streets of St. Petersburg", "St. Petersburg Street Circuit", "Streets of St Petersburg"]
+  },
+  "canadian-tire-motorsport-park": {
+    "name": "Canadian Tire Motorsport Park",
+    "countryCode": "CA",
+    "lat": 44.05,
+    "lon": -78.6778,
+    "aliases": ["Canadian Tire Motorsport Park", "Mosport"]
+  },
+  "michelin-raceway-road-atlanta": {
+    "name": "Michelin Raceway Road Atlanta",
+    "countryCode": "US",
+    "lat": 34.1467,
+    "lon": -83.8178,
+    "aliases": ["Michelin Raceway Road Atlanta", "Road Atlanta"]
+  },
+  "virginia-international-raceway": {
+    "name": "Virginia International Raceway",
+    "countryCode": "US",
+    "lat": 36.5617,
+    "lon": -79.2047,
+    "aliases": ["Virginia International Raceway"]
+  },
+  "weathertech-raceway-laguna-seca": {
+    "name": "WeatherTech Raceway Laguna Seca",
+    "countryCode": "US",
+    "lat": 36.5842,
+    "lon": -121.7536,
+    "aliases": ["WeatherTech Raceway Laguna Seca", "Laguna Seca", "Mazda Raceway Laguna Seca"]
+  },
+  "goiania": {
+    "name": "Autódromo Internacional Ayrton Senna",
+    "countryCode": "BR",
+    "lat": -16.7181,
+    "lon": -49.1922,
+    "aliases": ["Autódromo Internacional Ayrton Senna", "Autodromo Internacional Ayrton Senna", "Goiânia", "Goiania"]
+  },
+  "brno": {
+    "name": "Automotodrom Brno",
+    "countryCode": "CZ",
+    "lat": 49.2047,
+    "lon": 16.4506,
+    "aliases": ["Automotodrom Brno", "Masaryk Circuit", "Brno"]
+  },
+  "buriram": {
+    "name": "Chang International Circuit",
+    "countryCode": "TH",
+    "lat": 14.9628,
+    "lon": 103.085,
+    "aliases": ["Chang International Circuit", "Buriram International Circuit", "Buriram"]
+  },
+  "ricardo-tormo": {
+    "name": "Circuit Ricardo Tormo",
+    "countryCode": "ES",
+    "lat": 39.4858,
+    "lon": -0.6281,
+    "aliases": ["Circuit Ricardo Tormo", "Ricardo Tormo", "Cheste"]
+  },
+  "jerez": {
+    "name": "Circuito de Jerez – Ángel Nieto",
+    "countryCode": "ES",
+    "lat": 36.7083,
+    "lon": -6.0342,
+    "aliases": ["Circuito de Jerez - Angel Nieto", "Circuito de Jerez", "Jerez"]
+  },
+  "balaton-park": {
+    "name": "Balaton Park Circuit",
+    "countryCode": "HU",
+    "lat": 47.0081,
+    "lon": 18.1989,
+    "aliases": ["Balaton Park Circuit", "Balaton Park", "Balatonfőkajár"]
+  },
+  "motegi": {
+    "name": "Mobility Resort Motegi",
+    "countryCode": "JP",
+    "lat": 36.5333,
+    "lon": 140.2283,
+    "aliases": ["Mobility Resort Motegi", "Twin Ring Motegi", "Motegi"]
+  },
+  "aragon": {
+    "name": "MotorLand Aragón",
+    "countryCode": "ES",
+    "lat": 41.0783,
+    "lon": -0.2075,
+    "aliases": ["MotorLand Aragón", "MotorLand Aragon", "MotorLand", "Alcañiz", "Alcaniz"]
+  },
+  "mandalika": {
+    "name": "Pertamina Mandalika International Circuit",
+    "countryCode": "ID",
+    "lat": -8.8953,
+    "lon": 116.3058,
+    "aliases": ["Pertamina Mandalika International Circuit", "Mandalika International Street Circuit", "Mandalika"]
+  },
+  "sepang": {
+    "name": "Petronas Sepang International Circuit",
+    "countryCode": "MY",
+    "lat": 2.7606,
+    "lon": 101.7375,
+    "aliases": ["Petronas Sepang International Circuit", "Sepang International Circuit", "Sepang"]
+  },
+  "phillip-island": {
+    "name": "Phillip Island Grand Prix Circuit",
+    "countryCode": "AU",
+    "lat": -38.5031,
+    "lon": 145.2364,
+    "aliases": ["Phillip Island Grand Prix Circuit", "Phillip Island"]
+  },
+  "assen": {
+    "name": "TT Circuit Assen",
+    "countryCode": "NL",
+    "lat": 52.9617,
+    "lon": 6.5233,
+    "aliases": ["TT Circuit Assen", "Assen"]
+  },
+  "misano": {
+    "name": "Misano World Circuit Marco Simoncelli",
+    "countryCode": "IT",
+    "lat": 43.9614,
+    "lon": 12.6833,
+    "aliases": ["Misano World Circuit Marco Simoncelli", "Misano World Circuit", "Misano"]
+  },
+  "estoril": {
+    "name": "Circuito do Estoril",
+    "countryCode": "PT",
+    "lat": 38.7508,
+    "lon": -9.3942,
+    "aliases": ["Circuito do Estoril", "Autódromo do Estoril", "Autodromo do Estoril", "Estoril"]
+  },
+  "cremona": {
+    "name": "Cremona Circuit",
+    "countryCode": "IT",
+    "lat": 45.0854,
+    "lon": 10.312,
+    "aliases": ["Cremona Circuit", "Cremona"]
+  },
+  "donington": {
+    "name": "Donington Park",
+    "countryCode": "GB",
+    "lat": 52.8292,
+    "lon": -1.375,
+    "aliases": ["Donington Park", "Castle Donington"]
+  },
+  "lausitzring": {
+    "name": "Lausitzring",
+    "countryCode": "DE",
+    "lat": 51.5333,
+    "lon": 13.9194,
+    "aliases": ["Lausitzring", "DEKRA Lausitzring", "EuroSpeedway Lausitz"]
+  },
+  "hockenheimring": {
+    "name": "Hockenheimring",
+    "countryCode": "DE",
+    "lat": 49.3278,
+    "lon": 8.5658,
+    "aliases": ["Hockenheimring", "Hockenheim"]
+  },
+  "motorsport-arena-oschersleben": {
+    "name": "Motorsport Arena Oschersleben",
+    "countryCode": "DE",
+    "lat": 52.0272,
+    "lon": 11.2786,
+    "aliases": ["Motorsport Arena Oschersleben", "Oschersleben"]
+  },
+  "norisring": {
+    "name": "Norisring",
+    "countryCode": "DE",
+    "lat": 49.4314,
+    "lon": 11.125,
+    "aliases": ["Norisring"]
+  },
+  "brands-hatch": {
+    "name": "Brands Hatch",
+    "countryCode": "GB",
+    "lat": 51.3567,
+    "lon": 0.2625,
+    "aliases": ["Brands Hatch"]
+  },
+  "circuit-paul-ricard": {
+    "name": "Circuit Paul Ricard",
+    "countryCode": "FR",
+    "lat": 43.2506,
+    "lon": 5.7917,
+    "aliases": ["Circuit Paul Ricard", "Paul Ricard", "Le Castellet"]
+  },
+  "circuit-de-nevers-magny-cours": {
+    "name": "Circuit de Nevers Magny-Cours",
+    "countryCode": "FR",
+    "lat": 46.8633,
+    "lon": 3.1633,
+    "aliases": ["Circuit de Nevers Magny-Cours", "Magny-Cours"]
+  },
+  "circuito-del-jarama": {
+    "name": "Circuito del Jarama",
+    "countryCode": "ES",
+    "lat": 40.6172,
+    "lon": -3.5856,
+    "aliases": ["Circuito del Jarama", "Jarama"]
+  },
+  "sanya-street-circuit": {
+    "name": "Sanya Street Circuit",
+    "countryCode": "CN",
+    "lat": 18.355,
+    "lon": 109.7369,
+    "aliases": ["Sanya Street Circuit", "Sanya"]
+  },
+  "tempelhof-airport-street-circuit": {
+    "name": "Tempelhof Airport Street Circuit",
+    "countryCode": "DE",
+    "lat": 52.4736,
+    "lon": 13.4017,
+    "aliases": ["Tempelhof Airport Street Circuit", "Tempelhof"]
+  },
+  "tokyo-street-circuit": {
+    "name": "Tokyo Street Circuit",
+    "countryCode": "JP",
+    "lat": 35.6333,
+    "lon": 139.8006,
+    "aliases": ["Tokyo Street Circuit", "Tokyo Big Sight"]
+  },
+  "excel-london": {
+    "name": "ExCeL London",
+    "countryCode": "GB",
+    "lat": 51.5081,
+    "lon": 0.0289,
+    "aliases": ["ExCeL London", "ExCeL"]
+  },
+  "madring": {
+    "name": "Madring",
+    "countryCode": "ES",
+    "lat": 40.4653,
+    "lon": -3.6153,
+    "aliases": ["Madring", "IFEMA Madrid"]
+  }
 }
