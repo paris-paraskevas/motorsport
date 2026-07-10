@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 **Calendar accuracy fixes.** Filled in the DTM's missing Norisring round and the full 14-round WRC season, corrected the GT World Challenge's Barcelona round to its Sprint format, and fixed a mislabelled NLS round (the 66th ADAC ACAS Cup). Behind the scenes, many more race weekends — across NASCAR, IndyCar, MotoGP, GT and more — now carry precise venue location details in their search-engine markup.
 
+## 0.191.0 — 2026-07-10
+
+**"What is Formula 1?", "What is the Nürburgring 24 Hours?" — and every series' About in one place.** Every championship now has a plain-language "what is it" guide in the Learn section, including two brand-new ones for Formula 1 and the Nürburgring 24 Hours. Each series' "About" link now takes you straight to that guide, so all the reference reading lives together instead of behind a tab.
+
 ## 0.190.0 — 2026-07-10
 
 **A Series guides page — and smoother tab navigation.** "Series guides" now has its own page (linked from the Learn and Series menus) listing every championship's overview, history and rules. Also fixed: switching series tabs now returns you to the top of the page instead of leaving you scrolled down.

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { loadAllSeriesMeta } from '@/lib/series';
-import { topicForSeries } from '@/lib/information/topics';
+import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -61,7 +61,9 @@ export default async function SeriesGuidesPage() {
       <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
         {series.map((s) => {
           const topic = topicForSeries(s.slug);
+          const about = aboutGuideForSeries(s.slug);
           const links: Array<{ label: string; href: string }> = [
+            ...(about ? [{ label: 'about', href: about }] : []),
             { label: 'overview', href: `/series/${s.slug}` },
             { label: 'history', href: `/information/${topic}/the-history-of-${s.slug}` },
             { label: 'rules', href: `/information/${topic}/${s.slug}-rules-explained` },
