@@ -477,7 +477,7 @@ async function loadSeriesGuides(): Promise<InfoEntry[]> {
           { label: `More ${topicLabel} answers`, href: `/information/${topic}` },
         ],
         review: 'verified',
-        featured: false,
+        featured: true,
         updated: hist.updated,
         author: hist.author,
       });
@@ -502,7 +502,7 @@ async function loadSeriesGuides(): Promise<InfoEntry[]> {
           { label: `More ${topicLabel} answers`, href: `/information/${topic}` },
         ],
         review: 'verified',
-        featured: false,
+        featured: true,
         updated: rules.updated,
         author: rules.author,
       });

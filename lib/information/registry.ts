@@ -22,7 +22,11 @@ import { entryKey, type InfoEntry } from './types';
 // series × 13 championships — "what is / weekend / points / what's new in 2026"),
 // each derived from the audited series overviews and adversarially fact-checked
 // before promotion.
-export const INFORMATION_MAX_INDEXED = 290;
+// 2026-07-10: raised 290 → 320 for the 30 series history/rules guides (IA
+// restructure Phase C) flipped to featured; the old /series/<slug>/history tabs
+// 308-redirect to the guides (proxy.ts) + drop from the sitemap so nothing
+// duplicates, and "Rules essentials" was pulled out of the About tab.
+export const INFORMATION_MAX_INDEXED = 320;
 
 interface RegistryState {
   all: InfoEntry[];
