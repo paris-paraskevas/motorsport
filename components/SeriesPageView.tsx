@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
 import { seriesWithThreads } from '@/lib/threads';
 import { resolveTab, labelForTab, describeTab, type TabKey } from '@/lib/tabs';
+import { topicForSeries } from '@/lib/information/topics';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -190,6 +191,8 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
 
       <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
+      <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
+
       {/* Calendar tab only: subscribe to this series' schedule as a live ICS
           feed (/api/calendar/[slug]). Plain-language labels (operator feedback
           2026-07-03 — "Subscribe (webcal) · .ics" read as jargon): the primary
@@ -223,6 +226,43 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         {renderTab(activeTab, series)}
       </Suspense>
     </div>
+  );
+}
+
+// "Learn about <series>" — the editorial/reference content that moved off the
+// tab rail (IA restructure Phase B). History + Rules now live in /information
+// (the /series/<slug>/{about,history} tab routes stay live until Phase C
+// redirects them); About/Champions/Drivers remain series routes for now.
+function SeriesLearnMore({
+  slug,
+  name,
+  singleEvent,
+}: {
+  slug: string;
+  name: string;
+  singleEvent?: boolean;
+}) {
+  const topic = topicForSeries(slug);
+  const links: Array<{ label: string; href: string }> = [
+    { label: 'About', href: `/series/${slug}/about` },
+    { label: 'History', href: `/information/${topic}/the-history-of-${slug}` },
+    { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained` },
+    { label: singleEvent ? 'Past winners' : 'Champions', href: `/series/${slug}/champions` },
+    { label: 'Drivers', href: `/series/${slug}/drivers` },
+  ];
+  return (
+    <section className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-border pb-4 font-mono text-[11px] uppercase tracking-[0.14em]">
+      <span className="text-text-faint">Learn about {name}:</span>
+      {links.map(l => (
+        <Link
+          key={l.label}
+          href={l.href}
+          className="text-text-muted hover:text-tint transition-colors duration-(--duration-fast)"
+        >
+          {l.label}
+        </Link>
+      ))}
+    </section>
   );
 }
 
