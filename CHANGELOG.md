@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.186.0 — 2026-07-10
+
+### Added
+- **Per-series history & rules guides in `/information`** (IA restructure, Phase A — additive, zero SEO risk). New `InfoEntry kind:'guide'` (`lib/information/types.ts`) + `loadSeriesGuides()` (`lib/information/curated.ts`) that turns the EXISTING `content/series/<slug>/{history,rules}.md` into /information guide pages (2 per series × 15 = 30) — SINGLE SOURCE OF TRUTH, no content duplication (the same files the series History tab + About-tab "Rules essentials" render). Rendered by the existing `/information/[topic]/[slug]` page; emits Article JSON-LD via new `guideArticleLd` (`lib/json-ld.ts`), not QAPage. Shipped **`featured: false` (noindex, out of the sitemap)** so they don't compete with the still-live series History/About tabs for indexing — reachable now via the topic index pages + on-site search; Phase C flips them indexed as those tabs redirect here. Verified: `next build` (exit 0, 436 pages, no index-cap overflow), `vitest lib/information` 16/16, F1 history + rules guides render on the dev server + are listed on the `/information/formula-1` topic index.
+
 ## 0.185.1 — 2026-07-10
 
 ### Changed
