@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.185.0 — 2026-07-10
+
+**Plain-English guides for every series.** Each of the 13 newly-covered championships now has a set of short, fact-checked answer pages — what it is, how a race weekend works, how scoring works, and what's new for 2026 — so you can get up to speed on MotoGP, WorldSBK, NASCAR, DTM, WRC, F2, F3, Formula E, IndyCar, WEC, IMSA, GT World Challenge and NLS in a couple of minutes. Find them in the Answers section.
+
 ## 0.184.1 — 2026-07-10
 
 **Every series now has an overview.** The About tab for each championship — MotoGP, WorldSBK, NASCAR, DTM, WRC, F2, F3, Formula E, IndyCar, WEC, IMSA, GT World Challenge and NLS — now opens with a plain-English overview: what it is, how a race weekend works, how points are scored, and what's new for 2026.

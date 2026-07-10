@@ -18,7 +18,11 @@ import { entryKey, type InfoEntry } from './types';
 // 2026-07-08: raised 150 → 225 to index the fact-checked tracks + per-country and
 // most-famous aggregates + team histories + rising-stars watchlist (aggressive
 // promotion round; ~221 entries indexed).
-export const INFORMATION_MAX_INDEXED = 225;
+// 2026-07-10: raised 225 → 290 for the 52 fact-checked series Q&A pages (4 per
+// series × 13 championships — "what is / weekend / points / what's new in 2026"),
+// each derived from the audited series overviews and adversarially fact-checked
+// before promotion.
+export const INFORMATION_MAX_INDEXED = 290;
 
 interface RegistryState {
   all: InfoEntry[];

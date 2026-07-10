@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.185.0 — 2026-07-10
+
+### Added
+- **52 fact-checked series Q&A pages in the /information hub** (operator; AdSense original-content + discoverability program). Four editorial answers per series × 13 championships (motogp, wsbk, nascar-cup, dtm, wrc, f2, f3, formula-e, indycar, wec, imsa, gt-world, nls) — "What is <series>?", "How a race weekend works", "How scoring works", "What's new for 2026" — authored under `content/information/answers/*.md` from the audited series `overview.md` files, mapped to the fixed `topicForSeries()` buckets, `review: verified` + `featured: true`. Raised `INFORMATION_MAX_INDEXED` 225 → 290 (`lib/information/registry.ts`) so all 52 index. Authored by parallel per-series agents, then adversarially fact-checked per topic against primary sources: the audit caught + fixed 4 real errors before promotion (MotoGP self-referential "junior categories" line; NASCAR "no points resets" — the 2026 Chase re-seeds; Formula E Miami "returning" → it's a venue move to the Miami Autodrome; DTM "one" mandatory stop → Sunday has two) and confirmed NLS best-8-of-10 still applies for 2026 (a stale 0.184.1 changelog note had claimed it was dropped). De-duplicated against the 16 existing curated answers (cross-linked, not duplicated). Auto-surfaced on the `/information/<topic>` index pages + ⌘K search + sitemap. Verified: `next build` (436 static pages, no index-cap overflow) + a production-server render check of a sample Q&A + topic page.
+
 ## 0.184.1 — 2026-07-10
 
 ### Added
