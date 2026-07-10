@@ -6,7 +6,35 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-10 (LATEST, session 4 cont. — batch 2) — `main` = 0.183.6
+## ⚡ Next session pickup — 2026-07-10 (LATEST, session 4 cont. — batch 3 + wrap) — `main` = 0.184.1
+
+**Third batch of session 4, then wrapped.** Verified batch-2 (0.183.5/.6) READY on prod, ran an evidence-based backlog triage, shipped a 2-item batch. `main` = 0.184.1, all green, ZERO open PRs, dev server running on :3000.
+
+### ✅ MERGED (0.184.0 → 0.184.1)
+- **#469 (0.184.0)** Settings **"Your devices"** push-device list — per-user device list with per-device Test + Remove; subscriptions now store a client-derived label; new `GET /api/push/devices` (`listUserSubscriptions`) + `components/YourDevices`; test route takes an optional `{endpoint}`; Remove reuses ownership-checked `/api/push/unsubscribe`. Route 401s signed-out + settings 200 verified; **full signed-in→subscribe→list→test→remove flow = OWED operator prod pass** (needs auth + KV + a real subscription).
+- **#470 (0.184.1)** **series overviews ×13** — authored `content/series/<slug>/overview.md` for every remaining series (F1 + ADAC were already done), F1-template voice, on the About tab. Facts researched per-series from primary sources by 4 agents, then an **adversarial audit** re-verified the prose vs sources and fixed real errors (DTM "in Austria" not first non-German; IndyCar Toronto→Markham relocation; NLS combined GP+Nordschleife / best-8-of-10 / solo 4h drivers; Formula E Miami a returning stop). AdSense original-content win.
+- Docs PRs: **#468** ideas triage, **#471** admin-console idea.
+
+### 🧹 Triage done (#468) — stop resurfacing
+Killed as already-shipped: FIA-regs+common-topics on F1 About, Decoder→Analysis rename, global search (⌘K), collapsible-champions, NASCAR chart, news-filter-persist, error.tsx, cron-health, push deep-link. Parked (blocked): richer map overlays (geometry), Sentry (DSN), bet-display (data-model decision), badge-chequered (monochrome landmine), dev/staging + feeder-intake (operator). Verified ALREADY-DONE this session: page-width (0.181.3), SportsEvent JSON-LD enrichment (GSC report is STALE → Validate-fix).
+
+### ⏳ OWED — operator actions (KEEP — still open)
+1. **External cron pinger** (Hobby) for prompt blog notifications: cron-job.org → `GET /api/cron/publish-posts` every 15 min, header `Authorization: Bearer <CRON_SECRET>`.
+2. **GSC "Validate fix"** on QAPage + SportsEvent (SportsEvent is fully enriched — validating clears the 34-event flag).
+3. **#456 notify prod-watch** (coalescing/quiet-hours on a busy cron tick) + **#469 devices-list** end-to-end pass.
+
+### 🔜 NEXT SESSION — operator's queued HEAVY release audit
+**Check the last ~100 releases (RELEASES.md / CHANGELOG.md) against current prod reality** — what actually stuck vs what was announced but **quietly reverted / regressed / never truly shipped** (or shipped DARK and never flipped). Evidence-required per item (verify vs code/prod), like the 2026-07-03 109-item triage; output = an "announced ≠ live" strike list to re-do or kill. Its own dedicated session. Also queued: **surface/index the 13 new series overviews** (operator flagged them buried on the About tab — "they will never be found there"; needs a discoverability pass: a "Series guides" home in `/information`, cross-links, indexable routes — buried content doesn't serve the AdSense goal), AdSense-content (per-country intros + champion-Q&A depth), assistant Phase-2 grounded Q&A, admin console (GA/Clerk/GSC + heatmaps — new Inbox item), W4 profiles (last v1.0 gate).
+
+### 📋 Data-hygiene NOTED (found by the overviews research, NOT fixed — verify + fix in a data pass)
+`rounds.json` gaps: **DTM** missing R4 Norisring (7/8); **WRC** has only 6/14 rounds; **NASCAR** R32 Charlotte labelled "oval" but the Chase race is the **ROVAL**; **GT-World** R9 "3 Hours of Barcelona" is actually a **Sprint** round (Portimão is the endurance finale); **NLS** R9 label likely "66. ADAC ACAS Cup".
+
+### State
+On `main` (0.184.1), clean tree, dev server running on :3000. Two untracked `drafts/*.json` (not mine). Stash entries operator-owed.
+
+---
+
+## ⚡ Next session pickup — 2026-07-10 (session 4 cont. — batch 2) — `main` = 0.183.6
 
 **Continuation of session 4.** Verified all 5 batch-1 deploys (0.183.0–0.183.4) READY on prod, then ran a 2nd operator-approved batch. `main` = 0.183.6, all green, ZERO open PRs.
 
