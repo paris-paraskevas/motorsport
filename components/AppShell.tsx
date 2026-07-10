@@ -166,13 +166,14 @@ export function AppShell({
 
             {/* Information hub — the "questions answered" + reference section. */}
             <HeaderNavMenu
-              label="Answers"
+              label="Learn"
               href="/information"
               active={isActive('/information')}
-              panelLabel="Motorsport answers"
+              panelLabel="Learn about motorsport"
             >
               <MenuLinkList
                 items={[
+                  { href: '/information#series-guides', label: 'Series guides', desc: 'Every championship: history & rules' },
                   { href: '/information/formula-1', label: 'Formula 1 & Open-Wheel', desc: 'Champions, rules & records' },
                   { href: '/information/feeder-series', label: 'Feeder Series', desc: 'The junior ladder' },
                   { href: '/information/tracks', label: 'Tracks & Circuits', desc: 'Venues by country' },
@@ -280,6 +281,16 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
         <span className="text-[13px] font-semibold text-text">F1 Head-to-head</span>
         <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
           Compare two drivers →
+        </span>
+      </Link>
+      <Link
+        href="/information#series-guides"
+        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+      >
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span className="text-[13px] font-semibold text-text">Series guides</span>
+        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+          History &amp; rules →
         </span>
       </Link>
       <div className="grid grid-cols-3 gap-x-6 gap-y-4">

@@ -33,7 +33,7 @@ export function Footer() {
             <ColumnHeading>Site</ColumnHeading>
             <FooterLink href="/">Landing</FooterLink>
             <FooterLink href="/about">About</FooterLink>
-            <FooterLink href="/information">Answers</FooterLink>
+            <FooterLink href="/information">Learn</FooterLink>
             <FooterLink href="/blog">Blog</FooterLink>
             <FooterLink href="/threads">Threads</FooterLink>
             <FooterLink href="/changelog">Release notes</FooterLink>

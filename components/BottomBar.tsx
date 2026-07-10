@@ -37,12 +37,13 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
           Icon={Flag}
           dataTour="series"
         />
-        {/* Answers hub (incl. the circuit map) — the section had no mobile entry
-            before, so /information + /information/map were unreachable on phones. */}
+        {/* Learn hub (incl. series guides + the circuit map) — the section had no
+            mobile entry before, so /information + /information/map were unreachable
+            on phones. */}
         <BarLink
           href="/information"
           active={pathname === '/information' || pathname.startsWith('/information/')}
-          label="Answers"
+          label="Learn"
           Icon={Compass}
         />
         {/* Play folded into Social (0.84.0): Social is the play/friends/community hub. */}
