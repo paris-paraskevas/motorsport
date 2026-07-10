@@ -1,19 +1,19 @@
 {
   "season": 2026,
   "rounds": [
-    { "round": 1, "startDate": "2026-01-22", "endDate": "2026-01-25", "name": "Rallye Monte-Carlo" },
-    { "round": 2, "startDate": "2026-02-12", "endDate": "2026-02-15", "name": "Rally Sweden" },
-    { "round": 3, "startDate": "2026-03-12", "endDate": "2026-03-15", "name": "Safari Rally Kenya" },
-    { "round": 4, "startDate": "2026-04-09", "endDate": "2026-04-12", "name": "Croatia Rally" },
-    { "round": 5, "startDate": "2026-04-23", "endDate": "2026-04-26", "name": "Rally Islas Canarias" },
-    { "round": 6, "startDate": "2026-05-07", "endDate": "2026-05-10", "name": "Vodafone Rally de Portugal" },
-    { "round": 7, "startDate": "2026-05-28", "endDate": "2026-05-31", "name": "FORUM8 Rally Japan" },
-    { "round": 8, "startDate": "2026-06-25", "endDate": "2026-06-28", "name": "EKO Acropolis Rally Greece" },
-    { "round": 9, "startDate": "2026-07-16", "endDate": "2026-07-19", "name": "Rally Estonia" },
-    { "round": 10, "startDate": "2026-07-30", "endDate": "2026-08-02", "name": "Secto Rally Finland" },
-    { "round": 11, "startDate": "2026-08-27", "endDate": "2026-08-30", "name": "Rally del Paraguay" },
-    { "round": 12, "startDate": "2026-09-10", "endDate": "2026-09-13", "name": "Rally Chile" },
-    { "round": 13, "startDate": "2026-10-01", "endDate": "2026-10-04", "name": "Rally Italia Sardegna" },
-    { "round": 14, "startDate": "2026-11-11", "endDate": "2026-11-14", "name": "Rally Saudi Arabia" }
+    { "round": 1, "startDate": "2026-01-22", "endDate": "2026-01-25", "name": "Rallye Monte-Carlo", "countryCode": "MC" },
+    { "round": 2, "startDate": "2026-02-12", "endDate": "2026-02-15", "name": "Rally Sweden", "countryCode": "SE" },
+    { "round": 3, "startDate": "2026-03-12", "endDate": "2026-03-15", "name": "Safari Rally Kenya", "countryCode": "KE" },
+    { "round": 4, "startDate": "2026-04-09", "endDate": "2026-04-12", "name": "Croatia Rally", "countryCode": "HR" },
+    { "round": 5, "startDate": "2026-04-23", "endDate": "2026-04-26", "name": "Rally Islas Canarias", "countryCode": "ES" },
+    { "round": 6, "startDate": "2026-05-07", "endDate": "2026-05-10", "name": "Vodafone Rally de Portugal", "countryCode": "PT" },
+    { "round": 7, "startDate": "2026-05-28", "endDate": "2026-05-31", "name": "FORUM8 Rally Japan", "countryCode": "JP" },
+    { "round": 8, "startDate": "2026-06-25", "endDate": "2026-06-28", "name": "EKO Acropolis Rally Greece", "countryCode": "GR" },
+    { "round": 9, "startDate": "2026-07-16", "endDate": "2026-07-19", "name": "Rally Estonia", "countryCode": "EE" },
+    { "round": 10, "startDate": "2026-07-30", "endDate": "2026-08-02", "name": "Secto Rally Finland", "countryCode": "FI" },
+    { "round": 11, "startDate": "2026-08-27", "endDate": "2026-08-30", "name": "Rally del Paraguay", "countryCode": "PY" },
+    { "round": 12, "startDate": "2026-09-10", "endDate": "2026-09-13", "name": "Rally Chile", "countryCode": "CL" },
+    { "round": 13, "startDate": "2026-10-01", "endDate": "2026-10-04", "name": "Rally Italia Sardegna", "countryCode": "IT" },
+    { "round": 14, "startDate": "2026-11-11", "endDate": "2026-11-14", "name": "Rally Saudi Arabia", "countryCode": "SA" }
   ]
 }
