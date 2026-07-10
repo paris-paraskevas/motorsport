@@ -373,6 +373,25 @@ export default async function DriverPage({
         </section>
       )}
 
+      {driver.seriesSlug === 'f1' && (
+        <section className="mb-8 border-y border-border py-4">
+          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+            Head-to-head
+          </h2>
+          <Link
+            href={`/f1/compare?a=${slug}`}
+            className="group inline-flex items-center gap-3"
+          >
+            <span className="text-text text-xl font-semibold group-hover:text-tint transition-colors duration-(--duration-fast)">
+              Compare {driver.name} with another driver
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
+              →
+            </span>
+          </Link>
+        </section>
+      )}
+
       {bio && <AboutSection bio={bio} />}
 
       {mentions.length > 0 && <NewsMentionsSection items={mentions} />}
