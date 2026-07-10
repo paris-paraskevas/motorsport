@@ -4,9 +4,8 @@ import path from 'path';
 /**
  * Per-round media for a series, curated under
  * `content/series/<slug>/media.json`. Keyed by canonical round number (string
- * in JSON). Seeds the long-parked WeekendMedia idea: today only the home's
- * JUST MISSED block reads it (latest race's highlight); weekend pages can
- * reuse the same file later.
+ * in JSON). Read by the home's JUST MISSED block (latest race's highlight),
+ * the weekend page, and the race session page.
  */
 export interface RoundMedia {
   /** YouTube id for the round's headline (race) highlights — used by the home
