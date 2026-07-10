@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.192.0 — 2026-07-11
+
+**Calendar accuracy fixes.** Filled in the DTM's missing Norisring round and the full 14-round WRC season, corrected the GT World Challenge's Barcelona round to its Sprint format, and fixed a mislabelled NLS round (the 66th ADAC ACAS Cup).
+
 ## 0.190.0 — 2026-07-10
 
 **A Series guides page — and smoother tab navigation.** "Series guides" now has its own page (linked from the Learn and Series menus) listing every championship's overview, history and rules. Also fixed: switching series tabs now returns you to the top of the page instead of leaving you scrolled down.
