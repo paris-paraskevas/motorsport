@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.186.1 — 2026-07-10
+
+**A "Series guides" hub.** The Answers section now has a Series-guides directory — every championship's history and rules a click away, plus a "start here" link explaining the different types of motorsport.
+
 ## 0.186.0 — 2026-07-10
 
 **Series histories & rules, now in the Answers section.** Every championship's full history and its rules explainer now have their own pages in the Answers hub — reachable from each series' topic page and from search — the first step of gathering all the reference reading into one place.
