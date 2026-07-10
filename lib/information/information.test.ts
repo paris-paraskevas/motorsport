@@ -11,8 +11,9 @@ import {
   INFORMATION_MAX_INDEXED,
   __resetInfoRegistry,
 } from './registry';
-import { INFO_TOPICS, topicForSeries, isTopicId } from './topics';
+import { INFO_TOPICS, topicForSeries, isTopicId, aboutGuideForSeries } from './topics';
 import { entryKey } from './types';
+import { loadAllSeriesMeta } from '../series';
 
 beforeAll(() => __resetInfoRegistry());
 
@@ -72,6 +73,36 @@ describe('topic mapping', () => {
   it('falls back by category for an unknown series', () => {
     expect(topicForSeries('some-new-gt-series', 'gt')).toBe('endurance');
     expect(topicForSeries('totally-unknown')).toBe('general');
+  });
+});
+
+describe('aboutGuideForSeries — About-tab → /information redirect map', () => {
+  it('maps sample series to their what-is guide path', () => {
+    expect(aboutGuideForSeries('f1')).toBe('/information/formula-1/what-is-formula-1');
+    expect(aboutGuideForSeries('wec')).toBe('/information/endurance/what-is-the-wec');
+    expect(aboutGuideForSeries('nascar-cup')).toBe(
+      '/information/stock-cars/what-is-the-nascar-cup-series',
+    );
+    expect(aboutGuideForSeries('adac-ravenol-24h')).toBe(
+      '/information/endurance/what-is-the-nurburgring-24-hours',
+    );
+  });
+
+  it('returns null for a series with no guide', () => {
+    expect(aboutGuideForSeries('totally-unknown')).toBeNull();
+  });
+
+  // The load-bearing guard against a redirect landing on a 404: every real
+  // series must have a what-is guide AND it must resolve to an existing entry.
+  it('every series has a what-is guide that resolves to a real entry', async () => {
+    const metas = await loadAllSeriesMeta();
+    for (const m of metas) {
+      const href = aboutGuideForSeries(m.slug);
+      expect(href, `${m.slug} has no about guide`).not.toBeNull();
+      const [, , topic, slug] = href!.split('/');
+      const entry = await getInfoEntry(topic, slug);
+      expect(entry, `${href} does not resolve to an entry`).not.toBeNull();
+    }
   });
 });
 

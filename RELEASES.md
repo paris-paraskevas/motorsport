@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.191.0 — 2026-07-10
+
+**"What is Formula 1?", "What is the Nürburgring 24 Hours?" — and every series' About in one place.** Every championship now has a plain-language "what is it" guide in the Learn section, including two brand-new ones for Formula 1 and the Nürburgring 24 Hours. Each series' "About" link now takes you straight to that guide, so all the reference reading lives together instead of behind a tab.
+
 ## 0.190.0 — 2026-07-10
 
 **A Series guides page — and smoother tab navigation.** "Series guides" now has its own page (linked from the Learn and Series menus) listing every championship's overview, history and rules. Also fixed: switching series tabs now returns you to the top of the page instead of leaving you scrolled down.

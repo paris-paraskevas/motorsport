@@ -3,7 +3,7 @@ import { loadAllSeriesMeta, loadSeries } from './series';
 import { groupByWeekend } from './group';
 import { tabsFor } from './tabs';
 import { SITE_URL } from './site';
-import { INFO_TOPICS } from './information/topics';
+import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
@@ -45,9 +45,15 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m) => [
     { url: `${SITE_URL}/series/${m.slug}` },
     ...tabsFor(m.singleEvent, m.slug)
-      // history moved to the /information guide (redirected in proxy.ts) — keep
-      // the redirecting URL out of the sitemap.
-      .filter((t) => t.key !== 'calendar' && t.key !== 'history')
+      // history + about moved to /information guides (redirected in proxy.ts) —
+      // keep the redirecting URLs out of the sitemap. About only redirects where
+      // a guide exists, so gate it on aboutGuideForSeries.
+      .filter(
+        (t) =>
+          t.key !== 'calendar' &&
+          t.key !== 'history' &&
+          !(t.key === 'about' && aboutGuideForSeries(m.slug)),
+      )
       .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),
   ]);
 

@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.191.0 — 2026-07-10
+
+### Added
+- **Two "what is <series>?" guide pages** — `content/information/answers/what-is-formula-1.md` (topic `formula-1`) and `what-is-the-nurburgring-24-hours.md` (topic `endurance`), the first per-series intro entries for the two series the 0.185.0 Q&A wave skipped (it covered 13/15; F1 + ADAC-24h had none). F1's entry folds in the former About-tab "Common topics" content. Both fact-checked against primary sources — 2026 F1 regs verified via web search (11 teams / 22 cars, ~50/50 power unit + MGU-H dropped, active aero + Overtake Mode replacing DRS, 100% sustainable fuel). Auto-loaded by `loadEditorialAnswers`; `review: verified` + `featured: true` so they index.
+
+### Changed
+- **Series About tab migrated to /information (IA restructure — the About phase, mirroring history in 0.189.0).** `/series/<slug>/about` now **308-redirects** to the series' `/information` "what is <series>?" guide. New single-source-of-truth helper `aboutGuideForSeries(slug)` in `lib/information/topics.ts` (bespoke per-series what-is slugs → `/information/<topic>/<slug>`, null-safe). Redirect added to `proxy.ts` (`SERIES_ABOUT_RE`, mirrors the history block). About dropped from the sitemap (`lib/sitemap-data.ts`) + on-site search (`lib/search-index.ts`) — the what-is entry already covers both. The "Learn about <series>" About link, the Learn hub series rows, and `/information/series-guides` now point at the guide (`components/SeriesPageView.tsx`, `app/(app)/information/page.tsx`, `app/(app)/information/series-guides/page.tsx`). `AboutTab` is now unreachable (like `HistoryTab`) but left in place for parity.
+- **Champions-Q&A "history" cross-links repointed** from the now-redirecting `/series/<slug>/history` to the canonical `/information/<topic>/the-history-of-<slug>` (`lib/information/generated.ts`) — a leftover from the 0.189.0 history migration; no more internal links pointing at 308s.
+- Page `<title>`s ("Motorsport Answers…") left as-is (operator decision: the search-facing title stays; the nav label is separately "Learn").
+
+### Verified
+- `npx vitest run` → 88 files / 820 tests, incl. a new guard that every series' `aboutGuideForSeries` resolves to a real registry entry (catches a redirect-404). `next build` exit 0. On a fresh dev: `/series/{f1,wec,adac-ravenol-24h,nascar-cup,motogp}/about` → 308 → the correct what-is; both new pages 200 with content; `sitemap.xml` has 0 series-about + 0 series-history URLs and both new entries; the F1 series page "Learn about" links into /information; both new pages browser-verified (render, byline, sources, related links).
+
 ## 0.190.0 — 2026-07-10
 
 ### Added
