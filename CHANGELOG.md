@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.188.1 — 2026-07-10
+
+### Changed
+- **Series-page desktop layout polish** (operator screenshot feedback). (1) Tab rail fills the full width on ≥sm (`components/SeriesTabs.tsx` tabs `sm:flex-1` + centered; mobile keeps the scrollable rail). (2) Past (collapsed) weekends now render full-width stacked instead of inside the `lg:grid-cols-2` grid — a compact past row no longer sits lopsided beside a tall upcoming card (`components/MonthScopedWeekends.tsx` splits past vs upcoming). (3) Removed the prominent cancelled-rounds banner from the top of every series page (`components/SeriesPageView.tsx`) — the detail stays in the "Cancelled this season" section on the Calendar tab. (4) Lightened the "Learn about `<series>`" link row (dropped the double border). `CancelledRoundsBanner` export retained (now unused). Verified: `tsc` clean + desktop (1440) & mobile (390) screenshots.
+
 ## 0.188.0 — 2026-07-10
 
 ### Changed

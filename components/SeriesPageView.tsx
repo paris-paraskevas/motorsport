@@ -13,7 +13,6 @@ import { withSocialMeta } from '@/lib/seo';
 import { Series } from '@/lib/types';
 import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
-import { CancelledRoundsBanner } from '@/components/CancelledRounds';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { CalendarTab } from '@/components/tabs/CalendarTab';
 import { AboutTab } from '@/components/tabs/AboutTab';
@@ -187,8 +186,6 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         )}
       </header>
 
-      <CancelledRoundsBanner cancelledRounds={series.rounds?.cancelledRounds} />
-
       <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
       <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
@@ -251,7 +248,7 @@ function SeriesLearnMore({
     { label: 'Drivers', href: `/series/${slug}/drivers` },
   ];
   return (
-    <section className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-border pb-4 font-mono text-[11px] uppercase tracking-[0.14em]">
+    <section className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-[11px] uppercase tracking-[0.14em]">
       <span className="text-text-faint">Learn about {name}:</span>
       {links.map(l => (
         <Link
