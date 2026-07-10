@@ -66,21 +66,44 @@ export function MonthScopedWeekends({
           Nothing in this month.
         </div>
       ) : (
-        // items-start: grid rows must NOT stretch cards to the tallest neighbour
-        // — a compact past weekend beside a tall upcoming one would otherwise
-        // balloon into a tall empty box. Each card keeps its natural height.
-        <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
-          {inMonth.map(({ weekend, round }) => (
-            <WeekendBlock
-              key={weekend.key}
-              weekend={weekend}
-              round={round}
-              seriesSlug={seriesSlug}
-              color={color}
-              showNextTag={weekend.key === nextWeekendKey}
-            />
-          ))}
-        </div>
+        // Past (collapsed) weekends render full-width stacked — a compact past
+        // row sitting in the 2-col grid next to a tall upcoming card looked
+        // broken on desktop. Only upcoming weekends use the 2-col grid;
+        // items-start keeps each card at its natural height.
+        <>
+          {inMonth.some(w => w.weekend.isPast) && (
+            <div className="space-y-2 mb-6">
+              {inMonth
+                .filter(w => w.weekend.isPast)
+                .map(({ weekend, round }) => (
+                  <WeekendBlock
+                    key={weekend.key}
+                    weekend={weekend}
+                    round={round}
+                    seriesSlug={seriesSlug}
+                    color={color}
+                    showNextTag={weekend.key === nextWeekendKey}
+                  />
+                ))}
+            </div>
+          )}
+          {inMonth.some(w => !w.weekend.isPast) && (
+            <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
+              {inMonth
+                .filter(w => !w.weekend.isPast)
+                .map(({ weekend, round }) => (
+                  <WeekendBlock
+                    key={weekend.key}
+                    weekend={weekend}
+                    round={round}
+                    seriesSlug={seriesSlug}
+                    color={color}
+                    showNextTag={weekend.key === nextWeekendKey}
+                  />
+                ))}
+            </div>
+          )}
+        </>
       )}
     </section>
   );

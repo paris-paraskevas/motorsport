@@ -44,7 +44,7 @@ export function SeriesTabs({
       aria-label="Series sections"
       className="sticky top-14 z-20 -mx-4 md:-mx-6 lg:-mx-8 mb-6 border-y border-border bg-bg/95 backdrop-blur-xl"
     >
-      <div className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5">
+      <div className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5 sm:gap-0">
         {tabs.map(tab => {
           const isActive = tab.key === activeTab;
           const href = tab.key === 'calendar' ? `/series/${slug}` : `/series/${slug}/${tab.key}`;
@@ -55,7 +55,7 @@ export function SeriesTabs({
               href={href}
               scroll={false}
               aria-current={isActive ? 'page' : undefined}
-              className={`shrink-0 inline-flex items-center h-11 border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
+              className={`shrink-0 sm:flex-1 inline-flex items-center justify-center h-11 border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
                 isActive
                   ? 'border-tint text-text'
                   : 'border-transparent text-text-muted hover:text-text'
