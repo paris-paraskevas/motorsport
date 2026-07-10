@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.190.0 — 2026-07-10
+
+**A Series guides page — and smoother tab navigation.** "Series guides" now has its own page (linked from the Learn and Series menus) listing every championship's overview, history and rules. Also fixed: switching series tabs now returns you to the top of the page instead of leaving you scrolled down.
+
 ## 0.189.0 — 2026-07-10
 
 **Series histories & rules are now full guide pages.** Each championship's history and rules explainer is its own page in the Learn hub — and the series "History" link takes you straight there.

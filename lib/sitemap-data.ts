@@ -86,6 +86,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   );
   const infoUrls: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/information` },
+    { url: `${SITE_URL}/information/series-guides` },
     ...topicIndexable
       .filter((t) => t.ok)
       .map((t) => ({ url: `${SITE_URL}/information/${t.id}` })),

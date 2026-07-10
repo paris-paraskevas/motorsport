@@ -99,7 +99,12 @@ export default async function InformationHub() {
 
       <section id="series-guides" className="mb-10 scroll-mt-20">
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-1">
-          Series guides
+          <Link
+            href="/information/series-guides"
+            className="hover:text-tint transition-colors duration-(--duration-fast)"
+          >
+            Series guides →
+          </Link>
         </h2>
         <p className="text-sm text-text-muted mb-4">
           A guide to every championship we cover — its full history and how the racing works.

@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.190.0 — 2026-07-10
+
+### Added
+- **Dedicated `/information/series-guides` page** (operator). A standalone, indexed landing listing all 15 championships → overview / history / rules (`app/(app)/information/series-guides/page.tsx`, static route, added to the sitemap). The Learn dropdown + Series mega-menu "Series guides" links now point here (`components/AppShell.tsx`, replacing the `/information#series-guides` anchor); the Learn hub's Series-guides section heading links here too (`app/(app)/information/page.tsx`).
+
+### Fixed
+- **Series tab navigation now scrolls to the top** (operator: "when I change page I stay scrolled down"). Root cause: `SeriesTabs` uses `scroll={false}` + a manual scroll-to-top, but crossing the calendar (bare `/series/[slug]`) ↔ tab (`/series/[slug]/[tab]`) route-file boundary REMOUNTS it, resetting the component ref so the scroll-to-top was skipped; separately, `scrollIntoView` was scrolling the window to the sticky rail's in-flow position (~73px). Fix: track the last path **module-side** (survives remounts) + center the active tab via the rail's own `scrollLeft` instead of `scrollIntoView` (`components/SeriesTabs.tsx`). Verified: `/series/f1/standings` scrolled to 1500 → Calendar tab → scrollY 0.
+
 ## 0.189.0 — 2026-07-10
 
 ### Changed

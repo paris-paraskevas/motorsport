@@ -1,7 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { TabKey, railTabsFor } from '@/lib/tabs';
+
+// Module-level so it survives SeriesTabs REMOUNTING across the calendar (bare
+// /series/[slug]) ↔ tab (/series/[slug]/[tab]) route-file boundary — those are
+// separate route files, so a component-instance ref resets on each crossing and
+// the scroll-to-top gets skipped (the "stays scrolled down on tab change" bug).
+let lastScrolledPath: string | null = null;
 
 // Sticky tab rail (PR 2c-3, docs/redesign-2026-06.md): replaces the 9-tile
 // grid that ate the first mobile viewport before any content. Horizontally
@@ -22,29 +29,37 @@ export function SeriesTabs({
 }) {
   const tabs = railTabsFor(singleEvent, slug);
   const activeRef = useRef<HTMLAnchorElement | null>(null);
-  const prevTabRef = useRef<TabKey | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const pathname = usePathname();
 
-  // On tab switch, land at the top of the new tab instead of inheriting the
-  // old tab's scroll depth. Next's default Link scroll can't deliver this —
-  // it maintains position whenever the page still fills the viewport — so the
-  // Links keep scroll={false} and the scroll is owned here. First render is
-  // exempt: fresh loads already start at top, and back/forward should keep
-  // the browser's restored position.
+  // On tab navigation, land at the top of the new tab instead of inheriting the
+  // old tab's scroll depth. The tab Links keep scroll={false} (Next's default
+  // keeps position whenever the page still fills the viewport), so the scroll is
+  // owned here — keyed on pathname and tracked module-side so it fires even when
+  // SeriesTabs remounts crossing the calendar↔tab route boundary. The very
+  // first path we see is exempt (fresh load / restored position).
   useEffect(() => {
-    if (prevTabRef.current !== null && prevTabRef.current !== activeTab) {
+    if (lastScrolledPath !== null && lastScrolledPath !== pathname) {
       window.scrollTo(0, 0);
     }
-    prevTabRef.current = activeTab;
-    // Keep the active tab in view when landing deep (e.g. /series/f1/champions).
-    activeRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
-  }, [activeTab]);
+    lastScrolledPath = pathname;
+    // Center the active tab in the horizontally-scrollable rail (mobile) by
+    // scrolling the RAIL itself — NOT scrollIntoView, which also scrolls the
+    // window vertically to the sticky rail's in-flow position (~73px) and undoes
+    // the scroll-to-top above. Only when the rail actually overflows.
+    const el = activeRef.current;
+    const rail = railRef.current;
+    if (el && rail && rail.scrollWidth > rail.clientWidth) {
+      rail.scrollLeft = el.offsetLeft - (rail.clientWidth - el.clientWidth) / 2;
+    }
+  }, [pathname]);
 
   return (
     <nav
       aria-label="Series sections"
       className="sticky top-14 z-20 -mx-4 md:-mx-6 lg:-mx-8 mb-6 border-y border-border bg-bg/95 backdrop-blur-xl"
     >
-      <div className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5 sm:gap-0">
+      <div ref={railRef} className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5 sm:gap-0">
         {tabs.map(tab => {
           const isActive = tab.key === activeTab;
           const href = tab.key === 'calendar' ? `/series/${slug}` : `/series/${slug}/${tab.key}`;

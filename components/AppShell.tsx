@@ -173,7 +173,7 @@ export function AppShell({
             >
               <MenuLinkList
                 items={[
-                  { href: '/information#series-guides', label: 'Series guides', desc: 'Every championship: history & rules' },
+                  { href: '/information/series-guides', label: 'Series guides', desc: 'Every championship: history & rules' },
                   { href: '/information/formula-1', label: 'Formula 1 & Open-Wheel', desc: 'Champions, rules & records' },
                   { href: '/information/feeder-series', label: 'Feeder Series', desc: 'The junior ladder' },
                   { href: '/information/tracks', label: 'Tracks & Circuits', desc: 'Venues by country' },
@@ -284,7 +284,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
         </span>
       </Link>
       <Link
-        href="/information#series-guides"
+        href="/information/series-guides"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
         <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
