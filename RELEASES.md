@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.184.1 — 2026-07-10
+
+**Every series now has an overview.** The About tab for each championship — MotoGP, WorldSBK, NASCAR, DTM, WRC, F2, F3, Formula E, IndyCar, WEC, IMSA, GT World Challenge and NLS — now opens with a plain-English overview: what it is, how a race weekend works, how points are scored, and what's new for 2026.
+
 ## 0.184.0 — 2026-07-10
 
 **Manage your notification devices.** A new "Your devices" list in Settings → Notifications shows every browser and device where you've turned notifications on — send a test to a single one, or remove any you don't use anymore.
