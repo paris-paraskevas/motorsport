@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
-import { INFO_TOPICS } from '@/lib/information/topics';
+import { INFO_TOPICS, topicForSeries } from '@/lib/information/topics';
 import { getAllInfoEntries, getIndexedInfoEntries } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -99,25 +99,42 @@ export default async function InformationHub() {
 
       <section className="mb-10">
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-1">
-          Series histories
+          Series guides
         </h2>
         <p className="text-sm text-text-muted mb-4">
-          Original, sourced histories of every championship we cover — origins, defining eras
-          and the moments that shaped each sport.
+          A guide to every championship we cover — its full history and how the racing works.
+          New to the sport? Start with{' '}
+          <Link
+            href="/information/general/types-of-motorsport"
+            className="text-tint hover:underline underline-offset-2"
+          >
+            the different types of motorsport
+          </Link>
+          .
         </p>
-        <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {seriesByName.map((s) => (
-            <Link
-              key={s.slug}
-              href={`/series/${s.slug}/history`}
-              className="group flex items-baseline gap-2 py-1.5 text-text-muted hover:text-tint transition-colors duration-(--duration-fast)"
-            >
-              <span className="font-medium text-text group-hover:text-tint">{s.name}</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint group-hover:text-tint">
-                history →
-              </span>
-            </Link>
-          ))}
+        <div className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {seriesByName.map((s) => {
+            const topic = topicForSeries(s.slug);
+            return (
+              <div key={s.slug} className="py-0.5">
+                <div className="font-medium text-text">{s.name}</div>
+                <div className="mt-0.5 flex flex-wrap gap-x-3 font-mono text-[10px] uppercase tracking-[0.12em]">
+                  <Link
+                    href={`/information/${topic}/the-history-of-${s.slug}`}
+                    className="text-text-faint hover:text-tint transition-colors duration-(--duration-fast)"
+                  >
+                    history →
+                  </Link>
+                  <Link
+                    href={`/information/${topic}/${s.slug}-rules-explained`}
+                    className="text-text-faint hover:text-tint transition-colors duration-(--duration-fast)"
+                  >
+                    rules →
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
