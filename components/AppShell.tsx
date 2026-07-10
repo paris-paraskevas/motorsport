@@ -272,6 +272,16 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
           Analysis &amp; Race Story →
         </span>
       </Link>
+      <Link
+        href="/f1/compare"
+        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+      >
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span className="text-[13px] font-semibold text-text">F1 Head-to-head</span>
+        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+          Compare two drivers →
+        </span>
+      </Link>
       <div className="grid grid-cols-3 gap-x-6 gap-y-4">
         {groups.map(g => (
           <div key={g.category.id}>
