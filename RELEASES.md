@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.189.0 — 2026-07-10
+
+**Series histories & rules are now full guide pages.** Each championship's history and rules explainer is its own page in the Learn hub — and the series "History" link takes you straight there.
+
 ## 0.188.1 — 2026-07-10
 
 **Series-page polish.** The section tabs now stretch across the full width, past race weekends sit in a clean full-width row (instead of a lopsided grid on desktop), the "cancelled rounds" notice is tucked away, and the "Learn about" links row reads cleaner.

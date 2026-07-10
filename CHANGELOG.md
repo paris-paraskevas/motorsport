@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.189.0 — 2026-07-10
+
+### Changed
+- **Indexed the per-series history/rules guides + de-duped the old surfaces** (operator; IA restructure Phase C). Flipped the 30 guide pages to `featured: true` (`lib/information/curated.ts`) so they index; raised `INFORMATION_MAX_INDEXED` 290→320 (`lib/information/registry.ts`). De-dup so nothing competes for indexing: `/series/<slug>/history` now **308-redirects** to its `/information` guide (`proxy.ts`, via `topicForSeries`) + dropped from the sitemap (`lib/sitemap-data.ts`); **"Rules essentials" removed from the About tab** (`components/tabs/AboutTab.tsx`) — rules live only in the guide now (linked from the series "Learn about" block). Verified: `next build` (exit 0, 466 pages, no index-cap overflow); `/series/f1/history` → 308 → `/information/formula-1/the-history-of-f1`; that guide renders 200 + indexable (no noindex) + Article JSON-LD (not QAPage); About tab no longer shows Rules essentials.
+
 ## 0.188.1 — 2026-07-10
 
 ### Changed

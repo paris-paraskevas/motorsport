@@ -45,7 +45,9 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m) => [
     { url: `${SITE_URL}/series/${m.slug}` },
     ...tabsFor(m.singleEvent, m.slug)
-      .filter((t) => t.key !== 'calendar')
+      // history moved to the /information guide (redirected in proxy.ts) — keep
+      // the redirecting URL out of the sitemap.
+      .filter((t) => t.key !== 'calendar' && t.key !== 'history')
       .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),
   ]);
 
