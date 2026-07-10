@@ -6,7 +6,46 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-10 (LATEST, session 4 cont. — batch 3 + wrap) — `main` = 0.184.1
+## ⚡ Next session pickup — 2026-07-10 (LATEST, session 5 — release audit + IA restructure + polish) — `main` = 0.190.0
+
+**Huge session: 0.184.1 → 0.190.0 (10 feature/fix PRs + 3 docs), all merged + green, 0 open PRs, dev on :3000.** Every operator ask this session was shipped + verified.
+
+### ✅ Release audit (the queued "heavy audit") — DONE, #474
+Audited the last ~100 releases (0.184.1→0.132.0) vs prod: **98/101 live**; zero quietly-reverted/regressed/never-happened. Only "announced ≠ live": 1 intentional dark flag (v1.0 banner, 0.171.0 — flip on launch), 2 same-day supersessions (0.161.0, 0.152.1). Evidence doc: `docs/research/2026-07-10-release-audit.md`. Confirmed **the Race Engineer assistant is LIVE on prod** (`NEXT_PUBLIC_ASSISTANT_ENABLED` ON) — the "ships dark" note in the 2026-07-06 block below is STALE (corrected inline). Also fixed a stale `lib/media.ts` comment.
+
+### ✅ Series Q&A + IA restructure — SHIPPED
+- **#475 (0.185.0)** — **52 fact-checked series Q&A pages** in `/information` (4 per series ×13: what-is / race-weekend / points / what's-new-2026), derived from the audited overviews; **parallel per-series authoring + adversarial fact-check** caught 4 real errors before promotion (MotoGP, NASCAR "no points resets", Formula E Miami "returning", DTM one→two pit stops).
+- **#476 (0.185.1)** — **F1 head-to-head surfaced** — pre-filled cross-link on every F1 driver page + a Series-menu entry (`/f1/compare` was reachable only from F1 Analysis + ⌘K).
+- **IA restructure (operator: "9 tabs is dumb; /information should be the reference home, series pages link to it")** — Full, approved:
+  - **#477–478 (0.186.x)** Phase A — new `InfoEntry kind:'guide'` + `loadSeriesGuides()` turns the EXISTING `content/series/<slug>/{history,rules}.md` into /information guide pages (30; single source of truth; Article JSON-LD) + a "Series guides" hub section.
+  - **#479 (0.187.0)** Phase B — series rail trimmed to the **5 LIVE tabs** (calendar/news/standings/results/tracks) + a **"Learn about `<series>`"** link block (`railTabsFor`; editorial routes stayed live → zero SEO change).
+  - **#482 (0.189.0)** Phase C — flipped the guides to **indexed** (`INFORMATION_MAX_INDEXED` 290→320); `/series/<slug>/history` **308-redirects** to its guide (`proxy.ts` via `topicForSeries`) + dropped from the sitemap; **"Rules essentials" removed from the About tab** (rules live only in the guide now).
+- **#480 (0.188.0)** — nav **"Answers" → "Learn"** (desktop menu + mobile bar + footer + search category); Series guides added to the Learn + Series menus.
+- **#481 (0.188.1)** — series-page desktop polish (operator screenshot): full-width tab rail, past weekends as a full-width row (not lopsided in the 2-col grid), removed the top cancelled-rounds banner, lighter Learn-about row.
+- **#483 (0.190.0)** — dedicated **`/information/series-guides`** page (indexed, in sitemap; the menus link here now) + **fixed the series-tab scroll bug** ("stay scrolled down on tab change" — the calendar↔tab route-file remount reset `SeriesTabs`' ref and skipped the scroll-to-top; now tracked module-side + active tab centered via the rail's `scrollLeft`).
+
+### ⏳ OWED / NEXT — queued
+- **#13 SportsEvent enrichment** (parked this session): widen circuit → `location.address` coverage + ensure `organizer.url` for all series; **skip `offers`** (no ticket data; non-critical). Then operator re-runs GSC "Validate fix" on Events. (QAPage validation already started fine.)
+- **`rounds.json` data-hygiene pass** (unverified — from the overviews research; verify each vs primary source, then fix): **DTM** missing R4 Norisring; **WRC** 6/14 rounds; **NASCAR** R32 Charlotte is the **ROVAL** not "oval"; **GT-World** R9 "3 Hours of Barcelona" is a **Sprint** round; **NLS** R9 label ("66. ADAC ACAS Cup").
+- **About-tab full migration** — the About tab still renders overview + Wikipedia + F1 common-topics; its `/information` twin is the "what-is-`<series>`" Q&A. Not fully migrated/redirected (Champions & Drivers deliberately stay as series routes, linked from "Learn about").
+- **Page `<title>`s** still read "Motorsport Answers" while the nav is "Learn" — deferred SEO-title rename decision (nav-only rename was the ask).
+- **W4 driver/team profiles** (last v1.0 launch gate) · **admin console** (GA/Clerk/GSC + heatmaps) · **assistant Phase-2** grounded Q&A over /information · **champion-Q&A depth** (needs a `champions.json` schema extension — LARGE).
+- **NLS changelog error** (harmless): the 0.184.1 CHANGELOG says NLS "drops best-8-of-10 for 2026" but best-8-of-10 STILL applies (overview + official regs confirm) — the note is wrong; fix if touching that entry.
+
+### 🧷 Landmines / lessons (this session)
+- **Module-level state survives remounts** — component refs reset when a component remounts across a route-FILE boundary (bare `/series/[slug]` ↔ `/series/[slug]/[tab]`); track cross-nav state module-side.
+- **`scrollIntoView` on a sticky element** scrolls the window to its in-flow position (~73px) — for horizontal-only rail centering, set the container's `scrollLeft` instead.
+- **`next build` clobbers a running `next dev`** on the same `.next` (existing dev serves 500s) — restart dev after a build; verify redirects/middleware on a fresh server, not the clobbered one.
+- **`next start` can partially start** (serves prerendered pages 200 but middleware doesn't run → a redirect shows 200) — verify middleware/path redirects on `next dev` (dev/prod-identical for path redirects).
+- **/information indexing cap is now 320** (`registry.ts`); raising it is a deliberate editorial act.
+- **5 stray files** (`components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/{indycar,wrc}.test.ts` — small lint cleanups of unknown provenance, appeared mid-session) + **2 draft JSONs** (`drafts/*.json`, stale blog previews) remain untracked — **operator said leave-as-is**. `.playwright-mcp/` verification artifacts untracked (gitignore-able).
+
+### State
+`main` @ **0.190.0**, clean re: session work, 0 open PRs; dev on `:3000`; 5 strays + 2 drafts + `.playwright-mcp/` untracked.
+
+---
+
+## ⚡ Next session pickup — 2026-07-10 (session 4 cont. — batch 3 + wrap) — `main` = 0.184.1
 
 **Third batch of session 4, then wrapped.** Verified batch-2 (0.183.5/.6) READY on prod, ran an evidence-based backlog triage, shipped a 2-item batch. `main` = 0.184.1, all green, ZERO open PRs, dev server running on :3000.
 

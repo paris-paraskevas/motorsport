@@ -1092,6 +1092,22 @@ Unsupervised overnight build off an operator brief ("questions answered" section
 
 Active: _(overnight autonomous run — no interactive time tracked)_
 
+### Fri 2026-07-10 — session 5: release audit + IA restructure + polish → 0.190.0
+
+Operator-directed, off the session-4 handoff (10 feature/fix PRs, 0.184.1 → 0.190.0). No `[+Nm]` prefixes captured.
+- → done: **heavy release audit** — last ~100 releases (0.184.1→0.132.0) vs prod, 98/101 live, evidence doc `docs/research/2026-07-10-release-audit.md` (#474) + stale-doc fixes.
+- → done: **52 fact-checked series Q&A pages** in /information (#475, 0.185.0) — parallel per-series authoring + adversarial fact-check (caught 4 real errors).
+- → done: **F1 head-to-head surfaced** (#476, 0.185.1).
+- → done: **IA restructure A→B→C** — series editorial content → /information guides; rail trimmed to 5 live tabs + "Learn about" block; guides indexed + `/series/<slug>/history` 308-redirect + rules out of About (#477–479, #482; 0.186.0→0.189.0).
+- → done: **Answers → Learn nav** (#480, 0.188.0) + **dedicated /information/series-guides page** (#483, 0.190.0).
+- → done: **series-page desktop polish** (#481, 0.188.1) + **series-tab scroll-bug fix** (#483) — operator screenshot/feedback, verified desktop + mobile (Playwright).
+- → parked: SportsEvent offers/address enrichment (#13) · real-odds adapter · blog cron-pinger (operator: "remove").
+- → gates: every PR `next build` green (→467 static pages) + `tsc` + browser/Playwright verified.
+
+Won't touch (deferred to next): About-tab full migration, page-`<title>` Answers→Learn, W4 profiles, admin console, assistant Phase-2, champion-Q&A depth, `rounds.json` hygiene.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
