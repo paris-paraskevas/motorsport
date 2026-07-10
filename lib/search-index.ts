@@ -5,7 +5,7 @@ import { groupByWeekend } from './group';
 import { tabsFor } from './tabs';
 import { loadAllPosts } from './posts';
 import { publishedPosts } from './blog';
-import { INFO_TOPICS, getTopic } from './information/topics';
+import { INFO_TOPICS, getTopic, aboutGuideForSeries } from './information/topics';
 import { getSearchableInfoEntries } from './information/registry';
 
 // The global-search index. A flat, JSON-serialisable list of every searchable
@@ -71,6 +71,10 @@ export async function buildSearchIndex(): Promise<SearchDoc[]> {
     });
     for (const t of tabsFor(m.singleEvent)) {
       if (t.key === 'calendar') continue;
+      // About redirects to the /information "what is <series>?" guide, which is
+      // already indexed below via getSearchableInfoEntries — don't emit the
+      // redirecting tab URL.
+      if (t.key === 'about' && aboutGuideForSeries(m.slug)) continue;
       docs.push({
         type: 'tab',
         title: `${m.name} ${t.label}`,

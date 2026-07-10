@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { TABS } from '@/lib/tabs';
-import { topicForSeries } from '@/lib/information/topics';
+import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
 
 // Public-with-account: everything is public by default. Only user-scoped
 // API routes require a signed-in user. The /settings PAGE went public in
@@ -27,6 +27,10 @@ const SERIES_BARE_RE = /^\/series\/[^/]+$/;
 // IA restructure: the series History tab moved to the /information hub as a
 // guide page; 308-redirect the old /series/<slug>/history URL to it.
 const SERIES_HISTORY_RE = /^\/series\/([^/]+)\/history$/;
+// IA restructure Phase C: the series About tab moved to the /information "what
+// is <series>?" guide; 308-redirect the old /series/<slug>/about URL to it.
+// aboutGuideForSeries returns null for any series without a guide (tab stays).
+const SERIES_ABOUT_RE = /^\/series\/([^/]+)\/about$/;
 
 export default clerkMiddleware(async (auth, req) => {
   const url = req.nextUrl;
@@ -44,6 +48,16 @@ export default clerkMiddleware(async (auth, req) => {
     dest.pathname = `/information/${topicForSeries(slug)}/the-history-of-${slug}`;
     dest.search = '';
     return NextResponse.redirect(dest, 308);
+  }
+  const aboutMatch = SERIES_ABOUT_RE.exec(url.pathname);
+  if (aboutMatch) {
+    const guide = aboutGuideForSeries(aboutMatch[1]);
+    if (guide) {
+      const dest = url.clone();
+      dest.pathname = guide;
+      dest.search = '';
+      return NextResponse.redirect(dest, 308);
+    }
   }
   if (isProtected(req)) {
     await auth.protect();

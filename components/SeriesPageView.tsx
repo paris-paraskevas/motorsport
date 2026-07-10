@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
 import { seriesWithThreads } from '@/lib/threads';
 import { resolveTab, labelForTab, describeTab, type TabKey } from '@/lib/tabs';
-import { topicForSeries } from '@/lib/information/topics';
+import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -240,8 +240,9 @@ function SeriesLearnMore({
   singleEvent?: boolean;
 }) {
   const topic = topicForSeries(slug);
+  const about = aboutGuideForSeries(slug) ?? `/series/${slug}/about`;
   const links: Array<{ label: string; href: string }> = [
-    { label: 'About', href: `/series/${slug}/about` },
+    { label: 'About', href: about },
     { label: 'History', href: `/information/${topic}/the-history-of-${slug}` },
     { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained` },
     { label: singleEvent ? 'Past winners' : 'Champions', href: `/series/${slug}/champions` },
