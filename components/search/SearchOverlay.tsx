@@ -15,7 +15,7 @@ const TYPE_LABEL: Record<SearchType, string> = {
   series: 'Series',
   weekend: 'Weekends',
   tab: 'Series tabs',
-  info: 'Answers',
+  info: 'Learn',
   blog: 'Blog',
   page: 'Pages',
 };

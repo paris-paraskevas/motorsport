@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.188.0 — 2026-07-10
+
+### Changed
+- **Renamed the "Answers" nav to "Learn" + surfaced Series guides in the nav** (operator; IA restructure). Desktop header menu + mobile bottom bar relabeled Answers→Learn (`components/AppShell.tsx` HeaderNavMenu label/panelLabel, `components/BottomBar.tsx`, `components/Footer.tsx` link, `components/search/SearchOverlay.tsx` result-group label). Added a "Series guides" entry to the Learn dropdown AND a "Series guides" link in the Series mega-menu, both → `/information#series-guides` (new anchor id on the hub's Series-guides section, `app/(app)/information/page.tsx`). Page `<title>`s ("Motorsport Answers…") left as-is (SEO decision deferred). Verified: `tsc` clean; Playwright — both dropdowns render the Series-guides link, "Learn" trigger present, 0 console errors.
+
 ## 0.187.0 — 2026-07-10
 
 ### Changed

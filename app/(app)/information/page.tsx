@@ -97,7 +97,7 @@ export default async function InformationHub() {
         </section>
       )}
 
-      <section className="mb-10">
+      <section id="series-guides" className="mb-10 scroll-mt-20">
         <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-1">
           Series guides
         </h2>
