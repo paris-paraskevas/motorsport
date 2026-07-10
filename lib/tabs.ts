@@ -40,6 +40,19 @@ export function tabsFor(singleEvent: boolean | undefined, slug?: string): typeof
   return base.filter(t => t.key !== 'tracks' || seriesHasTracksTab(slug));
 }
 
+/** Tabs shown in the series-page RAIL — the live/interactive ones only. The
+ *  editorial tabs (about / history / champions / drivers) moved to a "Learn
+ *  about <series>" link block + the /information hub (IA restructure). Their
+ *  ROUTES stay live and in the sitemap until Phase C redirects them, so TABS /
+ *  tabsFor() are deliberately unchanged — this only trims the visible rail. */
+export const RAIL_TAB_KEYS = ['calendar', 'news', 'standings', 'results', 'tracks'] as const;
+
+export function railTabsFor(singleEvent: boolean | undefined, slug?: string): typeof TABS[number][] {
+  return tabsFor(singleEvent, slug).filter(t =>
+    (RAIL_TAB_KEYS as readonly string[]).includes(t.key),
+  );
+}
+
 export function resolveTab(
   value: string | string[] | undefined,
   singleEvent?: boolean,

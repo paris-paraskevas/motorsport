@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.187.0 — 2026-07-10
+
+### Changed
+- **Series-page rail trimmed to live tabs + "Learn about `<series>`" link block** (IA restructure, Phase B). The rail now shows only the live/interactive tabs (`RAIL_TAB_KEYS` = calendar/news/standings/results/tracks in `lib/tabs.ts`; `SeriesTabs` uses new `railTabsFor`); the editorial tabs (about/history/champions/drivers) moved to a compact "Learn about `<series>`" link block below the rail (`components/SeriesPageView.tsx` `SeriesLearnMore`) — History/Rules point to the new `/information` guides, About/Champions/Drivers to their (still-live) series routes. `TABS`/`tabsFor`/routing/sitemap are deliberately UNCHANGED, so the editorial tab routes stay live + indexed until Phase C — zero SEO change here. Verified: `next build` (exit 0, 436 pages), `tsc` clean, f1/motogp rails render the live set only, the link block resolves, and `/series/f1/{about,history,champions,drivers}` still 200.
+
 ## 0.186.1 — 2026-07-10
 
 ### Changed

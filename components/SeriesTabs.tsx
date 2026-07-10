@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
-import { TabKey, tabsFor } from '@/lib/tabs';
+import { TabKey, railTabsFor } from '@/lib/tabs';
 
 // Sticky tab rail (PR 2c-3, docs/redesign-2026-06.md): replaces the 9-tile
 // grid that ate the first mobile viewport before any content. Horizontally
@@ -20,7 +20,7 @@ export function SeriesTabs({
   activeTab: TabKey;
   singleEvent?: boolean;
 }) {
-  const tabs = tabsFor(singleEvent, slug);
+  const tabs = railTabsFor(singleEvent, slug);
   const activeRef = useRef<HTMLAnchorElement | null>(null);
   const prevTabRef = useRef<TabKey | null>(null);
 

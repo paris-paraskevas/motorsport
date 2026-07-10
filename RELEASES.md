@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.187.0 — 2026-07-10
+
+**Cleaner series pages.** Each championship's page now leads with just its live tabs — Calendar, News, Standings, Results (and Tracks for F1) — with a compact "Learn about `<series>`" links row for the reference reading (about, history, rules, champions, drivers).
+
 ## 0.186.1 — 2026-07-10
 
 **A "Series guides" hub.** The Answers section now has a Series-guides directory — every championship's history and rules a click away, plus a "start here" link explaining the different types of motorsport.
