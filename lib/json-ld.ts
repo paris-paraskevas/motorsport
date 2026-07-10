@@ -232,3 +232,28 @@ export function historyArticleLd(args: {
   }
   return ld;
 }
+
+// Article schema for a long-form editorial /information guide (a series' history
+// or rules essay). Like historyArticleLd but generic over the headline, so the
+// same builder serves both guide kinds.
+export function guideArticleLd(args: {
+  headline: string;
+  url: string;
+  author?: string;
+  date?: string;
+}): object {
+  const ld: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: args.headline,
+    url: args.url,
+    author: { '@type': 'Person', name: args.author || 'Paris Paraskevas' },
+    publisher: { '@id': ORG_ID },
+    isAccessibleForFree: true,
+  };
+  if (args.date) {
+    ld.datePublished = args.date;
+    ld.dateModified = args.date;
+  }
+  return ld;
+}

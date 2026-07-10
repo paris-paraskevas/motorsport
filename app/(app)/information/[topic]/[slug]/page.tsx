@@ -8,7 +8,7 @@ import type { InfoEntry } from '@/lib/information/types';
 import { renderMarkdown } from '@/lib/content';
 import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
-import { breadcrumbLd, qaPageLd } from '@/lib/json-ld';
+import { breadcrumbLd, qaPageLd, guideArticleLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 
@@ -141,6 +141,17 @@ export default async function InfoEntryPage({
             answerText: entry.summary,
             url,
             dateModified: entry.updated,
+          })}
+        />
+      )}
+      {/* Guide (series history / rules essay) → Article, not QAPage. */}
+      {indexed && entry.kind === 'guide' && (
+        <JsonLd
+          data={guideArticleLd({
+            headline: entry.question,
+            url,
+            author: entry.author,
+            date: entry.updated,
           })}
         />
       )}

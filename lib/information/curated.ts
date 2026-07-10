@@ -4,7 +4,8 @@ import path from 'path';
 import matter from 'gray-matter';
 import { slugify } from '../slug';
 import { matchCircuit } from '../circuits';
-import { isTopicId } from './topics';
+import { isTopicId, topicForSeries, getTopic } from './topics';
+import { listSeriesSlugs, loadSeriesMeta } from '../series';
 import { entryHref } from './types';
 import type { InfoEntry, InfoLink, InfoReview, InfoSource, TrackFacts } from './types';
 
@@ -418,20 +419,114 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
   return out;
 }
 
+// ── Series guides: content/series/<slug>/{history,rules}.md → long-form ───────
+// editorial guide pages in /information. SINGLE SOURCE OF TRUTH — the same files
+// the series History tab + About-tab "Rules essentials" render, read straight
+// from content/series/ (no duplication). Ship `featured: false` (noindex, out of
+// the sitemap) so they don't compete with the still-live series editorial tabs
+// for indexing; the IA restructure flips them featured as those tabs redirect
+// here (Phase C). Reachable now via topic index pages + on-site search.
+async function readSeriesMd(
+  slug: string,
+  file: string,
+): Promise<{ body: string; author?: string; updated: string } | null> {
+  try {
+    const raw = await fs.readFile(
+      path.join(process.cwd(), 'content', 'series', slug, file),
+      'utf-8',
+    );
+    const { content, data } = matter(raw);
+    if (!content.trim()) return null;
+    return {
+      body: content.trim(),
+      author: typeof data.author === 'string' ? data.author : undefined,
+      updated: coerceDate(data['last-updated']),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function loadSeriesGuides(): Promise<InfoEntry[]> {
+  const slugs = await listSeriesSlugs();
+  const out: InfoEntry[] = [];
+  for (const slug of slugs) {
+    const meta = await loadSeriesMeta(slug).catch(() => null);
+    if (!meta) continue;
+    const name = meta.name;
+    const topic = topicForSeries(slug);
+    const topicLabel = getTopic(topic)?.label ?? 'more';
+    const officialSource: InfoSource[] = meta.officialSite
+      ? [{ label: `${name} — official site`, url: meta.officialSite }]
+      : [];
+
+    const hist = await readSeriesMd(slug, 'history.md');
+    if (hist) {
+      out.push({
+        kind: 'guide',
+        topic,
+        slug: `the-history-of-${slug}`,
+        question: `The history of ${name}`,
+        summary: `How ${name} came to be — its origins, defining eras and the modern championship.`,
+        keywords: [`${name} history`, `history of ${name}`, `${name} origins`, `${name} explained`],
+        bodyMarkdown: hist.body,
+        sources: officialSource,
+        related: [
+          { label: name, href: `/series/${slug}` },
+          { label: `${name} rules explained`, href: `/information/${topic}/${slug}-rules-explained` },
+          { label: `More ${topicLabel} answers`, href: `/information/${topic}` },
+        ],
+        review: 'verified',
+        featured: false,
+        updated: hist.updated,
+        author: hist.author,
+      });
+    }
+
+    const rules = await readSeriesMd(slug, 'rules.md');
+    if (rules) {
+      out.push({
+        kind: 'guide',
+        topic,
+        slug: `${slug}-rules-explained`,
+        question: `${name} rules explained`,
+        summary: `The essential rules of ${name} — the race format, how points are scored, and what decides the title.`,
+        keywords: [`${name} rules`, `how ${name} works`, `${name} points system`, `${name} regulations`],
+        bodyMarkdown: rules.body,
+        sources: meta.regulationsUrl
+          ? [{ label: `${name} — regulations`, url: meta.regulationsUrl }, ...officialSource]
+          : officialSource,
+        related: [
+          { label: name, href: `/series/${slug}` },
+          { label: `The history of ${name}`, href: `/information/${topic}/the-history-of-${slug}` },
+          { label: `More ${topicLabel} answers`, href: `/information/${topic}` },
+        ],
+        review: 'verified',
+        featured: false,
+        updated: rules.updated,
+        author: rules.author,
+      });
+    }
+  }
+  return out;
+}
+
 /** All curated + web-researched entries (editorial answers, tracks, team
- *  histories, rising stars) plus generated track-aggregate pages (per-country +
- *  most-famous). Order is stable within each source. */
+ *  histories, rising stars, per-series history/rules guides) plus generated
+ *  track-aggregate pages (per-country + most-famous). Order is stable within
+ *  each source. */
 export async function loadCuratedInfoEntries(): Promise<InfoEntry[]> {
-  const [answers, tracks, teams, stars] = await Promise.all([
+  const [answers, tracks, teams, stars, guides] = await Promise.all([
     loadEditorialAnswers(),
     loadTracks(),
     loadTeamHistories(),
     loadRisingStars(),
+    loadSeriesGuides(),
   ]);
   // Every curated entry carries the operator byline (E-E-A-T); generated
   // champions-derived entries deliberately do not (see registry/generated.ts).
   const AUTHOR = 'Paris Paraskevas';
-  return [...answers, ...tracks, ...teams, ...stars, ...trackAggregates(tracks)].map(
+  return [...answers, ...tracks, ...teams, ...stars, ...guides, ...trackAggregates(tracks)].map(
     (e) => ({ ...e, author: e.author ?? AUTHOR }),
   );
 }

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.186.0 — 2026-07-10
+
+**Series histories & rules, now in the Answers section.** Every championship's full history and its rules explainer now have their own pages in the Answers hub — reachable from each series' topic page and from search — the first step of gathering all the reference reading into one place.
+
 ## 0.185.1 — 2026-07-10
 
 **Find the driver head-to-head more easily.** The F1 driver comparison is now a click away — a link in the top "Series" menu, and a "Compare with another driver" button on every F1 driver's page — instead of being tucked away.

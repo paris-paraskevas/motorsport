@@ -20,8 +20,10 @@
 export type InfoReview = 'verified' | 'unverified';
 
 /** qa = a question + answer. track = a circuit/venue profile (structured
- *  facts + map). watchlist = the feeder rising-stars list page. */
-export type InfoKind = 'qa' | 'track' | 'watchlist';
+ *  facts + map). watchlist = the feeder rising-stars list page. guide = a
+ *  long-form editorial essay (a series' history / rules), sourced from
+ *  content/series/<slug>/{history,rules}.md. */
+export type InfoKind = 'qa' | 'track' | 'watchlist' | 'guide';
 
 export interface InfoSource {
   label: string;
