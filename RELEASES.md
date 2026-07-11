@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.195.2 — 2026-07-11
+
+**Race Engineer button no longer hides behind the circuit map.** On the circuit map page, the help button in the bottom-right could be covered by the map — it now always stays on top.
+
 ## 0.195.1 — 2026-07-11
 
 **Driver nationality and age now show everywhere.** A caching quirk was hiding the new flag and age on some driver pages just after launch — fixed, so they appear for every driver now.
