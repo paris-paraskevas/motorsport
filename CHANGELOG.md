@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.200.0 — 2026-07-11
+
+### Added
+- **Home editor: drag-and-drop with `@dnd-kit`.** The "Make your own home" editor's block list now reorders via `@dnd-kit` sortable (pointer + touch + keyboard) instead of the old desktop-only native HTML5 drag — so blocks are draggable on phones too, with smooth animation and a keyboard path (focus the ≡ handle → Space to pick up → arrows to move → Space to drop). The drag listeners live on the ≡ handle so the row's arrow/hide/settings buttons stay clickable; the up/down arrows remain as a fallback. New deps: `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`. `components/HomeCustomizeBanner.tsx` (`BlockControls` → a `SortableRow` inside `DndContext`/`SortableContext`; the existing `reorder()` handler is reused via `onDragEnd`). Verified in-browser: keyboard drag ("This week" 0→1) and pointer drag ("News" 0→2) both reorder live, 0 console errors; tsc + eslint clean.
+
 ## 0.199.1 — 2026-07-11
 
 ### Fixed
