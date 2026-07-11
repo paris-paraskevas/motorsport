@@ -1125,6 +1125,24 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Sun 2026-07-12 — session 8 (unsupervised overnight): security + admin dashboard + feeder intake + changelog weeks + audit → 0.206.1
+
+Operator handed off #1 (admin redesign) + #2 (feeder intake) + #3 (polish → changelog weeks) to run solo overnight; mid-session flagged the public `/changelog` was leaking internal admin detail. 5 PRs #505–#509, all merged + prod-audited.
+
+- → done: **#505 (0.203.2) security** — the repo was PUBLIC → made it private; redacted the admin/subdomain/heatmap detail from the public `/changelog`. No secrets were ever committed.
+- → done: **#506 (0.204.0) /admin dashboard** — section-nav rail + KPI cards + a card per section (operator disliked the single-column stack). Browser-verified 1440 + 390.
+- → done: **#507 (0.205.0) /contribute feeder-intake MVP** — public form → `series_submission` staging → operator email + admin Submissions list. **Prod migration OWED (safety-gated overnight).**
+- → done: **#508 (0.206.0) /changelog weekly grouping** — ISO weeks within months, month-clamped labels. Prod DOM-verified.
+- → done: **#509 (0.206.1) audit fix-forward** — 2 adversarial subagents (admin came back clean); fixed rate-limit fail-closed + `file_type` sanitise + DB-error leak + the never-running changelog test (841→852) + the cross-month label duplication.
+- → gates: every PR tsc + eslint + `next build` + browser/curl; full suite **852**; prod-audited (0.206.1 live · /admin 404 anon · /contribute route validates · changelog weeks + clamp live).
+- → OWED operator: apply the feeder prod migration (Supabase Studio SQL editor); set up the cron-job.org pinger (private repo meters GH Actions — ~4-day runway). Details in `docs/HANDOFF.md` session-8 block.
+
+Won't touch (deferred — needs operator/decision): AdSense content (portraits ×14, champion-Q&A schema); F1 classification speed; weather+news audit; mobile Community tab; feeder Phase 2 (Storage/Turnstile).
+
+Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
