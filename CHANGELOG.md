@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.195.0 — 2026-07-11
+
+### Fixed
+- **Mobile findability of Blog / Threads / News.** On phones these were scattered — Blog + Threads only in the footer, `/news` only in the home "Jump to" launcher (not even the footer), none in the bottom bar (which by an operator rule holds only real-destination tabs, never a menu). Harmonized the two surfaces so each destination is reachable from both: added **News** to the footer Site column (`components/Footer.tsx`) and **Blog + Threads** chips to the home launcher (`components/HomeLauncher.tsx`). No bottom-bar change. Confirmed via a triage pass that none of the three was already surfaced elsewhere on mobile (only a deliberate desktop-`lg:` mega-menu + the footer/launcher). Verified: `next build` exit 0; phone-width render shows News in the footer and Blog/Threads chips in the launcher.
+
 ## 0.194.0 — 2026-07-11
 
 ### Added
