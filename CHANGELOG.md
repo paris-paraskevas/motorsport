@@ -4,7 +4,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.192.0 — 2026-07-11
+## 0.194.0 — 2026-07-11
 
 ### Added
 - **SportsEvent structured data — `location.address` widened to all non-rally venues** (#13; GSC "Events: improve item appearance"). Added **60 verified circuits** to `content/circuits.json` (38 → 98): NASCAR ovals + street rounds, IndyCar/IMSA road & street courses, the MotoGP/WSBK international calendar, DTM's German tracks, the Formula E street circuits, and the new F1 Madrid venue. Coordinates are Wikipedia-infobox-sourced (gathered by 4 parallel research agents; the two brand-new street circuits — San Diego/Coronado and Arlington — anchored to their host venue). Every non-WRC weekend now emits `SportsEvent.location.address` (PostalAddress country) + `GeoCoordinates` where before it was name-only. `organizer.url` was already emitted for all 15 series (verified; no change). The matcher stays exact-alias (no fuzzy `tracks.json` broadening — avoids the flagged false-positive risk); `circuits.json` feeds enrichment + layout matching, not the map, so no new pins.
@@ -21,6 +21,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 - DTM R4 Norisring carries round metadata but no curated session times yet (renders as an upcoming round, times TBC); the GT-World Barcelona Sprint's full two-race schedule likewise awaits the official 2026 timetable — curation patches when those drop.
 - **WRC `location.address` via per-round host country**: rally "venues" are individual special stages, not circuits, so each WRC round now carries a curated `countryCode` (`content/series/wrc/rounds.json`; new optional field on `SeriesRoundEntry` in `lib/types.ts`) and the weekend page falls back to it when no circuit matches (`app/(app)/series/[slug]/weekend/[round]/page.tsx` — `circuitMatch?.circuit.countryCode ?? roundMeta?.countryCode`). WRC weekends with stage sessions now emit `location.address` — verified Greece → GR, Finland → FI. (Far-future rounds with no session data yet stay location-less until the feed fills in.)
 - Verified: `npx vitest run` → 88 files / 817 tests; `next build` exit 0. rounds.json — fresh-dev WRC calendar shows all 14 rounds + the DTM/GT-World/NLS relabels render (old titles gone). SportsEvent — circuit-router spot-check 20/20 correct (no alias hijack; Jarama/Madring disambiguated); fresh-dev weekend pages emit `location.address`: NASCAR Kansas → US, DTM Lausitzring → DE, GT-World Brands Hatch → GB, existing COTA still US.
+
+## 0.193.0 — 2026-07-11
+
+### Added
+- **Driver profiles — nationality flag + age (W4 P1).** The `/drivers/<slug>` header now leads with a flag + nationality + age, extracted from the Wikipedia intro the "About" section already fetches — so it covers all 15 series with zero new data entry. `lib/wikipedia-bio.ts`: `parseIdentity` reads the "(born <date>)" and the "is a/an <Demonym>" nationality (mapped via a demonym→ISO table, longest-match so "Spanish Grand Prix racer" → Spanish and "New Zealand driver" → New Zealand); `ageFromISO` + `flagEmoji` helpers; both attached to `WikipediaBio` and rendered in `app/(app)/drivers/[slug]/page.tsx`. Fail-soft — no flag/age when the article doesn't match (line omitted).
+- Date parsing builds the ISO string from **local** components, never `toISOString()` (which UTC-shifts a date-only value by a day — the probe caught exactly that: 1 Oct → 30 Sep). Verified across disciplines: Verstappen → 🇳🇱 Dutch · 28, Márquez → 🇪🇸 Spanish · 33.
+- Tests (`lib/wikipedia-bio.test.ts`): `parseIdentity` across F1/MotoGP/NASCAR/WRC phrasings (incl. the "Spanish Grand Prix" + two-word "New Zealand" edges), the no-UTC-shift guard, `ageFromISO` birthday-boundary cases, `flagEmoji`.
+
+### Notes
+- Wikipedia-only for now (an optional `drivers.json` nationality/dob override can be added if a specific driver's extraction is ever wrong — none seen in spot-checks). Portraits (P2), career stats (P3), team enrichment (P4) and original bios (P5) stay post-launch per the W4 scope.
+- Verified: `npx vitest run` → 826 tests; `next build` exit 0; fresh-dev `/drivers/marc-marquez` renders "🇪🇸 Spanish · 33 yrs".
 
 ## 0.191.0 — 2026-07-10
 
