@@ -12,8 +12,8 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const ip = clientIp(req);
   const [ipAllowed, globalAllowed] = await Promise.all([
-    allowRequest(`contribute:ip:${ip}`, 5, 60 * 60), // 5 / hour / IP (uploads are heavier than a contact msg)
-    allowRequest('contribute:global', 100, 60 * 60), // 100 / hour globally
+    allowRequest(`contribute:ip:${ip}`, 5, 60 * 60, true), // 5/h/IP; failClosed — this write costs storage + 2 emails
+    allowRequest('contribute:global', 100, 60 * 60, true), // 100/h global; failClosed on a cost-bearing endpoint
   ]);
   if (!ipAllowed || !globalAllowed) {
     return NextResponse.json({ error: 'too many requests — try again later' }, { status: 429 });
@@ -55,8 +55,14 @@ export async function POST(req: Request) {
   });
 
   if ('error' in result) {
-    const status = /failed:|not configured/.test(result.error) ? 502 : 400;
-    return NextResponse.json({ error: result.error }, { status });
+    // DB / config errors: log the detail server-side, return a generic message
+    // (never leak schema internals to an anonymous caller). Validation errors are
+    // client-fixable and safe to surface verbatim.
+    if (/failed:|not configured/.test(result.error)) {
+      console.error('[contribute] submission failed:', result.error);
+      return NextResponse.json({ error: 'could not save your submission — please try again' }, { status: 502 });
+    }
+    return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
   // Best-effort notifications — never block or fail the accepted submission.

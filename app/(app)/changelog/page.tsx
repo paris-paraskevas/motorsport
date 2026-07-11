@@ -106,15 +106,17 @@ export default async function ChangelogPage() {
               <div className="space-y-5 px-4 md:px-5 pb-5 pt-1">
                 {group.weeks.map((week) => (
                   <div key={week.key}>
-                    <div className="mb-2 flex items-center gap-2 pl-1">
-                      <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold">
-                        {week.label}
-                      </span>
-                      <span aria-hidden="true" className="h-px flex-1 bg-border/50" />
-                      <span className="font-mono text-[10px] tnum text-text-faint">
-                        {week.releases.length}
-                      </span>
-                    </div>
+                    {week.label !== group.label && (
+                      <div className="mb-2 flex items-center gap-2 pl-1">
+                        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+                          {week.label}
+                        </span>
+                        <span aria-hidden="true" className="h-px flex-1 bg-border/50" />
+                        <span className="font-mono text-[10px] tnum text-text-faint">
+                          {week.releases.length}
+                        </span>
+                      </div>
+                    )}
                     <ul className="space-y-3">
                       {week.releases.map((release) => {
                         const isRunning = release.version === APP_VERSION;

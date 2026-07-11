@@ -135,7 +135,9 @@ export function validateSubmission(input: SubmissionInput): ValidationResult {
         error: `file too large (max ${Math.round(FILE_MAX_BYTES / (1024 * 1024))} MB) — paste a link instead`,
       };
     file_name = name;
-    file_type = (input.file.type ?? '').trim().slice(0, 100) || 'application/octet-stream';
+    // MIME type sanitised to safe chars — it flows into a Content-Type response
+    // header on the admin download; a raw CR/LF here would 500 that route.
+    file_type = (input.file.type ?? '').replace(/[^\w.+/-]/g, '').slice(0, 100) || 'application/octet-stream';
     file_size = bytes;
     file_data = b64;
   }

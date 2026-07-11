@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.206.1 — 2026-07-12
+
+**Behind the scenes.** Security hardening and a small changelog display fix.
+
 ## 0.206.0 — 2026-07-12
 
 **A tidier changelog.** Release notes are now grouped by week inside each month, so it's easier to scan what shipped when.
