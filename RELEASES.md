@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.203.0 — 2026-07-11
+
+**Behind the scenes.** The admin dashboard now lives at the internal `dev.` subdomain.
+
 ## 0.202.0 — 2026-07-11
 
 **Behind the scenes.** The internal admin dashboard now includes an anonymous click heatmap (consent-based, no personal data) to see how pages are used.

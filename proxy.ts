@@ -59,6 +59,18 @@ export default clerkMiddleware(async (auth, req) => {
       return NextResponse.redirect(dest, 308);
     }
   }
+  // dev.paddock-tracker.com is the admin/dev surface: its root serves the admin
+  // dashboard (which itself gates on Clerk `isAdmin` → 404 for non-admins)
+  // instead of the marketing landing. Other paths on the host resolve normally —
+  // the admin tools live at real routes (/admin, /blog, /threads,
+  // /settings/assistant). A rewrite (not redirect) keeps the dev.* URL.
+  const host = req.headers.get('host') ?? '';
+  if (host.startsWith('dev.') && url.pathname === '/') {
+    const dest = url.clone();
+    dest.pathname = '/admin';
+    return NextResponse.rewrite(dest);
+  }
+
   if (isProtected(req)) {
     await auth.protect();
   }
