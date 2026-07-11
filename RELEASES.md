@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.199.1 — 2026-07-11
+
+**Search-result fix.** Corrected a structured-data detail on the motorsport Q&A pages so Google can validate them cleanly.
+
 ## 0.199.0 — 2026-07-11
 
 **Customise your home, right from the home.** A new "Make your own home" button lets you rearrange, fold, hide or add blocks to your home page in place — no more digging into settings. Works on desktop and phone. (Signed out, it points you to a free account.)

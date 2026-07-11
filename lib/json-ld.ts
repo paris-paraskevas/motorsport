@@ -155,7 +155,10 @@ export function qaPageLd(args: {
   author?: string;
 }): object {
   const iso = toIsoDateTime(args.dateModified);
-  const author = { '@type': 'Person', name: args.author || 'Paris Paraskevas' };
+  // `author.url` is a recommended Q&A field — GSC flags its absence on both
+  // mainEntity.author and acceptedAnswer.author (this const feeds both). Point it
+  // at the site identity so the author resolves to a real URL.
+  const author = { '@type': 'Person', name: args.author || 'Paris Paraskevas', url: SITE_URL };
   const dates = iso ? { datePublished: iso, dateModified: iso } : {};
   return {
     '@context': 'https://schema.org',
