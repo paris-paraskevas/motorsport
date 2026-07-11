@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
-import { BarChart3, CalendarDays, ChevronDown, Flag, Lock, Newspaper, Trophy, Users } from 'lucide-react';
+import { BarChart3, CalendarDays, ChevronDown, FileText, Flag, Lock, MessagesSquare, Newspaper, Trophy, Users } from 'lucide-react';
 import type { SeriesCategory } from '@/lib/types';
 import { CATEGORIES } from '@/lib/categories';
 
@@ -118,6 +118,14 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
 
       <Link href="/news" className={chip}>
         <Newspaper size={13} aria-hidden /> News
+      </Link>
+
+      <Link href="/blog" className={chip}>
+        <FileText size={13} aria-hidden /> Blog
+      </Link>
+
+      <Link href="/threads" className={chip}>
+        <MessagesSquare size={13} aria-hidden /> Threads
       </Link>
 
       <Link href="/social" className={chip}>

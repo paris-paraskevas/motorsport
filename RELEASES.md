@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.195.0 — 2026-07-11
+
+**Easier to find Blog, Threads and News on your phone.** News now appears in the footer, and Blog and Threads are a tap away from the home "Jump to" row — so all three are reachable without hunting.
+
 ## 0.194.0 — 2026-07-11
 
 **Calendar accuracy fixes.** Filled in the DTM's missing Norisring round and the full 14-round WRC season, corrected the GT World Challenge's Barcelona round to its Sprint format, and fixed a mislabelled NLS round (the 66th ADAC ACAS Cup). Behind the scenes, many more race weekends — across NASCAR, IndyCar, MotoGP, GT and more — now carry precise venue location details in their search-engine markup.

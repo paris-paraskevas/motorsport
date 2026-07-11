@@ -34,6 +34,7 @@ export function Footer() {
             <FooterLink href="/">Landing</FooterLink>
             <FooterLink href="/about">About</FooterLink>
             <FooterLink href="/information">Learn</FooterLink>
+            <FooterLink href="/news">News</FooterLink>
             <FooterLink href="/blog">Blog</FooterLink>
             <FooterLink href="/threads">Threads</FooterLink>
             <FooterLink href="/changelog">Release notes</FooterLink>
