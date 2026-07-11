@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.200.0 — 2026-07-11
+
+**Drag to rearrange your home — now on phones too.** In the home editor you can drag blocks into the order you want with a mouse, touch or keyboard (the up/down arrows still work too).
+
 ## 0.199.1 — 2026-07-11
 
 **Search-result fix.** Corrected a structured-data detail on the motorsport Q&A pages so Google can validate them cleanly.

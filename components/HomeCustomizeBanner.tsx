@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type ComponentType } from 'react';
+import { useState, type ComponentType, type ReactNode } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import {
   ArrowUp,
@@ -36,6 +36,23 @@ import {
 } from '@/lib/homeLayout';
 import { useHomeLayout } from '@/lib/useHomeLayout';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const META = new Map(HOME_ELEMENTS.map(e => [e.id, e]));
 
@@ -112,12 +129,37 @@ const NUMERIC_SETTING: Partial<
   social: { field: 'count', label: 'Leagues', values: [2, 3, 5], def: 3 },
 };
 
+// One sortable row in the block list — dnd-kit sortable (pointer + touch +
+// keyboard). The drag listeners go on the ≡ handle (via the render prop) so the
+// row's other buttons stay clickable, and the handle is the only drag target.
+function SortableRow({
+  id,
+  children,
+}: {
+  id: HomeElementId;
+  children: (handle: Pick<ReturnType<typeof useSortable>, 'attributes' | 'listeners'>) => ReactNode;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  return (
+    <li
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      className={`py-2.5 ${isDragging ? 'relative z-10' : ''}`}
+    >
+      {children({ attributes, listeners })}
+    </li>
+  );
+}
+
 function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: string; name: string }[] }) {
   const { isSignedIn } = useAuth();
   const { layout, reorder, toggleHidden, toggleCollapsed, setWidgetSetting, reset } = useHomeLayout();
   const { followed } = useFollowedSeries();
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [openId, setOpenId] = useState<HomeElementId | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   // Customising the Home (reorder / hide / fold / per-widget settings) is a
   // free-account feature — a guest gets the fixed default layout, so show a
@@ -159,16 +201,13 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
     reorder([...SPINE_IDS, ...next]);
   };
 
-  const onDrop = (to: number) => {
-    if (dragIndex === null || dragIndex === to) {
-      setDragIndex(null);
-      return;
-    }
-    const next = [...controllable];
-    const [moved] = next.splice(dragIndex, 1);
-    next.splice(to, 0, moved);
-    reorder([...SPINE_IDS, ...next]);
-    setDragIndex(null);
+  const onDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const from = controllable.indexOf(active.id as HomeElementId);
+    const to = controllable.indexOf(over.id as HomeElementId);
+    if (from < 0 || to < 0) return;
+    reorder([...SPINE_IDS, ...arrayMove(controllable, from, to)]);
   };
 
   // Eligible series the user actually follows (championship-leader subset picker).
@@ -277,88 +316,90 @@ function BlockControls({ eligibleSeries = [] }: { eligibleSeries?: { slug: strin
         <HomePreview layout={layout} />
       </div>
       <div>
-        <ul className="divide-y divide-border">
-          {controllable.map((id, i) => {
-            const hidden = layout.hidden.includes(id);
-            const collapsed = layout.collapsed.includes(id);
-            const meta = META.get(id);
-            const open = openId === id;
-            return (
-              <li
-                key={id}
-                draggable
-                onDragStart={e => {
-                  setDragIndex(i);
-                  e.dataTransfer.effectAllowed = 'move';
-                  e.dataTransfer.setData('text/plain', String(i)); // Firefox needs data to start a drag
-                }}
-                onDragOver={e => e.preventDefault()}
-                onDrop={() => onDrop(i)}
-                onDragEnd={() => setDragIndex(null)}
-                className={`py-2.5 ${dragIndex === i ? 'opacity-50' : ''}`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <span className="shrink-0 cursor-grab text-text-faint active:cursor-grabbing" aria-hidden="true">
-                    <GripVertical size={15} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className={`block text-sm ${hidden ? 'text-text-faint line-through' : 'text-text'}`}>
-                      {meta?.label ?? id}
-                    </span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => moveControllable(id, -1)}
-                    disabled={i === 0}
-                    aria-label={`Move ${meta?.label ?? id} up`}
-                    className="p-1 text-text-muted hover:text-text disabled:opacity-30"
-                  >
-                    <ArrowUp size={15} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveControllable(id, 1)}
-                    disabled={i === controllable.length - 1}
-                    aria-label={`Move ${meta?.label ?? id} down`}
-                    className="p-1 text-text-muted hover:text-text disabled:opacity-30"
-                  >
-                    <ArrowDown size={15} />
-                  </button>
-                  {meta?.collapsible && (
-                    <button
-                      type="button"
-                      onClick={() => toggleCollapsed(id)}
-                      disabled={hidden}
-                      aria-label={collapsed ? `Expand ${meta?.label ?? id}` : `Fold ${meta?.label ?? id}`}
-                      className="p-1 text-text-muted hover:text-text disabled:opacity-30"
-                    >
-                      {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setOpenId(open ? null : id)}
-                    disabled={hidden}
-                    aria-label={`Settings for ${meta?.label ?? id}`}
-                    aria-expanded={open}
-                    className={`p-1 hover:text-text disabled:opacity-30 ${open ? 'text-text' : 'text-text-muted'}`}
-                  >
-                    <Settings2 size={15} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleHidden(id)}
-                    aria-label={hidden ? `Show ${meta?.label ?? id}` : `Hide ${meta?.label ?? id}`}
-                    className="p-1 text-text-muted hover:text-text"
-                  >
-                    {hidden ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-                {open && !hidden && renderSettings(id)}
-              </li>
-            );
-          })}
-        </ul>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+          <SortableContext items={controllable} strategy={verticalListSortingStrategy}>
+            <ul className="divide-y divide-border">
+              {controllable.map((id, i) => {
+                const hidden = layout.hidden.includes(id);
+                const collapsed = layout.collapsed.includes(id);
+                const meta = META.get(id);
+                const open = openId === id;
+                return (
+                  <SortableRow key={id} id={id}>
+                    {handle => (
+                      <>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            className="shrink-0 cursor-grab touch-none text-text-faint active:cursor-grabbing"
+                            aria-label={`Drag ${meta?.label ?? id} to reorder`}
+                            {...handle.attributes}
+                            {...handle.listeners}
+                          >
+                            <GripVertical size={15} />
+                          </button>
+                          <span className="min-w-0 flex-1">
+                            <span className={`block text-sm ${hidden ? 'text-text-faint line-through' : 'text-text'}`}>
+                              {meta?.label ?? id}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => moveControllable(id, -1)}
+                            disabled={i === 0}
+                            aria-label={`Move ${meta?.label ?? id} up`}
+                            className="p-1 text-text-muted hover:text-text disabled:opacity-30"
+                          >
+                            <ArrowUp size={15} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveControllable(id, 1)}
+                            disabled={i === controllable.length - 1}
+                            aria-label={`Move ${meta?.label ?? id} down`}
+                            className="p-1 text-text-muted hover:text-text disabled:opacity-30"
+                          >
+                            <ArrowDown size={15} />
+                          </button>
+                          {meta?.collapsible && (
+                            <button
+                              type="button"
+                              onClick={() => toggleCollapsed(id)}
+                              disabled={hidden}
+                              aria-label={collapsed ? `Expand ${meta?.label ?? id}` : `Fold ${meta?.label ?? id}`}
+                              className="p-1 text-text-muted hover:text-text disabled:opacity-30"
+                            >
+                              {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setOpenId(open ? null : id)}
+                            disabled={hidden}
+                            aria-label={`Settings for ${meta?.label ?? id}`}
+                            aria-expanded={open}
+                            className={`p-1 hover:text-text disabled:opacity-30 ${open ? 'text-text' : 'text-text-muted'}`}
+                          >
+                            <Settings2 size={15} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleHidden(id)}
+                            aria-label={hidden ? `Show ${meta?.label ?? id}` : `Hide ${meta?.label ?? id}`}
+                            className="p-1 text-text-muted hover:text-text"
+                          >
+                            {hidden ? <EyeOff size={15} /> : <Eye size={15} />}
+                          </button>
+                        </div>
+                        {open && !hidden && renderSettings(id)}
+                      </>
+                    )}
+                  </SortableRow>
+                );
+              })}
+            </ul>
+          </SortableContext>
+        </DndContext>
         <button
           type="button"
           onClick={reset}
