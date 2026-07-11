@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.201.0 — 2026-07-11
+
+**Behind the scenes.** Added an internal admin dashboard (not visible to users) to keep an eye on sign-ups, traffic and how the site is used.
+
 ## 0.200.0 — 2026-07-11
 
 **Drag to rearrange your home — now on phones too.** In the home editor you can drag blocks into the order you want with a mouse, touch or keyboard (the up/down arrows still work too).
