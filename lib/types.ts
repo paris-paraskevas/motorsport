@@ -145,6 +145,10 @@ export interface SeriesRoundEntry {
   startDate: string;
   endDate: string;
   name: string;
+  // ISO 3166-1 alpha-2 host country. Set for rally / multi-venue rounds where no
+  // single circuit matches, so SportsEvent can still emit location.address
+  // (lib/json-ld.ts). Circuit-based rounds derive their country from circuits.json.
+  countryCode?: string;
   cancelled?: boolean;
   // Set when a round was rescheduled mid-season (e.g. MotoGP Qatar 2026
   // moved from April to November). Original dates preserved for UI display.

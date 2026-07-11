@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.194.0 — 2026-07-11
+
+### Added
+- **SportsEvent structured data — `location.address` widened to all non-rally venues** (#13; GSC "Events: improve item appearance"). Added **60 verified circuits** to `content/circuits.json` (38 → 98): NASCAR ovals + street rounds, IndyCar/IMSA road & street courses, the MotoGP/WSBK international calendar, DTM's German tracks, the Formula E street circuits, and the new F1 Madrid venue. Coordinates are Wikipedia-infobox-sourced (gathered by 4 parallel research agents; the two brand-new street circuits — San Diego/Coronado and Arlington — anchored to their host venue). Every non-WRC weekend now emits `SportsEvent.location.address` (PostalAddress country) + `GeoCoordinates` where before it was name-only. `organizer.url` was already emitted for all 15 series (verified; no change). The matcher stays exact-alias (no fuzzy `tracks.json` broadening — avoids the flagged false-positive risk); `circuits.json` feeds enrichment + layout matching, not the map, so no new pins.
+
+### Fixed
+- **rounds.json data-hygiene pass** — each item verified against a 2026 primary source before editing (RULE #1).
+  - **DTM**: inserted the missing **R4 Norisring** (2026-07-03/05; the file jumped R3→R5) — `content/series/dtm/rounds.json`. Source: official DTM/ADAC calendar.
+  - **WRC**: completed the season from 6 → **all 14 rounds** (added R2 Sweden, R3 Safari Kenya, R5 Islas Canarias, R9 Estonia, R11 Paraguay, R12 Chile, R13 Sardegna, R14 Saudi Arabia with verified dates) — `content/series/wrc/rounds.json`. Source: wrc.com / Wikipedia. New rounds use sponsor-agnostic names (2026 title sponsors unverified).
+  - **GT World Challenge**: R9 Barcelona is a **Sprint Cup** round in 2026 (reverted from Endurance; Portimão R10 is the 3h Endurance finale) — renamed "3 Hours of Barcelona" → "Barcelona Sprint" (`content/series/gt-world/rounds.json`) and fixed the mislabelled race session "3 Hours of Barcelona (Race)" → "Sprint Race" (`content/series/gt-world/sessions.json`). Source: SRO / Sportscar365 / Wikipedia.
+  - **NLS**: R9 was a placeholder duplicate of R2's "ADAC Barbarossapreis" — corrected to the **"66. ADAC ACAS Cup"** (2026-09-13; the R8 Reinoldus 09-12 + R9 doubleheader is real) across `content/series/nls/rounds.json` + the 3 R9 session titles (`content/series/nls/sessions.json`). Source: Wikipedia 2026 NLS calendar table (the official site listed a stale duplicate).
+
+### Notes
+- **NASCAR R32 was already correct — the handoff note is STALE.** For 2026 the fall Charlotte playoff race **returns to the 1.5-mile oval** (the Roval was retired after 8 seasons), so "Bank of America 400 (Charlotte oval)" stands. No change made.
+- DTM R4 Norisring carries round metadata but no curated session times yet (renders as an upcoming round, times TBC); the GT-World Barcelona Sprint's full two-race schedule likewise awaits the official 2026 timetable — curation patches when those drop.
+- **WRC `location.address` via per-round host country**: rally "venues" are individual special stages, not circuits, so each WRC round now carries a curated `countryCode` (`content/series/wrc/rounds.json`; new optional field on `SeriesRoundEntry` in `lib/types.ts`) and the weekend page falls back to it when no circuit matches (`app/(app)/series/[slug]/weekend/[round]/page.tsx` — `circuitMatch?.circuit.countryCode ?? roundMeta?.countryCode`). WRC weekends with stage sessions now emit `location.address` — verified Greece → GR, Finland → FI. (Far-future rounds with no session data yet stay location-less until the feed fills in.)
+- Verified: `npx vitest run` → 88 files / 817 tests; `next build` exit 0. rounds.json — fresh-dev WRC calendar shows all 14 rounds + the DTM/GT-World/NLS relabels render (old titles gone). SportsEvent — circuit-router spot-check 20/20 correct (no alias hijack; Jarama/Madring disambiguated); fresh-dev weekend pages emit `location.address`: NASCAR Kansas → US, DTM Lausitzring → DE, GT-World Brands Hatch → GB, existing COTA still US.
+
 ## 0.193.0 — 2026-07-11
 
 ### Added

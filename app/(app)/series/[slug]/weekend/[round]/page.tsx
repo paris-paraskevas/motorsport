@@ -144,6 +144,9 @@ export default async function WeekendPage({
   // ISR-safe; gracefully partial when a venue or roster isn't curated.
   const venueLocation = weekend.sessions.find(s => s.location)?.location;
   const circuitMatch = await matchCircuitEntry(venueLocation, weekendTitleLabel);
+  // Rally / multi-venue rounds have no single circuit; fall back to the round's
+  // curated host country (rounds.json) so SportsEvent still emits an address.
+  const roundMeta = series.rounds?.rounds?.find((r) => r.round === round);
   const roster = await loadCuratedDrivers(slug);
   const eventDescription =
     `Round ${round} of the ${series.meta.season} ${series.meta.name} season` +
@@ -181,7 +184,7 @@ export default async function WeekendPage({
           description: eventDescription,
           organizerUrl: series.meta.officialSite ?? `${SITE_URL}/series/${slug}`,
           performers: roster?.teams.map(t => t.name) ?? [],
-          addressCountry: circuitMatch?.circuit.countryCode,
+          addressCountry: circuitMatch?.circuit.countryCode ?? roundMeta?.countryCode,
           geo: circuitMatch
             ? { lat: circuitMatch.circuit.lat, lon: circuitMatch.circuit.lon }
             : undefined,
