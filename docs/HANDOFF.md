@@ -6,7 +6,41 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-11 (LATEST, session 6 — About→/info migration + SEO/data + W4 P1 + mobile + prod audit) — `main` = 0.195.1
+## ⚡ Next session pickup — 2026-07-11 (LATEST, session 7 — engineer fixes + blog tags + home editor/DnD + GSC + admin console + heatmap) — `main` = 0.202.0
+
+**Marathon: 0.195.1 → 0.202.0, 9 PRs (#491–#499), all merged + prod-audited.** Also ran `/doctor` (disabled 29 unused skills) + AUDIT #1 (all of #491–#495 verified live on prod, incl. 4 real F1 posts surfacing on `/series/f1`). Operator directive this session: flat-triage the ledger → batch → tackle, **audit every 5 PRs**, Claude creates + merges PRs autonomously, **postpone v1 launch**. Second wave (operator "keep going"): GSC fix → dnd-kit → **admin/dev console** → **heatmap** → (polish/AdSense/maintenance still queued).
+
+### ✅ Shipped
+- **#491 (0.195.2) fix(assistant)** — Race Engineer launcher was painted UNDER the Leaflet map; `isolate` on the `MapContainer` bounds Leaflet's z-index-1000 leak (also fixes the sticky-header case). Prod-verified (launcher wins at the overlap).
+- **#492 (0.196.0) feat(assistant)** — Race Engineer **multiple past conversations** (localStorage list; New chat + History drawer + switch/delete; legacy single-chat migrates). Full signed-in flow verified.
+- **#493 (0.197.0) feat(blog)** — posts carry **tags** (`tags text[]` migration applied to **PROD Supabase** via the Management API + backfill from `series_slug` + GIN index; `normalizeTags`; composer tags input).
+- **#494 (0.198.0) feat(blog)** — **tag-matched posts surface on series pages** ("From the Paddock blog" block; `publishedPostsForSeries` `.or(series_slug.eq / tags.cs)`; `dbToPost` now passes tags). **Prod-verified: 4 real F1 posts surface on /series/f1.**
+- **#495 (0.199.0) feat(home)** — **"Make your own home"** button (signed-out → sign-in; signed-in → inline `HomeCustomizeBanner`). Desktop + mobile verified.
+- **#496 (0.199.1) fix(seo)** — QAPage **`author.url`** (GSC Q&A "missing field" flag). Prod-verified in the JSON-LD.
+- **#497 (0.200.0) feat(home)** — home editor **drag-and-drop (`@dnd-kit`)** — pointer + touch + keyboard; handle-only drag; up/down arrows kept as a fallback. Both keyboard + pointer reorder verified.
+- **#498 (0.201.0) feat(admin)** — **admin console `/admin`** (`isAdmin`-gated, noindex): live Clerk user stats; GA4/GSC panels stubbed (env vars named in-panel); heatmap slot; tools grid linking existing admin surfaces. Prod-verified (404 gate + live Clerk data).
+- **#499 (0.202.0) feat(admin)** — **anonymous click heatmap** (consent-gated capture → `POST /api/heatmap` → KV per-path 24×24 grid → `/admin` render). Capture beacon verified; KV write + populated grid confirm on prod.
+
+### ⏳ OWED — operator
+1. **`dev.paddock-tracker.com`** — add the domain to the Vercel project + a DNS CNAME. Then Claude wires `proxy.ts` to gate that host to admins / serve `/admin` (untestable until the domain exists; the admin page already works at `/admin`).
+2. **GA4 + GSC creds** — `GA4_PROPERTY_ID` (+ a Data API service account) + `GSC_SITE_URL` (+ a service account) to light up those `/admin` panels.
+3. **GSC "Validate Fix" on Q&A** — `author.url` is now live (#496).
+
+### 🔜 NEXT — operator's queued program (ordered)
+**Polish** (`/changelog` weekly grouping; remaster the older home widgets) → **AdSense content** (W4 P2 driver portraits ×14 series; champion-Q&A depth — needs a `champions.json` schema extension, LARGE) → **Maintenance** (F1 classification speed; weather+news 15-series audit; deeper mobile "Community" tab; B-perf). **AUDIT #2 owed** after the next PR (4 of 5 shipped since AUDIT #1).
+
+### 🧷 Landmines (session 7)
+- **Committed to `main` by accident once** (#498) — caught pre-push, moved to a branch via `git branch -f main origin/main`. **Branch BEFORE editing.**
+- **Dev-server HMR / `.next` flakiness** — a stale webpack cache 500'd `/series/[slug]` in dev + blocked a stub render; `rm -rf .next` + restart fixes it. **Prod builds fine** (the 500 was dev-only, not the code).
+- **Local KV is empty** — heatmap (and other KV) writes/reads no-op locally; verify KV-backed data on prod.
+- **Temp-auth-force pattern** (force `isSignedIn = true` in the component, reverted before commit) is how signed-in / admin UIs get locally verified — Clerk prod auth can't sign in headless.
+
+### State
+`main` @ **0.202.0**, 0 open PRs, all prod-audited (PR9 deploying at capture time). Dev server on `:3000` (restarted mid-session after the `.next` clear). 5 stray lint files + 2 draft JSONs + `.playwright-mcp/` still untracked — **leave-as-is**.
+
+---
+
+## ⚡ Next session pickup — 2026-07-11 (session 6 — About→/info migration + SEO/data + W4 P1 + mobile + prod audit) — `main` = 0.195.1
 
 **Big session: 0.190.0 → 0.195.1, 5 PRs, all merged + audited live on prod, 0 open.** Drained the queued IA/SEO/W4 work + the operator's mobile note, then audited the day's work on prod (caught + fixed one cache bug).
 
