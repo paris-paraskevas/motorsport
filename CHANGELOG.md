@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.199.0 — 2026-07-11
+
+### Added
+- **"Make your own home" — customise the home from the home.** A "Make your own home" button pins to the top of `/app`, shown to everyone: signed-out it routes to sign-in (customising is a free-account feature); signed-in it toggles an inline editor — the existing `HomeCustomizeBanner` (live preview + per-block reorder / add-remove via show-hide / fold / per-widget settings / reset), whose changes apply live to the blocks below. These controls previously lived only on `/settings/customize`. All in `components/HomeContent.tsx` — reuses the shared `useHomeLayout` + `HomeCustomizeBanner`, so no new persistence. Mobile-considered: the button is a 44px touch target and the editor stacks to one column with up/down arrows driving reordering on touch (native drag stays desktop; **dnd-kit** touch-drag of the actual blocks is the approved follow-up). Verified in-browser desktop (1440) + mobile (390), signed-out (button → `/sign-in`) and signed-in (toggle → editor with 51 block controls → "Done"), 0 console errors.
+
 ## 0.198.0 — 2026-07-11
 
 ### Added
