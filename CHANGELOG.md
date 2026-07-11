@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.202.0 — 2026-07-11
+
+### Added
+- **Click heatmap (admin behaviour panel).** A self-hosted, anonymous click heatmap so the operator can see which viewport regions of each page get clicks — and which dead zones to sell sponsorships in. **Capture:** `components/HeatmapTracker.tsx` (mounted app-wide) buckets each click into a 24×24 viewport grid for the current path, batches, and ships via `sendBeacon` on a timer / tab-hide / route change — **consent-gated** (`paddock:consent.analytics`) + honours Do Not Track, **no cookies, no PII** (only a path + coarse cell counts leave the browser). **Ingest:** `POST /api/heatmap` → `lib/heatmap.ts` aggregates into KV (per-path cell hash via `hincrby`, 90-day rolling TTL, path whitelisted + count-capped). **Render:** the `/admin` **Behaviour** section shows the hottest pages as brand-tinted 24×24 grids (`HeatGrid`), fail-soft to an empty state. Verified in-browser: with consent granted, six clicks bucketed + flushed as one beacon `{path:"/app",cells:[…]}`; the API returns 204; empty-state renders; tsc + eslint clean. KV persistence + the populated grid render confirm on prod (local KV is empty) — checked at the next audit.
+
 ## 0.201.0 — 2026-07-11
 
 ### Added

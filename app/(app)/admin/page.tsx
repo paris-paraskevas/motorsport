@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { PAGE_READ } from '@/lib/site';
+import { topHeatmaps, GRID, type PathHeat } from '@/lib/heatmap';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -52,7 +53,7 @@ async function loadUserStats(): Promise<{ count: number; recent: { id: string; n
 // non-admins (Clerk publicMetadata.role === 'admin'), noindex.
 export default async function AdminPage() {
   if (!isAdmin(await currentUser())) notFound();
-  const users = await loadUserStats();
+  const [users, heat] = await Promise.all([loadUserStats(), topHeatmaps(6)]);
   const ga4Connected = Boolean(process.env.GA4_PROPERTY_ID);
   const gscConnected = Boolean(process.env.GSC_SITE_URL);
 
@@ -120,15 +121,28 @@ export default async function AdminPage() {
         )}
       </Section>
 
-      {/* Behaviour — the click heatmap (self-captured; lands next) */}
+      {/* Behaviour — the self-captured click heatmap */}
       <Section icon={MousePointerClick} title="Behaviour — click heatmap">
-        <div className="rounded-xl border border-dashed border-border bg-surface/40 px-4 py-6 text-center">
-          <p className="text-sm text-text-muted">
-            A self-hosted click heatmap — see which parts of each page get attention (and which don&apos;t) so you
-            can place sponsorships where they&apos;re seen.
-          </p>
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Building next</p>
-        </div>
+        {heat.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-surface/40 px-4 py-6 text-center">
+            <p className="text-sm text-text-muted">
+              A self-hosted click heatmap — where on each page people click (and the dead zones to sell). No data
+              yet; it fills as people browse (analytics-consent only, anonymous).
+            </p>
+          </div>
+        ) : (
+          <>
+            <p className="mb-3 font-mono text-[11px] leading-relaxed text-text-faint">
+              Hottest pages by clicks — brighter = more clicks in that viewport region. Cold zones are candidates for
+              sponsorships.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {heat.map(h => (
+                <HeatGrid key={h.path} heat={h} />
+              ))}
+            </div>
+          </>
+        )}
       </Section>
 
       {/* Existing admin tools, gathered in one place */}
@@ -191,6 +205,35 @@ function NotConnected({ what, env }: { what: string; env: string }) {
 
 function Unavailable({ note }: { note: string }) {
   return <p className="font-mono text-sm text-text-faint">{note}</p>;
+}
+
+// A page's click heatmap: a GRIDxGRID viewport grid, each cell brand-tinted by
+// its share of that page's max cell count. Aspect-video mirrors a landscape
+// viewport so hot regions map to where they were clicked.
+function HeatGrid({ heat }: { heat: PathHeat }) {
+  const cells: React.ReactNode[] = [];
+  for (let i = 0; i < GRID * GRID; i++) {
+    const n = heat.cells[i] ?? 0;
+    const o = heat.max > 0 && n > 0 ? 0.12 + (n / heat.max) * 0.88 : 0;
+    cells.push(<div key={i} style={o > 0 ? { backgroundColor: `rgba(255,180,0,${o.toFixed(3)})` } : undefined} />);
+  }
+  return (
+    <div>
+      <div className="mb-1 flex items-baseline justify-between gap-2">
+        <span className="truncate font-mono text-xs text-text">{heat.path}</span>
+        <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">
+          {heat.total.toLocaleString()} clicks
+        </span>
+      </div>
+      <div
+        className="grid aspect-video w-full overflow-hidden rounded-lg border border-border bg-surface"
+        style={{ gridTemplateColumns: `repeat(${GRID}, minmax(0, 1fr))` }}
+        aria-hidden
+      >
+        {cells}
+      </div>
+    </div>
+  );
 }
 
 function ToolLink({
