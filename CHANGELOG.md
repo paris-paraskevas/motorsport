@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.201.0 — 2026-07-11
+
+### Added
+- **Admin console (`/admin`).** A single admin-only dashboard consolidating "who's using Paddock and how" (operator ask). Live now: **Clerk user stats** (total accounts + most-recent sign-ups, fail-soft via `clerkClient().users.getCount()`/`getUserList`). Stubbed with the exact env vars to connect: **Traffic** (Google Analytics — `GA4_PROPERTY_ID`) and **Search** (Search Console — `GSC_SITE_URL`). A **click-heatmap** slot ("Building next") + a **Tools** grid linking the existing admin surfaces (Assistant insights, Blog queue, Threads moderation, Feedback board). `app/(app)/admin/page.tsx` — `isAdmin`-gated (Clerk `publicMetadata.role`; `notFound()` for everyone else), `noindex`, force-dynamic, mirrors the `/settings/assistant` pattern. Destined for the `dev.paddock-tracker.com` subdomain — subdomain routing (`proxy.ts`) + the GA4/GSC panel wiring are follow-ups (operator adds the domain + API creds). Verified: `/admin` 404s signed-out; the content renders with live Clerk data (temp gate-bypass, reverted); tsc + eslint clean.
+
 ## 0.200.0 — 2026-07-11
 
 ### Added
