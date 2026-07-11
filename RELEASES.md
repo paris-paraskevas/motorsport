@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.199.0 — 2026-07-11
+
+**Customise your home, right from the home.** A new "Make your own home" button lets you rearrange, fold, hide or add blocks to your home page in place — no more digging into settings. Works on desktop and phone. (Signed out, it points you to a free account.)
+
 ## 0.198.0 — 2026-07-11
 
 **Blog posts now show up on their series' pages.** Each series page lists the Paddock blog posts tagged with that series — so a Monaco preview appears on the Formula 1 page, and so on. Posts also show their tags.
