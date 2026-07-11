@@ -1108,6 +1108,21 @@ Won't touch (deferred to next): About-tab full migration, page-`<title>` Answers
 
 Active: _(no `[+Nm]` prefixes captured)_
 
+### Sat 2026-07-11 — session 6 (About migration + SEO/data + W4 P1 + mobile + prod audit)
+
+Operator-directed continuation ("keep going" / "next batch" through the queue). 0.190.0 → 0.195.1, 5 PRs, all merged + prod-audited. No `[+Nm]` prefixes captured.
+- → done: **About-tab → /information migration** (#485, 0.191.0) — all 15 About tabs 308-redirect to their "what is <series>?" guide; authored `what-is-formula-1` + `what-is-the-nurburgring-24-hours`.
+- → done: **SEO/data pass** (#486, 0.194.0) — rounds.json hygiene (DTM R4 / WRC 6→14 / GT-World Barcelona-Sprint / NLS ACAS-Cup; NASCAR R32 oval was correct — ROVAL note stale) + SportsEvent `location.address` (+60 verified circuits → 98, WRC `countryCode`).
+- → done: **W4 scoped + P1 driver identity** (#487, 0.193.0) — flag+nationality+age from the Wikipedia intro. v1.0 bar = P1 (last launch gate); P2–P5 post-launch.
+- → done: **Mobile findability** (#488, 0.195.0) — Blog/Threads/News into footer + home launcher (operator's mobile note; no bottom-bar change).
+- → done: **Prod audit** of the day's work → caught + fixed the W4-identity cache-staleness (#489, 0.195.1 cache-key `v2:` bump).
+- → done: **session wrap** — this handoff + IDEAS triage + SCHEDULE (docs/session-6-wrap).
+- → gates: every PR `next build` green + `vitest` + browser/Playwright + a prod curl/Playwright audit. Stacked same-day PRs union-resolved (re-versioned 0.192.0 → 0.194.0 after #487 landed first).
+
+Won't touch (deferred): W4 P2–P5 (post-launch), assistant Phase-2, champion-Q&A depth, admin console (creds-blocked), deeper mobile "Community" tab.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
 ---
 
 ## Backlog stubs (next 1–2 weeks, no firm date yet)

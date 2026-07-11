@@ -6,7 +6,43 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-10 (LATEST, session 5 — release audit + IA restructure + polish) — `main` = 0.190.0
+## ⚡ Next session pickup — 2026-07-11 (LATEST, session 6 — About→/info migration + SEO/data + W4 P1 + mobile + prod audit) — `main` = 0.195.1
+
+**Big session: 0.190.0 → 0.195.1, 5 PRs, all merged + audited live on prod, 0 open.** Drained the queued IA/SEO/W4 work + the operator's mobile note, then audited the day's work on prod (caught + fixed one cache bug).
+
+### ✅ Shipped
+- **#485 (0.191.0) — About-tab → /information migration** (final IA phase). `/series/<slug>/about` 308-redirects to each series' "what is <series>?" guide (all 15) via new `aboutGuideForSeries()` (`lib/information/topics.ts`, bespoke per-series slugs); dropped from sitemap + on-site search; the "Learn about"/hub/series-guides About links repointed. Authored the 2 missing what-is entries — **what-is-formula-1.md** (folds in the F1 common-topics; 2026 regs web-verified: 11 teams, ~50/50 PU, active-aero + Overtake-Mode, sustainable fuel) + **what-is-the-nurburgring-24-hours.md**. Titles kept "Motorsport Answers" (operator: SEO). `AboutTab` unreachable now (left in place, like `HistoryTab`).
+- **#486 (0.194.0) — SEO/data pass.** (a) rounds.json hygiene (each verified vs a 2026 primary source): DTM +R4 Norisring; WRC 6→14 rounds; GT-World R9 "Barcelona Sprint" (was "3 Hours of Barcelona" — Sprint not Endurance in 2026) + its race session; NLS R9 "66. ADAC ACAS Cup" (+3 session titles). **NASCAR R32 "Charlotte oval" is CORRECT for 2026 — the prior handoff's "ROVAL" note was STALE (Roval retired after 8 seasons).** (b) SportsEvent `location.address`: **+60 verified circuits** in `content/circuits.json` (38→98; Wikipedia-infobox coords via 4 research agents) + WRC per-round `countryCode` (new optional `SeriesRoundEntry` field) with a weekend-page fallback. Every non-WRC weekend + WRC-with-sessions now emits addressCountry+geo. Matcher stays EXACT-alias (no fuzzy tracks.json broadening — false-positive risk). **circuits.json feeds enrichment + layout matching, NOT the map** (tracks.json is the map's source).
+- **#487 (0.193.0) — W4 P1 driver identity.** Flag + nationality + age on `/drivers/<slug>`, parsed from the Wikipedia intro the "About" section already fetches (`parseIdentity` in `lib/wikipedia-bio.ts`: "(born <date>)" + "is a/an <Demonym>", demonym→ISO map longest-match, `ageFromISO`/`flagEmoji`). Fail-soft. **Dates built from LOCAL components — never `toISOString()`.**
+- **#488 (0.195.0) — mobile findability.** Blog/Threads/News were scattered on phones (Blog+Threads footer-only, News home-launcher-only). Added News to the footer + Blog/Threads chips to the home "Jump to" launcher. **No bottom-bar change** (operator rule in `BottomBar.tsx`: nav tabs are real destinations, never open a menu).
+- **#489 (0.195.1) — audit hotfix.** W4 identity was missing on prod for pre-deploy-cached bios (the KV bio cache kept the old object shape after P1 added fields). Bumped the cache key to `v2:`.
+
+### W4 scope + operator decision
+Fully scoped. `/drivers` + `/teams` pages ALREADY render portrait/bio/season-form/trend — W4 is enrichment, not a rebuild. **drivers.json coverage complete (all 15 — May's "13-series gap" is closed).** **v1.0 bar = identity layer (P1) only — shipped.** Post-launch phases: **P2 portraits** (only `f1/portraits.json`; 14 series open — license-verified Commons curation), **P3 career stats** (needs champions.json depth), **P4 team enrichment** (no free logo source), **P5 original bios** (AdSense). This closes the **last v1.0 launch gate** (W1/security/W3/W4 all ✅).
+
+### Triage (evidence-based; all verified genuinely OPEN — nothing already done)
+Portraits P2 (only f1) · Assistant Phase-2 (grounds ONLY on `content/assistant/site-help.md` — no /information retrieval, `lib/assistant/corpus.ts`) · Champion-Q&A depth (`Champion` type has no runner-up/margin/wins; `generated.ts` emits who-won+points only — needs a champions.json schema extension) · Admin console (no `/admin`, no GA/GSC/Clerk dashboard — only `/settings/assistant`; blocked on operator API creds) · deeper mobile (a "Community" real-destination bottom-bar tab — needs operator design nod).
+
+### Prod audit (all 5 verified live)
+#485 redirect+what-is+sitemap ✅ · #486 WRC 14 rounds + Barcelona Sprint + SportsEvent addressCountry fetching from prod's datacenter IP (WRC→GR, NASCAR→US, DTM→DE) ✅ · #488 footer News ✅ · #487 identity ✅ after #489 (was stale-cached — Verstappen had bio but no flag/age; Márquez fresh-cached had it).
+
+### ⏳ OWED — operator
+- Re-run GSC **"Validate fix" on Events** (SportsEvent addresses now enriched — #486).
+
+### 🧷 Landmines / lessons (session 6)
+- **Cache-schema change → BUMP the cache key** (#489): adding fields to a KV-cached object without a key bump serves stale shapes until TTL.
+- **`new Date("30 September 1997").toISOString()` UTC-shifts a date-only value by a day** — build the ISO from local getters. Probe caught it (1 Oct → 30 Sep).
+- **node `fs.writeFileSync` on Windows can emit CRLF** (mixed vs the LF repo) → a whole-file-looking diff; normalize `\r\n`→`\n` for a clean append-only diff (hit on circuits.json).
+- **Stacked same-day PRs**: union-resolve CHANGELOG/RELEASES/package.json + re-version the later-merging PR ABOVE main (0.192.0 → 0.194.0 after #487 landed first). Happened repeatedly.
+- **Home dashboard is client-hydrated** — the a11y snapshot pre-hydration shows only the SSR shell (H1 + footer); re-snapshot the settled page.
+- **BottomBar rule** (operator, 0.15.0): nav tabs are real destinations, never menus — rules out a mobile "More" overflow sheet.
+
+### State
+`main` @ **0.195.1**, all merged, **0 open PRs**. Untracked (leave-as-is): 5 stray lint files (`components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/{indycar,wrc}.test.ts`), 2 `drafts/*.json`, `.playwright-mcp/`.
+
+---
+
+## ⚡ Next session pickup — 2026-07-10 (session 5 — release audit + IA restructure + polish) — `main` = 0.190.0
 
 **Huge session: 0.184.1 → 0.190.0 (10 feature/fix PRs + 3 docs), all merged + green, 0 open PRs, dev on :3000.** Every operator ask this session was shipped + verified.
 
