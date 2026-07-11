@@ -38,6 +38,21 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 ### State
 `main` @ **0.202.0**, 0 open PRs, all prod-audited (PR9 deploying at capture time). Dev server on `:3000` (restarted mid-session after the `.next` clear). 5 stray lint files + 2 draft JSONs + `.playwright-mcp/` still untracked — **leave-as-is**.
 
+### 🆕 Session-7 addendum — operator dump (2026-07-11, mid-session) — `main` = 0.203.0
+Operator reviewed the owed-list + sent GSC screenshots. Status + **new asks** (planning/decisions needed):
+- **`dev.paddock-tracker.com`** — operator ADDED it in Vercel (Valid Configuration). **#501 (0.203.0)** wires `proxy.ts` to rewrite the `dev.*` root → `/admin` (rewrite; gated on `isAdmin`). Verify on the real subdomain **as an admin**.
+- **GSC:** Q&A `author.url` validation STARTED ✅; Events `address` validation STARTED ✅ (12 residual = venues not in `circuits.json`). Events **`offers` CAN'T be legitimately fixed** (28 items): grep confirms NO ticket/price/offer data anywhere in the model → adding it = fabrication (RULE #1). Non-critical flag; leave it.
+- **AdSense — NOT yet** (operator agrees). Only **28 indexed of 618** sitemap URLs; killer = "Crawled – currently not indexed" (16 = low-value signal). Wait for Google to crawl/index more (sitemap read Jul 10); keep content unique. Check "Excluded by noindex" (2) + "Blocked by robots.txt" (1) are intentional.
+- **Vercel Cron — operator WANTS it** (GH Actions is throttled/late): add `vercel.json` `crons`. ⚠️ Hobby = daily-only crons; every-15-min needs **Pro** — confirm plan (Hobby → keep GH for frequent + Vercel daily; Pro → move all, retire GH workflows).
+- **Sentry — operator WANTS it**: wire `@sentry/nextjs`; operator provides the **DSN**.
+- **`/admin` layout — operator dislikes it**: design pass before rebuilding (proper nav + cards).
+- **Feeder-intake page — operator wants a public submit page** to link in an outreach email: plan (form → Supabase-storage staging → review), then build. Design doc: `docs/research/2026-07-06-feeder-series-intake.md`.
+- **GA4 (`GA4_PROPERTY_ID`) + GSC (`GSC_SITE_URL`) creds** — operator unsure how; Claude to guide step-by-step when wiring those `/admin` panels.
+- **Deferred (operator):** Clerk key rotation (not yet), real-odds API (won't pay), dev/staging env (maybe unneeded).
+- **Crons run via GitHub Actions today** (13 workflows in `.github/workflows/*.yml` ping `/api/cron/*` with `CRON_SECRET`) — NOT Vercel; no `vercel.json` exists yet.
+
+**Session 7 final: 11 PRs (#491–#501, 0.195.1→0.203.0) + AUDIT #1 + AUDIT #2 + `/doctor`.**
+
 ---
 
 ## ⚡ Next session pickup — 2026-07-11 (session 6 — About→/info migration + SEO/data + W4 P1 + mobile + prod audit) — `main` = 0.195.1
