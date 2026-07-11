@@ -40,7 +40,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ### 🆕 Session-7 addendum — operator dump (2026-07-11, mid-session) — `main` = 0.203.0
 Operator reviewed the owed-list + sent GSC screenshots. Status + **new asks** (planning/decisions needed):
-- **`dev.paddock-tracker.com`** — operator ADDED it in Vercel (Valid Configuration). **#501 (0.203.0)** wires `proxy.ts` to rewrite the `dev.*` root → `/admin` (rewrite; gated on `isAdmin`). Verify on the real subdomain **as an admin**.
+- **`dev.paddock-tracker.com`** — operator ADDED it in Vercel (Valid). **#501 (0.203.0)** rewrites the `dev.*` root → `/admin`; **#503 (0.203.1) auth-locks the WHOLE `dev.*` host** (anonymous → `/sign-in`, signed-in non-admins → 403, root → `/admin`). **⏳ Operator, for the hard admin lock:** add the Clerk **session-token claim** `{"metadata":"{{user.public_metadata}}"}` (Clerk → Sessions → Customize session token) so middleware can read `publicMetadata.role`. Until then it's **signed-in-only** (no lockout); the `/admin` page self-gates regardless. Verify on the real subdomain as an admin.
 - **GSC:** Q&A `author.url` validation STARTED ✅; Events `address` validation STARTED ✅ (12 residual = venues not in `circuits.json`). Events **`offers` CAN'T be legitimately fixed** (28 items): grep confirms NO ticket/price/offer data anywhere in the model → adding it = fabrication (RULE #1). Non-critical flag; leave it.
 - **AdSense — NOT yet** (operator agrees). Only **28 indexed of 618** sitemap URLs; killer = "Crawled – currently not indexed" (16 = low-value signal). Wait for Google to crawl/index more (sitemap read Jul 10); keep content unique. Check "Excluded by noindex" (2) + "Blocked by robots.txt" (1) are intentional.
 - **Vercel Cron — operator WANTS it** (GH Actions is throttled/late): add `vercel.json` `crons`. ⚠️ Hobby = daily-only crons; every-15-min needs **Pro** — confirm plan (Hobby → keep GH for frequent + Vercel daily; Pro → move all, retire GH workflows).
@@ -51,7 +51,7 @@ Operator reviewed the owed-list + sent GSC screenshots. Status + **new asks** (p
 - **Deferred (operator):** Clerk key rotation (not yet), real-odds API (won't pay), dev/staging env (maybe unneeded).
 - **Crons run via GitHub Actions today** (13 workflows in `.github/workflows/*.yml` ping `/api/cron/*` with `CRON_SECRET`) — NOT Vercel; no `vercel.json` exists yet.
 
-**Session 7 final: 11 PRs (#491–#501, 0.195.1→0.203.0) + AUDIT #1 + AUDIT #2 + `/doctor`.**
+**Session 7 final: 12 feature/fix PRs (#491–#503) + 2 docs (#500, #502) + AUDIT #1 + AUDIT #2 + `/doctor` (29 skills). 0.195.1 → 0.203.1.** Vercel: operator on **Hobby** (cron is daily-only → every-15-min needs Pro; GH Actions stays the frequent driver). Sentry DSN = sentry.io → project → Settings → Client Keys (DSN) — wire `@sentry/nextjs` next session. `/admin` redesign + feeder-intake page = next session.
 
 ---
 
