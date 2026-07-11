@@ -6,7 +6,39 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-11 (LATEST, session 7 — engineer fixes + blog tags + home editor/DnD + GSC + admin console + heatmap) — `main` = 0.202.0
+## ⚡ Next session pickup — 2026-07-12 (LATEST, session 8 — SECURITY: repo→private + changelog redaction · admin dashboard · feeder intake · changelog weeks · adversarial audit) — `main` = 0.206.1
+
+**Unsupervised overnight run. 0.203.1 → 0.206.1, 5 PRs (#505–#509), all merged + prod-audited.** Operator handed off "#1 admin redesign, #2 feeder intake, #3 polish (changelog weeks)" to run solo overnight; mid-session flagged the public `/changelog` was leaking internal admin detail. Order taken: security fix first → #1/#2/#3 → a 2-subagent adversarial audit + fix-forward.
+
+### ✅ Shipped
+- **#505 (0.203.2) chore(security)** — the GitHub repo `paris-paraskevas/motorsport` was **PUBLIC**; made it **private** (`gh repo edit --visibility private`, operator chose this via AskUserQuestion) + redacted the public `/changelog` lines for 0.201.0–0.203.1 (they had named the admin dashboard, the `dev.` subdomain, the heatmap + what it tracks) down to anodyne "internal tooling" notes. **No live secrets were ever committed** (env files gitignored — verified by a tracked-file secret scan). It was information disclosure, not a credential leak.
+- **#506 (0.204.0) feat(admin)** — **`/admin` redesigned as a dashboard** (operator disliked the single-column stack): sticky section-nav rail + KPI overview row + a card per section (Overview/Users/Traffic/Search/Behaviour/Submissions/Tools). `PAGE_READ`→`PAGE_WIDE`. Gating unchanged (isAdmin/notFound/noindex/force-dynamic). Browser-verified signed-in at 1440+390 (temp gate-bypass, reverted); caught + fixed a mobile horizontal-overflow (nav grid-item `min-w-0`).
+- **#507 (0.205.0) feat(contribute)** — **feeder-series intake MVP** (`/contribute`): public no-account page → `series_submission` staging table (RLS-on/service-role, no app_user FK) → best-effort operator email + a read-only Submissions section + file-download route in `/admin`. Base64 file inline (2 MB cap), per-IP+global rate-limit, honeypot, required consent. **⚠ prod migration pending operator authorization** (see OWED #1).
+- **#508 (0.206.0) feat(changelog)** — **`/changelog` groups releases by week within each month** (ISO week, Monday-start, UTC). Confirmed live on prod (DOM labels "6–12 Jul", "1–5 Jul", "29–30 Jun", …).
+- **#509 (0.206.1) fix(audit)** — fixes from the 2-subagent adversarial audit (admin dashboard came back clean): `/contribute` rate-limit **fails closed**; `file_type` sanitised (a raw CRLF used to 500 the admin download — confirmed); generic client error on DB failure (no schema leak); **the changelog test never ran** (vitest `include` didn't cover `app/**` — fixed, 841→**852** tests); cross-month week labels clamped (were duplicated under two months).
+
+### ⏳ OWED — operator (blocking / decisions)
+1. **Apply the feeder-intake prod migration** so `/contribute` works. File: `supabase/migrations/20260712120000_series_submission.sql`. The Management-API SQL write was **safety-gated** overnight (the auto-mode classifier blocked a CREATE TABLE against prod that the brief didn't explicitly name — correct behaviour). **Easiest:** Supabase Studio → SQL Editor → paste the file → Run. (Or Management API: POST `{query}` to `https://api.supabase.com/v1/projects/dzelqrtajnauunzmxfic/database/query`, `Authorization: Bearer <.supabase-pat>`, **browser User-Agent** — Cloudflare-1010 landmine.) It's additive + idempotent (`create table if not exists`). Then verify a real `/contribute` submit → row → admin download.
+2. **Crons → external free pinger (cron-job.org)** — going private **meters GitHub Actions minutes** (Free = 2,000/mo; the 13 crons run ~15.6k min/mo → they stop or bill ~$100/mo within ~4 days of 2026-07-12). Operator CHOSE the pinger route (via AskUserQuestion): create 13 cron-job.org jobs hitting `https://paddock-tracker.com/api/cron/*` with `Authorization: Bearer <CRON_SECRET>` (value in Vercel env; GitHub's copy is write-only). The 13-job list + schedules was handed over in-session. **Ping Claude when live → it disables the GH `schedule:` triggers** (keeping `workflow_dispatch`).
+3. Carried from session 7 (still open): **Clerk session-token claim** for the hard dev-subdomain admin lock · **GA4/GSC creds** to light the /admin Traffic+Search panels · **Sentry DSN** · **Vercel Pro** (the paid alternative to the cron pinger).
+
+### 🔜 NEXT — operator's queued program (unchanged)
+Rest of "#3": **AdSense content** (W4 P2 driver portraits ×14 series; champion-Q&A depth = a `champions.json` schema extension, LARGE) → **maintenance** (F1 classification speed; weather+news 15-series audit; deeper mobile "Community" tab; B-perf). **Feeder Phase 2:** Supabase Storage + signed upload URLs for files >2 MB; Turnstile once Cloudflare keys exist; a Claude-assisted normalize-then-approve admin step.
+
+### 🧷 Landmines / lessons (session 8)
+- **The repo is now PRIVATE** — keep the public `/changelog` (RELEASES.md) free of internal-infra detail (operator flag); the git history + ops docs are no longer public.
+- **Prod Supabase writes are safety-gated** — even a sanctioned migration needs the operator to name the action; can't be applied blind overnight.
+- **vitest `include` is now `lib/**` + `tests/**` + `app/**`** — a `*.test.ts` outside those globs silently never runs (the changelog test reported "green" while skipped). Verify a new test makes the COUNT go up.
+- **`next build` clobbers a running `next dev`** (shared `.next`) — restart dev after a build; the audit's transient `/contribute` console errors were HMR churn from this, not real (clean reload = 0 errors).
+- **HTML-entity-encoded en-dash** — `curl | grep` won't find "6–12 Jul" (source is `&#8211;`); verify rendered text via the browser DOM.
+- **Control-char regex authoring** — a literal `\x00-\x1f` class kept landing as raw bytes (rg flagged the file binary); use a `charCodeAt(i) < 32` check instead.
+
+### State
+`main` @ **0.206.1**, 0 open PRs, all 5 PRs prod-audited. Dev server restarted clean on `:3000`. Untracked strays (leave-as-is, all gitignored): the 5 session-7 lint files, `drafts/*.json`, `.playwright-mcp/`, this session's `*.png` screenshots.
+
+---
+
+## ⚡ Next session pickup — 2026-07-11 (session 7 — engineer fixes + blog tags + home editor/DnD + GSC + admin console + heatmap) — `main` = 0.202.0
 
 **Marathon: 0.195.1 → 0.202.0, 9 PRs (#491–#499), all merged + prod-audited.** Also ran `/doctor` (disabled 29 unused skills) + AUDIT #1 (all of #491–#495 verified live on prod, incl. 4 real F1 posts surfacing on `/series/f1`). Operator directive this session: flat-triage the ledger → batch → tackle, **audit every 5 PRs**, Claude creates + merges PRs autonomously, **postpone v1 launch**. Second wave (operator "keep going"): GSC fix → dnd-kit → **admin/dev console** → **heatmap** → (polish/AdSense/maintenance still queued).
 
