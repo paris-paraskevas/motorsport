@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.203.2 — 2026-07-11
+
+### Security
+- **Repo flipped to private; public `/changelog` de-detailed (opsec).** `paris-paraskevas/motorsport` was PUBLIC — the admin-console releases (0.201.0–0.203.1) described the internal admin dashboard, its `dev.` subdomain, the anonymous click heatmap, and what it tracks in `RELEASES.md` (rendered at the public `/changelog`); the tracked ops docs (`CLAUDE.md`, `docs/HANDOFF.md`, `CHANGELOG.md`) and source (`proxy.ts` host-gating, `lib/heatmap.ts`) further exposed the auth design and the *current* "signed-in-only, no lockout" gap on `dev.*`. Repo made **private** (`gh repo edit --visibility private`); the four public release lines reduced to anodyne "internal tooling/config" notes. No live secrets were ever committed (`.env.local` / `.clerk` / `.supabase-pat` / `.env.blog` all gitignored — verified by a tracked-file secret scan). **Consequence:** private-repo GitHub Actions minutes are now metered (Free tier = 2,000/mo) and the 13 cron `curl` pings (~15.6k run-min/mo) far exceed it → crons to be moved to a free external pinger (cron-job.org) hitting the same `/api/cron/*` endpoints with `Authorization: Bearer $CRON_SECRET`; the GH `schedule:` triggers disabled once the pinger is live (`workflow_dispatch` retained for manual runs).
+
 ## 0.203.1 — 2026-07-11
 
 ### Changed

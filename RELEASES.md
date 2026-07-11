@@ -1,20 +1,24 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.203.2 — 2026-07-11
+
+**Behind the scenes.** Internal maintenance.
+
 ## 0.203.1 — 2026-07-11
 
-**Behind the scenes.** The internal `dev.` admin subdomain now requires sign-in (admin-only once configured).
+**Behind the scenes.** More internal configuration changes.
 
 ## 0.203.0 — 2026-07-11
 
-**Behind the scenes.** The admin dashboard now lives at the internal `dev.` subdomain.
+**Behind the scenes.** Internal configuration changes.
 
 ## 0.202.0 — 2026-07-11
 
-**Behind the scenes.** The internal admin dashboard now includes an anonymous click heatmap (consent-based, no personal data) to see how pages are used.
+**Behind the scenes.** Further internal tooling improvements.
 
 ## 0.201.0 — 2026-07-11
 
-**Behind the scenes.** Added an internal admin dashboard (not visible to users) to keep an eye on sign-ups, traffic and how the site is used.
+**Behind the scenes.** Internal tooling and maintenance.
 
 ## 0.200.0 — 2026-07-11
 
