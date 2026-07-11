@@ -8,7 +8,7 @@ import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapsho
 import { driverSeasonForm, namesMatch, type DriverSeasonForm } from '@/lib/profile-stats';
 import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
 import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
-import { fetchWikipediaBio, type WikipediaBio } from '@/lib/wikipedia-bio';
+import { fetchWikipediaBio, ageFromISO, flagEmoji, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
 import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
@@ -256,6 +256,12 @@ export default async function DriverPage({
   const { form, trend } = seasonData;
   const mentions = filterNewsByMention(seriesNews, newsMentionAliases('driver', driver.name));
 
+  // Identity layer (W4): nationality + age from the Wikipedia intro (fail-soft —
+  // absent when the article doesn't match). Header omits the line entirely when
+  // neither resolves.
+  const nationality = bio?.nationality ?? null;
+  const age = bio?.bornISO ? ageFromISO(bio.bornISO) : null;
+
   // Portrait: prefer a curated free-licensed Commons portrait (rendered with
   // attribution) over the F1-only OpenF1 headshot (F1 official media, not
   // CC-licensed). The curated sidecar can cover any series; the OpenF1 fallback
@@ -342,6 +348,21 @@ export default async function DriverPage({
               {driver.name}
               <span style={{ color: driver.seriesColor }}>.</span>
             </h1>
+
+            {(nationality || age != null) && (
+              <div className="mt-3 flex items-center gap-2 flex-wrap font-mono text-[12px] uppercase tracking-[0.14em] text-text-muted">
+                {nationality && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <span aria-hidden="true" className="text-base leading-none">
+                      {flagEmoji(nationality.code)}
+                    </span>
+                    {nationality.demonym}
+                  </span>
+                )}
+                {nationality && age != null && <span className="text-border-strong">·</span>}
+                {age != null && <span>{age} yrs</span>}
+              </div>
+            )}
 
             <div className="mt-4 flex items-baseline gap-3 flex-wrap">
               {driver.number != null && (

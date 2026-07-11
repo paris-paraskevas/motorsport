@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.193.0 — 2026-07-11
+
+**Driver pages now show nationality and age.** Every driver profile leads with a flag, nationality and age next to their number — across all series.
+
 ## 0.191.0 — 2026-07-10
 
 **"What is Formula 1?", "What is the Nürburgring 24 Hours?" — and every series' About in one place.** Every championship now has a plain-language "what is it" guide in the Learn section, including two brand-new ones for Formula 1 and the Nürburgring 24 Hours. Each series' "About" link now takes you straight to that guide, so all the reference reading lives together instead of behind a tab.

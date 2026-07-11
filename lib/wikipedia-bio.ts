@@ -29,6 +29,13 @@ const MOTORSPORT_HINT =
 const MAX_PARAGRAPHS = 3;
 const CACHE_TTL_SECONDS = 24 * 60 * 60; // 24h — bios are near-static
 
+export interface DriverNationality {
+  /** ISO 3166-1 alpha-2, uppercase — powers the profile flag. */
+  code: string;
+  /** The demonym as written in the intro ("Dutch", "New Zealand"). */
+  demonym: string;
+}
+
 export interface WikipediaBio {
   /** Resolved article title (post-redirect), e.g. "Max Verstappen". */
   title: string;
@@ -36,6 +43,10 @@ export interface WikipediaBio {
   paragraphs: string[];
   /** Canonical article URL for the "Wikipedia →" attribution link. */
   url: string;
+  /** ISO date of birth (YYYY-MM-DD) parsed from the intro, when present. */
+  bornISO?: string;
+  /** Nationality parsed from "is a/an <Demonym> …", when it maps to a country. */
+  nationality?: DriverNationality;
 }
 
 interface WikiExtractPage {
@@ -48,6 +59,79 @@ interface WikiExtractPage {
 
 interface WikiExtractResponse {
   query?: { pages?: WikiExtractPage[] };
+}
+
+// Nationality demonyms → ISO 3166-1 alpha-2, for the driver-profile flag + age
+// (W4 identity layer). Racing nations; keyed lowercase. Two-word keys ("new
+// zealand") are tried before single words in parseIdentity. Stable reference
+// data — an unmapped demonym just omits the flag (fail-soft). UK nations map to
+// GB (the flag we have + the licence nationality).
+const DEMONYMS: Record<string, string> = {
+  'new zealand': 'NZ', 'new zealander': 'NZ', 'south african': 'ZA',
+  'saudi arabian': 'SA', 'northern irish': 'GB',
+  dutch: 'NL', spanish: 'ES', american: 'US', finnish: 'FI', british: 'GB',
+  english: 'GB', scottish: 'GB', welsh: 'GB', irish: 'IE', italian: 'IT',
+  german: 'DE', french: 'FR', australian: 'AU', brazilian: 'BR', japanese: 'JP',
+  mexican: 'MX', danish: 'DK', monégasque: 'MC', monegasque: 'MC', thai: 'TH',
+  canadian: 'CA', belgian: 'BE', swiss: 'CH', austrian: 'AT', swedish: 'SE',
+  norwegian: 'NO', portuguese: 'PT', argentine: 'AR', argentinian: 'AR',
+  colombian: 'CO', chilean: 'CL', chinese: 'CN', indian: 'IN', indonesian: 'ID',
+  malaysian: 'MY', estonian: 'EE', polish: 'PL', czech: 'CZ', hungarian: 'HU',
+  turkish: 'TR', russian: 'RU', ukrainian: 'UA', venezuelan: 'VE', emirati: 'AE',
+  saudi: 'SA', bahraini: 'BH', qatari: 'QA', paraguayan: 'PY', kenyan: 'KE',
+  croatian: 'HR', greek: 'GR', uruguayan: 'UY', romanian: 'RO', bulgarian: 'BG',
+  latvian: 'LV', lithuanian: 'LT', slovenian: 'SI', slovak: 'SK',
+};
+
+/**
+ * Extract date-of-birth + nationality from a Wikipedia intro paragraph. Both
+ * fail-soft (absent when the sentence doesn't match). DOB uses the article's
+ * "(born <date>)"; the ISO string is built from LOCAL date components (never
+ * `toISOString()`, which UTC-shifts a date-only value by a day). Nationality
+ * takes the first demonym after "is a/an", matched longest-first against the map
+ * (so "Spanish Grand Prix racer" → Spanish, "New Zealand driver" → New Zealand).
+ * Exported for unit tests.
+ */
+export function parseIdentity(intro: string): { bornISO?: string; nationality?: DriverNationality } {
+  const out: { bornISO?: string; nationality?: DriverNationality } = {};
+  const dm = intro.match(/\bborn\s+(\d{1,2}\s+[A-Z][a-z]+\s+\d{4}|[A-Z][a-z]+\s+\d{1,2},\s+\d{4})/);
+  if (dm) {
+    const d = new Date(dm[1]);
+    if (!Number.isNaN(d.getTime())) {
+      const pad = (n: number) => String(n).padStart(2, '0');
+      out.bornISO = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+  }
+  const nm = intro.match(/\bis an?\s+((?:[A-Z][a-zà-ÿ]+\s+){0,2}[A-Z][a-zà-ÿ]+)/);
+  if (nm) {
+    const words = nm[1].split(/\s+/);
+    for (let n = Math.min(2, words.length); n >= 1; n--) {
+      const phrase = words.slice(0, n).join(' ');
+      const code = DEMONYMS[phrase.toLowerCase()];
+      if (code) { out.nationality = { code, demonym: phrase }; break; }
+    }
+  }
+  return out;
+}
+
+/** Whole years from an ISO (YYYY-MM-DD) date of birth to `now` (default: today).
+ *  String math — no Date parse — so it never UTC-shifts. Null on a malformed or
+ *  implausible value. */
+export function ageFromISO(iso: string, now: Date = new Date()): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m) return null;
+  const [y, mo, da] = [+m[1], +m[2], +m[3]];
+  let age = now.getFullYear() - y;
+  const monthDelta = now.getMonth() + 1 - mo;
+  if (monthDelta < 0 || (monthDelta === 0 && now.getDate() < da)) age--;
+  return age > 0 && age < 120 ? age : null;
+}
+
+/** ISO 3166-1 alpha-2 → regional-indicator flag emoji ("NL" → 🇳🇱). */
+export function flagEmoji(code: string): string {
+  return code
+    .toUpperCase()
+    .replace(/[A-Z]/g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65));
 }
 
 /**
@@ -78,6 +162,7 @@ export function parseBioResponse(json: unknown): WikipediaBio | null {
     title: page.title,
     paragraphs,
     url: `https://en.wikipedia.org/wiki/${encodeURIComponent(page.title.replace(/ /g, '_'))}`,
+    ...parseIdentity(paragraphs[0]),
   };
 }
 
