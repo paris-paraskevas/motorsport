@@ -6,6 +6,7 @@ import { loadSeries, loadSeriesMeta } from '@/lib/series';
 import { seriesWithThreads } from '@/lib/threads';
 import { resolveTab, labelForTab, describeTab, type TabKey } from '@/lib/tabs';
 import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
+import { publishedPostsForSeries } from '@/lib/blog';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -222,6 +223,14 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <Suspense key={activeTab} fallback={<TabLoading />}>
         {renderTab(activeTab, series)}
       </Suspense>
+
+      {/* Blog posts tagged with this series (its series_slug or a matching tag) —
+          only on the calendar landing, streamed, and self-hiding when empty. */}
+      {activeTab === 'calendar' && (
+        <Suspense fallback={null}>
+          <SeriesBlogPosts slug={slug} />
+        </Suspense>
+      )}
     </div>
   );
 }
@@ -260,6 +269,35 @@ function SeriesLearnMore({
           {l.label}
         </Link>
       ))}
+    </section>
+  );
+}
+
+// Blog posts tagged with this series — surfaces the Paddock blog on the series
+// page (operator: "on series, blogs show up based off tags"). Server-fetched and
+// fail-soft; renders nothing when there are no matching published posts.
+async function SeriesBlogPosts({ slug }: { slug: string }) {
+  const posts = await publishedPostsForSeries(slug, 4).catch(() => []);
+  if (posts.length === 0) return null;
+  return (
+    <section className="mt-8 border-t border-border pt-6">
+      <h2 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+        From the Paddock blog
+      </h2>
+      <ul className="space-y-3">
+        {posts.map(p => (
+          <li key={p.id}>
+            <Link href={`/blog/${p.slug}`} className="group block">
+              <span className="block text-sm font-medium leading-snug text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
+                {p.title}
+              </span>
+              <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-text-muted">
+                {p.summary}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.198.0 — 2026-07-11
+
+### Added
+- **Tag-matched blog posts surface on series pages.** A "From the Paddock blog" block on each series' calendar landing lists that series' published posts — matched by the primary `series_slug` OR a `tags` entry equal to the series slug (new `publishedPostsForSeries` in `lib/blog.ts`: PostgREST `.or('series_slug.eq.X,tags.cs.{X}')`, newest published first, capped 4). Server-fetched in `SeriesPageView`, streamed in its own `Suspense`, and self-hiding when there are no matches — fail-soft, so it can never 500 the (static/ISR) series page. Also fixed: DB blog posts now render their tags on `/blog/[slug]` — the `dbToPost` adapter was dropping `tags` from the frontmatter (the tag-chip row already existed for MDX posts). Completes the operator's "on series, blogs show up based off tags". Verified in-browser: series page 200 with the block absent when there's no local data (fail-soft), and rendering correctly against stubbed posts; `tsc` + `eslint` clean. (Note: a stale local webpack build-worker cache was 500ing `/series/[slug]` in dev independent of this change — cleared by removing `.next`; prod builds the route fine.)
+
 ## 0.197.0 — 2026-07-11
 
 ### Added
