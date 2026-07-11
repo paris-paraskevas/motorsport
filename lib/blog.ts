@@ -18,6 +18,9 @@ export interface BlogPost {
   body: string;
   /** Optional series tag (a slug from content/series/<slug>). null = site-wide. */
   seriesSlug: string | null;
+  /** Free-form tags (normalized kebab). A series slug here surfaces the post on
+   *  that series' page too, beyond the single seriesSlug. */
+  tags: string[];
   status: PostStatus;
   authorId: string;
   authorName: string | null;
@@ -30,9 +33,36 @@ export interface BlogPost {
 export const TITLE_MAX = 140;
 export const SUMMARY_MAX = 300;
 export const BODY_MAX = 50000;
+export const TAGS_MAX = 12;
+const TAG_MAX_LEN = 40;
+
+/** Normalize a raw tag list to lowercase kebab slugs: trim, lowercase, collapse
+ *  runs of non-alphanumerics to a hyphen, drop blanks/dupes, cap each tag's
+ *  length and the total count. Exported for its own test — the per-series feed
+ *  (PR4) matches a series slug against these, so the normalization must agree
+ *  with the series-slug format. */
+export function normalizeTags(raw: string[] | undefined | null): string[] {
+  if (!Array.isArray(raw)) return [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const t of raw) {
+    if (typeof t !== 'string') continue;
+    const tag = t
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, TAG_MAX_LEN);
+    if (!tag || seen.has(tag)) continue;
+    seen.add(tag);
+    out.push(tag);
+    if (out.length >= TAGS_MAX) break;
+  }
+  return out;
+}
 
 const COLS =
-  'id, slug, title, summary, body, series_slug, status, author_id, publish_at, published_at, hero_image, created_at';
+  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, created_at';
 
 function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
   return {
@@ -42,6 +72,7 @@ function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
     summary: r.summary as string,
     body: r.body as string,
     seriesSlug: (r.series_slug as string | null) ?? null,
+    tags: (r.tags as string[] | null) ?? [],
     status: r.status as PostStatus,
     authorId: r.author_id as string,
     authorName: name,
@@ -63,6 +94,7 @@ export interface DraftInput {
   summary: string;
   body: string;
   seriesSlug?: string | null;
+  tags?: string[];
   heroImage?: string | null;
   publishAt?: string | null;
 }
@@ -92,6 +124,7 @@ export async function createDraft(authorId: string, input: DraftInput): Promise<
       summary,
       body,
       series_slug: input.seriesSlug?.trim() || null,
+      tags: normalizeTags(input.tags),
       hero_image: input.heroImage?.trim() || null,
       publish_at: input.publishAt ?? null,
       author_id: authorId,

@@ -52,6 +52,7 @@ export async function POST(req: Request) {
     summary?: unknown;
     body?: unknown;
     seriesSlug?: unknown;
+    tags?: unknown;
     heroImage?: unknown;
     publishAt?: unknown;
   };
@@ -64,6 +65,13 @@ export async function POST(req: Request) {
   // Optional series tag — validated against real slugs; unknown silently drops to untagged.
   const rawSlug = str(body.seriesSlug).trim();
   const seriesSlug = rawSlug && (await listSeriesSlugs()).includes(rawSlug) ? rawSlug : null;
+  // Free-form tags — accept an array or a comma-separated string; createDraft
+  // normalizes (lowercase kebab, dedupe, cap). Unknown-shaped input → untagged.
+  const tags = Array.isArray(body.tags)
+    ? (body.tags.filter(t => typeof t === 'string') as string[])
+    : typeof body.tags === 'string'
+      ? body.tags.split(',')
+      : [];
 
   try {
     await ensureAppUser(userId);
@@ -73,6 +81,7 @@ export async function POST(req: Request) {
       summary: str(body.summary),
       body: str(body.body),
       seriesSlug,
+      tags,
       heroImage: str(body.heroImage) || null,
       publishAt: typeof body.publishAt === 'string' ? body.publishAt : null,
     });
