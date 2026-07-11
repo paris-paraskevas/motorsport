@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.196.0 — 2026-07-11
+
+### Added
+- **Race Engineer: multiple past conversations.** The help chat kept only one running conversation (a single `localStorage` slot); it now stores a capped list (30) of past conversations. The panel header gains **New chat** (＋) and **History** (clock) controls: History lists past conversations newest-first with a derived title (the first user message) and a per-row delete; opening one restores its thread; New chat starts fresh (and reuses an already-blank chat instead of piling up empties). Still client-side / per-device (the widget is a stateless help chat, so no server storage), and the pre-v2 single-chat store (`paddock:assistant:chat`) migrates into the new list (`paddock:assistant:conversations` + `…:active`) on first load. All in `components/assistant/AssistantWidget.tsx` (the derived active-conversation `messages` are memoised; `setMessages` writes back into the active conversation so `send()`/rating are unchanged). Verified in-browser: legacy→v2 migration, 3-conversation load/persist round-trip, and the full signed-in flow (open → History → switch → delete → New chat) with 0 console errors.
+
 ## 0.195.2 — 2026-07-11
 
 ### Fixed
