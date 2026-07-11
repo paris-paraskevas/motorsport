@@ -10,6 +10,7 @@ import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { LaunchBanner } from '@/components/LaunchBanner';
 import { AssistantWidget } from '@/components/assistant/AssistantWidget';
+import { HeatmapTracker } from '@/components/HeatmapTracker';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
@@ -123,6 +124,7 @@ export default async function RootLayout({
               flips the signals on user choice and persists to localStorage. */}
           <CookieConsent />
           <AssistantWidget />
+          <HeatmapTracker />
           <Analytics />
           <SpeedInsights />
           {/* Deferred to lazyOnload (was afterInteractive): none of these are

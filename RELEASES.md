@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.202.0 — 2026-07-11
+
+**Behind the scenes.** The internal admin dashboard now includes an anonymous click heatmap (consent-based, no personal data) to see how pages are used.
+
 ## 0.201.0 — 2026-07-11
 
 **Behind the scenes.** Added an internal admin dashboard (not visible to users) to keep an eye on sign-ups, traffic and how the site is used.
