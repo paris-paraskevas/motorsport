@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.197.0 — 2026-07-11
+
+### Added
+- **Blog posts can carry tags.** Beyond a post's single `series_slug`, posts now have a free-form `tags text[]` (migration `supabase/migrations/20260711120000_post_tags.sql`: additive `not null default '{}'` column + a one-time backfill seeding each existing post's `series_slug` into `tags` so current series-associations keep surfacing + a GIN index for `@>` containment queries). `lib/blog.ts` gains a `normalizeTags` helper (trim → lowercase → kebab → dedupe → cap 12 × 40 chars) applied in `createDraft`, plus `BlogPost.tags` and `tags` in the shared `COLS` select. The in-app composer (`components/blog/PostComposer.tsx`) gets a comma-separated tags input, passed through `POST /api/blog` (accepts an array or a comma string). A series-slug tag surfaces the post on that series' page — consumed in the next change (PR4). Migration applied to prod (Paddock, `eu-west-1`; Management API returned 201, single-transaction). Public reads stay fail-soft so an un-migrated environment degrades to empty, not a crash. Verified: `tsc --noEmit` + `eslint` clean; `normalizeTags` edge-case probe (dedupe `F1`→`f1`, kebab `Grand Prix!!`→`grand-prix`, cap 12, truncate 40, non-array→`[]`).
+
 ## 0.196.0 — 2026-07-11
 
 ### Added

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.197.0 — 2026-07-11
+
+**Groundwork for tagged blog posts.** Posts can now be given tags in the composer, so the same post can be linked to more than one series. Tagged posts will start appearing on series pages in an upcoming update.
+
 ## 0.196.0 — 2026-07-11
 
 **The Race Engineer now remembers your past chats.** The help assistant keeps a history of your earlier conversations — start a new chat any time, switch back to a previous one, or delete the ones you don't need, all from the chat window.

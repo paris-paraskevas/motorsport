@@ -21,6 +21,7 @@ export function PostComposer({
   const [summary, setSummary] = useState('');
   const [body, setBody] = useState('');
   const [seriesSlug, setSeriesSlug] = useState('');
+  const [tags, setTags] = useState('');
   const [heroImage, setHeroImage] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +54,7 @@ export function PostComposer({
           summary,
           body,
           seriesSlug: seriesSlug || undefined,
+          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
           heroImage: heroImage || undefined,
         }),
       });
@@ -67,6 +69,7 @@ export function PostComposer({
       setSummary('');
       setBody('');
       setSeriesSlug('');
+      setTags('');
       setHeroImage('');
       setOpen(false);
       onCreated();
@@ -122,6 +125,16 @@ export function PostComposer({
         </select>
         <input className={`${field} flex-1`} value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="Hero image URL (optional)" />
       </div>
+      <input
+        className={`${field} font-mono text-xs`}
+        value={tags}
+        onChange={e => setTags(e.target.value)}
+        placeholder="tags, comma-separated (e.g. f1, monaco, preview)"
+        aria-label="Tags (comma-separated)"
+      />
+      <p className="font-mono text-[10px] text-text-faint">
+        A series-slug tag (e.g. <span className="text-text-muted">f1</span>) also surfaces this post on that series&apos; page.
+      </p>
       {error && <p className="font-mono text-xs text-red-400">{error}</p>}
       <div className="flex gap-2">
         <button
