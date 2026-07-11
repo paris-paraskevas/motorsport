@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fetchWikipediaBio, parseBioResponse } from './wikipedia-bio';
+import {
+  fetchWikipediaBio,
+  parseBioResponse,
+  parseIdentity,
+  ageFromISO,
+  flagEmoji,
+} from './wikipedia-bio';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -30,6 +36,9 @@ describe('parseBioResponse', () => {
     expect(bio?.paragraphs).toHaveLength(3); // 4 in the extract, capped at 3
     expect(bio?.paragraphs[0]).toContain('Dutch racing driver');
     expect(bio?.url).toBe('https://en.wikipedia.org/wiki/Max_Verstappen');
+    // Identity layer parsed off the intro.
+    expect(bio?.bornISO).toBe('1997-09-30');
+    expect(bio?.nationality).toEqual({ code: 'NL', demonym: 'Dutch' });
   });
 
   it('returns null for a missing title', () => {
@@ -72,6 +81,54 @@ describe('parseBioResponse', () => {
     expect(parseBioResponse({})).toBeNull();
     expect(parseBioResponse(null)).toBeNull();
     expect(parseBioResponse({ query: { pages: [] } })).toBeNull();
+  });
+});
+
+describe('parseIdentity', () => {
+  it('extracts DOB + nationality across disciplines and phrasings', () => {
+    const cases: Array<[string, string, string, string]> = [
+      ['Marc Márquez Alentà (born 17 February 1993) is a Spanish Grand Prix motorcycle road racer.', '1993-02-17', 'ES', 'Spanish'],
+      ['Kyle Miyata Larson (born July 31, 1992) is an American professional racing driver.', '1992-07-31', 'US', 'American'],
+      ['Max Emilian Verstappen (Dutch pronunciation: [x]; born 30 September 1997) is a Dutch and Belgian racing driver.', '1997-09-30', 'NL', 'Dutch'],
+      ['Kalle Alex Rovanperä (Finnish: [x]; born 1 October 2000) is a Finnish professional rally and racing driver.', '2000-10-01', 'FI', 'Finnish'],
+      ['Liam Jared Lawson (born 11 February 2002) is a New Zealand racing driver.', '2002-02-11', 'NZ', 'New Zealand'],
+    ];
+    for (const [intro, bornISO, code, demonym] of cases) {
+      const id = parseIdentity(intro);
+      expect(id.bornISO).toBe(bornISO);
+      expect(id.nationality).toEqual({ code, demonym });
+    }
+  });
+
+  it('builds the ISO date from local components (no UTC day-shift)', () => {
+    // 1 October must never slip to 30 September, whatever the runner's timezone.
+    expect(parseIdentity('(born 1 October 2000) is a Finnish racing driver.').bornISO).toBe('2000-10-01');
+  });
+
+  it('is fail-soft when neither a born-date nor a mappable demonym is present', () => {
+    expect(parseIdentity('A racing team competing across Europe.')).toEqual({});
+  });
+});
+
+describe('ageFromISO', () => {
+  const now = new Date(2026, 6, 11); // 2026-07-11, local
+
+  it('computes whole years, accounting for whether the birthday has passed', () => {
+    expect(ageFromISO('1997-09-30', now)).toBe(28); // birthday later in the year
+    expect(ageFromISO('1992-07-31', now)).toBe(33); // 20 days off — not yet
+    expect(ageFromISO('1993-02-17', now)).toBe(33); // birthday already passed
+  });
+
+  it('returns null on malformed or implausible input', () => {
+    expect(ageFromISO('not-a-date', now)).toBeNull();
+    expect(ageFromISO('1800-01-01', now)).toBeNull();
+  });
+});
+
+describe('flagEmoji', () => {
+  it('maps an ISO alpha-2 code to regional-indicator symbols', () => {
+    expect(flagEmoji('NL')).toBe('🇳🇱');
+    expect(flagEmoji('us')).toBe('🇺🇸');
   });
 });
 
