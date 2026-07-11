@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.206.0 — 2026-07-12
+
+**A tidier changelog.** Release notes are now grouped by week inside each month, so it's easier to scan what shipped when.
+
 ## 0.205.0 — 2026-07-12
 
 **Behind the scenes.** Groundwork for letting feeder series submit their data.

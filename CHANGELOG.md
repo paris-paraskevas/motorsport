@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.206.0 — 2026-07-12
+
+### Changed
+- **`/changelog` groups releases by week within each month.** The parser (`app/(app)/changelog/releases.ts`) already bucketed by calendar month; it now also splits each month into ISO calendar weeks (Monday-start, UTC) via new exported helpers `mondayOf`, `weekLabel` ("6–12 Jul" same-month / "29 Jun – 5 Jul" spanning) and `groupByWeek`. `MonthGroup` gains a `weeks: WeekGroup[]` field (newest week first; undated entries fall into a trailing "Earlier" week); `releases` is retained for the month's total count. The page renders a labelled week sub-header (range + a divider + count) above each week's release cards — useful now that a heavy month like July holds ~130 releases. New unit test `releases.test.ts` (13 cases: `mondayOf` incl. the Sunday→prior-Monday edge, `weekLabel` same/cross-month, `groupByWeek` ordering + "Earlier", `splitSections`). Verified in-browser (0 console errors); tsc + eslint + `next build` clean; full suite 841 green.
+
 ## 0.205.0 — 2026-07-12
 
 ### Added

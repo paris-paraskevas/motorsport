@@ -29,6 +29,15 @@ export interface ReleaseEntry {
   bodyHtml: string;
 }
 
+/** A calendar week (Monday-start, UTC) within a month, newest release first. */
+export interface WeekGroup {
+  /** The week's Monday as an ISO date ("YYYY-MM-DD"), or "undated". */
+  key: string;
+  /** Compact range label, e.g. "6–12 Jul" / "30 Jun – 6 Jul", or "Earlier". */
+  label: string;
+  releases: ReleaseEntry[];
+}
+
 export interface MonthGroup {
   /** Sort/identity key: "YYYY-MM" for dated groups, "0000-00" for undated. */
   key: string;
@@ -36,7 +45,10 @@ export interface MonthGroup {
   label: string;
   /** One-line thematic summary of the month's releases, or null if none curated. */
   abstract: string | null;
+  /** All the month's releases, newest first (drives the group's release count). */
   releases: ReleaseEntry[];
+  /** The releases split into calendar weeks (Monday-start, UTC), newest first. */
+  weeks: WeekGroup[];
 }
 
 // Header form: "<version>" optionally followed by " — <YYYY-MM-DD>".
@@ -108,6 +120,55 @@ export const MONTH_ABSTRACTS: Record<string, string> = {
   [UNDATED_KEY]: 'The earliest releases, from before these per-version notes began.',
 };
 
+/** The Monday (UTC) of the ISO week containing `dateISO`, as "YYYY-MM-DD". ISO
+ *  weeks start Monday; Sunday (getUTCDay 0) belongs to the week that began the
+ *  previous Monday. UTC throughout to match the rest of the date rendering. */
+export function mondayOf(dateISO: string): string {
+  const d = new Date(`${dateISO}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return dateISO;
+  const day = d.getUTCDay(); // 0=Sun … 6=Sat
+  d.setUTCDate(d.getUTCDate() + (day === 0 ? -6 : 1 - day));
+  return d.toISOString().slice(0, 10);
+}
+
+/** Compact label for the week beginning `mondayISO`, e.g. "6–12 Jul" (same
+ *  month) or "30 Jun – 6 Jul" (spanning months). UTC. */
+export function weekLabel(mondayISO: string): string {
+  const mon = new Date(`${mondayISO}T00:00:00Z`);
+  if (Number.isNaN(mon.getTime())) return mondayISO;
+  const sun = new Date(mon);
+  sun.setUTCDate(sun.getUTCDate() + 6);
+  const fmt = (d: Date, withMonth: boolean) =>
+    d.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      ...(withMonth ? { month: 'short' as const } : {}),
+      timeZone: 'UTC',
+    });
+  return mon.getUTCMonth() === sun.getUTCMonth()
+    ? `${fmt(mon, false)}–${fmt(sun, true)}`
+    : `${fmt(mon, true)} – ${fmt(sun, true)}`;
+}
+
+/** Split a month's (already newest-first) releases into calendar weeks, newest
+ *  week first; any undated entries collect into a trailing "Earlier" week. */
+export function groupByWeek(releases: ReleaseEntry[]): WeekGroup[] {
+  const weeks = new Map<string, WeekGroup>();
+  for (const r of releases) {
+    const key = r.dateISO ? mondayOf(r.dateISO) : 'undated';
+    let wg = weeks.get(key);
+    if (!wg) {
+      wg = { key, label: key === 'undated' ? 'Earlier' : weekLabel(key), releases: [] };
+      weeks.set(key, wg);
+    }
+    wg.releases.push(r);
+  }
+  return [...weeks.values()].sort((a, b) => {
+    if (a.key === 'undated') return 1;
+    if (b.key === 'undated') return -1;
+    return b.key.localeCompare(a.key);
+  });
+}
+
 /** Parse RELEASES.md into month groups, newest month first, and newest release
  *  first within each month. Undated entries collect into a trailing "Earlier"
  *  group. File order is preserved as the tiebreaker for same-date entries (the
@@ -141,6 +202,7 @@ export async function loadReleaseGroups(filePath: string): Promise<MonthGroup[]>
         label: entry.dateISO ? monthLabel(entry.dateISO) : 'Earlier',
         abstract: MONTH_ABSTRACTS[key] ?? null,
         releases: [],
+        weeks: [],
       };
       groups.set(key, group);
     }
@@ -155,6 +217,7 @@ export async function loadReleaseGroups(filePath: string): Promise<MonthGroup[]>
       if (da !== db) return db.localeCompare(da);
       return 0; // Array.prototype.sort is stable → keeps newest-first file order.
     });
+    group.weeks = groupByWeek(group.releases);
   }
 
   // Sort groups newest month first; the undated key sorts last naturally.

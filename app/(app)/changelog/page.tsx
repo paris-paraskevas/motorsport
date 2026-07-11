@@ -103,52 +103,67 @@ export default async function ChangelogPage() {
                 </div>
               </summary>
 
-              <ul className="space-y-3 px-4 md:px-5 pb-5 pt-1">
-                {group.releases.map((release) => {
-                  const isRunning = release.version === APP_VERSION;
-                  return (
-                    <li
-                      key={release.version}
-                      className={
-                        'rounded-2xl border p-5 transition-colors duration-(--duration-fast) ' +
-                        (isRunning
-                          ? 'border-brand/50 bg-brand/5 ring-1 ring-brand/30'
-                          : 'border-border/60 bg-surface/40')
-                      }
-                    >
-                      <div className="mb-2 flex items-baseline gap-3 flex-wrap">
-                        <h3 className="text-text font-mono text-sm font-semibold tracking-tight tnum">
-                          v{release.version}
-                        </h3>
-                        {release.dateISO && (
-                          <time
-                            dateTime={release.dateISO}
-                            title={release.dateISO}
-                            className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tnum font-mono"
+              <div className="space-y-5 px-4 md:px-5 pb-5 pt-1">
+                {group.weeks.map((week) => (
+                  <div key={week.key}>
+                    <div className="mb-2 flex items-center gap-2 pl-1">
+                      <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold">
+                        {week.label}
+                      </span>
+                      <span aria-hidden="true" className="h-px flex-1 bg-border/50" />
+                      <span className="font-mono text-[10px] tnum text-text-faint">
+                        {week.releases.length}
+                      </span>
+                    </div>
+                    <ul className="space-y-3">
+                      {week.releases.map((release) => {
+                        const isRunning = release.version === APP_VERSION;
+                        return (
+                          <li
+                            key={release.version}
+                            className={
+                              'rounded-2xl border p-5 transition-colors duration-(--duration-fast) ' +
+                              (isRunning
+                                ? 'border-brand/50 bg-brand/5 ring-1 ring-brand/30'
+                                : 'border-border/60 bg-surface/40')
+                            }
                           >
-                            {formatDay(release.dateISO)}
-                          </time>
-                        )}
-                        {isRunning && (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/50 bg-brand/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold text-brand">
-                            <span
-                              aria-hidden="true"
-                              className="h-1.5 w-1.5 rounded-full bg-brand"
-                            />
-                            Running
-                          </span>
-                        )}
-                      </div>
-                      {release.bodyHtml && (
-                        <div
-                          className={RELEASE_PROSE}
-                          dangerouslySetInnerHTML={{ __html: release.bodyHtml }}
-                        />
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+                            <div className="mb-2 flex items-baseline gap-3 flex-wrap">
+                              <h3 className="text-text font-mono text-sm font-semibold tracking-tight tnum">
+                                v{release.version}
+                              </h3>
+                              {release.dateISO && (
+                                <time
+                                  dateTime={release.dateISO}
+                                  title={release.dateISO}
+                                  className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tnum font-mono"
+                                >
+                                  {formatDay(release.dateISO)}
+                                </time>
+                              )}
+                              {isRunning && (
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/50 bg-brand/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold text-brand">
+                                  <span
+                                    aria-hidden="true"
+                                    className="h-1.5 w-1.5 rounded-full bg-brand"
+                                  />
+                                  Running
+                                </span>
+                              )}
+                            </div>
+                            {release.bodyHtml && (
+                              <div
+                                className={RELEASE_PROSE}
+                                dangerouslySetInnerHTML={{ __html: release.bodyHtml }}
+                              />
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </details>
           ))}
         </div>
