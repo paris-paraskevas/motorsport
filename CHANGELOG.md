@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.204.0 — 2026-07-12
+
+### Changed
+- **`/admin` redesigned as a dashboard (operator disliked the single-column stack).** `app/(app)/admin/page.tsx` now renders a sticky section-nav rail (Overview / Users / Traffic / Search / Behaviour / Tools — a horizontally-scrollable chip strip on mobile) beside a KPI overview row (Total accounts + Tracked clicks live; Traffic + Search show "—" until GA4/GSC creds are set) and a card per section. Container switched `PAGE_READ` → `PAGE_WIDE` (dashboard, not prose). Live Clerk user stats, the click-heatmap grids, the GA4/GSC connect-me hints and the Tools grid are unchanged in behaviour, re-laid-out. Still `isAdmin`-gated (Clerk `publicMetadata.role`), `notFound()` for non-admins, `noindex`, `force-dynamic`. New in-file helpers: `SECTIONS` (drives nav + anchors), `SectionNav`, `KpiCard`; `Section` gained an `id`/`scroll-mt`; the old `Stat` was removed. Verified in-browser signed-in (temp gate-bypass, reverted) at 1440 + 390 → 0 console errors, live 4-account data; caught + fixed a mobile horizontal-overflow (the nav grid-item needed `min-w-0` so its `overflow-x-auto` strip scrolls internally instead of widening the page from 390→636px). tsc + eslint + `next build` clean.
+
 ## 0.203.2 — 2026-07-11
 
 ### Security
