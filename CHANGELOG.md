@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.203.0 — 2026-07-11
+
+### Added
+- **`dev.paddock-tracker.com` serves the admin console.** The subdomain (now valid in Vercel) was serving the marketing landing; `proxy.ts` now detects a `dev.` host and **rewrites its root to `/admin`** (a rewrite, not a redirect, so the URL stays `dev.*`). The admin page still gates on Clerk `isAdmin` → dashboard for admins, `notFound()` (404) for everyone else. Other paths on the host resolve normally (admin tools live at real routes: `/blog`, `/threads`, `/settings/assistant`). Verified locally with a `Host:` header on a clean compile: `dev.*` `/` → 404 signed-out (gate holds) with the `/admin` route; the main host `/` still serves the landing (200). tsc + eslint clean.
+
 ## 0.202.0 — 2026-07-11
 
 ### Added
