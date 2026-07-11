@@ -36,6 +36,7 @@ function dbToPost(p: BlogPost): Post {
       publishedAt: p.publishedAt ?? p.publishAt ?? p.createdAt,
       heroImage: p.heroImage ?? undefined,
       seriesSlug: p.seriesSlug ?? undefined,
+      tags: p.tags,
     },
     source: p.body,
   };

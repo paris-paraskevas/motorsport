@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.198.0 — 2026-07-11
+
+**Blog posts now show up on their series' pages.** Each series page lists the Paddock blog posts tagged with that series — so a Monaco preview appears on the Formula 1 page, and so on. Posts also show their tags.
+
 ## 0.197.0 — 2026-07-11
 
 **Groundwork for tagged blog posts.** Posts can now be given tags in the composer, so the same post can be linked to more than one series. Tagged posts will start appearing on series pages in an upcoming update.

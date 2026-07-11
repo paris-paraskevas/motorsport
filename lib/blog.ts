@@ -169,6 +169,27 @@ export async function publishedPosts(): Promise<BlogPost[]> {
   }
 }
 
+/** Published posts for a series' page — matched by the primary series_slug OR a
+ *  `tags` entry equal to the series slug (so a post tagged with a series surfaces
+ *  there even when that series isn't its primary one). Newest first, capped.
+ *  Fail-soft: this feeds a decorative block and must never 500 the series page. */
+export async function publishedPostsForSeries(seriesSlug: string, limit = 4): Promise<BlogPost[]> {
+  if (!isBettingConfigured() || !seriesSlug) return [];
+  try {
+    const { data, error } = await betDb()
+      .from('post')
+      .select(COLS)
+      .eq('status', 'published')
+      .or(`series_slug.eq.${seriesSlug},tags.cs.{${seriesSlug}}`)
+      .order('published_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return withNames(data);
+  } catch {
+    return [];
+  }
+}
+
 /** One post by slug (any status), or null. The page gates non-published visibility. */
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   if (!isBettingConfigured()) return null;
