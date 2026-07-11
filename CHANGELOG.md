@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.203.1 — 2026-07-11
+
+### Changed
+- **`dev.paddock-tracker.com` is now auth-locked to admins.** Building on 0.203.0, `proxy.ts` gates the ENTIRE `dev.*` host, not just its root: anonymous visitors are redirected to `/sign-in` (from any path), signed-in non-admins get a 403, and the root still serves `/admin`. Admin = Clerk `publicMetadata.role === 'admin'`; to enforce the non-admin 403 in middleware the role must be in the session token — **operator adds the Clerk session-token claim** `{"metadata":"{{user.public_metadata}}"}` (Clerk dashboard → Sessions → Customize session token). Until then it falls back to signed-in-only (no operator lockout), and the `/admin` page's own `isAdmin` gate still 404s non-admins. `/sign-in` + `/sign-up` are exempt (no redirect loop). Verified via `Host:` header: dev `/` + `/blog` anon → 307 to `/sign-in`; dev `/sign-in` → 200; main host `/` → 200 landing.
+
 ## 0.203.0 — 2026-07-11
 
 ### Added
