@@ -133,11 +133,20 @@ export function mondayOf(dateISO: string): string {
 
 /** Compact label for the week beginning `mondayISO`, e.g. "6–12 Jul" (same
  *  month) or "30 Jun – 6 Jul" (spanning months). UTC. */
-export function weekLabel(mondayISO: string): string {
-  const mon = new Date(`${mondayISO}T00:00:00Z`);
+export function weekLabel(mondayISO: string, monthKey?: string): string {
+  let mon = new Date(`${mondayISO}T00:00:00Z`);
   if (Number.isNaN(mon.getTime())) return mondayISO;
-  const sun = new Date(mon);
+  let sun = new Date(mon);
   sun.setUTCDate(sun.getUTCDate() + 6);
+  // Clamp the range to the containing month so a week straddling a month boundary
+  // reads correctly under each header instead of the same label appearing twice.
+  if (monthKey && /^\d{4}-\d{2}$/.test(monthKey)) {
+    const [y, m] = monthKey.split('-').map(Number);
+    const monthStart = new Date(Date.UTC(y, m - 1, 1));
+    const monthEnd = new Date(Date.UTC(y, m, 0)); // day 0 of next month = this month's last day
+    if (mon < monthStart) mon = monthStart;
+    if (sun > monthEnd) sun = monthEnd;
+  }
   const fmt = (d: Date, withMonth: boolean) =>
     d.toLocaleDateString('en-GB', {
       day: 'numeric',
@@ -151,13 +160,13 @@ export function weekLabel(mondayISO: string): string {
 
 /** Split a month's (already newest-first) releases into calendar weeks, newest
  *  week first; any undated entries collect into a trailing "Earlier" week. */
-export function groupByWeek(releases: ReleaseEntry[]): WeekGroup[] {
+export function groupByWeek(releases: ReleaseEntry[], monthKey?: string): WeekGroup[] {
   const weeks = new Map<string, WeekGroup>();
   for (const r of releases) {
     const key = r.dateISO ? mondayOf(r.dateISO) : 'undated';
     let wg = weeks.get(key);
     if (!wg) {
-      wg = { key, label: key === 'undated' ? 'Earlier' : weekLabel(key), releases: [] };
+      wg = { key, label: key === 'undated' ? 'Earlier' : weekLabel(key, monthKey), releases: [] };
       weeks.set(key, wg);
     }
     wg.releases.push(r);
@@ -217,7 +226,7 @@ export async function loadReleaseGroups(filePath: string): Promise<MonthGroup[]>
       if (da !== db) return db.localeCompare(da);
       return 0; // Array.prototype.sort is stable → keeps newest-first file order.
     });
-    group.weeks = groupByWeek(group.releases);
+    group.weeks = groupByWeek(group.releases, group.key === UNDATED_KEY ? undefined : group.key);
   }
 
   // Sort groups newest month first; the undated key sorts last naturally.

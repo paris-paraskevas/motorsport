@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.206.1 — 2026-07-12
+
+### Fixed
+- **Audit fixes across the session's three features (adversarial review by two subagents).**
+  - `/contribute` rate limiter now **fails closed** (`allowRequest(..., true)` on both buckets, `app/api/contribute/route.ts`) — the endpoint costs storage (2 MB base64 rows) + 2 emails per call, so a KV outage must deny rather than silently open the caps (mirrors the AI endpoint's `failClosed`).
+  - **`file_type` sanitised** to `[\w.+/-]` before storage (`lib/feeder.ts`) — a crafted MIME with a raw CR/LF used to flow into the admin download's `Content-Type` header and 500 that route (confirmed).
+  - **Generic client error on a DB failure** (`app/api/contribute/route.ts`) — the raw Supabase `error.message` is now logged server-side, not returned to the anonymous caller (no schema-internal leak).
+  - **The changelog parser test now actually runs** — `vitest.config.ts` `include` didn't cover `app/**`, so `app/(app)/changelog/releases.test.ts` was silently skipped (the suite reported green without ever executing it). Added `app/**/*.test.{ts,tsx}`; suite 841 → **852**.
+  - **Cross-month week labels are clamped to their month** (`releases.ts` `weekLabel`/`groupByWeek` gained a `monthKey`) — an ISO week straddling a boundary (Mon 29 Jun–5 Jul) no longer shows "29 Jun – 5 Jul" under BOTH July and June; it now reads "1–5 Jul" under July and "29–30 Jun" under June. The redundant "Earlier" sub-header under the "Earlier" month is suppressed (`page.tsx`).
+  - Accepted + documented (unchanged): the submitter receipt email goes to an unverified address — bounded by the now-fail-closed rate limit + fixed content, consistent with the existing `/api/contact` behaviour.
+  All gates green: tsc + eslint + `next build`; full suite **852 passed**.
+
 ## 0.206.0 — 2026-07-12
 
 ### Changed

@@ -78,3 +78,16 @@ describe('splitSections', () => {
     expect(secs[1].dateISO).toBeNull();
   });
 });
+
+describe('month clamping (cross-month weeks)', () => {
+  it('weekLabel clamps to the containing month when monthKey is given', () => {
+    expect(weekLabel('2026-06-29', '2026-07')).toBe('1–5 Jul'); // July portion only
+    expect(weekLabel('2026-06-29', '2026-06')).toBe('29–30 Jun'); // June portion only
+    expect(weekLabel('2026-07-06', '2026-07')).toBe('6–12 Jul'); // fully inside → unchanged
+    expect(weekLabel('2026-06-29')).toBe('29 Jun – 5 Jul'); // no monthKey → full ISO week
+  });
+  it('groupByWeek applies the clamp to its week labels', () => {
+    const jul = groupByWeek([entry('0.1.0', '2026-07-01')], '2026-07');
+    expect(jul[0].label).toBe('1–5 Jul');
+  });
+});
