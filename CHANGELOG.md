@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.195.2 — 2026-07-11
+
+### Fixed
+- **Race Engineer launcher hidden behind the circuit map.** On `/information/map`, Leaflet's controls sit at `z-index: 1000` and `.leaflet-container` is left at `position: relative; z-index: auto` — which is *not* a stacking context — so those z-1000 values leaked into the root stacking context and painted over the fixed Race Engineer launcher (`z-40`, `components/assistant/AssistantWidget.tsx`) wherever they overlapped (bottom-right, over the attribution control). Added `isolate` (CSS `isolation: isolate`) to the `MapContainer` (`components/information/TracksMapInner.tsx`) so Leaflet's internal z-index stack is bounded inside the map's own stacking context; the launcher — and the sticky header, which had the same latent bug — now win. Root-caused + verified in-browser with a stacking A/B: at the launcher↔attribution overlap, `document.elementFromPoint` returns the launcher with `isolate` and the attribution `<a>` when `isolation` is forced back to `auto`. No z-index change on the widget, so it still sits below modals / the search overlay (`z-50`).
+
 ## 0.195.1 — 2026-07-11
 
 ### Fixed

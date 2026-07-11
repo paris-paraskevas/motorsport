@@ -185,7 +185,11 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
         })}
       </div>
 
-      {/* Map */}
+      {/* Map. `isolate` gives the container its own stacking context so Leaflet's
+          internal z-index stack (controls sit at z-index 1000) can't leak out and
+          paint over fixed app UI — the Race Engineer launcher (z-40) and the
+          sticky header. Leaflet leaves .leaflet-container at z-index:auto, which
+          is not a stacking context, so without this those z-1000 values escape. */}
       <MapContainer
         ref={mapRef}
         center={[20, 0]}
@@ -193,7 +197,7 @@ export default function TracksMapInner({ tracks }: { tracks: MapTrack[] }) {
         minZoom={2}
         worldCopyJump
         scrollWheelZoom
-        className="h-[70vh] min-h-[520px] w-full overflow-hidden rounded-lg border border-border"
+        className="isolate h-[70vh] min-h-[520px] w-full overflow-hidden rounded-lg border border-border"
       >
         {/* Base-layer switcher (top-right): Standard OSM + free satellite/terrain,
             all key-less. Esri World Imagery uses {z}/{y}/{x} order (not OSM's
