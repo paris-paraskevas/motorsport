@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.195.1 — 2026-07-11
+
+**Driver nationality and age now show everywhere.** A caching quirk was hiding the new flag and age on some driver pages just after launch — fixed, so they appear for every driver now.
+
 ## 0.195.0 — 2026-07-11
 
 **Easier to find Blog, Threads and News on your phone.** News now appears in the footer, and Blog and Threads are a tap away from the home "Jump to" row — so all three are reachable without hunting.

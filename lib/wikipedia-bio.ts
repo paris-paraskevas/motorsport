@@ -181,7 +181,10 @@ export async function fetchWikipediaBio(name: string): Promise<WikipediaBio | nu
   const trimmed = name.trim();
   if (!trimmed) return null;
 
-  const key = `paddock:wiki-bio:${slugify(trimmed)}`;
+  // `v2` namespace: the cached WikipediaBio gained bornISO + nationality (W4 P1),
+  // so retire pre-P1 cache entries — otherwise a bio cached before the deploy
+  // returns the old shape (no identity) until its 24h TTL expires.
+  const key = `paddock:wiki-bio:v2:${slugify(trimmed)}`;
   const cached = await readResultsCache<CachedBio>(key);
   if (cached) return cached.bio;
 
