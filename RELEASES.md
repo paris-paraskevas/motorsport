@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.196.0 — 2026-07-11
+
+**The Race Engineer now remembers your past chats.** The help assistant keeps a history of your earlier conversations — start a new chat any time, switch back to a previous one, or delete the ones you don't need, all from the chat window.
+
 ## 0.195.2 — 2026-07-11
 
 **Race Engineer button no longer hides behind the circuit map.** On the circuit map page, the help button in the bottom-right could be covered by the map — it now always stays on top.

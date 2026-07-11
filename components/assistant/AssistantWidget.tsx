@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
-import { UserCog, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { UserCog, X, Send, ThumbsUp, ThumbsDown, Plus, History, Trash2 } from 'lucide-react';
 import type { ChatMessage } from '@/lib/assistant/prompt';
 import { parseInline } from '@/lib/assistant/render';
 
@@ -13,8 +13,11 @@ import { parseInline } from '@/lib/assistant/render';
 // just renders the conversation and its states. Multi-turn: it POSTs the running
 // history each send. Account-gated: signed-out users get a sign-in prompt.
 const MAX_LEN = 1000;
-const CHAT_KEY = 'paddock:assistant:chat';
+const CHAT_KEY = 'paddock:assistant:chat'; // legacy single-conversation store (migrated on load)
+const CONVS_KEY = 'paddock:assistant:conversations'; // Conversation[]
+const ACTIVE_KEY = 'paddock:assistant:active'; // id of the open conversation
 const RATED_KEY = 'paddock:assistant:rated';
+const MAX_CONVS = 30; // cap stored history
 const SUGGESTIONS = [
   'How do I follow a series?',
   'How does the prediction game work?',
@@ -22,10 +25,35 @@ const SUGGESTIONS = [
   'How do I customise my home?',
 ];
 
+// A stored help conversation. Kept client-side (localStorage) — the widget is a
+// stateless help chat, so per-device history is enough and it keeps working for
+// signed-out users. Its display title is derived (first user line), not stored.
+interface Conversation {
+  id: string;
+  messages: ChatMessage[];
+  updatedAt: number;
+}
+
+function convTitle(c: Conversation): string {
+  const first = c.messages.find((m) => m.role === 'user')?.content?.trim();
+  if (!first) return 'New chat';
+  return first.length > 42 ? `${first.slice(0, 42)}…` : first;
+}
+
+function newId(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return `c-${Math.random().toString(36).slice(2)}-${performance.now().toString(36)}`;
+  }
+}
+
 export function AssistantWidget() {
   const { isSignedIn } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [convs, setConvs] = useState<Conversation[]>([]);
+  const [activeId, setActiveId] = useState<string>('');
+  const [showHistory, setShowHistory] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +63,57 @@ export function AssistantWidget() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
+  // The open conversation's messages are the chat's source of truth; setMessages
+  // writes back into that conversation so send()/rating below stay unchanged.
+  const messages = useMemo(
+    () => convs.find((c) => c.id === activeId)?.messages ?? [],
+    [convs, activeId],
+  );
+  const setMessages = (updater: ChatMessage[] | ((m: ChatMessage[]) => ChatMessage[])) =>
+    setConvs((prev) =>
+      prev.map((c) =>
+        c.id === activeId
+          ? {
+              ...c,
+              messages: typeof updater === 'function' ? updater(c.messages) : updater,
+              updatedAt: Date.now(),
+            }
+          : c,
+      ),
+    );
+
+  const newChat = () => {
+    const current = convs.find((c) => c.id === activeId);
+    if (current && current.messages.length === 0) {
+      setShowHistory(false); // already on a blank chat — don't pile up empties
+      return;
+    }
+    const id = newId();
+    setConvs((prev) => [{ id, messages: [], updatedAt: Date.now() }, ...prev]);
+    setActiveId(id);
+    setInput('');
+    setError(null);
+    setShowHistory(false);
+  };
+
+  const openConv = (id: string) => {
+    setActiveId(id);
+    setError(null);
+    setShowHistory(false);
+  };
+
+  const deleteConv = (id: string) => {
+    const next = convs.filter((c) => c.id !== id);
+    if (next.length === 0) {
+      const nid = newId();
+      setConvs([{ id: nid, messages: [], updatedAt: Date.now() }]);
+      setActiveId(nid);
+      return;
+    }
+    setConvs(next);
+    if (id === activeId) setActiveId(next[0].id);
+  };
+
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
@@ -42,13 +121,25 @@ export function AssistantWidget() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, busy]);
 
-  // Persist the conversation across reloads/navigation (localStorage; capped).
+  // Load conversations (localStorage), migrating the pre-v2 single-chat store.
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(CHAT_KEY);
-      const stored = raw ? JSON.parse(raw) : null;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (Array.isArray(stored)) setMessages(stored as ChatMessage[]);
+      const rawConvs = localStorage.getItem(CONVS_KEY);
+      let list: Conversation[] = rawConvs ? JSON.parse(rawConvs) : [];
+      if (!Array.isArray(list)) list = [];
+      list = list.filter((c) => c && typeof c.id === 'string' && Array.isArray(c.messages));
+      if (list.length === 0) {
+        const legacy = localStorage.getItem(CHAT_KEY);
+        const msgs = legacy ? JSON.parse(legacy) : null;
+        if (Array.isArray(msgs) && msgs.length) {
+          list = [{ id: newId(), messages: msgs as ChatMessage[], updatedAt: Date.now() }];
+        }
+      }
+      if (list.length === 0) list = [{ id: newId(), messages: [], updatedAt: Date.now() }];
+      const storedActive = localStorage.getItem(ACTIVE_KEY) || '';
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydrate from localStorage (client-only; can't run during render)
+      setConvs(list);
+      setActiveId(list.some((c) => c.id === storedActive) ? storedActive : list[0].id);
       const rawRated = localStorage.getItem(RATED_KEY);
       const storedRated = rawRated ? JSON.parse(rawRated) : null;
       if (storedRated && typeof storedRated === 'object' && !Array.isArray(storedRated)) {
@@ -58,13 +149,19 @@ export function AssistantWidget() {
       /* ignore corrupt/blocked storage */
     }
   }, []);
+  // Persist conversations + which one is open (each trimmed to the last 40 turns).
   useEffect(() => {
+    if (convs.length === 0) return;
     try {
-      localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-40)));
+      localStorage.setItem(
+        CONVS_KEY,
+        JSON.stringify(convs.slice(0, MAX_CONVS).map((c) => ({ ...c, messages: c.messages.slice(-40) }))),
+      );
+      localStorage.setItem(ACTIVE_KEY, activeId);
     } catch {
       /* ignore */
     }
-  }, [messages]);
+  }, [convs, activeId]);
   useEffect(() => {
     try {
       localStorage.setItem(RATED_KEY, JSON.stringify(rated));
@@ -154,6 +251,29 @@ export function AssistantWidget() {
           <div className="font-display text-sm font-bold uppercase tracking-wide text-text">Race Engineer</div>
           <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Paddock help</div>
         </div>
+        {isSignedIn && (
+          <>
+            <button
+              type="button"
+              onClick={newChat}
+              aria-label="New conversation"
+              title="New conversation"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-text"
+            >
+              <Plus size={16} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowHistory((v) => !v)}
+              aria-label={showHistory ? 'Back to conversation' : 'Past conversations'}
+              aria-pressed={showHistory}
+              title="Past conversations"
+              className={`inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-text ${showHistory ? 'bg-surface text-text' : 'text-text-muted'}`}
+            >
+              <History size={16} aria-hidden />
+            </button>
+          </>
+        )}
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -174,6 +294,35 @@ export function AssistantWidget() {
             >
               Sign in — it&apos;s free
             </Link>
+          </div>
+        ) : showHistory ? (
+          <div className="space-y-1">
+            {convs.length === 1 && convs[0].messages.length === 0 ? (
+              <p className="px-1 py-2 text-sm text-text-muted">No past conversations yet.</p>
+            ) : (
+              [...convs]
+                .sort((a, b) => b.updatedAt - a.updatedAt)
+                .map((c) => (
+                  <div
+                    key={c.id}
+                    className={`group flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors ${
+                      c.id === activeId ? 'bg-surface text-text' : 'text-text-muted hover:bg-surface'
+                    }`}
+                  >
+                    <button type="button" onClick={() => openConv(c.id)} className="min-w-0 flex-1 text-left">
+                      <span className="block truncate">{convTitle(c)}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteConv(c.id)}
+                      aria-label={`Delete conversation: ${convTitle(c)}`}
+                      className="shrink-0 text-text-faint opacity-0 transition-opacity hover:text-red-400 focus:opacity-100 focus:outline-none group-hover:opacity-100"
+                    >
+                      <Trash2 size={14} aria-hidden />
+                    </button>
+                  </div>
+                ))
+            )}
           </div>
         ) : (
           <>
@@ -249,7 +398,7 @@ export function AssistantWidget() {
         )}
       </div>
 
-      {isSignedIn && (
+      {isSignedIn && !showHistory && (
         <div className="border-t border-border p-3">
           <div className="flex items-end gap-2">
             <textarea
