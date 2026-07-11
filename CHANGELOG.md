@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.195.1 — 2026-07-11
+
+### Fixed
+- **Driver nationality/age missing on prod for pre-deploy-cached bios (W4 P1 follow-up).** The Wikipedia bio is KV-cached 24h (hits included); 0.193.0 added `bornISO`/`nationality` to the cached object but kept the same cache key, so any driver whose bio was cached before the deploy returned the old shape → no flag/age (audit found Verstappen showing his bio but no identity, while a freshly-cached Márquez had it). Bumped the cache key to a `v2:` namespace (`lib/wikipedia-bio.ts`) so every bio re-fetches through the identity parser immediately instead of waiting out the TTL. Found by auditing the day's work on prod (evidence: prod `/drivers/max-verstappen` had the Wikipedia "About" section but no `yrs`/flag).
+
 ## 0.195.0 — 2026-07-11
 
 ### Fixed
