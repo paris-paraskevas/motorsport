@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.203.1 — 2026-07-11
+
+**Behind the scenes.** The internal `dev.` admin subdomain now requires sign-in (admin-only once configured).
+
 ## 0.203.0 — 2026-07-11
 
 **Behind the scenes.** The admin dashboard now lives at the internal `dev.` subdomain.

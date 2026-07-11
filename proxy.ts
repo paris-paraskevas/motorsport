@@ -59,16 +59,32 @@ export default clerkMiddleware(async (auth, req) => {
       return NextResponse.redirect(dest, 308);
     }
   }
-  // dev.paddock-tracker.com is the admin/dev surface: its root serves the admin
-  // dashboard (which itself gates on Clerk `isAdmin` → 404 for non-admins)
-  // instead of the marketing landing. Other paths on the host resolve normally —
-  // the admin tools live at real routes (/admin, /blog, /threads,
-  // /settings/assistant). A rewrite (not redirect) keeps the dev.* URL.
+  // dev.paddock-tracker.com is the admin/dev surface — auth-locked. Anonymous
+  // visitors are sent to sign in; signed-in non-admins get 403; the root serves
+  // the admin dashboard. Admin = Clerk `publicMetadata.role === 'admin'`, which
+  // must be surfaced in the SESSION TOKEN to be readable in middleware — add it
+  // in Clerk → Sessions → Customize session token: {"metadata":"{{user.public_metadata}}"}.
+  // Until that claim exists the role reads `undefined` and we fall back to
+  // signed-in-only (so the operator can't lock themselves out); the /admin page's
+  // own isAdmin gate still 404s non-admins. Auth pages are exempt (no redirect loop).
   const host = req.headers.get('host') ?? '';
-  if (host.startsWith('dev.') && url.pathname === '/') {
-    const dest = url.clone();
-    dest.pathname = '/admin';
-    return NextResponse.rewrite(dest);
+  if (host.startsWith('dev.') && !url.pathname.startsWith('/sign-in') && !url.pathname.startsWith('/sign-up')) {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) {
+      const signIn = url.clone();
+      signIn.pathname = '/sign-in';
+      signIn.search = `redirect_url=${encodeURIComponent(url.pathname)}`;
+      return NextResponse.redirect(signIn);
+    }
+    const role = (sessionClaims as { metadata?: { role?: string } } | null)?.metadata?.role;
+    if (role !== undefined && role !== 'admin') {
+      return new NextResponse('Admins only.', { status: 403 });
+    }
+    if (url.pathname === '/') {
+      const dest = url.clone();
+      dest.pathname = '/admin';
+      return NextResponse.rewrite(dest);
+    }
   }
 
   if (isProtected(req)) {
