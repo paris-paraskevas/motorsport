@@ -6,17 +6,20 @@ import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  Inbox,
   LayoutDashboard,
   MessageSquare,
   MousePointerClick,
   Newspaper,
   Search,
   Sparkles,
+  Upload,
   Users,
 } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { PAGE_WIDE } from '@/lib/site';
 import { topHeatmaps, GRID, type PathHeat } from '@/lib/heatmap';
+import { listSeriesSubmissions, type SeriesSubmission } from '@/lib/feeder';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -56,6 +59,7 @@ const SECTIONS = [
   { id: 'traffic', label: 'Traffic', icon: BarChart3 },
   { id: 'search', label: 'Search', icon: Search },
   { id: 'behaviour', label: 'Behaviour', icon: MousePointerClick },
+  { id: 'submissions', label: 'Submissions', icon: Inbox },
   { id: 'tools', label: 'Tools', icon: Sparkles },
 ] as const;
 
@@ -66,7 +70,11 @@ const SECTIONS = [
 // are set. 404s for non-admins (Clerk publicMetadata.role === 'admin'), noindex.
 export default async function AdminPage() {
   if (!isAdmin(await currentUser())) notFound();
-  const [users, heat] = await Promise.all([loadUserStats(), topHeatmaps(6)]);
+  const [users, heat, submissions] = await Promise.all([
+    loadUserStats(),
+    topHeatmaps(6),
+    listSeriesSubmissions(20),
+  ]);
   const ga4Connected = Boolean(process.env.GA4_PROPERTY_ID);
   const gscConnected = Boolean(process.env.GSC_SITE_URL);
   const totalClicks = heat.reduce((sum, h) => sum + h.total, 0);
@@ -189,6 +197,33 @@ export default async function AdminPage() {
             )}
           </Section>
 
+          {/* Submissions — feeder-series data intake (/contribute) */}
+          <Section
+            id="submissions"
+            icon={Inbox}
+            title={submissions.length ? `Feeder submissions · ${submissions.length}` : 'Feeder submissions'}
+          >
+            {submissions.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border bg-surface/40 px-4 py-6 text-center">
+                <p className="text-sm text-text-muted">
+                  Series that send their data via{' '}
+                  <Link href="/contribute" className="text-brand hover:underline">
+                    /contribute
+                  </Link>{' '}
+                  land here for review. None yet.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-xl border border-border bg-surface-elevated">
+                <ul className="divide-y divide-border">
+                  {submissions.map(s => (
+                    <SubmissionRow key={s.id} s={s} />
+                  ))}
+                </ul>
+              </div>
+            )}
+          </Section>
+
           {/* Tools — existing admin surfaces, gathered in one place */}
           <Section id="tools" icon={Sparkles} title="Tools">
             <div className="grid gap-2 sm:grid-cols-2">
@@ -196,6 +231,7 @@ export default async function AdminPage() {
               <ToolLink href="/blog" icon={Newspaper} label="Blog queue" desc="Draft → approve → schedule" />
               <ToolLink href="/threads" icon={MessageSquare} label="Threads moderation" desc="Approve community threads" />
               <ToolLink href="/feedback" icon={MessageSquare} label="Feedback board" desc="What users report" />
+              <ToolLink href="/contribute" icon={Upload} label="Feeder intake" desc="Public series-data submit form" />
             </div>
           </Section>
 
@@ -291,6 +327,52 @@ function NotConnected({ what, env }: { what: string; env: string }) {
 
 function Unavailable({ note }: { note: string }) {
   return <p className="font-mono text-sm text-text-faint">{note}</p>;
+}
+
+// A feeder-series submission row in the admin review list. File downloads go
+// through the admin-gated /api/admin/submissions/[id] route (the base64 blob is
+// never inlined into this page); links open the submitter's data source.
+function SubmissionRow({ s }: { s: SeriesSubmission }) {
+  return (
+    <li className="px-4 py-3 text-sm">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="truncate font-semibold text-text">{s.seriesName}</span>
+        <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+          {new Date(s.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+        </span>
+      </div>
+      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted">
+        <a href={`mailto:${s.contactEmail}`} className="hover:text-text">
+          {s.contactEmail}
+        </a>
+        {s.season ? <span className="text-text-faint">{s.season}</span> : null}
+        <SubmissionStatusBadge status={s.status} />
+        {s.fileName ? (
+          <a href={`/api/admin/submissions/${s.id}`} className="text-brand hover:underline">
+            ↓ {s.fileName}
+          </a>
+        ) : null}
+        {s.dataUrl ? (
+          <a href={s.dataUrl} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+            link ↗
+          </a>
+        ) : null}
+      </div>
+      {s.note ? <p className="mt-1 line-clamp-2 text-xs text-text-faint">{s.note}</p> : null}
+    </li>
+  );
+}
+
+function SubmissionStatusBadge({ status }: { status: SeriesSubmission['status'] }) {
+  const tone: Record<SeriesSubmission['status'], string> = {
+    new: 'text-brand',
+    reviewing: 'text-amber-400',
+    ingested: 'text-emerald-400',
+    rejected: 'text-text-faint',
+  };
+  return (
+    <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${tone[status]}`}>{status}</span>
+  );
 }
 
 // A page's click heatmap: a GRIDxGRID viewport grid, each cell brand-tinted by

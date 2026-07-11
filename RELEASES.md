@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.205.0 — 2026-07-12
+
+**Behind the scenes.** Groundwork for letting feeder series submit their data.
+
 ## 0.204.0 — 2026-07-12
 
 **Behind the scenes.** Internal tooling improvements.
