@@ -112,3 +112,39 @@ export async function renderPostBody(body: string): Promise<RenderedBody> {
   }
   return { segments, toc };
 }
+
+// Escape author-controlled strings before they land in the preview HTML the
+// editor feeds to dangerouslySetInnerHTML.
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * Flatten a body to a single HTML string for the composer's live preview.
+ * Markdown runs go through the same sanitised pipeline as the published post;
+ * each embed becomes a labelled PLACEHOLDER, never the live widget — the preview
+ * fires on every keystroke, so it must not run an embed's data fetch, and a
+ * placeholder still shows the author where the embed lands and with what args.
+ * A body with no shortcodes is a single markdown run → byte-identical to
+ * `renderMarkdown` (so non-embed posts preview exactly as before).
+ */
+export async function renderPreviewHtml(body: string): Promise<string> {
+  const parts: string[] = [];
+  for (const seg of parseBodySegments(body)) {
+    if (seg.kind === 'markdown') {
+      parts.push(await renderMarkdown(seg.text));
+    } else {
+      const args = Object.entries(seg.spec.args)
+        .map(([k, v]) => `${escapeHtml(k)}=${escapeHtml(v)}`)
+        .join(' ');
+      parts.push(
+        `<div class="not-prose my-4 rounded-lg border border-dashed border-border bg-surface/40 px-4 py-3 text-sm text-text-faint">▮ ${escapeHtml(seg.spec.type)} embed${args ? ` · ${args}` : ''}</div>`,
+      );
+    }
+  }
+  return parts.join('\n');
+}
