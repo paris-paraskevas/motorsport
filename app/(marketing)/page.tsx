@@ -11,6 +11,8 @@ import { fetchWeather, forecastFor, weatherLabel } from '@/lib/weather';
 import { formatRelative } from '@/lib/date';
 import { JsonLd } from '@/components/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/json-ld';
+import { withSocialMeta } from '@/lib/seo';
+import { SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { StandaloneRedirect } from '@/components/landing/StandaloneRedirect';
 import { TickerBar, type TickerSegment } from '@/components/landing/TickerBar';
 import { LandingNav } from '@/components/landing/LandingNav';
@@ -29,6 +31,14 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
+  // The layout default gives the descriptive <title>, but its OG/Twitter title
+  // is the bare site name; set the descriptive social title + description here
+  // for the home page (Next replaces og/twitter blocks per route, not merges).
+  ...withSocialMeta({
+    title: `${SITE_TITLE} — Live F1, MotoGP, WEC, IndyCar & NASCAR schedule`,
+    description: SITE_DESCRIPTION,
+    path: '/',
+  }),
 };
 
 const GMT_FMT = new Intl.DateTimeFormat('en-GB', {
