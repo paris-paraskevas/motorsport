@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.215.0 — 2026-07-12
+
+### Added
+- **Feedback board: "Copy all open" + "Close all done" (operator request).** `components/feedback/FeedbackBoard.tsx` — **Copy all open** copies every open item as `Type / Title / Description` (blocks joined by `---`) to the clipboard in one action, so the whole open queue hands off in a single paste; shows "Copied ✓". **Close all done** (admin-only, shown only when done>0) bulk-flips every `done` item to `closed` via the existing status API then reloads once — the pragmatic form of "automatically close these once we've done them" (true commit-linked auto-close is a larger design, flagged for the operator). tsc + eslint clean; the board is staff-gated and fetches its own data, so the happy-path prod-verifies (operator is admin) per the documented gated-UI pattern; the bulk-close reuses the proven per-item `move()` call.
+
 ## 0.214.1 — 2026-07-12
 
 ### Changed
