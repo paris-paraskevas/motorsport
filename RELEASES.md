@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.207.1 — 2026-07-12
+
+**Blog reads better on phones.** Tidied the blog post layout on small screens — the in-page contents list no longer clutters the bottom, and wide tables, code and images stay within the screen.
+
 ## 0.207.0 — 2026-07-12
 
 **Behind the scenes.** Internal tooling improvements.
