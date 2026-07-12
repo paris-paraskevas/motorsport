@@ -47,7 +47,7 @@ The top ten finishers score **25-18-15-12-10-8-6-4-2-1** points; there is **no b
 2026 brings the biggest rules reset in over a decade:
 
 - **Power units** now run on an approximate **50/50 split** between the combustion engine and electric power (up from around 20%), with the MGU-H dropped, and on **100% sustainable fuel**.
-- **Active aerodynamics** replace DRS: every car can flatten its wings on the straights for less drag, and the passing aid is now **Overtake Mode** — a burst of extra electric energy for a car running within a second of the one ahead.
+- **Active aerodynamics** replace DRS: every car can flatten its wings on the straights for less drag, and the passing aid is now **Overtake**, a burst of extra electric energy for a car running within a second of the one ahead.
 - The cars are **shorter, narrower and lighter**, and the grid welcomes **Cadillac** as an all-new eleventh team alongside **Audi**, which takes over the former Sauber entry.
 
 New to the sport? Start with [Formula 1 rules explained](/information/formula-1/f1-rules-explained) and [the history of Formula 1](/information/formula-1/the-history-of-f1).

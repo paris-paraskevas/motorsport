@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.216.0 — 2026-07-12
+
+**Formula 1's 2026 rules, explained.** Two new Learn guides break down the biggest F1 rule change in over a decade: what's new for 2026, and how the new hybrid power unit works. We also refreshed the active-aero and overtaking terms to the FIA's final 2026 names.
+
 ## 0.215.0 — 2026-07-12
 
 **Behind the scenes.** Staff feedback-board tools — copy the whole open queue in one click, and close everything done at once.
