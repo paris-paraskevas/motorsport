@@ -19,7 +19,9 @@ export const POST_ARTICLE_CLASS =
    prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
    prose-p:leading-relaxed
    prose-strong:text-text
-   prose-a:text-text prose-a:underline-offset-4`;
+   prose-a:text-text prose-a:underline-offset-4
+   prose-pre:overflow-x-auto prose-img:rounded-lg prose-img:mx-auto prose-img:max-w-full
+   prose-table:block prose-table:overflow-x-auto prose-table:max-w-full`;
 
 export function PostHeader({
   dateLabel,

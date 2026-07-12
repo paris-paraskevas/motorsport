@@ -343,7 +343,7 @@ export default async function PostPage({
 
           <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">
             {toc.length >= 2 && (
-              <nav aria-label="On this page">
+              <nav aria-label="On this page" className="hidden lg:block">
                 <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
                   On this page
                 </h2>

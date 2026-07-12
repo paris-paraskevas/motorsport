@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.207.1 — 2026-07-12
+
+### Fixed
+- **Blog post mobile layout** (operator: "blogs — fix layout on mobile screens"). On the sampled posts nothing was overflowing outright, so this is the set of clear mobile wins + defensive fixes: the "On this page" ToC (`app/(app)/blog/[slug]/page.tsx`) is now `hidden lg:block` — on mobile it was rendering as dead weight *below* the whole article (useless after you've scrolled past it); it stays as the sticky sidebar on desktop. The article body (`POST_ARTICLE_CLASS` in `components/blog/PostHeader.tsx`, single-sourced across the public path + the DraftEditor view) is now overflow-safe: `prose-pre:overflow-x-auto`, `prose-img:rounded-lg/mx-auto/max-w-full`, and **`prose-table:block prose-table:overflow-x-auto`** so a wide standings/data table scrolls horizontally instead of blowing out the viewport (also serves the "enrich blog posts with data visuals" idea — authored tables/circuit SVGs/screenshots now render tidily on phones). Verified at 390px (ToC gone from the bottom, 0 console errors, no horizontal scroll). NOTE: embedding *live* charts/components inside DB posts still needs a markdown shortcode→component pipeline (DB post bodies render as plain markdown, not MDX) — deferred as a design decision.
+
 ## 0.207.0 — 2026-07-12
 
 ### Changed
