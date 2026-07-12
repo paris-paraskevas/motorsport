@@ -1143,6 +1143,20 @@ Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
 
 ---
 
+### Sun 2026-07-12 — session 9 (unsupervised overnight): B1 quick-wins + B2 tour + B3.12 reschedule + explainers + audit → 0.210.1
+
+Operator handed off IDEAS batches B1 + B2 + B3 to run solo. 6 PRs #512–#517, all merged + prod-audited (0.210.1 live).
+- → done: **#512 feedback status-filter** (closed hidden by default, done/closed dimmed/struck) · **#513 blog mobile** (ToC hidden on phones + overflow-safe tables/images) · **#514 endurance explainers** (LMH/LMDh + GT driver-ratings + cross-links; "driver ratings" = the GT Pro/Gold/Silver/Bronze categorisation — no numeric rating exists) · **#515 tour mobile-first** (opposite-half sheet, rounded) · **#516 blog reschedule** (reschedulePost + 'reschedule' action + UI) · **#517 audit fix** (BMW LMH→LMDh + tidy-ups).
+- → deferred (documented, NOT done): B3.7 portraits ×14 + B3.8 team logos (licensing — supervised pass), B3.9 champion-Q&A depth (schema + big curation), B3.11 cadence automation (crons-gated), B3.13 bios + B3.10 live-chart embeds (shortcode pipeline). B1.1 admin grant = operator Clerk-dashboard action.
+- → audit: 2 adversarial subagents; reschedule/feedback/tour reviewed clean; one CONFIRMED factual error (BMW) fixed in #517.
+- → gates: every PR tsc + eslint + browser/curl; `next build` at 0.210.0 (cumulative) + prod-verified; heavily-gated UIs (feedback, blog moderation) verified via a temp mock + gate-bypass (reverted).
+
+Won't touch (deferred): the B3 licensing/large items above; anything needing an operator decision.
+
+Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**

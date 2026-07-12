@@ -6,26 +6,17 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ---
 
-## B1 — Feedback-board quick wins (fresh, small)
+## B1 — Feedback-board quick wins
 
-- **Admin Console access** — set the operator's "Paris Dev" Clerk account `publicMetadata.role:"admin"` so `/admin` opens for it (Clerk dashboard → Users → Metadata, or via the Clerk API).
-- **/feedback screen** — actually mark closed items closed + add a status filter/sort so they can be hidden.
-- **Blog mobile layout** — fix the blog post layout on phone screens.
-- **Driver ratings** — an explainer page for what the ratings mean + cross-link it wherever ratings appear.
-- **WEC rules** — where the guide says "LMH / LMDh", link to a page explaining those rulesets.
-
-## B2 — Onboarding tour rebuild
-
-- **Rebuild the startup tour** (`components/Tour.tsx`) — old, outdated, "dreadful on mobile"; mobile-first rewrite (operator Bug).
+- **Admin Console access** (operator action, no code) — grant the PROD Clerk "Paris Dev" account `publicMetadata.role:"admin"` (Clerk dashboard → Users → Paris Dev → Metadata → Public) so `/admin` + the `dev.` subdomain open for it. _(The other B1 items — feedback filter, blog mobile, driver-ratings + WEC-rules explainers — and the B2 tour rebuild all SHIPPED 2026-07-12, #512–#515.)_
 
 ## B3 — AdSense-readiness content (business priority)
 
 - **Driver portraits ×14 series** (W4 P2) — Wikimedia CC + per-image attribution; also swap the F1 OpenF1 headshots to a properly-licensed source (copyright follow-up).
 - **Team logos ×15** — find a non-infringing source (no free Commons source yet — needs a licence decision; NO Getty).
 - **Champion-Q&A depth** — runner-up / margin / wins on the champions Q&A; needs a `champions.json` schema extension (LARGE, own project).
-- **Enrich blog posts with data visuals** — standings links, CC circuit SVGs, embedded charts (SeasonTrendChart / stint).
-- **Blog cadence automation** — scheduled authoring trigger (GH Actions headless `claude -p` emits the draft → deterministic prod insert, never holds the service key).
-- **Re-schedule a scheduled post** — `reschedulePost(id, publishAt)` while `status='approved'` + a datetime control on the Scheduled rows.
+- **Enrich blog posts with data visuals** — responsive tables/images SHIPPED (#513); embedding *live* charts in DB posts still needs a markdown-shortcode→component pipeline (DB bodies are plain markdown, not MDX).
+- **Blog cadence automation** — scheduled authoring trigger (GH Actions headless `claude -p` emits the draft → deterministic prod insert, never holds the service key); gated on the cron pinger (GH Actions now metered).
 - **Original driver bios** (W4 P5) — replace Wikipedia-derived bios with original write-ups.
 
 ## B4 — Data completeness & resilience
