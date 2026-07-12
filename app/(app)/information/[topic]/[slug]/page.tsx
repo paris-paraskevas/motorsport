@@ -34,6 +34,7 @@ export async function generateMetadata({
   return {
     title: entry.question,
     description: entry.summary,
+    alternates: { canonical: `/information/${topic}/${slug}` },
     ...(indexed ? {} : { robots: { index: false, follow: true } }),
     ...withSocialMeta({
       title: entry.question,

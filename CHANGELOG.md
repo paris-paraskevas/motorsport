@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.217.1 — 2026-07-12
+
+### Fixed
+- **Self-referencing canonical on every `/information` answer + track page (SEO campaign Phase 0b).** `app/(app)/information/[topic]/[slug]/page.tsx` `generateMetadata` set no `alternates.canonical`, so all ~322 indexed answer/track pages (incl. the DRS page) shipped without a `<link rel="canonical">`, while sibling routes (`/series`, series-guides, weekend/session) all set one. Added `alternates: { canonical: '/information/${topic}/${slug}' }`. Verified in dev — the DRS page now emits `<link rel="canonical" href="https://paddock-tracker.com/information/formula-1/what-is-drs-in-f1"/>`; tsc clean.
+
 ## 0.217.0 — 2026-07-12
 
 ### Added
