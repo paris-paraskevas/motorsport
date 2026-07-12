@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.217.1 — 2026-07-12
+
+**Behind the scenes.** SEO tidy-up so search engines index the canonical version of every Learn page.
+
 ## 0.217.0 — 2026-07-12
 
 **Clearer, fact-checked motorsport guides.** Richer explainers for how rally racing works, the difference between MotoGP, Moto2 and Moto3, how the F1 points system works, and the classes at Le Mans, each cross-checked against official sources. We also corrected a few technical figures to their current 2026 values and fixed some internal links.
