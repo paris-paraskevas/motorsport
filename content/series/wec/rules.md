@@ -6,7 +6,7 @@ last-updated: 2026-06-11
 
 ## The classes
 
-Two classes share every WEC grid. Hypercar is the headline act — prototypes built to either LMH or LMDh rules, performance-balanced so Ferrari, Toyota, BMW, Cadillac, Alpine, Peugeot, Aston Martin and newcomer Genesis can all fight for outright victory. LMGT3 is the production-based supporting class: customer-run GT3 machinery in pro-am hands, and in 2026 it fields the biggest GT grid the championship has ever seen. The prototypes lap the GT3s constantly, so traffic management is a core skill of the discipline, not a nuisance.
+Two classes share every WEC grid. Hypercar is the headline act — prototypes built to either [LMH or LMDh](/information/endurance/what-are-lmh-and-lmdh) rules, performance-balanced so Ferrari, Toyota, BMW, Cadillac, Alpine, Peugeot, Aston Martin and newcomer Genesis can all fight for outright victory. LMGT3 is the production-based supporting class: customer-run GT3 machinery in pro-am hands, and in 2026 it fields the biggest GT grid the championship has ever seen. The prototypes lap the GT3s constantly, so traffic management is a core skill of the discipline, not a nuisance.
 
 ## The races
 

@@ -6,7 +6,7 @@ last-updated: 2026-06-11
 
 ## The classes
 
-One formula — GT3 — sliced into four cups by driver rating rather than machinery. Pro crews fight for outright wins and the overall championship. Gold Cup runs Gold-rated line-ups with one Silver permitted, Silver Cup is all-Silver, and Bronze Cup is built around a Bronze-rated amateur — at sprint rounds with at most a Platinum alongside, at endurance rounds with Silvers eligible too. Every race therefore produces several winners: a Silver Cup car twelfth overall can still bank maximum class points. The Bronze Cup carries a serious season prize — contest every round and win it, and an automatic LMGT3 invitation to the 24 Hours of Le Mans follows.
+One formula — GT3 — sliced into four cups by [driver rating](/information/endurance/what-do-gt-driver-ratings-mean) rather than machinery. Pro crews fight for outright wins and the overall championship. Gold Cup runs Gold-rated line-ups with one Silver permitted, Silver Cup is all-Silver, and Bronze Cup is built around a Bronze-rated amateur — at sprint rounds with at most a Platinum alongside, at endurance rounds with Silvers eligible too. Every race therefore produces several winners: a Silver Cup car twelfth overall can still bank maximum class points. The Bronze Cup carries a serious season prize — contest every round and win it, and an automatic LMGT3 invitation to the 24 Hours of Le Mans follows.
 
 ## The races
 

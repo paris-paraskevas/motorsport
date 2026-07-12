@@ -29,6 +29,6 @@ related:
 
 **GT World Challenge** is the global **GT3** competition run by **SRO Motorsports Group** — the organisation (originally the Stéphane Ratel Organisation) that created the GT3 category itself. Every car is a **production-based supercar** built to a common FIA GT3 standard, so brands such as **Ferrari, Porsche, BMW, Mercedes-AMG, Aston Martin, Lamborghini, McLaren and Audi** race wheel-to-wheel.
 
-What sets it apart is who drives them. The grid is split by **driver rating** into four classes — **Pro, Gold, Silver and Bronze** — so seasoned professionals and amateur racers share the same track, each chasing a class title as well as the outright win. **Balance of Performance** adjustments keep the many different cars closely matched.
+What sets it apart is who drives them. The grid is split by **[driver rating](/information/endurance/what-do-gt-driver-ratings-mean)** into four classes — **Pro, Gold, Silver and Bronze** — so seasoned professionals and amateur racers share the same track, each chasing a class title as well as the outright win. **Balance of Performance** adjustments keep the many different cars closely matched.
 
 The **European** series is the strongest GT3 field in the world; **sister championships run in America and Asia**, and their results feed a global GT World Challenge title. Its showpiece is the **24 Hours of Spa**, held at Spa-Francorchamps in Belgium and one of endurance racing's great events. For the season's rhythm, see [how a race weekend works](/information/endurance/how-a-gt-world-challenge-race-weekend-works).

@@ -26,7 +26,7 @@ A defining feature of Le Mans and endurance racing is that **several different c
 
 The current structure is broadly:
 
-- **Hypercar** — the top prototype class, fighting for the **overall win**. Purpose-built, hybrid-era machines from manufacturers such as Ferrari, Toyota, Porsche, Cadillac and others, built to two convergent rulebooks (LMH and LMDh) balanced to race together.
+- **Hypercar** — the top prototype class, fighting for the **overall win**. Purpose-built, hybrid-era machines from manufacturers such as Ferrari, Toyota, Porsche, Cadillac and others, built to two convergent rulebooks ([LMH and LMDh](/information/endurance/what-are-lmh-and-lmdh)) balanced to race together.
 - **LMP2** — a **spec prototype** class using a common chassis and engine, quick but a clear step below Hypercar, popular with independent teams.
 - **GT (currently LMGT3)** — **production-based grand-touring cars** from brands like Ferrari, Porsche, Aston Martin, BMW and Corvette, often shared by professional and amateur drivers.
 

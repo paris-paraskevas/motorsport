@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.208.0 — 2026-07-12
+
+### Added
+- **Two endurance explainers + cross-links (operator feedback: WEC "LMH/LMDh" should link to a rules page; "driver ratings" should be explained + linked).** New verified `/information` answers `content/information/answers/what-are-lmh-and-lmdh.md` (LMH vs LMDh — bespoke vs spec chassis, optional front hybrid vs spec Bosch rear hybrid, cost, WEC-only vs WEC+IMSA, BoP; web-verified incl. 2026 manufacturer split + Genesis) and `what-do-gt-driver-ratings-mean.md` (the FIA Platinum/Gold/Silver/Bronze categorisation + how SRO's Pro/Gold/Silver/Bronze cups + WEC crew rules use it). Both auto-load via `loadEditorialAnswers` (no registry edit). Linked the mentions: `wec/rules.md` ("LMH or LMDh") → the Hypercar explainer; `gt-world/overview.md`, `gt-world/rules.md`, `what-is-gt-world-challenge.md` ("driver rating") + `classes-at-le-mans.md` ("LMH and LMDh") → the respective explainers. Verified: both pages 200 with correct content on dev, the cross-link resolves, info test 19/19, tsc + eslint clean. (Resolves the "driver ratings" feedback — an Explore pass confirmed there is NO per-driver numeric rating in the app; the operator meant the GT driver *categorisation*.)
+
 ## 0.207.1 — 2026-07-12
 
 ### Fixed
