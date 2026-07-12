@@ -114,6 +114,10 @@ interface RawTrack {
    *  turns a thin stub into a substantial, index-worthy page. */
   article?: string;
   sources?: unknown;
+  /** Optional per-entry SEO keyword variants; falls back to a generic set. */
+  keywords?: string[];
+  /** Optional contextual related links; falls back to the generic pair. */
+  related?: { label: string; href: string }[];
   review?: string;
   featured?: boolean;
 }
@@ -174,13 +178,19 @@ async function loadTracks(): Promise<InfoEntry[]> {
       slug,
       question: t.name,
       summary: t.summary?.trim() || `${t.name} — a racing venue in ${t.country}.`,
-      keywords: [t.name, `${t.name} circuit`, `${t.country} race track`, t.country],
+      keywords:
+        Array.isArray(t.keywords) && t.keywords.length
+          ? t.keywords.map(String)
+          : [t.name, `${t.name} circuit`, `${t.country} race track`, t.country],
       bodyMarkdown: body,
       sources: asSources(t.sources),
-      related: [
-        { label: 'All tracks & circuits', href: '/information/tracks' },
-        { label: 'Browse every series', href: '/series' },
-      ],
+      related:
+        Array.isArray(t.related) && t.related.length
+          ? t.related
+          : [
+              { label: 'All tracks & circuits', href: '/information/tracks' },
+              { label: 'Browse every series', href: '/series' },
+            ],
       review,
       featured: t.featured === true && review === 'verified',
       updated: FALLBACK_DATE,
@@ -339,8 +349,9 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
     if (listRaw.length < 2) continue;
     const list = [...listRaw].sort((a, b) => a.question.localeCompare(b.question));
     const review: InfoReview = list.every((t) => t.review === 'verified') ? 'verified' : 'unverified';
+    const marquee = list.slice(0, 3).map((t) => t.question).join(', ');
     const body = [
-      `${country} is home to **${list.length}** notable racing venues in our directory — here is each, with a note on what it is known for:`,
+      `**${country}** has **${list.length}** notable racing venues in the Paddock circuits directory, including ${marquee}. Here is every ${country} circuit we track, with its key facts and what each is known for:`,
       '',
       ...list.map((t) => {
         const facts = [
@@ -351,7 +362,7 @@ function trackAggregates(tracks: InfoEntry[]): InfoEntry[] {
           .filter(Boolean)
           .join(', ');
         const note = t.summary ? ` ${t.summary}` : '';
-        return `- **[${t.question}](${entryHref(t)})**${facts ? ` — ${facts}.` : ''}${note}`;
+        return `- **[${t.question}](${entryHref(t)})**${facts ? `: ${facts}.` : ''}${note}`;
       }),
     ].join('\n');
     out.push({

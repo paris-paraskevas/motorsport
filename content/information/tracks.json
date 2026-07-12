@@ -2946,14 +2946,52 @@
         "nascar",
         "indycar"
       ],
-      "summary": "A 1.5-mile oval in Homestead, Florida, whose progressive banking produces wide, multi-groove racing. It hosted NASCAR's season finale from 2002 to 2019, and the Cup Series championship finale is set to return there in 2026 under a new rotating model.",
+      "summary": "Homestead-Miami Speedway: a 1.5-mile oval in Homestead, Florida near Miami, with progressive banking. It hosted NASCAR's season finale, which returns in 2026.",
       "confidence": "high",
       "sources": [
-        "https://en.wikipedia.org/wiki/Homestead-Miami_Speedway"
+        {
+          "label": "Homestead-Miami Speedway (official history)",
+          "url": "https://www.homesteadmiamispeedway.com/track-history/"
+        },
+        {
+          "label": "Homestead-Miami Speedway (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Homestead%E2%80%93Miami_Speedway"
+        },
+        {
+          "label": "NASCAR: 2026 championship weekend moves to Homestead",
+          "url": "https://www.nascar.com/news-media/2025/05/06/homestead-miami-returns-as-host-of-nascar-championship-weekend-in-2026/"
+        }
       ],
       "review": "verified",
       "featured": true,
-      "article": "## Origins\nHomestead-Miami Speedway opened in November 1995 in Homestead, Florida. The promoter Ralph Sanchez advanced the project as part of southern Miami-Dade County's recovery from Hurricane Andrew, which had struck the region in 1992. The track first ran as a flat, rectangular quad-oval; it was reshaped into a true oval in 1997 and gained its current variable, progressive banking in a 2003 reconfiguration, each change intended to improve the quality of stock-car racing.\n\n## The circuit\nThe oval measures 1.5 miles (2.414 km) and has four turns. Its defining feature is progressive banking that varies from 18 to 20 degrees through the corners, with the straights banked at four degrees. The design lets drivers work several lines, from the flatter bottom of the track to the higher, faster lane against the outside wall, while the abrasive surface wears tyres heavily over a fuel run. Those traits have made Homestead a circuit that rewards tyre management and patience, especially in the closing laps of longer races.\n\n## Racing at Homestead\nHomestead hosted the season-ending finale for NASCAR's Cup, Xfinity and Truck series from 2002 to 2019, staging many of the era's title deciders, before championship weekend moved to Phoenix Raceway for 2020. Under a new model that rotates the finale among NASCAR's marquee venues, championship weekend returns to Homestead in 2026, with the Cup Series title race set for 8 November. The venue also hosted top-level open-wheel racing: CART's Grand Prix of Miami ran from 1996 to 2000, and the Indy Racing League and later IndyCar competed there from 2001 until 2010."
+      "article": "## Origins after Hurricane Andrew\nHomestead-Miami Speedway is a 1.5-mile (2.414 km) oval in Homestead, Florida, south of Miami. The track exists largely because of a natural disaster. After Hurricane Andrew flattened much of South Dade County in August 1992, city officials courted veteran Miami racing promoter Ralph Sanchez to build a motorsports complex as an economic catalyst for the recovering region. Sanchez, who had run the Grand Prix of Miami since the 1980s and had been seeking a permanent home for it since 1991, broke ground on August 24, 1993, one year to the day after the storm. The facility, originally called the Homestead Motorsports Complex, opened in November 1995, and Dale Jarrett won the first major race, a NASCAR Busch (now Xfinity) Series event, on November 5, 1995.\n\n## The oval and its progressive banking\nHomestead-Miami is a 1.5-mile, four-turn intermediate oval. Its defining feature is the progressive (variable) banking added in 2003: the turns rise from 18 degrees at the bottom of the track to 20 degrees at the top, while the straights sit at 4 degrees. That variable banking lets drivers run several distinct grooves, from a flat inside line to a high line against the wall, and it is widely credited with producing the wide, multi-groove, side-by-side racing the track is known for today. The layout has made Homestead a driver favorite and a frequent source of dramatic, tire-managed finishes.\n\n## The original layout and its reconfigurations\nHomestead did not always look this way. Its original layout was a flat, rectangular oval modeled on the Indianapolis Motor Speedway, paired with a 2.2-mile infield road course. Because the track was far shorter than Indianapolis, the sharp, square corners scaled poorly: passing was difficult, speeds were low, and the crash angles were dangerously steep. Sanchez rounded the corners in 1997, spending about $8 million to turn the rectangle into a continuous, true oval, though the banking stayed shallow at 6 degrees in the turns and 3 degrees on the straights. Racing remained flat and processional until the 2003 project rebuilt the turns with the 18-to-20-degree progressive banking used today.\n\n## Racing at Homestead\nOpen-wheel racing came first. The Championship Auto Racing Teams (CART) series opened its season at Homestead every year from 1996 to 2000, with Jimmy Vasser winning the inaugural event in March 1996. The Indy Racing League, later IndyCar, then sanctioned the race from 2001 through 2010; that era included the death of driver Paul Dana in a 2006 warm-up crash and ended with Dario Franchitti clinching the 2010 title in the final IndyCar race held there. NASCAR became the venue's signature tenant. The Cup Series first raced at Homestead in 1999, and the track built a reputation for crowning champions, including all seven of Jimmie Johnson's Cup titles and all three of Tony Stewart's.\n\n## The NASCAR finale returns in 2026\nFrom 2002 to 2019, Homestead-Miami hosted NASCAR's season finale for all three national series, an 18-year run that was the longest championship-host streak in series history. NASCAR moved the finale to its own Phoenix Raceway in 2020. Under a new rotating-finale model, championship weekend returns to Homestead in 2026: the Truck, Xfinity, and Cup title races run on November 6, 7, and 8, 2026, with the Cup Series Championship Race set for Sunday, November 8. It is the first time since 2019 that all three series will crown their champions in South Florida, and NASCAR plans to rotate the finale to other tracks in the following years.\n\n## Key facts\n- Location: Homestead, Florida, south of Miami\n- Configuration: 1.5-mile (2.414 km) four-turn oval, plus an infield road course\n- Banking (since 2003): 18 to 20 degrees progressive in the turns, 4 degrees on the straights\n- Opened: November 1995; built as part of the region's recovery from 1992's Hurricane Andrew\n- Major series: NASCAR Cup, Xfinity, and Truck; formerly CART (1996-2000) and IndyCar (2001-2010)\n- NASCAR season finale 2002-2019; returns as championship host in 2026",
+      "keywords": [
+        "homestead-miami speedway",
+        "homestead raceway",
+        "homestead speedway miami",
+        "miami homestead track",
+        "homestead miami speedway original layout",
+        "homestead-miami speedway banking",
+        "homestead florida racetrack",
+        "homestead miami speedway nascar",
+        "homestead miami speedway indycar",
+        "homestead miami oval",
+        "homestead miami speedway 2026 finale"
+      ],
+      "related": [
+        {
+          "label": "NASCAR Cup Series",
+          "href": "/series/nascar-cup"
+        },
+        {
+          "label": "IndyCar",
+          "href": "/series/indycar"
+        },
+        {
+          "label": "Racing tracks in the United States",
+          "href": "/information/tracks/racing-tracks-in-united-states"
+        }
+      ]
     },
     {
       "slug": "indianapolis-motor-speedway",
@@ -3413,14 +3451,53 @@
         "endurance",
         "gt"
       ],
-      "summary": "A fast, sweeping four-mile natural-terrain road course at Elkhart Lake, Wisconsin (opened 1955) — one of America's classic circuits, home to IndyCar and IMSA sportscar rounds.",
+      "summary": "Road America is a 4.048-mile (6.515 km), 14-turn natural-terrain road course at Elkhart Lake, Wisconsin (opened 1955), home to IndyCar and IMSA racing.",
       "confidence": "high",
       "sources": [
-        "https://en.wikipedia.org/wiki/Road_America"
+        {
+          "label": "Road America (official track info)",
+          "url": "https://www.roadamerica.com/track.html"
+        },
+        {
+          "label": "Road America (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Road_America"
+        },
+        {
+          "label": "IndyCar: Road America 2026",
+          "url": "https://www.indycar.com/Schedule/2026/Road-America"
+        }
       ],
       "review": "verified",
       "featured": true,
-      "article": "## Four miles through the Wisconsin countryside\nRoad America, at Elkhart Lake in Wisconsin, is one of the great road courses of the world — a fast, sweeping four-mile ribbon of asphalt running through wooded, rolling terrain almost unchanged since it opened. Long straights, high-speed corners and dramatic elevation changes make it a favourite of drivers and fans alike, and its length and speed demand both bravery and mechanical sympathy.\n\n## A calendar fixture\nThe circuit is a cornerstone of American motorsport, hosting an NTT IndyCar Series race on the 2026 calendar and welcoming sports-car and other national series through the year. Its flat-out nature and old-school character set it apart from the stadium-style circuits built since.\n\n## History\nOpened in 1955, Road America has run continuously ever since — one of the last of the great natural-terrain road courses still racing in essentially its original form."
+      "article": "## How long is Road America?\nRoad America is 4.048 miles (6.515 km) long with 14 turns, making it one of the longest permanent road courses in North America. The natural-terrain circuit sits near Elkhart Lake, Wisconsin, on 640 acres of glacial Kettle Moraine countryside, roughly halfway between Milwaukee and Green Bay. It opened in 1955 and its lap has stayed virtually unchanged ever since, a rarity among the world's great circuits. Long straights let cars approach 200 mph (320 km/h), which is why it is nicknamed the 'National Park of Speed.'\n\n## The lap and its signature corners\nThe 4.048-mile lap links four long straights with 14 corners and several heavy braking zones, rewarding top speed and bravery in equal measure. The most famous of these is the Kink, a fast, barely-lifting bend on the back section that has long tested drivers' nerve. Other landmarks include the sweeping Carousel, the downhill braking zone into Canada Corner (a prime overtaking spot), the quick run through Turn 5, and the Thunder Valley dip. Big elevation changes throughout make Road America one of the fastest and most demanding road courses anywhere.\n\n## Racing at Road America in 2026\nRoad America headlines its 2026 calendar with two major professional weekends. The NTT IndyCar Series returns for the XPEL Grand Prix Presented by AMR on June 18 to 21, Round 10 of the season, with the race on Sunday. The IMSA SportsCar Championship visits on July 30 to August 2 with the Motul SportsCar Endurance Grand Prix, which for 2026 grows into a six-hour endurance race and joins the Michelin Endurance Cup. The schedule also features MotoAmerica Superbikes (late May), the Trans-Am SpeedTour (late June), SCCA competition including the June Sprints and the National Championship Runoffs, and vintage weekends with SVRA. The NASCAR Cup Series ran here in 1956 and again in 2021 and 2022 before its date moved to the Chicago Street Course in 2023; it is not on the 2026 schedule.\n\n## A brief history\nRoad America is the creation of Clif Tufte, a highway engineer who laid the course out over the rolling farmland outside the village of Elkhart Lake after Wisconsin banned racing on public roads. Grading began in April 1955, and the first SCCA national race weekend was held on September 10, 1955. Despite decades of facility upgrades, the original 4.048-mile, 14-turn layout has never been altered for cars, so today's drivers race essentially the same track that opened seven decades ago.\n\n## What makes it distinctive\nRoad America is one of only a handful of major circuits still running its original configuration, and it holds an FIA Grade Two rating. Rather than a flat, purpose-built site, it follows the natural contours of the land, sweeping around hills and diving through ravines. That blend of length, elevation, high speed, and continuity is what keeps it a fixture for IndyCar, IMSA sportscars, and club and vintage racing alike.",
+      "keywords": [
+        "road america track length",
+        "road america length",
+        "road america track",
+        "how long is road america",
+        "road america circuit length",
+        "road america 4.048 miles",
+        "road america number of turns",
+        "road america elkhart lake",
+        "road america indycar",
+        "road america imsa",
+        "road america the kink",
+        "road america wisconsin"
+      ],
+      "related": [
+        {
+          "label": "IndyCar",
+          "href": "/series/indycar"
+        },
+        {
+          "label": "IMSA SportsCar Championship",
+          "href": "/series/imsa"
+        },
+        {
+          "label": "Racing tracks in the United States",
+          "href": "/information/tracks/racing-tracks-in-united-states"
+        }
+      ]
     },
     {
       "slug": "sebring-international-raceway",
@@ -3516,14 +3593,52 @@
       "categories": [
         "nascar"
       ],
-      "summary": "At 2.66 miles the largest and fastest oval in NASCAR, famous for high-speed pack racing in Alabama.",
+      "summary": "In Talladega, Alabama, this 2.66-mile tri-oval is NASCAR's biggest and fastest track, known for 33-degree banking and high-speed pack racing.",
       "confidence": "high",
       "sources": [
-        "https://en.wikipedia.org/wiki/Talladega_Superspeedway"
+        {
+          "label": "Talladega Superspeedway (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Talladega_Superspeedway"
+        },
+        {
+          "label": "NASCAR.com: Talladega Superspeedway",
+          "url": "https://www.nascar.com/gallery/talladega-superspeedway/"
+        },
+        {
+          "label": "Encyclopedia of Alabama: Talladega Superspeedway",
+          "url": "https://encyclopediaofalabama.org/article/talladega-superspeedway/"
+        }
       ],
       "review": "verified",
       "featured": true,
-      "article": "## The biggest oval in NASCAR\nTalladega Superspeedway in Alabama is the largest and fastest oval on the NASCAR calendar — a 2.66-mile tri-oval with steep banking that lets stock cars run flat out, nose to tail, lap after lap. Aerodynamic rules keep speeds in check and, in doing so, bunch the entire field into enormous multi-wide packs.\n\n## Pack racing and 'the Big One'\nThat pack racing is Talladega's signature and its hazard: with dozens of cars inches apart at close to 200 mph, a single mistake can trigger a chain-reaction crash — 'the Big One' — that collects a dozen or more. It makes for unpredictable racing where a driver can lead one lap and be eliminated the next, and where drafting alliances often decide the win.\n\n## On the calendar\nOpened in 1969, Talladega hosts two NASCAR Cup Series weekends a year; its spring and autumn dates are among the most anticipated of the season, the latter falling within the play-offs."
+      "article": "## Where is Talladega Superspeedway?\nTalladega Superspeedway sits in east-central Alabama, in the United States. The track is in Lincoln, in Talladega County, and takes its name from the nearby city of Talladega. It lies just off Interstate 20, roughly 40 miles (64 km) east of Birmingham and about 95 miles (150 km) west of Atlanta, Georgia. At 2.66 miles (4.281 km) it is the largest oval in NASCAR, longer than either Daytona International Speedway (2.5 miles) or the Indianapolis Motor Speedway (2.5 miles).\n\n## The track: length, banking and layout\nTalladega is a 2.66-mile (4.281 km) tri-oval with four turns. Its defining feature is steep banking: 33 degrees in the turns, 16.5 degrees through the tri-oval kink on the frontstretch, and 2 degrees along the backstretch. That is steeper than Daytona's 31-degree turns, and it was deliberate. When NASCAR founder Bill France Sr. built the track he wanted it longer, wider and more steeply banked than Daytona so it would be the fastest in the sport. It opened in 1969 as the Alabama International Motor Speedway and was renamed Talladega Superspeedway in 1989. It remains the longest oval on the NASCAR Cup Series calendar.\n\n## Pack racing and 'the Big One'\nTalladega is famous for pack racing. Because the banking and long straights let cars run flat out, and because NASCAR limits engine power at its two biggest ovals, the field bunches into tight, multi-wide packs where dozens of cars run inches apart at close to 200 mph. The trade-off is danger. A single mistake can set off a chain-reaction crash that collects 10 or more cars at once, an event fans and broadcasters call 'the Big One.' That unpredictability defines Talladega's reputation: almost any car in the pack can win, and the outcome is often in doubt until the final lap.\n\n## Restrictor plates and tapered spacers\nThe power limits date to 1987. During qualifying for that year's Winston 500 Bill Elliott set the fastest official lap in NASCAR history (see below), but in the race Bobby Allison's car went airborne into the frontstretch catch fence, nearly reaching the grandstand. NASCAR responded by mandating restrictor plates at Talladega and Daytona from 1988 to slow the cars. The plates were replaced in 2019 by a tapered spacer, used first at Talladega's spring race that April, which serves the same purpose of cutting horsepower to keep pack speeds in check.\n\n## Speed records\nBill Elliott holds the fastest qualifying lap in NASCAR history at Talladega: 212.809 mph, set on April 30, 1987, in his No. 9 Coors Ford. He covered the 2.66-mile lap in 44.998 seconds. Because restrictor plates, and later tapered spacers, have capped speeds ever since, that mark has stood for nearly four decades and is effectively permanent. Elliott is also the track's most successful pole winner.\n\n## Racing at Talladega today\nTalladega hosts two NASCAR Cup Series race weekends a year. The spring race, currently the GEICO 500, runs in late April. The autumn race, currently the YellaWood 500, falls in the NASCAR playoffs: it is one of the Round of 8 events that cut the title contenders down to the Championship 4, which makes it one of the most consequential dates on the schedule. Because pack racing scrambles the form book, Talladega is one of the few tracks where a championship run can be made or ended by a single crash.",
+      "keywords": [
+        "talladega superspeedway",
+        "talladega superspeedway length",
+        "where is talladega",
+        "what state is talladega raceway in",
+        "where is talladega superspeedway located",
+        "where is talladega speedway",
+        "talladega superspeedway location",
+        "talladega alabama",
+        "talladega superspeedway banking",
+        "how long is talladega superspeedway",
+        "nascar talladega"
+      ],
+      "related": [
+        {
+          "label": "NASCAR Cup Series",
+          "href": "/series/nascar-cup"
+        },
+        {
+          "label": "Racing tracks in the United States",
+          "href": "/information/tracks/racing-tracks-in-united-states"
+        },
+        {
+          "label": "Most famous racing circuits in the world",
+          "href": "/information/tracks/most-famous-racing-circuits-in-the-world"
+        }
+      ]
     },
     {
       "slug": "texas-motor-speedway",
@@ -3623,14 +3738,52 @@
         "endurance",
         "historic"
       ],
-      "summary": "California circuit near Monterey famed for the plunging, blind 'Corkscrew' esses; former MotoGP and current IndyCar venue.",
+      "summary": "California road course near Monterey, famed for the blind, plunging Corkscrew. Home to IndyCar (and its 2026 finale); a former MotoGP venue.",
       "confidence": "high",
       "sources": [
-        "https://en.wikipedia.org/wiki/Laguna_Seca_Raceway"
+        {
+          "label": "WeatherTech Raceway Laguna Seca (official)",
+          "url": "https://weathertechraceway.com/pages/track-information"
+        },
+        {
+          "label": "Laguna Seca (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Laguna_Seca"
+        },
+        {
+          "label": "IndyCar: Laguna Seca 2026",
+          "url": "https://www.indycar.com/Schedule/2026/Laguna-Seca"
+        }
       ],
       "review": "verified",
       "featured": true,
-      "article": "## The Corkscrew\nWeatherTech Raceway Laguna Seca, in the hills above Monterey in California, is famous the world over for one corner: the Corkscrew, a blind, plunging left-right that drops several storeys in a couple of hundred metres and rewards a leap of faith on the brakes. The rest of the lap is quick and technical, run over dry, slippery hillside asphalt.\n\n## IndyCar and two wheels\nThe circuit is a fixture of the NTT IndyCar Series, and in 2026 it hosts the season finale — the stage on which the championship is settled. It was also for many years a celebrated round of the Grand Prix motorcycle world championship, and its history takes in sports cars and superbikes as well as open-wheel racing.\n\n## History\nOpened in 1957, Laguna Seca has been repeatedly updated but never lost the Corkscrew that made its name, and it remains one of the most recognisable circuits in America."
+      "article": "## Where is Laguna Seca?\nWeatherTech Raceway Laguna Seca sits in Monterey County, California, USA, on the state's Central Coast. The road course lies just inland from the Monterey Peninsula, between the city of Monterey and Salinas, roughly two hours south of the San Francisco Bay Area. It is owned by Monterey County and forms part of the county park system, occupying land that was once the U.S. Army's Fort Ord.\n\n## The Corkscrew\nThe Corkscrew is why Laguna Seca is world famous. This blind left-right sequence at Turns 8 and 8A plunges 59 feet, about five and a half stories, in only 450 feet of track. Drivers crest a rise unable to see the exit, then drop into a steepening descent: the gradient reaches roughly 12 percent at the Turn 8 apex and around 18 percent by Turn 8A. From Turn 8 down to Turn 9 the land falls 109 feet, just over ten stories. Local lore holds that the section was never formally designed; a foreman reportedly told the bulldozer operator to 'get down the hill any way you can.'\n\n## The lap\nThe circuit measures 2.238 miles (3.602 km) and has 11 turns, with roughly 180 feet of total elevation change across the lap. It is short, hilly, and technical. Fast, flowing corners and blind crests reward commitment and precise car placement, while the narrow layout makes clean overtaking hard, which is part of why passes at the Corkscrew become legend.\n\n## Racing at Laguna Seca\nToday Laguna Seca is best known as an IndyCar venue, and it hosts the 2026 NTT IndyCar Series season finale on September 6, 2026, where the year's champion is crowned. It also stages IMSA sports car racing and historic events, including the Rolex Monterey Motorsports Reunion during Monterey Car Week. The track was a MotoGP round from 2005 to 2013, when Marc Marquez won the last grand prix held there before the series moved elsewhere.\n\n## Famous moments\nLaguna Seca has produced two of motorsport's most replayed overtakes, both at the Corkscrew. In the 1996 CART season finale, rookie Alex Zanardi dived down the inside of Bryan Herta on the last lap, ran across the dirt, and rejoined ahead to win in a move known simply as 'The Pass.' In the 2008 United States MotoGP round, Valentino Rossi ran around the outside of Casey Stoner through the same corner, earning the nickname 'King of the Corkscrew.' Marquez recreated the move on Rossi there in 2013.\n\n## History\nLaguna Seca opened in 1957, with its first event, the Pebble Beach road race, held on November 9 that year. The original layout ran about 1.9 miles. In 1988 an infield section (today's Turns 3, 4, and 5) was added, extending the circuit to its current 2.238-mile, 11-turn form. The venue carried the Mazda Raceway Laguna Seca name for 17 years before WeatherTech became title sponsor in 2018.",
+      "keywords": [
+        "laguna seca",
+        "track laguna seca",
+        "laguna seca race track california",
+        "laguna seca california",
+        "weathertech raceway laguna seca",
+        "laguna seca corkscrew",
+        "laguna seca monterey",
+        "laguna seca indycar",
+        "laguna seca motogp",
+        "laguna seca track",
+        "corkscrew turn 8"
+      ],
+      "related": [
+        {
+          "label": "IndyCar",
+          "href": "/series/indycar"
+        },
+        {
+          "label": "Racing tracks in the United States",
+          "href": "/information/tracks/racing-tracks-in-united-states"
+        },
+        {
+          "label": "Most famous racing circuits in the world",
+          "href": "/information/tracks/most-famous-racing-circuits-in-the-world"
+        }
+      ]
     }
   ]
 }
