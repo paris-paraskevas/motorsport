@@ -36,7 +36,7 @@ The tiers are named after precious metals, highest to lowest:
 - **Silver** — generally younger drivers building a career (the rating leans on getting your first licence before 30).
 - **Bronze** — amateurs and gentleman drivers, typically those who started racing later in life (first licence after 30) or without a significant professional record.
 
-A rating reflects **pedigree, not raw pace** — a quick Silver can beat a Gold, and an experienced Bronze can be genuinely fast. Categorisations are reviewed and re-published **once a year** (each November), and can move up or down as a driver's career changes.
+A rating reflects **pedigree, not raw pace** — a quick Silver can beat a Gold, and an experienced Bronze can be genuinely fast. Categorisations are reviewed and re-published **once a year** (the definitive list late in the year), and can move up or down as a driver's career changes.
 
 ## How series use them
 

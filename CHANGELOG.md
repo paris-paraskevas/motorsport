@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.210.1 — 2026-07-12
+
+### Fixed
+- **Audit fix-forward (two adversarial review agents over the run's changes).** (1) **CONFIRMED factual error, fixed:** `what-are-lmh-and-lmdh.md` listed **BMW under LMH** — BMW's M Hybrid V8 is **LMDh** (spec Dallara chassis + the common Bosch hybrid); moved it to the LMDh list with a clarifying note. (An initial web-search result had BMW wrong under LMH; the adversarial fact-check caught it vs Wikipedia / 24h-lemans — exactly why the pass exists.) (2) `what-do-gt-driver-ratings-mean.md` — softened the imprecise "each November" to "the definitive list late in the year" (the FIA definitive categorisation publishes ~December). (3) `PostModeration.tsx` — clear a row's typed `when` value after a successful approve/reschedule so it re-prefills from the freshly-persisted `publish_at` (agent-flagged stale-value case under concurrent edits, low severity). The reschedule feature + feedback filter + tour otherwise reviewed CLEAN (datetime round-trip, authz, status guards, Set-toggle, opposite-half sheet all verified). tsc + eslint clean.
+
 ## 0.210.0 — 2026-07-12
 
 ### Added
