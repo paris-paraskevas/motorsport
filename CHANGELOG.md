@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.216.1 — 2026-07-12
+
+### Changed
+- **DRS content SEO + depth (operator: the top GSC impressions "drs f1" / "what is drs in f1" / "what replaces drs" / MOM were pulling ~47 impressions a week at 0 clicks).** `what-is-drs-in-f1.md`: retitled "What was DRS…" → **"What is DRS in F1?"** (matches the dominant present-tense query), rewrote the summary + keywords to the actual impression phrases (drs f1 / f1 drs / drs in f1 / drs formula one / drag reduction system / how does drs work / drs detection zone), and expanded the body from ~4 paragraphs to **7 sections** (how it worked, DRS zones + the detection point, the one-second rule, when it was disabled, why it was introduced, why F1 replaced it for 2026, a recap) for ranking + featured-snippet coverage. `what-replaced-drs-manual-override-mode.md`: summary now leads with "What replaces DRS", keywords add **"what replaces drs" / "mom f1" / "manual override mode" / drs-replacement-2026** variants. Both keep their existing slugs (no URL/ranking reset); QAPage JSON-LD intact; em-dash-free. Browser-verified (titles, meta descriptions, 11-heading structure, MOM + Corner/Straight in body, 0 console errors); tsc clean.
+
 ## 0.216.0 — 2026-07-12
 
 ### Added

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.216.1 — 2026-07-12
+
+**Better DRS explainers.** Expanded the "What is DRS?" guide with how it worked, the DRS zones, the one-second rule and why F1 dropped it for 2026, and sharpened the "what replaced DRS" guide, so both are easier to find and answer the question fully.
+
 ## 0.216.0 — 2026-07-12
 
 **Formula 1's 2026 rules, explained.** Two new Learn guides break down the biggest F1 rule change in over a decade: what's new for 2026, and how the new hybrid power unit works. We also refreshed the active-aero and overtaking terms to the FIA's final 2026 names.
