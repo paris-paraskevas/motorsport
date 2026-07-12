@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.219.0 — 2026-07-13
+
+### Added
+- **New MotoGP records page (GSC top-query gap).** `content/information/answers/who-has-won-the-most-motogp-titles.md` — "Who has won the most MotoGP titles?" targets the impression-getting "motogp world champions" queries: the premier-class order (Agostini 8; Rossi + Marquez 7 each), the premier-vs-all-class distinction, most titles by manufacturer, and the reigning 2025 champion. Adversarially fact-checked, triple-verified against motogp.com / FIM / Wikipedia (caught + corrected a "Marquez 2025 = Gresini" error → factory Ducati). `INFORMATION_MAX_INDEXED` 322 → 323 to index it. Verified in dev (200, content, QAPage JSON-LD, indexed, em-dash-free).
+
 ## 0.218.3 — 2026-07-13
 
 ### Added

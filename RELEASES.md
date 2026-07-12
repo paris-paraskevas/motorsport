@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.219.0 — 2026-07-13
+
+**New guide: the most MotoGP titles.** A fact-checked rundown of who has won the most premier-class championships, from Agostini to Rossi and Marquez, the record by manufacturer, and the current champion.
+
 ## 0.218.3 — 2026-07-13
 
 **Better link previews.** Sharing the home page or a race-weekend page now shows a proper title and a tailored preview image instead of a generic card.
