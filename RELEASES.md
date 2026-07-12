@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.214.1 — 2026-07-12
+
+**Series pages put the schedule first.** The calendar now sits right under the tabs instead of behind a row of reference links, which moved to the foot of the page. A quick News link joins the threads link at the top.
+
 ## 0.214.0 — 2026-07-12
 
 **Cleaner writing in the blog editor.** The editor now flags em-dashes (banned) and common "reads like AI" phrasings as you write, with one-click jumps to each spot, so posts read more human. It only flags, it never rewrites your words.
