@@ -145,12 +145,23 @@ export function Tour({ stops }: { stops: TourStop[] }) {
   // clamped to the viewport. Fixed coordinates — everything tracks rect.
   const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 844;
+  // Mobile (< sm): a full-width sheet anchored to the half OPPOSITE the target,
+  // so it never covers the spotlight (the Series/Account stops live in the bottom
+  // bar). Desktop: a compact popover floated by the target, clamped to the viewport.
+  const isMobile = vw < 640;
   const popW = Math.min(POPOVER_W, vw - 24);
   const below = rect ? rect.top + rect.height + 12 : vh / 2;
   const popTop = rect && below + 190 > vh ? Math.max(12, rect.top - 190 - 12) : below;
   const popLeft = rect
     ? Math.min(Math.max(12, rect.left + rect.width / 2 - popW / 2), vw - popW - 12)
     : (vw - popW) / 2;
+  const targetCenterY = rect ? rect.top + rect.height / 2 : vh / 2;
+  const sheetAtBottom = targetCenterY < vh * 0.5; // target in the top half → sheet below, and vice-versa
+  const popStyle = isMobile
+    ? sheetAtBottom
+      ? { left: 12, right: 12, bottom: 88 }
+      : { left: 12, right: 12, top: 12 }
+    : { top: popTop, left: popLeft, width: popW };
 
   return createPortal(
     <div className="fixed inset-0 z-[68]">
@@ -180,8 +191,8 @@ export function Tour({ stops }: { stops: TourStop[] }) {
         aria-labelledby="tour-title"
         aria-describedby="tour-body"
         tabIndex={-1}
-        className="fixed z-[70] border border-border bg-surface-elevated p-4 outline-none motion-safe:transition-opacity motion-safe:duration-200 motion-safe:starting:opacity-0"
-        style={{ top: popTop, left: popLeft, width: popW }}
+        className="fixed z-[70] rounded-2xl border border-border bg-surface-elevated p-4 shadow-2xl shadow-black/50 outline-none motion-safe:transition-opacity motion-safe:duration-200 motion-safe:starting:opacity-0"
+        style={popStyle}
       >
         <div className="font-mono text-[10px] uppercase tracking-[0.16em] font-semibold text-text-faint">
           Step {step + 1} of {stops.length}

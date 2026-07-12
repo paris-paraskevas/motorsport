@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.209.0 — 2026-07-12
+
+**The welcome tour works properly on phones.** The quick intro tour now shows its tips in a tidy panel that sits clear of whatever it's pointing at — never covering it — with a cleaner, rounded look.
+
 ## 0.208.0 — 2026-07-12
 
 **Two new endurance explainers.** New Learn guides — "What are LMH and LMDh?" and "What do the GT driver ratings mean?" — now explain the Hypercar rulebooks and the Pro/Gold/Silver/Bronze driver categories, and the WEC and GT World Challenge pages link to them wherever those terms come up.

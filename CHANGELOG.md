@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.209.0 — 2026-07-12
+
+### Fixed
+- **Onboarding tour, mobile-first (operator Bug: "old, outdated and frankly dreadful on mobile").** `components/Tour.tsx`: on small screens (< sm) the step popover is now a **full-width sheet anchored to the half OPPOSITE the spotlight target** — so it never covers what it's pointing at (the Series/Account stops resolve to bottom-bar links, which the old centred/floated popover overlapped). Desktop keeps the compact floated-by-target popover, clamped to the viewport. Both now `rounded-2xl` with a shadow (was a sharp bordered box). Stops content was already current (chyron / this-week / series / account) — the complaint was UX, not copy, so no copy change. Verified in-browser at 390px (step 1 chyron → sheet at bottom; step 3 Series → sheet flips to top, bottom-bar target stays visible) and 1440px (floated popover preserved), 0 console errors; tsc + eslint clean.
+
 ## 0.208.0 — 2026-07-12
 
 ### Added
