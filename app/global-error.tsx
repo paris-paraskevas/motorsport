@@ -1,5 +1,6 @@
 'use client';
 import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 
 // Root global error boundary. Next App Router invokes this ONLY when the root
 // layout (or template) itself throws, so it replaces the root layout entirely
@@ -16,6 +17,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error('[paddock] global error', error);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

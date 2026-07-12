@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
@@ -111,4 +112,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSerwist(nextConfig);
+// Sentry wraps the fully-composed config (Serwist included) so its build plugin
+// sees the final webpack config. tunnelRoute is intentionally NOT set — the SDK
+// posts directly to the Sentry ingest host, already allowed by the CSP's broad
+// `connect-src https:`, so there's no proxy route to exclude from proxy.ts.
+// Source-map upload runs only when SENTRY_AUTH_TOKEN is present (CI/operator);
+// without it the build still succeeds, just with minified prod stack traces.
+export default withSentryConfig(withSerwist(nextConfig), {
+  org: "paddocktracker",
+  project: "javascript-nextjs",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  silent: !process.env.CI,
+});

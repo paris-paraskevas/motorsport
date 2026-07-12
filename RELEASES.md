@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.213.0 — 2026-07-12
+
+**Behind the scenes.** Added production error monitoring so problems get spotted and fixed faster.
+
 ## 0.212.0 — 2026-07-12
 
 **Standings tables in blog posts.** Alongside the trend chart, blog posts can now embed a live drivers'-standings table for a series — and the blog editor's preview now marks where each embed will appear.
