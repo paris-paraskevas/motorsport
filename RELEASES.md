@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.219.1 — 2026-07-13
+
+**You can now hide "Just missed."** The latest-results block on your home can be removed from "Make your own home" and stays hidden, instead of only folding away.
+
 ## 0.219.0 — 2026-07-13
 
 **New guide: the most MotoGP titles.** A fact-checked rundown of who has won the most premier-class championships, from Agostini to Rossi and Marquez, the record by manufacturer, and the current champion.

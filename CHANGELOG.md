@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.219.1 — 2026-07-13
+
+### Fixed
+- **"Just missed" can now be dismissed (operator: "can't get rid of it").** `lib/homeLayout.ts`: removed `just-missed` from `SPINE_IDS`. It was a force-pinned spine member, so `reconcileHomeLayout` stripped it from `hidden[]` on every read/write and the "Make your own home" panel rendered no hide toggle for it — the only affordance was the collapse chevron, which folds the body but leaves the header, hence "can't get rid of it." It is now hideable + reorderable like any other block (the customize panel's existing Eye toggle now applies), and a hide persists (localStorage + KV); it still defaults to second in the order and collapsed, so nothing changes for a user who keeps it. Only `chyron` remains spine. `lib/homeLayout.test.ts` updated to the new behavior (18/18); tsc clean.
+
 ## 0.219.0 — 2026-07-13
 
 ### Added
