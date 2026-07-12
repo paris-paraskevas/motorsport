@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.218.3 — 2026-07-13
+
+**Better link previews.** Sharing the home page or a race-weekend page now shows a proper title and a tailored preview image instead of a generic card.
+
 ## 0.218.2 — 2026-07-13
 
 **Weekend schedules in search.** Race-weekend pages now describe their full session schedule and start times to search engines, and correctly flag a rescheduled round, so results can show when each session runs.
