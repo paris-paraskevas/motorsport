@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.210.2 — 2026-07-12
+
+**Behind the scenes.** Internal hardening — regression tests for race-weekend round grouping, and a news-feed fallback for the Nürburgring 24 Hours.
+
 ## 0.210.1 — 2026-07-12
 
 **Fixes.** Corrected a manufacturer listed under the wrong Hypercar ruleset in the new endurance explainer, plus small copy tidy-ups.

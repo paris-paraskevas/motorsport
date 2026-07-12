@@ -27,6 +27,7 @@ export const NEWS_SLUG_MAP: Record<string, string | null> = {
   wrc: 'wrc',
   'nascar-cup': 'nascar-cup',
   nls: null, // no dedicated upstream category; 'endurance' would mislabel generic stories under the NLS chip (audit #9)
+  'adac-ravenol-24h': null, // no dedicated Nürburgring-24h feed; like nls, a generic 'endurance' feed would mislabel — fall back to the official-site affordance rather than being unmapped
 };
 
 const parser = new XMLParser({

@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.210.2 — 2026-07-12
+
+### Changed
+- **B4 "Data completeness & resilience" — the shippable-unsupervised slice.** A recon pass found most of the batch was **already done** (MotoGP chart undercount fixed + regression-tested `lib/results/motogp.test.ts`; GTWC canonical rounds via `event-rounds.json`; FE doubleheader weekend URLs via `splitAcrossRounds`) or **prod/preview/decision-gated** (the standings-resilience `withSourceSnapshot` extension, live weather/news coverage, `media.json` seeds — see IDEAS + HANDOFF). This ships the two genuinely local, safe items:
+  - **`NEWS_SLUG_MAP` completed** (`lib/news.ts`) — `adac-ravenol-24h` was **absent** from the map (undefined, not the intended fallback); added it as an explicit `null` (like `nls`), so the Nürburgring-24h news falls back to the official-site affordance instead of an unmapped state.
+  - **Regression tests** (`lib/group.test.ts`) for `assignRoundsToWeekends`/`splitAcrossRounds` (the previously-untested round logic): a 4-day-merged **doubleheader splits into one reachable weekend per round with NO duplicate round numbers** (the FE fix, as an executable guard), a session no curated round covers **stays at round 0** (the MotoGP pre-season-test regression), and the no-rounds.json **index fallback**. 10/10 group tests pass; tsc + eslint clean.
+
 ## 0.210.1 — 2026-07-12
 
 ### Fixed
