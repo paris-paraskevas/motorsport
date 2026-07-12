@@ -21,6 +21,7 @@ export function HeaderNavMenu({
   href,
   active = false,
   dataTour,
+  dataHeatmapId,
   panelLabel,
   panelClassName,
   children,
@@ -30,6 +31,7 @@ export function HeaderNavMenu({
   href?: string;
   active?: boolean;
   dataTour?: string;
+  dataHeatmapId?: string;
   panelLabel?: string;
   panelClassName?: string;
   children: React.ReactNode;
@@ -117,6 +119,7 @@ export function HeaderNavMenu({
           aria-expanded={open}
           aria-controls={panelId}
           data-tour={dataTour}
+          data-heatmap-id={dataHeatmapId}
           className={triggerClass}
         >
           {inner}
@@ -132,6 +135,7 @@ export function HeaderNavMenu({
           aria-expanded={open}
           aria-controls={panelId}
           data-tour={dataTour}
+          data-heatmap-id={dataHeatmapId}
           className={triggerClass}
         >
           {inner}

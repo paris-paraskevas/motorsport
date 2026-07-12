@@ -79,11 +79,11 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
     <nav ref={ref} aria-label="Jump to" className="flex flex-wrap items-center gap-2 border-y border-border py-3">
       <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.18em] text-text-faint">Jump to</span>
 
-      <Link href="/calendar" className={chip}>
+      <Link href="/calendar" data-heatmap-id="home:launcher:calendar" className={chip}>
         <CalendarDays size={13} aria-hidden /> Calendar
       </Link>
 
-      <Link href="/f1/analysis" className={chip}>
+      <Link href="/f1/analysis" data-heatmap-id="home:launcher:f1-analysis" className={chip}>
         <Flag size={13} aria-hidden /> F1 Analysis
         {!isSignedIn && <Lock size={11} className="text-text-faint" aria-label="sign in to unlock" />}
       </Link>
@@ -94,6 +94,7 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
           onClick={() => setOpen(open === 'standings' ? null : 'standings')}
           aria-expanded={open === 'standings'}
           aria-haspopup="menu"
+          data-heatmap-id="home:launcher:standings"
           className={chip}
         >
           <Trophy size={13} aria-hidden /> Standings
@@ -108,6 +109,7 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
           onClick={() => setOpen(open === 'results' ? null : 'results')}
           aria-expanded={open === 'results'}
           aria-haspopup="menu"
+          data-heatmap-id="home:launcher:results"
           className={chip}
         >
           <BarChart3 size={13} aria-hidden /> Results
@@ -116,19 +118,19 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
         {open === 'results' && picker('results')}
       </div>
 
-      <Link href="/news" className={chip}>
+      <Link href="/news" data-heatmap-id="home:launcher:news" className={chip}>
         <Newspaper size={13} aria-hidden /> News
       </Link>
 
-      <Link href="/blog" className={chip}>
+      <Link href="/blog" data-heatmap-id="home:launcher:blog" className={chip}>
         <FileText size={13} aria-hidden /> Blog
       </Link>
 
-      <Link href="/threads" className={chip}>
+      <Link href="/threads" data-heatmap-id="home:launcher:threads" className={chip}>
         <MessagesSquare size={13} aria-hidden /> Threads
       </Link>
 
-      <Link href="/social" className={chip}>
+      <Link href="/social" data-heatmap-id="home:launcher:social" className={chip}>
         <Users size={13} aria-hidden /> Social
       </Link>
     </nav>

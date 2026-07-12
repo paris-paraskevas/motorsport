@@ -1,21 +1,23 @@
-import { kv } from '@vercel/kv';
+import { betDb, isBettingConfigured } from '@/lib/betting/client';
 
-// Anonymous click-heatmap aggregation. NO PII — only a same-site page path plus a
-// coarse viewport grid cell per click. Feeds the /admin behaviour panel so the
-// operator can see which page regions get attention (and which are dead) for
-// sponsorship placement. Every read/write is fail-soft (an unprovisioned or
-// blipping KV must never break page render or the click path).
-
-export const GRID = 24; // GRID x GRID viewport cells per page
-const CELLS = GRID * GRID;
-const PATHS_KEY = 'heatmap:paths'; // set of tracked paths
-const MAX_PATHS = 80; // safety cap on distinct paths
-const TTL = 60 * 60 * 24 * 90; // 90-day rolling window on the per-path cell hash
-const cellsKey = (path: string) => `heatmap:cells:${path}`;
+// Anonymous element-relative click + impression heatmap, backed by the Postgres
+// `heatmap_event` table (rebuild of the old KV 24x24 viewport-grid model, which
+// could not name WHICH element got clicks, mixed breakpoints, and ignored scroll).
+// One row per raw event; the `heatmap_element_stats` view aggregates them so the
+// /admin panel can rank HOT elements (most clicks) and DEAD elements (seen but
+// never clicked — the wasted-space / sponsorship signal). NO PII: only a same-site
+// path, an element id / compact selector, and a coarse in-element ratio.
+//
+// FAIL-SOFT everywhere. Capture (recordEvents) and the reads (rankedElements /
+// heatmapAdminOverview) must never throw into the caller and must tolerate the
+// table/view not yet existing on prod — this module ships BEFORE the migration is
+// applied, in which case capture no-ops and the admin shows its empty state.
+// `betDb()` is the shared service-role Supabase client (named for betting but used
+// by every server table); RLS-on + no-policies means only it can touch the table.
 
 /** Accept only clean same-site app paths: strip query/hash, lowercase, cap length,
- *  whitelist chars. Returns null for anything else (prevents unbounded/garbage KV
- *  keys from arbitrary client input). */
+ *  whitelist chars. Returns null for anything else (prevents unbounded/garbage rows
+ *  from arbitrary client input). */
 export function normalizePath(raw: unknown): string | null {
   if (typeof raw !== 'string') return null;
   let p = raw.split('?')[0].split('#')[0].trim().toLowerCase();
@@ -25,65 +27,256 @@ export function normalizePath(raw: unknown): string | null {
   return p || '/';
 }
 
-export interface ClickCell {
-  c: number; // cell index = gy * GRID + gx (0..CELLS-1)
-  n: number; // count in this batch
-}
+export type Breakpoint = 'mobile' | 'tablet' | 'desktop';
+export type EventKind = 'click' | 'impression';
+export type Pointer = 'mouse' | 'touch';
 
-/** Aggregate a batch of clicks for one path into KV. */
-export async function recordClicks(rawPath: string, cells: ClickCell[]): Promise<void> {
-  const path = normalizePath(rawPath);
-  if (!path || !Array.isArray(cells) || cells.length === 0) return;
-  const key = cellsKey(path);
-  const pipe = kv.pipeline();
-  let wrote = 0;
-  for (const cell of cells.slice(0, CELLS)) {
-    const c = Number(cell?.c);
-    if (!Number.isInteger(c) || c < 0 || c >= CELLS) continue;
-    const n = Math.max(1, Math.min(50, Math.floor(Number(cell?.n)) || 1));
-    pipe.hincrby(key, String(c), n);
-    wrote++;
-  }
-  if (wrote === 0) return;
-  pipe.expire(key, TTL);
-  pipe.sadd(PATHS_KEY, path);
-  try {
-    await pipe.exec();
-  } catch {
-    /* KV down — clicks are best-effort */
-  }
-}
-
-export interface PathHeat {
+export interface HeatmapEvent {
   path: string;
-  total: number;
-  max: number;
-  cells: Record<number, number>;
+  kind: EventKind;
+  elementId?: string;
+  selector?: string;
+  relX?: number;
+  relY?: number;
+  breakpoint: Breakpoint;
+  viewportW?: number;
+  viewportH?: number;
+  pointer?: Pointer;
 }
 
-/** Top pages by total clicks, with their per-cell counts, for the admin panel. */
-export async function topHeatmaps(limit = 8): Promise<PathHeat[]> {
+export interface ElementRank {
+  elementId: string;
+  clicks: number;
+  impressions: number;
+  ctr: number; // clicks / impressions when impressions > 0, else 0
+}
+
+const BREAKPOINTS = new Set<string>(['mobile', 'tablet', 'desktop']);
+const KINDS = new Set<string>(['click', 'impression']);
+const POINTERS = new Set<string>(['mouse', 'touch']);
+const MAX_EVENTS = 250; // per-batch cap (well under sendBeacon's 64 KiB)
+const ELEMENT_ID_MAX = 128;
+const SELECTOR_MAX = 200;
+const SMALLINT_MAX = 32767; // Postgres smallint upper bound for viewport dims
+
+function clampRatio(v: unknown): number | undefined {
+  const n = typeof v === 'number' ? v : Number(v);
+  if (!Number.isFinite(n)) return undefined;
+  return Math.max(0, Math.min(1, n));
+}
+
+function clampDim(v: unknown): number | undefined {
+  const n = typeof v === 'number' ? v : Number(v);
+  if (!Number.isFinite(n)) return undefined;
+  const r = Math.round(n);
+  return r >= 0 && r <= SMALLINT_MAX ? r : undefined;
+}
+
+function capString(v: unknown, max: number): string | undefined {
+  if (typeof v !== 'string') return undefined;
+  const s = v.trim();
+  return s.length > 0 ? s.slice(0, max) : undefined;
+}
+
+/**
+ * Validate + clamp a raw client envelope `{ path, breakpoint, viewportW, viewportH,
+ * pointer, events: [{ kind, elementId?, selector?, relX?, relY? }] }` into row-shaped
+ * HeatmapEvents. Drops the whole batch on a bad path/breakpoint; drops individual
+ * events with a bad kind or that identify nothing (no elementId AND no selector);
+ * clamps ratios to 0..1, viewport dims to a smallint, caps strings, and caps the
+ * batch to MAX_EVENTS. Lives here (not in the route) so it is unit-testable offline.
+ */
+export function sanitizeEvents(envelope: unknown): HeatmapEvent[] {
+  if (!envelope || typeof envelope !== 'object') return [];
+  const env = envelope as Record<string, unknown>;
+  const path = normalizePath(env.path);
+  const bp = env.breakpoint;
+  if (!path || typeof bp !== 'string' || !BREAKPOINTS.has(bp)) return [];
+  if (!Array.isArray(env.events)) return [];
+
+  const breakpoint = bp as Breakpoint;
+  const viewportW = clampDim(env.viewportW);
+  const viewportH = clampDim(env.viewportH);
+  const pointer =
+    typeof env.pointer === 'string' && POINTERS.has(env.pointer) ? (env.pointer as Pointer) : undefined;
+
+  const out: HeatmapEvent[] = [];
+  for (const raw of env.events.slice(0, MAX_EVENTS)) {
+    if (!raw || typeof raw !== 'object') continue;
+    const ev = raw as Record<string, unknown>;
+    if (typeof ev.kind !== 'string' || !KINDS.has(ev.kind)) continue;
+    const elementId = capString(ev.elementId, ELEMENT_ID_MAX);
+    const selector = capString(ev.selector, SELECTOR_MAX);
+    if (!elementId && !selector) continue; // a row must identify something
+    out.push({
+      path,
+      kind: ev.kind as EventKind,
+      elementId,
+      selector,
+      relX: clampRatio(ev.relX),
+      relY: clampRatio(ev.relY),
+      breakpoint,
+      viewportW,
+      viewportH,
+      pointer,
+    });
+  }
+  return out;
+}
+
+/**
+ * Bulk-insert a batch of already-sanitized events. Fail-soft: no-op when Supabase
+ * is unconfigured, and both a returned `{ error }` (e.g. the table isn't applied on
+ * prod yet) and any thrown error are swallowed — capture is best-effort and must
+ * never surface to the ingest path.
+ */
+export async function recordEvents(events: HeatmapEvent[]): Promise<void> {
+  if (!isBettingConfigured()) return;
+  if (!Array.isArray(events) || events.length === 0) return;
+  const rows = events.map(e => ({
+    path: e.path,
+    kind: e.kind,
+    element_id: e.elementId ?? null,
+    selector: e.selector ?? null,
+    rel_x: e.relX ?? null,
+    rel_y: e.relY ?? null,
+    breakpoint: e.breakpoint,
+    viewport_w: e.viewportW ?? null,
+    viewport_h: e.viewportH ?? null,
+    pointer: e.pointer ?? null,
+  }));
   try {
-    const paths = (await kv.smembers(PATHS_KEY)) as string[] | null;
-    if (!paths || paths.length === 0) return [];
-    const heats: PathHeat[] = [];
-    for (const path of paths.slice(0, MAX_PATHS)) {
-      const raw = ((await kv.hgetall(cellsKey(path))) ?? {}) as Record<string, unknown>;
-      const cells: Record<number, number> = {};
-      let total = 0;
-      let max = 0;
-      for (const [k, v] of Object.entries(raw)) {
-        const c = Number(k);
-        const n = Number(v);
-        if (!Number.isInteger(c) || !Number.isFinite(n)) continue;
-        cells[c] = n;
-        total += n;
-        if (n > max) max = n;
+    const { error } = await betDb().from('heatmap_event').insert(rows);
+    if (error) return; // table not applied yet / transient — swallow, capture is best-effort
+  } catch {
+    // Supabase unreachable — never break the ingest path.
+  }
+}
+
+interface StatRow {
+  element_id: string | null;
+  clicks: number | null;
+  impressions: number | null;
+}
+
+/** Split raw stat rows (already scoped to one path[/breakpoint]) into hot/dead lists.
+ *  Rows are aggregated by element id first, so the same id spanning breakpoints (when
+ *  no breakpoint filter is applied) collapses into one rank. */
+function splitRanks(rows: StatRow[], deadMinImpressions: number): { hot: ElementRank[]; dead: ElementRank[] } {
+  const byId = new Map<string, { clicks: number; impressions: number }>();
+  for (const r of rows) {
+    const id = r.element_id;
+    if (!id) continue;
+    const prev = byId.get(id) ?? { clicks: 0, impressions: 0 };
+    byId.set(id, {
+      clicks: prev.clicks + (Number(r.clicks) || 0),
+      impressions: prev.impressions + (Number(r.impressions) || 0),
+    });
+  }
+  const ranks: ElementRank[] = [...byId.entries()].map(([elementId, v]) => ({
+    elementId,
+    clicks: v.clicks,
+    impressions: v.impressions,
+    ctr: v.impressions > 0 ? v.clicks / v.impressions : 0,
+  }));
+  const hot = ranks.filter(r => r.clicks > 0).sort((a, b) => b.clicks - a.clicks);
+  const dead = ranks
+    .filter(r => r.clicks === 0 && r.impressions >= deadMinImpressions)
+    .sort((a, b) => b.impressions - a.impressions);
+  return { hot, dead };
+}
+
+/**
+ * Ranked hot/dead elements for one path (optionally scoped to a breakpoint).
+ * Fail-soft to `{ hot: [], dead: [] }` when unconfigured, the path is invalid, or
+ * the view read errors/throws. `deadMinImpressions` (default 20) is the minimum
+ * impressions before a never-clicked element counts as a dead zone.
+ */
+export async function rankedElements(
+  rawPath: string,
+  opts: { breakpoint?: Breakpoint; deadMinImpressions?: number } = {},
+): Promise<{ hot: ElementRank[]; dead: ElementRank[] }> {
+  const empty = { hot: [] as ElementRank[], dead: [] as ElementRank[] };
+  if (!isBettingConfigured()) return empty;
+  const path = normalizePath(rawPath);
+  if (!path) return empty;
+  const deadMin = opts.deadMinImpressions ?? 20;
+  try {
+    let query = betDb()
+      .from('heatmap_element_stats')
+      .select('element_id, clicks, impressions')
+      .eq('path', path);
+    if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    const { data, error } = await query;
+    if (error || !data) return empty;
+    return splitRanks(data as StatRow[], deadMin);
+  } catch {
+    return empty;
+  }
+}
+
+export interface HeatmapPathPanel {
+  path: string;
+  total: number; // total clicks across the shown breakpoints (sort key + KPI)
+  breakpoints: { breakpoint: Breakpoint; hot: ElementRank[]; dead: ElementRank[] }[];
+}
+
+interface OverviewRow extends StatRow {
+  path: string;
+  breakpoint: string;
+}
+
+/**
+ * One-query overview for /admin: every tracked path, each broken down by breakpoint
+ * into hot/dead lists. Fail-soft to `[]`. Enumerates paths itself (the per-path
+ * `rankedElements` cannot), so the admin needs no separate path-listing call.
+ * Paths are ordered by total clicks; empty when there is no data (or pre-migration).
+ */
+export async function heatmapAdminOverview(
+  opts: { deadMinImpressions?: number; maxPaths?: number } = {},
+): Promise<HeatmapPathPanel[]> {
+  if (!isBettingConfigured()) return [];
+  const deadMin = opts.deadMinImpressions ?? 20;
+  const maxPaths = opts.maxPaths ?? 8;
+  try {
+    const { data, error } = await betDb()
+      .from('heatmap_element_stats')
+      .select('path, breakpoint, element_id, clicks, impressions');
+    if (error || !data) return [];
+    const rows = data as OverviewRow[];
+
+    // Group rows by path, then by breakpoint.
+    const byPath = new Map<string, Map<Breakpoint, StatRow[]>>();
+    for (const r of rows) {
+      if (!r.path || typeof r.breakpoint !== 'string' || !BREAKPOINTS.has(r.breakpoint)) continue;
+      const bp = r.breakpoint as Breakpoint;
+      let bpMap = byPath.get(r.path);
+      if (!bpMap) {
+        bpMap = new Map();
+        byPath.set(r.path, bpMap);
       }
-      if (total > 0) heats.push({ path, total, max, cells });
+      const list = bpMap.get(bp) ?? [];
+      list.push(r);
+      bpMap.set(bp, list);
     }
-    heats.sort((a, b) => b.total - a.total);
-    return heats.slice(0, limit);
+
+    const order: Breakpoint[] = ['mobile', 'tablet', 'desktop'];
+    const panels: HeatmapPathPanel[] = [];
+    for (const [path, bpMap] of byPath) {
+      const breakpoints: HeatmapPathPanel['breakpoints'] = [];
+      let total = 0;
+      for (const bp of order) {
+        const list = bpMap.get(bp);
+        if (!list) continue;
+        const { hot, dead } = splitRanks(list, deadMin);
+        if (hot.length === 0 && dead.length === 0) continue;
+        total += hot.reduce((s, r) => s + r.clicks, 0);
+        breakpoints.push({ breakpoint: bp, hot, dead });
+      }
+      if (breakpoints.length > 0) panels.push({ path, total, breakpoints });
+    }
+    panels.sort((a, b) => b.total - a.total);
+    return panels.slice(0, maxPaths);
   } catch {
     return [];
   }
