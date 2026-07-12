@@ -32,6 +32,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
   // Status filter — closed items are hidden by default so the board shows live work.
   const [visible, setVisible] = useState<Set<Item['status']>>(() => new Set<Item['status']>(['open', 'considered', 'done']));
   const toggle = (s: Item['status']) =>
@@ -121,6 +122,41 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
     }
   }
 
+  // Copy every OPEN item as type + title + description, so the whole open queue
+  // can be handed off in one paste (operator request).
+  function copyAllOpen() {
+    const open = (items ?? []).filter(it => it.status === 'open');
+    const text = open.map(it => `${KIND_LABEL[it.kind]}\n${it.title}\n${it.body}`).join('\n\n---\n\n');
+    void navigator.clipboard?.writeText(text).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      },
+      () => setError('Clipboard blocked — copy manually.'),
+    );
+  }
+
+  // Bulk-close everything marked done (operator: "automatically close these once
+  // we've done them"). One click flips all done → closed, then reloads once.
+  async function closeAllDone() {
+    const done = (items ?? []).filter(it => it.status === 'done');
+    if (done.length === 0) return;
+    try {
+      await Promise.all(
+        done.map(it =>
+          fetch(`/api/feedback/${it.id}`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ status: 'closed' }),
+          }),
+        ),
+      );
+      await reload();
+    } catch {
+      setError('Network error — try again.');
+    }
+  }
+
   const field = 'w-full rounded border border-border bg-bg px-3 py-2 text-sm text-text placeholder:text-text-faint';
 
   return (
@@ -155,8 +191,9 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
         <p className="font-mono text-sm text-text-muted">Nothing yet — post the first bug or idea above.</p>
       ) : (
         <>
-          {/* Status filter — toggle which statuses show; closed is off by default. */}
-          <div className="flex flex-wrap gap-1.5">
+          {/* Status filter — toggle which statuses show; closed is off by default.
+              Right side: copy the open queue, and bulk-close everything done. */}
+          <div className="flex flex-wrap items-center gap-1.5">
             {STATUSES.map(s => {
               const on = visible.has(s);
               return (
@@ -173,6 +210,23 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
                 </button>
               );
             })}
+            <button
+              type="button"
+              onClick={copyAllOpen}
+              disabled={counts.open === 0}
+              className="ml-auto rounded border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text disabled:opacity-40"
+            >
+              {copied ? 'Copied ✓' : `Copy all open (${counts.open})`}
+            </button>
+            {canManage && counts.done > 0 && (
+              <button
+                type="button"
+                onClick={closeAllDone}
+                className="rounded border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+              >
+                Close all done ({counts.done})
+              </button>
+            )}
           </div>
 
           {shown.length === 0 ? (
