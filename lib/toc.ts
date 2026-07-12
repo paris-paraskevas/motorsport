@@ -29,10 +29,14 @@ function dedupe(slug: string, used: Map<string, number>): string {
 /** DB path: inject ids into the rendered h2/h3 and return the flat ToC. Runs on
  *  the already-sanitised HTML string — the ids we add are computed slugs, never
  *  user input, so this introduces no XSS surface. Headings that already carry an
- *  id are left untouched. */
-export function injectHeadingIds(html: string): { html: string; toc: TocItem[] } {
+ *  id are left untouched. Pass a shared `used` map to keep ids unique across
+ *  multiple HTML fragments rendered separately (the embed pipeline renders each
+ *  markdown run between shortcodes on its own, then threads one map through). */
+export function injectHeadingIds(
+  html: string,
+  used: Map<string, number> = new Map(),
+): { html: string; toc: TocItem[] } {
   const toc: TocItem[] = [];
-  const used = new Map<string, number>();
   const withIds = html.replace(
     /<(h2|h3)\b([^>]*)>([\s\S]*?)<\/\1>/g,
     (m, tag: string, attrs: string, inner: string) => {
