@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.207.0 — 2026-07-12
+
+### Changed
+- **Feedback board (`/feedback`, staff-only): status filter + closed items read as closed** (operator ask "make closed items closed and filter them better"). `components/feedback/FeedbackBoard.tsx` gains a status-filter chip row (open / considered / done / closed, each with a live count); **closed is off by default** so the board shows live work. Done + closed rows render dimmed and closed titles are struck through; an empty-filter state shows "No items match the filter". Filter is client-side over the already-loaded list (no API change). Verified in-browser with mock data at 1440 (closed hidden by default; toggling CLOSED reveals the struck-through row); tsc + eslint clean.
+
 ## 0.206.1 — 2026-07-12
 
 ### Fixed

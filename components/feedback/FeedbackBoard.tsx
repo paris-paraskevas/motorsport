@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 
 interface Item {
   id: string;
@@ -32,6 +32,21 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
+  // Status filter — closed items are hidden by default so the board shows live work.
+  const [visible, setVisible] = useState<Set<Item['status']>>(() => new Set<Item['status']>(['open', 'considered', 'done']));
+  const toggle = (s: Item['status']) =>
+    setVisible(prev => {
+      const next = new Set(prev);
+      if (next.has(s)) next.delete(s);
+      else next.add(s);
+      return next;
+    });
+  const counts = useMemo(() => {
+    const c: Record<Item['status'], number> = { open: 0, considered: 0, done: 0, closed: 0 };
+    for (const it of items ?? []) c[it.status] += 1;
+    return c;
+  }, [items]);
+  const shown = (items ?? []).filter(it => visible.has(it.status));
 
   async function reload() {
     const r = await fetch('/api/feedback');
@@ -139,37 +154,66 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
       ) : items.length === 0 ? (
         <p className="font-mono text-sm text-text-muted">Nothing yet — post the first bug or idea above.</p>
       ) : (
-        <ul className="space-y-3">
-          {items.map(it => (
-            <li key={it.id} className="rounded-lg border border-border p-3">
-              <div className="mb-1 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">
-                  {KIND_LABEL[it.kind]}
-                </span>
-                <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${STATUS_TONE[it.status]}`}>{it.status}</span>
-                <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-                  {it.authorName ?? `Racer ${it.authorId.slice(-4)}`}
-                </span>
-              </div>
-              <div className="font-semibold text-text">{it.title}</div>
-              <p className="mt-0.5 whitespace-pre-wrap text-sm text-text-muted">{it.body}</p>
-              {canManage && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {STATUSES.filter(s => s !== it.status).map(s => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => move(it.id, s)}
-                      className="rounded border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted hover:text-text"
-                    >
-                      → {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+        <>
+          {/* Status filter — toggle which statuses show; closed is off by default. */}
+          <div className="flex flex-wrap gap-1.5">
+            {STATUSES.map(s => {
+              const on = visible.has(s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => toggle(s)}
+                  aria-pressed={on}
+                  className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
+                    on ? 'border-brand bg-brand/10 text-text' : 'border-border text-text-faint hover:text-text-muted'
+                  }`}
+                >
+                  {s} <span className="tabular-nums">{counts[s]}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {shown.length === 0 ? (
+            <p className="font-mono text-sm text-text-muted">No items match the filter.</p>
+          ) : (
+            <ul className="space-y-3">
+              {shown.map(it => {
+                const dimmed = it.status === 'closed' || it.status === 'done';
+                return (
+                  <li key={it.id} className={`rounded-lg border border-border p-3 ${dimmed ? 'opacity-60' : ''}`}>
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">
+                        {KIND_LABEL[it.kind]}
+                      </span>
+                      <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${STATUS_TONE[it.status]}`}>{it.status}</span>
+                      <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+                        {it.authorName ?? `Racer ${it.authorId.slice(-4)}`}
+                      </span>
+                    </div>
+                    <div className={`font-semibold text-text ${it.status === 'closed' ? 'line-through' : ''}`}>{it.title}</div>
+                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-text-muted">{it.body}</p>
+                    {canManage && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {STATUSES.filter(s => s !== it.status).map(s => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => move(it.id, s)}
+                            className="rounded border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted hover:text-text"
+                          >
+                            → {s}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );
