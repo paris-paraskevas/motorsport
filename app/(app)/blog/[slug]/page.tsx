@@ -7,9 +7,10 @@ import { currentUser, clerkClient } from '@clerk/nextjs/server';
 import { listPostSlugs, loadPost, loadAllPosts } from '@/lib/posts';
 import { getPostBySlug, publishedPosts, type BlogPost } from '@/lib/blog';
 import { isAdmin, isWriter } from '@/lib/threads';
-import { renderMarkdown } from '@/lib/content';
+import { renderPostBody, type RenderedBody } from '@/lib/blog-embeds';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { DraftEditor } from '@/components/blog/DraftEditor';
+import { PostArticle } from '@/components/blog/PostArticle';
 import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
@@ -17,7 +18,7 @@ import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
 import { SITE_URL } from '@/lib/site';
 import type { Post } from '@/lib/types';
 import { loadSeriesMeta } from '@/lib/series';
-import { injectHeadingIds, tocFromMarkdown, type TocItem } from '@/lib/toc';
+import { tocFromMarkdown, type TocItem } from '@/lib/toc';
 import { BlogShare } from '@/components/blog/BlogShare';
 
 // Force-dynamic: required for the admin scheduled-preview branch (currentUser),
@@ -203,7 +204,7 @@ export default async function PostPage({
   const { slug } = await params;
 
   let post: Post | null = null;
-  let bodyHtml: string | null = null; // set for DB posts (rendered markdown)
+  let rendered: RenderedBody | null = null; // set for DB posts (rendered segments + ToC)
   let scheduledAt: string | null = null; // admin preview of a scheduled (approved) post
   let draftPreview = false; // admin preview of a still-draft post (not yet scheduled)
 
@@ -211,12 +212,12 @@ export default async function PostPage({
   if (db) {
     if (db.status === 'published') {
       post = dbToPost(db);
-      bodyHtml = await renderMarkdown(db.body);
+      rendered = await renderPostBody(db.body);
     } else if ((db.status === 'approved' || db.status === 'draft') && (await canPreviewUnpublished(db))) {
       // Not yet live (scheduled, or still a draft) — previewable by an admin or
       // the writer who owns it, so they can read the whole piece before it's live.
       post = dbToPost(db);
-      bodyHtml = await renderMarkdown(db.body);
+      rendered = await renderPostBody(db.body);
       scheduledAt = db.status === 'approved' ? db.publishAt : null;
       draftPreview = db.status === 'draft';
     } else {
@@ -234,18 +235,14 @@ export default async function PostPage({
 
   const postUrl = `${SITE_URL}/blog/${slug}`;
 
-  // Table of contents + anchor ids for the sidebar. DB posts carry rendered
-  // HTML (inject ids into it); MDX posts derive the ToC from their markdown
-  // source (mdx-components adds matching ids at render).
-  let articleHtml = bodyHtml;
-  let toc: TocItem[] = [];
-  if (bodyHtml !== null) {
-    const injected = injectHeadingIds(bodyHtml);
-    articleHtml = injected.html;
-    toc = injected.toc;
-  } else if (post.source) {
-    toc = tocFromMarkdown(post.source);
-  }
+  // Table of contents for the sidebar. DB posts carry rendered segments (ids
+  // already injected across them, ToC accumulated in document order); MDX posts
+  // derive the ToC from their markdown source (mdx-components adds matching ids).
+  const toc: TocItem[] = rendered
+    ? rendered.toc
+    : post.source
+      ? tocFromMarkdown(post.source)
+      : [];
 
   const series = post.frontmatter.seriesSlug
     ? await loadSeriesMeta(post.frontmatter.seriesSlug).catch(() => null)
@@ -280,7 +277,7 @@ export default async function PostPage({
           title={post.frontmatter.title}
           summary={post.frontmatter.summary}
           body={db.body}
-          bodyHtml={bodyHtml ?? ''}
+          bodyNode={<PostArticle segments={rendered?.segments ?? []} />}
           dateLabel={formatDate(post.frontmatter.publishedAt)}
           banner={
             draftPreview
@@ -333,8 +330,8 @@ export default async function PostPage({
       </header>
 
       <article className={POST_ARTICLE_CLASS}>
-        {articleHtml !== null ? (
-          <div dangerouslySetInnerHTML={{ __html: articleHtml }} />
+        {rendered ? (
+          <PostArticle segments={rendered.segments} />
         ) : (
           <MDXRemote source={post.source} components={mdxComponents} />
         )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil } from 'lucide-react';
 import { PostHeader, POST_ARTICLE_CLASS, type PostAuthor } from './PostHeader';
@@ -19,9 +19,10 @@ const SUMMARY_MAX = 300;
 // amber banner + post header + article for draft/scheduled posts, plus a
 // pencil that swaps them for an in-place markdown editor so a draft can be
 // hand-corrected during review. Save PATCHes /api/blog/[id] then
-// router.refresh() — the RSC re-renders (getPostBySlug → renderMarkdown) and
+// router.refresh() — the RSC re-renders (getPostBySlug → renderPostBody) and
 // fresh props drop the component back to view mode. No client-side markdown
-// rendering, so the rendered result is always the server pipeline's.
+// rendering, so the rendered result (incl. live embeds) is always the server
+// pipeline's; `bodyNode` is that server-rendered article, passed in as a node.
 // Slug, series, hero image and publish time are immutable in this surface.
 
 export interface DraftEditorProps {
@@ -29,13 +30,13 @@ export interface DraftEditorProps {
   title: string;
   summary: string;
   body: string;
-  bodyHtml: string;
+  bodyNode: ReactNode;
   dateLabel: string;
   banner: { kind: 'draft' } | { kind: 'scheduled'; label: string };
   author: PostAuthor | null;
 }
 
-export function DraftEditor({ id, title, summary, body, bodyHtml, dateLabel, banner, author }: DraftEditorProps) {
+export function DraftEditor({ id, title, summary, body, bodyNode, dateLabel, banner, author }: DraftEditorProps) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -169,9 +170,7 @@ export function DraftEditor({ id, title, summary, body, bodyHtml, dateLabel, ban
             summary={summary}
             author={author ?? { name: null, image: null }}
           />
-          <article className={POST_ARTICLE_CLASS}>
-            <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
-          </article>
+          <article className={POST_ARTICLE_CLASS}>{bodyNode}</article>
         </>
       )}
     </>

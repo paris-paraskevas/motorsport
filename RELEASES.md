@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.211.0 — 2026-07-12
+
+**Live charts in blog posts.** Blog posts can now feature a live championship-trend chart for a series right in the article — the same interactive chart as the standings pages, drawn from the season's real results.
+
 ## 0.210.2 — 2026-07-12
 
 **Behind the scenes.** Internal hardening — regression tests for race-weekend round grouping, and a news-feed fallback for the Nürburgring 24 Hours.
