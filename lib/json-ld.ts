@@ -87,8 +87,10 @@ export function sportsEventLd(args: {
   addressCountry?: string;
   /** Matched circuit coordinates → Place.geo. */
   geo?: { lat: number; lon: number };
+  /** Override the event URL (e.g. a per-session page); defaults to the weekend URL. */
+  url?: string;
 }): object {
-  const url = `${SITE_URL}/series/${args.slug}/weekend/${args.round}`;
+  const url = args.url ?? `${SITE_URL}/series/${args.slug}/weekend/${args.round}`;
   const location = args.weekend.sessions.find((s) => s.location)?.location;
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',

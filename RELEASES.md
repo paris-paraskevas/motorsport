@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.218.1 — 2026-07-13
+
+**Session pages in search.** Practice, qualifying and race session pages now tell search engines the session name and its exact start time, so searches like "what time is practice" can surface the right details.
+
 ## 0.218.0 — 2026-07-13
 
 **Richer circuit guides.** Fuller, fact-checked profiles for Homestead-Miami, Talladega, Road America and Laguna Seca, each answering what the track is, where it is and how long it is, with clearer facts, sources and links. The country track lists (Sweden, Japan, Argentina and more) now open with a better summary of each nation's venues.

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.218.1 — 2026-07-13
+
+### Added
+- **SEO campaign Phase 2a — per-session structured data + query-matched metadata.** `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`: session pages now emit a `BreadcrumbList` (Home → series → weekend → session) + a session-level **`SportsEvent`** whose `startDate` is the real session instant — the "what time is <session>" rich-result signal for the site's #1 impression page (WEC FP1). Gated on a known time (dateOnly/TBC sessions skip the event). Meta description rewritten to lead with the query ("What time is {session} at the {event}?"). `lib/json-ld.ts`: `sportsEventLd` gains an optional `url` (defaults to the weekend URL) so it can point at a session. Verified in dev across F1/MotoGP/WEC session pages (SportsEvent + startDate + breadcrumb present, 0 console errors); tsc clean.
+- **Deferred to Phase 2b (flagged):** `force-dynamic` → ISR is entangled with the F1 `auth()` analysis gate (needs a dynamic-boundary refactor); the `LocalTime` Athens-SSR canonical-time fix; and a selective session-URL sitemap policy (bulk-adding every session risks a scaled-content signal).
+
 ## 0.218.0 — 2026-07-13
 
 ### Changed

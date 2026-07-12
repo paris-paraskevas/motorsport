@@ -33,6 +33,8 @@ import {
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
+import { JsonLd } from '@/components/JsonLd';
+import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { loadMedia, videoForSession } from '@/lib/media';
 import {
@@ -59,7 +61,7 @@ import { OvertakesBoard } from '@/components/f1/OvertakesBoard';
 import { buildPracticeAnalysis, type PracticeAnalysis as PracticeData } from '@/lib/openf1/practice';
 import { PracticeAnalysis } from '@/components/f1/PracticeAnalysis';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
-import { PAGE_WIDE } from '@/lib/site';
+import { PAGE_WIDE, SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -334,7 +336,8 @@ export async function generateMetadata(
   const title = base.length > 60 ? `${base.slice(0, 59)}…` : base;
   const hasFullClassification =
     ['f1', 'f2', 'f3', 'motogp', 'wsbk'].includes(ctx.slug);
-  const description = `${ctx.session.title} at the ${ctx.series.meta.name} ${weekendTitle} — session time in your time zone${hasFullClassification ? ', full classification and results' : ''}.`;
+  const metaSessionName = ctx.session.title.replace(/^.*?[-–—:]\s*/, '').trim() || ctx.session.title;
+  const description = `What time is ${metaSessionName} at the ${ctx.series.meta.name} ${weekendTitle}? Start time shown in your local time zone${hasFullClassification ? ', plus full classification and results' : ''}.`;
   const path = `/series/${ctx.slug}/weekend/${ctx.round}/${ctx.sessionParam}`;
   return {
     title,
@@ -535,7 +538,7 @@ export default async function SessionPage({
 }) {
   const ctx = await resolve(params);
   if (!ctx) notFound();
-  const { series, weekend, session, round, slug } = ctx;
+  const { series, weekend, session, round, slug, sessionParam } = ctx;
 
   const now = new Date();
   const isLive = !session.dateOnly && session.start <= now && now <= session.end;
@@ -679,11 +682,41 @@ export default async function SessionPage({
     weekendTitle,
   );
 
+  // Per-session structured data: a breadcrumb (Home > series > weekend >
+  // session) plus a session-level SportsEvent whose startDate is the real
+  // session instant — the "what time is <session>" rich-result signal. Emitted
+  // only when the time is known (dateOnly/TBC sessions have no real instant).
+  const sessionEventName = `${sessionName} at ${series.meta.name} ${weekendTitle}`;
+  const sessionUrl = `${SITE_URL}/series/${slug}/weekend/${round}/${sessionParam}`;
+
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
       style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Home', url: SITE_URL },
+          { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
+          { name: weekendTitle, url: `${SITE_URL}/series/${slug}/weekend/${round}` },
+          { name: sessionName, url: sessionUrl },
+        ])}
+      />
+      {!session.dateOnly && (
+        <JsonLd
+          data={sportsEventLd({
+            weekend,
+            series,
+            slug,
+            round,
+            title: sessionEventName,
+            startDate: session.start,
+            endDate: session.end,
+            url: sessionUrl,
+            organizerUrl: series.meta.officialSite ?? `${SITE_URL}/series/${slug}`,
+          })}
+        />
+      )}
       <div
         className="absolute top-0 left-0 right-0 h-px -z-10"
         style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
