@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.217.0 — 2026-07-12
+
+**Clearer, fact-checked motorsport guides.** Richer explainers for how rally racing works, the difference between MotoGP, Moto2 and Moto3, how the F1 points system works, and the classes at Le Mans, each cross-checked against official sources. We also corrected a few technical figures to their current 2026 values and fixed some internal links.
+
 ## 0.216.1 — 2026-07-12
 
 **Better DRS explainers.** Expanded the "What is DRS?" guide with how it worked, the DRS zones, the one-second rule and why F1 dropped it for 2026, and sharpened the "what replaced DRS" guide, so both are easier to find and answer the question fully.

@@ -39,7 +39,7 @@ Manufacturers on the LMH route include **Toyota, Ferrari, Peugeot and Aston Mart
 
 An **LMDh** car is built on a **spec "backbone"** — a chassis from one of four approved constructors (**Dallara, Ligier, Multimatic or Oreca**) plus a **common hybrid system** (motor by Bosch, battery by Williams, gearbox by Xtrac) that delivers its power to the **rear axle only**. The manufacturer supplies its own engine and bodywork on top. The spec parts keep the chassis cost capped at roughly €1 million, and — crucially — an LMDh car is eligible for **both** the WEC and IMSA, so one design can race on two continents.
 
-Manufacturers on the LMDh route include **Porsche, Cadillac, BMW, Lamborghini and Alpine**, with **Genesis** joining as an LMDh newcomer in 2026 (on an Oreca chassis). (BMW's M Hybrid V8 runs an LMDh Dallara chassis — despite the class being *named* "Hypercar".)
+Manufacturers on the LMDh route include **Cadillac, BMW and Alpine**, with **Genesis** joining as an LMDh newcomer in 2026 (on an Oreca chassis). **Porsche** (963) and **Lamborghini** (SC63) also ran LMDh cars but left the Hypercar grid after 2025 and 2024 respectively. (BMW's M Hybrid V8 runs an LMDh Dallara chassis — despite the class being *named* "Hypercar".)
 
 ## The differences at a glance
 
@@ -49,4 +49,4 @@ Manufacturers on the LMDh route include **Porsche, Cadillac, BMW, Lamborghini an
 - **Where they race** — LMH: WEC / Le Mans only. LMDh: WEC **and** IMSA.
 - **Shared** — both hit a common ~1,030 kg minimum weight and similar total power (~500 kW), equalised by Balance of Performance.
 
-Both approaches now sit on the same grid, which is why a Ferrari (LMH) can fight a Porsche (LMDh) for the same overall win. For how the wider field is organised, see [the classes at Le Mans](/information/endurance/classes-at-le-mans).
+Both approaches now sit on the same grid, which is why a Ferrari (LMH) can fight a Cadillac (LMDh) for the same overall win. For how the wider field is organised, see [the classes at Le Mans](/information/endurance/classes-at-le-mans).
