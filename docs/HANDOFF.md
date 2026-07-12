@@ -6,7 +6,34 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-12 (LATEST, session 9 — B1 feedback quick-wins · B2 tour rebuild · B3.12 reschedule · endurance explainers · adversarial audit) — `main` = 0.210.1
+## ⚡ Next session pickup — 2026-07-12 (LATEST, session 10 — B4 data-resilience: recon found it ~90% already done; shipped the safe slice) — `main` = 0.210.2
+
+**Unsupervised overnight, "next batch" (= B4 Data completeness & resilience). 0.210.1 → 0.210.2, 1 PR (#519).** A recon subagent (verified with 60 passing tests) found **most of B4 was already done or prod/preview/decision-gated** — the IDEAS ledger was stale. Shipped the two genuinely-safe local items; documented the rest. The "audit heavily" instruction was served by the recon discovering the already-done state.
+
+### ✅ Shipped
+- **#519 (0.210.2) chore(data)** — (1) **`NEWS_SLUG_MAP` completed** (`lib/news.ts`): `adac-ravenol-24h` was **absent** (undefined, not the intended fallback) → added explicit `null` like `nls`, so Nürburgring-24h news falls back to the official-site affordance. (2) **Round-grouping regression tests** (`lib/group.test.ts`) for the previously-untested `assignRoundsToWeekends`/`splitAcrossRounds`: doubleheader **splits into one reachable weekend per round with NO duplicate round numbers** (the FE fix, as a guard), uncovered session **stays at round 0** (the MotoGP pre-season-test regression), no-rounds.json **index fallback**. Full suite 852→**855**.
+
+### 🔎 B4 recon verdict (why the batch was thin)
+- **Already done + tested (IDEAS was stale — I trimmed these):** MotoGP standings-chart undercount (fixed, `MIN_RACE_ROWS=3` + `pickScoringRace`; regression tests in `lib/results/motogp.test.ts`); GTWC canonical rounds (`roundForGtWorldEvent` + `content/series/gt-world/event-rounds.json`, all 10); FE doubleheader weekend URLs (`splitAcrossRounds` in `lib/rounds.ts`).
+- **Standings last-good resilience ~done:** `withSourceSnapshot` already wraps 9 standings modules + news + F1 standings/results (`lib/f1-cache.ts`); a warm cron exists (`/api/cron/warm-results`).
+
+### 🚫 Deferred (documented — need preview/prod/decision, NOT unsupervised)
+- **Extend `withSourceSnapshot` to the ~11 remaining `lib/results/*` modules** — the code is a fail-soft proven wrapper (can't regress), but PROVING resilience needs the prod Supabase `source_snapshot` table + a real upstream outage (datacenter landmine). Good supervised/preview item.
+- **Live weather/news coverage** — the wiring gap-list is local, but which venues actually return Open-Meteo data + which series return RSS needs live datacenter fetches. (Wiring note: weather resolves coords via `matchCircuit` over `content/circuits.json` (98 entries); venues not matched get no weather — a curation gap-fill = add primary-sourced lat/lon, verification-heavy.)
+- **`media.json` seeds** — 11 of 15 series lack `content/series/<slug>/media.json` (present: wec/f1/f2/f3). Populating needs researched + fact-checked YouTube IDs (a wrong/dead/geo-locked ID ships a broken embed — draft-scrutiny rule). Enumerated in IDEAS.
+- **NLS Nürburgring results** — a new PDF scraper = the datacenter-verify landmine.
+- **B1.1 admin grant** (carried) — operator Clerk-dashboard action; **feeder migration + cron pinger** (carried) still gating.
+
+### 🧷 Landmines / lessons (session 10)
+- **tsc is a separate gate from vitest** — the new tests PASSED under vitest while `tsc` failed (my `SeriesRoundsFile` literals were missing the required `season` field; vitest doesn't type-check). Always run tsc, not just the tests.
+- **IDEAS goes stale** — 3 B4 items were already shipped in earlier sessions but still listed as open. A recon pass before building a "batch" is worth it; trim the ledger as you verify.
+
+### State
+`main` @ **0.210.2**, 0 open PRs. Dev server on `:3000`. Full suite **855 passing**. Untracked strays (leave-as-is, gitignored): the 5 session-7 lint files, `drafts/*.json`, `.playwright-mcp/`, screenshots.
+
+---
+
+## ⚡ Next session pickup — 2026-07-12 (session 9 — B1 feedback quick-wins · B2 tour rebuild · B3.12 reschedule · endurance explainers · adversarial audit) — `main` = 0.210.1
 
 **Unsupervised overnight run. 0.206.1 → 0.210.1, 6 PRs (#512–#517), all merged + prod-audited (0.210.1 live).** Operator handed off IDEAS batches **B1 + B2 + B3** to run solo. Shipped all of B1 (except the operator-action admin grant), B2, B3.12, and the responsive-table slice of B3.10; documented the licensing/large/decision B3 items. Then a 2-subagent adversarial audit (one caught a real factual error → fixed in #517).
 
