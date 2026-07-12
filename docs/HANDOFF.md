@@ -6,7 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-12 (LATEST, session 12 — B3 embed pipeline + Sentry + overnight feedback-board sweep) — `main` = 0.215.0
+## ⚡ Next session pickup — 2026-07-12 (LATEST, session 12 CONTINUED — F1/DRS SEO content + GSC-driven audit campaign kickoff) — `main` = 0.216.1
+
+**After the #530 wrap, the session continued: GSC data showed our top impressions are DRS/MOM/F1-regs + rally/moto/points/Le-Mans explainers, almost all at 0 clicks. Shipped content-SEO fixes; queued a big page-audit campaign. Total session now 11 merged PRs #522–#532 (0.210.2 → 0.216.1) + 1 draft PR #533.**
+
+### ✅ Shipped since #530
+- **#531 (0.216.0) F1 2026-regs Q&A** — new `/information/formula-1` `whats-new-in-f1-2026` + `how-does-the-2026-f1-power-unit-work` (adversarially fact-checked, 2+ sources/claim); reconciled the FIA Dec-2025 rename (Overtake; Corner/Straight Mode) in `what-is-formula-1` + `what-replaced-drs…`; `INFORMATION_MAX_INDEXED` 320→322.
+- **#532 (0.216.1) DRS SEO** — `what-is-drs-in-f1` retitled "What is DRS in F1?" (query match) + expanded to 7 sections; `what-replaced-drs…` sharpened for "what replaces drs" + MOM. Prod-verified live.
+
+### 🔬 FIRST next-session task — review + merge draft PR #533
+**`feat/seo-content-enrich` (PR #533, DRAFT, do NOT merge unreviewed)** — 4 top-impression 0-click `/information` pages enriched by fact-check subagents: `how-rally-racing-works` (49 imp), `difference-motogp-moto2-moto3` (47), `how-the-f1-points-system-works` (39), `classes-at-le-mans` (36). Each cross-verified 2+ sources, em-dash-free, slugs unchanged, registry test 19/19. **Before merge:** (1) RULE-#1 spot-check facts; (2) browser-verify each desktop **+ 390px mobile**; (3) bump CHANGELOG/RELEASES/version; (4) fold in the flagged fixes below.
+
+### 🧭 SEO AUDIT CAMPAIGN (the operator's big guided task — plan-mode next session)
+Goal: every main + impression-getting page in "pristine" condition. **Per-page rubric:** SEO (query-matched title/meta/keywords, heading structure, QAPage/Article JSON-LD) · content (RULE-#1 accurate, rich, answers the query intent, no stale facts) · **mobile ≥ desktop** (390px pass on every page, operator mandate; devices split ~647 desktop / 446 mobile impressions) · valid internal/related links · a11y + speed. **Template = the DRS page** (query title + multi-section body + sources + JSON-LD + em-dash-free). **Attack order (by impressions):** the #533 four → remaining `/information/tracks/*` (Homestead, Sweden, Japan, Argentina, Talladega, Road America, Laguna Seca…) → `/series/[slug]/weekend/[round]` + per-session pages (WEC FP1 = top page, 145 imp/11 clicks) → Home `/` (119 imp). Parallelise drafting via subagents, serialise review+merge.
+
+### 🧷 Flagged fixes (found by the enrichment agents)
+- `what-are-lmh-and-lmdh.md` still lists **Porsche + Lamborghini as LMDh** — stale for WEC 2026 (Porsche pulled factory Hypercar after 2025). Review/fix.
+- `what-is-formula-1.md` links to `/information/formula-1/f1-rules-explained` + `/the-history-of-f1` — verify these resolve (possible dead links; they may be series-guide routes, not answers/*.md).
+- **YAML trap (recurring):** a `: ` (colon-space) in an unquoted frontmatter value makes gray-matter throw → `loadEditorialAnswers` silently skips the file (404). The registry also memoises per-process (`registry.ts` `let cache`) → a content edit needs a dev restart to surface.
+
+### 🗂️ ALL open items (flat — the operator's requested full inventory)
+**Operator-owed setup:** Sentry `NEXT_PUBLIC_SENTRY_DSN` in Vercel (+ optional `SENTRY_AUTH_TOKEN`) · GA4 (SA JSON key + Data API + property-Viewer + envs) · GSC (SA JSON key + Search Console API + user + `GSC_SITE_URL` + envs) · cron-job.org pinger (13 crons) · rotate `sk_live_*`+`.supabase-pat` (later) · feeder-series outreach. *(Clerk session-token claim ✅ done.)*
+**Build-ready (creds/research in hand):** GA4 `/admin` Traffic panel · GSC `/admin` Search panel · heatmap Phase-1 (element-relative capture → Supabase → dead-element ranking; Phase-1b screenshots deferred) · feedback screenshots + Supabase Storage bucket + true auto-close · **DRS blog post** (operator voice, no AI phrases/em-dashes, copyright-free DRS/MOM photos).
+**New large asks:** DATABASE FILLING (everything in the DB, schema+phasing decision) · session-time stored-instant audit (display half done #525) · DOCUMENTATION: Greek professor-nav guide (urgent; `docs/paddock-odigos-el.md` planned) + thesis-grade full docs.
+**Decisions needed:** home-customization redo ("revisit & replan") · GSC "offers" (recommend won't-fix, no ticket data) · the two flagged fixes above.
+**Backlog (IDEAS.md B4–B10):** B4 points-scale→charts / withSourceSnapshot extension / NLS scraper / F1 classification speed / results re-check / OpenF1 residual / weather gap-fill / media.json ×11 · B5 live data · B6 onboard telemetry · B7 betting & social · B8 UX/IA/mobile (incl. mobile-first audit, assistant Phase-2) · B9 notifications · B10 quality/infra (B-perf, WCAG, component+E2E tests, legacy lint, launch program, Android TWA, Greek `/el/`, dev/staging, feeder Phase-2, user research).
+
+### State
+`main` @ **0.216.1**, 1 draft PR (#533) open + unmerged, 11 PRs prod-audited (public changes live; auth-gated ones verify by operator). Full suite **884**. Dev server may be stale/clobbered (restart next session). Strays leave-as-is (gitignored): 5 session-7 lint files, `drafts/*.json`, `.playwright-mcp/`, `*.png`. Empty local branches `docs/greek-guide`+`docs/greek-nav-guide` (no commits, ignore).
+
+---
+
+## ⚡ Next session pickup — 2026-07-12 (session 12 — B3 embed pipeline + Sentry + overnight feedback-board sweep) — `main` = 0.215.0
 
 **Supervised start (B3 blog embeds) → "go for all" (Sentry/GA4/GSC) → unsupervised overnight (feedback-board dump). 8 PRs #522–#529 (0.210.2 → 0.215.0), all merged + prod-audited (0.215.0 live).**
 
