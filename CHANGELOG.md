@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.220.0 — 2026-07-13
+
+### Changed
+- **Heatmap rebuilt as an element-relative, Supabase-backed system (operator priority: "a heatmap that works").** Replaces the KV 24×24 viewport-grid model, which couldn't name WHICH element got clicks, mixed breakpoints into one grid, and ignored scroll. `components/HeatmapTracker.tsx` now captures clicks relative to the nearest `[data-heatmap-id]` element (bounding-rect ratios + breakpoint + pointer; compact-selector fallback for un-instrumented clicks) AND per-pageview element impressions via IntersectionObserver, so `/admin` can rank HOT elements (most clicks) and DEAD elements (seen but never clicked, the wasted-space/sponsorship signal a click-only grid structurally cannot produce). `lib/heatmap.ts` swaps KV for Supabase (`recordEvents` bulk insert + `rankedElements`/`heatmapAdminOverview` over a `heatmap_element_stats` view; `normalizePath` kept; all reads/writes fail-soft). `app/api/heatmap/route.ts` validates + clamps the new envelope (204, fail-soft). `app/(app)/admin/page.tsx` renders per-path Hot + Dead lists by breakpoint (replacing `HeatGrid`). 6 nav/chrome components instrumented with ~43 `data-heatmap-id`s. 20 offline unit tests (`lib/heatmap.test.ts`) + a local-integration script (`scripts/verify-heatmap.mts`). Fully fail-soft: ships + deploys safely BEFORE the migration exists (capture no-ops, admin shows the empty state).
+- **⏳ Operator step — apply the migration to light it up.** `supabase/migrations/20260713120000_heatmap_events.sql` (`heatmap_event` table + `heatmap_element_stats` view, RLS-on / service-role) is committed but NOT applied — prod Supabase writes are operator-gated. Apply it (Management API + `.supabase-pat`, browser UA, or Studio); no redeploy needed. Then browser-verify live capture + the `/admin` ranked view on a preview/prod.
+- Verified: tsc clean; 20/20 unit tests; `POST /api/heatmap` with the new envelope → 204 (fail-soft); 29 `data-heatmap-id`s render on `/series/f1`. Deferred: Phase-1b screenshot overlay; Phase-2 rollup/partitioning + Clarity-style dead-click.
+
 ## 0.219.2 — 2026-07-13
 
 ### Changed

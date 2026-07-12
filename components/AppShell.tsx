@@ -106,6 +106,7 @@ export function AppShell({
               guard bounces back). */}
           <Link
             href={standalone ? '/app' : '/'}
+            data-heatmap-id="nav:wordmark"
             className="font-display text-base font-extrabold uppercase tracking-wide text-text"
           >
             Paddock<span className="text-brand">•</span>Tracker
@@ -115,6 +116,7 @@ export function AppShell({
           <nav aria-label="Sections" className="hidden lg:flex items-stretch self-stretch gap-5">
             <Link
               href="/app"
+              data-heatmap-id="nav:home"
               aria-current={isActive('/app', true) ? 'page' : undefined}
               className={`inline-flex items-center border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
                 isActive('/app', true)
@@ -130,6 +132,7 @@ export function AppShell({
               label="Calendar"
               href="/calendar"
               active={isActive('/calendar', true)}
+              dataHeatmapId="nav:calendar"
               panelLabel="Jump to month"
               panelClassName="w-64"
             >
@@ -142,6 +145,7 @@ export function AppShell({
               href="/series"
               active={isActive('/series')}
               dataTour="series"
+              dataHeatmapId="nav:series"
               panelLabel="Browse series"
               panelClassName="w-[40rem] max-w-[calc(100vw-1.5rem)]"
             >
@@ -154,6 +158,7 @@ export function AppShell({
               label="News"
               href="/news"
               active={isActive('/news') || isActive('/blog') || isActive('/threads')}
+              dataHeatmapId="nav:news"
               panelLabel="News & community"
             >
               <MenuLinkList
@@ -169,6 +174,7 @@ export function AppShell({
               label="Learn"
               href="/information"
               active={isActive('/information')}
+              dataHeatmapId="nav:learn"
               panelLabel="Learn about motorsport"
             >
               <MenuLinkList
@@ -189,6 +195,7 @@ export function AppShell({
                 label="Social"
                 href="/social"
                 active={isActive('/social') || isActive('/play')}
+                dataHeatmapId="nav:social"
                 panelLabel="Social"
               >
                 <MenuLinkList
@@ -265,6 +272,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
     <div className="flex flex-col gap-4">
       <Link
         href="/f1/analysis"
+        data-heatmap-id="nav:f1-analysis"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
         <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
@@ -275,6 +283,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
       </Link>
       <Link
         href="/f1/compare"
+        data-heatmap-id="nav:f1-compare"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
         <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
@@ -285,6 +294,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
       </Link>
       <Link
         href="/information/series-guides"
+        data-heatmap-id="nav:series-guides"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
         <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />

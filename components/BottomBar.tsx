@@ -23,12 +23,13 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated/90 backdrop-blur-xl border-t border-border pb-[env(safe-area-inset-bottom)]"
     >
       <div className={`grid ${bettingEnabled ? 'grid-cols-6' : 'grid-cols-5'} h-14 max-w-2xl mx-auto`}>
-        <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} />
+        <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} dataHeatmapId="bottombar:home" />
         <BarLink
           href="/calendar"
           active={pathname === '/calendar'}
           label="Calendar"
           Icon={CalendarDays}
+          dataHeatmapId="bottombar:calendar"
         />
         <BarLink
           href="/series"
@@ -36,6 +37,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
           label="Series"
           Icon={Flag}
           dataTour="series"
+          dataHeatmapId="bottombar:series"
         />
         {/* Learn hub (incl. series guides + the circuit map) — the section had no
             mobile entry before, so /information + /information/map were unreachable
@@ -45,6 +47,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
           active={pathname === '/information' || pathname.startsWith('/information/')}
           label="Learn"
           Icon={Compass}
+          dataHeatmapId="bottombar:learn"
         />
         {/* Play folded into Social (0.84.0): Social is the play/friends/community hub. */}
         {bettingEnabled && (
@@ -53,6 +56,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
             active={pathname === '/social' || pathname.startsWith('/social/')}
             label="Social"
             Icon={Users}
+            dataHeatmapId="bottombar:social"
           />
         )}
         <BarLink
@@ -62,6 +66,7 @@ export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
           Icon={CircleUser}
           avatarUrl={isSignedIn ? user?.imageUrl : undefined}
           dataTour="account"
+          dataHeatmapId="bottombar:account"
         />
       </div>
     </nav>
@@ -75,6 +80,7 @@ function BarLink({
   Icon,
   avatarUrl,
   dataTour,
+  dataHeatmapId,
 }: {
   href: string;
   active: boolean;
@@ -82,11 +88,13 @@ function BarLink({
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
   avatarUrl?: string;
   dataTour?: string;
+  dataHeatmapId?: string;
 }) {
   return (
     <Link
       href={href}
       data-tour={dataTour}
+      data-heatmap-id={dataHeatmapId}
       aria-current={active ? 'page' : undefined}
       className={`relative flex flex-col items-center justify-center gap-1 transition-colors duration-(--duration-fast) ${
         active ? 'text-brand' : 'text-text-faint hover:text-text'

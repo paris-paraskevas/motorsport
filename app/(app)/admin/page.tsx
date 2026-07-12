@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { PAGE_WIDE } from '@/lib/site';
-import { topHeatmaps, GRID, type PathHeat } from '@/lib/heatmap';
+import { heatmapAdminOverview, type HeatmapPathPanel, type ElementRank } from '@/lib/heatmap';
 import { listSeriesSubmissions, type SeriesSubmission } from '@/lib/feeder';
 
 export const dynamic = 'force-dynamic';
@@ -72,12 +72,12 @@ export default async function AdminPage() {
   if (!isAdmin(await currentUser())) notFound();
   const [users, heat, submissions] = await Promise.all([
     loadUserStats(),
-    topHeatmaps(6),
+    heatmapAdminOverview(),
     listSeriesSubmissions(20),
   ]);
   const ga4Connected = Boolean(process.env.GA4_PROPERTY_ID);
   const gscConnected = Boolean(process.env.GSC_SITE_URL);
-  const totalClicks = heat.reduce((sum, h) => sum + h.total, 0);
+  const totalClicks = heat.reduce((sum, p) => sum + p.total, 0);
 
   return (
     <div className={PAGE_WIDE}>
@@ -185,12 +185,12 @@ export default async function AdminPage() {
             ) : (
               <>
                 <p className="mb-3 font-mono text-[11px] leading-relaxed text-text-faint">
-                  Hottest pages by clicks — brighter = more clicks in that viewport region. Cold zones are candidates
-                  for sponsorships.
+                  Ranked per page and viewport. Hot elements get the most clicks; Dead elements are seen but never
+                  clicked (wasted space, candidates to sell).
                 </p>
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {heat.map(h => (
-                    <HeatGrid key={h.path} heat={h} />
+                <div className="space-y-4">
+                  {heat.map(p => (
+                    <RankPanel key={p.path} panel={p} />
                   ))}
                 </div>
               </>
@@ -375,31 +375,77 @@ function SubmissionStatusBadge({ status }: { status: SeriesSubmission['status'] 
   );
 }
 
-// A page's click heatmap: a GRIDxGRID viewport grid, each cell brand-tinted by
-// its share of that page's max cell count. Aspect-video mirrors a landscape
-// viewport so hot regions map to where they were clicked.
-function HeatGrid({ heat }: { heat: PathHeat }) {
-  const cells: React.ReactNode[] = [];
-  for (let i = 0; i < GRID * GRID; i++) {
-    const n = heat.cells[i] ?? 0;
-    const o = heat.max > 0 && n > 0 ? 0.12 + (n / heat.max) * 0.88 : 0;
-    cells.push(<div key={i} style={o > 0 ? { backgroundColor: `rgba(255,180,0,${o.toFixed(3)})` } : undefined} />);
-  }
+// A page's element ranking: Hot (most clicks) and Dead (seen but never clicked)
+// lists, split per breakpoint. Dead elements are the wasted-space / sponsorship
+// signal the operator asked for. Replaces the old KV viewport-grid HeatGrid.
+function RankPanel({ panel }: { panel: HeatmapPathPanel }) {
   return (
-    <div>
-      <div className="mb-1 flex items-baseline justify-between gap-2">
-        <span className="truncate font-mono text-xs text-text">{heat.path}</span>
+    <div className="overflow-hidden rounded-xl border border-border bg-surface-elevated">
+      <div className="flex items-baseline justify-between gap-2 border-b border-border px-4 py-2.5">
+        <span className="truncate font-mono text-xs text-text">{panel.path}</span>
         <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">
-          {heat.total.toLocaleString()} clicks
+          {panel.total.toLocaleString()} clicks
         </span>
       </div>
-      <div
-        className="grid aspect-video w-full overflow-hidden rounded-lg border border-border bg-surface"
-        style={{ gridTemplateColumns: `repeat(${GRID}, minmax(0, 1fr))` }}
-        aria-hidden
-      >
-        {cells}
+      <div className="divide-y divide-border">
+        {panel.breakpoints.map(bp => (
+          <div key={bp.breakpoint} className="px-4 py-3">
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+              {bp.breakpoint}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <RankList
+                title="Hot"
+                tone="text-brand"
+                rows={bp.hot}
+                empty="No clicks yet"
+                render={r => `${(r.ctr * 100).toFixed(0)}% CTR`}
+              />
+              <RankList
+                title="Dead, candidates to sell"
+                tone="text-text-faint"
+                rows={bp.dead}
+                empty="No dead zones yet"
+                render={r => `${r.impressions.toLocaleString()} seen, 0 clicks`}
+              />
+            </div>
+          </div>
+        ))}
       </div>
+    </div>
+  );
+}
+
+// One ranked list (Hot or Dead), capped at the top 6 elements. `render` formats
+// the right-hand metric per row (CTR for hot, impressions for dead).
+function RankList({
+  title,
+  tone,
+  rows,
+  empty,
+  render,
+}: {
+  title: string;
+  tone: string;
+  rows: ElementRank[];
+  empty: string;
+  render: (r: ElementRank) => string;
+}) {
+  return (
+    <div>
+      <div className={`mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${tone}`}>{title}</div>
+      {rows.length === 0 ? (
+        <p className="font-mono text-[11px] text-text-faint">{empty}</p>
+      ) : (
+        <ul className="space-y-1">
+          {rows.slice(0, 6).map(r => (
+            <li key={r.elementId} className="flex items-baseline justify-between gap-2 text-xs">
+              <span className="truncate font-mono text-text">{r.elementId}</span>
+              <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{render(r)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

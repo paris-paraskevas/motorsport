@@ -3,10 +3,19 @@ import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+function FooterLink({
+  href,
+  dataHeatmapId,
+  children,
+}: {
+  href: string;
+  dataHeatmapId?: string;
+  children: React.ReactNode;
+}) {
   return (
     <Link
       href={href}
+      data-heatmap-id={dataHeatmapId}
       className="block py-0.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
     >
       {children}
@@ -31,24 +40,24 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-6 text-xs sm:gap-8">
           <div>
             <ColumnHeading>Site</ColumnHeading>
-            <FooterLink href="/">Landing</FooterLink>
-            <FooterLink href="/about">About</FooterLink>
-            <FooterLink href="/information">Learn</FooterLink>
-            <FooterLink href="/news">News</FooterLink>
-            <FooterLink href="/blog">Blog</FooterLink>
-            <FooterLink href="/threads">Threads</FooterLink>
-            <FooterLink href="/changelog">Release notes</FooterLink>
-            <FooterLink href="/settings">Account</FooterLink>
+            <FooterLink href="/" dataHeatmapId="footer:landing">Landing</FooterLink>
+            <FooterLink href="/about" dataHeatmapId="footer:about">About</FooterLink>
+            <FooterLink href="/information" dataHeatmapId="footer:learn">Learn</FooterLink>
+            <FooterLink href="/news" dataHeatmapId="footer:news">News</FooterLink>
+            <FooterLink href="/blog" dataHeatmapId="footer:blog">Blog</FooterLink>
+            <FooterLink href="/threads" dataHeatmapId="footer:threads">Threads</FooterLink>
+            <FooterLink href="/changelog" dataHeatmapId="footer:changelog">Release notes</FooterLink>
+            <FooterLink href="/settings" dataHeatmapId="footer:account">Account</FooterLink>
             <ManageCookiesButton />
           </div>
           <div>
             <ColumnHeading>Legal</ColumnHeading>
-            <FooterLink href="/privacy">Privacy</FooterLink>
-            <FooterLink href="/terms">Terms</FooterLink>
-            <FooterLink href="/cookies">Cookies</FooterLink>
-            <FooterLink href="/accessibility">Accessibility</FooterLink>
-            <FooterLink href="/do-not-sell">Do Not Sell or Share</FooterLink>
-            <FooterLink href="/imprint">Imprint</FooterLink>
+            <FooterLink href="/privacy" dataHeatmapId="footer:privacy">Privacy</FooterLink>
+            <FooterLink href="/terms" dataHeatmapId="footer:terms">Terms</FooterLink>
+            <FooterLink href="/cookies" dataHeatmapId="footer:cookies">Cookies</FooterLink>
+            <FooterLink href="/accessibility" dataHeatmapId="footer:accessibility">Accessibility</FooterLink>
+            <FooterLink href="/do-not-sell" dataHeatmapId="footer:do-not-sell">Do Not Sell or Share</FooterLink>
+            <FooterLink href="/imprint" dataHeatmapId="footer:imprint">Imprint</FooterLink>
           </div>
         </div>
         <div className="mt-6 flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-text-faint sm:flex-row sm:items-center sm:justify-between">

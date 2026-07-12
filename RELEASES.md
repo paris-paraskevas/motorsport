@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.220.0 — 2026-07-13
+
+**Behind the scenes.** Rebuilt the internal click-heatmap tool so it can show which on-page elements get used and which are ignored, to guide layout and content decisions.
+
 ## 0.219.2 — 2026-07-13
 
 **Bahrain GP status clarified.** The cancelled Bahrain round now notes the proposed October return weekend that is under discussion, instead of a bare "under discussion".
