@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.214.0 — 2026-07-12
+
+### Added
+- **Blog composer flags AI-writing tells + bans em-dashes (operator request).** New pure `lib/ai-prose-lint.ts` `lintAiProse(markdown)`: a masking preprocessor blanks fenced/inline code, `[[embed]]` shortcodes and URL targets (so nothing in code or links is flagged, and match offsets map 1:1 to the textarea), then rules scan the prose. **Em-dash "—" and space-padded en-dash "–" are ERRORS** (operator ban → "replace with a comma or hyphen"; tight ranges like 10–15 / P1–P5 are left alone); AI cadences ("not only … but also", "it's not just X, it's Y", "a testament to", "in the world of", "when it comes to", "let's dive into", filler transitions Moreover/Furthermore/…, hedging, density-thresholded intensifiers) and AI vocab (delve/tapestry/seamless/underscore/…) are WARNINGS; motorsport-ambiguous words (boasts, showcase, "navigate the …", nestled, symphony, garner) are INFO so they don't nag. `components/blog/MarkdownEditor.tsx` gained a **"Style" pill** (live "· N" badge coloured by worst severity) opening a flags panel; each flag shows its fix message + clickable **"L{line}"** chips that select the offending text via `setSelectionRange`. Advisory only (never rewrites); covers the new-post composer and the draft editor (both mount `MarkdownEditor`).
+- 16 unit tests (`lib/ai-prose-lint.test.ts`): em-dash caught + offset lands on the dash, en-dash tight-range exemption, code/embed/URL masking (length + newlines preserved), the constructions/vocab, the intensifier density threshold, and the motorsport FP guards ("navigates the chicane" NOT flagged; "boasts" is info). Suite 868→**884**. tsc + eslint clean; browser-verified in an isolated harness — "Style · 5" badge, panel listed em-dash/antithesis/vocab/filler + boasts-as-info, "navigate the" correctly absent, and a jump chip selected the "—". Temp harness removed.
+
 ## 0.213.2 — 2026-07-12
 
 ### Added

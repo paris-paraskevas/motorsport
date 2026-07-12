@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { POST_ARTICLE_CLASS } from './PostHeader';
+import { lintAiProse, lintSummary } from '@/lib/ai-prose-lint';
 
 // Markdown editor for the blog: a formatting toolbar (inserts markdown) over a
 // plain textarea, plus a Write/Preview toggle whose preview is rendered by the
@@ -50,6 +51,18 @@ export function MarkdownEditor({
   const pendingSel = useRef<[number, number] | null>(null);
   const [preview, setPreview] = useState(false);
   const [html, setHtml] = useState('');
+  const [showLint, setShowLint] = useState(false);
+  // AI-writing lint: pure + fast, so recompute on the value (no debounce). Em/
+  // en-dashes are errors (operator ban); constructions/vocab warnings; motorsport-
+  // ambiguous words info. Advisory only — the author fixes, we never rewrite.
+  const flags = useMemo(() => lintAiProse(value), [value]);
+  const summary = useMemo(() => lintSummary(flags), [flags]);
+  const jumpTo = useCallback((start: number, end: number) => {
+    const ta = ref.current;
+    if (!ta) return;
+    ta.focus();
+    ta.setSelectionRange(start, end); // selecting the span scrolls it into view
+  }, []);
 
   const apply = useCallback(
     (tool: Tool) => {
@@ -125,9 +138,27 @@ export function MarkdownEditor({
         ))}
         <button
           type="button"
+          onClick={() => setShowLint(s => !s)}
+          aria-pressed={showLint}
+          disabled={preview}
+          title="Check for AI-writing tells"
+          className={`ml-auto rounded border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors disabled:opacity-40 ${
+            summary.errors
+              ? 'border-red-500/60 text-red-400'
+              : summary.warnings
+                ? 'border-amber-500/50 text-amber-300'
+                : showLint
+                  ? 'border-brand/60 text-brand'
+                  : 'border-border text-text-muted hover:text-text'
+          }`}
+        >
+          Style{summary.errors || summary.warnings ? ` · ${summary.errors + summary.warnings}` : ''}
+        </button>
+        <button
+          type="button"
           onClick={() => setPreview(p => !p)}
           aria-pressed={preview}
-          className={`ml-auto rounded border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors ${
+          className={`rounded border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors ${
             preview ? 'border-brand/60 text-brand' : 'border-border text-text-muted hover:text-text'
           }`}
         >
@@ -166,6 +197,48 @@ export function MarkdownEditor({
           aria-label={ariaLabel}
           required
         />
+      )}
+
+      {!preview && showLint && (
+        <div className="space-y-2 rounded border border-border bg-bg p-2.5">
+          {flags.length === 0 ? (
+            <p className="font-mono text-[11px] text-text-faint">No AI-writing tells found. Reads clean.</p>
+          ) : (
+            flags.map(f => (
+              <div key={f.id} className="space-y-0.5">
+                <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                  <span
+                    className={`inline-block h-1.5 w-1.5 rounded-full ${
+                      f.severity === 'error'
+                        ? 'bg-red-500'
+                        : f.severity === 'warning'
+                          ? 'bg-amber-400'
+                          : 'bg-text-faint'
+                    }`}
+                  />
+                  <span className="font-semibold text-text">{f.name}</span>
+                  <span className="text-text-faint">×{f.count}</span>
+                </div>
+                <p className="text-[11px] leading-snug text-text-muted">{f.message}</p>
+                <div className="flex flex-wrap gap-1">
+                  {f.matches.slice(0, 6).map((mt, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => jumpTo(mt.start, mt.end)}
+                      className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-text-faint transition-colors hover:border-border-strong hover:text-text"
+                    >
+                      L{mt.line}
+                    </button>
+                  ))}
+                  {f.matches.length > 6 && (
+                    <span className="font-mono text-[10px] text-text-faint">+{f.matches.length - 6}</span>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.214.0 — 2026-07-12
+
+**Cleaner writing in the blog editor.** The editor now flags em-dashes (banned) and common "reads like AI" phrasings as you write, with one-click jumps to each spot, so posts read more human. It only flags, it never rewrites your words.
+
 ## 0.213.2 — 2026-07-12
 
 **Behind the scenes.** Admin tooling tidy-ups.
