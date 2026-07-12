@@ -21,16 +21,16 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ## B4 — Data completeness & resilience
 
-- **F1 classification speed** — event-driven session warming off `sessions.json` (poll from session-end, not a flat tick); evaluate Jolpica as a faster race-classification source.
-- **Standings last-good resilience** — extend `withSourceSnapshot` to F1 standings/results + the motorsport.com scrapes + add a warm cron so the request path never hits upstream cold.
-- **MotoGP standings-chart undercount** — a round/session drops under the finisher floor in `fetchMotoGPSeasonResults`.
+_(Most of B4 was already done — verified 2026-07-12. SHIPPED earlier/that day: MotoGP chart undercount fix, GTWC canonical rounds, FE doubleheader weekend URLs + round-grouping regression guards, news-map completion (#519). Remaining below is preview/prod/curation-gated.)_
+
+- **F1 classification speed** — event-driven session warming off `sessions.json` (poll from session-end, not a flat tick); evaluate Jolpica as a faster race-classification source. _(datacenter-verify on a preview.)_
+- **Standings/results last-good resilience** — `withSourceSnapshot` already wraps the 9 standings modules + news + F1; extend it to the ~11 remaining `lib/results/*` modules. Fail-soft (can't regress) but resilience only PROVES on prod during an outage → preview/prod-gated.
 - **NLS Nürburgring results** — teilnehmer.vln.de PDF scraper (DTM-shaped; datacenter-verify on a preview).
 - **Remaining standings charts** — FE / IndyCar / GT-World / IMSA / WEC (data-gated: need a per-series points-scale module before a chart can reconcile).
 - **Results re-check lifecycle** — late-penalty re-verify (+1w / +1m / season-end) via a KV snapshot + diff cron + curation alert (Gasly-Monaco precedent).
 - **OpenF1 live-lockout residual** — a cold/expired session first opened *during* a live lockout still can't fetch; + a pre-warm cron for weekend session pages.
-- **Weather + news 15-series audit** — Open-Meteo (venue-local date) + news feed per next-weekend of every series; output a gap list + curation pass.
-- **rounds/URL hygiene** — GTWC results round numbers (no canonical round) + FE doubleheader second-race weekend URLs (8/10 link) + endurance weekend-grouping audit vs `groupByWeekend`.
-- **media.json seeds** — official-channel highlight clips for the ~12 uncovered series; audit + replace geo-restricted clips.
+- **Weather coverage gap-fill** — venues not in `content/circuits.json` (matched via `matchCircuit`) get no weather; add primary-sourced lat/lon (verification-heavy).
+- **media.json seeds** — 11 of 15 series lack `content/series/<slug>/media.json` (have: wec/f1/f2/f3); populating needs fact-checked official-channel YouTube IDs (draft-scrutiny) + a geo-restriction audit.
 - **Curation patches** when timetables drop (ongoing, e.g. IMSA practice, FE session times).
 
 ## B5 — Live / race-day data

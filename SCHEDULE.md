@@ -1157,6 +1157,20 @@ Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
 
 ---
 
+### Sun 2026-07-12 — session 10 (unsupervised overnight): "next batch" = B4 → recon found it ~90% done; shipped the safe slice → 0.210.2
+
+Operator handed off "next batch" (B4 — Data completeness & resilience). A recon subagent (verified with 60 passing tests) found most of B4 was already shipped or prod/preview/decision-gated — the IDEAS ledger was stale.
+- → done: **#519 (0.210.2)** — completed `NEWS_SLUG_MAP` (adac-ravenol-24h was unmapped → explicit `null` fallback like nls) + round-grouping regression tests (doubleheader splits w/ no duplicate rounds, round-0 for uncovered sessions, index fallback). Suite 852→855.
+- → verified already-done (IDEAS trimmed): MotoGP chart undercount, GTWC canonical rounds, FE doubleheader URLs, standings/F1 last-good resilience (`withSourceSnapshot`).
+- → deferred (documented, gated): extend `withSourceSnapshot` to the remaining results modules (prod-verify), live weather/news coverage (datacenter), media.json seeds ×11 (content research + fact-check), NLS results scraper (datacenter). B1.1 admin + feeder migration + cron pinger still owed.
+- → lesson: `tsc` caught a missing required type field that `vitest` passed — tsc is a separate gate from the tests.
+
+Won't touch (deferred): the preview/prod/curation-gated B4 items above.
+
+Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
