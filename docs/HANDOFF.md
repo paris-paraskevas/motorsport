@@ -6,7 +6,33 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-12 (LATEST, session 10 — B4 data-resilience: recon found it ~90% already done; shipped the safe slice) — `main` = 0.210.2
+## ⚡ Next session pickup — 2026-07-12 (LATEST, session 11 — operator triage of the "not done" audit + feeder ACTIVATED) — `main` = 0.210.2
+
+**No new PRs — this was a decision/activation turn.** Operator reviewed the cross-batch "what hasn't been done" audit and gave dispositions; two blockers are now cleared.
+
+### ✅ Cleared this turn
+- **Admin access DONE** — operator set the PROD Clerk "Paris Dev" account (`user_3Dj7…uQYVpJEbK`, pparaskevas.dev@gmail.com) `publicMetadata.role: "admin"`. `/admin` page-gate now opens for it. (The dev-subdomain MIDDLEWARE hard-lock still also needs the session-token claim — OWED below.)
+- **Feeder intake ACTIVATED** — operator authorised the SQL; applied `supabase/migrations/20260712120000_series_submission.sql` to prod via the Management API (table exists, 0 rows) and **e2e-verified**: a real POST to `https://paddock-tracker.com/api/contribute` inserted a row (200 + id), then deleted it (back to 0). `/contribute` is now fully live.
+
+### 🗂️ Operator dispositions on the deferred list (2026-07-12)
+- **KILLED:** driver portraits ×14 (long-tail licensing, not worth it) · team logos ×15 (no free source → copyright). Moved to IDEAS Killed.
+- **BUILD NEXT — don't defer** (operator wants all of these; IDEAS B3 + B4 re-flagged): **B3** — champion-Q&A depth (`champions.json` schema + fact-checked data), original driver bios, blog data-visual embeds (markdown-shortcode→component pipeline), blog cadence automation (headless `claude -p` draft trigger). **B4** — extend `withSourceSnapshot` to the remaining `lib/results/*`, NLS Nürburgring results scraper, a **per-series points-scale module → the remaining standings charts** (FE/IndyCar/GT-World/IMSA/WEC), F1 classification speed, results re-check lifecycle (late-penalty diff), OpenF1 live-lockout residual + pre-warm cron, weather coverage gap-fill, media.json seeds ×11.
+- ⚠ Many of the above are **outbound/server code** → fail first on Vercel datacenter IPs; **verify on a Vercel preview, not localhost**. Previews are SSO-walled, so the OPERATOR does the preview review (or sets a bypass secret) — plan a preview-verify step into each.
+
+### ⏳ OWED — operator (remaining setup; HOW captured for each)
+1. **cron-job.org pinger** (crons meter on the private repo) — sign up (free) → 13 jobs, URL `https://paddock-tracker.com/api/cron/<name>` (schedules handed over), Advanced → header `Authorization: Bearer <CRON_SECRET>` (value: Vercel → Settings → Environment Variables → `CRON_SECRET` → reveal), Timezone UTC. Then ping Claude → it disables the GH `schedule:` triggers.
+2. **Clerk session-token claim** — Clerk dashboard → Configure → **Sessions** → "Customize session token" → add `{"metadata": "{{user.public_metadata}}"}` → Save. (Puts publicMetadata in the JWT so `proxy.ts` can read `sessionClaims.metadata.role` for the dev-subdomain hard-lock.)
+3. **GA4 creds** — `GA4_PROPERTY_ID` = GA4 → Admin → Property Settings → Property ID (number). Service account = Google Cloud → enable "Google Analytics Data API" → create service account + JSON key → add its email as a Viewer in GA4 → Property Access Management. Give Claude the property ID + the JSON key (env).
+4. **GSC creds** — `GSC_SITE_URL` = the verified property (`https://paddock-tracker.com/` or `sc-domain:paddock-tracker.com`). Service account = Google Cloud → enable "Search Console API" → service account + JSON key → add its email in Search Console → Settings → Users & permissions. Give Claude the site URL + JSON key.
+5. **Sentry DSN** — sentry.io → new project (Next.js) → Settings → Client Keys (DSN) → copy the `https://…@…ingest.sentry.io/…` DSN. Give it to Claude to wire `@sentry/nextjs`.
+6. **Rotate `sk_live_*` + `.supabase-pat`** — operator: doing later.
+
+### State
+`main` @ **0.210.2**, 0 open PRs. Feeder LIVE. Dev on `:3000`. Suite 855. Strays leave-as-is (gitignored).
+
+---
+
+## ⚡ Next session pickup — 2026-07-12 (session 10 — B4 data-resilience: recon found it ~90% already done; shipped the safe slice) — `main` = 0.210.2
 
 **Unsupervised overnight, "next batch" (= B4 Data completeness & resilience). 0.210.1 → 0.210.2, 1 PR (#519).** A recon subagent (verified with 60 passing tests) found **most of B4 was already done or prod/preview/decision-gated** — the IDEAS ledger was stale. Shipped the two genuinely-safe local items; documented the rest. The "audit heavily" instruction was served by the recon discovering the already-done state.
 
