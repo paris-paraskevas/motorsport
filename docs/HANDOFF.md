@@ -6,7 +6,43 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-12 (LATEST, session 11 — operator triage of the "not done" audit + feeder ACTIVATED) — `main` = 0.210.2
+## ⚡ Next session pickup — 2026-07-12 (LATEST, session 12 — B3 embed pipeline + Sentry + overnight feedback-board sweep) — `main` = 0.215.0
+
+**Supervised start (B3 blog embeds) → "go for all" (Sentry/GA4/GSC) → unsupervised overnight (feedback-board dump). 8 PRs #522–#529 (0.210.2 → 0.215.0), all merged + prod-audited (0.215.0 live).**
+
+### ✅ Shipped
+- **#522 (0.211.0) + #523 (0.212.0) — Blog data-visual embed pipeline (IDEAS B3).** `lib/blog-embeds.ts` splits a DB post body on standalone `[[type key=value]]` lines BEFORE the markdown render (no rehype-sanitize/XSS impact); `renderPostBody` interleaves sanitised-HTML runs + embeds + a merged ToC (one dedup map through `injectHeadingIds`). Embeds: `[[chart series=…]]` (LazySeasonTrendChart via `loadSnapshotSource`, gated on `pointsExact`) + `[[standings series=…]]` (`buildStandingsAtRound`). `PostArticle` renders on the public path + DraftEditor preview. Composer preview (`/api/blog/preview` → `renderPreviewHtml`) shows shortcodes as no-fetch placeholders + a syntax hint. Browser-verified (F1 chart live data; WEC → honest "not available").
+- **#524 (0.213.0) — Sentry** (`@sentry/nextjs` v10, Next-16 instrumentation across browser/server/edge; `withSentryConfig(withSerwist(…))` preserving node-ical landmines; errors+tracing only, no replay/logs, no tunnelRoute). Browser smoke: a test error POSTed to ingest → **200**. ⏳ **Operator: set `NEXT_PUBLIC_SENTRY_DSN` in Vercel** (DSN provided in-convo; optionally `SENTRY_AUTH_TOKEN` for prod source maps) to activate.
+- **#525 (0.213.1) — Session times drop the "EEST" label** (`formatDevice` no longer emits `timeZoneName`; viewer-local, clean "Fri 14:00"; SSR `formatLocal` keeps its Athens label per audit 2-1). Prod-verified (no EEST, HTTP-live). **This is the display half of the "VPN/local times" feedback** (#session-12 dump); JS renders in the device zone, so a device-TZ change updates times.
+- **#526 (0.213.2) — Admin link on /settings → dev.paddock-tracker.com** (admin-only row in `AccountStaffLinks`).
+- **#527 (0.214.0) — Blog AI-writing lint** (`lib/ai-prose-lint.ts` — masks code/embeds/URLs, flags em/en-dashes as ERRORS + AI cadences/vocab as warnings + motorsport-ambiguous words as info; `MarkdownEditor` "Style" pill + panel + click-to-jump). 16 unit tests; browser-verified (jump selected the "—"; "navigates the chicane" not flagged).
+- **#528 (0.214.1) — Series pages lead with the calendar**; `SeriesLearnMore` moved to a bottom footer + a News quick-link added by the threads link. Prod-verified (calendar precedes Learn-about in SSR).
+- **#529 (0.215.0) — Feedback board: Copy-all-open + Close-all-done** (admin bulk close = the pragmatic "auto-close done").
+
+### ⏳ OWED / NEXT (creds in hand or research done — build/activate next)
+- **GA4 + GSC panels — NOT built yet** (from "go for all"; I did Sentry, ran out of night before these). Operator provided: GA4 SA JSON key + property `538125099` + Data API enabled; GSC SA JSON key (needs Search Console API enabled + `GSC_SITE_URL` confirmed — Domain property → `sc-domain:paddock-tracker.com`). Plan: `lib/analytics/ga4.ts` (`@google-analytics/data`) + `lib/analytics/gsc.ts` (`googleapis`), SA key from a base64 env (`GA4_SA_KEY`/`GSC_SA_KEY`, never committed), replace the `/admin` stubs. Keys are in-conversation, NOT committed.
+- **F1 2026 regs Q&A — research DONE + cross-verified** (14 Q&A + confidence notes). ⚠ It caught that the FIA **renamed** the aero modes Dec-2025: X/Z-mode → **Straight/Corner Mode**, "Manual Override" → **Overtake** — the existing `what-is-formula-1` copy is now STALE and must be reconciled. Ship as curated `/information` Q&A (adversarial fact-check the uncertain figures: downforce/drag %, fuel-flow kg/h, PU cost cap, floor width — all flagged).
+- **Heatmap redo — research DONE** (root cause: viewport-relative capture, no breakpoint bucket, abstract grid). Phase-1 (no chromium): element-relative + absolute-Y + breakpoint capture → Supabase raw table → `/admin` ranked hot/**dead**-element list (the sponsorship view). Phase-1b screenshot overlay (puppeteer/@sparticuz/chromium; live-iframe REJECTED — `X-Frame-Options: DENY`). Open Qs: page scope, chromium-vs-hosted, retire KV, retention.
+- **Feedback infra remainder:** screenshot upload + **Supabase Storage bucket** (prod bucket + form + upload) + true commit-linked auto-close. **Claude-readable feedback:** I can already query the prod `feedback` table via the Management API (`.supabase-pat`, browser UA) on "check feedback" — demonstrate/document next.
+
+### 🧭 NEEDS OPERATOR DECISION
+- **"Make your own home" / home content redo** — operator: "dreadful … remove it, rethink … we will revisit and replan." Design decision; NOT built (concrete mobile "jump-to collapsible/removable" is the one buildable slice once the direction is set).
+- **DATABASE FILLING** (everything in the DB: drivers/teams/blogs/sessions/weekends/series/users/pages/buttons) — a large architecture project; needs a schema design + phasing decision before any build.
+- **GSC "offers" (25 items, Image #5)** — SportsEvent `offers` is a RECOMMENDED field needing real ticket/price data we don't have; adding it = fabrication (RULE #1). It's a non-critical warning. **Recommendation: won't-fix / dismiss** unless a real ticketing source is wired.
+- **Contact feeder series** — operator action (outreach); the `/contribute` intake is already live.
+
+### 🧷 Landmines / lessons (session 12)
+- **`@sentry/nextjs` v10 `captureRouterTransitionStart` is a CLIENT export** — a Node `require()` shows `undefined`; it's real in the client build + types. Verify client exports against the browser build, not the server CJS entry.
+- **New module wired into an existing one didn't HMR** — dev served a stale `BlogEmbed` (standings `case` fell through to "unknown") until a `.next` clear + dev restart. tsc/eslint/build were green; the dev graph was stale.
+- **Deleting an app route leaves a stale `.next/dev/types/<route>/page.ts`** that fails `tsc` until cleared (`rm -rf .next/dev/types/<route>`).
+- **Sentry DSN for local verify** went in `.env.local` then was removed (avoid dev events polluting prod Sentry).
+
+### State
+`main` @ **0.215.0**, 0 open PRs, all 8 prod-audited (0.215.0 live; public changes verified, auth-gated ones verify by the operator). Full suite **884**. 3 background research briefs consumed (F1 Q&A, heatmap, AI-writing). Strays leave-as-is (gitignored): the 5 session-7 lint files, `drafts/*.json`, `.playwright-mcp/`, `*.png`.
+
+---
+
+## ⚡ Next session pickup — 2026-07-12 (session 11 — operator triage of the "not done" audit + feeder ACTIVATED) — `main` = 0.210.2
 
 **No new PRs — this was a decision/activation turn.** Operator reviewed the cross-batch "what hasn't been done" audit and gave dispositions; two blockers are now cleared.
 
