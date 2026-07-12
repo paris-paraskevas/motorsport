@@ -14,14 +14,18 @@ function useHydrated(): boolean {
   );
 }
 
-// Device-local time with the viewer's own zone label, e.g. "Fri 14:00 GMT".
+// Device-local time, e.g. "Fri 14:00". No zone label: this renders in the
+// VIEWER's own timezone, so their own abbreviation ("EEST", "GMT", …) is noise,
+// not information (operator feedback: "it says EEST and should just have time").
+// The SSR fallback (formatLocal, fixed Athens) DOES keep its label — an
+// unlabelled Athens time would misread as local for a non-Athens no-JS viewer
+// (audit 2-1); post-hydration this device-local value replaces it.
 function formatDevice(date: Date): string {
   return new Intl.DateTimeFormat('en-GB', {
     weekday: 'short',
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-    timeZoneName: 'short',
   }).format(date);
 }
 
