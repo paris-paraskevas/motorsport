@@ -6,7 +6,40 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-12 (LATEST, session 8 — SECURITY: repo→private + changelog redaction · admin dashboard · feeder intake · changelog weeks · adversarial audit) — `main` = 0.206.1
+## ⚡ Next session pickup — 2026-07-12 (LATEST, session 9 — B1 feedback quick-wins · B2 tour rebuild · B3.12 reschedule · endurance explainers · adversarial audit) — `main` = 0.210.1
+
+**Unsupervised overnight run. 0.206.1 → 0.210.1, 6 PRs (#512–#517), all merged + prod-audited (0.210.1 live).** Operator handed off IDEAS batches **B1 + B2 + B3** to run solo. Shipped all of B1 (except the operator-action admin grant), B2, B3.12, and the responsive-table slice of B3.10; documented the licensing/large/decision B3 items. Then a 2-subagent adversarial audit (one caught a real factual error → fixed in #517).
+
+### ✅ Shipped
+- **#512 (0.207.0) feat(feedback)** — status-filter chips (open/considered/done/closed + counts) on the staff `/feedback` board; **closed hidden by default**; done/closed rows dimmed, closed titles struck. Client-side over the loaded list (no API change). (B1.2)
+- **#513 (0.207.1) fix(blog)** — blog post **mobile layout**: ToC `hidden lg:block` (was dead weight below the article on phones); article body overflow-safe (`prose-pre/img/table` — wide tables now scroll). (B1.3 + the responsive slice of B3.10)
+- **#514 (0.208.0) feat(information)** — two verified **endurance explainers** + cross-links: `what-are-lmh-and-lmdh` + `what-do-gt-driver-ratings-mean`, linked from the WEC/GT-World guides where "LMH/LMDh" and "driver rating" appear. (B1.5 + B1.4 — an Explore pass confirmed there is NO per-driver numeric rating; the operator meant the GT Pro/Gold/Silver/Bronze **categorisation**.)
+- **#515 (0.209.0) fix(tour)** — onboarding tour **mobile-first**: on < sm the step popover is a full-width sheet anchored to the half OPPOSITE the spotlight target (never covers the bottom-bar Series/Account stops); desktop keeps the floated popover; both `rounded-2xl` + shadow. Stops copy was already current. (B2)
+- **#516 (0.210.0) feat(blog)** — **re-schedule an approved (scheduled) post**: `reschedulePost` (status-guarded to `approved`) + a `'reschedule'` action on `POST /api/blog/[id]` + a datetime field/button on each Scheduled row in `PostModeration`. (B3.12)
+- **#517 (0.210.1) fix(audit)** — audit fix-forward: **BMW was wrongly listed under LMH → moved to LMDh** (M Hybrid V8 = Dallara/LMDh; an initial web-search result had it wrong, the adversarial fact-check caught it); softened an imprecise categorisation date; cleared a stale reschedule `when` value.
+
+### ⏳ OWED — operator (decisions / actions)
+1. **B1.1 Admin Console access** — grant the PROD Clerk "Paris Dev" account `publicMetadata.role: "admin"` so `/admin` + the `dev.` subdomain open for it. NOT done in code (no code needed — the gates already read `publicMetadata.role === 'admin'`). It's a sensitive **prod** auth grant on your own account → do it in the **Clerk dashboard → Users → Paris Dev → Metadata → Public → `{"role":"admin"}`** (30 sec). I didn't perform a privileged prod auth mutation unsupervised.
+2. **Carried from session 8 (still gating):** apply the **feeder-intake prod migration** (`supabase/migrations/20260712120000_series_submission.sql`) + set up the **cron-job.org pinger** (private repo meters GH Actions). Plus Clerk session-token claim, GA4/GSC creds, Sentry DSN.
+
+### 🚫 Deferred (documented, NOT done — need a decision or a focused/supervised session)
+- **B3.7 driver portraits ×14 series** + **B3.8 team logos ×15** — licensing-led curation (Wikimedia CC + per-image attribution). NOT bulk-done unsupervised: a wrong licence is a real liability, and each image needs licence verification. Team logos additionally have **no known free source** (a licence decision). Do in a focused, supervised pass.
+- **B3.9 champion-Q&A depth** — needs a `champions.json` schema extension (runner-up/margin/wins) **+ a large fact-checked data-curation pass** across every champion-season; the schema change alone does nothing without the data. Its own project.
+- **B3.11 blog cadence automation** — a scheduled headless `claude -p` authoring trigger; tangled with the crons decision (GH Actions now metered) — settle the cron pinger first.
+- **B3.13 original driver bios** (W4 P5) + **B3.10 live-chart embeds in DB posts** — the latter needs a markdown-shortcode→component pipeline (DB post bodies are plain markdown, not MDX). Both larger; deferred.
+
+### 🧷 Landmines / lessons (session 9)
+- **Trust the adversarial fact-check over a single web-search result** — my LMH manufacturer list came straight from one search summary that had **BMW under LMH**; it's LMDh. The review agent caught it. For published facts, cross-check ≥2 primary sources (RULE #1).
+- **Heavily-gated UIs (feedback board, blog moderation)** verify via a TEMP mock + gate-bypass (reverted) at the component; the DB/admin happy-path only fully verifies on prod.
+- **Branch BEFORE editing** — slipped once (edited `Tour.tsx` on `main`); caught pre-commit, moved to a branch (nothing was committed to main).
+- `curl | grep` misses HTML-entity-encoded en-dashes (`&#8211;`) — verify rendered text via the browser DOM.
+
+### State
+`main` @ **0.210.1**, 0 open PRs, all 6 prod-audited (0.210.1 live). Dev server restarted clean on `:3000`. Untracked strays (leave-as-is, gitignored): the 5 session-7 lint files, `drafts/*.json`, `.playwright-mcp/`, this run's `*.png` screenshots.
+
+---
+
+## ⚡ Next session pickup — 2026-07-12 (session 8 — SECURITY: repo→private + changelog redaction · admin dashboard · feeder intake · changelog weeks · adversarial audit) — `main` = 0.206.1
 
 **Unsupervised overnight run. 0.203.1 → 0.206.1, 5 PRs (#505–#509), all merged + prod-audited.** Operator handed off "#1 admin redesign, #2 feeder intake, #3 polish (changelog weeks)" to run solo overnight; mid-session flagged the public `/changelog` was leaking internal admin detail. Order taken: security fix first → #1/#2/#3 → a 2-subagent adversarial audit + fix-forward.
 
