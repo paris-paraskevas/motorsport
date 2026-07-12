@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.218.2 — 2026-07-13
+
+**Weekend schedules in search.** Race-weekend pages now describe their full session schedule and start times to search engines, and correctly flag a rescheduled round, so results can show when each session runs.
+
 ## 0.218.1 — 2026-07-13
 
 **Session pages in search.** Practice, qualifying and race session pages now tell search engines the session name and its exact start time, so searches like "what time is practice" can surface the right details.

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.218.2 — 2026-07-13
+
+### Added
+- **SEO campaign Phase 3 — weekend-page structured data.** `lib/json-ld.ts` `sportsEventLd` + `app/(app)/series/[slug]/weekend/[round]/page.tsx`: the weekend `SportsEvent` now carries a **`subEvent[]`** (one SportsEvent per timed session, each with its `startDate`/`endDate` + session URL) so search can surface the weekend's full session schedule and start times, plus a **data-driven `eventStatus`** — `EventRescheduled` + `previousStartDate` when `weekend.previousStartDate` is set, else `EventScheduled` (previously hardcoded to Scheduled). `sportsEventLd` gained `previousStartDate` + `subEvents` args. Verified in dev: WEC weekend = 8 session sub-events; MotoGP Qatar (round 20) = `EventRescheduled` + `previousStartDate` 2026-04-10 (the same treatment the rescheduled Bahrain round will get). tsc clean.
+- **Phase 2b still deferred** (flagged prior): `force-dynamic`→ISR (auth-gate refactor), `LocalTime` Athens-SSR, selective session sitemap.
+
 ## 0.218.1 — 2026-07-13
 
 ### Added

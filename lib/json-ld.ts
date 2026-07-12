@@ -89,6 +89,10 @@ export function sportsEventLd(args: {
   geo?: { lat: number; lon: number };
   /** Override the event URL (e.g. a per-session page); defaults to the weekend URL. */
   url?: string;
+  /** Date the round was moved from; sets eventStatus = EventRescheduled + previousStartDate. */
+  previousStartDate?: string;
+  /** Per-session sub-events (the weekend schedule) — each becomes a SportsEvent subEvent. */
+  subEvents?: Array<{ name: string; startDate: Date; endDate: Date; url: string }>;
 }): object {
   const url = args.url ?? `${SITE_URL}/series/${args.slug}/weekend/${args.round}`;
   const location = args.weekend.sessions.find((s) => s.location)?.location;
@@ -99,7 +103,9 @@ export function sportsEventLd(args: {
     url,
     startDate: args.startDate.toISOString(),
     endDate: args.endDate.toISOString(),
-    eventStatus: 'https://schema.org/EventScheduled',
+    eventStatus: args.previousStartDate
+      ? 'https://schema.org/EventRescheduled'
+      : 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
     sport: args.series.meta.name,
     // Stable brand image — a per-event OG image would be nicer, but its
@@ -131,6 +137,22 @@ export function sportsEventLd(args: {
       };
     }
     ld.location = place;
+  }
+  // A rescheduled round carries its former date (Schema.org pairs this with
+  // eventStatus = EventRescheduled).
+  if (args.previousStartDate) {
+    ld.previousStartDate = toIsoDateTime(args.previousStartDate) ?? args.previousStartDate;
+  }
+  // The weekend's sessions as sub-events — lets search surface the per-session
+  // schedule + start times under the event.
+  if (args.subEvents && args.subEvents.length > 0) {
+    ld.subEvent = args.subEvents.map((s) => ({
+      '@type': 'SportsEvent',
+      name: s.name,
+      startDate: s.startDate.toISOString(),
+      endDate: s.endDate.toISOString(),
+      url: s.url,
+    }));
   }
   return ld;
 }
