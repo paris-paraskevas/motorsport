@@ -18,9 +18,12 @@
 /out/
 
 # serwist service worker — generated into public/ on every build by @serwist/next
-# (swDest: public/sw.js). Regenerated per build, so it is not tracked.
+# (swDest: public/sw.js). Regenerated per build, so it is not tracked. The .map
+# siblings appear once source maps are on (Sentry build); same rationale.
 /public/sw.js
+/public/sw.js.map
 /public/swe-worker-*.js
+/public/swe-worker-*.js.map
 
 # production
 /build

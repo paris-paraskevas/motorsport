@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.213.0 — 2026-07-12
+
+### Added
+- **Sentry error monitoring + tracing (`@sentry/nextjs` v10, Next 16).** Wired across all three runtimes: `instrumentation-client.ts` (browser, + `onRouterTransitionStart`), `sentry.server.config.ts` + `sentry.edge.config.ts` loaded by `instrumentation.ts`'s `register()` (+ `onRequestError = Sentry.captureRequestError`), and `app/global-error.tsx` now also `captureException`s (kept its existing UI + `console.error`). `next.config.ts` is wrapped `withSentryConfig(withSerwist(nextConfig), …)` — Sentry outermost so its build plugin sees the final webpack config; the node-ical `serverExternalPackages` + `outputFileTracingIncludes` landmines are preserved untouched.
+- **Scope: errors + tracing only** (`tracesSampleRate` 1.0 dev / 0.1 prod). Session Replay deliberately NOT enabled (records user sessions — a consent/privacy call the app's Consent Mode governs); `enableLogs` off (avoid PII from console capture); both are easy follow-ups. **No `tunnelRoute`** — the SDK posts straight to the ingest host, already covered by the CSP `connect-src https:`, so `proxy.ts` is untouched. DSN resolution: client reads `NEXT_PUBLIC_SENTRY_DSN`; server/edge read `SENTRY_DSN ?? NEXT_PUBLIC_SENTRY_DSN`, so one Vercel env var lights up all three. Source-map upload runs only when `SENTRY_AUTH_TOKEN` is set (build still passes without it). `.gitignore` extended for the SW `.map` siblings the source-map-enabled build now emits.
+- Verified: tsc + eslint + `next build` clean (Sentry composes with Serwist; node-ical still traced). Browser smoke with the DSN set locally — client SDK initialised (`window.__SENTRY__` v10.65.0, carrier bound to our DSN) and a test error POSTed to `…ingest.de.sentry.io/…/envelope/` → **200** (events reach the project); DSN then removed from `.env.local`. **Operator: set `NEXT_PUBLIC_SENTRY_DSN` in Vercel** (optionally `SENTRY_AUTH_TOKEN` for readable prod stack traces) to enable on prod.
+
 ## 0.212.0 — 2026-07-12
 
 ### Added
