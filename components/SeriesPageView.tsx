@@ -158,8 +158,11 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
           )}
         </div>
         <StaleBanner configured={series.configured} stale={series.stale} />
-        {hasThreads && (
-          <div className="mt-3">
+        {/* Quick links at the top: series threads (left) + news (right) — the two
+            discussion/update surfaces (operator feedback). News is always live;
+            threads only appear when the series has any. */}
+        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5">
+          {hasThreads && (
             <Link
               href={`/threads?series=${slug}`}
               className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
@@ -167,8 +170,15 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
               <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint" />
               {series.meta.name} threads →
             </Link>
-          </div>
-        )}
+          )}
+          <Link
+            href={`/series/${slug}/news`}
+            className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
+          >
+            <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint" />
+            News →
+          </Link>
+        </div>
         {/* F1-only: the Telemetry & Analysis hub (Decoder + Race Story per round)
             isn't a series tab, so surface it here for mobile + desktop (0.114.1). */}
         {slug === 'f1' && (
@@ -188,8 +198,6 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       </header>
 
       <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
-
-      <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
 
       {/* Calendar tab only: subscribe to this series' schedule as a live ICS
           feed (/api/calendar/[slug]). Plain-language labels (operator feedback
@@ -231,6 +239,10 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
           <SeriesBlogPosts slug={slug} />
         </Suspense>
       )}
+
+      {/* Reference links tucked at the BOTTOM (operator feedback: they were
+          "weirdly placed text" above the calendar the user actually wants). */}
+      <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
     </div>
   );
 }
@@ -258,7 +270,7 @@ function SeriesLearnMore({
     { label: 'Drivers', href: `/series/${slug}/drivers` },
   ];
   return (
-    <section className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-[11px] uppercase tracking-[0.14em]">
+    <section className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border pt-6 font-mono text-[11px] uppercase tracking-[0.14em]">
       <span className="text-text-faint">Learn about {name}:</span>
       {links.map(l => (
         <Link

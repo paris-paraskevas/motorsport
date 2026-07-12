@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.214.1 — 2026-07-12
+
+### Changed
+- **Series pages lead with the calendar; the "Learn about" links are tucked to the bottom (operator: "the user wants to see calendar but gets a bunch of weirdly placed text that links to other content he hasn't asked for").** `components/SeriesPageView.tsx`: the `SeriesLearnMore` reference row (About / History / Rules / Champions / Drivers) moved from ABOVE the tab body to a bordered footer after the content + blog block, so the schedule sits directly under the tab rail on every tab. Added a **News quick-link** at the top beside the series-threads link (operator: "news linked next to threads"): News always shows (live tab), threads only when the series has any (fail-soft; local Supabase down = no threads link, News still shows). Also removed the deleted-route stale-type gotcha noted below. Browser-verified on `/series/f1`: DOM order is now News (top) → rail → calendar → … → Learn about (bottom), 0 console errors. tsc + eslint clean.
+- **Gotcha logged:** deleting an app route leaves a stale `.next/dev/types/<route>/page.ts` that fails `tsc` until cleared — `rm -rf .next/dev/types/<route>` (or a `.next` clear) after removing a route.
+
 ## 0.214.0 — 2026-07-12
 
 ### Added
