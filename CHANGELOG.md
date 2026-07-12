@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.216.0 — 2026-07-12
+
+### Added
+- **F1 2026-regulation Q&A content (operator: "rich content on the new regs in Q&A form").** Two new `/information/formula-1` explainers: **whats-new-in-f1-2026** (the overhaul overview: 50/50 hybrid, active aero + Overtake in place of DRS, smaller/lighter cars, 11-team grid with Audi + Cadillac) and **how-does-the-2026-f1-power-unit-work** (power-unit deep-dive: ~50/50 split, MGU-K ~350 kW, MGU-H removed, 100% sustainable fuel). Fills the missing F1 "what's new 2026" (every other series had one). **Adversarially fact-checked** by a subagent — every load-bearing claim verified against 2+ primary sources (Formula1.com, FIA, Mercedes-AMG F1, The Race); zero WRONG/UNVERIFIABLE. Written em-dash-free (dogfooding the new blog lint).
+- **Reconciled the FIA's Dec-2025 rename** in the existing entries: `what-is-formula-1.md` "Overtake Mode" → "Overtake"; `what-replaced-drs-manual-override-mode.md` active-aero now leads with **Corner Mode / Straight Mode** (X/Z-mode noted as the development names — the mapping independently re-verified, since a major outlet publishes it backwards).
+- `INFORMATION_MAX_INDEXED` 320 → **322** so both fact-checked pages index (deliberate editorial act per the registry rule). Both browser-verified (200, content + sections present, 0 console errors); registry test 19/19; tsc + `next build` clean.
+- **Landmine:** an unquoted YAML frontmatter value containing `: ` (colon-space) makes gray-matter throw, and `loadEditorialAnswers`' try/catch **silently skips** the file (404, not an error) — hit on `whats-new-in-f1-2026`'s summary. The registry is also memoised per-process (`registry.ts` `let cache`), so a content edit needs a dev restart to surface.
+
 ## 0.215.0 — 2026-07-12
 
 ### Added

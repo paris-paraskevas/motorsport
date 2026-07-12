@@ -41,14 +41,14 @@ At high speed a car's electrical deployment normally tapers off. But when a chas
 
 *(A separate feature, **Boost**, lets any driver deploy harvested battery power with a button at will — distinct from the proximity-gated Overtake.)*
 
-## Active aerodynamics (X-mode / Z-mode) — the low-drag tool
+## Active aerodynamics (Corner Mode / Straight Mode) — the low-drag tool
 
-Active aero replaces DRS's drag-cutting role, but it is a lap-time tool available to **every** car, not an overtaking aid. Both the front and rear wings now move together (DRS moved only the rear):
+Active aero replaces DRS's drag-cutting role, but it is a lap-time tool available to **every** car, not an overtaking aid. Both the front and rear wings now move together (DRS moved only the rear). The FIA renamed the two states in December 2025, having developed them as Z-mode and X-mode:
 
-- **Z-mode** — high-downforce "corner mode", wings loaded for cornering.
-- **X-mode** — low-drag "straight mode", flaps flattened to cut drag for straight-line speed.
+- **Corner Mode** (developed as Z-mode) is the high-downforce state, wings loaded for cornering.
+- **Straight Mode** (developed as X-mode) is the low-drag state, flaps flattened to cut drag for straight-line speed.
 
-Unlike DRS, X-mode has **no one-second proximity requirement** — leader and backmarker can both use it on the same straight. The wings close automatically under braking.
+Unlike DRS, Straight Mode has **no one-second proximity requirement**: leader and backmarker can both use it on the same straight. The wings close automatically under braking.
 
 ## Where it is used on each circuit
 

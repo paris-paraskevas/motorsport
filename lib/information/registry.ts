@@ -26,7 +26,11 @@ import { entryKey, type InfoEntry } from './types';
 // restructure Phase C) flipped to featured; the old /series/<slug>/history tabs
 // 308-redirect to the guides (proxy.ts) + drop from the sitemap so nothing
 // duplicates, and "Rules essentials" was pulled out of the About tab.
-export const INFORMATION_MAX_INDEXED = 320;
+// 2026-07-12: raised 320 → 322 for the two F1 2026-regulation Q&A pages ("what's
+// new in F1 2026" + "how the 2026 power unit works"), each adversarially
+// fact-checked (every load-bearing claim verified against 2+ primary sources)
+// before promotion.
+export const INFORMATION_MAX_INDEXED = 322;
 
 interface RegistryState {
   all: InfoEntry[];
