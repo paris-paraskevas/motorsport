@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.210.0 — 2026-07-12
+
+### Added
+- **Re-schedule an already-scheduled blog post (IDEAS B3.12).** Before this, `decidePost` only did draft→approved (no way to move an approved-but-not-yet-published post's `publish_at`). Added `reschedulePost(id, publishAt)` to `lib/blog.ts` — status-guarded to `'approved'` (exact-count, mirrors `decidePost`), so a published/draft/rejected post can't be moved. Wired a `'reschedule'` action into `POST /api/blog/[id]` (requires `publishAt`; same admin-or-owning-writer authz as approve/reject via `authorizePostActor`; if the new time is already past, the inline publish-if-due runs so it goes live + notifies immediately, else the cron takes it at the new time). `components/blog/PostModeration.tsx`: each **Scheduled** row now carries a `datetime-local` field pre-filled with its current time + a **Re-schedule** button. tsc + eslint + `next build` clean (`/api/blog/[id]` builds). The moderation UI + DB happy-path are admin/writer + prod-DB gated, so end-to-end (edit time → row updates) verifies on prod; the guard mirrors the proven `decidePost` pattern.
+
 ## 0.209.0 — 2026-07-12
 
 ### Fixed

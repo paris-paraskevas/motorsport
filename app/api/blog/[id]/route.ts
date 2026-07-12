@@ -4,7 +4,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isAdmin, isWriter } from '@/lib/threads';
 import { isPushConfigured } from '@/lib/push';
-import { decidePost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
+import { decidePost, reschedulePost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
 import { announcePublishedPosts } from '@/lib/notify-blog';
 
 export const runtime = 'nodejs';
@@ -23,10 +23,11 @@ async function authorizePostActor(id: string, userId: string): Promise<BlogPost 
   return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 }
 
-// POST = approve/schedule or reject a post (admin, or the writer who owns it):
-// { action: 'approve' | 'reject', publishAt? }. Approve schedules it (publishAt is
-// an ISO string, required); the publish cron makes it live at that time. Reject is
-// terminal.
+// POST = approve/schedule, reject, or re-schedule a post (admin, or the writer who
+// owns it): { action: 'approve' | 'reject' | 'reschedule', publishAt? }. Approve
+// schedules a draft (publishAt is an ISO string, required); reschedule moves an
+// already-scheduled (approved, not-yet-live) post to a new publishAt; the publish
+// cron makes it live at that time. Reject is terminal.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
@@ -41,19 +42,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   } catch {
     return NextResponse.json({ error: 'invalid body' }, { status: 400 });
   }
-  if (body.action !== 'approve' && body.action !== 'reject') {
+  if (body.action !== 'approve' && body.action !== 'reject' && body.action !== 'reschedule') {
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
   }
   const publishAt = typeof body.publishAt === 'string' ? body.publishAt : undefined;
   try {
-    await decidePost(id, userId, body.action === 'approve', publishAt);
-    // If this approval made a post due now (publish_at already passed), publish +
-    // notify it immediately instead of waiting for the GitHub-Actions-throttled
-    // publish cron (which can lag ~2h). publishDuePosts is the status-guarded
-    // once-ever flip, so the cron won't re-announce an already-published post.
-    // Best-effort: the approve already succeeded and the cron is the backstop —
+    if (body.action === 'reschedule') {
+      if (!publishAt) return NextResponse.json({ error: 'publishAt required to reschedule' }, { status: 422 });
+      await reschedulePost(id, publishAt);
+    } else {
+      await decidePost(id, userId, body.action === 'approve', publishAt);
+    }
+    // Approving OR re-scheduling can leave a post due now (publish_at in the past)
+    // — publish + notify it immediately instead of waiting for the
+    // GitHub-Actions-throttled publish cron (which can lag ~2h). publishDuePosts is
+    // the status-guarded once-ever flip, so the cron won't re-announce it.
+    // Best-effort: the action already succeeded and the cron is the backstop —
     // never fail the request on a publish/push hiccup.
-    if (body.action === 'approve') {
+    if (body.action === 'approve' || body.action === 'reschedule') {
       try {
         const published = await publishDuePosts(new Date());
         if (published.length > 0) {
@@ -68,7 +74,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
-    const domain = /required|not a draft/i.test(message);
+    const domain = /required|not a draft|not scheduled/i.test(message);
     return NextResponse.json({ error: message }, { status: domain ? 422 : 500 });
   }
 }

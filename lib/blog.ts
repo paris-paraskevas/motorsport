@@ -301,6 +301,24 @@ export async function decidePost(
   if (!count) throw new Error('post is not a draft (already decided?)');
 }
 
+/** Move an already-approved (scheduled, not-yet-published) post to a new
+ *  publish_at. Status-guarded to 'approved' so a published / draft / rejected
+ *  post can't be moved — only something still waiting to go live. Caller
+ *  pre-verified (admin or the owning writer, per the API's authorizePostActor). */
+export async function reschedulePost(id: string, publishAt: string): Promise<void> {
+  if (!publishAt || Number.isNaN(new Date(publishAt).getTime())) {
+    throw new Error('publish_at required to reschedule');
+  }
+  const now = new Date().toISOString();
+  const { error, count } = await betDb()
+    .from('post')
+    .update({ publish_at: publishAt, updated_at: now }, { count: 'exact' })
+    .eq('id', id)
+    .eq('status', 'approved');
+  if (error) throw new Error(`reschedulePost failed: ${error.message}`);
+  if (!count) throw new Error('post is not scheduled (only scheduled posts can be re-scheduled)');
+}
+
 /** The publish-cron worker: flip every approved post whose publish_at has passed
  *  to 'published'. Each UPDATE is status-guarded with an exact count, so only the
  *  rows THIS call actually flips are returned — overlapping ticks / a redeploy
