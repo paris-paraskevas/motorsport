@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.212.0 — 2026-07-12
+
+### Added
+- **Blog embeds phase 2 — `standings` embed + composer-preview awareness.** `[[standings series=<slug>]]` (`components/blog/embeds/StandingsEmbed.tsx`) renders a compact drivers'-standings snapshot from the SAME feed as the chart (`loadSnapshotSource` → `buildStandingsAtRound(races, ∞, extras)`), so the two stay consistent by construction. Gated on `pointsExact` (the flag the drivers-page trend uses to decide the results carry canonical per-round points) — endurance / owner-points series fall back to a note rather than risk a results-cumulated table disagreeing with the official standings (RULE #1); a fuller per-series official-standings embed is a possible follow-up. Wired into the `BlogEmbed` dispatcher (`case 'standings'`).
+- **Composer live-preview is embed-aware** (`app/api/blog/preview/route.ts` → new `renderPreviewHtml` in `lib/blog-embeds.ts`): a shortcode renders as a labelled placeholder (e.g. "▮ chart embed · series=f1") instead of raw `[[…]]` text, so an author doesn't read it as broken. Runs **no** data fetch (the preview fires on every keystroke) — the live widget renders only on the published post + the draft/scheduled full-page preview. Author arg values are HTML-escaped into the placeholder. A body with no shortcodes previews **byte-identically** to before (a single markdown run). `components/blog/MarkdownEditor.tsx` gained a one-line shortcode-syntax hint.
+- Tests: `renderPreviewHtml` (byte-identical for no-embed bodies; placeholder not the raw token; arg escaping) — suite 865→**868**. tsc + eslint + `next build` clean; browser-verified on a temp-mocked post (F1 standings table matches the chart's ranked list 1:1, WEC → "not available" note, chart still renders, 0 console errors). **Lesson:** adding a NEW module wired into an existing one (the `StandingsEmbed` import in `BlogEmbed`) didn't hot-reload — dev served the stale dispatcher (`case` fell through to "unknown embed") until a `.next`-clear + dev restart; the code was correct (tsc/eslint/build green), the dev graph was stale.
+
 ## 0.211.0 — 2026-07-12
 
 ### Added

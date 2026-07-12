@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseBodySegments, parseEmbedArgs, renderPostBody } from './blog-embeds';
+import { parseBodySegments, parseEmbedArgs, renderPostBody, renderPreviewHtml } from './blog-embeds';
+import { renderMarkdown } from './content';
 
 describe('parseEmbedArgs', () => {
   it('parses unquoted, double-quoted and single-quoted values', () => {
@@ -72,5 +73,27 @@ describe('renderPostBody', () => {
     const htmlC = (segments[2] as { html: string }).html;
     expect(htmlA).toContain('id="recap"');
     expect(htmlC).toContain('id="recap-1"');
+  });
+});
+
+describe('renderPreviewHtml', () => {
+  it('is byte-identical to renderMarkdown for a body with no embeds', async () => {
+    const md = '## Heading\n\nSome **prose** with a [link](https://x.test) and a list:\n\n- one\n- two';
+    expect(await renderPreviewHtml(md)).toEqual(await renderMarkdown(md));
+  });
+
+  it('renders an embed as a labelled placeholder, not the live widget or raw shortcode', async () => {
+    const html = await renderPreviewHtml('Intro.\n\n[[chart series=f1]]\n\nOutro.');
+    expect(html).toContain('chart embed');
+    expect(html).toContain('series=f1');
+    expect(html).not.toContain('[[chart'); // not the raw token
+    expect(html).toContain('Intro.');
+    expect(html).toContain('Outro.');
+  });
+
+  it('escapes author-controlled arg values in the placeholder', async () => {
+    const html = await renderPreviewHtml('[[chart series="a<b>c"]]');
+    expect(html).not.toContain('a<b>');
+    expect(html).toContain('a&lt;b&gt;c');
   });
 });

@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isWriter } from '@/lib/threads';
-import { renderMarkdown } from '@/lib/content';
+import { renderPreviewHtml } from '@/lib/blog-embeds';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // Live-preview render for the blog editor. Takes { body } markdown and returns
-// { html } through the SAME renderMarkdown pipeline the published post uses — so
-// the preview is byte-identical to what ships (no client-side markdown library,
-// no rehype-sanitize drift, which is exactly the risk the 2026-07-03 inline-edit
-// spec flagged against a client-rendered preview). Writer/admin only.
+// { html } through the SAME sanitised pipeline the published post uses (no
+// client-side markdown library, no rehype-sanitize drift — the risk the
+// 2026-07-03 inline-edit spec flagged against a client-rendered preview). Embed
+// shortcodes render as labelled placeholders here (renderPreviewHtml runs no
+// data fetch — the preview fires on every keystroke); the live widget only
+// renders on the published post + the draft/scheduled full-page preview. A
+// body with no shortcodes previews byte-identically to before. Writer/admin only.
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -27,6 +30,6 @@ export async function POST(req: Request) {
   // render endpoint.
   if (md.length > 50000) return NextResponse.json({ error: 'body too long' }, { status: 413 });
 
-  const html = await renderMarkdown(md);
+  const html = await renderPreviewHtml(md);
   return NextResponse.json({ html });
 }

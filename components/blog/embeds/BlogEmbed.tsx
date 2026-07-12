@@ -1,5 +1,6 @@
 import type { EmbedSpec } from '@/lib/blog-embeds';
 import { ChartEmbed, EmbedNote } from './ChartEmbed';
+import { StandingsEmbed } from './StandingsEmbed';
 
 // Server dispatcher for a `[[type ...]]` blog shortcode. Each embed is a data
 // widget, not article prose, so the frame opts out of the surrounding `prose`
@@ -14,6 +15,8 @@ function renderEmbed(spec: EmbedSpec) {
   switch (spec.type) {
     case 'chart':
       return <ChartEmbed series={spec.args.series} />;
+    case 'standings':
+      return <StandingsEmbed series={spec.args.series} />;
     default:
       return <EmbedNote>Unknown embed “{spec.type}”.</EmbedNote>;
   }

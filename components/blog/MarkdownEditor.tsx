@@ -135,6 +135,14 @@ export function MarkdownEditor({
         </button>
       </div>
 
+      {!preview && (
+        <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+          Data embeds (own line): <code>{'[[chart series=f1]]'}</code> ·{' '}
+          <code>{'[[standings series=f1]]'}</code>. Render for series with per-round
+          championship points; endurance series (WEC, IMSA, GT World, NLS) show a note instead.
+        </p>
+      )}
+
       {preview ? (
         <div className={`rounded border border-border bg-bg px-3 py-2 ${minHeightClass}`}>
           {!value.trim() ? (
