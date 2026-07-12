@@ -30,7 +30,10 @@ import { entryKey, type InfoEntry } from './types';
 // new in F1 2026" + "how the 2026 power unit works"), each adversarially
 // fact-checked (every load-bearing claim verified against 2+ primary sources)
 // before promotion.
-export const INFORMATION_MAX_INDEXED = 322;
+// 2026-07-13: raised 322 → 323 for "who has won the most MotoGP titles" (a GSC
+// top-query gap; premier-class + all-class + by-manufacturer records, triple-
+// verified against motogp.com / FIM / Wikipedia before promotion).
+export const INFORMATION_MAX_INDEXED = 323;
 
 interface RegistryState {
   all: InfoEntry[];
