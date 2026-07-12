@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.210.0 — 2026-07-12
+
+**Reschedule a scheduled post.** Blog editors can now change the publish time of a post that's already scheduled but hasn't gone live yet — straight from the blog console.
+
 ## 0.209.0 — 2026-07-12
 
 **The welcome tour works properly on phones.** The quick intro tour now shows its tips in a tidy panel that sits clear of whatever it's pointing at — never covering it — with a cleaner, rounded look.

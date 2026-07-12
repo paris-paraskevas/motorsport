@@ -41,6 +41,16 @@ function fmt(iso: string | null): string {
     : d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+// An ISO instant → the LOCAL wall-clock string a <input type="datetime-local">
+// expects, so a scheduled post's re-schedule field pre-fills with its current time.
+function toLocalInput(iso: string | null): string {
+  if (!iso) return defaultLocalDateTime();
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return defaultLocalDateTime();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export function PostModeration({ series }: { series: { slug: string; name: string }[] }) {
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
@@ -97,13 +107,13 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
     };
   }, [isSignedIn]);
 
-  async function decide(id: string, action: 'approve' | 'reject') {
+  async function decide(id: string, action: 'approve' | 'reject' | 'reschedule', localWhen?: string) {
     setBusy(id);
     setError(null);
     try {
       const body: { action: string; publishAt?: string } = { action };
-      if (action === 'approve') {
-        const d = new Date(when[id] || defaultLocalDateTime());
+      if (action === 'approve' || action === 'reschedule') {
+        const d = new Date(localWhen ?? when[id] ?? defaultLocalDateTime());
         if (Number.isNaN(d.getTime())) {
           setError('Pick a valid publish time.');
           return;
@@ -193,13 +203,32 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
           <h3 className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">
             Scheduled
           </h3>
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {data.scheduled.map(p => (
-              <li key={p.id} className="flex items-baseline justify-between gap-3 font-mono text-xs">
-                <Link href={`/blog/${p.slug}`} className="truncate text-text hover:text-brand">
-                  {p.title}
-                </Link>
-                <span className="shrink-0 text-text-faint">publishes {fmt(p.publishAt)}</span>
+              <li key={p.id} className="rounded-lg border border-border bg-surface/40 p-2.5">
+                <div className="flex items-baseline justify-between gap-3 font-mono text-xs">
+                  <Link href={`/blog/${p.slug}`} className="truncate text-text hover:text-brand">
+                    {p.title}
+                  </Link>
+                  <span className="shrink-0 text-text-faint">publishes {fmt(p.publishAt)}</span>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <input
+                    type="datetime-local"
+                    value={when[p.id] ?? toLocalInput(p.publishAt)}
+                    onChange={e => setWhen(w => ({ ...w, [p.id]: e.target.value }))}
+                    className="rounded border border-border bg-bg px-2 py-1 font-mono text-xs text-text"
+                    aria-label="New publish time"
+                  />
+                  <button
+                    type="button"
+                    disabled={busy === p.id}
+                    onClick={() => decide(p.id, 'reschedule', when[p.id] ?? toLocalInput(p.publishAt))}
+                    className="rounded border border-border px-3 py-1 font-mono text-xs text-text-muted hover:text-text disabled:opacity-40"
+                  >
+                    Re-schedule
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
