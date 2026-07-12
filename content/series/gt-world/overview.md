@@ -2,7 +2,7 @@
 title: GT World Challenge — overview
 ---
 
-GT World Challenge is SRO's global **GT3** competition — one class of production-based supercars, split by driver rating into Pro, Gold, Silver and Bronze so amateurs and professionals share the same grid. Its European series is the strongest GT3 field in the world; sister championships run in America and Asia.
+GT World Challenge is SRO's global **GT3** competition — one class of production-based supercars, split by [driver rating](/information/endurance/what-do-gt-driver-ratings-mean) into Pro, Gold, Silver and Bronze so amateurs and professionals share the same grid. Its European series is the strongest GT3 field in the world; sister championships run in America and Asia.
 
 ## Race weekend shape
 
