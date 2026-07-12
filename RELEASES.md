@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.207.0 — 2026-07-12
+
+**Behind the scenes.** Internal tooling improvements.
+
 ## 0.206.1 — 2026-07-12
 
 **Behind the scenes.** Security hardening and a small changelog display fix.
