@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.213.2 — 2026-07-12
+
+**Behind the scenes.** Admin tooling tidy-ups.
+
 ## 0.213.1 — 2026-07-12
 
 **Cleaner session times.** Times show in your own local timezone without the extra zone label now — just the time.
