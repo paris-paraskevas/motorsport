@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.218.0 — 2026-07-13
+
+**Richer circuit guides.** Fuller, fact-checked profiles for Homestead-Miami, Talladega, Road America and Laguna Seca, each answering what the track is, where it is and how long it is, with clearer facts, sources and links. The country track lists (Sweden, Japan, Argentina and more) now open with a better summary of each nation's venues.
+
 ## 0.217.1 — 2026-07-12
 
 **Behind the scenes.** SEO tidy-up so search engines index the canonical version of every Learn page.

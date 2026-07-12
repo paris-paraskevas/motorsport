@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.218.0 — 2026-07-13
+
+### Changed
+- **SEO campaign Phase 1 — enriched the 7 top-impression track pages (GSC-driven).** `content/information/tracks.json`: rewrote the four US-circuit profiles GSC surfaces (`homestead-miami-speedway`, `talladega-superspeedway`, `road-america`, `weathertech-raceway-laguna-seca`) from ~150–260-word 3-section stubs into 5–6-section, answer-first, em-dash-free guides that lead with the real query intent (where is it / length / layout), each **adversarially fact-checked by a per-track subagent against ≥2 primary sources** (official track sites + Wikipedia + series/sanctioning bodies), with ≥2 labelled `sources` (was 1) and query-matched `keywords` + contextual `related`. `lib/information/curated.ts`: `loadTracks` now honours per-entry `keywords` + `related` (generic fallback preserved for the other ~134 tracks); the `racing-tracks-in-<country>` aggregate generator gets a richer, em-dash-free, data-driven intro naming each country's marquee venues (lifts all 17 aggregates incl. the GSC targets `racing-tracks-in-sweden` / `-japan` / `-argentina`). Browser-verified at 390px (Homestead, Talladega + Japan/US aggregates viewed; all 7 render, 0 console errors); tsc clean.
+- **NOTED (not done):** ~134 non-target track summaries still contain em-dashes that surface in the aggregate lists (pre-existing member data) — a future sweep.
+
 ## 0.217.1 — 2026-07-12
 
 ### Fixed
