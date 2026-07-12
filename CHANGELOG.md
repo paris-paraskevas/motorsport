@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.219.2 — 2026-07-13
+
+### Changed
+- **F1 Bahrain GP status made accurate (operator flagged a reschedule).** `content/series/f1/rounds.json`: Bahrain's cancelled-round `rescheduleStatus` tightened from "under discussion" to name the proposed 2-4 October weekend and that it is not yet officially confirmed. Primary-source verified (an adversarial subagent confirmed formula1.com's live 2026 calendar still lists 22 rounds with no Bahrain; Wikipedia + F1 press say only that an Oct 2-4 slot is under consideration, decision due before the summer break). **The full reschedule (adding Bahrain as an active round + a sessions.json weekend) is staged but NOT applied** — it needs official F1/FIA confirmation, so it's left for the operator (RULE #1: never assert an unconfirmed calendar).
+
 ## 0.219.1 — 2026-07-13
 
 ### Fixed
