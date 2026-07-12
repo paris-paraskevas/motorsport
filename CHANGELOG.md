@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.217.0 — 2026-07-12
+
+### Added
+- **Enriched the four top-impression `/information` explainers (GSC showed high impressions at ~0 clicks) and folded in two flagged fact-fixes (PR #533).** `content/information/answers/how-rally-racing-works.md`, `difference-motogp-moto2-moto3.md`, `how-the-f1-points-system-works.md`, `classes-at-le-mans.md` — query-matched titles/keywords, multi-section bodies, sources and related links. Each page adversarially fact-checked by a per-topic subagent against ≥2 primary sources (WRC/FIA; motogp.com/FIM/Triumph; the FIA 2025 F1 Sporting Regs PDF; fiawec.com/24h-lemans.com plus the official 2026 Le Mans entry list).
+
+### Fixed
+- **MotoGP classes — three stale/wrong figures corrected** (`difference-motogp-moto2-moto3.md`): Moto3 rev limit 14,000 → **13,500 rpm** (cut for 2015; 14,000 was the 2012 launch value); Moto3 minimum weight 148 → **152 kg** (raised in 2018 — Wikipedia still lists the old 148, the source of the error); "the grid mixes inline-four and V4" → **all-V4 for 2026** after Yamaha dropped its inline-four.
+- **LMDh manufacturer roster de-staled** (`what-are-lmh-and-lmdh.md`, operator-flagged): removed **Porsche** (963 factory program shut after 2025) and **Lamborghini** (SC63, exited) from the current LMDh list; correct 2026 set is Cadillac, BMW, Alpine, Genesis (Porsche/Lamborghini kept as a past-tense note). Fixed the stale "Ferrari (LMH) vs Porsche (LMDh)" example → Cadillac. `classes-at-le-mans.md`'s 2026 Hypercar list was already correct (verified against the official entry).
+- **Two dead internal links repointed** (`what-is-formula-1.md`): `/information/formula-1/f1-rules-explained` and `…/the-history-of-f1` had no backing entry (hard 404 via the `[slug]` route's `notFound()`) → now point to `how-the-f1-points-system-works` and `whats-new-in-f1-2026`; `updated` bumped to 2026-07-12.
+- Fact-check note: the F1-points page's 50–75% shortened-race tier (`19-14-12-10-8-6-4-3-2-1`) matches the codified FIA 2025 Sporting Regs (Art. 6.5) exactly and is **more** correct than several secondary sources (incl. an old formula1.com article) — left as written. Browser-verified all six touched pages at 390px + desktop (0 console errors; the two F1-points tables scroll cleanly on mobile).
+
 ## 0.216.1 — 2026-07-12
 
 ### Changed

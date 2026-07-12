@@ -51,7 +51,7 @@ All three classes share every race weekend, running back to back at the same cir
 
 ## What cc is Moto3, and what makes it the entry class
 
-Moto3 bikes use a **250cc single-cylinder four-stroke** engine. The formula is deliberately restrictive: engines are normally aspirated (no turbocharging or supercharging), the bore is capped at 81mm, and the rev limit is 14,000 rpm. A Moto3 machine has a minimum weight of about 148 kg including the rider and produces around 55 horsepower, which makes it the slowest of the three classes.
+Moto3 bikes use a **250cc single-cylinder four-stroke** engine. The formula is deliberately restrictive: engines are normally aspirated (no turbocharging or supercharging), the bore is capped at 81mm, and the rev limit is 13,500 rpm. A Moto3 machine has a minimum weight of about 152 kg including the rider and produces around 55 horsepower, which makes it the slowest of the three classes.
 
 Because the bikes are so evenly matched and low on power, Moto3 racing is defined by slipstreaming and huge braking-zone battles, and it rewards racecraft over machinery. Costs and electronics are tightly controlled, and the bikes run control **Pirelli** tyres (the class switched from Dunlop to Pirelli in 2024). Current bikes are built by manufacturers such as **KTM** and **Honda**. Riders here are typically the youngest on the grid.
 
@@ -63,7 +63,7 @@ What Moto2 does not standardise is the **chassis**. Teams buy their frames from 
 
 ## What cc is MotoGP, and why it is the prototype class
 
-MotoGP is the prototype pinnacle. The engine formula allows up to **1,000cc**, four-stroke, with a maximum of **four cylinders** and a maximum bore of 81mm. Manufacturers are free to choose their engine layout, so the grid mixes inline-four and V4 designs. These are bespoke racing machines, not production-based bikes, built by **Ducati, Aprilia, KTM, Honda and Yamaha**.
+MotoGP is the prototype pinnacle. The engine formula allows up to **1,000cc**, four-stroke, with a maximum of **four cylinders** and a maximum bore of 81mm. Manufacturers are free to choose their engine layout, though for 2026 every bike on the grid runs a V4, after Yamaha dropped its inline-four for the new season. These are bespoke racing machines, not production-based bikes, built by **Ducati, Aprilia, KTM, Honda and Yamaha**.
 
 A current MotoGP bike makes more than 280 horsepower, has a minimum weight of 157 kg, and tops 350 km/h, with the fastest bikes now exceeding 360 km/h at high-speed circuits such as Mugello. The class runs control **Michelin** tyres. Even here, some hardware is standardised for fairness: since 2016 every bike uses a unified electronic control unit (a spec ECU built by Magneti Marelli) running common software. So MotoGP is a true prototype class in its engines and chassis, with only the electronics and tyres held in common.
 
