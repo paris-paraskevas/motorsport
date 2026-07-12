@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
-import { weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
+import { sessionSlug, weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
 import { matchCircuitEntry } from '@/lib/circuits';
@@ -154,6 +154,18 @@ export default async function WeekendPage({
     (venueLocation ? ` at ${venueLocation}` : '') +
     '.';
 
+  // Per-session sub-events for the weekend SportsEvent — the schedule + start
+  // times search can surface. Timed sessions only (TBC/dateOnly have no instant).
+  const sessionEvents = [...weekend.sessions]
+    .filter((s) => !s.dateOnly)
+    .sort((a, b) => a.start.getTime() - b.start.getTime())
+    .map((s) => ({
+      name: s.title.replace(/^.*?[-–—:]\s*/, '').trim() || s.title,
+      startDate: s.start,
+      endDate: s.end,
+      url: `${SITE_URL}/series/${slug}/weekend/${round}/${sessionSlug(s.title)}`,
+    }));
+
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
@@ -188,6 +200,8 @@ export default async function WeekendPage({
           geo: circuitMatch
             ? { lat: circuitMatch.circuit.lat, lon: circuitMatch.circuit.lon }
             : undefined,
+          subEvents: sessionEvents,
+          previousStartDate: weekend.previousStartDate,
         })}
       />
       {/* Radial wash retired with the rest of the app's (2c-3 precedent);
