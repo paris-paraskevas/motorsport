@@ -1,12 +1,15 @@
 ---
 topic: formula-1
 question: What replaced DRS in Formula 1 for 2026?
-summary: For 2026 F1 dropped DRS and split its job into two systems — an electrical overtaking boost called Overtake (Manual Override Mode) and active aerodynamics (movable front and rear wings with a low-drag straight mode).
+summary: DRS is gone for 2026. What replaces DRS is two systems working together, an electrical overtaking boost called Overtake (developed as Manual Override Mode, or MOM), plus active aerodynamics, the movable front and rear wings with a low-drag Straight Mode.
 keywords:
+  - what replaces drs
   - what replaced drs
   - manual override mode
+  - mom f1
   - f1 overtake mode 2026
-  - f1 active aero x mode z mode
+  - drs replacement 2026
+  - active aero corner mode straight mode
   - 2026 f1 overtaking rules
 review: verified
 featured: true
