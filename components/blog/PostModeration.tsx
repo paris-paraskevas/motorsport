@@ -130,6 +130,13 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
         setError(d.error ?? 'Failed.');
         return;
       }
+      // Clear this row's typed value so it re-prefills from the freshly-persisted
+      // publish_at after the reload (avoids showing a stale edited time).
+      setWhen(w => {
+        const next = { ...w };
+        delete next[id];
+        return next;
+      });
       await load();
       router.refresh();
     } catch {

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.210.1 — 2026-07-12
+
+**Fixes.** Corrected a manufacturer listed under the wrong Hypercar ruleset in the new endurance explainer, plus small copy tidy-ups.
+
 ## 0.210.0 — 2026-07-12
 
 **Reschedule a scheduled post.** Blog editors can now change the publish time of a post that's already scheduled but hasn't gone live yet — straight from the blog console.

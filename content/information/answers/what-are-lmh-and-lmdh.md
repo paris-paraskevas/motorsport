@@ -33,13 +33,13 @@ The top class of modern endurance racing — the one fighting for the **overall 
 
 An **LMH** car is designed **from the ground up by the manufacturer** — the chassis, bodywork and engine are all bespoke. A hybrid system is **optional**: if fitted, the petrol engine drives the rear axle and the electric motor powers the **front** axle, so the car is effectively all-wheel-drive above a set speed (the front motor isn't allowed to deploy below roughly 190 km/h, which limits the advantage in the wet and at low speed). There is no chassis cost cap, so LMH offers the most engineering freedom at the highest cost.
 
-Manufacturers on the LMH route include **Toyota, Ferrari, Peugeot, BMW and Aston Martin** — the Aston Martin Valkyrie is the outlier, racing with a naturally-aspirated V12 and **no hybrid** at all.
+Manufacturers on the LMH route include **Toyota, Ferrari, Peugeot and Aston Martin** — the Aston Martin Valkyrie is the outlier, racing with a naturally-aspirated V12 and **no hybrid** at all.
 
 ## LMDh — Le Mans Daytona h
 
 An **LMDh** car is built on a **spec "backbone"** — a chassis from one of four approved constructors (**Dallara, Ligier, Multimatic or Oreca**) plus a **common hybrid system** (motor by Bosch, battery by Williams, gearbox by Xtrac) that delivers its power to the **rear axle only**. The manufacturer supplies its own engine and bodywork on top. The spec parts keep the chassis cost capped at roughly €1 million, and — crucially — an LMDh car is eligible for **both** the WEC and IMSA, so one design can race on two continents.
 
-Manufacturers on the LMDh route include **Porsche, Cadillac, Lamborghini and Alpine**, with **Genesis** joining as an LMDh newcomer in 2026 (on an Oreca chassis).
+Manufacturers on the LMDh route include **Porsche, Cadillac, BMW, Lamborghini and Alpine**, with **Genesis** joining as an LMDh newcomer in 2026 (on an Oreca chassis). (BMW's M Hybrid V8 runs an LMDh Dallara chassis — despite the class being *named* "Hypercar".)
 
 ## The differences at a glance
 
