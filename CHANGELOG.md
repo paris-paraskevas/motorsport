@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.226.0 — 2026-07-13
+
+### Added
+- Blog posts can now be shared to Facebook, WhatsApp, and the device's native share sheet (the only route to Instagram / Stories on mobile), alongside the existing X and copy-link controls. `components/blog/BlogShare.tsx` adds Facebook + WhatsApp web-intent links and a feature-detected native `navigator.share` button, detected via `useSyncExternalStore` (no `set-state-in-effect` lint, no hydration mismatch). Browser-verified at 390px + desktop: 5 controls, correctly-encoded share URLs, 0 console errors.
+
 ## 0.225.3 — 2026-07-13
 
 ### Fixed

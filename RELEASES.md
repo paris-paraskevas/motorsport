@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.226.0 — 2026-07-13
+
+**Share posts anywhere.** Blog posts now have Facebook, WhatsApp, and a native share button (which reaches Instagram and Stories on your phone), next to the existing X and copy-link options.
+
 ## 0.225.3 — 2026-07-13
 
 **Better search.** You can now find a race weekend by its circuit name, not just the country. Searching "Sachsenring" brings up the German Grand Prix.
