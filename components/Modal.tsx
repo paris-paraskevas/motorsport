@@ -17,7 +17,7 @@ export function Modal({ title, onClose, children }: { title: string; onClose: ()
       <div className="w-full max-w-md border border-border bg-surface-elevated" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <span className="font-display text-sm font-bold uppercase tracking-wide text-text">{title}</span>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-text-muted hover:text-text">
+          <button type="button" onClick={onClose} aria-label="Close" className="-m-1.5 p-1.5 text-text-muted hover:text-text">
             <X size={16} />
           </button>
         </div>

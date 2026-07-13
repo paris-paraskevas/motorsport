@@ -83,6 +83,7 @@ export function HeaderUtils({
         <SignInButton mode="modal">
           <button
             type="button"
+            aria-label="Sign in"
             data-heatmap-id="chrome:sign-in"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
           >
