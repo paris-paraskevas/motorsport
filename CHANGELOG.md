@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.223.0 — 2026-07-13
+
+### Added
+- **Heatmap Phase 3 — segmentation + date ranges.** `components/HeatmapTracker.tsx` derives two anonymous per-pageview segments and adds them to the batch: SOURCE (referrer + UTM → direct / organic / referral / campaign / internal) and VISITOR (new vs returning, via a single `paddock:hm-seen` localStorage flag — no id/PII). `lib/heatmap.ts`: `Source` / `Visitor` types + `HeatmapEvent` fields; `sanitizeEvents` validates + applies them; a shared `HeatmapReadOpts` (breakpoint + source + visitor + from/to) now filters every read (`clickPoints` / `scrollStats` / `frustrationSignals` / `overlayData`).
+- **Admin overlay gains segment + date filters.** `components/admin/HeatmapOverlay.tsx`: source, visitor, and date-range (7/30/90d/all) selects re-fetch via the extended `loadOverlayData` server action — read one segment at a time ("never the average visitor") instead of a merged view.
+- **⏳ Operator step — apply migration #3.** `supabase/migrations/20260713140000_heatmap_segments.sql` (add `source` + `visitor` columns + checks + a `(path,source,visitor)` index) is committed but NOT applied — operator-gated. **Deploy-safe:** `recordEvents` now retries a rejected batch with ONLY the original (#544) columns + legacy kinds, so capture survives any pending migration (#2 or #3) without regressing.
+- Deferred: the before/after two-window compare (date-range filtering ships; a side-by-side delta is a follow-up). Verified: `next build` clean; 914/914 vitest (segment sanitize + the core-columns insert fallback unit-tested); browser — segment/date controls render, overlay paints, 0 console errors.
+
 ## 0.222.0 — 2026-07-13
 
 ### Added

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Breakpoint, FrustrationItem, OverlayData } from '@/lib/heatmap';
+import type { Breakpoint, FrustrationItem, OverlayData, Source, Visitor } from '@/lib/heatmap';
 
 // A true visual heatmap: the REAL page rendered in a same-origin iframe (?hm=1 so
 // its own tracker stays off), with a canvas overlay. CLICKS mode positions each
@@ -102,12 +102,18 @@ export function HeatmapOverlay({
   paths: string[];
   initialPath: string;
   initialData: OverlayData;
-  // Server action (admin-gated) — clicks + scroll + frustration for a path+bp.
-  loadData: (path: string, breakpoint: Breakpoint) => Promise<OverlayData>;
+  // Server action (admin-gated) — clicks + scroll + frustration for a path + filters.
+  loadData: (
+    path: string,
+    filter: { breakpoint: Breakpoint; source?: Source; visitor?: Visitor; from?: string },
+  ) => Promise<OverlayData>;
 }) {
   const [path, setPath] = useState(initialPath);
   const [bp, setBp] = useState<Breakpoint>('desktop');
   const [mode, setMode] = useState<Mode>('clicks');
+  const [source, setSource] = useState<'all' | Source>('all');
+  const [visitor, setVisitor] = useState<'all' | Visitor>('all');
+  const [range, setRange] = useState<'all' | '7d' | '30d' | '90d'>('all');
   const [data, setData] = useState<OverlayData>(initialData);
   const [loading, setLoading] = useState(false);
   const [placed, setPlaced] = useState<{ placed: number; total: number } | null>(null);
@@ -128,13 +134,20 @@ export function HeatmapOverlay({
     }
     let alive = true;
     setLoading(true);
-    loadData(path, bp)
+    const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 0;
+    const from = days > 0 ? new Date(Date.now() - days * 86_400_000).toISOString() : undefined;
+    loadData(path, {
+      breakpoint: bp,
+      source: source === 'all' ? undefined : source,
+      visitor: visitor === 'all' ? undefined : visitor,
+      from,
+    })
       .then(d => alive && (setData(d), setLoading(false)))
       .catch(() => alive && (setData({ clicks: [], scroll: { sample: 0, reached: [] }, rage: [], dead: [] }), setLoading(false)));
     return () => {
       alive = false;
     };
-  }, [path, bp, loadData]);
+  }, [path, bp, source, visitor, range, loadData]);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -231,6 +244,40 @@ export function HeatmapOverlay({
             </button>
           ))}
         </div>
+        <select
+          value={source}
+          onChange={e => setSource(e.target.value as 'all' | Source)}
+          title="Traffic source"
+          className="border border-border bg-bg px-2 py-1 font-mono text-[11px] text-text"
+        >
+          <option value="all">all sources</option>
+          <option value="direct">direct</option>
+          <option value="organic">organic</option>
+          <option value="referral">referral</option>
+          <option value="campaign">campaign</option>
+          <option value="internal">internal</option>
+        </select>
+        <select
+          value={visitor}
+          onChange={e => setVisitor(e.target.value as 'all' | Visitor)}
+          title="Visitor type"
+          className="border border-border bg-bg px-2 py-1 font-mono text-[11px] text-text"
+        >
+          <option value="all">all visitors</option>
+          <option value="new">new</option>
+          <option value="returning">returning</option>
+        </select>
+        <select
+          value={range}
+          onChange={e => setRange(e.target.value as 'all' | '7d' | '30d' | '90d')}
+          title="Date range"
+          className="border border-border bg-bg px-2 py-1 font-mono text-[11px] text-text"
+        >
+          <option value="all">all time</option>
+          <option value="7d">7 days</option>
+          <option value="30d">30 days</option>
+          <option value="90d">90 days</option>
+        </select>
         <button type="button" onClick={render} className={pill(false)}>
           Re-measure
         </button>

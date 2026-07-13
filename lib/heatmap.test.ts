@@ -31,6 +31,7 @@ let configured = true;
 let failInsert = false; // insert throws
 let insertReturnsError = false; // insert resolves { error } without throwing
 let rejectNewKinds = false; // insert rejects a batch containing a non-legacy kind (pre-migration)
+let rejectNewColumns = false; // insert rejects a batch carrying value/source/visitor (pre-migration)
 let failView = false; // view read throws
 let viewReturnsError = false; // view read resolves { error }
 let insertCalls = 0;
@@ -43,8 +44,9 @@ function makeChain(): Chain {
     insert(rows) {
       insertCalls++;
       if (failInsert) throw new Error('supabase insert outage');
-      const hasNewKind = rows.some(r => !['click', 'impression'].includes(String((r as Record<string, unknown>).kind)));
-      if (insertReturnsError || (rejectNewKinds && hasNewKind)) {
+      const hasNewKind = rows.some(r => !['click', 'impression'].includes(String(r.kind)));
+      const hasNewCol = rows.some(r => 'value' in r || 'source' in r || 'visitor' in r);
+      if (insertReturnsError || (rejectNewKinds && hasNewKind) || (rejectNewColumns && hasNewCol)) {
         return Promise.resolve({ data: null, error: { message: 'insert rejected' } });
       }
       insertedRows.push(...rows);
@@ -95,6 +97,7 @@ beforeEach(() => {
   failInsert = false;
   insertReturnsError = false;
   rejectNewKinds = false;
+  rejectNewColumns = false;
   failView = false;
   viewReturnsError = false;
   insertCalls = 0;
@@ -204,6 +207,30 @@ describe('sanitizeEvents', () => {
     expect(rows[1]).toMatchObject({ kind: 'rage', elementId: 'nav:home' });
     expect(rows[2]).toMatchObject({ kind: 'dead', selector: 'div:nth-of-type(2)' });
   });
+
+  it('applies validated envelope segments (source / visitor) to every row; drops bad ones', () => {
+    const good = sanitizeEvents({
+      path: '/app',
+      breakpoint: 'desktop',
+      source: 'organic',
+      visitor: 'returning',
+      events: [
+        { kind: 'click', elementId: 'nav:home' },
+        { kind: 'scroll', value: 0.5 },
+      ],
+    });
+    expect(good).toHaveLength(2);
+    expect(good.every(r => r.source === 'organic' && r.visitor === 'returning')).toBe(true);
+    const bad = sanitizeEvents({
+      path: '/app',
+      breakpoint: 'desktop',
+      source: 'nope',
+      visitor: 'maybe',
+      events: [{ kind: 'click', elementId: 'x' }],
+    });
+    expect(bad[0].source).toBeUndefined();
+    expect(bad[0].visitor).toBeUndefined();
+  });
 });
 
 describe('recordEvents', () => {
@@ -240,14 +267,14 @@ describe('recordEvents', () => {
     expect(insertedRows).toHaveLength(0);
   });
 
-  it('swallows a returned { error } (table not applied on prod yet)', async () => {
+  it('swallows a returned { error } and its core-only retry (table not applied yet)', async () => {
     insertReturnsError = true;
     await expect(recordEvents(evs)).resolves.toBeUndefined();
-    expect(insertCalls).toBe(1);
+    expect(insertCalls).toBe(2); // first batch + the core-columns fallback both rejected
     expect(insertedRows).toHaveLength(0);
   });
 
-  it('pre-migration fallback: a mixed batch retries with only the legacy kinds', async () => {
+  it('pre-migration fallback: a mixed-kind batch retries with only the legacy kinds', async () => {
     rejectNewKinds = true; // DB rejects any batch containing scroll/rage/dead
     await recordEvents([
       { path: '/app', kind: 'click', elementId: 'nav:home', breakpoint: 'desktop' },
@@ -256,6 +283,18 @@ describe('recordEvents', () => {
     expect(insertCalls).toBe(2); // full batch rejected → retry click-only
     expect(insertedRows).toHaveLength(1);
     expect(insertedRows[0]).toMatchObject({ kind: 'click', element_id: 'nav:home' });
+  });
+
+  it('pre-migration fallback: strips new columns (value/source/visitor) on retry', async () => {
+    rejectNewColumns = true; // DB rejects any row carrying value/source/visitor
+    await recordEvents([
+      { path: '/app', kind: 'click', elementId: 'nav:home', breakpoint: 'desktop', source: 'organic', visitor: 'new' },
+    ]);
+    expect(insertCalls).toBe(2); // full row rejected → retry with core columns only
+    expect(insertedRows).toHaveLength(1);
+    expect(insertedRows[0]).toMatchObject({ kind: 'click', element_id: 'nav:home' });
+    expect('source' in insertedRows[0]).toBe(false);
+    expect('visitor' in insertedRows[0]).toBe(false);
   });
 });
 
