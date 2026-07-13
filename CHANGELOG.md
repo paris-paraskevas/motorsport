@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.225.1 — 2026-07-13
+
+### Changed
+- Docs: session-14 handoff wrap (`docs/HANDOFF.md`) — 7 PRs #547–#553, operator actions owed (2 heatmap migrations + GA4/GSC/Bing Vercel env), the `/admin` redesign concept (pending go), and the Sachsenring blog queued; `IDEAS.md` inbox re-triaged. Internal only.
+
 ## 0.225.0 — 2026-07-13
 
 ### Added

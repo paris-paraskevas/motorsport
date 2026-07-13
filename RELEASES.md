@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.225.1 — 2026-07-13
+
+**Internal.** Housekeeping — session notes and planning docs.
+
 ## 0.225.0 — 2026-07-13
 
 **Behind the scenes.** The admin dashboard now also shows Bing search stats (clicks, impressions, top queries and pages) alongside Google.

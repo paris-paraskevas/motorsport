@@ -6,7 +6,38 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-13 (LATEST, session 13 — SEO campaign phases 0–4 + MotoGP content + Just-missed fix + Supabase heatmap; supervised start → unsupervised overnight) — `main` = 0.220.0
+## ⚡ Next session pickup — 2026-07-13 (LATEST, session 14 — home-customize redo + full heatmap suite + admin analytics hub GA4/GSC/Bing + News-tab trim) — `main` = 0.225.0
+
+**7 PRs #547–#553 (0.220.1 → 0.225.0), all merged + prod-audited.** Session extended `/admin` into a unified analytics console + shipped a real visual heatmap.
+
+### ✅ Shipped
+- **#547 (0.220.1)** home-customize redo — removed the inline "Make your own home" editor (customization now ONLY at `/settings/customize`); Jump-to nav moved under the countdown hero + lightened.
+- **#548 (0.221.0)** heatmap Phase 1 — visual click **overlay** on the real page (same-origin iframe + canvas; element-anchored, re-resolved live). Flipped `X-Frame-Options` DENY→SAMEORIGIN + CSP `frame-ancestors 'self'`.
+- **#549 (0.221.1)** dropped the redundant **News tab** from the series rail (`RAIL_TAB_KEYS`); route + sitemap intact.
+- **#550 (0.222.0)** heatmap Phase 2 — scroll-depth + rage/dead-click capture + admin Clicks|Scroll mode + frustration lists. Migration #2.
+- **#551 (0.223.0)** heatmap Phase 3 — segmentation (source/visitor) + date ranges. Migration #3.
+- **#552 (0.224.0)** `/admin` **GA4 Traffic + GSC Search** panels (`lib/analytics/ga4.ts` + `gsc.ts`, server-only + fail-soft).
+- **#553 (0.225.0)** `/admin` **Bing Search** panel (`lib/analytics/bing.ts`).
+
+### ⏳ OPERATOR ACTIONS to fully light things up (all verified live locally; prod is env-gated)
+1. **Apply the 2 heatmap migrations** (prod Supabase, Management API + `.supabase-pat`, browser UA): `supabase/migrations/20260713130000_heatmap_signals.sql` + `20260713140000_heatmap_segments.sql`. Until applied only clicks/impressions persist (deploy-safe — `recordEvents` retries a rejected new-kind/column batch with core #544 columns only).
+2. **Set analytics env in Vercel** (then redeploy): `GA4_PROPERTY_ID=538125099`, `GA4_SA_KEY`=base64 of `paddocktracker-5707cd014ce4.json` (the `paddocktracker@` SA — GA4 Viewer granted ✅), `GSC_SITE_URL=sc-domain:paddock-tracker.com`, `GSC_SA_KEY`=base64 of `paddocktracker-7e334d84e7f5.json` (the `paddocktracker-gsc@` SA), `BING_WEBMASTER_API_KEY` (32-char, operator's `Downloads/.env`), `BING_SITE_URL=https://www.paddock-tracker.com`. Verified live: GA4 74 users / 486 sessions / 4,489 views · GSC 47 clicks / 2,156 impr · Bing 9 clicks / 1,750 impr. Outbound Google/Bing API → confirm on preview/prod.
+3. **Heatmap overlay** — hard-refresh `/admin` (PWA cache) to see it; sparse until real click data + the migrations accrue.
+
+### 📋 PENDING DECISIONS / NEXT SESSION
+- **Sachsenring / MotoGP German GP blog** — DRAFT NEXT SESSION (operator ask). A stray `drafts/motogp-german-grand-prix-2026-preview.json` exists from a prior session; check preview-vs-digest against the calendar, fact-check (RULE #1) via the `weekend-post` skill, land as a prod DB draft (never MDX).
+- **`/admin` redesign — GREEN-LIT 2026-07-13** (EXTEND `/admin`, not standalone — decided; operator likes the AIDesigner "telemetry-console" direction, concept saved at `.aidesigner/mcp-latest.html`). Operator constraints: **a separate ROUTE per category** (Overview / Traffic / Search / Behaviour / PageSpeed / …), real navigation, **NO `#` hash-anchor sections**. Build = restructure `app/(app)/admin/` into a shared `layout.tsx` (amber nav rail + KPI header) + per-category `page.tsx` routes, on the hairline telemetry-grid aesthetic (KPI tiles / sparklines / mono-display); move each source's data fetch to its own page; keep the heatmap overlay + server actions working; **add a PageSpeed Insights panel** (PSI = clean public API + key, easy; Vercel Web-Analytics = no clean query API; Cloudflare = needs the site behind CF). 4 AIDesigner credits left.
+- **Bahrain GP** — NOT verified (operator confirmed 2026-07-13). Reschedule stays parked; do NOT touch `rounds.json`/`sessions.json` until F1/FIA confirm.
+
+### 🧷 Landmines / notes (session 14)
+- Analytics SA keys (operator's Downloads): `paddocktracker-5707cd014ce4.json` = GA4 (`paddocktracker@`), `paddocktracker-7e334d84e7f5.json` = GSC (`paddocktracker-gsc@`); Bing key in `Downloads/.env`. **Two DIFFERENT GA4/GSC service accounts** — GA4 needs the `paddocktracker@` one; the `-gsc` one is GSC/Bing-only and lacks GA4 Viewer.
+- `X-Frame-Options` is now **SAMEORIGIN** (was DENY) so the admin heatmap overlay can frame same-origin pages; CSP `frame-ancestors` → 'self' (still report-only).
+- `.aidesigner/` = local design scratch (NOT committed). New deps: `@google-analytics/data`, `@googleapis/searchconsole` (Bing uses plain `fetch`).
+- Strays still leave-as-is (5 lint files, `drafts/*.json`, `.playwright-mcp/`, `*.png`). Full suite **916** vitest.
+
+---
+
+## ⚡ Next session pickup — 2026-07-13 (session 13 — SEO campaign phases 0–4 + MotoGP content + Just-missed fix + Supabase heatmap; supervised start → unsupervised overnight) — `main` = 0.220.0
 
 **10 PRs #535–#544 (0.216.1 → 0.220.0), all merged + prod-audited on 0.220.0. Supervised start (Opus-4.8 CLAUDE.md rewrite + SEO plan), then an unsupervised overnight run: the rest of the SEO campaign + the operator's feedback + the heatmap.**
 
