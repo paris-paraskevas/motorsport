@@ -18,8 +18,9 @@ import {
 } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { PAGE_WIDE } from '@/lib/site';
-import { heatmapAdminOverview, type HeatmapPathPanel, type ElementRank } from '@/lib/heatmap';
+import { heatmapAdminOverview, clickPoints, type HeatmapPathPanel, type ElementRank, type ClickPoint, type Breakpoint } from '@/lib/heatmap';
 import { listSeriesSubmissions, type SeriesSubmission } from '@/lib/feeder';
+import { HeatmapOverlay } from '@/components/admin/HeatmapOverlay';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -51,6 +52,15 @@ async function loadUserStats(): Promise<{ count: number; recent: { id: string; n
   }
 }
 
+// Admin-gated server action: fetch bucketed click points for one path+breakpoint
+// on demand (the overlay's picker calls this). Re-checks admin — a server action
+// is a POST endpoint anyone could invoke, so it must guard, not trust the caller.
+async function loadClickPoints(path: string, breakpoint: Breakpoint): Promise<ClickPoint[]> {
+  'use server';
+  if (!isAdmin(await currentUser())) return [];
+  return clickPoints(path, { breakpoint });
+}
+
 // The dashboard's sections, in order. Drives both the sticky section-nav rail and
 // the anchor targets, so nav and content can't drift out of sync.
 const SECTIONS = [
@@ -75,6 +85,10 @@ export default async function AdminPage() {
     heatmapAdminOverview(),
     listSeriesSubmissions(20),
   ]);
+  // Seed the overlay with the busiest page (desktop) so it paints on first render;
+  // the picker fetches other path/breakpoint combos via the loadClickPoints action.
+  const overlayPaths = heat.map(p => p.path);
+  const initialPoints: ClickPoint[] = heat[0] ? await clickPoints(heat[0].path, { breakpoint: 'desktop' }) : [];
   const ga4Connected = Boolean(process.env.GA4_PROPERTY_ID);
   const gscConnected = Boolean(process.env.GSC_SITE_URL);
   const totalClicks = heat.reduce((sum, p) => sum + p.total, 0);
@@ -183,17 +197,25 @@ export default async function AdminPage() {
                 </p>
               </div>
             ) : (
-              <>
-                <p className="mb-3 font-mono text-[11px] leading-relaxed text-text-faint">
-                  Ranked per page and viewport. Hot elements get the most clicks; Dead elements are seen but never
-                  clicked (wasted space, candidates to sell).
-                </p>
-                <div className="space-y-4">
-                  {heat.map(p => (
-                    <RankPanel key={p.path} panel={p} />
-                  ))}
+              <div className="space-y-6">
+                <HeatmapOverlay
+                  paths={overlayPaths}
+                  initialPath={heat[0].path}
+                  initialPoints={initialPoints}
+                  loadPoints={loadClickPoints}
+                />
+                <div>
+                  <p className="mb-3 font-mono text-[11px] leading-relaxed text-text-faint">
+                    Ranked per page and viewport. Hot elements get the most clicks; Dead elements are seen but never
+                    clicked (wasted space, candidates to sell).
+                  </p>
+                  <div className="space-y-4">
+                    {heat.map(p => (
+                      <RankPanel key={p.path} panel={p} />
+                    ))}
+                  </div>
                 </div>
-              </>
+              </div>
             )}
           </Section>
 

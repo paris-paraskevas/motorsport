@@ -281,3 +281,81 @@ export async function heatmapAdminOverview(
     return [];
   }
 }
+
+export interface ClickPoint {
+  elementId?: string; // data-heatmap-id anchor (preferred), else undefined
+  selector?: string; // re-resolvable CSS path when there's no elementId
+  relX: number; // bucketed 0..1 ratio within the anchor element
+  relY: number;
+  weight: number; // number of clicks collapsed into this bucket
+}
+
+// Coarse grid for bucketing in-element click ratios: many clicks on the same spot
+// collapse into one weighted point, capping the overlay payload. 1/50 per axis.
+const POINT_BUCKETS = 50;
+
+/**
+ * Positioned click points for one path (optionally a breakpoint / date window),
+ * for the /admin overlay. Reads the raw `heatmap_event` table — the stats view
+ * drops both rel coords AND selector-only (untagged) clicks — keeps click rows
+ * carrying an in-element ratio, and buckets them per anchor (element_id OR
+ * selector) onto a coarse grid. Each point keeps its anchor so the overlay can
+ * RE-RESOLVE it on the live page and position the blob precisely. Fail-soft [].
+ * NOTE: reads up to a row cap and buckets in JS — fine at current volume; Phase 3
+ * moves range/segment aggregation into a Postgres RPC for scale.
+ */
+export async function clickPoints(
+  rawPath: string,
+  opts: { breakpoint?: Breakpoint; from?: string; to?: string; limit?: number } = {},
+): Promise<ClickPoint[]> {
+  if (!isBettingConfigured()) return [];
+  const path = normalizePath(rawPath);
+  if (!path) return [];
+  try {
+    let query = betDb()
+      .from('heatmap_event')
+      .select('element_id, selector, rel_x, rel_y')
+      .eq('path', path)
+      .eq('kind', 'click')
+      .not('rel_x', 'is', null)
+      .not('rel_y', 'is', null);
+    if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    if (opts.from) query = query.gte('created_at', opts.from);
+    if (opts.to) query = query.lte('created_at', opts.to);
+    query = query.order('created_at', { ascending: false }).limit(opts.limit ?? 2000);
+    const { data, error } = await query;
+    if (error || !data) return [];
+    return bucketClickPoints(data as RawClickRow[]);
+  } catch {
+    return [];
+  }
+}
+
+interface RawClickRow {
+  element_id: string | null;
+  selector: string | null;
+  rel_x: number | null;
+  rel_y: number | null;
+}
+
+/**
+ * Pure bucketer (extracted for unit testing): collapse raw click rows onto the
+ * coarse in-element grid — one weighted ClickPoint per (anchor, cell). An
+ * `element_id` anchor wins over a `selector`; rows without an anchor or a numeric
+ * ratio are dropped; out-of-range ratios clamp into 0..1.
+ */
+export function bucketClickPoints(rows: RawClickRow[]): ClickPoint[] {
+  const buckets = new Map<string, ClickPoint>();
+  for (const r of rows) {
+    const elementId = r.element_id ?? undefined;
+    const selector = elementId ? undefined : r.selector ?? undefined;
+    if ((!elementId && !selector) || typeof r.rel_x !== 'number' || typeof r.rel_y !== 'number') continue;
+    const bx = Math.round(Math.max(0, Math.min(1, r.rel_x)) * POINT_BUCKETS) / POINT_BUCKETS;
+    const by = Math.round(Math.max(0, Math.min(1, r.rel_y)) * POINT_BUCKETS) / POINT_BUCKETS;
+    const key = `${elementId ?? ''}|${selector ?? ''}|${bx}|${by}`;
+    const prev = buckets.get(key);
+    if (prev) prev.weight += 1;
+    else buckets.set(key, { elementId, selector, relX: bx, relY: by, weight: 1 });
+  }
+  return [...buckets.values()];
+}

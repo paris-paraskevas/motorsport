@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.221.0 — 2026-07-13
+
+### Added
+- **Heatmap Phase 1 — a real visual click overlay on the actual page (operator: "see exactly where users clicked, on the page as it renders").** New `components/admin/HeatmapOverlay.tsx`: the `/admin` Behaviour section frames the real route in a same-origin iframe (`?hm=1`) and paints a best-practice density heatmap (radial-kernel accumulate → blue→red colour ramp) on a canvas over it, positioning each click by RE-RESOLVING its element in the live DOM (`[data-heatmap-id]` or a resolvable CSS path) and applying the stored in-element `relX/relY` — so hotspots land exactly on the real tabs/buttons at any breakpoint (per-breakpoint isolation; placed/total honesty count). Data via an admin-gated `loadClickPoints` server action + new `clickPoints()` / `bucketClickPoints()` in `lib/heatmap.ts` (reads the raw `heatmap_event` table, buckets per anchor onto a 1/50 grid). The Hot/Dead ranked lists stay below.
+- **Capture upgrade** `components/HeatmapTracker.tsx`: every click (not just `data-heatmap-id` ones) now stores a re-resolvable rooted CSS path (`cssPath`, replacing the lossy 1-level `describe`) anchored to the nearest clickable element, plus `relX/relY` — so untagged clicks are positionable too. A `?hm=1` guard stops the tracker recording when a page is framed for inspection (no self-pollution).
+- **Security header** `next.config.ts`: `X-Frame-Options` DENY→SAMEORIGIN + CSP `frame-ancestors 'none'`→`'self'` (report-only) so the admin can frame our own pages for the overlay; cross-origin (clickjacking) framing stays blocked.
+- No migration (reuses existing `selector` / `rel_x` / `rel_y` columns). Verified: `next build` clean; 907/907 vitest (`bucketClickPoints` unit-tested); browser — synthetic points on `/app` painted exactly on the Calendar/Standings/Results/News chips (4/4 placed), correct density ramp, 0 console errors. Phases 2 (scroll/rage/dead) + 3 (segmentation/date-range) to follow.
+
 ## 0.220.1 — 2026-07-13
 
 ### Changed

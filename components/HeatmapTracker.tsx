@@ -25,20 +25,30 @@ function bucket(w: number): 'mobile' | 'tablet' | 'desktop' {
   return w < 768 ? 'mobile' : w < 1024 ? 'tablet' : 'desktop';
 }
 
-// Compact, stable-ish descriptor for a clicked element with no data-heatmap-id:
-// tag + #id + first class + :nth-of-type. Not a resolvable selector — just a label
-// so untagged hotspots still surface as candidates for future instrumentation.
-function describe(el: Element): string {
-  let sel = el.tagName.toLowerCase();
-  if (el.id) sel += `#${el.id}`;
-  const cls = el.classList[0];
-  if (cls) sel += `.${cls}`;
-  const parent = el.parentElement;
-  if (parent) {
-    const sameTag = Array.from(parent.children).filter(c => c.tagName === el.tagName);
-    if (sameTag.length > 1) sel += `:nth-of-type(${sameTag.indexOf(el) + 1})`;
+// A rooted, depth-capped CSS path that querySelector can RE-RESOLVE on the live
+// page — so an untagged click can still be positioned on its real element in the
+// overlay (not just labelled). Prefers a stable #id (unique → anchor there), else
+// tag + :nth-of-type per level. Tailwind utility classes are ignored on purpose
+// (non-unique / unstable across renders).
+function cssPath(el: Element): string {
+  const parts: string[] = [];
+  let node: Element | null = el;
+  for (let depth = 0; node && depth < 8 && node.tagName !== 'HTML' && node.tagName !== 'BODY'; depth++) {
+    if (node.id && /^[A-Za-z][\w-]*$/.test(node.id)) {
+      parts.unshift(`#${node.id}`);
+      break; // an id is unique — anchor the path here
+    }
+    const parent: Element | null = node.parentElement;
+    const tag = node.tagName.toLowerCase();
+    if (parent) {
+      const sameTag = Array.from(parent.children).filter(c => c.tagName === node!.tagName);
+      parts.unshift(sameTag.length > 1 ? `${tag}:nth-of-type(${sameTag.indexOf(node) + 1})` : tag);
+    } else {
+      parts.unshift(tag);
+    }
+    node = parent;
   }
-  return sel.slice(0, 200);
+  return parts.join(' > ').slice(0, 200);
 }
 
 // Anonymous element-relative heatmap capture. Per pageview it records: clicks
@@ -51,6 +61,13 @@ export function HeatmapTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // When the /admin heatmap overlay frames a page (?hm=1), never record — the
+    // operator's own inspection clicks must not pollute the captured data.
+    try {
+      if (new URLSearchParams(window.location.search).get('hm') === '1') return;
+    } catch {
+      /* no window/search — fall through */
+    }
     if (typeof navigator !== 'undefined' && navigator.doNotTrack === '1') return;
     let analytics = false;
     try {
@@ -82,7 +99,18 @@ export function HeatmapTracker() {
           relY: rect.height > 0 ? clamp01((e.clientY - rect.top) / rect.height) : undefined,
         });
       } else {
-        push({ kind: 'click', selector: describe(target) });
+        // Untagged click: anchor to the nearest meaningful clickable element (so a
+        // hit resolves to the real link/button/tab, not an inner icon/span) and
+        // capture the in-element ratio so the overlay can position it precisely.
+        const anchor =
+          target.closest('a, button, [role="button"], input, select, textarea, label, summary') ?? target;
+        const rect = anchor.getBoundingClientRect();
+        push({
+          kind: 'click',
+          selector: cssPath(anchor),
+          relX: rect.width > 0 ? clamp01((e.clientX - rect.left) / rect.width) : undefined,
+          relY: rect.height > 0 ? clamp01((e.clientY - rect.top) / rect.height) : undefined,
+        });
       }
     };
 
