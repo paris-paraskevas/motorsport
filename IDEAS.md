@@ -6,13 +6,14 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ---
 
-## Inbox (2026-07-13 — session 13, triage next session)
+## Inbox (2026-07-13 — session 14, triage next session)
 
-- **Home customization (operator direction; likely plan-mode)** — remove "Make your own home" from the home (`HomeCustomizeBanner`, mounted in `components/HomeContent.tsx`) → keep it ONLY in `/settings/customize`; and move / re-CSS the home "jump to" bit (`components/HomeContent.tsx`). The Just-missed dismiss fix (#542) is confirmed good. _(Heatmap migration DONE 2026-07-13 — applied + live-verified; see HANDOFF.)_
-- **Bahrain GP 2026** — apply the staged reschedule (add round #23 + `sessions.json` weekend, `previousStartDate` 2026-04-10) once F1/FIA officially confirm Oct 2–4; draft the marquee blog then. Both pending confirmation.
-- **Bing Webmaster Tools** — operator signup + verify + submit sitemap ("Bing SEO" feedback). IndexNow already wired.
-- **Trending content (ongoing)** — MotoGP-titles shipped (#541); next GSC gaps = broader `tracks.json` enrichment (~130 thin profiles) + race-weekend "what time" landable content.
-- **SEO Phase 2b (deferred)** — session `force-dynamic`→ISR (F1 `auth()`-gate refactor) + `LocalTime` Athens-SSR canonical time + selective session sitemap. Low SEO value now (JSON-LD already carries session times); recommend not doing unsupervised.
+- **Sachsenring / MotoGP German GP blog** — DRAFT NEXT SESSION (operator ask). Stray `drafts/motogp-german-grand-prix-2026-preview.json` from a prior session; check preview-vs-digest vs the calendar, fact-check (RULE #1) via the `weekend-post` skill, land as a prod DB draft (never MDX).
+- **`/admin` redesign (operator; EXTEND not standalone — decided)** — AIDesigner "telemetry-console" concept saved at `.aidesigner/mcp-latest.html`; awaiting operator go. Then refactor `app/(app)/admin/page.tsx` to the hairline telemetry-grid + **add a PageSpeed Insights panel** (PSI = easy public API; Vercel analytics = no clean query API; Cloudflare = needs site on CF). 4 AIDesigner credits left.
+- **⏳ Operator env/infra to light up analytics + heatmap** (details in HANDOFF session-14): apply the 2 heatmap migrations; set GA4/GSC/Bing env in Vercel (keys in operator's Downloads). All verified live locally; prod is env-gated.
+- **Bahrain GP 2026** — NOT verified (operator confirmed). Reschedule parked until F1/FIA officially confirm; draft the marquee blog then.
+- **Trending content (ongoing)** — broader `tracks.json` enrichment (~130 thin profiles) + race-weekend "what time" landable content.
+- **SEO Phase 2b (deferred)** — session `force-dynamic`→ISR (F1 `auth()`-gate refactor) + `LocalTime` Athens-SSR canonical time + selective session sitemap. Low SEO value now; recommend not doing unsupervised.
 - **Doc hygiene (parked)** — trim `docs/HANDOFF.md` + `SCHEDULE.md` to the last ~2–3 sessions; archive older to `docs/handoff-archive.md`.
 
 ## B1 — Feedback-board quick wins
