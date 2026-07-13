@@ -120,12 +120,18 @@ export async function buildSearchIndex(): Promise<SearchDoc[]> {
         for (const w of groupByWeekend(series.sessions, now, series.rounds)) {
           if (w.round < 1) continue;
           const name = roundName.get(w.round);
+          // Circuit/venue from the sessions' `location` (e.g. "Sachsenring,
+          // Hohenstein-Ernstthal") as searchable keywords, so a venue-name query
+          // finds the round even when it's named for its country ("German Grand Prix").
+          const venue = [
+            ...new Set(w.sessions.map((s) => s.location).filter((l): l is string => !!l)),
+          ].join(' ');
           docs.push({
             type: 'weekend',
             title: name ? `${m.name} — ${name}` : `${m.name} — Round ${w.round}`,
             subtitle: `Round ${w.round} · weekend`,
             url: `/series/${m.slug}/weekend/${w.round}`,
-            keywords: `${m.slug} round ${w.round}`,
+            keywords: `${m.slug} round ${w.round}${venue ? ` ${venue}` : ''}`,
           });
         }
       } catch {
