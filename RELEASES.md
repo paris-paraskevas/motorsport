@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.223.0 — 2026-07-13
+
+**Behind the scenes.** The internal heatmap can now be filtered by traffic source, new vs returning visitors, and a date range.
+
 ## 0.222.0 — 2026-07-13
 
 **Behind the scenes.** The internal heatmap gained a scroll-depth view (how far visitors read each page) plus frustration signals (rage- and dead-clicks).

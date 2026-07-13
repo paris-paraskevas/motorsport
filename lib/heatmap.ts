@@ -30,6 +30,9 @@ export function normalizePath(raw: unknown): string | null {
 export type Breakpoint = 'mobile' | 'tablet' | 'desktop';
 export type EventKind = 'click' | 'impression' | 'scroll' | 'rage' | 'dead';
 export type Pointer = 'mouse' | 'touch';
+// Anonymous per-pageview segments: entry source + new/returning.
+export type Source = 'direct' | 'organic' | 'referral' | 'campaign' | 'internal';
+export type Visitor = 'new' | 'returning';
 
 export interface HeatmapEvent {
   path: string;
@@ -43,6 +46,18 @@ export interface HeatmapEvent {
   viewportW?: number;
   viewportH?: number;
   pointer?: Pointer;
+  source?: Source;
+  visitor?: Visitor;
+}
+
+// Shared read filters for the /admin heatmap: a breakpoint, a segment (source /
+// visitor) and a created_at date window. All optional — unset means "all".
+export interface HeatmapReadOpts {
+  breakpoint?: Breakpoint;
+  source?: Source;
+  visitor?: Visitor;
+  from?: string;
+  to?: string;
 }
 
 export interface ElementRank {
@@ -55,6 +70,8 @@ export interface ElementRank {
 const BREAKPOINTS = new Set<string>(['mobile', 'tablet', 'desktop']);
 const KINDS = new Set<string>(['click', 'impression', 'scroll', 'rage', 'dead']);
 const POINTERS = new Set<string>(['mouse', 'touch']);
+const SOURCES = new Set<string>(['direct', 'organic', 'referral', 'campaign', 'internal']);
+const VISITORS = new Set<string>(['new', 'returning']);
 const MAX_EVENTS = 250; // per-batch cap (well under sendBeacon's 64 KiB)
 const ELEMENT_ID_MAX = 128;
 const SELECTOR_MAX = 200;
@@ -100,6 +117,8 @@ export function sanitizeEvents(envelope: unknown): HeatmapEvent[] {
   const viewportH = clampDim(env.viewportH);
   const pointer =
     typeof env.pointer === 'string' && POINTERS.has(env.pointer) ? (env.pointer as Pointer) : undefined;
+  const source = typeof env.source === 'string' && SOURCES.has(env.source) ? (env.source as Source) : undefined;
+  const visitor = typeof env.visitor === 'string' && VISITORS.has(env.visitor) ? (env.visitor as Visitor) : undefined;
 
   const out: HeatmapEvent[] = [];
   for (const raw of env.events.slice(0, MAX_EVENTS)) {
@@ -112,7 +131,7 @@ export function sanitizeEvents(envelope: unknown): HeatmapEvent[] {
       // value, not an anchor. Everything else falls through to the element path.
       const value = clampRatio(ev.value);
       if (value === undefined) continue;
-      out.push({ path, kind, value, breakpoint, viewportW, viewportH, pointer });
+      out.push({ path, kind, value, breakpoint, viewportW, viewportH, pointer, source, visitor });
       continue;
     }
     const elementId = capString(ev.elementId, ELEMENT_ID_MAX);
@@ -129,6 +148,8 @@ export function sanitizeEvents(envelope: unknown): HeatmapEvent[] {
       viewportW,
       viewportH,
       pointer,
+      source,
+      visitor,
     });
   }
   return out;
@@ -155,18 +176,31 @@ export async function recordEvents(events: HeatmapEvent[]): Promise<void> {
     viewport_w: e.viewportW ?? null,
     viewport_h: e.viewportH ?? null,
     pointer: e.pointer ?? null,
+    source: e.source ?? null,
+    visitor: e.visitor ?? null,
   }));
   try {
     const { error } = await betDb().from('heatmap_event').insert(rows);
     if (!error) return;
-    // Pre-migration fallback: a batch containing a kind the DB doesn't allow yet
-    // (scroll/rage/dead before the Phase-2 migration) fails atomically and would
-    // take the click/impression rows down with it. Retry with only the always-
-    // valid kinds so Phase-1 capture never regresses while the migration pends.
-    const legacy = rows.filter(r => r.kind === 'click' || r.kind === 'impression');
-    if (legacy.length > 0 && legacy.length < rows.length) {
-      await betDb().from('heatmap_event').insert(legacy);
-    }
+    // A pending migration (a new kind OR a new column — value/source/visitor)
+    // fails the whole batch atomically. Retry with ONLY the original (#544)
+    // columns + legacy kinds, so click/impression capture never regresses while
+    // any later migration is still pending.
+    const core = events
+      .filter(e => e.kind === 'click' || e.kind === 'impression')
+      .map(e => ({
+        path: e.path,
+        kind: e.kind,
+        element_id: e.elementId ?? null,
+        selector: e.selector ?? null,
+        rel_x: e.relX ?? null,
+        rel_y: e.relY ?? null,
+        breakpoint: e.breakpoint,
+        viewport_w: e.viewportW ?? null,
+        viewport_h: e.viewportH ?? null,
+        pointer: e.pointer ?? null,
+      }));
+    if (core.length > 0) await betDb().from('heatmap_event').insert(core);
   } catch {
     // Supabase unreachable — never break the ingest path.
   }
@@ -325,7 +359,7 @@ const POINT_BUCKETS = 50;
  */
 export async function clickPoints(
   rawPath: string,
-  opts: { breakpoint?: Breakpoint; from?: string; to?: string; limit?: number } = {},
+  opts: HeatmapReadOpts & { limit?: number } = {},
 ): Promise<ClickPoint[]> {
   if (!isBettingConfigured()) return [];
   const path = normalizePath(rawPath);
@@ -339,6 +373,8 @@ export async function clickPoints(
       .not('rel_x', 'is', null)
       .not('rel_y', 'is', null);
     if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    if (opts.source) query = query.eq('source', opts.source);
+    if (opts.visitor) query = query.eq('visitor', opts.visitor);
     if (opts.from) query = query.gte('created_at', opts.from);
     if (opts.to) query = query.lte('created_at', opts.to);
     query = query.order('created_at', { ascending: false }).limit(opts.limit ?? 2000);
@@ -405,7 +441,7 @@ export function bucketScrollDepths(values: number[]): ScrollStats {
  */
 export async function scrollStats(
   rawPath: string,
-  opts: { breakpoint?: Breakpoint; from?: string; to?: string } = {},
+  opts: HeatmapReadOpts = {},
 ): Promise<ScrollStats> {
   const empty = bucketScrollDepths([]);
   if (!isBettingConfigured()) return empty;
@@ -419,6 +455,8 @@ export async function scrollStats(
       .eq('kind', 'scroll')
       .not('value', 'is', null);
     if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    if (opts.source) query = query.eq('source', opts.source);
+    if (opts.visitor) query = query.eq('visitor', opts.visitor);
     if (opts.from) query = query.gte('created_at', opts.from);
     if (opts.to) query = query.lte('created_at', opts.to);
     const { data, error } = await query.limit(5000);
@@ -470,7 +508,7 @@ export function aggregateFrustration(rows: FrustrationRow[]): FrustrationSignals
  */
 export async function frustrationSignals(
   rawPath: string,
-  opts: { breakpoint?: Breakpoint; from?: string; to?: string } = {},
+  opts: HeatmapReadOpts = {},
 ): Promise<FrustrationSignals> {
   const empty: FrustrationSignals = { rage: [], dead: [] };
   if (!isBettingConfigured()) return empty;
@@ -483,6 +521,8 @@ export async function frustrationSignals(
       .eq('path', path)
       .in('kind', ['rage', 'dead']);
     if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    if (opts.source) query = query.eq('source', opts.source);
+    if (opts.visitor) query = query.eq('visitor', opts.visitor);
     if (opts.from) query = query.gte('created_at', opts.from);
     if (opts.to) query = query.lte('created_at', opts.to);
     const { data, error } = await query.limit(5000);
@@ -504,7 +544,7 @@ export interface OverlayData {
 
 export async function overlayData(
   path: string,
-  opts: { breakpoint?: Breakpoint; from?: string; to?: string } = {},
+  opts: HeatmapReadOpts = {},
 ): Promise<OverlayData> {
   const [clicks, scroll, frustration] = await Promise.all([
     clickPoints(path, opts),

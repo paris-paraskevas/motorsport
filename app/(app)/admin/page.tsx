@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { isAdmin } from '@/lib/threads';
 import { PAGE_WIDE } from '@/lib/site';
-import { heatmapAdminOverview, overlayData, type HeatmapPathPanel, type ElementRank, type OverlayData, type Breakpoint } from '@/lib/heatmap';
+import { heatmapAdminOverview, overlayData, type HeatmapPathPanel, type ElementRank, type OverlayData, type Breakpoint, type Source, type Visitor } from '@/lib/heatmap';
 import { listSeriesSubmissions, type SeriesSubmission } from '@/lib/feeder';
 import { HeatmapOverlay } from '@/components/admin/HeatmapOverlay';
 
@@ -55,13 +55,16 @@ async function loadUserStats(): Promise<{ count: number; recent: { id: string; n
 const EMPTY_OVERLAY: OverlayData = { clicks: [], scroll: { sample: 0, reached: [] }, rage: [], dead: [] };
 
 // Admin-gated server action: fetch the overlay bundle (clicks + scroll + rage/dead)
-// for one path+breakpoint on demand (the overlay's picker calls this). Re-checks
-// admin — a server action is a POST endpoint anyone could invoke, so it must
-// guard, not trust the caller.
-async function loadOverlayData(path: string, breakpoint: Breakpoint): Promise<OverlayData> {
+// for one path + filter (breakpoint / segment / date window) on demand — the
+// overlay's controls call this. Re-checks admin — a server action is a POST
+// endpoint anyone could invoke, so it must guard, not trust the caller.
+async function loadOverlayData(
+  path: string,
+  filter: { breakpoint: Breakpoint; source?: Source; visitor?: Visitor; from?: string },
+): Promise<OverlayData> {
   'use server';
   if (!isAdmin(await currentUser())) return EMPTY_OVERLAY;
-  return overlayData(path, { breakpoint });
+  return overlayData(path, filter);
 }
 
 // The dashboard's sections, in order. Drives both the sticky section-nav rail and

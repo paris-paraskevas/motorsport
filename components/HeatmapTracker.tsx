@@ -91,6 +91,31 @@ export function HeatmapTracker() {
     }
     if (!analytics) return;
 
+    // Anonymous per-pageview segments: entry source (referrer / UTM) + new vs
+    // returning (a single localStorage flag — no id, no PII).
+    const source = ((): 'direct' | 'organic' | 'referral' | 'campaign' | 'internal' => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('utm_source') || params.get('utm_campaign')) return 'campaign';
+        const ref = document.referrer;
+        if (!ref) return 'direct';
+        const host = new URL(ref).hostname;
+        if (host === location.hostname) return 'internal';
+        if (/(^|\.)(google|bing|duckduckgo|yahoo|ecosia|yandex|baidu|brave)\./i.test(host)) return 'organic';
+        return 'referral';
+      } catch {
+        return 'direct';
+      }
+    })();
+    let visitor: 'new' | 'returning' = 'new';
+    try {
+      const SEEN_KEY = 'paddock:hm-seen';
+      visitor = localStorage.getItem(SEEN_KEY) ? 'returning' : 'new';
+      localStorage.setItem(SEEN_KEY, '1');
+    } catch {
+      /* no storage — treat as new */
+    }
+
     const events: PendingEvent[] = [];
     const seen = new Set<string>(); // one impression per element id per pageview
 
@@ -209,6 +234,8 @@ export function HeatmapTracker() {
         viewportH: h,
         breakpoint: bucket(w),
         pointer: window.matchMedia?.('(pointer: coarse)').matches ? 'touch' : 'mouse',
+        source,
+        visitor,
         events: batch,
       };
       try {
