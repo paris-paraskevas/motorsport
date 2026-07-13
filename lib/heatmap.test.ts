@@ -30,6 +30,7 @@ interface Chain {
 let configured = true;
 let failInsert = false; // insert throws
 let insertReturnsError = false; // insert resolves { error } without throwing
+let rejectNewKinds = false; // insert rejects a batch containing a non-legacy kind (pre-migration)
 let failView = false; // view read throws
 let viewReturnsError = false; // view read resolves { error }
 let insertCalls = 0;
@@ -42,8 +43,9 @@ function makeChain(): Chain {
     insert(rows) {
       insertCalls++;
       if (failInsert) throw new Error('supabase insert outage');
-      if (insertReturnsError) {
-        return Promise.resolve({ data: null, error: { message: 'relation "heatmap_event" does not exist' } });
+      const hasNewKind = rows.some(r => !['click', 'impression'].includes(String((r as Record<string, unknown>).kind)));
+      if (insertReturnsError || (rejectNewKinds && hasNewKind)) {
+        return Promise.resolve({ data: null, error: { message: 'insert rejected' } });
       }
       insertedRows.push(...rows);
       return Promise.resolve({ data: null, error: null });
@@ -83,6 +85,8 @@ import {
   rankedElements,
   heatmapAdminOverview,
   bucketClickPoints,
+  bucketScrollDepths,
+  aggregateFrustration,
   type HeatmapEvent,
 } from './heatmap';
 
@@ -90,6 +94,7 @@ beforeEach(() => {
   configured = true;
   failInsert = false;
   insertReturnsError = false;
+  rejectNewKinds = false;
   failView = false;
   viewReturnsError = false;
   insertCalls = 0;
@@ -181,6 +186,24 @@ describe('sanitizeEvents', () => {
     });
     expect(rows[0].selector).toHaveLength(200);
   });
+
+  it('accepts scroll (value, no anchor) + rage/dead (anchored); drops a scroll with no value', () => {
+    const rows = sanitizeEvents({
+      path: '/app',
+      breakpoint: 'desktop',
+      events: [
+        { kind: 'scroll', value: 0.72 },
+        { kind: 'scroll' }, // dropped: no value
+        { kind: 'rage', elementId: 'nav:home', relX: 0.5, relY: 0.5 },
+        { kind: 'dead', selector: 'div:nth-of-type(2)', relX: 0.1, relY: 0.2 },
+      ],
+    });
+    expect(rows.map(r => r.kind)).toEqual(['scroll', 'rage', 'dead']);
+    expect(rows[0]).toMatchObject({ kind: 'scroll', value: 0.72 });
+    expect(rows[0].elementId).toBeUndefined();
+    expect(rows[1]).toMatchObject({ kind: 'rage', elementId: 'nav:home' });
+    expect(rows[2]).toMatchObject({ kind: 'dead', selector: 'div:nth-of-type(2)' });
+  });
 });
 
 describe('recordEvents', () => {
@@ -222,6 +245,17 @@ describe('recordEvents', () => {
     await expect(recordEvents(evs)).resolves.toBeUndefined();
     expect(insertCalls).toBe(1);
     expect(insertedRows).toHaveLength(0);
+  });
+
+  it('pre-migration fallback: a mixed batch retries with only the legacy kinds', async () => {
+    rejectNewKinds = true; // DB rejects any batch containing scroll/rage/dead
+    await recordEvents([
+      { path: '/app', kind: 'click', elementId: 'nav:home', breakpoint: 'desktop' },
+      { path: '/app', kind: 'scroll', value: 0.5, breakpoint: 'desktop' },
+    ]);
+    expect(insertCalls).toBe(2); // full batch rejected → retry click-only
+    expect(insertedRows).toHaveLength(1);
+    expect(insertedRows[0]).toMatchObject({ kind: 'click', element_id: 'nav:home' });
   });
 });
 
@@ -303,6 +337,40 @@ describe('bucketClickPoints', () => {
   it('clamps out-of-range ratios into the 0..1 grid', () => {
     const [p] = bucketClickPoints([{ element_id: 'x', selector: null, rel_x: 1.4, rel_y: -0.2 }]);
     expect(p).toMatchObject({ relX: 1, relY: 0, weight: 1 });
+  });
+});
+
+describe('bucketScrollDepths', () => {
+  it('builds a monotonic reach curve (fraction reaching each 10% depth)', () => {
+    const { sample, reached } = bucketScrollDepths([1, 0.5, 0.5, 0.2]);
+    expect(sample).toBe(4);
+    expect(reached).toHaveLength(10);
+    expect(reached[0]).toBeCloseTo(1); // all reached >= 10%
+    expect(reached[1]).toBeCloseTo(1); // all reached >= 20%
+    expect(reached[4]).toBeCloseTo(3 / 4); // three reached >= 50%
+    expect(reached[9]).toBeCloseTo(1 / 4); // one reached 100%
+    for (let i = 1; i < 10; i++) expect(reached[i]).toBeLessThanOrEqual(reached[i - 1] + 1e-9);
+  });
+  it('empty sample → all-zero curve', () => {
+    expect(bucketScrollDepths([])).toEqual({ sample: 0, reached: Array(10).fill(0) });
+  });
+});
+
+describe('aggregateFrustration', () => {
+  it('tallies rage + dead per anchor (element_id ?? selector), each sorted desc', () => {
+    const { rage, dead } = aggregateFrustration([
+      { kind: 'rage', element_id: 'nav:home', selector: null },
+      { kind: 'rage', element_id: 'nav:home', selector: null },
+      { kind: 'rage', element_id: 'nav:series', selector: null },
+      { kind: 'dead', element_id: null, selector: 'div.hero' },
+      { kind: 'click', element_id: 'x', selector: null }, // ignored (not rage/dead)
+      { kind: 'dead', element_id: null, selector: null }, // dropped (no anchor)
+    ]);
+    expect(rage).toEqual([
+      { anchor: 'nav:home', count: 2 },
+      { anchor: 'nav:series', count: 1 },
+    ]);
+    expect(dead).toEqual([{ anchor: 'div.hero', count: 1 }]);
   });
 });
 

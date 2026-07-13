@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.222.0 — 2026-07-13
+
+**Behind the scenes.** The internal heatmap gained a scroll-depth view (how far visitors read each page) plus frustration signals (rage- and dead-clicks).
+
 ## 0.221.1 — 2026-07-13
 
 **Tidier series pages.** Dropped the duplicate "News" tab from each series' tab bar — series news is still one tap away from the News link at the top of the page.
