@@ -6,7 +6,45 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-12 (LATEST, session 12 CONTINUED — F1/DRS SEO content + GSC-driven audit campaign kickoff) — `main` = 0.216.1
+## ⚡ Next session pickup — 2026-07-13 (LATEST, session 13 — SEO campaign phases 0–4 + MotoGP content + Just-missed fix + Supabase heatmap; supervised start → unsupervised overnight) — `main` = 0.220.0
+
+**10 PRs #535–#544 (0.216.1 → 0.220.0), all merged + prod-audited on 0.220.0. Supervised start (Opus-4.8 CLAUDE.md rewrite + SEO plan), then an unsupervised overnight run: the rest of the SEO campaign + the operator's feedback + the heatmap.**
+
+### ✅ Shipped (all prod-verified)
+- **#535 docs — CLAUDE.md recast as an Opus-4.8 charter** (contract → laws → landmines; every rule/fact preserved; + prompt-sharpen rule, 2 durable landmines, prod Supabase ref). Parent `C:\Dev\Personal\CLAUDE.md` (shared across 20 projects, unversioned, Fable-authored) got the prompt-sharpen "Intake" rule (backed up to scratchpad).
+- **#533 → 0.217.0** — SEO Phase 1a: enriched the 4 top-impression explainers (rally / motogp-classes / f1-points / le-mans) + flagged fixes (3 MotoGP errors, stale LMDh roster, 2 dead F1 links). Adversarial fact-check.
+- **#536 → 0.217.1** — Phase 0b: self-referencing canonical on all ~322 `/information` answer pages (route had none).
+- **#537 → 0.218.0** — Phase 1 tracks: 4 US circuits in `tracks.json` (Homestead/Talladega/Road-America/Laguna-Seca) + per-entry keywords/related loader support + richer country-aggregate intro. GSC correction: Sweden/Japan/Argentina traffic is on the generated `racing-tracks-in-*` aggregates, not the individual circuits.
+- **#538 → 0.218.1** — Phase 2a: per-session SportsEvent + breadcrumb JSON-LD + query-matched meta (WEC FP1 = #1 impression page).
+- **#539 → 0.218.2** — Phase 3: weekend SportsEvent `subEvent[]` (session schedule) + data-driven `eventStatus`.
+- **#540 → 0.218.3** — Phase 4: home descriptive OG/twitter title + per-weekend OG image.
+- **#541 → 0.219.0** — content: "who has won the most MotoGP titles" (GSC gap); `INFORMATION_MAX_INDEXED` 322→323.
+- **#542 → 0.219.1** — bug: "Just missed" now dismissable (removed from `SPINE_IDS`; was force-pinned + stripped from `hidden`). Tests 18/18.
+- **#543 → 0.219.2** — data: Bahrain cancelled-round status tightened to the verified "proposed Oct 2–4, unconfirmed".
+- **#544 → 0.220.0** — heatmap Phase-1: element-relative capture + IntersectionObserver impressions → Supabase → `/admin` Hot/Dead element ranking. Fail-soft; migration committed NOT applied.
+
+### ⏳ OWED / NEEDS DECISION (operator)
+- **Apply the heatmap migration** `supabase/migrations/20260713120000_heatmap_events.sql` (prod Supabase; Management API + `.supabase-pat`, browser UA, or Studio) → lights up live capture + the `/admin` ranked view, no redeploy. Then browser-verify capture + the admin view on a preview.
+- **Bahrain GP reschedule** — NOT officially confirmed (only an Oct 2–4 slot under discussion; F1's live 2026 calendar still shows 22 rounds, no Bahrain). Full reschedule edit (add active round #23 + `sessions.json` weekend, `previousStartDate` 2026-04-10) staged in the verify agent's report / #543 commit body; apply once F1 confirms. Blog draft NOT created (pending).
+- **Bing Webmaster Tools** — operator signup + verify + submit sitemap (the "Bing SEO" feedback). IndexNow already wired.
+- **Phase 2b (deferred — recommend against unsupervised):** session `force-dynamic`→ISR (entangled with the F1 `auth()` analysis gate) + `LocalTime` Athens-SSR fix (cross-cutting; machine time already correct via JSON-LD `startDate` + `<time datetime>`) + bulk session-URL sitemap (scaled-content risk).
+- **Just-missed live hide** — unit-tested + code-traced; the signed-in customize-panel persist is operator browser-verify.
+
+### 🧭 SEO campaign state
+Phases 0/1/2a/3/4 DONE. Plan: `~/.claude/plans/structured-fluttering-iverson.md`. Next levers: broader `tracks.json` enrichment (~130 thin profiles; GSC shows track-query demand), race-weekend "what time" landable content, Phase 2b.
+
+### 🧷 Landmines (session 13)
+- New `opengraph-image.tsx` needs a dev restart to register (new-file HMR gap); its URL is **hashed** (`/…/opengraph-image-<hash>?…`), not `/opengraph-image` (that path falls through to `[session]`).
+- A net-new INDEXED `/information` page needs an `INFORMATION_MAX_INDEXED` bump (cap binding).
+- `tracks.json` is CRLF `JSON.stringify(,,2)`; patch via a script that preserves CRLF (guard: re-serialise must round-trip) to keep the diff scoped.
+- Heatmap is fail-soft → ships before its migration; live only once applied.
+
+### State
+`main` @ **0.220.0**, 0 open PRs, all 10 prod-audited. Dev may be stale (restart). Strays leave-as-is (5 lint files, `drafts/*.json`, `.playwright-mcp/`, `*.png`). Doc-hygiene (trim HANDOFF/SCHEDULE + archive) still **PARKED** (operator deferred earlier this session).
+
+---
+
+## ⚡ Next session pickup — 2026-07-12 (session 12 CONTINUED — F1/DRS SEO content + GSC-driven audit campaign kickoff) — `main` = 0.216.1
 
 **After the #530 wrap, the session continued: GSC data showed our top impressions are DRS/MOM/F1-regs + rally/moto/points/Le-Mans explainers, almost all at 0 clicks. Shipped content-SEO fixes; queued a big page-audit campaign. Total session now 11 merged PRs #522–#532 (0.210.2 → 0.216.1) + 1 draft PR #533.**
 
