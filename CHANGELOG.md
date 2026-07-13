@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.226.1 — 2026-07-13
+
+### Fixed
+- Accessibility quick-wins from the WCAG 2.2 AA + mobile audits (no visual/behaviour change): the sign-in button gains an `aria-label` (it was a nameless icon below the `sm` breakpoint — WCAG 4.1.2); the generic `Modal` close control gets a real tap target (`-m-1.5 p-1.5`, was ~16px — WCAG 2.5.8); blog byline avatars use empty `alt` since they sit beside the visible "By &lt;name&gt;" (drops the duplicate screen-reader announcement — 1.1.1); and calendar month-view mobile dots now carry `role="img"` + `aria-label` (series + session) instead of unlabelled colour dots (1.3.1). Files: `components/HeaderUtils.tsx`, `components/Modal.tsx`, `components/blog/PostHeader.tsx`, `app/(app)/blog/[slug]/page.tsx`, `components/calendar/MonthView.tsx`. Browser-verified at 390px (106 dots labelled, 0 console errors); lint clean.
+
 ## 0.226.0 — 2026-07-13
 
 ### Added

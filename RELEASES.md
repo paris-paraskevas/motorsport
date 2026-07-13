@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.226.1 — 2026-07-13
+
+**Accessibility polish.** Small screen-reader and touch improvements: a labelled sign-in button, a bigger close button on pop-ups, and the mobile calendar's coloured dots now say which session they are.
+
 ## 0.226.0 — 2026-07-13
 
 **Share posts anywhere.** Blog posts now have Facebook, WhatsApp, and a native share button (which reaches Instagram and Stories on your phone), next to the existing X and copy-link options.

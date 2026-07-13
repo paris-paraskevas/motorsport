@@ -69,6 +69,8 @@ export function MonthView({
                 {entries.slice(0, 6).map(e => (
                   <span
                     key={`${e.seriesSlug}-${e.session.uid}`}
+                    role="img"
+                    aria-label={`${e.seriesSlug}: ${e.session.title}`}
                     className="h-1.5 w-1.5 rounded-full"
                     style={{ backgroundColor: e.color }}
                   />
