@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, SlidersHorizontal, Trophy, Tv, Users, UserPlus } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Trophy, Tv, Users, UserPlus } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
 import { weatherLabel } from '@/lib/weather';
@@ -16,8 +16,6 @@ import type { CircuitLayout } from '@/lib/circuit-layout';
 import { formatBetSelection } from '@/lib/betting/constants';
 import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
 import { HomeLauncher, type LauncherSeries } from '@/components/HomeLauncher';
-import { HomeCustomizeBanner } from '@/components/HomeCustomizeBanner';
-import { useAuth } from '@clerk/nextjs';
 
 interface HomeItem {
   session: Session;
@@ -296,14 +294,10 @@ export function HomeContent({
       : `/series/${item.seriesSlug}`;
   };
   const { followed, hydrated } = useFollowedSeries();
-  // Layout is read here; the customise CONTROLS live in Account (a banner with a
-  // preview). The home keeps an inline collapse toggle on its collapsible blocks.
+  // Layout is read here (order / hidden / collapsed); the customise CONTROLS live
+  // at /settings/customize. The home keeps an inline collapse toggle on its
+  // collapsible blocks.
   const { layout, toggleCollapsed } = useHomeLayout();
-  const { isSignedIn } = useAuth();
-  // In-place home editor: the "Make your own home" button toggles an inline
-  // customise panel whose reorder / add / hide / settings apply live to the
-  // blocks rendered below.
-  const [editingHome, setEditingHome] = useState(false);
   // Starts at the SSR default ("All" = null); the persisted slug is adopted
   // after mount so the hydration render matches the server HTML. Guarded so a
   // stored series that's since dropped out of the feed can still be re-picked
@@ -720,8 +714,8 @@ export function HomeContent({
   // Home-layout customization: each top-level block gets a CSS `order` from the
   // user's prefs (so the DEFAULT order renders identically), and hidden blocks
   // are dropped. Applied on a flex column below.
-  // Scaled ×2 so the fixed Jump-to launcher can slot at an odd order (3) between
-  // the spine (chyron 0, just-missed 2) and the customizable zone (4+).
+  // Scaled ×2 so the fixed Jump-to launcher can slot at an odd order (1) directly
+  // under the chyron (order 0), above the first controllable block (order ≥2).
   const orderOf = (id: HomeElementId): number => {
     const i = layout.order.indexOf(id);
     return (i < 0 ? 99 : i) * 2;
@@ -736,52 +730,15 @@ export function HomeContent({
         Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
       </h1>
 
-      {/* Make your own home — pinned above the customizable zone, shown to all.
-          Signed-out routes to sign-in (customising is a free-account feature);
-          signed-in toggles the inline editor, whose reorder / add / hide /
-          settings apply live to the blocks below. On touch the editor's up/down
-          arrows drive reordering (native drag is desktop; dnd-kit touch-drag is
-          the follow-up). */}
-      <div className="mb-6 flex items-center justify-end">
-        {isSignedIn ? (
-          <button
-            type="button"
-            onClick={() => setEditingHome(v => !v)}
-            aria-pressed={editingHome}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors duration-(--duration-fast) ${
-              editingHome
-                ? 'border-brand bg-brand text-bg'
-                : 'border-border-strong bg-surface text-text hover:border-brand'
-            }`}
-          >
-            <SlidersHorizontal size={14} aria-hidden />
-            {editingHome ? 'Done' : 'Make your own home'}
-          </button>
-        ) : (
-          <Link
-            href="/sign-in"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border-strong bg-surface px-4 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text transition-colors duration-(--duration-fast) hover:border-brand"
-          >
-            <SlidersHorizontal size={14} aria-hidden />
-            Make your own home
-          </Link>
-        )}
-      </div>
-      {editingHome && isSignedIn && (
-        <div className="mb-8">
-          <HomeCustomizeBanner />
-        </div>
-      )}
-
       {/* On 2K+ (≥1700px) the blocks flow into two columns so the wide container is
           used, not stretched into over-long rows; the chyron spans both. Below that
           it stays a single flex column (mobile/laptop unchanged). CSS `order` from
           the customise prefs still applies to grid items. */}
       <div className="flex flex-col 3xl:grid 3xl:grid-cols-2 3xl:gap-x-10 3xl:items-start">
-      {/* ── Jump-to launcher — fixed quick-access row, pinned above the
-             customizable zone (order 3 sits between the Just-missed spine and
-             the first widget). Shown to everyone; all content is public. ── */}
-      <div className="mb-8 3xl:col-span-2" style={{ order: 3 }}>
+      {/* ── Jump-to launcher — fixed quick-access nav, pinned directly under the
+             chyron hero (order 1 sits between the chyron at 0 and the first
+             controllable block at ≥2). Shown to everyone; all content is public. ── */}
+      <div className="mb-8 3xl:col-span-2" style={{ order: 1 }}>
         <HomeLauncher series={series} />
       </div>
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next

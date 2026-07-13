@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.220.1 — 2026-07-13
+
+**A tidier home.** Home customization now lives in one place — Settings → Customise home — rather than a button on the home itself. The quick-jump bar (Calendar, Standings, Results and more) moved up to sit right under the next-session countdown, with a lighter look.
+
 ## 0.220.0 — 2026-07-13
 
 **Behind the scenes.** Rebuilt the internal click-heatmap tool so it can show which on-page elements get used and which are ignored, to guide layout and content decisions.
