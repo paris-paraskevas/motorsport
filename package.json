@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.223.0",
+  "version": "0.224.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -21,6 +21,8 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@google-analytics/data": "^6.1.0",
+    "@googleapis/searchconsole": "^6.0.1",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@sentry/nextjs": "^10.65.0",

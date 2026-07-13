@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.224.0 — 2026-07-13
+
+### Added
+- **/admin Traffic (GA4) + Search (Search Console) panels — real data (operator: "solve traffic and search in dev").** New `lib/analytics/ga4.ts` (`@google-analytics/data` → `fetchGa4Traffic`: users / sessions / page-views + top pages + top countries, 30d) and `lib/analytics/gsc.ts` (`@googleapis/searchconsole` → `fetchGscSearch`: clicks / impressions / CTR / avg-position + top queries + top pages, 28d). Both server-only + fail-soft: SA key from a base64 env (`GA4_SA_KEY` / `GSC_SA_KEY`, never committed) + `GA4_PROPERTY_ID` / `GSC_SITE_URL`; any missing env or API error → null → the admin shows a connect/unavailable state (never 500s). `app/(app)/admin/page.tsx` renders the real KPIs + `TrafficPanel` / `SearchPanel`. `scripts/verify-analytics.mts` exercises both live (aggregate counts only, no key/PII).
+- Verified LIVE from localhost with the operator's service account: **GSC returns real data** (41 clicks / 1,286 impressions / 3.2% CTR / avg pos 14.9 over 28d; top query "paddock tracker"); browser-verified the admin Search panel renders it. GA4 authenticates but returns PERMISSION_DENIED — the service account isn't granted Viewer on the GA4 property yet, so Traffic shows a "grant Viewer" state. `next build` clean; 914/914 vitest.
+- **⏳ Operator steps to activate on prod:** (1) set `GA4_PROPERTY_ID` / `GA4_SA_KEY` (base64 of the SA JSON) / `GSC_SITE_URL` (`sc-domain:paddock-tracker.com`) / `GSC_SA_KEY` in Vercel; (2) grant the service account Viewer on the GA4 property so Traffic populates. Outbound Google-API code — confirm on a preview/prod (datacenter runtime).
+
 ## 0.223.0 — 2026-07-13
 
 ### Added
