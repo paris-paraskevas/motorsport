@@ -42,10 +42,12 @@ export function tabsFor(singleEvent: boolean | undefined, slug?: string): typeof
 
 /** Tabs shown in the series-page RAIL — the live/interactive ones only. The
  *  editorial tabs (about / history / champions / drivers) moved to a "Learn
- *  about <series>" link block + the /information hub (IA restructure). Their
- *  ROUTES stay live and in the sitemap until Phase C redirects them, so TABS /
- *  tabsFor() are deliberately unchanged — this only trims the visible rail. */
-export const RAIL_TAB_KEYS = ['calendar', 'news', 'standings', 'results', 'tracks'] as const;
+ *  about <series>" link block + the /information hub (IA restructure); News was
+ *  dropped from the rail too — redundant with the News quick-link added by the
+ *  Threads link (#528). Their ROUTES stay live and in the sitemap until Phase C
+ *  redirects them, so TABS / tabsFor() are deliberately unchanged — this only
+ *  trims the visible rail. */
+export const RAIL_TAB_KEYS = ['calendar', 'standings', 'results', 'tracks'] as const;
 
 export function railTabsFor(singleEvent: boolean | undefined, slug?: string): typeof TABS[number][] {
   return tabsFor(singleEvent, slug).filter(t =>
