@@ -23,6 +23,7 @@ import { listSeriesSubmissions, type SeriesSubmission } from '@/lib/feeder';
 import { HeatmapOverlay } from '@/components/admin/HeatmapOverlay';
 import { fetchGa4Traffic, isGa4Configured, type Ga4Traffic } from '@/lib/analytics/ga4';
 import { fetchGscSearch, isGscConfigured, type GscSearch } from '@/lib/analytics/gsc';
+import { fetchBingSearch, isBingConfigured, type BingSearch } from '@/lib/analytics/bing';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -76,6 +77,7 @@ const SECTIONS = [
   { id: 'users', label: 'Users', icon: Users },
   { id: 'traffic', label: 'Traffic', icon: BarChart3 },
   { id: 'search', label: 'Search', icon: Search },
+  { id: 'search-bing', label: 'Bing', icon: Search },
   { id: 'behaviour', label: 'Behaviour', icon: MousePointerClick },
   { id: 'submissions', label: 'Submissions', icon: Inbox },
   { id: 'tools', label: 'Tools', icon: Sparkles },
@@ -88,12 +90,13 @@ const SECTIONS = [
 // are set. 404s for non-admins (Clerk publicMetadata.role === 'admin'), noindex.
 export default async function AdminPage() {
   if (!isAdmin(await currentUser())) notFound();
-  const [users, heat, submissions, ga4, gsc] = await Promise.all([
+  const [users, heat, submissions, ga4, gsc, bing] = await Promise.all([
     loadUserStats(),
     heatmapAdminOverview(),
     listSeriesSubmissions(20),
     fetchGa4Traffic(30),
     fetchGscSearch(28),
+    fetchBingSearch(),
   ]);
   // Seed the overlay with the busiest page (desktop) so it paints on first render;
   // the picker fetches other path/breakpoint combos via the loadOverlayData action.
@@ -101,6 +104,7 @@ export default async function AdminPage() {
   const initialOverlay: OverlayData = heat[0] ? await overlayData(heat[0].path, { breakpoint: 'desktop' }) : EMPTY_OVERLAY;
   const ga4Connected = isGa4Configured();
   const gscConnected = isGscConfigured();
+  const bingConnected = isBingConfigured();
   const totalClicks = heat.reduce((sum, p) => sum + p.total, 0);
 
   return (
@@ -198,6 +202,17 @@ export default async function AdminPage() {
               <Unavailable note="Search Console is configured but returned no data yet." />
             ) : (
               <NotConnected what="Google Search Console" env="GSC_SITE_URL + GSC_SA_KEY" />
+            )}
+          </Section>
+
+          {/* Search — Bing Webmaster Tools */}
+          <Section id="search-bing" icon={Search} title="Search — Bing">
+            {bing ? (
+              <BingPanel data={bing} />
+            ) : bingConnected ? (
+              <Unavailable note="Bing is configured but returned no data yet." />
+            ) : (
+              <NotConnected what="Bing Webmaster Tools" env="BING_WEBMASTER_API_KEY + BING_SITE_URL" />
             )}
           </Section>
 
@@ -434,6 +449,25 @@ function SearchPanel({ data }: { data: GscSearch }) {
         <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.page, value: p.clicks }))} />
       </div>
       <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Last 28 days · Search Console</p>
+    </div>
+  );
+}
+
+// Bing search: clicks / impressions / CTR + top queries + pages. Bing clicks are
+// sparse, so the lists rank by impressions (where the signal is).
+function BingPanel({ data }: { data: BingSearch }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <MiniStat label="Clicks" value={data.clicks} />
+        <MiniStat label="Impressions" value={data.impressions} />
+        <MiniStat label="CTR" text={`${(data.ctr * 100).toFixed(1)}%`} />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatList title="Top queries" rows={data.topQueries.map(q => ({ label: q.query, value: q.impressions }))} />
+        <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.page, value: p.impressions }))} />
+      </div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Bing Webmaster Tools · ranked by impressions</p>
     </div>
   );
 }

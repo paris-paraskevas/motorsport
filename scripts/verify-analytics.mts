@@ -7,6 +7,7 @@
 //   npx tsx scripts/verify-analytics.mts
 import { fetchGa4Traffic, isGa4Configured } from '@/lib/analytics/ga4';
 import { fetchGscSearch, isGscConfigured } from '@/lib/analytics/gsc';
+import { fetchBingSearch, isBingConfigured } from '@/lib/analytics/bing';
 
 console.log('GA4 configured:', isGa4Configured());
 const ga4 = await fetchGa4Traffic(30);
@@ -22,4 +23,12 @@ if (!gsc) console.log('GSC → null (unconfigured or API error)');
 else
   console.log(
     `GSC 28d → clicks=${gsc.clicks} impressions=${gsc.impressions} ctr=${(gsc.ctr * 100).toFixed(1)}% pos=${gsc.position.toFixed(1)}; topQueries=${gsc.topQueries.length} topPages=${gsc.topPages.length}; sample query: ${gsc.topQueries[0]?.query ?? 'n/a'}`,
+  );
+
+console.log('Bing configured:', isBingConfigured());
+const bing = await fetchBingSearch();
+if (!bing) console.log('Bing → null (unconfigured or API error)');
+else
+  console.log(
+    `Bing → clicks=${bing.clicks} impressions=${bing.impressions} ctr=${(bing.ctr * 100).toFixed(1)}%; topQueries=${bing.topQueries.length} topPages=${bing.topPages.length}; sample query: ${bing.topQueries[0]?.query ?? 'n/a'}`,
   );

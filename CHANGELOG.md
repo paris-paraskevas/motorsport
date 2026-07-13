@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.225.0 — 2026-07-13
+
+### Added
+- **/admin "Search — Bing" panel (Bing Webmaster Tools).** New `lib/analytics/bing.ts` — the BWT JSON API (api-key auth): `GetRankAndTrafficStats` (clicks/impressions) + `GetQueryStats` + `GetPageStats`, with `aggregateBingRows` collapsing Bing's per-day rows per query/page (Bing puts the page URL in the `Query` field). Server-only + fail-soft on `BING_WEBMASTER_API_KEY` + `BING_SITE_URL`; missing env or API error → null → connect/unavailable state. `app/(app)/admin/page.tsx` adds a "Search — Bing" section + nav entry + `BingPanel` (clicks / impressions / CTR + top queries + top pages, ranked by impressions since Bing clicks are sparse).
+- Verified LIVE with the operator's key (`www.paddock-tracker.com`): 9 clicks / 1,750 impressions over ~52 days; `aggregateBingRows` unit-tested. `next build` clean; 916/916 vitest.
+- **⏳ Operator:** set `BING_WEBMASTER_API_KEY` + `BING_SITE_URL` (`https://www.paddock-tracker.com`) in Vercel to light it up on prod.
+
 ## 0.224.0 — 2026-07-13
 
 ### Added
