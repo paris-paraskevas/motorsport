@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.225.2 — 2026-07-13
+
+**Internal.** Planning notes for the admin redesign.
+
 ## 0.225.1 — 2026-07-13
 
 **Internal.** Housekeeping — session notes and planning docs.

@@ -26,7 +26,15 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ### 📋 PENDING DECISIONS / NEXT SESSION
 - **Sachsenring / MotoGP German GP blog** — DRAFT NEXT SESSION (operator ask). A stray `drafts/motogp-german-grand-prix-2026-preview.json` exists from a prior session; check preview-vs-digest against the calendar, fact-check (RULE #1) via the `weekend-post` skill, land as a prod DB draft (never MDX).
-- **`/admin` redesign — GREEN-LIT 2026-07-13** (EXTEND `/admin`, not standalone — decided; operator likes the AIDesigner "telemetry-console" direction, concept saved at `.aidesigner/mcp-latest.html`). Operator constraints: **a separate ROUTE per category** (Overview / Traffic / Search / Behaviour / PageSpeed / …), real navigation, **NO `#` hash-anchor sections**. Build = restructure `app/(app)/admin/` into a shared `layout.tsx` (amber nav rail + KPI header) + per-category `page.tsx` routes, on the hairline telemetry-grid aesthetic (KPI tiles / sparklines / mono-display); move each source's data fetch to its own page; keep the heatmap overlay + server actions working; **add a PageSpeed Insights panel** (PSI = clean public API + key, easy; Vercel Web-Analytics = no clean query API; Cloudflare = needs the site behind CF). 4 AIDesigner credits left.
+- **`/admin` redesign — GREEN-LIT; BUILD NEXT SESSION** (EXTEND `/admin`, not standalone; operator likes the AIDesigner telemetry-console direction — concept at `.aidesigner/mcp-latest.html`). **EXACT route map (operator, 2026-07-13)** — shared `app/(app)/admin/layout.tsx` (admin gate + amber nav rail) + real routes, **NO `#` hash anchors**:
+  - **`/admin`** = overview HUB — a card per page linking to it (not a stack of sections).
+  - **`/admin/traffic`** = GA4.
+  - **`/admin/search`** = GSC + Bing side-by-side (ONE shared Search page).
+  - **`/admin/behaviour`** = the click heatmap (overlay + Hot/Dead + scroll + frustration; move the `loadOverlayData` server action here).
+  - **`/admin/users`** = a dedicated Clerk dashboard (expand well beyond today's recent-sign-ups list).
+  - **`/admin/submissions`** = feeder submissions.
+  - **`/admin/tools`** = hub linking out to each tool's existing page.
+  Aesthetic: hairline telemetry-grid + KPI tiles/sparklines + mono-display + amber; extract shared admin UI components. Atomic ~10-file refactor — verify each route, keep every live source + heatmap + server actions working. **PSI PARKED** (not in the map + keyless PSI 429s → needs a `PSI_API_KEY` in the `paddocktracker` GCP project with PageSpeed Insights API enabled); the drafted `lib/analytics/psi.ts` (PSI v5, fail-soft, 6h fetch-cache) was discarded — recreate if wanted. Foundation branch discarded; rebuild coherently. 4 AIDesigner credits left.
 - **Bahrain GP** — NOT verified (operator confirmed 2026-07-13). Reschedule stays parked; do NOT touch `rounds.json`/`sessions.json` until F1/FIA confirm.
 
 ### 🧷 Landmines / notes (session 14)
