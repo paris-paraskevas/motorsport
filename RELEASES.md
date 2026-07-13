@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.224.0 — 2026-07-13
+
+**Behind the scenes.** The admin dashboard now shows live traffic (Google Analytics) and search (Search Console) — top pages, queries, clicks and impressions.
+
 ## 0.223.0 — 2026-07-13
 
 **Behind the scenes.** The internal heatmap can now be filtered by traffic source, new vs returning visitors, and a date range.

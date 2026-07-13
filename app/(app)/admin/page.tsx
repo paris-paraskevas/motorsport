@@ -21,6 +21,8 @@ import { PAGE_WIDE } from '@/lib/site';
 import { heatmapAdminOverview, overlayData, type HeatmapPathPanel, type ElementRank, type OverlayData, type Breakpoint, type Source, type Visitor } from '@/lib/heatmap';
 import { listSeriesSubmissions, type SeriesSubmission } from '@/lib/feeder';
 import { HeatmapOverlay } from '@/components/admin/HeatmapOverlay';
+import { fetchGa4Traffic, isGa4Configured, type Ga4Traffic } from '@/lib/analytics/ga4';
+import { fetchGscSearch, isGscConfigured, type GscSearch } from '@/lib/analytics/gsc';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -86,17 +88,19 @@ const SECTIONS = [
 // are set. 404s for non-admins (Clerk publicMetadata.role === 'admin'), noindex.
 export default async function AdminPage() {
   if (!isAdmin(await currentUser())) notFound();
-  const [users, heat, submissions] = await Promise.all([
+  const [users, heat, submissions, ga4, gsc] = await Promise.all([
     loadUserStats(),
     heatmapAdminOverview(),
     listSeriesSubmissions(20),
+    fetchGa4Traffic(30),
+    fetchGscSearch(28),
   ]);
   // Seed the overlay with the busiest page (desktop) so it paints on first render;
   // the picker fetches other path/breakpoint combos via the loadOverlayData action.
   const overlayPaths = heat.map(p => p.path);
   const initialOverlay: OverlayData = heat[0] ? await overlayData(heat[0].path, { breakpoint: 'desktop' }) : EMPTY_OVERLAY;
-  const ga4Connected = Boolean(process.env.GA4_PROPERTY_ID);
-  const gscConnected = Boolean(process.env.GSC_SITE_URL);
+  const ga4Connected = isGa4Configured();
+  const gscConnected = isGscConfigured();
   const totalClicks = heat.reduce((sum, p) => sum + p.total, 0);
 
   return (
@@ -141,14 +145,14 @@ export default async function AdminPage() {
               <KpiCard
                 icon={BarChart3}
                 label="Traffic (30d)"
-                value="—"
-                hint={ga4Connected ? 'GA4 configured' : 'connect GA4'}
+                value={ga4 ? ga4.users.toLocaleString() : '—'}
+                hint={ga4 ? 'users · GA4' : ga4Connected ? 'GA4 no access yet' : 'connect GA4'}
               />
               <KpiCard
                 icon={Search}
-                label="Search clicks"
-                value="—"
-                hint={gscConnected ? 'GSC configured' : 'connect GSC'}
+                label="Search clicks (28d)"
+                value={gsc ? gsc.clicks.toLocaleString() : '—'}
+                hint={gsc ? `${gsc.impressions.toLocaleString()} impressions` : gscConnected ? 'GSC no data yet' : 'connect GSC'}
               />
             </div>
           </Section>
@@ -175,21 +179,25 @@ export default async function AdminPage() {
             )}
           </Section>
 
-          {/* Traffic — Google Analytics 4 (needs GA4_PROPERTY_ID + a service account) */}
+          {/* Traffic — Google Analytics 4 */}
           <Section id="traffic" icon={BarChart3} title="Traffic — Google Analytics">
-            {ga4Connected ? (
-              <Unavailable note="GA4 is configured — data panels wire up in a follow-up." />
+            {ga4 ? (
+              <TrafficPanel data={ga4} />
+            ) : ga4Connected ? (
+              <Unavailable note="GA4 is configured but returned no data — grant the service account Viewer on the property." />
             ) : (
-              <NotConnected what="Google Analytics 4" env="GA4_PROPERTY_ID + a Data API service account" />
+              <NotConnected what="Google Analytics 4" env="GA4_PROPERTY_ID + GA4_SA_KEY" />
             )}
           </Section>
 
-          {/* Search — Search Console (needs GSC_SITE_URL + a service account) */}
+          {/* Search — Google Search Console */}
           <Section id="search" icon={Search} title="Search — Search Console">
-            {gscConnected ? (
-              <Unavailable note="Search Console is configured — data panels wire up in a follow-up." />
+            {gsc ? (
+              <SearchPanel data={gsc} />
+            ) : gscConnected ? (
+              <Unavailable note="Search Console is configured but returned no data yet." />
             ) : (
-              <NotConnected what="Google Search Console" env="GSC_SITE_URL + a service account" />
+              <NotConnected what="Google Search Console" env="GSC_SITE_URL + GSC_SA_KEY" />
             )}
           </Section>
 
@@ -355,6 +363,79 @@ function NotConnected({ what, env }: { what: string; env: string }) {
 
 function Unavailable({ note }: { note: string }) {
   return <p className="font-mono text-sm text-text-faint">{note}</p>;
+}
+
+// A single headline metric (Users / Clicks / CTR …). `text` overrides the numeric
+// formatting for non-count values (CTR, position).
+function MiniStat({ label, value, text }: { label: string; value?: number; text?: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-surface-elevated p-3">
+      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
+      <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-text">
+        {text ?? (value ?? 0).toLocaleString()}
+      </div>
+    </div>
+  );
+}
+
+// A labelled top-N list (top pages / queries / countries), capped at 8.
+function StatList({ title, rows }: { title: string; rows: { label: string; value: number }[] }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-surface-elevated">
+      <div className="border-b border-border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        {title}
+      </div>
+      {rows.length === 0 ? (
+        <p className="px-4 py-3 font-mono text-[11px] text-text-faint">No data</p>
+      ) : (
+        <ul className="divide-y divide-border">
+          {rows.slice(0, 8).map((r, i) => (
+            <li key={`${r.label}-${i}`} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
+              <span className="truncate text-text">{r.label || '—'}</span>
+              <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">{r.value.toLocaleString()}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// GA4 traffic: headline totals + top pages / countries (last 30 days).
+function TrafficPanel({ data }: { data: Ga4Traffic }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <MiniStat label="Users" value={data.users} />
+        <MiniStat label="Sessions" value={data.sessions} />
+        <MiniStat label="Page views" value={data.pageViews} />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.path, value: p.views }))} />
+        <StatList title="Top countries" rows={data.topCountries.map(c => ({ label: c.country, value: c.users }))} />
+      </div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Last 30 days · Google Analytics 4</p>
+    </div>
+  );
+}
+
+// GSC search: clicks / impressions / CTR / position + top queries + pages (28 days).
+function SearchPanel({ data }: { data: GscSearch }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <MiniStat label="Clicks" value={data.clicks} />
+        <MiniStat label="Impressions" value={data.impressions} />
+        <MiniStat label="CTR" text={`${(data.ctr * 100).toFixed(1)}%`} />
+        <MiniStat label="Avg position" text={data.position.toFixed(1)} />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StatList title="Top queries" rows={data.topQueries.map(q => ({ label: q.query, value: q.clicks }))} />
+        <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.page, value: p.clicks }))} />
+      </div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Last 28 days · Search Console</p>
+    </div>
+  );
 }
 
 // A feeder-series submission row in the admin review list. File downloads go
