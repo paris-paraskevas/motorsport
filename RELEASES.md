@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.221.1 — 2026-07-13
+
+**Tidier series pages.** Dropped the duplicate "News" tab from each series' tab bar — series news is still one tap away from the News link at the top of the page.
+
 ## 0.221.0 — 2026-07-13
 
 **Behind the scenes.** Our internal click-heatmap now shows a true visual overlay — the real page with colour hotspots landing exactly on the buttons and tabs people actually clicked.
