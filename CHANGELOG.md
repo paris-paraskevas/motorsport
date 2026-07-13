@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.225.3 — 2026-07-13
+
+### Fixed
+- Global search now finds a race weekend by its circuit / venue name, not only the round's country name. `buildSearchIndex` (`lib/search-index.ts`) adds each weekend's session `location` (e.g. "Sachsenring, Hohenstein-Ernstthal") to that weekend doc's `keywords`, so searching "Sachsenring" surfaces the MotoGP German Grand Prix (round 11), which is named for its country. Guarded by two new `search-match` assertions (circuit + town). Verified on the live dev index (weekend/11 keywords now carry the venue). No index-size or URL change.
+
 ## 0.225.2 — 2026-07-13
 
 ### Changed

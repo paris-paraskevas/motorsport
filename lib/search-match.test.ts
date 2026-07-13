@@ -10,6 +10,9 @@ const docs: SearchDoc[] = [
   { type: 'tab', title: 'Formula 1 Standings', subtitle: 'Formula 1 · tab', url: '/series/f1/standings', keywords: 'f1 standings' },
   { type: 'blog', title: 'Le Mans 2026 preview', subtitle: 'Blog', url: '/blog/le-mans-2026-preview' },
   { type: 'page', title: 'Calendar', subtitle: 'Every series, one timeline', url: '/calendar' },
+  // A round named for its country, with the circuit/venue only in keywords (as
+  // buildSearchIndex emits from the sessions' `location`).
+  { type: 'weekend', title: 'MotoGP — German Grand Prix', subtitle: 'Round 11 · weekend', url: '/series/motogp/weekend/11', keywords: 'motogp round 11 Sachsenring, Hohenstein-Ernstthal' },
 ];
 
 describe('searchDocs', () => {
@@ -39,6 +42,13 @@ describe('searchDocs', () => {
   it('does subsequence fuzzy matching', () => {
     // "vstpn" is a subsequence of "verstappen"
     expect(searchDocs(docs, 'vstpn').some((d) => d.url === '/drivers/max-verstappen')).toBe(true);
+  });
+
+  it('finds a weekend by circuit/venue name in keywords, not just the round name', () => {
+    // The round is named "German Grand Prix"; searching the circuit still finds it.
+    expect(searchDocs(docs, 'sachsenring').some((d) => d.url === '/series/motogp/weekend/11')).toBe(true);
+    // and the town in the location string works too
+    expect(searchDocs(docs, 'hohenstein').some((d) => d.url === '/series/motogp/weekend/11')).toBe(true);
   });
 
   it('respects the result limit', () => {
