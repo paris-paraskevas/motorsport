@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.220.1 — 2026-07-13
+
+### Changed
+- **Home decluttered — customization consolidated into Settings, Jump-to nav repositioned (operator: the home is "chaotic"; the "revisit & replan" home-customization redo).** Removed the inline "Make your own home" editor from `components/HomeContent.tsx`: the top-right button, its `editingHome` state, the `editingHome`-gated inline `<HomeCustomizeBanner/>` mount, and the now-dead `HomeCustomizeBanner` / `useAuth`(`isSignedIn`) / `SlidersHorizontal` imports (each used only by that block). Home customization now lives ONLY at `/settings/customize` (the existing `HomeCustomizePanel`), still linked as the first row of the Account page (`app/(app)/settings/page.tsx`); the home still READS layout prefs and keeps its inline per-block fold/expand. Deleted the orphaned `HomeCustomizeBanner` export from `components/HomeCustomizeBanner.tsx` (zero remaining consumers — `/settings/customize` imports `HomeCustomizePanel`; filename kept to avoid churn).
+- **Jump-to launcher moved under the hero + lightened.** `components/HomeContent.tsx`: the launcher wrapper's CSS `order` 3 → 1, so it renders chyron (0) → Jump-to (1) → Just-missed (2) → widgets (≥4) — order 1 always sits between the pinned chyron and the first controllable block, regardless of user reordering. `components/HomeLauncher.tsx`: `border-y`→`border-b` hairline (avoids doubling the chyron's own bottom border above it) + tighter chip padding (`px-3 py-1.5`→`px-2.5 py-1`); all `data-heatmap-id`s preserved.
+- Verified: `next build` clean; eslint clean; 893/893 vitest; browser-verified signed-out at 390 / 1280 / 1728px (no button; nav directly under the hero, above Just-missed; 0 console errors) and `/settings/customize` renders intact.
+
 ## 0.220.0 — 2026-07-13
 
 ### Changed

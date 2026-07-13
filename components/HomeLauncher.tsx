@@ -50,7 +50,7 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
   })).filter(g => g.list.length > 0);
 
   const chip =
-    'inline-flex shrink-0 items-center gap-1.5 border border-border bg-surface/60 px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text';
+    'inline-flex shrink-0 items-center gap-1.5 border border-border bg-surface/60 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text';
 
   const picker = (tab: 'standings' | 'results') => (
     <div className="absolute left-0 top-full z-30 mt-1.5 max-h-80 w-64 overflow-y-auto border border-border-strong bg-bg p-2 shadow-lg">
@@ -76,7 +76,7 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
   );
 
   return (
-    <nav ref={ref} aria-label="Jump to" className="flex flex-wrap items-center gap-2 border-y border-border py-3">
+    <nav ref={ref} aria-label="Jump to" className="flex flex-wrap items-center gap-2 border-b border-border py-2.5">
       <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.18em] text-text-faint">Jump to</span>
 
       <Link href="/calendar" data-heatmap-id="home:launcher:calendar" className={chip}>

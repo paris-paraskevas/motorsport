@@ -462,25 +462,6 @@ function WidgetGallery() {
   );
 }
 
-// "Customise your home" banner for the Account page: a live preview next to the
-// per-block controls. Works signed-out (localStorage) and signed-in (KV,
-// cross-device) via useHomeLayout. Retained for any inline embed; the primary
-// home for these controls is now the /settings/customize page (HomeCustomizePanel).
-export function HomeCustomizeBanner() {
-  return (
-    <section className="mb-6 border border-border bg-surface/60 p-4">
-      <div className="mb-1.5 flex items-center gap-2">
-        <SlidersHorizontal size={14} className="text-text-muted" />
-        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-text">Customise your home</h2>
-      </div>
-      <p className="mb-4 font-mono text-[11px] leading-relaxed text-text-faint">
-        Drag the handle to reorder (or use the arrows). Fold or hide any block. Changes save instantly.
-      </p>
-      <BlockControls />
-    </section>
-  );
-}
-
 // Full customise surface for the dedicated /settings/customize page: the live
 // preview + per-block controls, then the widget-discovery gallery. Same hook,
 // same persistence as the banner — just the richer, standalone presentation.
