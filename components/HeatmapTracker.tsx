@@ -9,14 +9,25 @@ const MAX_IMPRESSION_TARGETS = 200; // cap observed elements per pageview
 const DWELL_MS = 300; // element must stay >=50% visible this long to count as seen
 const FLUSH_MS = 15000;
 
-type Kind = 'click' | 'impression';
+type Kind = 'click' | 'impression' | 'scroll' | 'rage' | 'dead';
 interface PendingEvent {
   kind: Kind;
   elementId?: string;
   selector?: string;
   relX?: number;
   relY?: number;
+  value?: number; // scroll depth 0..1 (kind='scroll' only)
 }
+
+// Rage-click detection: >= RAGE_COUNT clicks within RAGE_WINDOW_MS inside a
+// RAGE_RADIUS_PX box = a frustration burst.
+const RAGE_COUNT = 3;
+const RAGE_WINDOW_MS = 500;
+const RAGE_RADIUS_PX = 30;
+// Ignore a page that was barely scrolled (tells us nothing).
+const SCROLL_MIN = 0.05;
+// Untagged click targets we still treat as a real (positioned) click, not dead.
+const INTERACTIVE_SEL = 'a[href], button, [role="button"], input, select, textarea, label, summary';
 
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
@@ -51,12 +62,15 @@ function cssPath(el: Element): string {
   return parts.join(' > ').slice(0, 200);
 }
 
-// Anonymous element-relative heatmap capture. Per pageview it records: clicks
+// Anonymous element-relative heatmap capture. Per pageview it records: CLICKS
 // (element-relative ratio inside the nearest [data-heatmap-id] ancestor, else a
-// compact fallback selector) and one impression per tagged element that dwells
-// >=50% visible for DWELL_MS. Batches both, ships via sendBeacon on a 15s timer,
-// on tab-hide, and on route change. Consent-gated (analytics) + honours Do Not
-// Track. No cookies, no PII, zero server imports — only the batch leaves the tab.
+// re-resolvable CSS path to the nearest clickable element), DEAD clicks (on
+// non-interactive space), RAGE clicks (rapid repeats in one spot), one IMPRESSION
+// per tagged element that dwells >=50% visible for DWELL_MS, and one SCROLL-depth
+// reading per pageview. Batches all of it, ships via sendBeacon on a 15s timer,
+// on tab-hide, and on route change; when a page is framed for the /admin overlay
+// (?hm=1) nothing is recorded. Consent-gated (analytics) + honours Do Not Track.
+// No cookies, no PII, zero server imports — only the batch leaves the tab.
 export function HeatmapTracker() {
   const pathname = usePathname();
 
@@ -84,33 +98,44 @@ export function HeatmapTracker() {
       if (events.length < MAX_EVENTS) events.push(ev);
     };
 
+    // Rage-click sliding window: recent click coordinates within RAGE_WINDOW_MS.
+    const clickWindow: { t: number; x: number; y: number }[] = [];
+
     const onClick = (e: MouseEvent) => {
       const target = e.target;
       if (!(target instanceof Element)) return;
-      const el = target.closest('[data-heatmap-id]');
-      if (el) {
-        const id = el.getAttribute('data-heatmap-id');
-        if (!id) return;
-        const rect = el.getBoundingClientRect();
-        push({
-          kind: 'click',
-          elementId: id,
-          relX: rect.width > 0 ? clamp01((e.clientX - rect.left) / rect.width) : undefined,
-          relY: rect.height > 0 ? clamp01((e.clientY - rect.top) / rect.height) : undefined,
-        });
+
+      // A click lands on a heatmap-tagged element (best anchor), on some other
+      // interactive element (real click, positioned via a resolvable path), or on
+      // non-interactive dead space (a frustration signal, not engagement).
+      const tagged = target.closest('[data-heatmap-id]');
+      const interactive = target.closest(INTERACTIVE_SEL);
+      const anchor = tagged ?? interactive ?? target;
+      const rect = anchor.getBoundingClientRect();
+      const relX = rect.width > 0 ? clamp01((e.clientX - rect.left) / rect.width) : undefined;
+      const relY = rect.height > 0 ? clamp01((e.clientY - rect.top) / rect.height) : undefined;
+      const taggedId = tagged?.getAttribute('data-heatmap-id') || undefined;
+
+      if (taggedId) {
+        push({ kind: 'click', elementId: taggedId, relX, relY });
       } else {
-        // Untagged click: anchor to the nearest meaningful clickable element (so a
-        // hit resolves to the real link/button/tab, not an inner icon/span) and
-        // capture the in-element ratio so the overlay can position it precisely.
-        const anchor =
-          target.closest('a, button, [role="button"], input, select, textarea, label, summary') ?? target;
-        const rect = anchor.getBoundingClientRect();
-        push({
-          kind: 'click',
-          selector: cssPath(anchor),
-          relX: rect.width > 0 ? clamp01((e.clientX - rect.left) / rect.width) : undefined,
-          relY: rect.height > 0 ? clamp01((e.clientY - rect.top) / rect.height) : undefined,
-        });
+        // Interactive-but-untagged is still a real click; non-interactive = dead.
+        push({ kind: interactive ? 'click' : 'dead', selector: cssPath(anchor), relX, relY });
+      }
+
+      // Rage: >= RAGE_COUNT clicks within RAGE_WINDOW_MS inside a RAGE_RADIUS_PX
+      // box. Emits ONE rage event anchored like the click, then clears the window
+      // so the next burst needs a fresh cluster (no per-click spam).
+      const now = Date.now();
+      clickWindow.push({ t: now, x: e.clientX, y: e.clientY });
+      while (clickWindow.length > 0 && now - clickWindow[0].t > RAGE_WINDOW_MS) clickWindow.shift();
+      if (clickWindow.length >= RAGE_COUNT) {
+        const xs = clickWindow.map(c => c.x);
+        const ys = clickWindow.map(c => c.y);
+        if (Math.max(...xs) - Math.min(...xs) <= RAGE_RADIUS_PX && Math.max(...ys) - Math.min(...ys) <= RAGE_RADIUS_PX) {
+          push({ kind: 'rage', elementId: taggedId, selector: taggedId ? undefined : cssPath(anchor), relX, relY });
+          clickWindow.length = 0;
+        }
       }
     };
 
@@ -150,7 +175,30 @@ export function HeatmapTracker() {
       for (let i = 0; i < targets.length && i < MAX_IMPRESSION_TARGETS; i++) io.observe(targets[i]);
     }
 
-    const flush = () => {
+    // Scroll depth: track the furthest the viewer reached this pageview (rAF-
+    // throttled, only on scrollable pages); emitted once on a terminal flush.
+    let maxScroll = 0;
+    let scrollSent = false;
+    let scrollQueued = false;
+    const measureScroll = () => {
+      scrollQueued = false;
+      const full = document.documentElement.scrollHeight;
+      if (full <= window.innerHeight + 4) return; // not scrollable — nothing to learn
+      const depth = clamp01((window.scrollY + window.innerHeight) / full);
+      if (depth > maxScroll) maxScroll = depth;
+    };
+    const onScroll = () => {
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(measureScroll);
+    };
+
+    const flush = (terminal = false) => {
+      // Attach this pageview's furthest scroll depth once, on a terminal flush.
+      if (terminal && !scrollSent && maxScroll >= SCROLL_MIN) {
+        push({ kind: 'scroll', value: maxScroll });
+        scrollSent = true;
+      }
       if (events.length === 0) return;
       const batch = events.splice(0, events.length);
       const w = window.innerWidth;
@@ -172,17 +220,19 @@ export function HeatmapTracker() {
     };
 
     const onHide = () => {
-      if (document.visibilityState === 'hidden') flush();
+      if (document.visibilityState === 'hidden') flush(true);
     };
 
     document.addEventListener('click', onClick, { capture: true });
     document.addEventListener('visibilitychange', onHide);
-    const timer = window.setInterval(flush, FLUSH_MS);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    const timer = window.setInterval(() => flush(), FLUSH_MS);
 
     return () => {
-      flush(); // attribute this path's events before it changes
+      flush(true); // attribute this path's events (incl. final scroll depth) before it changes
       document.removeEventListener('click', onClick, { capture: true } as EventListenerOptions);
       document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('scroll', onScroll);
       window.clearInterval(timer);
       io?.disconnect();
       for (const t of dwellTimers.values()) window.clearTimeout(t);

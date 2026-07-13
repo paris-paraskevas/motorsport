@@ -28,7 +28,7 @@ export function normalizePath(raw: unknown): string | null {
 }
 
 export type Breakpoint = 'mobile' | 'tablet' | 'desktop';
-export type EventKind = 'click' | 'impression';
+export type EventKind = 'click' | 'impression' | 'scroll' | 'rage' | 'dead';
 export type Pointer = 'mouse' | 'touch';
 
 export interface HeatmapEvent {
@@ -38,6 +38,7 @@ export interface HeatmapEvent {
   selector?: string;
   relX?: number;
   relY?: number;
+  value?: number; // scroll depth 0..1 (kind='scroll')
   breakpoint: Breakpoint;
   viewportW?: number;
   viewportH?: number;
@@ -52,7 +53,7 @@ export interface ElementRank {
 }
 
 const BREAKPOINTS = new Set<string>(['mobile', 'tablet', 'desktop']);
-const KINDS = new Set<string>(['click', 'impression']);
+const KINDS = new Set<string>(['click', 'impression', 'scroll', 'rage', 'dead']);
 const POINTERS = new Set<string>(['mouse', 'touch']);
 const MAX_EVENTS = 250; // per-batch cap (well under sendBeacon's 64 KiB)
 const ELEMENT_ID_MAX = 128;
@@ -105,12 +106,21 @@ export function sanitizeEvents(envelope: unknown): HeatmapEvent[] {
     if (!raw || typeof raw !== 'object') continue;
     const ev = raw as Record<string, unknown>;
     if (typeof ev.kind !== 'string' || !KINDS.has(ev.kind)) continue;
+    const kind = ev.kind as EventKind;
+    if (kind === 'scroll') {
+      // A scroll reading identifies the PATH, not an element: it needs a depth
+      // value, not an anchor. Everything else falls through to the element path.
+      const value = clampRatio(ev.value);
+      if (value === undefined) continue;
+      out.push({ path, kind, value, breakpoint, viewportW, viewportH, pointer });
+      continue;
+    }
     const elementId = capString(ev.elementId, ELEMENT_ID_MAX);
     const selector = capString(ev.selector, SELECTOR_MAX);
-    if (!elementId && !selector) continue; // a row must identify something
+    if (!elementId && !selector) continue; // click / rage / dead must identify something
     out.push({
       path,
-      kind: ev.kind as EventKind,
+      kind,
       elementId,
       selector,
       relX: clampRatio(ev.relX),
@@ -140,6 +150,7 @@ export async function recordEvents(events: HeatmapEvent[]): Promise<void> {
     selector: e.selector ?? null,
     rel_x: e.relX ?? null,
     rel_y: e.relY ?? null,
+    value: e.value ?? null,
     breakpoint: e.breakpoint,
     viewport_w: e.viewportW ?? null,
     viewport_h: e.viewportH ?? null,
@@ -147,7 +158,15 @@ export async function recordEvents(events: HeatmapEvent[]): Promise<void> {
   }));
   try {
     const { error } = await betDb().from('heatmap_event').insert(rows);
-    if (error) return; // table not applied yet / transient — swallow, capture is best-effort
+    if (!error) return;
+    // Pre-migration fallback: a batch containing a kind the DB doesn't allow yet
+    // (scroll/rage/dead before the Phase-2 migration) fails atomically and would
+    // take the click/impression rows down with it. Retry with only the always-
+    // valid kinds so Phase-1 capture never regresses while the migration pends.
+    const legacy = rows.filter(r => r.kind === 'click' || r.kind === 'impression');
+    if (legacy.length > 0 && legacy.length < rows.length) {
+      await betDb().from('heatmap_event').insert(legacy);
+    }
   } catch {
     // Supabase unreachable — never break the ingest path.
   }
@@ -358,4 +377,139 @@ export function bucketClickPoints(rows: RawClickRow[]): ClickPoint[] {
     else buckets.set(key, { elementId, selector, relX: bx, relY: by, weight: 1 });
   }
   return [...buckets.values()];
+}
+
+// ── Phase 2 signals: scroll depth + rage/dead-click frustration ──────────────
+
+export interface ScrollStats {
+  sample: number; // number of scroll readings
+  reached: number[]; // reached[i] = fraction (0..1) who scrolled to >= (i+1)*10%
+}
+
+/** Pure: turn a list of per-pageview max-scroll depths (0..1) into a reach curve —
+ *  reached[i] is the fraction who got at least (i+1)*10% down the page. */
+export function bucketScrollDepths(values: number[]): ScrollStats {
+  const sample = values.length;
+  const reached: number[] = [];
+  for (let i = 1; i <= 10; i++) {
+    const threshold = i / 10 - 1e-9;
+    reached.push(sample === 0 ? 0 : values.filter(v => v >= threshold).length / sample);
+  }
+  return { sample, reached };
+}
+
+/**
+ * Scroll-depth reach curve for one path (optionally a breakpoint), for the /admin
+ * overlay's scroll mode. Reads raw 'scroll' events (each a pageview's furthest
+ * depth) and buckets them into the reach curve. Fail-soft to an empty curve.
+ */
+export async function scrollStats(
+  rawPath: string,
+  opts: { breakpoint?: Breakpoint; from?: string; to?: string } = {},
+): Promise<ScrollStats> {
+  const empty = bucketScrollDepths([]);
+  if (!isBettingConfigured()) return empty;
+  const path = normalizePath(rawPath);
+  if (!path) return empty;
+  try {
+    let query = betDb()
+      .from('heatmap_event')
+      .select('value')
+      .eq('path', path)
+      .eq('kind', 'scroll')
+      .not('value', 'is', null);
+    if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    if (opts.from) query = query.gte('created_at', opts.from);
+    if (opts.to) query = query.lte('created_at', opts.to);
+    const { data, error } = await query.limit(5000);
+    if (error || !data) return empty;
+    const values = (data as { value: number | null }[])
+      .map(r => r.value)
+      .filter((v): v is number => typeof v === 'number');
+    return bucketScrollDepths(values);
+  } catch {
+    return empty;
+  }
+}
+
+export interface FrustrationItem {
+  anchor: string; // element_id (preferred) or selector
+  count: number;
+}
+export interface FrustrationSignals {
+  rage: FrustrationItem[]; // rapid repeat-clicks in one spot
+  dead: FrustrationItem[]; // clicks on non-interactive space
+}
+
+interface FrustrationRow {
+  kind: string;
+  element_id: string | null;
+  selector: string | null;
+}
+
+/** Pure: tally rage + dead rows per anchor (element_id ?? selector), each list
+ *  sorted by count desc. */
+export function aggregateFrustration(rows: FrustrationRow[]): FrustrationSignals {
+  const tally = (kind: string): FrustrationItem[] => {
+    const m = new Map<string, number>();
+    for (const r of rows) {
+      if (r.kind !== kind) continue;
+      const anchor = r.element_id ?? r.selector;
+      if (!anchor) continue;
+      m.set(anchor, (m.get(anchor) ?? 0) + 1);
+    }
+    return [...m.entries()].map(([anchor, count]) => ({ anchor, count })).sort((a, b) => b.count - a.count);
+  };
+  return { rage: tally('rage'), dead: tally('dead') };
+}
+
+/**
+ * Rage + dead-click tallies for one path (optionally a breakpoint), for the
+ * /admin frustration lists. Reads raw 'rage'/'dead' rows and aggregates per
+ * anchor. Fail-soft to empty lists.
+ */
+export async function frustrationSignals(
+  rawPath: string,
+  opts: { breakpoint?: Breakpoint; from?: string; to?: string } = {},
+): Promise<FrustrationSignals> {
+  const empty: FrustrationSignals = { rage: [], dead: [] };
+  if (!isBettingConfigured()) return empty;
+  const path = normalizePath(rawPath);
+  if (!path) return empty;
+  try {
+    let query = betDb()
+      .from('heatmap_event')
+      .select('kind, element_id, selector')
+      .eq('path', path)
+      .in('kind', ['rage', 'dead']);
+    if (opts.breakpoint) query = query.eq('breakpoint', opts.breakpoint);
+    if (opts.from) query = query.gte('created_at', opts.from);
+    if (opts.to) query = query.lte('created_at', opts.to);
+    const { data, error } = await query.limit(5000);
+    if (error || !data) return empty;
+    return aggregateFrustration(data as FrustrationRow[]);
+  } catch {
+    return empty;
+  }
+}
+
+// Everything the /admin overlay shows for one path+breakpoint, in one call: the
+// click points, the scroll reach curve, and the rage/dead frustration tallies.
+export interface OverlayData {
+  clicks: ClickPoint[];
+  scroll: ScrollStats;
+  rage: FrustrationItem[];
+  dead: FrustrationItem[];
+}
+
+export async function overlayData(
+  path: string,
+  opts: { breakpoint?: Breakpoint; from?: string; to?: string } = {},
+): Promise<OverlayData> {
+  const [clicks, scroll, frustration] = await Promise.all([
+    clickPoints(path, opts),
+    scrollStats(path, opts),
+    frustrationSignals(path, opts),
+  ]);
+  return { clicks, scroll, rage: frustration.rage, dead: frustration.dead };
 }

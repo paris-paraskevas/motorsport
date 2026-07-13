@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.222.0 — 2026-07-13
+
+### Added
+- **Heatmap Phase 2 — scroll-depth + rage/dead-click signals.** `components/HeatmapTracker.tsx` now also captures: per-pageview max SCROLL depth (rAF-throttled, scrollable pages only; emitted once on a terminal flush), RAGE clicks (≥3 clicks within 500 ms inside a 30 px box → one anchored 'rage' event), and DEAD clicks (a click with no interactive ancestor → 'dead' with a resolvable selector; interactive-but-untagged clicks stay 'click'). `lib/heatmap.ts`: `EventKind` / `KINDS` + `HeatmapEvent.value` extended; `sanitizeEvents` accepts `scroll` (needs a value, no anchor) + `rage`/`dead` (anchored); new reads `scrollStats` (reach curve via `bucketScrollDepths`) + `frustrationSignals` (rage/dead tallies via `aggregateFrustration`) + a combined `overlayData`.
+- **Admin overlay gains a Clicks | Scroll mode + frustration lists.** `components/admin/HeatmapOverlay.tsx`: Scroll mode shades the real page in 10 reach-banded, colour-ramped rows (hot at top → cool as fewer scroll down, labelled "% reached N% depth"); rage/dead tallies list below. Fed by the extended admin server action `loadOverlayData` (`app/(app)/admin/page.tsx`).
+- **⏳ Operator step — apply migration #2.** `supabase/migrations/20260713130000_heatmap_signals.sql` (extend the `kind` check with scroll/rage/dead + add a `value real` column + a `(path,kind,breakpoint)` index) is committed but NOT applied — prod Supabase writes are operator-gated. Apply it (Management API + `.supabase-pat`, browser UA). **Deploy-safe before applying:** `recordEvents` retries a rejected mixed batch with only the click/impression rows, so Phase-1 capture never regresses while the migration pends.
+- Verified: `next build` clean; 912/912 vitest (sanitize new-kinds, `bucketScrollDepths`, `aggregateFrustration`, insert fallback unit-tested); browser — clicks mode still places exactly (3/3 on `/app` chips), scroll mode shades the real page by reach, rage/dead lists render, 0 console errors. Phase 3 (segmentation + date ranges) next.
+
 ## 0.221.1 — 2026-07-13
 
 ### Changed
