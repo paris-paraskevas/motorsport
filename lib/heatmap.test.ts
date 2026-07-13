@@ -82,6 +82,7 @@ import {
   recordEvents,
   rankedElements,
   heatmapAdminOverview,
+  bucketClickPoints,
   type HeatmapEvent,
 } from './heatmap';
 
@@ -272,6 +273,36 @@ describe('rankedElements', () => {
     expect(await rankedElements('/app')).toEqual({ hot: [], dead: [] });
     failView = false;
     expect(await rankedElements('not-a-path')).toEqual({ hot: [], dead: [] });
+  });
+});
+
+describe('bucketClickPoints', () => {
+  it('collapses same-anchor same-cell clicks into one weighted point; element_id wins over selector', () => {
+    const pts = bucketClickPoints([
+      { element_id: 'nav:home', selector: 'ignored', rel_x: 0.5, rel_y: 0.5 },
+      { element_id: 'nav:home', selector: null, rel_x: 0.505, rel_y: 0.498 }, // same 1/50 cell → merges
+      { element_id: null, selector: 'a:nth-of-type(2)', rel_x: 0.1, rel_y: 0.9 },
+    ]);
+    const home = pts.find(p => p.elementId === 'nav:home');
+    expect(home).toMatchObject({ relX: 0.5, relY: 0.5, weight: 2 });
+    expect(home?.selector).toBeUndefined(); // element_id anchor drops the selector
+    const sel = pts.find(p => p.selector === 'a:nth-of-type(2)');
+    expect(sel).toMatchObject({ weight: 1 });
+    expect(sel?.elementId).toBeUndefined();
+  });
+
+  it('drops rows with no anchor or a non-numeric ratio', () => {
+    expect(
+      bucketClickPoints([
+        { element_id: null, selector: null, rel_x: 0.5, rel_y: 0.5 }, // no anchor
+        { element_id: 'x', selector: null, rel_x: null, rel_y: 0.5 }, // no ratio
+      ]),
+    ).toEqual([]);
+  });
+
+  it('clamps out-of-range ratios into the 0..1 grid', () => {
+    const [p] = bucketClickPoints([{ element_id: 'x', selector: null, rel_x: 1.4, rel_y: -0.2 }]);
+    expect(p).toMatchObject({ relX: 1, relY: 0, weight: 1 });
   });
 });
 

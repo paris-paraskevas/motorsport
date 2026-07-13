@@ -28,7 +28,9 @@ const CSP_REPORT_ONLY = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
-  "frame-ancestors 'none'",
+  // 'self' (not 'none') so the /admin heatmap overlay can frame our own pages to
+  // paint the click overlay; still blocks cross-origin (clickjacking) framing.
+  "frame-ancestors 'self'",
   "form-action 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com",
   // Scripts: self + inline/eval (Next bootstrap, inline gtag), Clerk, AdSense,
   // GA/GTM, Vercel scripts, and blob: for worker bootstrapping.
@@ -93,7 +95,9 @@ const nextConfig: NextConfig = {
             value: "max-age=63072000; includeSubDomains; preload",
           },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
+          // SAMEORIGIN (not DENY) so the /admin heatmap overlay can frame our own
+          // pages for the click overlay; cross-origin framing stays blocked.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
