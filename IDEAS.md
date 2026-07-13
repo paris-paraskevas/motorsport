@@ -8,7 +8,7 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ## Inbox (2026-07-13 — session 13, triage next session)
 
-- **Apply the heatmap migration** — `supabase/migrations/20260713120000_heatmap_events.sql` to prod (operator) → lights up the rebuilt element heatmap + `/admin` Hot/Dead ranking (code shipped #544, fail-soft; no redeploy). Then browser-verify capture + admin view on a preview.
+- **Home customization (operator direction; likely plan-mode)** — remove "Make your own home" from the home (`HomeCustomizeBanner`, mounted in `components/HomeContent.tsx`) → keep it ONLY in `/settings/customize`; and move / re-CSS the home "jump to" bit (`components/HomeContent.tsx`). The Just-missed dismiss fix (#542) is confirmed good. _(Heatmap migration DONE 2026-07-13 — applied + live-verified; see HANDOFF.)_
 - **Bahrain GP 2026** — apply the staged reschedule (add round #23 + `sessions.json` weekend, `previousStartDate` 2026-04-10) once F1/FIA officially confirm Oct 2–4; draft the marquee blog then. Both pending confirmation.
 - **Bing Webmaster Tools** — operator signup + verify + submit sitemap ("Bing SEO" feedback). IndexNow already wired.
 - **Trending content (ongoing)** — MotoGP-titles shipped (#541); next GSC gaps = broader `tracks.json` enrichment (~130 thin profiles) + race-weekend "what time" landable content.

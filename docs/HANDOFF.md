@@ -10,6 +10,22 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 **10 PRs #535–#544 (0.216.1 → 0.220.0), all merged + prod-audited on 0.220.0. Supervised start (Opus-4.8 CLAUDE.md rewrite + SEO plan), then an unsupervised overnight run: the rest of the SEO campaign + the operator's feedback + the heatmap.**
 
+### 🔔 Operator dispositions (post-report, 2026-07-13)
+1. **Heatmap migration → APPLIED + LIVE.** Ran `supabase/migrations/20260713120000_heatmap_events.sql` on prod via the Management API; verified end-to-end (prod `POST /api/heatmap` → 204 → row in `heatmap_element_stats` clicks:1/impressions:1 → synthetic row deleted). Live element capture + the `/admin` Hot/Dead ranking are now active. (Operator: "apply the heatmap for me" — done.)
+2. **Bahrain reschedule — PENDING** (await official F1/FIA confirmation; the staged edit + blog are ready to apply then).
+3. **Bing Webmaster Tools — PENDING** (operator action).
+4. **Phase 2b — operator wants more detail** → see the "Phase 2b details" block below.
+5. **Home customization (operator direction; the Just-missed fix itself is confirmed good):**
+   - (a) **Remove "Make your own home" from the home.** `HomeCustomizeBanner` (`components/HomeCustomizeBanner.tsx`) is mounted in `components/HomeContent.tsx` — remove it there; keep customization ONLY in account settings (`app/(app)/settings/customize/page.tsx`, already exists); ensure a link/path from settings remains.
+   - (b) **The home "jump to" bit needs to move or be re-CSS'd** (in `components/HomeContent.tsx`). Reposition / restyle.
+   - This is the next UI task — likely plan-mode (the "home-customization redo" the operator earlier said needs plan mode).
+
+### 📋 Phase 2b details (for the #4 decision)
+- **`force-dynamic` → ISR (session pages):** the session page calls `auth()` (F1 telemetry analysis gate), which forces dynamic rendering. ISR (cached HTML, faster TTFB) needs the auth-gated analysis moved into a dynamic sub-boundary (a client `<SignedIn>` island / Suspense) while the shell + JSON-LD render statically. Benefit: faster session pages + edge cache. Risk: regressing the F1 analysis gate. SEO benefit: ~nil (session times already ship as JSON-LD). Effort: medium refactor.
+- **`LocalTime` Athens-SSR fix:** session/weekend times render client-side; the SSR fallback is a fixed Athens time. The machine-readable time is ALREADY correct (JSON-LD `startDate` + `<time datetime>`), so the only gap is the visible pre-hydration text. Fixing it (server-render a canonical/track-local time) is cross-cutting (Home ticker + weekend schedule + session) and in the 0.213.1 landmine area. Benefit: correct visible time pre-hydration / no-JS. Risk: site-wide time regression. SEO benefit: low.
+- **Session-URL sitemap:** adding every session URL risks a scaled-content signal (thousands of thin/future pages); sessions are already crawled via internal links. Safe version = a narrow "recent + populated sessions only" policy. Recommendation: skip or narrow.
+- **My recommendation:** none of the three is worth the risk purely for SEO right now (the session-time win already shipped in Phase 2a/3). Do ISR only if session-page perf becomes a priority; treat LocalTime as a separate, carefully-scoped UI task.
+
 ### ✅ Shipped (all prod-verified)
 - **#535 docs — CLAUDE.md recast as an Opus-4.8 charter** (contract → laws → landmines; every rule/fact preserved; + prompt-sharpen rule, 2 durable landmines, prod Supabase ref). Parent `C:\Dev\Personal\CLAUDE.md` (shared across 20 projects, unversioned, Fable-authored) got the prompt-sharpen "Intake" rule (backed up to scratchpad).
 - **#533 → 0.217.0** — SEO Phase 1a: enriched the 4 top-impression explainers (rally / motogp-classes / f1-points / le-mans) + flagged fixes (3 MotoGP errors, stale LMDh roster, 2 dead F1 links). Adversarial fact-check.
@@ -21,10 +37,10 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 - **#541 → 0.219.0** — content: "who has won the most MotoGP titles" (GSC gap); `INFORMATION_MAX_INDEXED` 322→323.
 - **#542 → 0.219.1** — bug: "Just missed" now dismissable (removed from `SPINE_IDS`; was force-pinned + stripped from `hidden`). Tests 18/18.
 - **#543 → 0.219.2** — data: Bahrain cancelled-round status tightened to the verified "proposed Oct 2–4, unconfirmed".
-- **#544 → 0.220.0** — heatmap Phase-1: element-relative capture + IntersectionObserver impressions → Supabase → `/admin` Hot/Dead element ranking. Fail-soft; migration committed NOT applied.
+- **#544 → 0.220.0** — heatmap Phase-1: element-relative capture + IntersectionObserver impressions → Supabase → `/admin` Hot/Dead element ranking. Fail-soft; **migration now APPLIED to prod + live-verified** (2026-07-13 — see Operator dispositions).
 
 ### ⏳ OWED / NEEDS DECISION (operator)
-- **Apply the heatmap migration** `supabase/migrations/20260713120000_heatmap_events.sql` (prod Supabase; Management API + `.supabase-pat`, browser UA, or Studio) → lights up live capture + the `/admin` ranked view, no redeploy. Then browser-verify capture + the admin view on a preview.
+- ~~Apply the heatmap migration~~ **✅ DONE 2026-07-13** — applied to prod + live-verified end-to-end. Optional next: eyeball the `/admin` Hot/Dead view on a preview once real click data accrues.
 - **Bahrain GP reschedule** — NOT officially confirmed (only an Oct 2–4 slot under discussion; F1's live 2026 calendar still shows 22 rounds, no Bahrain). Full reschedule edit (add active round #23 + `sessions.json` weekend, `previousStartDate` 2026-04-10) staged in the verify agent's report / #543 commit body; apply once F1 confirms. Blog draft NOT created (pending).
 - **Bing Webmaster Tools** — operator signup + verify + submit sitemap (the "Bing SEO" feedback). IndexNow already wired.
 - **Phase 2b (deferred — recommend against unsupervised):** session `force-dynamic`→ISR (entangled with the F1 `auth()` analysis gate) + `LocalTime` Athens-SSR fix (cross-cutting; machine time already correct via JSON-LD `startDate` + `<time datetime>`) + bulk session-URL sitemap (scaled-content risk).
