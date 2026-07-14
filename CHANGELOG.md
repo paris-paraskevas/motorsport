@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.226.3 — 2026-07-14
+
+### Added
+- Champion-depth data model (B3, first-batch research). Four optional `Champion` fields in `lib/types.ts`: `wins` (Grand Prix wins, excludes Sprints), `runnerUp`, `runnerUpTeam` (short form matching `constructor`), `runnerUpPoints`; the margin is derived (`points - runnerUpPoints`), never stored, for a single source of truth. Populated `content/series/f1/champions.json` for 2016-2025 with fact-checked totals (2025 Norris 423 / 7 wins vs Verstappen 421 = margin 2; 2021 half-points 395.5 vs 387.5 = 8; etc.). All fields optional and backward-compatible — inert until a UI reads them, so ChampionsTab renders unchanged (browser-verified). Data cross-verified against 2+ primary sources per season (Formula1.com / Wikipedia / The Race / StatsF1); the post-cutoff 2025 season independently re-checked.
+
 ## 0.226.2 — 2026-07-14
 
 ### Fixed

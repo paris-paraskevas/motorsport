@@ -87,6 +87,15 @@ export interface Champion {
    * "Endurance Cup"). Falls back to "Secondary" if not provided. */
   secondaryLabel?: string;
   points?: number;
+  /** Grand Prix (feature-race) wins the champion scored this season. GP wins
+   * only, excludes Sprint wins (Sprints run from 2021). */
+  wins?: number;
+  /** Runner-up (P2) in the same drivers' championship, with their team (short
+   * form, matching `constructor`) and points. The margin over the runner-up is
+   * derived (`points - runnerUpPoints`), never stored, to keep one source of truth. */
+  runnerUp?: string;
+  runnerUpTeam?: string;
+  runnerUpPoints?: number;
 }
 
 export interface WikipediaSummary {
