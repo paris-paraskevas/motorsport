@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.227.9 — 2026-07-14
+
+### Changed
+- UI taste-call polish (operator-approved, 5 items):
+  - **F1 accent passes WCAG AA on dark surfaces.** Swapped F1 red `#e10600` to `#ff4136` (operator-verified contrast 5.81 / 5.30 / 4.99) across every rendered occurrence: `content/series/f1/meta.json` (source of `--series-color`/`--tint`), `app/globals.css` `--s-f1`, `components/information/TracksMapInner.tsx`, `components/SeasonTrendChart.tsx`, `app/(app)/f1/compare/page.tsx` fallback, `app/sw.ts` notification-chip accent, `app/(app)/not-found.tsx` gradient, both weekend `opengraph-image.tsx` defaults, `content/landing/circuits.json` (2 F1 circuits), `lib/email.ts` `red`, and `scripts/scaffold-series.mjs` default. Also `content/series/indycar/drivers.json` (Chip Ganassi, the only uppercase `#E10600`, caught by the explicit case-insensitive sweep). Left as-is (not rendered UI): docs, test fixtures, and the unserved root `fe-champ.html` scratch file.
+  - **Standings are semantic `<table>`s.** `components/tabs/StandingsTab.tsx` `DriversTable`/`ConstructorsTable` now emit `<table>` with `<thead>`/`<th scope="col">` (Pos / Driver / Team / Pts / Wins) and an `sr-only` `<caption>`, wrapped in `overflow-x-auto` for narrow-screen scroll, replacing the stacked `<ul>` flex rows. Team and Wins columns drop when the series has no such data; the name column self-labels Driver / Co-Driver / Constructor / Team / Manufacturer from the heading. Editorial styling (mono tabular-nums, brand P1, code badge) kept; still SSR'd inside the hidden-toggle sub-tab panels.
+  - **44px touch targets on header chrome (WCAG 2.5.5).** `min-h-11 min-w-11` + `justify-center` on the `HeaderUtils` pills (Contact / Coffee / Feedback / Account / Sign in), `NotificationBell`, and `SearchTrigger`; icon sizes unchanged. `BottomBar` links were already at least 44px (`h-14` grid cells).
+  - **Micro-labels already correct.** `components/BottomBar.tsx` labels were already `text-[9px] tracking-[0.14em]` on `main`, so no change was needed (the HANDOFF taste-call note was stale on this point).
+  - **Blog share bar moved to the top.** `app/(app)/blog/[slug]/page.tsx` renders `<BlogShare>` above the article body (under the header/summary) rather than in the sidebar/foot, so readers can share before reading.
+
 ## 0.227.8 — 2026-07-14
 
 ### Added

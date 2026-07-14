@@ -76,7 +76,7 @@ interface PushPayload {
 
 // Brand accent colour for the notification chip on Android.
 // Picked to read against the black launcher icon background.
-const ACCENT_COLOR = '#e10600';
+const ACCENT_COLOR = '#ff4136';
 
 // Paddock's original two-tone chime (synthesized in-repo by
 // scripts/gen-notification-sound.mjs — no third-party audio licensing).

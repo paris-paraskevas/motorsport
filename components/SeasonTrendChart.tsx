@@ -13,7 +13,7 @@ import {
 import type { SeasonTrendData } from '@/lib/season-trend';
 
 const COLORS = [
-  '#e10600', // F1 red
+  '#ff4136', // F1 red
   '#27f4d2', // teal
   '#fcd34d', // yellow
   '#a78bfa', // purple

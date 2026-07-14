@@ -26,7 +26,7 @@ export function HeaderUtils({
         onClick={openContactModal}
         aria-label="Contact"
         data-heatmap-id="chrome:contact"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+        className="inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
       >
         <Mail size={13} />
         <span className="hidden sm:inline">Contact</span>
@@ -37,7 +37,7 @@ export function HeaderUtils({
         rel="noopener noreferrer"
         aria-label="Buy me a coffee"
         data-heatmap-id="chrome:coffee"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-black bg-brand hover:bg-brand-deep rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+        className="inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-bold text-black bg-brand hover:bg-brand-deep rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
       >
         <Coffee size={13} />
         <span className="hidden sm:inline">Buy me a coffee</span>
@@ -52,7 +52,7 @@ export function HeaderUtils({
         <Link
           href="/feedback"
           data-heatmap-id="chrome:feedback"
-          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+          className="hidden lg:inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
         >
           <MessageSquare size={13} />
           <span>Feedback</span>
@@ -66,7 +66,7 @@ export function HeaderUtils({
         <Link
           href="/settings"
           data-heatmap-id="chrome:account"
-          className="hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full pl-1 pr-3 py-1 transition-colors duration-(--duration-fast)"
+          className="hidden lg:inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full pl-1 pr-3 py-1 transition-colors duration-(--duration-fast)"
         >
           {user?.imageUrl ? (
             <>
@@ -85,7 +85,7 @@ export function HeaderUtils({
             type="button"
             aria-label="Sign in"
             data-heatmap-id="chrome:sign-in"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+            className="inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-medium text-text-muted hover:text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
           >
             <LogIn size={13} />
             <span className="hidden sm:inline">Sign in</span>

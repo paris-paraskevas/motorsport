@@ -11,7 +11,7 @@
     },
     {
       "name": "Chip Ganassi Racing",
-      "color": "#E10600",
+      "color": "#ff4136",
       "drivers": [
         { "name": "Kyffin Simpson", "number": 8 },
         { "name": "Scott Dixon", "number": 9 },
