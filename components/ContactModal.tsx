@@ -118,7 +118,7 @@ export function ContactModal() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast)"
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:border-border-strong transition-colors duration-(--duration-fast)"
               />
             </label>
             <label className="block">
@@ -126,7 +126,7 @@ export function ContactModal() {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value as Category)}
-                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast)"
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text focus:border-border-strong transition-colors duration-(--duration-fast)"
               >
                 {CATEGORIES.map(c => (
                   <option key={c.value} value={c.value}>{c.label}</option>
@@ -141,7 +141,7 @@ export function ContactModal() {
                 value={message}
                 onChange={e => setMessage(e.target.value)}
                 placeholder="What's on your mind?"
-                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition-colors duration-(--duration-fast) resize-none"
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-text placeholder:text-text-faint focus:border-border-strong transition-colors duration-(--duration-fast) resize-none"
               />
             </label>
 

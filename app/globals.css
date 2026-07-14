@@ -391,4 +391,12 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+  /* Guaranteed keyboard focus ring for custom controls (WCAG 2.4.7). The `*`
+     rule above only sets the outline COLOR; with no width the near-black theme
+     fell back to the low-contrast UA outline. Scoped to keyboard focus only
+     (:focus-visible); :where() keeps 0 specificity so a component can override. */
+  :where(a, button, [role='button'], [role='tab'], [tabindex='0'], summary, input, select, textarea):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
