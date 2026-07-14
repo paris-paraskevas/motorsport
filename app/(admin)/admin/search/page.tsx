@@ -20,7 +20,7 @@ export default async function AdminSearchPage() {
     <div>
       <AdminPageHeader title="Search" tagline="Google Search Console · Bing Webmaster Tools" />
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Search Console</h2>
           {gsc ? (
             <SearchPanel data={gsc} />
@@ -30,7 +30,7 @@ export default async function AdminSearchPage() {
             <NotConnected what="Google Search Console" env="GSC_SITE_URL + GSC_SA_KEY" />
           )}
         </div>
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">Bing</h2>
           {bing ? (
             <BingPanel data={bing} />

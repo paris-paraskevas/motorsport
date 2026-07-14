@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.3 — 2026-07-14
+
+**Internal.** Isolated the private admin dashboard from the main site and fixed a panel layout issue there.
+
 ## 0.228.2 — 2026-07-14
 
 **Mobile header fix.** The top bar no longer cuts off a button on narrow phones.
