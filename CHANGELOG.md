@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.227.4 — 2026-07-14
+
+### Changed
+- Series Standings tab: Drivers / Constructors are sub-tabs instead of a long stack (#568). New `components/tabs/StandingsView.tsx` (client) mirrors the WeekendTabs tablist + ARIA; Drivers is the default (with the season-trend chart), Constructors shows on click. Applied to f1, f2, f3, formula-e, nascar-cup, wsbk, dtm (Drivers | Teams), wrc (Drivers | Co-Drivers | Manufacturers), and motogp + indycar (single Drivers section, no tab bar). Multi-class gt-world/imsa/wec keep their per-class stacked layout. Panels stay mounted (hidden-toggle) so all tables remain SSR'd/crawlable and switching never refetches; `SourceLink` stays below the tabs. Browser-verified on `/series/f1/standings`: Drivers default with chart, click Constructors reveals the teams table, ARIA roles correct, 0 console errors.
+
 ## 0.227.3 — 2026-07-14
 
 ### Changed
