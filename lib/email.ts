@@ -64,7 +64,7 @@ const BRAND = {
   text: '#f5f5f7',
   muted: '#9a9aa4',
   faint: '#6b6b76',
-  red: '#e10600',
+  red: '#ff4136',
 };
 
 const FONT_STACK = `-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif`;

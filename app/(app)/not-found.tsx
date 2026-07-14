@@ -13,7 +13,7 @@ export default function NotFound() {
           className="absolute inset-0 opacity-[0.18] pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle at 0% 0%, #e10600 0%, transparent 45%), radial-gradient(circle at 100% 100%, #38bdf8 0%, transparent 45%)',
+              'radial-gradient(circle at 0% 0%, #ff4136 0%, transparent 45%), radial-gradient(circle at 100% 100%, #38bdf8 0%, transparent 45%)',
           }}
         />
         <div className="relative">

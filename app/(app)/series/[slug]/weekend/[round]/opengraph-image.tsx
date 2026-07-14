@@ -26,7 +26,7 @@ export default async function Image({
   const { slug, round: roundRaw } = await params;
 
   let seriesName = 'Motorsport';
-  let color = '#e10600';
+  let color = '#ff4136';
   let gp = '';
   let roundLabel = '';
   let dates = '';

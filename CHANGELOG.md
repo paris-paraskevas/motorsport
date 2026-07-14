@@ -12,6 +12,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 ### Fixed
 - Dead in-app link: the feeder-submission operator-notification email CTA (`lib/feeder.ts` `notifyNewSubmission`) pointed at `/admin#submissions`, an anchor that stopped existing when the admin sections became routes; now `/admin/submissions`.
+## 0.227.9 — 2026-07-14
+
+### Changed
+- UI taste-call polish (operator-approved, 6 items):
+  - **F1 accent passes WCAG AA on dark surfaces.** Swapped F1 red `#e10600` to `#ff4136` (operator-verified contrast 5.81 / 5.30 / 4.99) across every rendered occurrence: `content/series/f1/meta.json` (source of `--series-color`/`--tint`), `app/globals.css` `--s-f1`, `components/information/TracksMapInner.tsx`, `components/SeasonTrendChart.tsx`, `app/(app)/f1/compare/page.tsx` fallback, `app/sw.ts` notification-chip accent, `app/(app)/not-found.tsx` gradient, both weekend `opengraph-image.tsx` defaults, `content/landing/circuits.json` (2 F1 circuits), `lib/email.ts` `red`, and `scripts/scaffold-series.mjs` default. Also `content/series/indycar/drivers.json` (Chip Ganassi, the only uppercase `#E10600`, caught by the explicit case-insensitive sweep). Left as-is (not rendered UI): docs, test fixtures, and the unserved root `fe-champ.html` scratch file.
+  - **Standings are semantic `<table>`s.** `components/tabs/StandingsTab.tsx` `DriversTable`/`ConstructorsTable` now emit `<table>` with `<thead>`/`<th scope="col">` (Pos / Driver / Team / Pts / Wins) and an `sr-only` `<caption>`, wrapped in `overflow-x-auto` for narrow-screen scroll, replacing the stacked `<ul>` flex rows. Team and Wins columns drop when the series has no such data; the name column self-labels Driver / Co-Driver / Constructor / Team / Manufacturer from the heading. Editorial styling (mono tabular-nums, brand P1, code badge) kept; still SSR'd inside the hidden-toggle sub-tab panels.
+  - **44px touch targets on header chrome (WCAG 2.5.5).** `min-h-11 min-w-11` + `justify-center` on the `HeaderUtils` pills (Contact / Coffee / Feedback / Account / Sign in), `NotificationBell`, and `SearchTrigger`; icon sizes unchanged. `BottomBar` links were already at least 44px (`h-14` grid cells).
+  - **Micro-labels already correct.** `components/BottomBar.tsx` labels were already `text-[9px] tracking-[0.14em]` on `main`, so no change was needed (the HANDOFF taste-call note was stale on this point).
+  - **Blog share bar moved to the top.** `app/(app)/blog/[slug]/page.tsx` renders `<BlogShare>` above the article body (under the header/summary) rather than in the sidebar/foot, so readers can share before reading.
+  - **Search trigger restyled to the brand accent (operator request).** `components/search/SearchTrigger.tsx` now uses the Race Engineer launcher's fill (`bg-brand` / `text-bg`, `hover:bg-brand-deep`) and `rounded-full`, with the "Search" label shown from `sm:` (was `xl:`) and the icon bumped 15 to 16, so the header search reads as a bigger, clearly labeled control. Tap target unchanged (`min-h-11 min-w-11`).
 
 ## 0.227.8 — 2026-07-14
 

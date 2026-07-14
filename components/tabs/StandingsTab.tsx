@@ -75,48 +75,81 @@ function DriversTable({
   drivers: DriverStanding[];
   heading?: string;
 }) {
+  // Columns adapt to the series shape: the Team column drops when no row carries
+  // a team (e.g. IMSA driver rows), and Wins drops when the feed has no tally.
+  const showTeam = drivers.some(d => Boolean(d.team));
+  const showWins = drivers.some(d => d.wins != null);
+  const nameLabel = /co-driver/i.test(heading) ? 'Co-Driver' : 'Driver';
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         {heading}
       </h2>
-      <ul className="divide-y divide-border/60">
-        {drivers.map(d => (
-          <li
-            key={`${d.position}-${d.driverName}`}
-            className="flex items-baseline gap-3 py-2"
-          >
-            <span
-              className={`w-6 text-sm font-mono tabular-nums text-right ${
-                d.position === 1 ? 'text-brand font-bold' : 'text-text-faint'
-              }`}
-            >
-              {d.position}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-2">
-                <span className="text-text text-sm font-medium truncate">
-                  {d.driverName}
-                </span>
-                {d.driverCode ? (
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
-                    {d.driverCode}
-                  </span>
-                ) : null}
-              </div>
-              {d.team ? (
-                <div className="text-text-muted text-xs truncate">{d.team}</div>
+      {/* overflow wrapper = horizontal scroll on narrow, mirrors .wiki-table-scroll */}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-sm">
+          <caption className="sr-only">{heading}</caption>
+          <thead>
+            <tr className="border-b border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              <th scope="col" className="w-10 py-2 pr-3 text-right font-semibold">
+                Pos
+              </th>
+              <th scope="col" className="py-2 pr-3 text-left font-semibold">
+                {nameLabel}
+              </th>
+              {showTeam ? (
+                <th scope="col" className="py-2 pr-3 text-left font-semibold">
+                  Team
+                </th>
               ) : null}
-            </div>
-            <span className="text-text text-sm font-mono font-semibold tabular-nums text-right w-14">
-              {d.points}
-            </span>
-            <span className="text-text-faint text-[11px] font-mono tabular-nums text-right w-8">
-              {d.wins != null ? `${d.wins}W` : ''}
-            </span>
-          </li>
-        ))}
-      </ul>
+              <th scope="col" className="py-2 pl-3 text-right font-semibold">
+                Pts
+              </th>
+              {showWins ? (
+                <th scope="col" className="w-12 py-2 pl-3 text-right font-semibold">
+                  Wins
+                </th>
+              ) : null}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/60">
+            {drivers.map(d => (
+              <tr key={`${d.position}-${d.driverName}`}>
+                <td
+                  className={`py-2 pr-3 text-right align-baseline font-mono tabular-nums ${
+                    d.position === 1 ? 'text-brand font-bold' : 'text-text-faint'
+                  }`}
+                >
+                  {d.position}
+                </td>
+                <td className="py-2 pr-3 align-baseline">
+                  <span className="inline-flex items-baseline gap-2">
+                    <span className="font-medium text-text">{d.driverName}</span>
+                    {d.driverCode ? (
+                      <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-faint">
+                        {d.driverCode}
+                      </span>
+                    ) : null}
+                  </span>
+                </td>
+                {showTeam ? (
+                  <td className="py-2 pr-3 align-baseline text-xs text-text-muted">
+                    {d.team}
+                  </td>
+                ) : null}
+                <td className="py-2 pl-3 text-right align-baseline font-mono font-semibold tabular-nums text-text">
+                  {d.points}
+                </td>
+                {showWins ? (
+                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[11px] tabular-nums text-text-faint">
+                    {d.wins != null ? d.wins : ''}
+                  </td>
+                ) : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
@@ -128,33 +161,66 @@ function ConstructorsTable({
   constructors: ConstructorStanding[];
   heading?: string;
 }) {
+  const showWins = constructors.some(c => c.wins != null);
+  // One renderer serves constructors, teams, and manufacturers — name the column
+  // from the heading so the header stays honest for each championship shape.
+  const nameLabel = /manufacturer/i.test(heading)
+    ? 'Manufacturer'
+    : /team/i.test(heading)
+      ? 'Team'
+      : 'Constructor';
   return (
     <section className="border-y border-border py-4">
       <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
         {heading}
       </h2>
-      <ul className="divide-y divide-border/60">
-        {constructors.map(c => (
-          <li key={`${c.position}-${c.name}`} className="flex items-baseline gap-3 py-2">
-            <span
-              className={`w-6 text-sm font-mono tabular-nums text-right ${
-                c.position === 1 ? 'text-brand font-bold' : 'text-text-faint'
-              }`}
-            >
-              {c.position}
-            </span>
-            <div className="flex-1 min-w-0">
-              <span className="text-text text-sm font-medium truncate">{c.name}</span>
-            </div>
-            <span className="text-text text-sm font-mono font-semibold tabular-nums text-right w-14">
-              {c.points}
-            </span>
-            <span className="text-text-faint text-[11px] font-mono tabular-nums text-right w-8">
-              {c.wins != null ? `${c.wins}W` : ''}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-sm">
+          <caption className="sr-only">{heading}</caption>
+          <thead>
+            <tr className="border-b border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              <th scope="col" className="w-10 py-2 pr-3 text-right font-semibold">
+                Pos
+              </th>
+              <th scope="col" className="py-2 pr-3 text-left font-semibold">
+                {nameLabel}
+              </th>
+              <th scope="col" className="py-2 pl-3 text-right font-semibold">
+                Pts
+              </th>
+              {showWins ? (
+                <th scope="col" className="w-12 py-2 pl-3 text-right font-semibold">
+                  Wins
+                </th>
+              ) : null}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/60">
+            {constructors.map(c => (
+              <tr key={`${c.position}-${c.name}`}>
+                <td
+                  className={`py-2 pr-3 text-right align-baseline font-mono tabular-nums ${
+                    c.position === 1 ? 'text-brand font-bold' : 'text-text-faint'
+                  }`}
+                >
+                  {c.position}
+                </td>
+                <td className="py-2 pr-3 align-baseline font-medium text-text">
+                  {c.name}
+                </td>
+                <td className="py-2 pl-3 text-right align-baseline font-mono font-semibold tabular-nums text-text">
+                  {c.points}
+                </td>
+                {showWins ? (
+                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[11px] tabular-nums text-text-faint">
+                    {c.wins != null ? c.wins : ''}
+                  </td>
+                ) : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
