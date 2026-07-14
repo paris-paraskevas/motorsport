@@ -44,6 +44,7 @@ import {
 import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
 import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
+import { StandingsView } from '@/components/tabs/StandingsView';
 
 const SOURCE_URL = 'https://github.com/jolpica/jolpica-f1';
 const FORMULA_E_SOURCE_URL =
@@ -289,11 +290,26 @@ export async function StandingsTab({ series }: { series: Series }) {
       races.length > 0
         ? buildSeasonTrendData(applyResultsOverrides(races, resultsOverrides), sprints)
         : null;
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <TrendSection trend={trend} />
+            <DriversTable drivers={drivers} />
+          </>
+        ),
+      },
+      {
+        key: 'constructors',
+        label: 'Constructors',
+        content: <ConstructorsTable constructors={constructors} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <TrendSection trend={trend} />
-        <DriversTable drivers={drivers} />
-        <ConstructorsTable constructors={constructors} />
+        <StandingsView sections={sections} />
         <SourceLink href={SOURCE_URL} label="jolpi.ca (Ergast mirror)" />
       </div>
     );
@@ -314,20 +330,35 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.constructors,
       overrides?.constructors,
     );
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <Suspense fallback={<TrendSkeleton />}>
+              <StreamedTrend
+                slug={series.meta.slug}
+                season={series.meta.season}
+                load={async s => {
+                  const r = await fetchF2SeasonResults(s);
+                  return { races: r.feature, extras: r.sprint };
+                }}
+              />
+            </Suspense>
+            <DriversTable drivers={drivers} />
+          </>
+        ),
+      },
+      {
+        key: 'constructors',
+        label: 'Constructors',
+        content: <ConstructorsTable constructors={constructors} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <Suspense fallback={<TrendSkeleton />}>
-          <StreamedTrend
-            slug={series.meta.slug}
-            season={series.meta.season}
-            load={async s => {
-              const r = await fetchF2SeasonResults(s);
-              return { races: r.feature, extras: r.sprint };
-            }}
-          />
-        </Suspense>
-        <DriversTable drivers={drivers} />
-        <ConstructorsTable constructors={constructors} />
+        <StandingsView sections={sections} />
         <SourceLink
           href="https://www.fiaformula2.com/Standings/Driver"
           label="fiaformula2.com"
@@ -351,17 +382,32 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.constructors,
       overrides?.constructors,
     );
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <Suspense fallback={<TrendSkeleton />}>
+              <StreamedTrend
+                slug={series.meta.slug}
+                season={series.meta.season}
+                load={s => fetchF3SeasonResults(s).then(races => ({ races }))}
+              />
+            </Suspense>
+            <DriversTable drivers={drivers} />
+          </>
+        ),
+      },
+      {
+        key: 'constructors',
+        label: 'Constructors',
+        content: <ConstructorsTable constructors={constructors} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <Suspense fallback={<TrendSkeleton />}>
-          <StreamedTrend
-            slug={series.meta.slug}
-            season={series.meta.season}
-            load={s => fetchF3SeasonResults(s).then(races => ({ races }))}
-          />
-        </Suspense>
-        <DriversTable drivers={drivers} />
-        <ConstructorsTable constructors={constructors} />
+        <StandingsView sections={sections} />
         <SourceLink
           href="https://www.fiaformula3.com/Standings/Driver"
           label="fiaformula3.com"
@@ -381,9 +427,16 @@ export async function StandingsTab({ series }: { series: Series }) {
       );
     }
     const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: <DriversTable drivers={drivers} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <DriversTable drivers={drivers} />
+        <StandingsView sections={sections} />
         <SourceLink href="https://www.indycar.com/Standings" label="indycar.com" />
       </div>
     );
@@ -404,10 +457,21 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.constructors,
       overrides?.constructors,
     );
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: <DriversTable drivers={drivers} />,
+      },
+      {
+        key: 'constructors',
+        label: 'Constructors',
+        content: <ConstructorsTable constructors={constructors} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <DriversTable drivers={drivers} />
-        <ConstructorsTable constructors={constructors} />
+        <StandingsView sections={sections} />
         <SourceLink
           href={FORMULA_E_SOURCE_URL}
           label="en.wikipedia.org (2025–26 Formula E)"
@@ -445,11 +509,26 @@ export async function StandingsTab({ series }: { series: Series }) {
       races.length > 0
         ? buildSeasonTrendData(applyResultsOverrides(races, resultsOverrides))
         : null;
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <TrendSection trend={trend} />
+            <DriversTable drivers={drivers} />
+          </>
+        ),
+      },
+      {
+        key: 'constructors',
+        label: 'Constructors',
+        content: <ConstructorsTable constructors={constructors} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <TrendSection trend={trend} />
-        <DriversTable drivers={drivers} />
-        <ConstructorsTable constructors={constructors} />
+        <StandingsView sections={sections} />
         <SourceLink href={NASCAR_SOURCE_URL} label="Wikipedia (2026 NASCAR Cup Series)" />
       </div>
     );
@@ -485,12 +564,33 @@ export async function StandingsTab({ series }: { series: Series }) {
     // sub-totals) — the same table the standings parser reads, so chart
     // totals reconcile to the tables above by construction.
     const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <TrendSection trend={trend} />
+            <DriversTable drivers={drivers} heading="Drivers" />
+          </>
+        ),
+      },
+      {
+        key: 'co-drivers',
+        label: 'Co-Drivers',
+        content: <DriversTable drivers={coDriversAsDrivers} heading="Co-Drivers" />,
+      },
+      {
+        key: 'manufacturers',
+        label: 'Manufacturers',
+        content: (
+          <ConstructorsTable constructors={manufacturers} heading="Manufacturers" />
+        ),
+      },
+    ];
     return (
       <div className="space-y-4">
-        <TrendSection trend={trend} />
-        <DriversTable drivers={drivers} heading="Drivers" />
-        <DriversTable drivers={coDriversAsDrivers} heading="Co-Drivers" />
-        <ConstructorsTable constructors={manufacturers} heading="Manufacturers" />
+        <StandingsView sections={sections} />
         <SourceLink
           href="https://en.wikipedia.org/wiki/2026_World_Rally_Championship"
           label="en.wikipedia.org (2026 WRC)"
@@ -706,27 +806,38 @@ export async function StandingsTab({ series }: { series: Series }) {
       );
     }
     const drivers = applyDriverOverrides(data.drivers, overrides?.drivers);
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <Suspense fallback={<TrendSkeleton />}>
+              <StreamedTrend
+                slug={series.meta.slug}
+                season={series.meta.season}
+                // A MotoGP weekend is one x-axis round but two point-scoring
+                // sessions: the Grand Prix and the (half-points) Sprint. Split
+                // by the `— Sprint` raceName suffix so the Sprint folds into the
+                // same round tick via `extras` (like F1 sprints) instead of
+                // plotting a second tick / double-tallying. Chart totals then
+                // reconcile to the DriversTable (standings) totals.
+                load={s =>
+                  fetchMotoGPSeasonResults(s).then(all => ({
+                    races: all.filter(r => !/Sprint/i.test(r.raceName)),
+                    extras: all.filter(r => /Sprint/i.test(r.raceName)),
+                  }))
+                }
+              />
+            </Suspense>
+            <DriversTable drivers={drivers} />
+          </>
+        ),
+      },
+    ];
     return (
       <div className="space-y-4">
-        <Suspense fallback={<TrendSkeleton />}>
-          <StreamedTrend
-            slug={series.meta.slug}
-            season={series.meta.season}
-            // A MotoGP weekend is one x-axis round but two point-scoring
-            // sessions: the Grand Prix and the (half-points) Sprint. Split
-            // by the `— Sprint` raceName suffix so the Sprint folds into the
-            // same round tick via `extras` (like F1 sprints) instead of
-            // plotting a second tick / double-tallying. Chart totals then
-            // reconcile to the DriversTable (standings) totals.
-            load={s =>
-              fetchMotoGPSeasonResults(s).then(all => ({
-                races: all.filter(r => !/Sprint/i.test(r.raceName)),
-                extras: all.filter(r => /Sprint/i.test(r.raceName)),
-              }))
-            }
-          />
-        </Suspense>
-        <DriversTable drivers={drivers} />
+        <StandingsView sections={sections} />
         <SourceLink
           href="https://www.motogp.com/en/world-standing"
           label="motogp.com"
@@ -750,17 +861,32 @@ export async function StandingsTab({ series }: { series: Series }) {
       data.constructors,
       overrides?.constructors,
     );
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <Suspense fallback={<TrendSkeleton />}>
+              <StreamedTrend
+                slug={series.meta.slug}
+                season={series.meta.season}
+                load={s => fetchWsbkSeasonResults(s).then(races => ({ races }))}
+              />
+            </Suspense>
+            <DriversTable drivers={drivers} />
+          </>
+        ),
+      },
+      {
+        key: 'constructors',
+        label: 'Constructors',
+        content: <ConstructorsTable constructors={constructors} />,
+      },
+    ];
     return (
       <div className="space-y-4">
-        <Suspense fallback={<TrendSkeleton />}>
-          <StreamedTrend
-            slug={series.meta.slug}
-            season={series.meta.season}
-            load={s => fetchWsbkSeasonResults(s).then(races => ({ races }))}
-          />
-        </Suspense>
-        <DriversTable drivers={drivers} />
-        <ConstructorsTable constructors={constructors} />
+        <StandingsView sections={sections} />
         <SourceLink href="https://www.worldsbk.com/en/standings" label="worldsbk.com" />
       </div>
     );
@@ -782,18 +908,35 @@ export async function StandingsTab({ series }: { series: Series }) {
     // motorsport.com's points matrix reconciles to the drivers table totals
     // by construction (same upstream).
     const trend = chartRaces.length > 0 ? buildSeasonTrendData(chartRaces) : null;
+    // Manufacturers table dropped (validation 2026-06-11): upstream
+    // motorsport.com's Constructor endpoint itself returns 4 of 8 brands with
+    // wrong totals — verified by fetching it directly; our parse was faithful
+    // to junk. Reinstate only with a better source (chart-vs-standings
+    // discipline applies to standings too) — hence no manufacturers sub-tab.
+    const sections = [
+      {
+        key: 'drivers',
+        label: 'Drivers',
+        content: (
+          <>
+            <TrendSection trend={trend} />
+            <DriversTable drivers={drivers} heading="Drivers" />
+          </>
+        ),
+      },
+      ...(teams.length > 0
+        ? [
+            {
+              key: 'teams',
+              label: 'Teams',
+              content: <ConstructorsTable constructors={teams} heading="Teams" />,
+            },
+          ]
+        : []),
+    ];
     return (
       <div className="space-y-4">
-        <TrendSection trend={trend} />
-        <DriversTable drivers={drivers} heading="Drivers" />
-        {teams.length > 0 ? (
-          <ConstructorsTable constructors={teams} heading="Teams" />
-        ) : null}
-        {/* Manufacturers table dropped (validation 2026-06-11): upstream
-            motorsport.com's Constructor endpoint itself returns 4 of 8
-            brands with wrong totals — verified by fetching it directly; our
-            parse was faithful to junk. Reinstate only with a better source
-            (chart-vs-standings discipline applies to standings too). */}
+        <StandingsView sections={sections} />
         <SourceLink
           href="https://www.motorsport.com/dtm/standings/2026/"
           label="motorsport.com (DTM 2026)"
