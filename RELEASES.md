@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.226.2 — 2026-07-14
+
+**Keyboard focus.** Links, buttons, and form fields now show a clear amber outline when you tab to them with a keyboard, so it is always obvious what is selected.
+
 ## 0.226.1 — 2026-07-13
 
 **Accessibility polish.** Small screen-reader and touch improvements: a labelled sign-in button, a bigger close button on pop-ups, and the mobile calendar's coloured dots now say which session they are.

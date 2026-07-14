@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.226.2 — 2026-07-14
+
+### Fixed
+- Keyboard focus is now visible (WCAG 2.4.7 / 1.4.11) from the WCAG audit (H1 + H2). A global `:focus-visible` rule in `app/globals.css` gives links, buttons, `[role=button]`/`[role=tab]`, `[tabindex=0]`, `summary`, and form controls a `2px solid var(--ring)` (amber) outline on keyboard focus; the base `* { outline-ring/50 }` reset only set the outline COLOUR (no width), so the near-black theme fell back to the low-contrast UA outline. `components/ContactModal.tsx` inputs dropped `focus:outline-none` (which killed the ring) and now inherit it. Scoped to `:focus-visible` (keyboard only) and via a 0-specificity `:where()` selector so components can still override; mouse users see no rings. Browser-verified: nav link `outline: 2px solid rgb(255,180,0)`, ContactModal email input shows a clear amber ring (screenshot).
+
 ## 0.226.1 — 2026-07-13
 
 ### Fixed
