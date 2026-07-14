@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Mail, X } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { useFocusTrap } from '@/lib/useFocusTrap';
 
 const CONTACT_OPEN_EVENT = 'paddock:open-contact';
 
@@ -26,6 +27,7 @@ export function ContactModal() {
   const [category, setCategory] = useState<Category>('general');
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onOpen = () => {
@@ -50,6 +52,10 @@ export function ContactModal() {
       document.body.style.overflow = prev;
     };
   }, [open]);
+
+  // Focus into the dialog on open, trap Tab, Escape-to-close, restore focus on
+  // close. `open` gates it — this dialog stays mounted and renders null when shut.
+  useFocusTrap(panelRef, () => setOpen(false), open);
 
   if (!open) return null;
 
@@ -90,6 +96,7 @@ export function ContactModal() {
       onClick={() => setOpen(false)}
     >
       <div
+        ref={panelRef}
         className="w-full max-w-md rounded-2xl bg-surface-elevated border border-border shadow-2xl shadow-black/60 overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -147,6 +154,8 @@ export function ContactModal() {
 
             {result && (
               <div
+                role="status"
+                aria-live="polite"
                 className={`text-sm ${
                   result.ok ? 'text-emerald-400' : 'text-amber-400'
                 }`}
