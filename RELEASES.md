@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.2 — 2026-07-14
+
+**Mobile header fix.** The top bar no longer cuts off a button on narrow phones.
+
 ## 0.228.1 — 2026-07-14
 
 **Fix.** Restored IndyCar's Chip Ganassi team colour, which was changed by mistake in the previous update.

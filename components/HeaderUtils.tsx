@@ -41,7 +41,7 @@ export function HeaderUtils({
       >
         <Coffee size={13} />
         <span className="hidden sm:inline">Buy me a coffee</span>
-        <span className="sm:hidden">Coffee</span>
+        <span className="hidden min-[380px]:inline sm:hidden">Coffee</span>
       </a>
       {/* Notification center — sent-push history, signed-in only, all viewports
           (NotificationBell self-gates on Clerk auth and renders nothing when
