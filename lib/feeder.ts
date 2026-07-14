@@ -259,7 +259,7 @@ export async function notifyNewSubmission(item: {
     heading: 'New feeder-series submission',
     intro: `${item.seriesName} · ${item.contactEmail}`,
     paragraphs,
-    cta: { label: 'Review in the admin dashboard', href: `${SITE_URL}/admin#submissions` },
+    cta: { label: 'Review in the admin dashboard', href: `${SITE_URL}/admin/submissions` },
     footerNote: 'A feeder series submitted data through /contribute.',
   });
   await sendEmail({ subject: `[Feeder intake] ${item.seriesName}`, text, html });
