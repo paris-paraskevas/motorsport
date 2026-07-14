@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { requireAdmin } from '@/lib/admin-guard';
-import { PAGE_WIDE } from '@/lib/site';
+import { PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { AdminNav } from '@/components/admin/AdminNav';
 
 export const dynamic = 'force-dynamic';
@@ -17,8 +17,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requireAdmin();
   return (
     <div className={PAGE_WIDE}>
+      {/* Absolute apex, not a relative "/settings": on the admin-only dev.
+          subdomain a relative link resolves to dev.paddock-tracker.com/settings,
+          which 404s (proxy.ts serves only admin routes on dev.*). */}
       <Link
-        href="/settings"
+        href={`${SITE_URL}/settings`}
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
       >
         <ArrowLeft size={13} /> Account

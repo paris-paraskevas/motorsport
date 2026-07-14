@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.9 — 2026-07-14
+
+**Internal.** Fixed an admin-only navigation link.
+
 ## 0.228.8 — 2026-07-14
 
 **Internal.** Session notes and planning docs.

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.228.9 — 2026-07-14
+
+### Fixed
+- Admin console "← Account" escape-hatch link now points at the absolute apex (`${SITE_URL}/settings`) instead of a relative `/settings` (`app/(admin)/admin/layout.tsx`). On the admin-only `dev.` subdomain a relative link resolved to `dev.paddock-tracker.com/settings`, which 404s because `proxy.ts` serves only admin routes on `dev.*`; the absolute URL escapes back to the apex. `/account` (the IDEAS-inbox shorthand) has no route — `/settings` is the account page and was already the existing href. Added an inline comment to stop a future relative-link regression.
+
 ## 0.228.8 — 2026-07-14
 
 ### Changed
