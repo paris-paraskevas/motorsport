@@ -59,7 +59,7 @@ export function SeriesTabs({
       aria-label="Series sections"
       className="sticky top-14 z-20 -mx-4 md:-mx-6 lg:-mx-8 mb-6 border-y border-border bg-bg/95 backdrop-blur-xl"
     >
-      <div ref={railRef} className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5 sm:gap-0">
+      <div ref={railRef} className="flex overflow-x-auto scrollbar-none px-4 md:px-6 lg:px-8 gap-5 sm:gap-0 [mask-image:linear-gradient(to_right,transparent,black_1rem,black_calc(100%_-_1rem),transparent)]">
         {tabs.map(tab => {
           const isActive = tab.key === activeTab;
           const href = tab.key === 'calendar' ? `/series/${slug}` : `/series/${slug}/${tab.key}`;

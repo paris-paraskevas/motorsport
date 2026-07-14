@@ -760,7 +760,7 @@ export function HomeContent({
               >
                 <span className="inline-flex items-center gap-2">
                   <span className="relative inline-flex">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-live opacity-60 animate-ping" />
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-live opacity-60 animate-ping motion-reduce:animate-none" />
                     <span className="relative inline-flex w-2 h-2 rounded-full bg-live" />
                   </span>
                   <span className="font-mono text-[11px] uppercase tracking-[0.2em] font-bold text-live">
@@ -781,7 +781,7 @@ export function HomeContent({
                 </span>
                 <span className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted group-hover:text-text transition-colors duration-(--duration-fast)">
                   Open
-                  <ArrowUpRight size={13} />
+                  <ArrowUpRight size={13} aria-hidden="true" />
                 </span>
               </Link>
               {item.watch && (
@@ -791,9 +791,9 @@ export function HomeContent({
                   rel="noopener noreferrer"
                   className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
                 >
-                  <Tv size={12} />
+                  <Tv size={12} aria-hidden="true" />
                   Watch on {item.watch.service}
-                  <ArrowUpRight size={12} className="opacity-60" />
+                  <ArrowUpRight size={12} aria-hidden="true" className="opacity-60" />
                 </a>
               )}
               </div>
@@ -824,7 +824,7 @@ export function HomeContent({
                 </span>
                 {next.session.location && (
                   <span className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
-                    <MapPin size={11} />
+                    <MapPin size={11} aria-hidden="true" />
                     {next.session.location.split(',')[0].trim()}
                   </span>
                 )}
@@ -858,7 +858,7 @@ export function HomeContent({
                 </div>
                 <div className="mt-0.5 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
                   {roundFor(next.seriesSlug, next.session.uid) ? 'Open weekend' : 'Open series'}
-                  <ArrowUpRight size={12} />
+                  <ArrowUpRight size={12} aria-hidden="true" />
                 </div>
               </div>
             )}
@@ -906,9 +906,9 @@ export function HomeContent({
               rel="noopener noreferrer"
               className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
             >
-              <Tv size={12} />
+              <Tv size={12} aria-hidden="true" />
               Watch on {next.watch.service}
-              <ArrowUpRight size={12} className="opacity-60" />
+              <ArrowUpRight size={12} aria-hidden="true" className="opacity-60" />
             </a>
           )}
           </div>
@@ -947,9 +947,9 @@ export function HomeContent({
           {!isCollapsed('just-missed') &&
             (justMissed === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-40 animate-pulse bg-surface" />
-                <div className="h-8 w-3/4 max-w-sm animate-pulse bg-surface" />
-                <div className="h-4 w-1/2 animate-pulse bg-surface/60" />
+                <div className="h-4 w-40 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-8 w-3/4 max-w-sm animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-1/2 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : !jmHero ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1010,7 +1010,7 @@ export function HomeContent({
                 className="group mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
               >
                 See full results
-                <ArrowUpRight size={13} />
+                <ArrowUpRight size={13} aria-hidden="true" />
               </a>
             )}
             {heroArticle && (
@@ -1025,7 +1025,7 @@ export function HomeContent({
                 </span>
                 <span className="mt-0.5 flex items-start gap-1.5 text-sm leading-snug text-text-muted transition-colors duration-(--duration-fast) group-hover:text-text">
                   <span className="min-w-0 line-clamp-2">{heroArticle.title}</span>
-                  <ExternalLink size={12} className="mt-0.5 shrink-0 text-text-faint" />
+                  <ExternalLink size={12} aria-hidden="true" className="mt-0.5 shrink-0 text-text-faint" />
                 </span>
               </a>
             )}
@@ -1036,9 +1036,9 @@ export function HomeContent({
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
               >
-                <Play size={12} />
+                <Play size={12} aria-hidden="true" />
                 Highlights
-                <ArrowUpRight size={12} className="opacity-60" />
+                <ArrowUpRight size={12} aria-hidden="true" className="opacity-60" />
               </a>
             )}
           </div>
@@ -1234,7 +1234,7 @@ export function HomeContent({
             {beyondCount > 0 && (
               <span className="text-text-faint tnum">+{beyondCount} ahead</span>
             )}
-            <ArrowUpRight size={13} />
+            <ArrowUpRight size={13} aria-hidden="true" />
           </Link>
           </>
           )}
@@ -1252,7 +1252,7 @@ export function HomeContent({
           {!isCollapsed('news') && (
           <>
           {seriesWithNews.length > 1 && (
-            <div className="mb-3 -mx-1 px-1 flex gap-1.5 overflow-x-auto scrollbar-none">
+            <div className="mb-3 -mx-1 px-1 flex gap-1.5 overflow-x-auto scrollbar-none [mask-image:linear-gradient(to_right,transparent,black_1rem,black_calc(100%_-_1rem),transparent)]">
               <button
                 type="button"
                 onClick={() => selectNewsFilter(null)}
@@ -1324,6 +1324,7 @@ export function HomeContent({
                       </span>
                       <ExternalLink
                         size={12}
+                        aria-hidden="true"
                         className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
                       />
                     </div>
@@ -1358,8 +1359,8 @@ export function HomeContent({
           <>
           {blogPosts === null ? (
             <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-              <div className="h-4 w-40 animate-pulse bg-surface" />
-              <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface/60" />
+              <div className="h-4 w-40 animate-pulse motion-reduce:animate-none bg-surface" />
+              <div className="h-4 w-3/4 max-w-md animate-pulse motion-reduce:animate-none bg-surface/60" />
             </div>
           ) : blogPosts.length === 0 ? (
             <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1384,6 +1385,7 @@ export function HomeContent({
                     )}
                     <ArrowUpRight
                       size={12}
+                      aria-hidden="true"
                       className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
                     />
                   </div>
@@ -1400,7 +1402,7 @@ export function HomeContent({
             className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
           >
             All posts
-            <ArrowUpRight size={13} />
+            <ArrowUpRight size={13} aria-hidden="true" />
           </Link>
           </>
           )}
@@ -1419,8 +1421,8 @@ export function HomeContent({
           {!isCollapsed('championship-leader') &&
             (standings === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface" />
-                <div className="h-4 w-1/2 animate-pulse bg-surface/60" />
+                <div className="h-4 w-3/4 max-w-md animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-1/2 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : standings.length === 0 ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1481,8 +1483,8 @@ export function HomeContent({
                 {!isCollapsed('standings-snapshot') &&
                   (standings === null ? (
                     <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                      <div className="h-4 w-1/3 animate-pulse bg-surface" />
-                      <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                      <div className="h-4 w-1/3 animate-pulse motion-reduce:animate-none bg-surface" />
+                      <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none bg-surface/60" />
                     </div>
                   ) : !brief ? (
                     <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1510,7 +1512,7 @@ export function HomeContent({
                         className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                       >
                         Full standings
-                        <ArrowUpRight size={13} />
+                        <ArrowUpRight size={13} aria-hidden="true" />
                       </Link>
                     </>
                   ))}
@@ -1533,8 +1535,8 @@ export function HomeContent({
           {!isCollapsed('standings-movers') &&
             (movers === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-1/3 animate-pulse bg-surface" />
-                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                <div className="h-4 w-1/3 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : movers.length === 0 ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1601,8 +1603,8 @@ export function HomeContent({
           {!isCollapsed('f1-upgrades') &&
             (upgrades === undefined ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-1/3 animate-pulse bg-surface" />
-                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                <div className="h-4 w-1/3 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : !upgrades ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1631,7 +1633,7 @@ export function HomeContent({
                   className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                 >
                   Full upgrades
-                  <ArrowUpRight size={13} />
+                  <ArrowUpRight size={13} aria-hidden="true" />
                 </Link>
               </div>
             ))}
@@ -1711,8 +1713,8 @@ export function HomeContent({
             {!isCollapsed('series-just-missed') &&
               (justMissed === null ? (
                 <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                  <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface" />
-                  <div className="h-4 w-1/2 animate-pulse bg-surface/60" />
+                  <div className="h-4 w-3/4 max-w-md animate-pulse motion-reduce:animate-none bg-surface" />
+                  <div className="h-4 w-1/2 animate-pulse motion-reduce:animate-none bg-surface/60" />
                 </div>
               ) : rows.length === 0 ? (
                 <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1780,7 +1782,7 @@ export function HomeContent({
                     </span>
                     {item.session.location && (
                       <span className="inline-flex items-center gap-1 text-text-faint">
-                        <MapPin size={11} />
+                        <MapPin size={11} aria-hidden="true" />
                         {item.session.location.split(',')[0].trim()}
                       </span>
                     )}
@@ -1807,7 +1809,7 @@ export function HomeContent({
                       </span>
                       <span className="shrink-0 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
                         {roundFor(item.seriesSlug, item.session.uid) ? 'Open weekend' : 'Open series'}
-                        <ArrowUpRight size={12} />
+                        <ArrowUpRight size={12} aria-hidden="true" />
                       </span>
                     </div>
                   </Link>
@@ -1842,8 +1844,8 @@ export function HomeContent({
           {!isCollapsed('threads') &&
             (threads === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-40 animate-pulse bg-surface" />
-                <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface/60" />
+                <div className="h-4 w-40 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-3/4 max-w-md animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : threads.length === 0 ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -1858,7 +1860,7 @@ export function HomeContent({
                       href={`/threads/${t.id}`}
                       className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
                     >
-                      <MessageSquare size={14} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                      <MessageSquare size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                       <span className="flex-1 min-w-0">
                         <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
                           {t.title}
@@ -1878,7 +1880,7 @@ export function HomeContent({
                           <span className="tnum">{relativeAgo(new Date(t.createdAt), now)}</span>
                         </span>
                       </span>
-                      <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                      <ArrowUpRight size={13} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                     </Link>
                   ))}
                 </div>
@@ -1887,7 +1889,7 @@ export function HomeContent({
                   className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                 >
                   All threads
-                  <ArrowUpRight size={13} />
+                  <ArrowUpRight size={13} aria-hidden="true" />
                 </Link>
               </>
             ))}
@@ -1907,8 +1909,8 @@ export function HomeContent({
           {!isCollapsed('bets') &&
             (bets === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-1/3 animate-pulse bg-surface" />
-                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                <div className="h-4 w-1/3 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : !bets.signedIn ? (
               <p className="border-y border-border py-4 text-sm text-text-faint">
@@ -1921,7 +1923,7 @@ export function HomeContent({
               <div className="border-y border-border py-4">
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
-                    <Coins size={13} className="text-brand" />
+                    <Coins size={13} aria-hidden="true" className="text-brand" />
                     Balance
                   </span>
                   <span className="font-display text-2xl font-extrabold tracking-wide text-text tnum">
@@ -1973,7 +1975,7 @@ export function HomeContent({
                     className="group inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                   >
                     {bets.nextMarket ? 'Place a bet' : 'Open Play'}
-                    <ArrowUpRight size={13} />
+                    <ArrowUpRight size={13} aria-hidden="true" />
                   </Link>
                 </div>
               </div>
@@ -1995,8 +1997,8 @@ export function HomeContent({
           {!isCollapsed('social') &&
             (social === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-1/3 animate-pulse bg-surface" />
-                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                <div className="h-4 w-1/3 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : !social.signedIn ? (
               <p className="border-y border-border py-4 text-sm text-text-faint">
@@ -2015,14 +2017,14 @@ export function HomeContent({
                           href={`/social/leagues/${l.id}`}
                           className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
                         >
-                          <Trophy size={14} className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
+                          <Trophy size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
                           <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-text tracking-tight">
                             {l.name}
                           </span>
                           <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
                             {l.myRank ? `P${l.myRank}/${l.memberCount}` : `${l.memberCount} member${l.memberCount === 1 ? '' : 's'}`}
                           </span>
-                          <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                          <ArrowUpRight size={13} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                         </Link>
                       </li>
                     ))}
@@ -2040,7 +2042,7 @@ export function HomeContent({
                   href="/social/friends"
                   className="group mt-3 flex items-center gap-3 border-t border-border pt-3 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
                 >
-                  <UserPlus size={14} className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
+                  <UserPlus size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
                   <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-text tracking-tight">
                     {social.friends.count} friend{social.friends.count === 1 ? '' : 's'}
                     {social.friends.pending > 0 && (
@@ -2049,7 +2051,7 @@ export function HomeContent({
                       </span>
                     )}
                   </span>
-                  <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                  <ArrowUpRight size={13} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                 </Link>
               </div>
             ))}
@@ -2069,8 +2071,8 @@ export function HomeContent({
           {!isCollapsed('latest-decoded') &&
             (decoded === undefined ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-1/2 animate-pulse bg-surface" />
-                <div className="h-4 w-2/3 animate-pulse bg-surface/60" />
+                <div className="h-4 w-1/2 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-2/3 animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : decoded === null ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -2088,7 +2090,7 @@ export function HomeContent({
                         <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text leading-none">
                           Qualifying Analysis
                         </span>
-                        <ArrowUpRight size={14} className="shrink-0 text-text-faint group-hover:text-text transition-colors duration-(--duration-fast)" />
+                        <ArrowUpRight size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text transition-colors duration-(--duration-fast)" />
                       </span>
                       {(decoded.qualifying.pole || decoded.qualifying.p2) && (
                         <span className="mt-1 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
@@ -2113,9 +2115,9 @@ export function HomeContent({
                       href={decoded.race.href}
                       className="group flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                     >
-                      <Play size={12} />
+                      <Play size={12} aria-hidden="true" />
                       Race Story · {decoded.gp}
-                      <ArrowUpRight size={12} className="opacity-60" />
+                      <ArrowUpRight size={12} aria-hidden="true" className="opacity-60" />
                     </Link>
                   )}
                 </div>
@@ -2153,7 +2155,7 @@ export function HomeContent({
                       rel="noopener noreferrer"
                       className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
                     >
-                      <Tv size={14} className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
+                      <Tv size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
                       <span className="flex-1 min-w-0">
                         <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
                           {item.session.title}
@@ -2169,7 +2171,7 @@ export function HomeContent({
                       <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
                         {item.session.dateOnly ? 'TBC' : formatRelative(item.session.start, now)}
                       </span>
-                      <ArrowUpRight size={13} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                      <ArrowUpRight size={13} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                     </a>
                   ))}
                 </div>
@@ -2210,7 +2212,7 @@ export function HomeContent({
                     </span>
                     {item.session.location && (
                       <span className="inline-flex items-center gap-1 text-text-faint">
-                        <MapPin size={11} />
+                        <MapPin size={11} aria-hidden="true" />
                         {item.session.location.split(',')[0].trim()}
                       </span>
                     )}
@@ -2233,7 +2235,7 @@ export function HomeContent({
                         )}
                       </span>
                     </span>
-                    <ArrowUpRight size={13} className="shrink-0 self-start text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                    <ArrowUpRight size={13} aria-hidden="true" className="shrink-0 self-start text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                   </div>
                 </Link>
               ))}
@@ -2255,8 +2257,8 @@ export function HomeContent({
           {!isCollapsed('driver-spotlight') &&
             (spotlight === null ? (
               <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-40 animate-pulse bg-surface" />
-                <div className="h-4 w-3/4 max-w-md animate-pulse bg-surface/60" />
+                <div className="h-4 w-40 animate-pulse motion-reduce:animate-none bg-surface" />
+                <div className="h-4 w-3/4 max-w-md animate-pulse motion-reduce:animate-none bg-surface/60" />
               </div>
             ) : spotlight.length === 0 ? (
               <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
@@ -2270,7 +2272,7 @@ export function HomeContent({
                     className="flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0"
                   >
                     <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: d.teamColor ?? d.seriesColor }} />
-                    <Users size={14} className="shrink-0 text-text-faint" />
+                    <Users size={14} aria-hidden="true" className="shrink-0 text-text-faint" />
                     <span className="flex-1 min-w-0">
                       <Link href={`/drivers/${d.slug}`} className="group inline-flex items-center gap-1.5 min-w-0">
                         <span className="truncate text-[15px] font-semibold text-text tracking-tight group-hover:text-brand transition-colors duration-(--duration-fast)">
@@ -2279,7 +2281,7 @@ export function HomeContent({
                         {d.code && (
                           <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{d.code}</span>
                         )}
-                        <ArrowUpRight size={12} className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
+                        <ArrowUpRight size={12} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                       </Link>
                       <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
                         <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: d.seriesColor }}>
@@ -2340,24 +2342,27 @@ function CollapsibleSectionHead({
   onToggle: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-expanded={!collapsed}
-      className="mb-3 flex w-full items-baseline justify-between gap-3 border-b border-border pb-2 text-left"
-    >
-      <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text">
-        {title}
-        <span className="text-brand">.</span>
-      </span>
-      <span className="inline-flex items-center gap-2">
-        {sub && <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{sub}</span>}
-        <ChevronDown
-          size={15}
-          className={`shrink-0 text-text-faint transition-transform duration-(--duration-fast) ${collapsed ? '-rotate-90' : ''}`}
-        />
-      </span>
-    </button>
+    <h2 className="mb-3">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={!collapsed}
+        className="flex w-full items-baseline justify-between gap-3 border-b border-border pb-2 text-left"
+      >
+        <span className="font-display text-xl font-extrabold uppercase tracking-wide text-text">
+          {title}
+          <span className="text-brand">.</span>
+        </span>
+        <span className="inline-flex items-center gap-2">
+          {sub && <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{sub}</span>}
+          <ChevronDown
+            size={15}
+            aria-hidden="true"
+            className={`shrink-0 text-text-faint transition-transform duration-(--duration-fast) ${collapsed ? '-rotate-90' : ''}`}
+          />
+        </span>
+      </button>
+    </h2>
   );
 }
 
@@ -2372,7 +2377,7 @@ function HomeSkeleton() {
         Paddock Tracker — live motorsport schedule and news across F1, MotoGP, WEC,
         Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more
       </h1>
-      <div aria-hidden="true" className="animate-pulse">
+      <div aria-hidden="true" className="animate-pulse motion-reduce:animate-none">
         <div className="mb-8 -mx-4 border-y border-border bg-surface px-4 py-5 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8">
           <div className="mb-2 h-4 w-40 bg-surface-elevated" />
           <div className="h-9 w-3/4 max-w-md bg-surface-elevated" />
