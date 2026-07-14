@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.226.4 — 2026-07-14
+
+**More accessibility.** Added a "Skip to content" shortcut for keyboard users, improved screen-reader support for the race-weekend tabs, and made wide tables in a series' History and About scroll on phones.
+
 ## 0.226.3 — 2026-07-14
 
 **Behind the scenes.** Groundwork for richer champion pages: added runner-up, winning margin, and race-win figures for recent F1 seasons (not shown yet).

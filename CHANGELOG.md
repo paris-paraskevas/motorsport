@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.226.4 — 2026-07-14
+
+### Fixed
+- More accessibility fixes from the audits (no change for sighted mouse users). A visually-hidden "Skip to content" link is now the first Tab stop, jumping past the fixed header to `#main-content` (WCAG 2.4.1) — `components/AppShell.tsx` (+ `<main id="main-content" tabIndex={-1}>`). Weekend-page tabs (`components/weekend/WeekendTabs.tsx`) expose proper `role="tablist"`/`tab`/`tabpanel` with `aria-selected` + `aria-controls`/`aria-labelledby`, dropping the misleading `aria-current="page"` (WCAG 4.1.2). The History + About tab prose gained the blog's `prose-table:block prose-table:overflow-x-auto` wrapper so a wide markdown table scrolls instead of clipping on mobile — `components/tabs/HistoryTab.tsx`, `components/tabs/AboutTab.tsx`. Browser-verified: skip link is the first Tab stop and reveals on focus; weekend tabs expose the ARIA roles (0 console errors).
+
 ## 0.226.3 — 2026-07-14
 
 ### Added

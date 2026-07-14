@@ -74,7 +74,8 @@ export async function HistoryTab({ series }: { series: Series }) {
                    prose-h2:text-base prose-h2:mt-6 prose-h2:mb-3
                    prose-h3:text-sm prose-h3:mt-5 prose-h3:mb-2
                    prose-p:leading-relaxed
-                   prose-a:text-text-muted prose-a:underline-offset-2"
+                   prose-a:text-text-muted prose-a:underline-offset-2
+                   prose-table:block prose-table:overflow-x-auto prose-table:max-w-full"
         dangerouslySetInnerHTML={{ __html: html }}
       />
       {author && (
