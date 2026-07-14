@@ -79,12 +79,12 @@ export function KpiTile({
   spark?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-surface-elevated p-4">
+    <div className="min-w-0 rounded-xl border border-border bg-surface-elevated p-4">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</span>
+        <span className="min-w-0 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</span>
         <Icon size={14} className="shrink-0 text-text-faint" />
       </div>
-      <div className="mt-2 font-display text-3xl font-extrabold tabular-nums text-text">{value}</div>
+      <div className="mt-2 truncate font-display text-3xl font-extrabold tabular-nums text-text">{value}</div>
       {spark ? <div className="mt-2 text-brand">{spark}</div> : null}
       {hint ? <div className="mt-0.5 text-[11px] text-text-faint">{hint}</div> : null}
     </div>
@@ -139,9 +139,9 @@ export function Sparkline({
 // formatting for non-count values (CTR, position).
 export function MiniStat({ label, value, text }: { label: string; value?: number; text?: string }) {
   return (
-    <div className="rounded-lg border border-border bg-surface-elevated p-3">
+    <div className="min-w-0 rounded-lg border border-border bg-surface-elevated p-3">
       <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
-      <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-text">
+      <div className="mt-1 truncate font-display text-xl sm:text-2xl font-extrabold tabular-nums text-text">
         {text ?? (value ?? 0).toLocaleString()}
       </div>
     </div>
@@ -228,7 +228,10 @@ export function TrafficPanel({ data }: { data: Ga4Traffic }) {
 export function SearchPanel({ data }: { data: GscSearch }) {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {/* 2x2, not 1x4: the search route sits GSC + Bing side by side (lg:grid-cols-2),
+          so four KPI tiles share a half-width column, and 4-across crammed the
+          numbers into an overflow. 2x2 keeps each tile wide enough for 6-7 digits. */}
+      <div className="grid grid-cols-2 gap-3">
         <MiniStat label="Clicks" value={data.clicks} />
         <MiniStat label="Impressions" value={data.impressions} />
         <MiniStat label="CTR" text={`${(data.ctr * 100).toFixed(1)}%`} />
