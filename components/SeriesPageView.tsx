@@ -197,6 +197,10 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         )}
       </header>
 
+      {/* Learn-about card: boosted to the top (operator 2026-07-14) as a
+          prominent entry point to the editorial/reference content. */}
+      <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
+
       <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
 
       {/* Calendar tab only: subscribe to this series' schedule as a live ICS
@@ -240,9 +244,6 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         </Suspense>
       )}
 
-      {/* Reference links tucked at the BOTTOM (operator feedback: they were
-          "weirdly placed text" above the calendar the user actually wants). */}
-      <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
     </div>
   );
 }
@@ -262,25 +263,39 @@ function SeriesLearnMore({
 }) {
   const topic = topicForSeries(slug);
   const about = aboutGuideForSeries(slug) ?? `/series/${slug}/about`;
-  const links: Array<{ label: string; href: string }> = [
-    { label: 'About', href: about },
-    { label: 'History', href: `/information/${topic}/the-history-of-${slug}` },
-    { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained` },
-    { label: singleEvent ? 'Past winners' : 'Champions', href: `/series/${slug}/champions` },
-    { label: 'Drivers', href: `/series/${slug}/drivers` },
+  const links: Array<{ label: string; href: string; blurb: string }> = [
+    { label: 'About', href: about, blurb: 'Overview' },
+    { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },
+    { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
+    { label: singleEvent ? 'Past winners' : 'Champions', href: `/series/${slug}/champions`, blurb: 'Year by year' },
+    { label: 'Drivers', href: `/series/${slug}/drivers`, blurb: 'The grid' },
   ];
+  // Telemetry-panel card (hairline grid via gap-px over a bg-border layer),
+  // deliberately not a rounded/gradient card — matches Paddock's own aesthetic.
   return (
-    <section className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border pt-6 font-mono text-[11px] uppercase tracking-[0.14em]">
-      <span className="text-text-faint">Learn about {name}:</span>
-      {links.map(l => (
-        <Link
-          key={l.label}
-          href={l.href}
-          className="text-text-muted hover:text-tint transition-colors duration-(--duration-fast)"
-        >
-          {l.label}
-        </Link>
-      ))}
+    <section aria-label={`Learn about ${name}`} className="mb-6 border border-border bg-surface-elevated">
+      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+        <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-tint" />
+        <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-text">
+          Learn about {name}
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-5">
+        {links.map(l => (
+          <Link
+            key={l.label}
+            href={l.href}
+            className="group flex flex-col gap-0.5 bg-surface-elevated px-3 py-2.5 transition-colors duration-(--duration-fast) hover:bg-surface"
+          >
+            <span className="text-sm font-semibold text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
+              {l.label}
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+              {l.blurb}
+            </span>
+          </Link>
+        ))}
+      </div>
     </section>
   );
 }

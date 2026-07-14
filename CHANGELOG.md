@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.227.0 — 2026-07-14
+
+### Changed
+- "Learn about &lt;series&gt;" boosted to a prominent card at the TOP of the series page (operator: it was a small link row at the bottom). New telemetry-panel treatment in `components/SeriesPageView.tsx` (`SeriesLearnMore`): a bordered header strip + a hairline grid (`gap-px` over a `bg-border` layer, sharp corners, no gradient/shadow — deliberately not a templated "AI card") of five entry points (About / History / Rules / Champions / Drivers), each with a one-line descriptor. Moved above the tab rail; the bottom link row is removed. Browser-verified desktop (5-col) + 390px (2-col), 0 console errors. Per operator: News stays a secondary quick-link, NOT promoted to a tab (the AIDesigner mock overreached there). Implements the "distinctive, not templated" UI principle ([[feedback-paddock-distinctive-ui]]).
+
 ## 0.226.4 — 2026-07-14
 
 ### Fixed

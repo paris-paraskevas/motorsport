@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.0 — 2026-07-14
+
+**Find your way around a series faster.** Every series page now opens with a clear "Learn about" panel linking straight to its history, rules, champions, drivers, and overview.
+
 ## 0.226.4 — 2026-07-14
 
 **More accessibility.** Added a "Skip to content" shortcut for keyboard users, improved screen-reader support for the race-weekend tabs, and made wide tables in a series' History and About scroll on phones.
