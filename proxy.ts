@@ -87,6 +87,21 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
+  // Signed-in visitors skip the marketing landing: on the main host, / -> /app.
+  // Anonymous requests (incl. crawlers) fall through to the static landing, so /
+  // stays the indexable SEO homepage. Temporary (307) — / is NOT moved, so a user
+  // who later signs out sees the landing again (a cached 301/308 would never
+  // re-check auth). Dev host already returned above (root rewrites to /admin).
+  if (url.pathname === '/' && !host.startsWith('dev.')) {
+    const { userId } = await auth();
+    if (userId) {
+      const dest = url.clone();
+      dest.pathname = '/app';
+      dest.search = '';
+      return NextResponse.redirect(dest, 307);
+    }
+  }
+
   if (isProtected(req)) {
     await auth.protect();
   }
