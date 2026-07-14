@@ -6,7 +6,47 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-14 (LATEST, session 15 — Sachsenring digest + blog-share + a11y/UX sweep + champion-depth + standings sub-tabs + cron-secret saga) — `main` = 0.227.4
+## ⚡ Next session pickup — 2026-07-14 (LATEST, session 16 — calendar CSS fix + parallel batch (taste-calls / admin ② / WRC) + post-ship UI/SEO/proxy fixes + Fotis onboarding) — `main` = 0.228.7
+
+**12 PRs #572–#583 (0.227.6 → 0.228.7), all merged + prod-shipping.** Heavily live-driven (operator reviewing/redirecting throughout, batched decisions). Ran the green-lit ② `/admin` redesign + the 5 taste calls + WRC curation as parallel worktree agents, then a run of operator-reported post-ship fixes, then set up contributor onboarding for Fotis.
+
+### ✅ Shipped
+- **#572 (0.227.6)** calendar: `WeekendBlock` `border-y`→`border` (enclosed cards). The recurring "right side of box cut off" was an OPEN right edge (border-y only), NOT overflow — verified no h-overflow at 390/1676/1920.
+- **#573 (0.227.7)** nav: signed-in `/`→`/app` 307 in `proxy.ts` (guarded `!host.startsWith('dev.')`); anonymous + crawlers keep the static landing, so `/` stays the SEO home.
+- **#574 (0.227.8)** content(wrc): curated Rally Estonia R9 `sessions.json` (18 SS + shakedown, stored UTC, triple-sourced Wikipedia/rally-maps/motorsportscalendar).
+- **#575 (0.227.9)** ui taste-calls: F1 accent `#e10600`→`#ff4136` (AA), standings as semantic `<table>`, 44px header tap targets, bottom-bar `text-[9px]` (already), blog share-bar to top — PLUS an unrequested amber search-button restyle that shipped (operator chose to keep it).
+- **#576 (0.228.0)** feat(admin): ② multi-page redesign — hub + 7 gated routes, shared layout, amber nav rail, `AdminUI` kit, `loadOverlayData` relocated to `/behaviour`. **`requireAdmin()` is in NEW `lib/admin-guard.ts`** (NOT `lib/threads.ts` — it's client-bundled via `ThreadComposer`, can't import `server-only`).
+- **#577 (0.228.1)** fix(indycar): revert Chip Ganassi `#ff4136`→`#E10600` (AA sweep over-caught a team-color hex).
+- **#578 (0.228.2)** fix(header): mobile header overflow — `AppShell` `gap-2 lg:gap-6` + cluster `gap-1 sm:gap-1.5`, coffee icon-only `<380px` (the 44px targets widened the cluster past 390px).
+- **#579 (0.228.3)** fix(admin): **isolate admin from site chrome** — moved `app/(app)/admin/**`→`app/(admin)/**` (new minimal root layout, no AppShell/footer/assistant/bottom-bar); URLs unchanged (route-group parens). + KPI panel overflow fix (`min-w-0`/`truncate`).
+- **#580 (0.228.4)** feat(header): all header utils → amber brand fill (operator request).
+- **#581 (0.228.5)** fix(proxy): `dev.*` admin-only — 404 any dev path that isn't `/admin*`, `/api/*`, or a `?hm=1` heatmap frame. Apex untouched.
+- **#582 (0.228.6)** fix(seo): complete SportsEvent JSON-LD — `organizer`(+url)/`performer`/`offers`/`eventStatus`/`description`/`image`/`address`+`geo`, copied onto every `subEvent`. `image` = brand logo (OG route is build-hashed, unsafe to reference); `address` country-only (`circuits.json` has no city).
+- **#583 (0.228.7)** docs: `docs/ONBOARDING.md` (contributor guide).
+
+### 🧑‍💻 Fotis onboarding (in progress)
+- New contributor (has Vercel/Supabase/GitHub creds), starting on UI/UX.
+- `docs/ONBOARDING.md` merged. `testing.paddock-tracker.com` = long-lived **`testing`** branch (bootstrapped with empty commit `a0a19c7` — a same-SHA-as-main branch won't build or appear in Vercel's branch picker); operator assigned the domain.
+- **ENV NOT ISOLATED:** `testing` likely uses PROD Supabase+KV → keep it UI/UX-only, NO DB writes, until a separate testing Supabase/KV is set. Vercel domain+env checklist is in this session's chat.
+- **OPERATOR TO DO:** grant Fotis GitHub **write** + Vercel **team** + Clerk; share `.env.local`/`.clerk`/`.supabase-pat` out-of-band. Local Supabase optional for UI (most surfaces render from `content/*` + APIs).
+
+### 🧭 New landmines / patterns
+- Parallel agent PRs: a branch built off a **stale fetch loses the push-race** (a revert missed the taste-calls merge; caught + fixed via #577), and every stacked PR needs a **release-note union + version renumber** on merge. `next build` is the merge gate.
+- Admin now lives in **`app/(admin)/`** (own root layout); `dev.*` is admin-only in `proxy.ts`. Both dev blocks guard on `host.startsWith('dev.')`.
+- A branch pointing at an already-deployed SHA gets **no Vercel build** (dedup) → absent from the domain branch picker; a distinct (even empty) commit fixes it.
+
+### 📋 Next session — prioritized
+1. **Admin "← ACCOUNT" back-link → absolute apex `/account`** (relative now 404s on `dev.`). Small. In IDEAS inbox.
+2. **Rally full-field per-stage** (operator: curate the FULL field). GATE: confirm eWRC is readable via a real browser (Playwright — it 402s plain HTTP). Then per-stage content schema → curate **R8 Acropolis** (RULE #1) → render on stage session pages (`ClassificationTable`) → scale. Spike verdict: Wikipedia "Special stages" table = winner/time/leader per SS only (free, reachable); full ranked field needs eWRC (browser may pass) or the paid Blacktop API.
+3. **~5-PR audit.**
+- Side: optional branded `app/(admin)/not-found.tsx` (non-admins get a bare 404); `testing` env-var isolation; IDEAS Now/Next triage.
+
+### ⏳ Operator prod-confirms owed
+- 7 chrome-free `/admin` routes (admin-authed); `dev.` 404s `/app`; signed-in `/`→`/app`; SportsEvent rich-results clear in GSC. (Session-15 carryover: MotoGP digest live on `/blog`? all 13 crons 200 post-redeploy?)
+
+---
+
+## ⚡ Next session pickup — 2026-07-14 (session 15 — Sachsenring digest + blog-share + a11y/UX sweep + champion-depth + standings sub-tabs + cron-secret saga) — `main` = 0.227.4
 
 **15 PRs #556–#570 (0.225.3 → 0.227.4), all merged + prod-shipping**, plus prod: landed the MotoGP German GP digest as a DB draft + applied the 2 heatmap migrations. Long live-driven session, operator reviewing throughout. The ✅ list below is the first wave; ALSO shipped: **#563** dialog focus-trap (`lib/useFocusTrap.ts` for Modal+ContactModal), **#564** MotoGP champion-depth data, **#565** home a11y (heading levels / reduced-motion / decorative-icon aria / scroll-rail fades), **#566** SportsEvent `location` GSC fix, **#568** Standings Drivers/Constructors sub-tabs (`components/tabs/StandingsView.tsx`), **#569** calendar single-column, **#567/#570** release notes. All browser/data-verified before merge.
 

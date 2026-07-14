@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.8 — 2026-07-14
+
+**Internal.** Session notes and planning docs.
+
 ## 0.228.7 — 2026-07-14
 
 **Internal.** Contributor onboarding documentation.
