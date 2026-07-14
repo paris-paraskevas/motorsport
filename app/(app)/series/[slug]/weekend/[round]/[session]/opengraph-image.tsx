@@ -26,7 +26,7 @@ export default async function Image({
   const { slug, round: roundRaw, session: sessionParam } = await params;
 
   let seriesName = 'Motorsport';
-  let color = '#e10600';
+  let color = '#ff4136';
   let gp = '';
   let sessionName = 'Session';
   let badge: string | null = null;

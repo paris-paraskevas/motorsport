@@ -12,7 +12,7 @@ const series = [
   {
     slug: 'f1',
     name: 'Formula 1',
-    color: '#e10600',
+    color: '#ff4136',
     icsUrl: 'https://better-f1-calendar.vercel.app/api/calendar.ics',
     season: 2026,
     category: 'formula',

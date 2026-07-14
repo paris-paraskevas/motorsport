@@ -13,7 +13,7 @@ import type { MapTrack } from './TracksMap';
 // colours (content/series/<slug>/meta.json) so the map matches the rest of the
 // app; the remaining descriptive categories get a distinct, sensible hue.
 const CATEGORY_COLOR: Record<string, string> = {
-  f1: '#e10600', // Formula 1 (series meta)
+  f1: '#ff4136', // Formula 1 (series meta)
   f2: '#38bdf8', // Formula 2 (series meta)
   f3: '#818cf8', // Formula 3 (series meta)
   motogp: '#fb923c', // MotoGP (series meta)

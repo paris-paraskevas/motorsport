@@ -329,6 +329,11 @@ export default async function PostPage({
         </p>
       </header>
 
+      {/* Share bar above the body so readers can share before reading. */}
+      <div className="mb-8">
+        <BlogShare url={postUrl} title={post.frontmatter.title} />
+      </div>
+
       <article className={POST_ARTICLE_CLASS}>
         {rendered ? (
           <PostArticle segments={rendered.segments} />
@@ -358,8 +363,6 @@ export default async function PostPage({
                 </ul>
               </nav>
             )}
-
-            <BlogShare url={postUrl} title={post.frontmatter.title} />
 
             {recent.length > 0 && (
               <section className="border-t border-border pt-4">

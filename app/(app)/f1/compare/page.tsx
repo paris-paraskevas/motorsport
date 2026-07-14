@@ -176,7 +176,7 @@ export default async function F1ComparePage({
     }
   }
 
-  const color = f1Drivers[0]?.seriesColor ?? '#e10600';
+  const color = f1Drivers[0]?.seriesColor ?? '#ff4136';
 
   return (
     <div
