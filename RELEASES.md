@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.226.3 — 2026-07-14
+
+**Behind the scenes.** Groundwork for richer champion pages: added runner-up, winning margin, and race-win figures for recent F1 seasons (not shown yet).
+
 ## 0.226.2 — 2026-07-14
 
 **Keyboard focus.** Links, buttons, and form fields now show a clear amber outline when you tab to them with a keyboard, so it is always obvious what is selected.
