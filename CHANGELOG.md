@@ -4,7 +4,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.228.5 — 2026-07-14
+## 0.228.6 — 2026-07-14
 
 ### Fixed
 - SportsEvent structured data now emits every field Google Search Console flagged as missing, on the weekend event AND on each per-session sub-event (`lib/json-ld.ts` `sportsEventLd`). Previously the recommended fields were emitted only on the top-level weekend event and only when the caller supplied them; every `subEvent` was a bare SportsEvent (name / startDate / endDate / url / location), so GSC flagged `description`, `image`, `performer`, `organizer` (+ `url`), `offers`, and `eventStatus` as missing on the sub-events, and the session page's own SportsEvent additionally lacked `address`, `description`, `performer`, and `offers`. Fields, and where each is sourced:
@@ -17,6 +17,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
   - `image`: kept as the stable brand logo (`icons/icon-512.png`) and now emitted on sub-events too. The per-weekend OG image route was evaluated and rejected: Next serves it at a build-hashed path (`/…/opengraph-image-<hash>?<contenthash>`; the bare `/opengraph-image` returns HTML, verified on a running dev server), so hard-referencing it in structured data would break silently on any rebuild.
   - `location.address` stays country-only (no `addressLocality`): `content/circuits.json` carries no city field, so a locality would be fabricated.
   - Callers: weekend page (`app/(app)/series/[slug]/weekend/[round]/page.tsx`) now passes `watch` + `cancelled`; session page passes `description`, `watch`, `addressCountry`, `venue`, `geo`, `cancelled`. Coverage extended in `lib/json-ld.test.ts` (offers presence/skip, eventStatus cancelled/rescheduled, sub-event enrichment, performer + organizer.url fallbacks). Verified on a dev server against F1 (roster teams, F1 TV offer) and NASCAR (roster teams, nascar.com offer) weekend + session pages.
+
+## 0.228.5 — 2026-07-14
+
+### Fixed
+- `dev.paddock-tracker.com` is now admin-only at the routing layer (`proxy.ts`, inside the existing `dev.` auth block): any path that is not an `/admin*` route, an `/api/*` endpoint, or a heatmap-overlay frame (`?hm=1`) returns 404 on the dev host. Previously only `/` rewrote to `/admin`, so `dev.paddock-tracker.com/app` (and every other public route) still served the site on the dev surface. The `?hm=1` allowance keeps the admin click-heatmap overlay working (it iframes real pages same-origin under X-Frame SAMEORIGIN); `/api/*` stays open for admin endpoints + framed-page data. Apex host untouched (guard is `host.startsWith('dev.')`). Verified: anonymous `dev.` still redirects to sign-in, apex `/app` still 200s; admin-authed 404 confirmed on dev by the operator.
 
 ## 0.228.4 — 2026-07-14
 

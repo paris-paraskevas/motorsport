@@ -150,7 +150,7 @@ export default async function WeekendPage({
   const roster = await loadCuratedDrivers(slug);
   const eventDescription =
     `Round ${round} of the ${series.meta.season} ${series.meta.name} season` +
-    (weekend.roundName ? ` — the ${weekend.roundName}` : '') +
+    (weekend.roundName ? `, the ${weekend.roundName}` : '') +
     (venueLocation ? ` at ${venueLocation}` : '') +
     '.';
 
