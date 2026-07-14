@@ -87,6 +87,9 @@ export function sportsEventLd(args: {
   addressCountry?: string;
   /** Matched circuit coordinates → Place.geo. */
   geo?: { lat: number; lon: number };
+  /** Venue name (the matched circuit) — the Place name when no session carries a
+   *  `location`. Ensures `location` is always emitted (Google requires it). */
+  venue?: string;
   /** Override the event URL (e.g. a per-session page); defaults to the weekend URL. */
   url?: string;
   /** Date the round was moved from; sets eventStatus = EventRescheduled + previousStartDate. */
@@ -95,7 +98,7 @@ export function sportsEventLd(args: {
   subEvents?: Array<{ name: string; startDate: Date; endDate: Date; url: string }>;
 }): object {
   const url = args.url ?? `${SITE_URL}/series/${args.slug}/weekend/${args.round}`;
-  const location = args.weekend.sessions.find((s) => s.location)?.location;
+  const location = args.weekend.sessions.find((s) => s.location)?.location ?? args.venue;
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'SportsEvent',
@@ -121,23 +124,23 @@ export function sportsEventLd(args: {
   if (args.performers && args.performers.length > 0) {
     ld.performer = args.performers.map((name) => ({ '@type': 'SportsTeam', name }));
   }
-  // location: Place. When the venue matches our curated circuits.json we enrich
-  // it with a PostalAddress (country) + GeoCoordinates; otherwise name-only,
-  // which is still spec-valid.
-  if (location) {
-    const place: Record<string, unknown> = { '@type': 'Place', name: location };
-    if (args.addressCountry) {
-      place.address = { '@type': 'PostalAddress', addressCountry: args.addressCountry };
-    }
-    if (args.geo) {
-      place.geo = {
-        '@type': 'GeoCoordinates',
-        latitude: args.geo.lat,
-        longitude: args.geo.lon,
-      };
-    }
-    ld.location = place;
+  // location: Place — REQUIRED by Google for SportsEvent rich results, so it is
+  // ALWAYS emitted (a missing location invalidates the item — GSC error, NASCAR
+  // Homestead, 2026-07). The name prefers a session/circuit venue, else the event
+  // title. When the venue matches circuits.json we enrich with a PostalAddress
+  // (country) + GeoCoordinates.
+  const place: Record<string, unknown> = { '@type': 'Place', name: location ?? args.title };
+  if (args.addressCountry) {
+    place.address = { '@type': 'PostalAddress', addressCountry: args.addressCountry };
   }
+  if (args.geo) {
+    place.geo = {
+      '@type': 'GeoCoordinates',
+      latitude: args.geo.lat,
+      longitude: args.geo.lon,
+    };
+  }
+  ld.location = place;
   // A rescheduled round carries its former date (Schema.org pairs this with
   // eventStatus = EventRescheduled).
   if (args.previousStartDate) {
@@ -152,6 +155,8 @@ export function sportsEventLd(args: {
       startDate: s.startDate.toISOString(),
       endDate: s.endDate.toISOString(),
       url: s.url,
+      // Sub-events are SportsEvents too; Google requires location on each.
+      location: place,
     }));
   }
   return ld;
