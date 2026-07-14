@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.8 — 2026-07-14
+
+**Rally Estonia session times.** This weekend's Rally Estonia (16–19 July) now shows exact times on the WRC calendar for the shakedown, all 18 special stages, and Sunday's Power Stage, replacing the earlier "TBC" placeholder.
+
 ## 0.227.6 — 2026-07-14
 
 **Calendar polish.** Race-weekend cards on a series' calendar page are now fully outlined, so they no longer look cut off along the right edge.
