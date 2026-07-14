@@ -81,7 +81,8 @@ export function sportsEventLd(args: {
   endDate: Date;
   description?: string;
   organizerUrl?: string;
-  /** Competing team names → SportsTeam[] performers. */
+  /** Competing team names → SportsTeam[] performers. When absent/empty the
+   *  series itself is emitted as the SportsOrganization performer. */
   performers?: string[];
   /** ISO 3166-1 alpha-2 — from the matched circuit; → Place.address. */
   addressCountry?: string;
@@ -90,6 +91,10 @@ export function sportsEventLd(args: {
   /** Venue name (the matched circuit) — the Place name when no session carries a
    *  `location`. Ensures `location` is always emitted (Google requires it). */
   venue?: string;
+  /** Official watch link (series.meta.watch) → an Offer (where to view). */
+  watch?: { service: string; url: string };
+  /** Round cancelled (rounds.json) → eventStatus = EventCancelled. */
+  cancelled?: boolean;
   /** Override the event URL (e.g. a per-session page); defaults to the weekend URL. */
   url?: string;
   /** Date the round was moved from; sets eventStatus = EventRescheduled + previousStartDate. */
@@ -99,36 +104,63 @@ export function sportsEventLd(args: {
 }): object {
   const url = args.url ?? `${SITE_URL}/series/${args.slug}/weekend/${args.round}`;
   const location = args.weekend.sessions.find((s) => s.location)?.location ?? args.venue;
-  const ld: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'SportsEvent',
-    name: args.title,
-    url,
-    startDate: args.startDate.toISOString(),
-    endDate: args.endDate.toISOString(),
-    eventStatus: args.previousStartDate
-      ? 'https://schema.org/EventRescheduled'
-      : 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
-    sport: args.series.meta.name,
-    // Stable brand image — a per-event OG image would be nicer, but its
-    // hashed dynamic URL isn't safe to hard-reference in structured data.
-    image: LOGO_URL,
-    organizer: {
-      '@type': 'Organization',
-      name: args.series.meta.name,
-      ...(args.organizerUrl ? { url: args.organizerUrl } : {}),
-    },
+
+  // image was already present on the top-level event but MISSING on every
+  // sub-event (GSC flag) — so emit it on both. We deliberately do NOT reference
+  // the per-weekend OG image route: Next serves it at a build-hashed path
+  // (/…/opengraph-image-<hash>?<contenthash>, verified 2026-07 — the bare
+  // /opengraph-image returns HTML, not the PNG), and hard-coding that internal
+  // hash into structured data breaks silently on any rebuild / Next upgrade.
+  // The stable brand logo always resolves and satisfies the image requirement.
+  const image = LOGO_URL;
+
+  // organizer.url flagged missing by GSC — always emit one: the series' official
+  // site when known, else its hub on this site.
+  const organizer = {
+    '@type': 'Organization',
+    name: args.series.meta.name,
+    url: args.organizerUrl ?? `${SITE_URL}/series/${args.slug}`,
   };
-  if (args.description) ld.description = args.description;
-  if (args.performers && args.performers.length > 0) {
-    ld.performer = args.performers.map((name) => ({ '@type': 'SportsTeam', name }));
-  }
+
+  // performer flagged missing by GSC — always populated. The competing teams
+  // when a roster is curated, else the series itself as the performing body (a
+  // motorsport round always has its series as a SportsOrganization performer).
+  const performer =
+    args.performers && args.performers.length > 0
+      ? args.performers.map((name) => ({ '@type': 'SportsTeam', name }))
+      : [{ '@type': 'SportsOrganization', name: args.series.meta.name }];
+
+  // offers (where to watch) when the series carries an official watch link. No
+  // price: the watch products are subscription/broadcast links whose cost we
+  // don't track, so asserting a price (even "0") would be inaccurate.
+  const offers = args.watch
+    ? {
+        '@type': 'Offer',
+        url: args.watch.url,
+        category: 'watch',
+        availability: 'https://schema.org/InStock',
+      }
+    : undefined;
+
+  // A tracked reschedule always has a known new date (current start) + the old
+  // one (previousStartDate), which is precisely EventRescheduled — not the
+  // date-less EventPostponed. A cancelled round is EventCancelled.
+  const eventStatus = args.cancelled
+    ? 'https://schema.org/EventCancelled'
+    : args.previousStartDate
+      ? 'https://schema.org/EventRescheduled'
+      : 'https://schema.org/EventScheduled';
+
+  const description =
+    args.description ??
+    `Round ${args.round} of the ${args.series.meta.season} ${args.series.meta.name} season.`;
+
   // location: Place — REQUIRED by Google for SportsEvent rich results, so it is
   // ALWAYS emitted (a missing location invalidates the item — GSC error, NASCAR
   // Homestead, 2026-07). The name prefers a session/circuit venue, else the event
   // title. When the venue matches circuits.json we enrich with a PostalAddress
-  // (country) + GeoCoordinates.
+  // (country) + GeoCoordinates. No addressLocality: circuits.json carries no city
+  // field, so we emit country + venue name rather than fabricate a city.
   const place: Record<string, unknown> = { '@type': 'Place', name: location ?? args.title };
   if (args.addressCountry) {
     place.address = { '@type': 'PostalAddress', addressCountry: args.addressCountry };
@@ -140,24 +172,59 @@ export function sportsEventLd(args: {
       longitude: args.geo.lon,
     };
   }
-  ld.location = place;
+
+  const ld: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    name: args.title,
+    url,
+    description,
+    startDate: args.startDate.toISOString(),
+    endDate: args.endDate.toISOString(),
+    eventStatus,
+    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
+    sport: args.series.meta.name,
+    image,
+    location: place,
+    organizer,
+    performer,
+  };
+  if (offers) ld.offers = offers;
   // A rescheduled round carries its former date (Schema.org pairs this with
   // eventStatus = EventRescheduled).
   if (args.previousStartDate) {
     ld.previousStartDate = toIsoDateTime(args.previousStartDate) ?? args.previousStartDate;
   }
-  // The weekend's sessions as sub-events — lets search surface the per-session
-  // schedule + start times under the event.
+  // The weekend's sessions as sub-events. Each is itself a SportsEvent that
+  // Google validates independently, so carry the same enrichment (description,
+  // location, organizer, performer, image, offers, eventStatus) — otherwise
+  // every sub-event trips the "missing field" warnings the parent just fixed.
+  // Sub-events take EventScheduled (or EventCancelled when the round is off);
+  // they have no per-session previousStartDate, so they never claim
+  // EventRescheduled.
   if (args.subEvents && args.subEvents.length > 0) {
-    ld.subEvent = args.subEvents.map((s) => ({
-      '@type': 'SportsEvent',
-      name: s.name,
-      startDate: s.startDate.toISOString(),
-      endDate: s.endDate.toISOString(),
-      url: s.url,
-      // Sub-events are SportsEvents too; Google requires location on each.
-      location: place,
-    }));
+    const subStatus = args.cancelled
+      ? 'https://schema.org/EventCancelled'
+      : 'https://schema.org/EventScheduled';
+    ld.subEvent = args.subEvents.map((s) => {
+      const sub: Record<string, unknown> = {
+        '@type': 'SportsEvent',
+        name: s.name,
+        description: `${s.name}: ${description}`,
+        startDate: s.startDate.toISOString(),
+        endDate: s.endDate.toISOString(),
+        url: s.url,
+        eventStatus: subStatus,
+        eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
+        sport: args.series.meta.name,
+        image,
+        location: place,
+        organizer,
+        performer,
+      };
+      if (offers) sub.offers = offers;
+      return sub;
+    });
   }
   return ld;
 }

@@ -150,7 +150,7 @@ export default async function WeekendPage({
   const roster = await loadCuratedDrivers(slug);
   const eventDescription =
     `Round ${round} of the ${series.meta.season} ${series.meta.name} season` +
-    (weekend.roundName ? ` — the ${weekend.roundName}` : '') +
+    (weekend.roundName ? `, the ${weekend.roundName}` : '') +
     (venueLocation ? ` at ${venueLocation}` : '') +
     '.';
 
@@ -203,6 +203,8 @@ export default async function WeekendPage({
             : undefined,
           subEvents: sessionEvents,
           previousStartDate: weekend.previousStartDate,
+          cancelled: roundMeta?.cancelled,
+          watch,
         })}
       />
       {/* Radial wash retired with the rest of the app's (2c-3 precedent);
