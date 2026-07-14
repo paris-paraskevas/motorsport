@@ -6,7 +6,42 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-13 (LATEST, session 14 — home-customize redo + full heatmap suite + admin analytics hub GA4/GSC/Bing + News-tab trim) — `main` = 0.225.0
+## ⚡ Next session pickup — 2026-07-14 (LATEST, session 15 — Sachsenring digest + blog-share + a11y/UX sweep + champion-depth + standings sub-tabs + cron-secret saga) — `main` = 0.227.4
+
+**15 PRs #556–#570 (0.225.3 → 0.227.4), all merged + prod-shipping**, plus prod: landed the MotoGP German GP digest as a DB draft + applied the 2 heatmap migrations. Long live-driven session, operator reviewing throughout. The ✅ list below is the first wave; ALSO shipped: **#563** dialog focus-trap (`lib/useFocusTrap.ts` for Modal+ContactModal), **#564** MotoGP champion-depth data, **#565** home a11y (heading levels / reduced-motion / decorative-icon aria / scroll-rail fades), **#566** SportsEvent `location` GSC fix, **#568** Standings Drivers/Constructors sub-tabs (`components/tabs/StandingsView.tsx`), **#569** calendar single-column, **#567/#570** release notes. All browser/data-verified before merge.
+
+### ✅ Shipped
+- **#556 (0.225.3)** search: weekend search matches by circuit/venue (session `location`), not just the country round name — "Sachsenring" now finds the German GP. `lib/search-index.ts`.
+- **#557 (0.226.0)** blog: `BlogShare` gains Facebook + WhatsApp + native Web Share (the Instagram/Stories route on mobile); `useSyncExternalStore` feature-detect.
+- **#558 (0.226.1)** a11y: sign-in `aria-label`, Modal close tap-target, byline avatar `alt=""`, calendar month-view dot `aria-label`s.
+- **#559 (0.226.2)** a11y focus: global `:focus-visible` amber ring (`app/globals.css`, `--ring`=`--tint`) + ContactModal input rings.
+- **#560 (0.226.3)** content: `Champion` gains optional `wins`/`runnerUp`/`runnerUpTeam`/`runnerUpPoints` (margin DERIVED, not stored); F1 champions.json 2016–2025 populated + fact-checked (2025 re-verified: Norris 423/7 vs Verstappen 421). Inert until a UI reads it.
+- **#561 (0.226.4)** a11y: skip-to-content link (`AppShell` → `#main-content`), weekend-tab ARIA (tablist/tab/tabpanel), History/About prose-table scroll wrapper.
+- **#562 (0.227.0)** series: "Learn about \<series\>" boosted from a bottom text row to a prominent top-of-page telemetry-panel card (hairline grid, distinctive not templated). News stays a quick-link, NOT a tab (operator confirmed the AIDesigner mock overreached).
+
+### ✅ Operator's 4 late-session tasks — 3 shipped, 1 researched
+1. **TBC session times (WRC/rally) — RESEARCHED, not built** (needs operator go on curate-vs-scrape). Only **WRC (9 rounds uncovered) + IndyCar (5)** fall through to date-only ICS → "TBC"; all other series fully curated. WRC's richest sources (wrc.com, ewrc) are **bot-blocked / client-rendered from a datacenter → NOT a clean cron**. Recommendation: **WRC = curate into `content/series/wrc/sessions.json`, Wikipedia-assisted** (the only per-stage source reachable from Vercel; **R9 Estonia runs 16–19 Jul, curatable NOW** — Wikipedia has the timed itinerary); **IndyCar = scheduled scrape of `motorsport.com/indycar/schedule/2026`** (datacenter-reachable SSR, full per-session times; preview-verify per the charter). Mechanism refs: `lib/ics.ts:9-29` (dateOnly), `lib/sessions-overrides.ts` (override merge), `app/api/cron/warm-sessions` is F1-only (NOT a template). RULE #1: motorsport.com is secondary, cross-check a primary.
+2. **Standings Drivers/Constructors sub-tabs** — SHIPPED #568 (`StandingsView`; Drivers default + chart, Constructors on click; multi-class series unchanged).
+3. **Calendar "no right side of box" → single full-width column** — SHIPPED #569.
+4. **GSC SportsEvent "Missing field location"** — SHIPPED #566 (verified on the repro `nascar-cup/weekend/36`).
+
+### ⏳ Cron-secret saga (RESOLVED) + landmine
+- cron-job.org + GitHub crons 401'd. Root cause: operator rotated `CRON_SECRET` in Vercel but **had not redeployed**, so prod ran the OLD secret (proven via a dispatched `health` run → `Status: 401`). `.env.local` holds the dummy `local-dev-cron-secret`. **LANDMINE: a Vercel env change takes effect only on the next deploy.** Operator has since rotated Vercel + GitHub secret + cron-job.org + redeployed. GitHub Actions throttles the `*/15` publish-posts to ~every 2–3.5h.
+- **⚠ MotoGP digest may still be UNPUBLISHED** — `status='approved'`, `publish_at` 2026-07-13 14:00Z (past). Auto-publishes on the next `publish-posts` tick, OR force-publish via Management API: `update post set status='published', published_at=now() where id='b4ec3628-5ce3-44ac-a3c5-d7581d2fc7eb' and status='approved';` Then confirm it's live on `/blog`.
+
+### 📋 Pending / owed
+- **Taste calls await operator nod** (AIDesigner mock at `.aidesigner/mcp-latest.html`, 3 credits left): F1 accent `#e10600` fails AA → `#ff4136` verified (5.81/5.30/4.99); standings-as-tables (M3); 44px chrome tap targets; micro-label sizing; blog share-bar to top of posts.
+- **② `/admin` multi-page redesign — STILL UNTOUCHED** (big green-lit plan-mode item; route map in the session-14 block below).
+
+### 🧷 New this session
+- **Skill:** `.claude/skills/blog-authoring/` (gitignored) — house style: no em dashes, no AI phrases, always link out, shareable.
+- **Memories:** `feedback-paddock-blog-house-style`, `feedback-paddock-distinctive-ui` (UI must be distinctive/editorial, never templated/AI — applies to ②).
+- **IDEAS inbox added:** heatmap-blob-customisable, all-time-legends-pages, better-ai-assistant-training, blog-share-at-top.
+- Strays (leave-as-is) now also: `*.png` verification screenshots in repo root, `.aidesigner/` runs; `IDEAS.md` has uncommitted inbox edits on main's tree.
+
+---
+
+## ⚡ Next session pickup — 2026-07-13 (session 14 — home-customize redo + full heatmap suite + admin analytics hub GA4/GSC/Bing + News-tab trim) — `main` = 0.225.0
 
 **7 PRs #547–#553 (0.220.1 → 0.225.0), all merged + prod-audited.** Session extended `/admin` into a unified analytics console + shipped a real visual heatmap.
 
