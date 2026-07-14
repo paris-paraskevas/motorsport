@@ -15,6 +15,11 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 - **Trending content (ongoing)** — broader `tracks.json` enrichment (~130 thin profiles) + race-weekend "what time" landable content.
 - **SEO Phase 2b (deferred)** — session `force-dynamic`→ISR (F1 `auth()`-gate refactor) + `LocalTime` Athens-SSR canonical time + selective session sitemap. Low SEO value now; recommend not doing unsupervised.
 - **Doc hygiene (parked)** — trim `docs/HANDOFF.md` + `SCHEDULE.md` to the last ~2–3 sessions; archive older to `docs/handoff-archive.md`.
+- **Heatmap overlay blob customisable**: make the yellow colour / shadow around the mouse (click-heatmap overlay) user-adjustable; fits `/admin/behaviour` in the `/admin` redesign.
+- **All-time legends pages per series**: dedicated pages for the greats (Schumacher, Prost, Senna, Agostini, Rossi, ...), one set per series. Content, RULE #1, fact-checked.
+- **Better AI-assistant training**: improve the assistant's grounding + answer quality; relates to B8 Assistant Phase-2 (grounded Q&A over the `/information` hub).
+- **Blog share bar at the top**: move the post share controls from the sidebar to the top of the article so readers can share before reading.
+- **TBC session times (WRC/IndyCar)** — researched session 15: only WRC (9 rounds) + IndyCar (5) fall through to date-only ICS ("TBC"). WRC = curate `content/series/wrc/sessions.json` (Wikipedia-assisted; wrc.com/ewrc bot-blocked from Vercel, NOT a clean cron); IndyCar = scrape `motorsport.com/indycar` (datacenter-reachable SSR, preview-verify). R9 Estonia curatable now. Full brief in session-15 HANDOFF.
 
 ## B1 — Feedback-board quick wins
 

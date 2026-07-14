@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.227.5 — 2026-07-14
+
+### Changed
+- Docs: session-15 handoff wrap (`docs/HANDOFF.md`) — 15 PRs #556–#570, the operator's 4 late tasks (standings sub-tabs / calendar single-column / GSC location shipped; TBC-session-times researched), the cron-secret root-cause + landmine, and pending (taste calls + ② redesign). `IDEAS.md` inbox: TBC session times + this session's ideas. Internal only.
+
 ## 0.227.4 — 2026-07-14
 
 ### Changed

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.5 — 2026-07-14
+
+**Internal.** Session notes and planning docs.
+
 ## 0.227.4 — 2026-07-14
 
 **Cleaner standings.** A series' Standings tab now splits into Drivers and Constructors sub-tabs (Drivers first) instead of one long scroll.
