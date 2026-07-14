@@ -46,6 +46,31 @@
       ]
     },
     {
+      "matchDate": "2026-07-16",
+      "round": 9,
+      "sessions": [
+        { "title": "WRC - Shakedown Kastre (Estonia)", "start": "2026-07-17T06:01:00Z", "end": "2026-07-17T08:00:00Z", "location": "Kastre, Estonia" },
+        { "title": "WRC - SS1 Raanitsa 1 (Estonia)", "start": "2026-07-17T10:03:00Z", "end": "2026-07-17T10:33:00Z", "location": "Raanitsa, Estonia" },
+        { "title": "WRC - SS2 Karaski 1 (Estonia)", "start": "2026-07-17T10:56:00Z", "end": "2026-07-17T11:11:00Z", "location": "Karaski, Estonia" },
+        { "title": "WRC - SS3 Kanepi 1 (Estonia)", "start": "2026-07-17T11:49:00Z", "end": "2026-07-17T12:09:00Z", "location": "Kanepi, Estonia" },
+        { "title": "WRC - SS4 Raanitsa 2 (Estonia)", "start": "2026-07-17T13:46:00Z", "end": "2026-07-17T14:16:00Z", "location": "Raanitsa, Estonia" },
+        { "title": "WRC - SS5 Karaski 2 (Estonia)", "start": "2026-07-17T14:39:00Z", "end": "2026-07-17T14:54:00Z", "location": "Karaski, Estonia" },
+        { "title": "WRC - SS6 Kanepi 2 (Estonia)", "start": "2026-07-17T15:32:00Z", "end": "2026-07-17T15:52:00Z", "location": "Kanepi, Estonia" },
+        { "title": "WRC - SS7 Elva linn (Estonia)", "start": "2026-07-17T16:35:00Z", "end": "2026-07-17T16:45:00Z", "location": "Elva, Estonia" },
+        { "title": "WRC - SS8 Peipsiääre 1 (Estonia)", "start": "2026-07-18T06:56:00Z", "end": "2026-07-18T07:26:00Z", "location": "Peipsiääre, Estonia" },
+        { "title": "WRC - SS9 Mustvee 1 (Estonia)", "start": "2026-07-18T07:49:00Z", "end": "2026-07-18T08:04:00Z", "location": "Mustvee, Estonia" },
+        { "title": "WRC - SS10 Peipsiääre 2 (Estonia)", "start": "2026-07-18T09:10:00Z", "end": "2026-07-18T09:40:00Z", "location": "Peipsiääre, Estonia" },
+        { "title": "WRC - SS11 Mustvee 2 (Estonia)", "start": "2026-07-18T10:03:00Z", "end": "2026-07-18T10:18:00Z", "location": "Mustvee, Estonia" },
+        { "title": "WRC - SS12 Kambja 1 (Estonia)", "start": "2026-07-18T12:48:00Z", "end": "2026-07-18T13:18:00Z", "location": "Kambja, Estonia" },
+        { "title": "WRC - SS13 Otepää 1 (Estonia)", "start": "2026-07-18T14:05:00Z", "end": "2026-07-18T14:25:00Z", "location": "Otepää, Estonia" },
+        { "title": "WRC - SS14 Kambja 2 (Estonia)", "start": "2026-07-18T14:58:00Z", "end": "2026-07-18T15:28:00Z", "location": "Kambja, Estonia" },
+        { "title": "WRC - SS15 Otepää 2 (Estonia)", "start": "2026-07-18T16:05:00Z", "end": "2026-07-18T16:25:00Z", "location": "Otepää, Estonia" },
+        { "title": "WRC - SS16 Tartu vald (Estonia)", "start": "2026-07-18T17:35:00Z", "end": "2026-07-18T17:45:00Z", "location": "Tartu, Estonia" },
+        { "title": "WRC - SS17 Kääriku 1 (Estonia)", "start": "2026-07-19T08:05:00Z", "end": "2026-07-19T08:35:00Z", "location": "Kääriku, Estonia" },
+        { "title": "WRC - SS18 Kääriku 2 - Wolf Power Stage (Estonia)", "start": "2026-07-19T10:15:00Z", "end": "2026-07-19T10:45:00Z", "location": "Kääriku, Estonia" }
+      ]
+    },
+    {
       "matchDate": "2026-07-30",
       "round": 10,
       "sessions": [

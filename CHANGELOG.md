@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.227.8 — 2026-07-14
+
+### Added
+- WRC session times: curated `content/series/wrc/sessions.json` override for Round 9 Delfi Rally Estonia (16–19 July 2026, EE). The upstream Google Calendar ICS emits the whole weekend as one date-only entry (`DTSTART;VALUE=DATE:20260716`), which `lib/ics.ts` flags `dateOnly` and the UI renders as "TBC". Added a 19-session block (`matchDate: "2026-07-16"`, `round: 9`) that `applySessionsOverrides` (`lib/sessions-overrides.ts`) splices in over the ±2-day match window: Kastre shakedown plus SS1–SS18, with SS18 Kääriku 2 tagged as the Wolf Power Stage. Times stored in UTC (Estonia is EEST / UTC+3 in July, so local minus 3h). Every one of the 18 stage start times is triple-verified against Wikipedia "2026 Rally Estonia" (itinerary cites eWRC-results.com), rally-maps.com (UTC+3), and motorsportscalendar.com; the last publishes the identical schedule in UTC, where each value equals the EEST time minus 3h exactly. wrc.com (HTTP 403) and eWRC-results.com (HTTP 402) blocked direct fetch. Shakedown start 09:01 EEST confirmed by Wikipedia plus rally-maps. Per-stage `end` values are nominal running windows (the UI shows only `start`; `end` only gates the live/past badge). Ceremonial start, service, and podium were left out as single-source (eWRC via Wikipedia) and outside the existing WRC block convention. Other uncurated 2026 rounds (2, 3, 5, 7, 11, 12, 13, 14) were intentionally left as-is, not yet confirmable from two sources.
+
 ## 0.227.7 — 2026-07-14
 
 ### Changed
