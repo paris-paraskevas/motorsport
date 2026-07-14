@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.228.5 — 2026-07-14
+
+### Fixed
+- `dev.paddock-tracker.com` is now admin-only at the routing layer (`proxy.ts`, inside the existing `dev.` auth block): any path that is not an `/admin*` route, an `/api/*` endpoint, or a heatmap-overlay frame (`?hm=1`) returns 404 on the dev host. Previously only `/` rewrote to `/admin`, so `dev.paddock-tracker.com/app` (and every other public route) still served the site on the dev surface. The `?hm=1` allowance keeps the admin click-heatmap overlay working (it iframes real pages same-origin under X-Frame SAMEORIGIN); `/api/*` stays open for admin endpoints + framed-page data. Apex host untouched (guard is `host.startsWith('dev.')`). Verified: anonymous `dev.` still redirects to sign-in, apex `/app` still 200s; admin-authed 404 confirmed on dev by the operator.
+
 ## 0.228.4 — 2026-07-14
 
 ### Changed
