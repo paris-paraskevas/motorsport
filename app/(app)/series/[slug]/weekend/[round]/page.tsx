@@ -197,6 +197,7 @@ export default async function WeekendPage({
           organizerUrl: series.meta.officialSite ?? `${SITE_URL}/series/${slug}`,
           performers: roster?.teams.map(t => t.name) ?? [],
           addressCountry: circuitMatch?.circuit.countryCode ?? roundMeta?.countryCode,
+          venue: circuitMatch?.circuit.name,
           geo: circuitMatch
             ? { lat: circuitMatch.circuit.lat, lon: circuitMatch.circuit.lon }
             : undefined,

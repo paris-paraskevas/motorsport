@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.1 — 2026-07-14
+
+**Search fix.** Race-weekend pages now always include venue data in their structured data, so Google can show them as event rich results (fixes a "missing location" error).
+
 ## 0.227.0 — 2026-07-14
 
 **Find your way around a series faster.** Every series page now opens with a clear "Learn about" panel linking straight to its history, rules, champions, drivers, and overview.
