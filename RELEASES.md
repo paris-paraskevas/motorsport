@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.4 — 2026-07-14
+
+**Brighter header.** The buttons in the top bar now share the same amber style.
+
 ## 0.228.3 — 2026-07-14
 
 **Internal.** Isolated the private admin dashboard from the main site and fixed a panel layout issue there.

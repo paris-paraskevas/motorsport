@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.228.4 — 2026-07-14
+
+### Changed
+- All header utility controls now use the amber brand fill for a uniform top bar (operator request). `components/HeaderUtils.tsx` (Contact, Feedback, Account, Sign in) and `components/NotificationBell.tsx` switched from the bordered gray treatment to `bg-brand text-black hover:bg-brand-deep`, matching the existing Coffee + Search buttons. No size change (same padding + 44px targets), so the 0.228.2 mobile-header fit holds — verified the cluster still fits at 360px + 390px with every control amber, nothing clipped.
+
 ## 0.228.3 — 2026-07-14
 
 ### Changed
