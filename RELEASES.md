@@ -2,7 +2,7 @@ What's new in Paddock Tracker. Newest first.
 
 ## 0.227.9 — 2026-07-14
 
-**Readability and accessibility polish.** Formula 1's red accent is now a slightly brighter shade that meets contrast guidelines on dark backgrounds. Championship standings are now proper tables with clear column headers, which read better for screen readers and scroll sideways on small screens. The controls in the top bar have larger, easier-to-tap touch areas, and blog posts show their share buttons at the top so you can share a story before reading it.
+**Readability and accessibility polish.** Formula 1's red accent is now a slightly brighter shade that meets contrast guidelines on dark backgrounds. Championship standings are now proper tables with clear column headers, which read better for screen readers and scroll sideways on small screens. The controls in the top bar have larger, easier-to-tap touch areas, and blog posts show their share buttons at the top so you can share a story before reading it. The search button in the top bar is now brighter and clearly labeled, so it is easier to spot.
 
 ## 0.227.8 — 2026-07-14
 
