@@ -88,7 +88,9 @@ export function MonthScopedWeekends({
             </div>
           )}
           {inMonth.some(w => !w.weekend.isPast) && (
-            <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
+            // Single column (operator 2026-07-14: "no right side of box"): upcoming
+            // weekends stack full-width instead of a 2-col grid.
+            <div className="space-y-6">
               {inMonth
                 .filter(w => !w.weekend.isPast)
                 .map(({ weekend, round }) => (
