@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.228.7 — 2026-07-14
+
+### Added
+- `docs/ONBOARDING.md` — a concise contributor onboarding guide (stack, local setup + gotchas, the four environments including `testing.paddock-tracker.com`, the three route groups, a per-surface app map with data sources, the curated-first data rule, the design language, the file map, the ship workflow, guardrails, and the first UI/UX files to open). Internal doc, not rendered. Also logged the admin "← ACCOUNT" back-link fix (point it at the absolute apex `/account`) to the `IDEAS.md` inbox.
+
 ## 0.228.6 — 2026-07-14
 
 ### Fixed

@@ -8,6 +8,7 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ## Inbox (2026-07-13 — session 14, triage next session)
 
+- **Admin "← ACCOUNT" link → apex** (operator 2026-07-14) — the back-link on the isolated dev/admin surface must point to the absolute `https://paddock-tracker.com/account`, NOT a relative `/account` (which now 404s on `dev.` after the admin-only routing). Lives in the admin layout / `AdminNav`; small href fix.
 - **Sachsenring / MotoGP German GP blog** — DRAFT NEXT SESSION (operator ask). Stray `drafts/motogp-german-grand-prix-2026-preview.json` from a prior session; check preview-vs-digest vs the calendar, fact-check (RULE #1) via the `weekend-post` skill, land as a prod DB draft (never MDX).
 - **`/admin` redesign — GREEN-LIT, build next session** — multi-page: `/admin` (overview hub, card per page) + `/traffic` (GA4) + `/search` (GSC + Bing) + `/behaviour` (heatmap) + `/users` (dedicated Clerk) + `/submissions` + `/tools` (links to each tool page); telemetry-grid aesthetic, real routes, no `#` hash anchors. **Full route map + build notes in HANDOFF session-14.** PSI parked (needs `PSI_API_KEY`). Concept at `.aidesigner/mcp-latest.html`.
 - **⏳ Operator env/infra to light up analytics + heatmap** (details in HANDOFF session-14): apply the 2 heatmap migrations; set GA4/GSC/Bing env in Vercel (keys in operator's Downloads). All verified live locally; prod is env-gated.
