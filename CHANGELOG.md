@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.227.2 — 2026-07-14
+
+### Fixed
+- Dialog focus management (#563, WCAG 2.4.3 / 2.1.2 / 4.1.3): new `lib/useFocusTrap.ts` gives `Modal` + `ContactModal` focus-in on open, a Tab/Shift+Tab trap, Escape-to-close, and focus-restore to the trigger; ContactModal's submit result is now an `aria-live` status. Browser-verified: focus enters on open, Escape closes and restores focus to the trigger.
+- Home accessibility (#565): collapsible section titles are now `<h2>` (heading order h1→h2→h3, WCAG 1.3.1 / 2.4.6); looping animations (chyron ping + skeletons) gated behind `motion-reduce`; ~38 decorative icons `aria-hidden`; edge-fade masks on the series tab rail + home news-filter scroll rails. Browser-verified (5 section `<h2>`s, masked rail, 0 console errors).
+
+### Added
+- Champion-depth data for MotoGP (#564): `wins` / `runnerUp` / `runnerUpTeam` / `runnerUpPoints` on the 2016–2025 premier-class rows, mirroring the F1 shape (margin derived, not stored). Fact-checked 2+ sources/season (2025 verified live: Márquez 545 / 11 wins vs Álex Márquez 467). Inert until a UI reads it.
+
 ## 0.227.1 — 2026-07-14
 
 ### Fixed

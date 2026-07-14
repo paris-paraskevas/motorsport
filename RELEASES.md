@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.2 — 2026-07-14
+
+**Accessibility, plus more MotoGP history.** Pop-up dialogs now keep keyboard focus inside and close on Escape, the home page has cleaner heading structure and calmer motion for reduced-motion users, and recent MotoGP champions gained runner-up and race-win detail behind the scenes.
+
 ## 0.227.1 — 2026-07-14
 
 **Search fix.** Race-weekend pages now always include venue data in their structured data, so Google can show them as event rich results (fixes a "missing location" error).
