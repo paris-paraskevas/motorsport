@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.6 — 2026-07-14
+
+**Calendar polish.** Race-weekend cards on a series' calendar page are now fully outlined, so they no longer look cut off along the right edge.
+
 ## 0.227.5 — 2026-07-14
 
 **Internal.** Session notes and planning docs.

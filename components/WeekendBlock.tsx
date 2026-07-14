@@ -43,7 +43,7 @@ export function WeekendBlock({
     return (
       <Wrapper
         {...(isChampionshipRound ? { href: `/series/${seriesSlug}/weekend/${round}` } : {})}
-        className={`relative block border-y border-border py-2.5 pl-5 pr-4 transition-colors duration-(--duration-fast) ${
+        className={`relative block border border-border py-2.5 pl-5 pr-4 transition-colors duration-(--duration-fast) ${
           isChampionshipRound ? 'hover:bg-surface' : ''
         }`}
       >
@@ -77,7 +77,7 @@ export function WeekendBlock({
       {...(isChampionshipRound
         ? { href: `/series/${seriesSlug}/weekend/${round}` }
         : {})}
-      className={`relative block border-y border-border p-4 pl-5 transition-colors duration-(--duration-fast) ${
+      className={`relative block border border-border p-4 pl-5 transition-colors duration-(--duration-fast) ${
         isChampionshipRound ? 'hover:bg-surface' : ''
       } ${weekend.isPast ? 'opacity-50 hover:opacity-80' : ''}`}
     >
