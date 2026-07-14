@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.227.7 — 2026-07-14
+
+**Straight to the app.** If you're signed in, opening the site now takes you to your app home instead of the marketing page. New and signed-out visitors still land on the usual welcome page.
+
 ## 0.227.6 — 2026-07-14
 
 **Calendar polish.** Race-weekend cards on a series' calendar page are now fully outlined, so they no longer look cut off along the right edge.
