@@ -85,6 +85,17 @@ export default clerkMiddleware(async (auth, req) => {
       dest.pathname = '/admin';
       return NextResponse.rewrite(dest);
     }
+    // dev.* is the ADMIN surface only: anything that is not an /admin route, an
+    // API (admin endpoints + the data the heatmap-framed pages fetch), or a
+    // heatmap overlay frame (?hm=1, which iframes real site pages same-origin)
+    // 404s — e.g. dev.paddock-tracker.com/app must NOT serve the public app.
+    if (
+      !url.pathname.startsWith('/admin') &&
+      !url.pathname.startsWith('/api/') &&
+      url.searchParams.get('hm') !== '1'
+    ) {
+      return new NextResponse('Not found', { status: 404 });
+    }
   }
 
   // Signed-in visitors skip the marketing landing: on the main host, / -> /app.
