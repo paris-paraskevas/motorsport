@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
+import { matchCircuitEntry } from '@/lib/circuits';
 import type { Weekend } from '@/lib/types';
 import { LocalTime } from '@/components/LocalTime';
 import {
@@ -677,10 +678,15 @@ export default async function SessionPage({
   // weekend page (venue/name via the shared circuit matcher; fs reads, so it
   // gracefully nulls for circuits without a layout).
   const watch = series.meta.watch;
-  const circuitLayout = await circuitLayoutFor(
-    weekend.sessions.find(s => s.location)?.location,
-    weekendTitle,
-  );
+  const venueLocation = weekend.sessions.find(s => s.location)?.location;
+  const circuitLayout = await circuitLayoutFor(venueLocation, weekendTitle);
+
+  // SportsEvent enrichment for the session event — the same circuit (address/geo)
+  // + round (host country / cancellation) resolution the weekend page does, so
+  // the session-level SportsEvent carries a full address, not a name-only Place.
+  // fs reads, cheap; gracefully partial when a venue/round isn't curated.
+  const circuitMatch = await matchCircuitEntry(venueLocation, weekendTitle);
+  const roundMeta = series.rounds?.rounds?.find(r => r.round === round);
 
   // Per-session structured data: a breadcrumb (Home > series > weekend >
   // session) plus a session-level SportsEvent whose startDate is the real
@@ -688,6 +694,9 @@ export default async function SessionPage({
   // only when the time is known (dateOnly/TBC sessions have no real instant).
   const sessionEventName = `${sessionName} at ${series.meta.name} ${weekendTitle}`;
   const sessionUrl = `${SITE_URL}/series/${slug}/weekend/${round}/${sessionParam}`;
+  const sessionEventDescription =
+    `${sessionName} at the ${series.meta.name} ${weekendTitle}` +
+    `, Round ${round} of the ${series.meta.season} season.`;
 
   return (
     <div
@@ -713,7 +722,15 @@ export default async function SessionPage({
             startDate: session.start,
             endDate: session.end,
             url: sessionUrl,
+            description: sessionEventDescription,
             organizerUrl: series.meta.officialSite ?? `${SITE_URL}/series/${slug}`,
+            addressCountry: circuitMatch?.circuit.countryCode ?? roundMeta?.countryCode,
+            venue: circuitMatch?.circuit.name,
+            geo: circuitMatch
+              ? { lat: circuitMatch.circuit.lat, lon: circuitMatch.circuit.lon }
+              : undefined,
+            cancelled: roundMeta?.cancelled,
+            watch,
           })}
         />
       )}

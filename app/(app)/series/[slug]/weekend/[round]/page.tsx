@@ -203,6 +203,8 @@ export default async function WeekendPage({
             : undefined,
           subEvents: sessionEvents,
           previousStartDate: weekend.previousStartDate,
+          cancelled: roundMeta?.cancelled,
+          watch,
         })}
       />
       {/* Radial wash retired with the rest of the app's (2c-3 precedent);

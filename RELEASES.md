@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.5 — 2026-07-14
+
+**Richer event data for search.** Race weekend and session pages now give search engines fuller event details, including the venue, where to watch, and event status, so listings can appear as richer race results.
+
 ## 0.228.4 — 2026-07-14
 
 **Brighter header.** The buttons in the top bar now share the same amber style.
