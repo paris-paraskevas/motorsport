@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.228.1 — 2026-07-14
+
+**Fix.** Restored IndyCar's Chip Ganassi team colour, which was changed by mistake in the previous update.
+
 ## 0.228.0 — 2026-07-14
 
 **Internal.** Rebuilt the private admin console as a multi-page dashboard.
