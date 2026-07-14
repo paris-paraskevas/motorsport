@@ -64,14 +64,18 @@ export function WeekendTabs({
     <section>
       <nav
         aria-label="Weekend sections"
+        role="tablist"
         className="mb-5 flex gap-5 border-b border-border font-mono text-[11px] uppercase tracking-[0.16em]"
       >
         {tabs.map(t => (
           <button
             key={t.key}
             type="button"
+            role="tab"
+            id={`weekend-tab-${t.key}`}
+            aria-selected={active === t.key}
+            aria-controls={`weekend-panel-${t.key}`}
             onClick={() => open(t.key)}
-            aria-current={active === t.key ? 'page' : undefined}
             className={`-mb-px border-b-2 pb-2 transition-colors duration-(--duration-fast) ${
               active === t.key ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'
             }`}
@@ -81,7 +85,13 @@ export function WeekendTabs({
         ))}
       </nav>
 
-      <div hidden={active !== 'schedule'} className="space-y-8">
+      <div
+        id="weekend-panel-schedule"
+        role="tabpanel"
+        aria-labelledby="weekend-tab-schedule"
+        hidden={active !== 'schedule'}
+        className="space-y-8"
+      >
         {scheduleSlot}
         <div>
           <button
@@ -101,13 +111,13 @@ export function WeekendTabs({
       </div>
 
       {showBets && seen.has('bets') && (
-        <div hidden={active !== 'bets'}>
+        <div id="weekend-panel-bets" role="tabpanel" aria-labelledby="weekend-tab-bets" hidden={active !== 'bets'}>
           <WeekendBetting seriesSlug={slug} round={round} isPast={isPast} />
         </div>
       )}
 
       {showNews && seen.has('news') && (
-        <div hidden={active !== 'news'}>
+        <div id="weekend-panel-news" role="tabpanel" aria-labelledby="weekend-tab-news" hidden={active !== 'news'}>
           <WeekendNewsClient slug={slug} round={round} />
         </div>
       )}

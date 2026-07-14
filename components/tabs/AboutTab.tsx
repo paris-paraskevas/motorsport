@@ -45,7 +45,8 @@ export async function AboutTab({ series }: { series: Series }) {
                          prose-headings:tracking-tight prose-headings:text-text
                          prose-h2:text-base prose-h2:mt-6 prose-h2:mb-3 prose-h2:font-semibold
                          prose-p:leading-relaxed
-                         prose-strong:text-text"
+                         prose-strong:text-text
+                         prose-table:block prose-table:overflow-x-auto prose-table:max-w-full"
               dangerouslySetInnerHTML={{ __html: overview }}
             />
           </section>
@@ -56,7 +57,8 @@ export async function AboutTab({ series }: { series: Series }) {
                        prose-headings:tracking-tight prose-headings:text-text
                        prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-3 prose-h2:font-semibold
                        prose-p:leading-relaxed
-                       prose-strong:text-text"
+                       prose-strong:text-text
+                       prose-table:block prose-table:overflow-x-auto prose-table:max-w-full"
             dangerouslySetInnerHTML={{ __html: overview }}
           />
         ))}

@@ -98,6 +98,14 @@ export function AppShell({
 
   return (
     <>
+      {/* Skip link: the first focusable element, visually hidden until keyboard
+          focus, jumps past the fixed header/nav to the main content (WCAG 2.4.1). */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-md focus:border focus:border-border focus:bg-surface-elevated focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-text"
+      >
+        Skip to content
+      </a>
       {/* Fixed (not sticky — overflow-x: hidden on body kills sticky) */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated/85 backdrop-blur-xl border-b border-border pt-[env(safe-area-inset-top)]">
         <div className="w-full px-4 md:px-6 lg:px-8 h-14 flex items-center gap-6">
@@ -218,7 +226,7 @@ export function AppShell({
 
       {/* pt-14 clears the fixed header; bottom padding clears the mobile
           bottom bar (h-14 + device safe area). */}
-      <main className="min-h-screen flex flex-col pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <main id="main-content" tabIndex={-1} className="min-h-screen flex flex-col pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none">
         <div className="flex-1">{children}</div>
         <Footer />
       </main>
