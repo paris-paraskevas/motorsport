@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.12 — 2026-07-15
+
+**Internal.** Health-check notes.
+
 ## 0.229.11 — 2026-07-15
 
 **Internal.** Planning-doc cleanup.

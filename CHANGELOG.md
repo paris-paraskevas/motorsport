@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.12 — 2026-07-15
+
+### Changed
+- Docs: logged the results-feed health failure to `docs/HANDOFF.md` (session-17 block, ⚠ CRITICAL section). `.github/workflows/health.yml` has been RED every run since ~2026-07-13 (HTTP 503 from `/api/cron/health`); reproduced locally via `npm run health:results`, so it's real source drift, not a datacenter-IP block. All 13 standings OK; 3 of 8 results feeds return empty — `f2` + `f3` (the FIA sites were rebuilt: `fiaformula2.com/Standings/Driver` now 308-redirects to `/en/standings/2026/drivers` and the new page has no `__NEXT_DATA__`, so `extractNextData` in `lib/results/f2.ts` + `f3.ts` is dead at the root → parser rewrite against the redesigned site) and `wrc` (Wikipedia page intact with all winner columns, but `fetchWRCSeasonResults` in `lib/results/wrc.ts` returns `[]` → table-navigation drift, tractable; separate from the healthy curated per-stage `stage-results.json`). Made the WRC/F2/F3 fix the #1 next-session priority (all outbound → verify locally + a preview pass before merge, per the 0.12.12 rule). Also folded #594–#596 (handoff, repo cleanup, planning-doc prune) into the session-17 shipped list. Internal.
+
 ## 0.229.11 — 2026-07-15
 
 ### Changed
