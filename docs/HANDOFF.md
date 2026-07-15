@@ -6,9 +6,15 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-15 (LATEST, session 17 — WRC per-stage classification + reachability, SEO internal-linking sweep, home/nav cleanups, Cloudflare migration) — `main` = 0.229.8
+## ⚡ Next session pickup — 2026-07-15 (LATEST, session 17 — WRC per-stage + reachability, SEO internal-linking, home/nav cleanups, Cloudflare migration, repo/doc cleanup; ⚠ found results-health RED) — `main` = 0.229.11
 
-**10 commits (0.228.8 → 0.229.8), all merged + prod-shipping.** Live-driven throughout. Theme: shipped the WRC per-stage classification AND made it reachable, ran a broad SEO internal-linking pass, and cleaned up nav/home. The Batch-1 "SEO content" audit found the content offensive already won.
+**13 commits (0.228.8 → 0.229.11), all merged + prod-shipping.** Live-driven throughout. Shipped the WRC per-stage classification and made it reachable, a broad SEO internal-linking pass, nav/home cleanups, and repo/doc cleanup — then diagnosed a 2-day-red results health check (⚠ below). The Batch-1 "SEO content" audit found the content offensive already won (explainers exist + `featured`; the lever is internal linking + authority, not more content).
+
+### ⚠ CRITICAL — results health RED for 2+ days (F2 / F3 / WRC results EMPTY)
+The 6-hourly `.github/workflows/health.yml` has failed every run since ~2026-07-13 (HTTP 503 from `/api/cron/health`). Reproduced **locally** via `npm run health:results`, so it's **real source drift, NOT a datacenter-IP block**. All **13 standings OK**; **3 of 8 results feeds down** — `f2`, `f3`, `wrc` all return **EMPTY (0 rows)**:
+- **F2 + F3 — the FIA sites were REBUILT → parser rewrite needed.** `fiaformula2.com/Standings/Driver` now **308-redirects to `/en/standings/2026/drivers`**, and the new page has **no `__NEXT_DATA__`** — the exact JSON `lib/results/f2.ts` + `f3.ts` (`extractNextData`) depend on. Both parsers are dead at the root (wrong URL AND the extraction method is gone). Fix = find where the redesigned site now holds its data (embedded JSON / an API / SSR tables) and rewrite. F3 mirrors F2 (`fiaformula3.com`).
+- **WRC — parser drift, source is fine → smaller fix.** `en.wikipedia.org/wiki/2026_World_Rally_Championship` is HTTP 200 with `Season_summary` + all four winner columns present, but `fetchWRCSeasonResults` (`lib/results/wrc.ts`) returns `[]` — the table-navigation (mw-heading walk / `findColIndex`) regressed against a Wikipedia structure tweak. Data's all there → a parser debug. (Separate from the curated per-stage `content/series/wrc/stage-results.json` from #586, which is healthy.)
+- **Impact:** the F2/F3/WRC *results tabs* are empty/stale (fail-soft serves last-good where cached) — not a crash; `health.yml` stays red until fixed.
 
 ### ✅ Shipped
 - **#585 (0.228.9)** fix(admin): "← Account" back-link → absolute apex `${SITE_URL}/settings` (relative 404s on `dev.`; `/account` has no route — `/settings` is it).
@@ -21,6 +27,9 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 - **dc1d140 (0.229.6)** feat(home): **removed the "Just missed" widget** (operator "can't get rid of it"; a prior hideable pass didn't satisfy). `series-just-missed` ("Series results") covers the data; the `/api/just-missed` route stays. ⚠ **committed direct to main (branch slip after the #591 merge) — verified + green, but no PR.**
 - **#592 (0.229.7)** feat(seo): series "Learn about" card links each series' Points + What's new explainers (`topics.ts` `pointsGuideForSeries`/`whatsNewGuideForSeries`, bespoke curated slugs verified vs `content/information/answers/`).
 - **#593 (0.229.8)** fix(wrc): rally weekend schedule rows are now clickable — `sessionLinkBase` (`weekend/[round]/page.tsx`) was missing `wrc`, so stage pages (and the #586 classification) were unreachable from the schedule.
+- **#594 (0.229.9)** docs: session-17 handoff.
+- **#595 (0.229.10)** chore: removed 6.6 MB of superseded design mockups (`docs/superpowers/design/mockups/*.webp` + `index.html`) + orphaned root `fe-champ.html`. Also cleared ~18 MB of gitignored root screenshots + `.playwright-mcp/`/`.aidesigner/` locally (no repo impact).
+- **#596 (0.229.11)** docs: pruned completed items from IDEAS + SCHEDULE (cross-checked vs CHANGELOG + code — blog embeds, NLS parser, `lib/onboarding.ts`, head-to-head all already shipped; SCHEDULE "Backlog stubs" reframed as historical, `IDEAS.md` is the live backlog).
 
 ### 🌩 Cloudflare migration (operator, mid-session)
 - Nameservers moved to Cloudflare (account **`pparaskevas.dev@gmail.com`**). **Prod is healthy through CF** — paddock-tracker.com serves, no SSL/DNS errors; **Clerk sign-in confirmed working** (FAPI resolves; both `clerk.`/`accounts.` records survived the move).
@@ -33,10 +42,11 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 - **`/information/tracks/*` + the explainers were near internal-link orphans** → the "crawled, currently not indexed" bucket (100+ pages) is authority/time + linking, NOT thin content (Silverstone has a ~1,460-char article and still isn't indexed). The intentionally-noindexed `who-won-<year>` stubs are correct (scaled-content avoidance) — do NOT "fix" the GSC noindex validations.
 
 ### 📋 Next session — prioritized
-1. **IndyCar session times + results — PREVIEW-PAIRED.** Outbound (motorsport.com/indycar): build + local-verify the parser, open a PR **held UNMERGED** for the operator's Vercel preview pass (datacenter-IP check — the 0.12.12 NASCAR-regression rule). Never merge unverified outbound.
-2. **Bing Webmaster Tools** — operator claims the domain + hands over a verification token → drop in the verification file (IndexNow already pings Bing each deploy).
-3. **Distribution / authority** — on-platform SEO is exhausted; indexing the not-indexed pages is now backlinks/traffic/time + CF CDN/caching once the plugin's in.
-- Side: extend the series-explainer links to more surfaces; doc hygiene (trim HANDOFF/SCHEDULE — SCHEDULE lagged since session 10).
+1. **FIX results health (RED 2+ days — see ⚠ above).** (a) **WRC** parser debug (`lib/results/wrc.ts` — data's present on Wikipedia; fix the table-nav/column detect); (b) **F2 + F3** rewrite for the rebuilt FIA sites (new URL `/en/standings/2026/drivers`, no `__NEXT_DATA__` → reverse-engineer the new data source). All three are outbound → verify with `npm run health:results` locally + a preview pass before merge. WRC is the tractable one; F2/F3 are the bigger rewrite.
+2. **IndyCar session times + results — PREVIEW-PAIRED.** Outbound (motorsport.com/indycar): build + local-verify, PR **held UNMERGED** for the operator's Vercel preview pass (0.12.12 NASCAR-regression rule).
+3. **Bing Webmaster Tools** — operator claims the domain + hands over a verification token → add the verification file (IndexNow already pings Bing each deploy).
+4. **Distribution / authority** — on-platform SEO exhausted; indexing the 100+ not-indexed pages is now backlinks/traffic/time + CF CDN once the plugin's in.
+- Side: extend series-explainer links to more surfaces; doc hygiene (trim HANDOFF/SCHEDULE).
 
 ### ⏳ Operator confirms owed
 - Cloudflare (all above). Install the CF plugin for agent DNS access. (Carryover: SportsEvent rich-results in GSC; the 100+ not-indexed is authority/time, not a bug.)
