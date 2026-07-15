@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.7 — 2026-07-15
+
+**More to learn per series.** Each series page now links its points-system and 2026-changes explainers, next to history and rules.
+
 ## 0.229.6 — 2026-07-15
 
 **Leaner home.** Removed the "Just missed" block from the home screen — recent results still live on each series page and in the per-series results widget.

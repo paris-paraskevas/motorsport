@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
 import { seriesWithThreads } from '@/lib/threads';
 import { resolveTab, labelForTab, describeTab, type TabKey } from '@/lib/tabs';
-import { topicForSeries, aboutGuideForSeries } from '@/lib/information/topics';
+import { topicForSeries, aboutGuideForSeries, pointsGuideForSeries, whatsNewGuideForSeries } from '@/lib/information/topics';
 import { publishedPostsForSeries } from '@/lib/blog';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
@@ -263,10 +263,14 @@ function SeriesLearnMore({
 }) {
   const topic = topicForSeries(slug);
   const about = aboutGuideForSeries(slug) ?? `/series/${slug}/about`;
+  const pointsHref = pointsGuideForSeries(slug);
+  const whatsNewHref = whatsNewGuideForSeries(slug);
   const links: Array<{ label: string; href: string; blurb: string }> = [
     { label: 'About', href: about, blurb: 'Overview' },
     { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },
     { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
+    ...(pointsHref ? [{ label: 'Points', href: pointsHref, blurb: 'How scoring works' }] : []),
+    ...(whatsNewHref ? [{ label: 'What’s new', href: whatsNewHref, blurb: '2026 changes' }] : []),
     { label: singleEvent ? 'Past winners' : 'Champions', href: `/series/${slug}/champions`, blurb: 'Year by year' },
     { label: 'Drivers', href: `/series/${slug}/drivers`, blurb: 'The grid' },
   ];

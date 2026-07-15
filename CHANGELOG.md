@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.7 — 2026-07-15
+
+### Changed
+- The series "Learn about" card now links each series' **Points** and **What's new** explainers (`lib/information/topics.ts` `pointsGuideForSeries` + `whatsNewGuideForSeries`; `SeriesLearnMore` in `components/SeriesPageView.tsx`), alongside the existing About/History/Rules. These featured `/information` explainers (how scoring works, the 2026 rule changes) existed but were reachable only from the topic indexes + on-site search — surfacing them from the indexed series hub adds inbound internal links (the lever for the "crawled, currently not indexed" bucket) plus a reader shortcut. Bespoke curated slugs are mapped explicitly (mirroring `SERIES_WHAT_IS`, verified against `content/information/answers/`); a series without one omits the link. Verified: tsc clean; F1 card links Points → `how-the-f1-points-system-works` (200) + What's new → `whats-new-in-f1-2026`.
+
 ## 0.229.6 — 2026-07-15
 
 ### Removed
