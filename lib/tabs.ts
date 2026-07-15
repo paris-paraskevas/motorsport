@@ -4,7 +4,7 @@ export const TABS = [
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
   { key: 'drivers',   label: 'Drivers' },
-  { key: 'tracks',    label: 'Tracks' },
+  { key: 'tracks',    label: 'Rounds' },
   { key: 'about',     label: 'About' },
   { key: 'history',   label: 'History' },
   { key: 'champions', label: 'Champions' },
@@ -115,7 +115,7 @@ export function describeTab(
       };
     case 'tracks':
       return {
-        title: `${seriesName} ${season} tracks — every circuit mapped`,
+        title: `${seriesName} ${season} rounds — every circuit mapped`,
         description: `All ${season} ${seriesName} circuits in one place — track layouts, locations, and links to each race weekend.`,
       };
     case 'about':

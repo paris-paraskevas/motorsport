@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.4 — 2026-07-15
+
+**Clearer tab name.** The series "Tracks" tab is now "Rounds" — it shows each round's circuit and links through to that race weekend.
+
 ## 0.229.3 — 2026-07-15
 
 **Jump to any circuit.** Each series calendar now lists the season's circuits, each linking straight to its profile — and a wrong-circuit link (the Miami Grand Prix pointed at the wrong track) is fixed.

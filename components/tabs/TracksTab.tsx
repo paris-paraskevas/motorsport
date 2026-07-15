@@ -37,7 +37,7 @@ export async function TracksTab({ series }: { series: Series }) {
     });
   }
 
-  if (cards.length === 0) return <PlaceholderTab tabLabel="Tracks" />;
+  if (cards.length === 0) return <PlaceholderTab tabLabel="Rounds" />;
 
   // One credit line for the whole grid — every curated layout shares the same
   // licensed source (content/circuits-layout.json keeps them accurate).
