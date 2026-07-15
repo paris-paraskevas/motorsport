@@ -15,7 +15,7 @@ export type CircuitsMap = Record<string, Circuit>;
 
 let cache: CircuitsMap | null = null;
 
-async function loadCircuits(): Promise<CircuitsMap> {
+export async function loadCircuits(): Promise<CircuitsMap> {
   if (cache) return cache;
   try {
     const raw = await fs.readFile(
@@ -32,7 +32,7 @@ async function loadCircuits(): Promise<CircuitsMap> {
 // Match the combining diacritical marks block (U+0300..U+036F).
 const DIACRITICS_RE = /[̀-ͯ]/g;
 
-function normalise(s: string): string {
+export function normalise(s: string): string {
   return s
     .toLowerCase()
     .normalize('NFD')

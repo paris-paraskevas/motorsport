@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.3 — 2026-07-15
+
+**Jump to any circuit.** Each series calendar now lists the season's circuits, each linking straight to its profile — and a wrong-circuit link (the Miami Grand Prix pointed at the wrong track) is fixed.
+
 ## 0.229.2 — 2026-07-15
 
 **Circuit links on race weekends.** Each race weekend now links straight to its circuit's profile, so you can read about the track in a tap.
