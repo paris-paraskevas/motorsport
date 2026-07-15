@@ -6,22 +6,21 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ---
 
-## Inbox (2026-07-13 — session 14, triage next session)
+## Inbox (2026-07-15 — session 17 triage: completed items removed)
 
-- **Admin "← ACCOUNT" link → apex** (operator 2026-07-14) — the back-link on the isolated dev/admin surface must point to the absolute `https://paddock-tracker.com/account`, NOT a relative `/account` (which now 404s on `dev.` after the admin-only routing). Lives in the admin layout / `AdminNav`; small href fix.
-- **Sachsenring / MotoGP German GP blog** — DRAFT NEXT SESSION (operator ask). Stray `drafts/motogp-german-grand-prix-2026-preview.json` from a prior session; check preview-vs-digest vs the calendar, fact-check (RULE #1) via the `weekend-post` skill, land as a prod DB draft (never MDX).
-- **`/admin` redesign — GREEN-LIT, build next session** — multi-page: `/admin` (overview hub, card per page) + `/traffic` (GA4) + `/search` (GSC + Bing) + `/behaviour` (heatmap) + `/users` (dedicated Clerk) + `/submissions` + `/tools` (links to each tool page); telemetry-grid aesthetic, real routes, no `#` hash anchors. **Full route map + build notes in HANDOFF session-14.** PSI parked (needs `PSI_API_KEY`). Concept at `.aidesigner/mcp-latest.html`.
+- **[you] Cloudflare post-migration checks** — in the CF dashboard: Clerk records (`clerk.`/`accounts.`/`clkmail.` + the two DKIM CNAMEs) must be **DNS-only (grey cloud), NOT proxied**; SSL/TLS = **Full (strict)**; `dev.*` resolves; Vercel → Domains shows "Valid". Then install the CF Claude plugin (`claude plugin marketplace add cloudflare/skills` + `install cloudflare@cloudflare`) for agent DNS access. Site + Clerk sign-in confirmed healthy through CF as of session 17.
+- **IndyCar session times + results — PREVIEW-PAIRED** — outbound (motorsport.com/indycar). Build + local-verify the parser, open a PR **held UNMERGED** for the operator's Vercel preview pass (datacenter-IP check — the 0.12.12 NASCAR-regression rule). Never merge unverified outbound.
+- **Bing Webmaster Tools** — operator claims the domain + hands over a verification token → add the verification file (IndexNow already pings Bing each deploy).
 - **⏳ Operator env/infra to light up analytics + heatmap** (details in HANDOFF session-14): apply the 2 heatmap migrations; set GA4/GSC/Bing env in Vercel (keys in operator's Downloads). All verified live locally; prod is env-gated.
 - **Bahrain GP 2026** — NOT verified (operator confirmed). Reschedule parked until F1/FIA officially confirm; draft the marquee blog then.
-- **Trending content (ongoing)** — broader `tracks.json` enrichment (~130 thin profiles) + race-weekend "what time" landable content.
+- **Trending content (ongoing)** — the existing ~138 `tracks.json` profiles are already content-deep (verified session 17: 133/138 rich articles), so this is about MORE venues + race-weekend "what time" landable content, not enriching the current set.
 - **SEO Phase 2b (deferred)** — session `force-dynamic`→ISR (F1 `auth()`-gate refactor) + `LocalTime` Athens-SSR canonical time + selective session sitemap. Low SEO value now; recommend not doing unsupervised.
 - **Doc hygiene (parked)** — trim `docs/HANDOFF.md` + `SCHEDULE.md` to the last ~2–3 sessions; archive older to `docs/handoff-archive.md`.
 - **Heatmap overlay blob customisable**: make the yellow colour / shadow around the mouse (click-heatmap overlay) user-adjustable; fits `/admin/behaviour` in the `/admin` redesign.
 - **All-time legends pages per series**: dedicated pages for the greats (Schumacher, Prost, Senna, Agostini, Rossi, ...), one set per series. Content, RULE #1, fact-checked.
 - **Better AI-assistant training**: improve the assistant's grounding + answer quality; relates to B8 Assistant Phase-2 (grounded Q&A over the `/information` hub).
-- **Blog share bar at the top**: move the post share controls from the sidebar to the top of the article so readers can share before reading.
-- **GSC zero-click content targets (2026-07-14, 7-day)** — huge impression/near-zero-click clusters flag under-served or missing explainer pages: DRS (dozens of variants — "what is drs in f1" 37, "drs f1" 29, plus 2026-specific "what replaces drs"/"replace drs scheduling" — DRS is being dropped, prime timely explainer), "most motogp championships" (42 impr/0 clicks + many "most X titles" variants), "wec points system" (40) + "f1/indycar/wrc/motogp points system", "what is moto2/moto3/formula 2/3", "how does rally racing work". Feeds SEO Phase 2b / B3 content — audit which /information pages exist vs. rank-but-don't-convert.
-- **TBC session times (WRC/IndyCar)** — researched session 15: only WRC (9 rounds) + IndyCar (5) fall through to date-only ICS ("TBC"). WRC = curate `content/series/wrc/sessions.json` (Wikipedia-assisted; wrc.com/ewrc bot-blocked from Vercel, NOT a clean cron); IndyCar = scrape `motorsport.com/indycar` (datacenter-reachable SSR, preview-verify). R9 Estonia curatable now. Full brief in session-15 HANDOFF.
+- **GSC zero-click clusters — content EXISTS, don't rewrite (session-17 audit).** Every high-demand explainer (DRS + 2026 replacement, all points systems, what-is/whats-new/weekend ×series, differences, rally, most-titles) is already in `content/information/answers/` AND `featured: true`. They're "crawled, currently not indexed" — an authority/time + internal-linking problem, not a content gap. Internal linking shipped session 17 (#588/#589/#592). Remaining lever = authority (backlinks/traffic) + Bing/GEO. Do NOT write duplicate explainers.
+- **TBC session times — WRC remaining rounds.** R9 Estonia curated (session 16). Remaining WRC date-only rounds are curatable into `content/series/wrc/sessions.json` (Wikipedia-assisted; wrc.com/ewrc bot-blocked from Vercel) as their itineraries publish — token-heavy, modest value. (IndyCar moved to the preview-paired Inbox item above.)
 
 ## B1 — Feedback-board quick wins
 

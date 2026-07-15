@@ -6,7 +6,44 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-14 (LATEST, session 16 — calendar CSS fix + parallel batch (taste-calls / admin ② / WRC) + post-ship UI/SEO/proxy fixes + Fotis onboarding) — `main` = 0.228.7
+## ⚡ Next session pickup — 2026-07-15 (LATEST, session 17 — WRC per-stage classification + reachability, SEO internal-linking sweep, home/nav cleanups, Cloudflare migration) — `main` = 0.229.8
+
+**10 commits (0.228.8 → 0.229.8), all merged + prod-shipping.** Live-driven throughout. Theme: shipped the WRC per-stage classification AND made it reachable, ran a broad SEO internal-linking pass, and cleaned up nav/home. The Batch-1 "SEO content" audit found the content offensive already won.
+
+### ✅ Shipped
+- **#585 (0.228.9)** fix(admin): "← Account" back-link → absolute apex `${SITE_URL}/settings` (relative 404s on `dev.`; `/account` has no route — `/settings` is it).
+- **#586 (0.229.0)** feat(wrc): per-stage overall classification on stage session pages. Curated `content/series/wrc/stage-results.json` → `loadWrcStageResults` → `fetchWrcStageClassification` (`lib/results/wrc.ts`) → a `wrc` branch in the session-page classification dispatch. `SessionClassificationEntry` gained optional `coDriverName`+`car`. Pilot: R8 Acropolis final classification (top 15 of 45), eWRC + wrc.com, adversarially verified CLEAN (incl. the post-penalty final order). **eWRC gate PASSED via Playwright — the 402 is anti-bot, a real browser reads it.**
+- **#587 (0.229.1)** fix(ui): weekend session rail `overflow-x-auto`→`flex-wrap` (18-stage rallies were cut off at ~SS10, hidden scrollbar).
+- **#588 (0.229.2)** feat(seo): weekend pages link the venue → its `/information/tracks/<slug>` profile.
+- **#589 (0.229.3)** feat(seo): "Circuits this season" links on the series calendar + **fixed a wrong-circuit bug** — `getTrackInfoByCircuitSlug` (from #588) used the greedy substring matcher so the Miami GP linked to Homestead-Miami Speedway; rebuilt on EXACT normalised-name equality. `lib/circuits.ts` now exports `loadCircuits` + `normalise`.
+- **#590 (0.229.4)** refactor: series "Tracks" tab → **"Rounds"** (its cards link weekends, not track profiles). Tab key stays `tracks` (no `/tracks` URL 404).
+- **#591 (0.229.5)** fix(wrc): stage classification skips the 7-day KV session cache (curated edits surface on the next deploy).
+- **dc1d140 (0.229.6)** feat(home): **removed the "Just missed" widget** (operator "can't get rid of it"; a prior hideable pass didn't satisfy). `series-just-missed` ("Series results") covers the data; the `/api/just-missed` route stays. ⚠ **committed direct to main (branch slip after the #591 merge) — verified + green, but no PR.**
+- **#592 (0.229.7)** feat(seo): series "Learn about" card links each series' Points + What's new explainers (`topics.ts` `pointsGuideForSeries`/`whatsNewGuideForSeries`, bespoke curated slugs verified vs `content/information/answers/`).
+- **#593 (0.229.8)** fix(wrc): rally weekend schedule rows are now clickable — `sessionLinkBase` (`weekend/[round]/page.tsx`) was missing `wrc`, so stage pages (and the #586 classification) were unreachable from the schedule.
+
+### 🌩 Cloudflare migration (operator, mid-session)
+- Nameservers moved to Cloudflare (account **`pparaskevas.dev@gmail.com`**). **Prod is healthy through CF** — paddock-tracker.com serves, no SSL/DNS errors; **Clerk sign-in confirmed working** (FAPI resolves; both `clerk.`/`accounts.` records survived the move).
+- **No CF integration in the codebase** (grep clean). Agent access = install the CF Claude Code plugin (`claude plugin marketplace add cloudflare/skills` + `claude plugin install cloudflare@cloudflare` + `/reload-plugins`; OAuth on first tool use) — **operator/interactive action**.
+- **⚠ LANDMINE — the Clerk DNS records MUST be "DNS only" (grey cloud), NOT proxied (orange)**, or CF intercepts Clerk's SSL/edge and auth breaks. **Operator to verify:** grey cloud on `clerk.`/`accounts.`/`clkmail.` + the two DKIM CNAMEs present; SSL/TLS mode = **Full (strict)** (Flexible → Vercel redirect loops); `dev.*` resolves; Vercel → Domains shows "Valid".
+
+### 🧭 Findings / decisions (the "scrutinise + audit" pass)
+- **Batch-1 "SEO content" = already done.** Every GSC-demand explainer (DRS + 2026 replacement, all points systems, what-is/whats-new/weekend ×series, differences, rally, most-titles records) exists in `content/information/answers/` AND is `featured: true`. Writing more is redundant + dilutive. The lever is internal linking (shipped #588/#589/#592) + authority/time — NOT content.
+- **Rally per-stage FULL field: scrutiny-declined** as low-value — per-stage running orders (SS1–16) are transient; the headline (final classification) shipped in #586. Not worth the metered seat.
+- **`/information/tracks/*` + the explainers were near internal-link orphans** → the "crawled, currently not indexed" bucket (100+ pages) is authority/time + linking, NOT thin content (Silverstone has a ~1,460-char article and still isn't indexed). The intentionally-noindexed `who-won-<year>` stubs are correct (scaled-content avoidance) — do NOT "fix" the GSC noindex validations.
+
+### 📋 Next session — prioritized
+1. **IndyCar session times + results — PREVIEW-PAIRED.** Outbound (motorsport.com/indycar): build + local-verify the parser, open a PR **held UNMERGED** for the operator's Vercel preview pass (datacenter-IP check — the 0.12.12 NASCAR-regression rule). Never merge unverified outbound.
+2. **Bing Webmaster Tools** — operator claims the domain + hands over a verification token → drop in the verification file (IndexNow already pings Bing each deploy).
+3. **Distribution / authority** — on-platform SEO is exhausted; indexing the not-indexed pages is now backlinks/traffic/time + CF CDN/caching once the plugin's in.
+- Side: extend the series-explainer links to more surfaces; doc hygiene (trim HANDOFF/SCHEDULE — SCHEDULE lagged since session 10).
+
+### ⏳ Operator confirms owed
+- Cloudflare (all above). Install the CF plugin for agent DNS access. (Carryover: SportsEvent rich-results in GSC; the 100+ not-indexed is authority/time, not a bug.)
+
+---
+
+## ⚡ Next session pickup — 2026-07-14 (session 16 — calendar CSS fix + parallel batch (taste-calls / admin ② / WRC) + post-ship UI/SEO/proxy fixes + Fotis onboarding) — `main` = 0.228.7
 
 **12 PRs #572–#583 (0.227.6 → 0.228.7), all merged + prod-shipping.** Heavily live-driven (operator reviewing/redirecting throughout, batched decisions). Ran the green-lit ② `/admin` redesign + the 5 taste calls + WRC curation as parallel worktree agents, then a run of operator-reported post-ship fixes, then set up contributor onboarding for Fotis.
 
