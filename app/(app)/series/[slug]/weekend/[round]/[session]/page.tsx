@@ -394,7 +394,11 @@ function weekendSessionNav(
 function SessionRail({ items }: { items: ReturnType<typeof weekendSessionNav>['items'] }) {
   return (
     <nav aria-label="Weekend sessions" className="mb-6 border-y border-border">
-      <div className="flex overflow-x-auto scrollbar-none gap-5">
+      {/* Wrap rather than horizontal-scroll: rallies have ~18 stage sessions,
+          and the old `overflow-x-auto scrollbar-none` hid SS11+ off-screen with
+          no scrollbar affordance. Few-session weekends (F1 etc.) still sit on
+          one line; many-session weekends wrap to a full, visible stage index. */}
+      <div className="flex flex-wrap gap-x-5 gap-y-1 py-1">
         {items.map(item => (
           <Link
             key={item.uid}
