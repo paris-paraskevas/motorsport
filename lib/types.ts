@@ -224,6 +224,45 @@ export interface CuratedDriversFile {
   teams: CuratedTeamLineup[];
 }
 
+/** One crew's line in a curated WRC classification. Times are display-ready
+ *  strings verbatim from the primary sources (eWRC-results.com / wrc.com):
+ *  the leader carries `time` (cumulative), everyone else `gap` (to the
+ *  leader) and `interval` (to the car ahead). `cls` is the FIA group
+ *  (RC1=Rally1, RC2=Rally2, RC3=Rally3, …). */
+export interface WrcStageEntry {
+  position: number;
+  driverName: string;
+  coDriverName?: string;
+  car?: string;
+  team?: string;
+  cls?: string;
+  time?: string;
+  gap?: string;
+  interval?: string;
+  status?: 'DNF' | 'DNS' | 'DSQ';
+}
+
+/** One stage's curated classification. `kind` distinguishes the rally-ending
+ *  overall ("final") from a running overall after an intermediate stage
+ *  ("overall") or an individual stage's times ("stage"). */
+export interface WrcStageClassification {
+  label?: string;
+  kind?: 'final' | 'overall' | 'stage';
+  entries: WrcStageEntry[];
+}
+
+/** Curated per-stage WRC classifications: `rounds[round].stages[stageSlug]`,
+ *  where stageSlug is "ss1".."ssN" or "shakedown" (matched from the ICS
+ *  session title). Sourced offline from eWRC + wrc.com (RULE #1); the rally
+ *  results feed only carries winners, so the full per-stage field is curated. */
+export interface WrcStageResultsFile {
+  season: number;
+  rounds: Record<
+    string,
+    { rally?: string; stages: Record<string, WrcStageClassification> }
+  >;
+}
+
 export interface DriverStandingOverride {
   driverName: string;
   position?: number;

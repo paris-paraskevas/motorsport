@@ -25,6 +25,7 @@ import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SessionResults } from '@/lib/results/f3';
 import { fetchMotoGPSessionClassification } from '@/lib/results/motogp';
 import { fetchWsbkSessionClassification } from '@/lib/results/wsbk';
+import { fetchWrcStageClassification } from '@/lib/results/wrc';
 import { fetchImsaSeasonResults } from '@/lib/results/imsa';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import {
@@ -486,13 +487,18 @@ function ClassificationTable({
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2">
                 <span className="text-text text-sm font-medium truncate">{e.driverName}</span>
+                {e.coDriverName ? (
+                  <span className="hidden sm:inline text-text-muted text-xs font-normal truncate">/ {e.coDriverName}</span>
+                ) : null}
                 {e.driverCode ? (
                   <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
                     {e.driverCode}
                   </span>
                 ) : null}
               </div>
-              <div className="text-text-muted text-xs truncate">{e.team}</div>
+              <div className="text-text-muted text-xs truncate">
+                {e.car ? (e.team ? `${e.car} · ${e.team}` : e.car) : e.team}
+              </div>
             </div>
             {data.isQualifying ? (
               <span className="hidden sm:flex items-baseline gap-3 font-mono text-[11px] tabular-nums text-text-muted">
@@ -584,6 +590,9 @@ export default async function SessionPage({
           slug === 'wsbk'
             ? await fetchWsbkSessionClassification(series.meta.season, round, sl)
             : await fetchMotoGPSessionClassification(series.meta.season, round, sl);
+      } else if (slug === 'wrc') {
+        // Rally: curated per-stage overall classification (no live race feed).
+        classification = await fetchWrcStageClassification(round, session.title);
       } else {
         classification = await fetchRoundClassification(series, round, session.title);
       }
@@ -860,7 +869,7 @@ export default async function SessionPage({
         <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />
       )}
 
-      <CollapsibleSection title="Classification" defaultOpen>
+      <CollapsibleSection title={slug === 'wrc' ? 'Overall classification' : 'Classification'} defaultOpen>
         {classification ? (
           <ClassificationTable data={classification} showHeading={false} />
         ) : classClassifications.length > 0 ? (
@@ -874,9 +883,11 @@ export default async function SessionPage({
             <p className="text-text-muted text-sm">
               {slug === 'f1'
                 ? 'Classification not available for this session yet.'
-                : isRaceLikeTitle(session.title)
-                  ? 'Classification not available for this race yet — season results live on the series page.'
-                  : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
+                : slug === 'wrc'
+                  ? 'The full field for this stage isn’t published yet. The rally result and season standings live on the series page.'
+                  : isRaceLikeTitle(session.title)
+                    ? 'Classification not available for this race yet — season results live on the series page.'
+                    : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
             </p>
             <Link
               href={`/series/${slug}/results`}

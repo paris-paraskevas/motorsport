@@ -47,6 +47,11 @@ export interface SessionClassificationEntry {
   position: number | null;
   driverName: string;
   driverCode?: string;
+  // Rally crews: the co-driver alongside `driverName`, and the car model
+  // (e.g. "Toyota GR Yaris Rally1"). Only WRC sets these; every other series
+  // leaves them undefined, so ClassificationTable renders exactly as before.
+  coDriverName?: string;
+  car?: string;
   team: string;
   laps?: number;
   // Display-ready values; which ones are present depends on session type.
