@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.2 — 2026-07-15
+
+**Circuit links on race weekends.** Each race weekend now links straight to its circuit's profile, so you can read about the track in a tap.
+
 ## 0.229.1 — 2026-07-15
 
 **All stages visible.** On rally weekends, the stage bar now shows every stage at once instead of cutting off partway through.

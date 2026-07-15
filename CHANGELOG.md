@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.2 — 2026-07-15
+
+### Changed
+- Weekend pages now deep-link the venue to its circuit profile — an "About <circuit>" link under the hero → `/information/tracks/<slug>`, shown whenever the round's venue resolves to a verified track profile. SEO rationale: the ~138 `/information/tracks/*` pages were internal-link orphans (reachable only from the tracks index + on-site search), which suppresses indexing ("crawled, currently not indexed") on a young domain; wiring them into the far-more-crawled weekend pages adds an internal-link signal and a reader shortcut. New `getTrackInfoByCircuitSlug()` (`lib/information/registry.ts`) memoises a circuits.json-slug → track-info-slug map by resolving each verified track through the same `matchCircuitEntry` used by the weekend page, which then looks up its already-resolved `circuitMatch.slug` (`app/(app)/series/[slug]/weekend/[round]/page.tsx`). Only verified (indexable) tracks are linked; no match → no link (rally / multi-venue rounds render nothing). Verified: tsc clean; British GP (round 9) shows "About Silverstone Circuit" → the 200 track page.
+
 ## 0.229.1 — 2026-07-15
 
 ### Fixed

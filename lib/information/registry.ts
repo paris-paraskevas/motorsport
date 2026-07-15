@@ -2,6 +2,7 @@ import 'server-only';
 import { generateInfoEntries } from './generated';
 import { loadCuratedInfoEntries } from './curated';
 import { entryKey, type InfoEntry } from './types';
+import { matchCircuitEntry } from '@/lib/circuits';
 
 // The single source of truth for the information hub: merges the verified,
 // champions-derived Q&A (generated.ts) with curated/web-researched content
@@ -41,6 +42,7 @@ interface RegistryState {
 }
 
 let cache: RegistryState | null = null;
+let trackByCircuitSlug: Map<string, string> | null = null;
 
 // Priority for the indexed cap: hand-written editorial first, then the
 // per-series record pages, then the current-champion pages. Lower = kept first.
@@ -95,6 +97,7 @@ async function state(): Promise<RegistryState> {
 /** Test-only: drop the memoised registry so a fresh fixture is picked up. */
 export function __resetInfoRegistry(): void {
   cache = null;
+  trackByCircuitSlug = null;
 }
 
 export async function getAllInfoEntries(): Promise<InfoEntry[]> {
@@ -126,6 +129,26 @@ export async function isEntryIndexed(e: InfoEntry): Promise<boolean> {
 export async function getIndexedInfoEntries(): Promise<InfoEntry[]> {
   const { all, indexedKeys } = await state();
   return all.filter((e) => indexedKeys.has(entryKey(e)));
+}
+
+/** Bridge a circuits.json slug → its `/information/tracks/<slug>` profile, so
+ *  weekend pages can deep-link the venue to its circuit page — those pages are
+ *  otherwise reachable only from the tracks index + on-site search (near
+ *  internal-link orphans, which suppresses indexing). A verified track resolves
+ *  to a circuits.json slug via the SAME matcher the weekend page uses, so both
+ *  sides agree on the key. Only verified tracks (the indexable ones) are mapped.
+ *  Memoised — static content. */
+export async function getTrackInfoByCircuitSlug(): Promise<Map<string, string>> {
+  if (trackByCircuitSlug) return trackByCircuitSlug;
+  const { all } = await state();
+  const map = new Map<string, string>();
+  for (const e of all) {
+    if (e.topic !== 'tracks' || e.review !== 'verified') continue;
+    const match = await matchCircuitEntry(e.question, e.slug.replace(/-/g, ' '));
+    if (match && !map.has(match.slug)) map.set(match.slug, e.slug);
+  }
+  trackByCircuitSlug = map;
+  return map;
 }
 
 /** Verified entries (featured or not) — surfaced in on-site ⌘K search. Unverified
