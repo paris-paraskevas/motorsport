@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.1 — 2026-07-15
+
+**All stages visible.** On rally weekends, the stage bar now shows every stage at once instead of cutting off partway through.
+
 ## 0.229.0 — 2026-07-15
 
 **Rally stage results.** World Rally Championship stage pages can now show the full field and running order, starting with the final classification of the Acropolis Rally in Greece. More stages and rallies to follow.
