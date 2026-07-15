@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.1 — 2026-07-15
+
+### Fixed
+- Weekend session rail (`SessionRail`, `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`) now wraps instead of horizontal-scrolling. It was `overflow-x-auto scrollbar-none`, which on many-session weekends (WRC rallies carry ~18 stage sessions) pushed SS11+ off-screen with no scrollbar affordance — the rail looked like it ended at ~SS10 and later stages were only reachable via the prev/next pager. Now `flex-wrap`, so every session is visible at once; few-session weekends (F1 etc.) still sit on one line.
+
+## 0.229.0 — 2026-07-15
+
+### Added
+- WRC per-stage overall classification on weekend session pages. Rallies were excluded from session-page classification by design (`RACE_SESSION_SERIES`, `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`) because the season feed carries winners only. New curated path: `content/series/wrc/stage-results.json` (keyed round → stage slug `ss1..ssN`/`shakedown`) → `loadWrcStageResults` (`lib/series-content.ts`) → `fetchWrcStageClassification` (`lib/results/wrc.ts`, maps to the shared `SessionClassification`, matching the stage by the SS number parsed from the ICS session title) → a new `slug === 'wrc'` branch in the session-page classification dispatch. `SessionClassificationEntry` (`lib/results/openf1.ts`) gains optional `coDriverName` + `car`; `ClassificationTable` renders the crew (`Driver / Co-driver`) and a `car · team` line — both additive and guarded, so every other series renders byte-identically. The section title reads "Overall classification" for WRC, and an uncurated stage shows a WRC-specific empty state linking to season results. Pilot data: R8 EKO Acropolis Rally Greece final classification (overall after SS17), top 15 of 45 finishers, curated offline from eWRC-results.com + wrc.com (RULE #1; podium cross-verified across both, Ogier 3:36:40.7 / Neuville +58.3 / Katsuta +3:04.8) and adversarially re-checked. The rest of the field, the running overall after each earlier stage, and other rounds extend the same schema (operator-curated). eWRC readability gate passed via a real browser (Playwright) — the 402 is anti-bot, not a paywall. Verified: `tsc --noEmit` clean; local browser render of the SS17 page (all 15 crews, interval + gap columns, 0 console errors) and the SS1 empty state.
+
+## 0.228.9 — 2026-07-14
+
+### Fixed
+- Admin console "← Account" escape-hatch link now points at the absolute apex (`${SITE_URL}/settings`) instead of a relative `/settings` (`app/(admin)/admin/layout.tsx`). On the admin-only `dev.` subdomain a relative link resolved to `dev.paddock-tracker.com/settings`, which 404s because `proxy.ts` serves only admin routes on `dev.*`; the absolute URL escapes back to the apex. `/account` (the IDEAS-inbox shorthand) has no route — `/settings` is the account page and was already the existing href. Added an inline comment to stop a future relative-link regression.
+
+## 0.228.8 — 2026-07-14
+
+### Changed
+- Docs: session-16 handoff (`docs/HANDOFF.md`) — 12 PRs #572–#583 (0.227.6 → 0.228.7: calendar cut-off, signed-in `/`→`/app`, WRC Estonia times, taste-calls, ② `/admin` redesign, IndyCar color revert, mobile-header fit, admin chrome isolation, amber utils, dev-admin-only routing, SportsEvent SEO, onboarding doc), the Fotis contributor onboarding state (`docs/ONBOARDING.md` + `testing.paddock-tracker.com` + operator to-dos), new landmines (parallel-PR push-race + stacked release-note union; admin now under `app/(admin)/`; a same-SHA branch gets no Vercel build), and next-session priorities (admin ← ACCOUNT fix, rally full-field per-stage, ~5-PR audit). Internal.
+
 ## 0.228.7 — 2026-07-14
 
 ### Added

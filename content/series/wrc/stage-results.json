@@ -1,0 +1,32 @@
+{
+  "_source": "Curated offline (RULE #1) from eWRC-results.com/final/96262-eko-acropolis-rally-greece-2026 + wrc.com official results. Podium cross-verified between both sources (Ogier 3:36:40.7 / Neuville +58.3 / Katsuta +3:04.8). Names normalised to first-last; times/gaps verbatim from eWRC. Keyed round -> stage slug (ss1..ssN, 'shakedown') matched from the ICS session title. PILOT: R8 final classification (overall after SS17) only, top 15 of 45 finishers. Operator extends: rest of field + running overall after each stage + other rounds.",
+  "season": 2026,
+  "rounds": {
+    "8": {
+      "rally": "EKO Acropolis Rally Greece",
+      "stages": {
+        "ss17": {
+          "kind": "final",
+          "label": "Final classification",
+          "entries": [
+            { "position": 1, "driverName": "Sébastien Ogier", "coDriverName": "Vincent Landais", "car": "Toyota GR Yaris Rally1", "team": "Toyota Gazoo Racing WRT", "cls": "RC1", "time": "3:36:40.7" },
+            { "position": 2, "driverName": "Thierry Neuville", "coDriverName": "Martijn Wydaeghe", "car": "Hyundai i20 N Rally1", "team": "Hyundai Shell Mobis WRT", "cls": "RC1", "gap": "+58.3", "interval": "+58.3" },
+            { "position": 3, "driverName": "Takamoto Katsuta", "coDriverName": "Aaron Johnston", "car": "Toyota GR Yaris Rally1", "team": "Toyota Gazoo Racing WRT", "cls": "RC1", "gap": "+3:04.8", "interval": "+2:06.5" },
+            { "position": 4, "driverName": "Sami Pajari", "coDriverName": "Marko Salminen", "car": "Toyota GR Yaris Rally1", "team": "Toyota Gazoo Racing WRT2", "cls": "RC1", "gap": "+5:02.2", "interval": "+1:57.4" },
+            { "position": 5, "driverName": "Elfyn Evans", "coDriverName": "Scott Martin", "car": "Toyota GR Yaris Rally1", "team": "Toyota Gazoo Racing WRT", "cls": "RC1", "gap": "+5:54.9", "interval": "+52.7" },
+            { "position": 6, "driverName": "Josh McErlean", "coDriverName": "Eoin Treacy", "car": "Ford Puma Rally1", "team": "M-Sport Ford WRT", "cls": "RC1", "gap": "+5:55.5", "interval": "+0.6" },
+            { "position": 7, "driverName": "Adrien Fourmaux", "coDriverName": "Alexandre Coria", "car": "Hyundai i20 N Rally1", "team": "Hyundai Shell Mobis WRT", "cls": "RC1", "gap": "+6:08.7", "interval": "+13.2" },
+            { "position": 8, "driverName": "Mārtiņš Sesks", "coDriverName": "Renārs Francis", "car": "Ford Puma Rally1", "team": "M-Sport Ford WRT", "cls": "RC1", "gap": "+8:05.8", "interval": "+1:57.1" },
+            { "position": 9, "driverName": "Robert Virves", "coDriverName": "Jakko Viilo", "car": "Škoda Fabia RS Rally2", "team": "Toksport WRT", "cls": "RC2", "gap": "+9:50.1", "interval": "+1:44.3" },
+            { "position": 10, "driverName": "Andreas Mikkelsen", "coDriverName": "Jørn Listerud", "car": "Škoda Fabia RS Rally2", "team": "Toksport WRT", "cls": "RC2", "gap": "+10:52.5", "interval": "+1:02.4" },
+            { "position": 11, "driverName": "Alejandro Cachón", "coDriverName": "Borja Rozada", "car": "Toyota GR Yaris Rally2", "team": "Toyota España", "cls": "RC2", "gap": "+11:53.3", "interval": "+1:00.8" },
+            { "position": 12, "driverName": "Roope Korhonen", "coDriverName": "Anssi Viinikka", "car": "Toyota GR Yaris Rally2", "team": "Rautio Motorsport", "cls": "RC2", "gap": "+12:43.4", "interval": "+50.1" },
+            { "position": 13, "driverName": "Diego Domínguez Jr.", "coDriverName": "Rogelio Peñate", "car": "Toyota GR Yaris Rally2", "cls": "RC2", "gap": "+13:33.2", "interval": "+49.8" },
+            { "position": 14, "driverName": "Léo Rossel", "coDriverName": "Guillaume Mercoiret", "car": "Lancia Ypsilon Rally2 HF Integrale", "team": "2C Junior Team", "cls": "RC2", "gap": "+14:00.7", "interval": "+27.5" },
+            { "position": 15, "driverName": "Pablo Sarrazin", "coDriverName": "Yannick Roche", "car": "Lancia Ypsilon Rally2 HF Integrale", "cls": "RC2", "gap": "+14:19.3", "interval": "+18.6" }
+          ]
+        }
+      }
+    }
+  }
+}

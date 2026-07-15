@@ -2,8 +2,57 @@ import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { Element } from 'domhandler';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { SessionClassification } from '@/lib/results/openf1';
+import { loadWrcStageResults } from '@/lib/series-content';
 
 export type { RaceResult, RaceResultEntry };
+
+// ---- Curated per-stage classification (weekend session pages) ------------
+//
+// Rallies have no single "race": each round is a stage itinerary, and the
+// Wikipedia season feed the rest of this module scrapes carries only per-rally
+// WINNERS. The full per-stage field is curated offline (RULE #1:
+// eWRC-results.com + wrc.com) into content/series/wrc/stage-results.json and
+// mapped here into the shared SessionClassification the session page renders.
+// Rally, not race: no points column; the leader shows the cumulative time and
+// everyone else gap-to-leader + interval-to-the-car-ahead.
+
+// "WRC - SS17 Loutraki 2 - Wolf Power Stage (Greece)" -> "ss17";
+// "WRC - Shakedown (Greece)" -> "shakedown". Null when neither matches.
+export function wrcStageSlug(sessionTitle: string): string | null {
+  const ss = sessionTitle.match(/\bSS(\d+)\b/i);
+  if (ss) return `ss${Number(ss[1])}`;
+  if (/shakedown/i.test(sessionTitle)) return 'shakedown';
+  return null;
+}
+
+export async function fetchWrcStageClassification(
+  round: number,
+  sessionTitle: string,
+): Promise<SessionClassification | null> {
+  const stageSlug = wrcStageSlug(sessionTitle);
+  if (!stageSlug) return null;
+  const file = await loadWrcStageResults();
+  const stage = file?.rounds?.[String(round)]?.stages?.[stageSlug];
+  if (!stage || !Array.isArray(stage.entries) || stage.entries.length === 0) {
+    return null;
+  }
+  return {
+    isQualifying: false,
+    isRace: false,
+    entries: stage.entries.map(e => ({
+      position: e.position ?? null,
+      driverName: e.driverName,
+      coDriverName: e.coDriverName,
+      car: e.car,
+      team: e.team ?? '',
+      time: e.time,
+      gap: e.gap,
+      interval: e.interval,
+      status: e.status,
+    })),
+  };
+}
 
 // WRC per-rally full classification. The season page at
 // /wiki/2026_World_Rally_Championship carries two relevant tables:
