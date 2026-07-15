@@ -565,7 +565,12 @@ export default async function SessionPage({
   // so read a KV-persisted copy first and only hit upstream on a miss.
   let classification: SessionClassification | null = null;
   let classClassifications: { cls: string; data: SessionClassification }[] = [];
-  if (isPast) {
+  if (isPast && slug === 'wrc') {
+    // Curated per-stage content is a cheap local read and the operator edits it
+    // in place — skip the 7-day KV session cache so edits surface on the next
+    // deploy instead of being pinned stale for a week.
+    classification = await fetchWrcStageClassification(round, session.title);
+  } else if (isPast) {
     const cacheKey = sessionClassCacheKey(
       slug,
       series.meta.season,
@@ -594,9 +599,6 @@ export default async function SessionPage({
           slug === 'wsbk'
             ? await fetchWsbkSessionClassification(series.meta.season, round, sl)
             : await fetchMotoGPSessionClassification(series.meta.season, round, sl);
-      } else if (slug === 'wrc') {
-        // Rally: curated per-stage overall classification (no live race feed).
-        classification = await fetchWrcStageClassification(round, session.title);
       } else {
         classification = await fetchRoundClassification(series, round, session.title);
       }

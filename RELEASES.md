@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.5 — 2026-07-15
+
+**Internal.** Curated rally classifications now update as soon as they're deployed.
+
 ## 0.229.4 — 2026-07-15
 
 **Clearer tab name.** The series "Tracks" tab is now "Rounds" — it shows each round's circuit and links through to that race weekend.
