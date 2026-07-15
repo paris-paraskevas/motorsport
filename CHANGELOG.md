@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.10 — 2026-07-15
+
+### Removed
+- Repo cleanup: deleted 6.6 MB of superseded design-exploration mockups (`docs/superpowers/design/mockups/*.webp` + `index.html` — the May-13 UI exploration the shipped UI long since replaced) and the orphaned root debug file `fe-champ.html` (a saved FE-championship page, imported nowhere). Neither is code or a served asset (only `public/` is served), so no app impact; kept the `docs/superpowers/{plans,specs}` markdown as a historical record. Internal.
+
 ## 0.229.9 — 2026-07-15
 
 ### Changed
