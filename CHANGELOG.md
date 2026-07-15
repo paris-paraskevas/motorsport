@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.5 — 2026-07-15
+
+### Fixed
+- WRC per-stage classification now skips the 7-day KV session cache (`app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx`). It's curated content — a cheap local file read that the operator edits in place — so routing it through the session cache only pinned edits stale for up to a week (e.g. extending R8's field wouldn't surface until the TTL expired). The `wrc` branch moved above the cache read/write; every other series' caching is unchanged. Verified: tsc clean; SS17 still renders the full classification via the uncached path.
+
 ## 0.229.4 — 2026-07-15
 
 ### Changed
