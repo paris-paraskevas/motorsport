@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.9 — 2026-07-15
+
+### Changed
+- Docs: session-17 handoff (`docs/HANDOFF.md`) — 10 commits #585–#593 + `dc1d140` (0.228.8 → 0.229.8: WRC per-stage classification + reachability, weekend/calendar circuit-profile internal links + the Miami wrong-link fix, "Tracks"→"Rounds", WRC cache-skip, "Just missed" removal, series Points/What's-new links, rally schedule clickable), the Cloudflare migration (Clerk-DNS-only landmine, CF plugin install, operator confirms owed), the Batch-1 "content already done" finding, and next-session priorities (IndyCar preview-paired, Bing, authority/distribution). Pruned the `IDEAS.md` inbox (removed shipped items) + added a `SCHEDULE.md` session-17 entry. Internal.
+
 ## 0.229.8 — 2026-07-15
 
 ### Fixed

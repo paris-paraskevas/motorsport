@@ -1171,6 +1171,25 @@ Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
 
 ---
 
+## Week of 2026-07-13
+
+_(Sessions 11–16, 2026-07-12 → 07-14, are recorded in `docs/HANDOFF.md`, not here — SCHEDULE lagged after session 10; HANDOFF is the maintained session record.)_
+
+### Wed 2026-07-15 — session 17 — WRC per-stage + reachability, SEO internal-linking, home/nav cleanups, Cloudflare migration
+
+10 commits, 0.228.8 → 0.229.8 (all merged/prod-shipping except the just-missed removal, which went direct to main via a branch slip — verified + green). Live-driven throughout.
+
+- → done: **#585** admin back-link → apex; **#586** WRC per-stage classification (R8 Acropolis pilot; eWRC gate passed via Playwright; adversarially verified); **#587** session rail wraps (18-stage rallies reachable); **#588/#589** weekend + calendar → circuit-profile links (+ Miami wrong-link fix); **#590** "Tracks" tab → "Rounds"; **#591** WRC skips the KV cache; **dc1d140** removed the "Just missed" home widget; **#592** series card → Points/What's new explainers; **#593** rally schedule rows clickable.
+- → audited: full suite green (tsc + 920 tests) across all 10. Batch-1 "SEO content" found already-done (every demand explainer exists + is featured) → internal linking is the lever, not new content.
+- → operator: Cloudflare migration mid-session (site + Clerk sign-in healthy through CF); Sachsenring blog posted.
+- → declined (scrutiny): rally per-stage FULL field (transient, low-value — headline shipped in #586); IndyCar results/times (outbound → preview-paired, next).
+
+Won't touch (deferred): IndyCar outbound (preview-paired), Bing (operator token), authority/distribution (off-platform), doc hygiene (trim HANDOFF/SCHEDULE).
+
+Active: _(live-driven session — no `[+Nm]` prefixes)_
+
+---
+
 ## Backlog stubs (next 1–2 weeks, no firm date yet)
 
 **Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
