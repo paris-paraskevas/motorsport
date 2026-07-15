@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.10 — 2026-07-15
+
+**Internal.** Repository cleanup.
+
 ## 0.229.9 — 2026-07-15
 
 **Internal.** Session notes and planning docs.
