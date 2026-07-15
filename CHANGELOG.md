@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.11 — 2026-07-15
+
+### Changed
+- Docs: pruned completed items from `IDEAS.md` + `SCHEDULE.md`, cross-checked against the CHANGELOG + codebase. Removed from IDEAS (verified shipped in code): blog data-visual embeds (`components/blog/embeds/*.tsx`), the NLS results parser (`lib/results/nls.ts`), and the `lib/onboarding.ts` deletion (file already gone); trimmed the head-to-head item since `/f1/compare` shipped. Reframed the `SCHEDULE.md` "Backlog stubs" header — the W1–W8 / S5–S7 waves largely shipped (per-session pages, driver/team pages, threads, SEO baseline, non-F1 results), with `IDEAS.md` now the live backlog. Internal.
+
 ## 0.229.10 — 2026-07-15
 
 ### Removed
