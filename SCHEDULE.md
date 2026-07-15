@@ -1190,9 +1190,11 @@ Active: _(live-driven session — no `[+Nm]` prefixes)_
 
 ---
 
-## Backlog stubs (next 1–2 weeks, no firm date yet)
+## Backlog stubs (HISTORICAL — mostly shipped; current backlog is IDEAS.md)
 
-**Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
+**Status (session-17 audit):** the W1–W8 wave + S5–S7 below have largely **shipped** across 0.10.x–0.22.x — verified in the codebase: per-session pages (`/weekend/[round]/[session]`), point-in-time weekend standings, series-tab polish, about/rules content per series, driver/team profile pages (`/drivers/[slug]`, `/teams/[slug]`), blog + threads + admin approval, the SEO baseline, and native non-F1 results/standings. **Still open:** W5 per-page layout spec, W6 Android TWA (post-v1.0), W8 v1.0 launch program (postponed), full Supabase-migration execution. The waves below are kept as a historical record; the **live** backlog lives in `IDEAS.md`.
+
+**Operator 15-item batch (2026-06-11), organized into waves:**
 
 - **W1 — Weekend page overhaul**: retheme to timing-screen language (radial wash still there), remove the back-to-series arrow, point-in-time standings (points as they stood at that GP — computable only where full per-round points exist: F1/F2/F3/NASCAR/WRC/DTM/IndyCar/FE/MotoGP/WSBK; F1 first, IMSA/GTWC excluded honestly), per-session pages with results at `/series/[slug]/weekend/[round]/[session]` (OpenF1 for F1 practices/quali; other series race-session only). 2–3 PRs.
 - **W2 — Series-tab polish**: ✅ shipped (PR #123, 0.26.0). Follow-up: curated historic-constructor color map so pre-current-grid champions color too.

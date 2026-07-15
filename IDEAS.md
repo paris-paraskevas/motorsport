@@ -30,7 +30,6 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 - **Champion-Q&A depth** — extend the `champions.json` schema (runner-up / margin / wins per champion-season) + curate the data, fact-checked per season. LARGE but operator-prioritised.
 - **Original driver bios** (W4 P5) — original write-ups replacing the Wikipedia-derived bios; fact-checked per driver.
-- **Blog data-visual embeds** — a markdown-shortcode→component pipeline so DB posts (plain markdown, not MDX) can embed live standings/charts/circuit SVGs (responsive tables/images already SHIPPED #513).
 - **Blog cadence automation** — a scheduled trigger that auto-DRAFTS the weekly marquee preview (Thu) + digest (Mon) as a prod DB draft for operator approval; infra shipped Phase-0 (#437), needs the headless `claude -p` GH Action trigger (pairs with the cron pinger).
 
 ## B4 — Data completeness & resilience
@@ -39,7 +38,6 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 
 - **F1 classification speed** — event-driven session warming off `sessions.json` (poll from session-end, not a flat tick); evaluate Jolpica as a faster race-classification source. _(datacenter-verify on a preview.)_
 - **Standings/results last-good resilience** — `withSourceSnapshot` already wraps the 9 standings modules + news + F1; extend it to the ~11 remaining `lib/results/*` modules. Fail-soft (can't regress) but resilience only PROVES on prod during an outage → preview/prod-gated.
-- **NLS Nürburgring results** — teilnehmer.vln.de PDF scraper (DTM-shaped; datacenter-verify on a preview).
 - **Remaining standings charts** — FE / IndyCar / GT-World / IMSA / WEC (data-gated: need a per-series points-scale module before a chart can reconcile).
 - **Results re-check lifecycle** — late-penalty re-verify (+1w / +1m / season-end) via a KV snapshot + diff cron + curation alert (Gasly-Monaco precedent).
 - **OpenF1 live-lockout residual** — a cold/expired session first opened *during* a live lockout still can't fetch; + a pre-warm cron for weekend session pages.
@@ -82,7 +80,7 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 - **Richer map overlays** — sector boundaries / start-finish / marshalling ("mom") zones + per-overlay filters (BLOCKED: needs a geometry/GeoJSON source).
 - **Race-weekend track-map sector diagram** (per-circuit corners/sectors on the weekend page).
 - **Season/month recap pages** — embedded season-highlight video + written recap + standings snapshot at that point.
-- **Head-to-head** — wire the team-vs-team compare page; give the driver head-to-head a magazine-style treatment.
+- **Head-to-head polish** — `/f1/compare` is shipped; remaining is extending it beyond F1 + a magazine-style driver head-to-head treatment.
 - **Champions tab visual redesign** — card layout / era groupings / avatars.
 - **Session cards tap-to-expand** (broadcast/stream/track) + **home-collapse** for Schedule/chyron + **session→series-tab** back-path.
 - **Offline mode** — service-worker cache the next 7 days of weekend data.
@@ -102,7 +100,7 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 - **B-perf execution** — re-baseline first; Clerk lazy / 3rd-party deferral / CSS critical-path / idle-prefetch of hidden segments; + the `/api/just-missed` cold-on-cold TTFB (~13.8s).
 - **WCAG 2.2 AA audit** + **motion / focus-state / dark-mode contrast** polish.
 - **Component tests** (vitest + Testing Library) + **Playwright E2E on preview deploys** + **route best-practices** (error boundaries + Suspense + Next 16 segment configs).
-- **Legacy lint cleanup** — 5 `react-hooks/set-state-in-effect` errors; **delete unused `lib/onboarding.ts`**; **DRY `EnableNotifications`/`OnboardingWizard`**; championship-leader all-deselected empty-state.
+- **Legacy lint cleanup** — 5 `react-hooks/set-state-in-effect` errors; **DRY `EnableNotifications`/`OnboardingWizard`**; championship-leader all-deselected empty-state. _(unused `lib/onboarding.ts` already deleted.)_
 - **Admin content-authoring UI** — a lightweight page-authoring surface for when Claude isn't in the loop / Fotis edits.
 - **W8 v1.0 launch program** (POSTPONED) — "out of early access" banner flip + marketing channel plan (IG/FB/Reddit/X/YouTube); checklist done.
 - **Android app** — TWA/Bubblewrap → Play Store ($25), Digital Asset Links + store assets (post-v1.0).
