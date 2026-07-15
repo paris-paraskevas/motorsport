@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.8 — 2026-07-15
+
+**Tap into rally stages.** On rally weekends, each stage in the schedule now opens its own page with the running classification.
+
 ## 0.229.7 — 2026-07-15
 
 **More to learn per series.** Each series page now links its points-system and 2026-changes explainers, next to history and rules.

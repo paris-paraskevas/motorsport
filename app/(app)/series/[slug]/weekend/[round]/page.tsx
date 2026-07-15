@@ -126,10 +126,11 @@ export default async function WeekendPage({
       : `${series.meta.name} — ${weekendTitleLabel}`;
 
   // Per-session result pages: F1 via OpenF1; the listed series carry race-session
-  // classifications; WEC/IMSA/GT World render per-class tables; others stay
+  // classifications; WEC/IMSA/GT World render per-class tables; WRC stage pages
+  // show the curated per-stage overall classification (0.229.0). Others stay
   // unlinked. Passed straight to the Schedule so each session ROW links to its
   // page — no separate "Sessions" list (it duplicated the timetable).
-  const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world'].includes(slug)
+  const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world', 'wrc'].includes(slug)
     ? `/series/${slug}/weekend/${round}`
     : undefined;
 

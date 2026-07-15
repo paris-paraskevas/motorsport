@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.8 — 2026-07-15
+
+### Fixed
+- Rally (WRC) weekend schedule rows are now clickable → their session pages. `sessionLinkBase` (`app/(app)/series/[slug]/weekend/[round]/page.tsx`) only links session rows for series that carry a session classification, and the list predated the WRC per-stage classification (0.229.0) — so WRC was missing and every rally stage rendered as plain, un-openable text (no way to reach the per-stage classification except the session rail). Added `wrc`; each stage row now links to `/series/wrc/weekend/<round>/<stage>` (the per-stage overall classification where curated, its empty state otherwise). Verified: Acropolis R8 schedule — Shakedown + SS1–SS17 all link; tsc clean, 0 console errors.
+
 ## 0.229.7 — 2026-07-15
 
 ### Changed
