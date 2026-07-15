@@ -5,6 +5,7 @@ import type {
   CuratedDriversFile,
   ResultsOverridesFile,
   StandingsOverridesFile,
+  WrcStageResultsFile,
 } from './types';
 
 const SERIES_ROOT = path.join(process.cwd(), 'content', 'series');
@@ -27,6 +28,16 @@ export function loadCuratedDrivers(slug: string): Promise<CuratedDriversFile | n
 export function loadCuratedChampions(slug: string): Promise<Champion[] | null> {
   return readJsonIfExists<Champion[]>(
     path.join(SERIES_ROOT, slug, 'champions.json'),
+  );
+}
+
+/** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
+ *  The rally results feed is winners-only, so the full per-stage field lives
+ *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is
+ *  absent. */
+export function loadWrcStageResults(): Promise<WrcStageResultsFile | null> {
+  return readJsonIfExists<WrcStageResultsFile>(
+    path.join(SERIES_ROOT, 'wrc', 'stage-results.json'),
   );
 }
 
