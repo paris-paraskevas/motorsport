@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.6 — 2026-07-15
+
+**Leaner home.** Removed the "Just missed" block from the home screen — recent results still live on each series page and in the per-series results widget.
+
 ## 0.229.5 — 2026-07-15
 
 **Internal.** Curated rally classifications now update as soon as they're deployed.

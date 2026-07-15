@@ -11,38 +11,36 @@ describe('homeLayout.reconcile', () => {
     const r = reconcileHomeLayout({ order: ['schedule'] });
     // The spine (chyron only) is always first…
     expect(r.order[0]).toBe('chyron');
-    // …then the stored non-spine order (schedule); just-missed is no longer
-    // spine, so it is filled in with the rest.
+    // …then the stored non-spine order (schedule); the rest are filled in.
     expect(r.order[1]).toBe('schedule');
-    expect(r.order).toContain('just-missed');
     expect(new Set(r.order)).toEqual(
-      new Set(['chyron', 'just-missed', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']),
+      new Set(['chyron', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']),
     );
-    expect(r.order).toHaveLength(19);
+    expect(r.order).toHaveLength(18);
   });
 
-  it('pins the chyron spine and never hides it; just-missed is now hideable', () => {
+  it('pins the chyron spine and never hides it; non-spine widgets stay hideable', () => {
     const r = reconcileHomeLayout({
-      order: ['news', 'schedule', 'chyron', 'just-missed'],
-      hidden: ['chyron', 'just-missed'],
+      order: ['news', 'schedule', 'chyron'],
+      hidden: ['chyron', 'news'],
     });
     expect(r.order[0]).toBe('chyron');
-    expect(r.hidden).not.toContain('chyron');   // spine, force-visible
-    expect(r.hidden).toContain('just-missed');  // dismissable now (operator fix)
+    expect(r.hidden).not.toContain('chyron');  // spine, force-visible
+    expect(r.hidden).toContain('news');        // any non-spine block is hideable
   });
 
   it('drops unknown ids and de-dupes', () => {
     const r = reconcileHomeLayout({ order: ['nope', 'chyron', 'chyron', 'schedule'] as never });
-    expect(r.order).toHaveLength(19);
+    expect(r.order).toHaveLength(18);
     expect(r.order.filter(x => x === 'chyron')).toHaveLength(1);
     expect(r.order).not.toContain('nope' as never);
   });
 
-  it('keeps a hidden just-missed (dismissable), drops unknown ids, default-hides opt-in widgets', () => {
-    // 'just-missed' is no longer spine, so a user's hide sticks; 'bogus' is
-    // unknown (dropped). No stored order → all opt-in widgets are "newly seen" → hidden.
-    const r = reconcileHomeLayout({ hidden: ['just-missed', 'bogus'] as never });
-    expect(r.hidden).toEqual(['just-missed', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']);
+  it('keeps a hidden non-spine widget, drops unknown ids, default-hides opt-in widgets', () => {
+    // A user's hide of a core widget (news) sticks; 'bogus' is unknown (dropped).
+    // No stored order → all opt-in widgets are "newly seen" → hidden.
+    const r = reconcileHomeLayout({ hidden: ['news', 'bogus'] as never });
+    expect(r.hidden).toEqual(['news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']);
   });
 
   it('parseHomeLayout rejects non-object / non-array fields, accepts valid', () => {
@@ -57,10 +55,10 @@ describe('homeLayout.reconcile', () => {
 });
 
 describe('homeLayout.collapsed', () => {
-  it('defaults to just-missed collapsed when absent (pre-v2 prefs inherit it)', () => {
-    expect(reconcileHomeLayout(null).collapsed).toEqual(['just-missed']);
-    expect(reconcileHomeLayout({}).collapsed).toEqual(['just-missed']);
-    expect(reconcileHomeLayout({ order: ['schedule'] }).collapsed).toEqual(['just-missed']);
+  it('defaults to nothing collapsed when absent (Just missed retired)', () => {
+    expect(reconcileHomeLayout(null).collapsed).toEqual([]);
+    expect(reconcileHomeLayout({}).collapsed).toEqual([]);
+    expect(reconcileHomeLayout({ order: ['schedule'] }).collapsed).toEqual([]);
   });
 
   it('honours an explicit empty collapsed (the user expanded it)', () => {
@@ -85,14 +83,14 @@ describe('homeLayout.defaultHidden (opt-in widgets)', () => {
 
   it('default-hides newly-seen opt-in widgets for an existing user who has never seen them', () => {
     // pre-v5 prefs: a full order WITHOUT the opt-in widgets, empty hidden.
-    const r = reconcileHomeLayout({ order: ['chyron', 'just-missed', 'schedule', 'news'], hidden: [] });
+    const r = reconcileHomeLayout({ order: ['chyron', 'schedule', 'news'], hidden: [] });
     expect(r.order).toContain('from-the-blog');
     expect(r.hidden).toEqual(['from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']);
   });
 
   it('respects the user choice once the widget is already in their stored order', () => {
     const full = [
-      'chyron', 'just-missed', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades',
+      'chyron', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades',
     ] as const;
     // all opt-in widgets present + not hidden → stay shown
     expect(reconcileHomeLayout({ order: [...full], hidden: [] }).hidden).toEqual([]);
@@ -114,7 +112,7 @@ describe('homeLayout.defaultHidden (opt-in widgets)', () => {
   it('keeps a user-shown widgets-pack id shown once it is in their stored order', () => {
     // The id is present in order AND not hidden → the user enabled it; respect that.
     const full = [
-      'chyron', 'just-missed', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades',
+      'chyron', 'schedule', 'news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades',
     ] as const;
     expect(reconcileHomeLayout({ order: [...full], hidden: ['where-to-watch'] }).hidden).toEqual(['where-to-watch']);
     expect(reconcileHomeLayout({ order: [...full], hidden: [] }).hidden).toEqual([]);
@@ -129,8 +127,8 @@ describe('homeLayout.config (per-widget settings)', () => {
 
   it('keeps valid per-widget settings and drops junk fields', () => {
     expect(
-      reconcileHomeLayout({ config: { 'just-missed': { count: 5, density: 'compact' } } as never }).config,
-    ).toEqual({ 'just-missed': { count: 5, density: 'compact' } });
+      reconcileHomeLayout({ config: { 'series-just-missed': { count: 5, density: 'compact' } } as never }).config,
+    ).toEqual({ 'series-just-missed': { count: 5, density: 'compact' } });
     // bad enum + out-of-range number → dropped; a widget left with no valid field is omitted
     expect(reconcileHomeLayout({ config: { news: { density: 'huge', count: 999 } } as never }).config).toEqual({});
     expect(

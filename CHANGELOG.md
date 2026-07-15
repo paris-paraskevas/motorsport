@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.6 — 2026-07-15
+
+### Removed
+- The "Just missed" home widget (operator: repeatedly "can't get rid of it"). A prior pass made it hideable, which didn't satisfy, so it's now removed entirely — the per-series "Series results" (`series-just-missed`) widget covers the same `/api/just-missed` data. Dropped the id from `HomeElementId` + `HOME_ELEMENTS` + `DEFAULT_COLLAPSED` (so `reconcileHomeLayout` drops it from existing users' stored layouts too), removed the render block + derived state (`jmCount`/`justMissedItems`/`jmHero`/`jmRest`/`heroArticle`) from `HomeContent`, removed its `/settings/customize` control (`HomeCustomizeBanner`), and updated `homeLayout.test.ts` to the 18-widget set. The `/api/just-missed` route + the shared fetch stay (Series results still uses them). Verified: tsc clean; `homeLayout` tests 18/18; `/app` renders chyron → This week → News with no Just missed and 0 console errors.
+
 ## 0.229.5 — 2026-07-15
 
 ### Fixed

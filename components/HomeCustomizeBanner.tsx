@@ -117,7 +117,6 @@ function HomePreview({ layout }: { layout: HomeLayoutPrefs }) {
 const NUMERIC_SETTING: Partial<
   Record<HomeElementId, { field: 'count' | 'days' | 'rows'; label: string; values: number[]; def: number }>
 > = {
-  'just-missed': { field: 'count', label: 'Results', values: [1, 2, 3, 4, 5], def: 3 },
   news: { field: 'count', label: 'Headlines', values: [5, 10, 20], def: 10 },
   'from-the-blog': { field: 'count', label: 'Posts', values: [2, 4, 6], def: 4 },
   schedule: { field: 'days', label: 'Days', values: [3, 7], def: 7 },
