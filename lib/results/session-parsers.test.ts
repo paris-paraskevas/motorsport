@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildSessionClassification as buildF2 } from './f2';
-import { buildSessionClassification as buildF3 } from './f3';
+import { mapClassification } from './fom-api';
 import { buildSessionClassification as buildMgp } from './motogp';
 import { parseSessionClassification as parseWsbk } from './wsbk';
 
@@ -8,21 +7,19 @@ import { parseSessionClassification as parseWsbk } from './wsbk';
 // (practice/qualifying on the weekend session pages). Each builds the shared
 // SessionClassification shape; quali is single-lap so isQualifying stays false.
 
-// --- F2 / F3 share the fiaformula{2,3}.com __NEXT_DATA__ shape ---------------
-function fiaRoot(session: Record<string, unknown>) {
-  return { props: { pageProps: { pageData: { RoundNumber: 1, SessionResults: [session] } } } };
+// --- F2 / F3 share the FOM api.formula1.com session shape --------------------
+// Both series now go through the shared mapClassification (lib/results/fom-api).
+function fomSession(rows: Array<Record<string, unknown>>) {
+  return { sessionResults: { session: 'q', sessionType: 'Qualifying', results: rows } };
 }
-const fiaRows = [
-  { FinishPosition: 1, DriverForename: 'Alpha', DriverSurname: 'One', TLA: 'AON', TeamName: 'Team A', Best: '1:28.695', Gap: '' },
-  { FinishPosition: 2, DriverForename: 'Beta', DriverSurname: 'Two', TLA: 'BTW', TeamName: 'Team B', Best: '1:28.911', Gap: '0.216' },
-  { FinishPosition: null, DriverForename: 'Gamma', DriverSurname: 'Three', TLA: 'GTH', TeamName: 'Team C' },
+const fomRows = [
+  { positionNumber: '1', driverFirstName: 'Alpha', driverLastName: 'One', driverTLA: 'AON', teamName: 'Team A', displayTime: '1:28.695', gapToLeader: '0' },
+  { positionNumber: '2', driverFirstName: 'Beta', driverLastName: 'Two', driverTLA: 'BTW', teamName: 'Team B', displayTime: '1:28.911', gapToLeader: '0.216' },
+  { positionNumber: '666', displayPosition: 'DNS', driverFirstName: 'Gamma', driverLastName: 'Three', driverTLA: 'GTH', teamName: 'Team C' },
 ];
 
-describe('F2 session classification', () => {
-  const c = buildF2(
-    fiaRoot({ SessionShortName: 'Qual', SessionType: 'QUALIFYING', SessionResultsAvailable: true, Results: fiaRows }),
-    'Qual',
-  )!;
+describe('FIA F2/F3 session classification (FOM API)', () => {
+  const c = mapClassification(fomSession(fomRows))!;
   it('is a timed session (single-lap quali → neither isQualifying nor isRace)', () => {
     expect(c.isQualifying).toBe(false);
     expect(c.isRace).toBe(false);
@@ -32,23 +29,13 @@ describe('F2 session classification', () => {
     expect(c.entries[0].gap).toBeUndefined();
     expect(c.entries[1].gap).toBe('+0.216');
   });
-  it('places a row with no finish position last, marked DNS', () => {
+  it('places a row with no finish position last, marked with its status', () => {
     const last = c.entries[c.entries.length - 1];
     expect(last).toMatchObject({ driverName: 'Gamma Three', position: null, status: 'DNS' });
   });
-  it('returns null when the asked session is absent', () => {
-    expect(buildF2(fiaRoot({ SessionShortName: 'Qual', Results: fiaRows }), 'Prac')).toBeNull();
-  });
-});
-
-describe('F3 session classification', () => {
-  it('matches by SessionType, so it finds practice even when short name is "Prac 1"', () => {
-    const c = buildF3(
-      fiaRoot({ SessionShortName: 'Prac 1', SessionType: 'PRACTICE', SessionResultsAvailable: true, Results: fiaRows }),
-      'PRACTICE',
-    )!;
-    expect(c.entries).toHaveLength(3);
-    expect(c.entries[0].time).toBe('1:28.695');
+  it('returns null when the session has no results', () => {
+    expect(mapClassification({ sessionResults: { results: [] } })).toBeNull();
+    expect(mapClassification(null)).toBeNull();
   });
 });
 
