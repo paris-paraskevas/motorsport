@@ -132,6 +132,20 @@ function firstLinkOrText(
   return cleanText(linkText || cell.text());
 }
 
+// Report-column cells link to the per-rally Wikipedia article. The href can
+// arrive relative ("/wiki/2026_Rally_Sweden"), protocol-relative
+// ("//en.wikipedia.org/wiki/…"), or absolute ("https://en.wikipedia.org/wiki/…")
+// depending on how the page HTML was rendered — Wikipedia switched the season
+// page to absolute hrefs mid-2026, which silently nulled every perRallyUrl and
+// emptied the whole feed. Accept all three; normalize to an absolute
+// en.wikipedia URL. Anything that is not an en.wikipedia /wiki/ link → null.
+function normalizeWikiHref(href: string | undefined): string | null {
+  if (!href) return null;
+  if (href.startsWith('/wiki/')) return `${WIKIPEDIA_ORIGIN}${href}`;
+  const m = href.match(/^(?:https?:)?\/\/en\.wikipedia\.org(\/wiki\/[^\s]+)$/i);
+  return m ? `${WIKIPEDIA_ORIGIN}${m[1]}` : null;
+}
+
 // ---- Calendar table — round → date map ----------------------------------
 
 const MONTHS: Record<string, number> = {
@@ -379,11 +393,9 @@ export function parseSeasonSummaryFromHtml(html: string): SeasonSummaryRow[] {
 
       let perRallyUrl: string | null = null;
       if (reportCol >= 0 && cells.length > reportCol) {
-        const link = $(cells[reportCol]).find('a').first();
-        const href = link.attr('href');
-        if (href && href.startsWith('/wiki/')) {
-          perRallyUrl = `${WIKIPEDIA_ORIGIN}${href}`;
-        }
+        perRallyUrl = normalizeWikiHref(
+          $(cells[reportCol]).find('a').first().attr('href'),
+        );
       }
 
       out.push({ round, rallyName, winnerName, coDriverName, team, perRallyUrl });
@@ -788,10 +800,11 @@ export async function fetchWRCSeasonResults(
   const dateByRound = new Map<number, Date>();
   for (const c of calendar) dateByRound.set(c.round, c.date);
 
-  // Fan-out per-rally fetches for completed rounds only.
-  const completed = summary.filter(
-    r => r.winnerName !== null && r.perRallyUrl !== null,
-  );
+  // Fan-out per-rally fetches for completed rounds (those with a winner). The
+  // per-rally article link is optional: a completed round whose Report link is
+  // missing or unrecognized still degrades to a winner-only row below rather
+  // than being dropped from the feed entirely.
+  const completed = summary.filter(r => r.winnerName !== null);
 
   const races = await Promise.all(
     completed.map(async row => {

@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.14 — 2026-07-20
+
+**Formula 2 & Formula 3 results are back.** After both series' sites were rebuilt, their results tabs had gone empty; they now show full feature, sprint, qualifying and practice classifications again, with correct championship points.
+
+## 0.229.13 — 2026-07-20
+
+**Rally results are back.** The World Rally Championship results tab is showing full stage-by-stage classifications again, after an upstream data-source change had briefly left it empty.
+
 ## 0.229.12 — 2026-07-15
 
 **Internal.** Health-check notes.
