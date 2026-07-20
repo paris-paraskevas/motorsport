@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.13 — 2026-07-20
+
+### Fixed
+- WRC results feed restored (was `EMPTY` in `npm run health:results` for ~1 week). Wikipedia switched the 2026 season page's Season-summary "Report" links from relative (`/wiki/2026_Rally_Sweden`) to absolute (`https://en.wikipedia.org/wiki/…`). `parseSeasonSummaryFromHtml` (`lib/results/wrc.ts`) only accepted `/wiki/`-prefixed hrefs, so `perRallyUrl` came back null on every round; `fetchWRCSeasonResults`'s completed-rounds filter (`r.winnerName !== null && r.perRallyUrl !== null`) then dropped all 14 rounds → `[]`, with the winner-only fallback unreachable because it lived inside the filtered list. Fix: new `normalizeWikiHref` helper accepts relative + protocol-relative + absolute `en.wikipedia.org/wiki/` hrefs and normalizes to absolute; the completed filter now keys on `winnerName` only, so a winner with a missing/unrecognized Report link degrades to a winner-only row instead of vanishing. The stale fixture (`tests/fixtures/wrc-season-2026.html`, relative hrefs) hid this from the suite, so added a synthetic absolute-href regression fixture in `lib/results/wrc.test.ts` covering both the link normalization and the winner-only fallback. Verified: `wrc.test.ts` 21/21; `npm run health:results` → WRC OK, 104 rows live. (F2/F3 remain `EMPTY` — separate FIA-site-rebuild fix in progress.)
+
 ## 0.229.12 — 2026-07-15
 
 ### Changed

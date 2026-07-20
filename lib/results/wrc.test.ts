@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import {
@@ -25,6 +25,27 @@ const rallyHtmls: Record<string, string> = {
   canarias: load('rally-canarias'),
   portugal: load('rally-portugal'),
 };
+
+// Regression fixture: Wikipedia switched the Season-summary "Report" links
+// from relative (/wiki/…) to absolute (https://en.wikipedia.org/wiki/…)
+// mid-2026, which silently nulled every perRallyUrl and — via the
+// completed-rounds filter — emptied the entire WRC feed. Round 1 has an
+// absolute Report link; round 2 has a winner but NO Report link (must still
+// surface as winner-only).
+const SYNTH_SEASON_ABSOLUTE_LINKS = `
+<div class="mw-heading mw-heading2"><h2 id="Calendar">Calendar</h2></div>
+<table class="wikitable">
+<tr><th>Round</th><th>Start date</th><th>Rally</th></tr>
+<tr><td>1</td><td>22 January</td><td><a href="/wiki/Rally_One">Rally One</a></td></tr>
+<tr><td>2</td><td>12 February</td><td><a href="/wiki/Rally_Two">Rally Two</a></td></tr>
+</table>
+<div class="mw-heading mw-heading2"><h2 id="Results_and_standings">Results and standings</h2></div>
+<div class="mw-heading mw-heading3"><h3 id="Season_summary">Season summary</h3></div>
+<table class="wikitable">
+<tr><th>Round</th><th>Event</th><th>Winning driver</th><th>Winning co-driver</th><th>Winning entrant</th><th>Report</th></tr>
+<tr><td>1</td><td><a href="/wiki/Rally_One">Rally One</a></td><td><a href="https://en.wikipedia.org/wiki/Driver_A">Driver A</a></td><td>Co A</td><td>Team A</td><td><a href="https://en.wikipedia.org/wiki/2026_Rally_One">Report</a></td></tr>
+<tr><td>2</td><td><a href="/wiki/Rally_Two">Rally Two</a></td><td><a href="https://en.wikipedia.org/wiki/Driver_B">Driver B</a></td><td>Co B</td><td>Team B</td><td></td></tr>
+</table>`;
 
 describe('parseRallyDate', () => {
   it('parses "22–25 January" style ranges', () => {
@@ -78,6 +99,20 @@ describe('parseSeasonSummaryFromHtml', () => {
     const r7 = rows.find(r => r.round === 7);
     expect(r7).toBeDefined();
     expect(r7!.winnerName).toBeNull();
+  });
+
+  it('normalizes an absolute en.wikipedia Report link to perRallyUrl', () => {
+    const rows = parseSeasonSummaryFromHtml(SYNTH_SEASON_ABSOLUTE_LINKS);
+    const r1 = rows.find(r => r.round === 1)!;
+    expect(r1.winnerName).toBe('Driver A');
+    expect(r1.perRallyUrl).toBe('https://en.wikipedia.org/wiki/2026_Rally_One');
+  });
+
+  it('leaves perRallyUrl null for a completed round with no Report link', () => {
+    const rows = parseSeasonSummaryFromHtml(SYNTH_SEASON_ABSOLUTE_LINKS);
+    const r2 = rows.find(r => r.round === 2)!;
+    expect(r2.winnerName).toBe('Driver B');
+    expect(r2.perRallyUrl).toBeNull();
   });
 });
 
@@ -227,6 +262,26 @@ describe('fetchWRCSeasonResults', () => {
     const races = await fetchWRCSeasonResults(2026);
     expect(races).toHaveLength(6);
     // Each falls back to a single-entry winners-only row.
+    for (const r of races) {
+      expect(r.results).toHaveLength(1);
+      expect(r.results[0].status).toBe('Winner');
+    }
+  });
+
+  it('keeps a completed round with no Report link as a winner-only row', async () => {
+    // Season page has two winners; per-rally article pages all 404, forcing
+    // the winner-only fallback. Round 2 has NO Report link — it must still
+    // appear (the completed-rounds filter keys on winnerName, not perRallyUrl).
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url === 'https://en.wikipedia.org/wiki/2026_World_Rally_Championship') {
+        return { ok: true, status: 200, text: async () => SYNTH_SEASON_ABSOLUTE_LINKS } as Response;
+      }
+      return { ok: false, status: 404, text: async () => '' } as Response;
+    }) as unknown as typeof fetch;
+
+    const races = await fetchWRCSeasonResults(2026);
+    expect(races.map(r => r.round)).toEqual([1, 2]);
     for (const r of races) {
       expect(r.results).toHaveLength(1);
       expect(r.results[0].status).toBe('Winner');

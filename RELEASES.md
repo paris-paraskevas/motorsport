@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.13 — 2026-07-20
+
+**Rally results are back.** The World Rally Championship results tab is showing full stage-by-stage classifications again, after an upstream data-source change had briefly left it empty.
+
 ## 0.229.12 — 2026-07-15
 
 **Internal.** Health-check notes.
