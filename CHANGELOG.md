@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.17 — 2026-07-20
+
+### Fixed
+- F2 + F3 **standings** feeds restored (both `EMPTY` in `npm run health:standings`) — the last red piece of the F2/F3 breakage. Same root cause as the results (0.229.14): the rebuilt fiaformula{2,3}.com killed the `__NEXT_DATA__` scrape of `/Standings/Driver` + `/Standings/Team`. Rewired `lib/standings/f2.ts` + `f3.ts` onto the shared FOM API client — new `fetchFomStandings` in `lib/results/fom-api.ts` reads `api.formula1.com/v2/core-fom-results/{brand}/driver-standings-breakdown` (drivers + canonical `championshipPoints`) and `/constructor-standings-breakdown` (teams). The driver breakdown carries no team, so each driver's team is joined from the latest completed round's feature race; feature wins are counted from the per-round `[SR,FR]` points (FR ≥ 25 — unlike the old `== 25`, this tolerates the bonus-inclusive FOM values). `fetchF2Standings`/`fetchF3Standings` keep their exact signatures + `source_snapshot` last-good wrap. Corrected the stale `motorsport.com` health labels → `FOM API`. Verified: `npm run health:standings` → F2 33 rows, F3 43 rows, 13/13 green; live impl check (F2 Tsolov 161pt/Campos, F3 Ugochukwu 104pt, teams populated); tsc clean; 908 tests pass.
+
 ## 0.229.16 — 2026-07-20
 
 ### Fixed
