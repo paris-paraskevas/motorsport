@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.15 — 2026-07-20
+
+### Added
+- Weekend-schedule health monitor (`lib/sessions-health.ts` + `scripts/health-sessions.mts`; `npm run health:sessions`, folded into `npm run health` and `/api/cron/health`). The standings/results monitors only count rows, so a broken per-round timetable stayed invisible — GT World's Misano weekend silently rendered only "Free Practice 2" (its `sessions.json` override dropped the real races) while standings stayed green. The new check groups each series into weekends and flags any COMPLETED round whose session count is anomalously low vs that series' own median (floor = median × 0.5), excluding stray `round < 1` buckets; a 0-session round grades EMPTY. Self-calibrating — no per-series floors, no fragile race-name detection — so single-session-per-round feeds (NASCAR, IndyCar ovals) don't false-trip while a 1-session weekend in a 5–6-session series does. Contributes to the cron's `down` count (503) so incomplete schedules alert like a down source. Known v1 gap: it counts sessions, so it does not yet catch a round with the right count but wrong days/times (needs official-timetable cross-referencing). First run surfaced the curation gap-list: `gt-world` (R4 Spa, R5 Misano), `dtm` (R4 Norisring), `wrc` (R4 Croatia), `indycar` (R3/R8/R10/R11 — road/street rounds missing practice+qualifying). Verified: `tsc` clean; `sessions-health.test.ts` 6/6; `npm run health:sessions` → 15 series, 4 flagged.
+
 ## 0.229.14 — 2026-07-20
 
 ### Fixed
