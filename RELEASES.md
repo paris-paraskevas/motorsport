@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.16 — 2026-07-20
+
+**Fuller race-weekend schedules.** Filled in missing practice, qualifying and race sessions across GT World, WRC, IndyCar and DTM weekends, so every series' schedule now shows the complete timetable.
+
 ## 0.229.15 — 2026-07-20
 
 **Internal.** Added a weekend-schedule health monitor that flags race weekends with incomplete session timetables.
