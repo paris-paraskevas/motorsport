@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.16 — 2026-07-20
+
+**Fuller race-weekend schedules.** Filled in missing practice, qualifying and race sessions across GT World, WRC, IndyCar and DTM weekends, so every series' schedule now shows the complete timetable.
+
+## 0.229.15 — 2026-07-20
+
+**Internal.** Added a weekend-schedule health monitor that flags race weekends with incomplete session timetables.
+
 ## 0.229.14 — 2026-07-20
 
 **Formula 2 & Formula 3 results are back.** After both series' sites were rebuilt, their results tabs had gone empty; they now show full feature, sprint, qualifying and practice classifications again, with correct championship points.

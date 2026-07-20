@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.229.16 — 2026-07-20
+
+### Fixed
+- Curated the incomplete weekend schedules the new sessions-health monitor (0.229.15) flagged — `npm run health:sessions` is now fully green (15/15 series). All from cross-checked official timetables (RULE #1), converted to UTC:
+  - **GT World** (`content/series/gt-world/sessions.json`): Misano R5 rebuilt from the lone "Free Practice 2" placeholder to the full 8-session weekend (FP1/FP2, group qualifying, both sprint races); Spa 24h R4 from a single "Race Start" to the full 11-session event (Bronze Test, FP1/FP2, the 2026 four-group qualifying, Superpole, Night Practice, Warm Up, Race). Source: official SRO timetable PDFs.
+  - **WRC** (`content/series/wrc/sessions.json`): Croatia R4 filled to the full 22-entry itinerary (Shakedown + SS1–SS20 Power Stage); Portugal R6 rebuilt to the full 24-entry itinerary AND its timezone corrected — stages had been stored an hour off (Portugal is WEST/UTC+1, not CEST). Sources: rally-croatia.com / rally-de-portugal.pt itineraries + rally-maps/Wikipedia cross-check.
+  - **IndyCar** (`content/series/indycar/sessions.json`): added practice+qualifying to R5 Long Beach, R6 Sonsio Indy GP, R9 Gateway, and expanded R3/R8/R10/R11 (Arlington, Detroit, Road America, Nashville) from race-only/race+quali to full weekends; corrected the Arlington race start (was 12:30 local; as-run 10:30). Source: indycar.com + promoter schedules.
+  - **DTM** (`content/series/dtm/sessions.json`): added the entirely-missing Round 4 Norisring block (FP1/FP2, Q1/Race 1, Q2/Race 2). Source: official DTM/ADAC timetable, two-source confirmed.
+  Research ran via parallel verification subagents; every session time cross-checked against ≥2 sources. Verified: `npm run health:sessions` → 15/15 green; tsc clean; 921 tests pass.
+
+## 0.229.15 — 2026-07-20
+
+### Added
+- Weekend-schedule health monitor (`lib/sessions-health.ts` + `scripts/health-sessions.mts`; `npm run health:sessions`, folded into `npm run health` and `/api/cron/health`). The standings/results monitors only count rows, so a broken per-round timetable stayed invisible — GT World's Misano weekend silently rendered only "Free Practice 2" (its `sessions.json` override dropped the real races) while standings stayed green. The new check groups each series into weekends and flags any COMPLETED round whose session count is anomalously low vs that series' own median (floor = median × 0.5), excluding stray `round < 1` buckets; a 0-session round grades EMPTY. Self-calibrating — no per-series floors, no fragile race-name detection — so single-session-per-round feeds (NASCAR, IndyCar ovals) don't false-trip while a 1-session weekend in a 5–6-session series does. Contributes to the cron's `down` count (503) so incomplete schedules alert like a down source. Known v1 gap: it counts sessions, so it does not yet catch a round with the right count but wrong days/times (needs official-timetable cross-referencing). First run surfaced the curation gap-list: `gt-world` (R4 Spa, R5 Misano), `dtm` (R4 Norisring), `wrc` (R4 Croatia), `indycar` (R3/R8/R10/R11 — road/street rounds missing practice+qualifying). Verified: `tsc` clean; `sessions-health.test.ts` 6/6; `npm run health:sessions` → 15 series, 4 flagged.
+
 ## 0.229.14 — 2026-07-20
 
 ### Fixed

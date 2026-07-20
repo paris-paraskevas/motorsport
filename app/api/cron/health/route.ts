@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { runStandingsHealth } from '@/lib/standings-health';
 import { runResultsHealth } from '@/lib/results-health';
+import { runSessionsHealth, summarizeSessions, type SessionHealthResult } from '@/lib/sessions-health';
 import { summarize, type HealthResult } from '@/lib/health-core';
 import { getSourceHealth } from '@/lib/source-snapshot';
 
@@ -14,6 +15,12 @@ const detail = (r: HealthResult) => ({
   ...(r.error ? { error: r.error } : {}),
 });
 
+const sessionDetail = (r: SessionHealthResult) => ({
+  slug: r.slug, label: r.label, status: r.status,
+  completedRounds: r.completedRounds, median: r.median, thin: r.thin, ms: r.ms,
+  ...(r.error ? { error: r.error } : {}),
+});
+
 // Runs every live standings AND results parser against its source from the
 // production environment (so the result reflects what users actually get, not a
 // CI runner's network). Returns 503 when any source is DOWN so the GitHub
@@ -23,14 +30,19 @@ export async function GET(req: Request) {
   if (auth !== 'ok') return cronAuthFailureResponse(auth);
 
   try {
-    const [standings, results, sources] = await Promise.all([
+    const [standings, results, sessions, sources] = await Promise.all([
       runStandingsHealth(),
       runResultsHealth(),
+      runSessionsHealth(),
       getSourceHealth(),
     ]);
     const sSum = summarize(standings);
     const rSum = summarize(results);
-    const down = sSum.down + rSum.down;
+    const sessSum = summarizeSessions(sessions);
+    // A thin/empty weekend schedule counts toward "down" too, so the 6-hourly
+    // cron alerts on incomplete session data — the failure the row-count checks
+    // can't see.
+    const down = sSum.down + rSum.down + sessSum.flagged;
 
     return NextResponse.json(
       {
@@ -39,6 +51,7 @@ export async function GET(req: Request) {
         down,
         standings: { ...sSum, checks: standings.map(detail) },
         results: { ...rSum, checks: results.map(detail) },
+        sessions: { ...sessSum, checks: sessions.map(sessionDetail) },
         sources, // durable last-good freshness per upstream feed (source_snapshot)
       },
       { status: down > 0 ? 503 : 200 },

@@ -41,6 +41,18 @@
       ]
     },
     {
+      "matchDate": "2026-07-05",
+      "round": 4,
+      "sessions": [
+        { "title": "DTM - Free Practice 1", "start": "2026-07-03T06:30:00Z", "end": "2026-07-03T07:30:00Z", "location": "Norisring, Nuremberg, Germany" },
+        { "title": "DTM - Free Practice 2", "start": "2026-07-03T11:00:00Z", "end": "2026-07-03T12:00:00Z", "location": "Norisring, Nuremberg, Germany" },
+        { "title": "DTM - Qualifying 1", "start": "2026-07-04T06:30:00Z", "end": "2026-07-04T06:50:00Z", "location": "Norisring, Nuremberg, Germany" },
+        { "title": "DTM - Race 1", "start": "2026-07-04T09:30:00Z", "end": "2026-07-04T10:30:00Z", "location": "Norisring, Nuremberg, Germany" },
+        { "title": "DTM - Qualifying 2", "start": "2026-07-05T06:30:00Z", "end": "2026-07-05T06:50:00Z", "location": "Norisring, Nuremberg, Germany" },
+        { "title": "DTM - Race 2", "start": "2026-07-05T09:30:00Z", "end": "2026-07-05T10:30:00Z", "location": "Norisring, Nuremberg, Germany" }
+      ]
+    },
+    {
       "matchDate": "2026-07-26",
       "round": 5,
       "sessions": [

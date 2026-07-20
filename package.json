@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.229.14",
+  "version": "0.229.16",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -12,7 +12,8 @@
     "indexnow:submit": "tsx scripts/submit-sitemap-to-indexnow.ts",
     "health:standings": "tsx scripts/health-standings.mts",
     "health:results": "tsx scripts/health-results.mts",
-    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts",
+    "health:sessions": "tsx scripts/health-sessions.mts",
+    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts && tsx scripts/health-sessions.mts",
     "assistant:eval": "tsx scripts/assistant-eval.mts",
     "prepare": "husky"
   },
