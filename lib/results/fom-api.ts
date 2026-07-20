@@ -1,4 +1,4 @@
-import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { RaceResult, RaceResultEntry, DriverStanding, ConstructorStanding } from '@/lib/types';
 import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
@@ -52,6 +52,7 @@ export interface FomMeeting {
 }
 
 export interface FomStandingRow {
+  position?: string; // "1st", "2nd", …
   driverReference?: string;
   driverFirstName?: string;
   driverLastName?: string;
@@ -390,4 +391,106 @@ export async function fetchFomSeason(brand: FomBrand, season: number): Promise<F
     await writeResultsCache(cacheKey, bundle);
   }
   return bundle;
+}
+
+// ---- Standings ----------------------------------------------------------
+
+interface FomConstructorRow {
+  position?: string;
+  teamName?: string;
+  championshipPoints?: number;
+  points?: Array<Array<number | null>>;
+}
+interface FomConstructorManifest {
+  standings?: FomConstructorRow[];
+}
+
+export interface FomStandings {
+  drivers: DriverStanding[];
+  constructors: ConstructorStanding[];
+}
+
+// "1st" -> 1, "2nd" -> 2, …; null when unparseable (caller falls back to index).
+function parseOrdinal(pos: string | undefined): number | null {
+  const m = pos?.match(/\d+/);
+  return m ? Number(m[0]) : null;
+}
+
+// Feature-race wins from the per-round [SR, FR] points: a Feature win scores
+// >= 25 (25 base plus any pole / fastest-lap bonus). The best non-win — P2 (18)
+// + pole (2) + FL (1) = 21 — stays below 25, so >= 25 uniquely identifies a win.
+// (The pre-rewrite parser used == 25, which the bonus-inclusive FOM values
+// would undercount.) Constructor wins are intentionally NOT derived this way:
+// a team's per-round FR is its two cars combined, so >= 25 does not imply a win.
+const FEATURE_WIN_MIN = 25;
+function countFeatureWins(points: Array<Array<number | null>> | undefined): number {
+  if (!Array.isArray(points)) return 0;
+  return points.filter(p => Array.isArray(p) && typeof p[1] === 'number' && (p[1] as number) >= FEATURE_WIN_MIN).length;
+}
+
+// The driver-standings breakdown carries NO team, so join driverReference ->
+// team from the latest completed round's feature race (which lists team per
+// entry). A driver absent from that race (reserve / one-off) gets an empty team;
+// StandingsTab hides the team column only when EVERY driver lacks one, so this
+// degrades cleanly.
+async function driverTeamMap(brand: FomBrand, meetings: FomMeeting[]): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  const today = new Date().toISOString().slice(0, 10);
+  const started = meetings.filter(m => (m.meetingStartDate ?? '') <= today && (m.raceSessions?.length ?? 0) > 0);
+  const latest = started[started.length - 1];
+  const feature = latest?.raceSessions?.find(s => /FEATURE/i.test(s.description ?? ''));
+  if (!latest?.meetingKey || !feature) return map;
+  const data = await fetchFomJson<FomSessionResponse>(brand, `/race?meeting=${latest.meetingKey}&session=${feature.sessionNumber}`);
+  for (const r of data?.sessionResults?.results ?? []) {
+    if (r.driverReference && r.teamName) map.set(r.driverReference, r.teamName);
+  }
+  return map;
+}
+
+/**
+ * Driver + constructor championship standings from the FOM breakdown endpoints
+ * (the same source the rebuilt fiaformula{2,3}.com standings pages use). Returns
+ * null only when BOTH tables come back empty (source down), so the caller's
+ * source-snapshot serves last-good. Position comes from the breakdown ordinal
+ * ("1st") with an index fallback; driver team is joined from the latest race.
+ */
+export async function fetchFomStandings(brand: FomBrand, season: number): Promise<FomStandings | null> {
+  const [driverBd, teamBd] = await Promise.all([
+    fetchFomJson<FomManifest>(brand, `/driver-standings-breakdown?season=${season}`),
+    fetchFomJson<FomConstructorManifest>(brand, `/constructor-standings-breakdown?season=${season}`),
+  ]);
+  const driverRows = driverBd?.standings ?? [];
+  const teamRows = teamBd?.standings ?? [];
+  if (driverRows.length === 0 && teamRows.length === 0) return null;
+
+  const teamByDriver = await driverTeamMap(brand, driverBd?.meetings ?? []);
+
+  const drivers: DriverStanding[] = [];
+  driverRows.forEach((r, i) => {
+    const name =
+      r.driverFirstName && r.driverLastName ? `${r.driverFirstName} ${r.driverLastName}` : r.driverShortName;
+    if (!name) return;
+    drivers.push({
+      position: parseOrdinal(r.position) ?? i + 1,
+      driverName: name,
+      driverCode: r.driverTLA,
+      team: (r.driverReference && teamByDriver.get(r.driverReference)) || '',
+      points: typeof r.championshipPoints === 'number' ? r.championshipPoints : 0,
+      wins: countFeatureWins(r.points),
+    });
+  });
+
+  const constructors: ConstructorStanding[] = [];
+  teamRows.forEach((r, i) => {
+    if (!r.teamName) return;
+    constructors.push({
+      position: parseOrdinal(r.position) ?? i + 1,
+      name: r.teamName,
+      points: typeof r.championshipPoints === 'number' ? r.championshipPoints : 0,
+    });
+  });
+
+  drivers.sort((a, b) => a.position - b.position);
+  constructors.sort((a, b) => a.position - b.position);
+  return { drivers, constructors };
 }

@@ -5,6 +5,7 @@ import {
   buildPointsLookup,
   completedRounds,
   fetchFomSeason,
+  fetchFomStandings,
   type FomSessionResponse,
   type FomMeeting,
   type FomStandingRow,
@@ -225,5 +226,58 @@ describe('mapClassification', () => {
     expect(c.entries[1].gap).toBe('+0.216');
     const last = c.entries[c.entries.length - 1];
     expect(last).toMatchObject({ position: null, status: 'DNS' });
+  });
+});
+
+describe('fetchFomStandings', () => {
+  const originalFetch = globalThis.fetch;
+  afterEach(() => { globalThis.fetch = originalFetch; vi.restoreAllMocks(); });
+
+  function mockApi(map: Record<string, unknown | null>) {
+    globalThis.fetch = vi.fn(async (url: string | URL) => {
+      const u = String(url);
+      for (const [pattern, body] of Object.entries(map)) {
+        if (u.includes(pattern)) {
+          if (body === null) throw new Error('down');
+          return { ok: true, status: 200, json: async () => body } as Response;
+        }
+      }
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    }) as unknown as typeof fetch;
+  }
+
+  it('maps drivers (team joined from the latest race) + constructors, with feature wins', async () => {
+    mockApi({
+      'driver-standings-breakdown': {
+        season: '2026',
+        meetings: [MELBOURNE],
+        standings: [
+          { position: '1st', championshipPoints: 37, driverReference: 'NIKTSO01', driverFirstName: 'Nikola', driverLastName: 'Tsolov', driverTLA: 'TSO', points: [[10, 27], [null, null]] },
+          { position: '2nd', championshipPoints: 18, driverReference: 'GABMIN01', driverFirstName: 'Gabriele', driverLastName: 'Mini', driverTLA: 'MIN', points: [[0, 18], [null, null]] },
+        ],
+      },
+      'constructor-standings-breakdown': {
+        standings: [
+          { position: '1st', teamName: 'Campos Racing', championshipPoints: 55 },
+          { position: '2nd', teamName: 'MP Motorsport', championshipPoints: 40 },
+        ],
+      },
+      // team map source (latest completed feature race)
+      'race?meeting=1279&session=2': sessionResponse(FEATURE_ROWS),
+    });
+    const s = (await fetchFomStandings('f2', 2026))!;
+    expect(s.drivers).toHaveLength(2);
+    // Team joined from FEATURE_ROWS; wins from FR >= 25 (Tsolov 27 → 1, Mini 18 → 0).
+    expect(s.drivers[0]).toEqual({ position: 1, driverName: 'Nikola Tsolov', driverCode: 'TSO', team: 'Campos Racing', points: 37, wins: 1 });
+    expect(s.drivers[1]).toMatchObject({ position: 2, team: 'MP Motorsport', wins: 0 });
+    expect(s.constructors).toEqual([
+      { position: 1, name: 'Campos Racing', points: 55 },
+      { position: 2, name: 'MP Motorsport', points: 40 },
+    ]);
+  });
+
+  it('returns null when both breakdown tables are empty', async () => {
+    mockApi({});
+    expect(await fetchFomStandings('f2', 2026)).toBeNull();
   });
 });

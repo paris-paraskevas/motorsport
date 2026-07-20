@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.17 — 2026-07-20
+
+**Formula 2 & Formula 3 standings are back.** The drivers' and teams' championship tables for both series are populating again after their site rebuild had left them blank.
+
 ## 0.229.16 — 2026-07-20
 
 **Fuller race-weekend schedules.** Filled in missing practice, qualifying and race sessions across GT World, WRC, IndyCar and DTM weekends, so every series' schedule now shows the complete timetable.
