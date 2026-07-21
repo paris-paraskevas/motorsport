@@ -23,6 +23,23 @@ export const POST_ARTICLE_CLASS =
    prose-pre:overflow-x-auto prose-img:rounded-lg prose-img:mx-auto prose-img:max-w-full
    prose-table:block prose-table:overflow-x-auto prose-table:max-w-full`;
 
+/** Cover image between the header and the body. Same two consumers as
+ *  PostHeader (public page + DraftEditor view mode). Fixed 1200×630 box
+ *  with object-cover, so odd source dimensions crop instead of reflowing
+ *  the page; eager-loaded — when present it's the LCP. */
+export function PostHero({ src, alt }: { src: string; alt: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      width={1200}
+      height={630}
+      className="mb-8 aspect-[1200/630] w-full rounded-xl border border-border bg-surface object-cover"
+    />
+  );
+}
+
 export function PostHeader({
   dateLabel,
   tags,
