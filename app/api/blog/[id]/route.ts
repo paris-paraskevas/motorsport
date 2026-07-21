@@ -79,12 +79,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 }
 
-// PATCH = edit a post's text in place (admin, or the writer who owns it): any of
-// { title?, summary?, body? }. Editable while draft or scheduled — updatePostContent
-// guards status ∈ {draft, approved}, so a writer can revise right up until the post
-// publishes, then it's locked. Slug, series, hero image and publish time are
-// immutable in this surface (spec docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md).
-// Validation / status domain errors map to 422, mirroring the handler above.
+// PATCH = edit a post's text/cover in place (admin, or the writer who owns it): any
+// of { title?, summary?, body?, heroImage? }. heroImage is an https:// or
+// root-relative URL; null or '' clears it (shape enforced in updatePostContent).
+// Editable while draft or scheduled — updatePostContent guards status ∈
+// {draft, approved}, so a writer can revise right up until the post publishes,
+// then it's locked. Slug, series and publish time remain immutable in this surface
+// (spec docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md; hero made
+// editable 0.230.0). Validation / status domain errors map to 422, mirroring the
+// handler above.
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
@@ -93,7 +96,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id } = await params;
   const gate = await authorizePostActor(id, userId);
   if (gate instanceof NextResponse) return gate;
-  let body: { title?: unknown; summary?: unknown; body?: unknown };
+  let body: { title?: unknown; summary?: unknown; body?: unknown; heroImage?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -103,10 +106,21 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (typeof body.title === 'string') patch.title = body.title;
   if (typeof body.summary === 'string') patch.summary = body.summary;
   if (typeof body.body === 'string') patch.body = body.body;
-  if (patch.title === undefined && patch.summary === undefined && patch.body === undefined) {
-    return NextResponse.json({ error: 'nothing to update — send title, summary and/or body' }, { status: 400 });
+  // heroImage: '' and null both mean "clear" — normalized to null in lib/blog.
+  if (typeof body.heroImage === 'string' || body.heroImage === null) patch.heroImage = body.heroImage;
+  if (
+    patch.title === undefined &&
+    patch.summary === undefined &&
+    patch.body === undefined &&
+    patch.heroImage === undefined
+  ) {
+    return NextResponse.json(
+      { error: 'nothing to update — send title, summary, body and/or heroImage' },
+      { status: 400 },
+    );
   }
   for (const [key, value] of Object.entries(patch)) {
+    if (key === 'heroImage') continue; // blank/null = clear, not an error
     if (!String(value).trim()) {
       return NextResponse.json({ error: `${key} must not be empty` }, { status: 400 });
     }
