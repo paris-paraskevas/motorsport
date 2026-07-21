@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.229.18 — 2026-07-21
+
+**Internal.** Tooling to draft a lap-by-lap race analysis from our own timing data; no user-facing change.
+
 ## 0.229.17 — 2026-07-20
 
 **Formula 2 & Formula 3 standings are back.** The drivers' and teams' championship tables for both series are populating again after their site rebuild had left them blank.
