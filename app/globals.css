@@ -208,6 +208,21 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* GeistSans ships a MALFORMED lowercase Greek omega: U+03C9 (ω) is drawn as a
+   capital Ω. It's a real (wrong) glyph, not a missing one, so the browser never
+   falls back on its own and Greek-language content reads wrong (reported by a
+   Greek writer, reproduced in Chrome 2026-07-21). Force the Greek + Greek-Extended
+   ranges to a correct system face, ahead of Geist; unicode-range scopes this to
+   Greek codepoints only, so Latin/numerals stay Geist untouched. Applied to the
+   body font stack below (prose inherits it). Verified: ω resolves to the system
+   glyph, Latin advance widths unchanged. */
+@font-face {
+  font-family: 'GreekFallback';
+  src: local('Helvetica Neue'), local('Arial'), local('Segoe UI'), local('Roboto'),
+    local('Noto Sans'), local('DejaVu Sans');
+  unicode-range: U+0370-03FF, U+1F00-1FFF;
+}
+
 html {
   color-scheme: dark;
 }
@@ -228,6 +243,12 @@ html, body {
 body {
   background-color: var(--bg);
   min-height: 100vh;
+  /* GreekFallback (Greek codepoints only) ahead of the Geist stack — fixes the
+     malformed Geist lowercase omega. GeistSans/"GeistSans Fallback" are the geist
+     package's stable family names (loaded via .className on <html>, no CSS var).
+     Body sets this explicitly so the whole document (incl. blog prose) inherits it;
+     font-mono / font-display utilities set their own family and are unaffected. */
+  font-family: 'GreekFallback', GeistSans, 'GeistSans Fallback', sans-serif;
 }
 
 /* Tabular numerals — used for times, points, positions. */
