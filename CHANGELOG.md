@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.2 — 2026-07-21
+
+### Fixed
+- Greek lowercase omega (ω, U+03C9) rendered as a capital Ω in blog prose and anywhere body text is Greek. Root cause: GeistSans (the body face, `geist/font/sans`) ships a malformed glyph for U+03C9 — a real-but-wrong glyph, so the browser never fell back to a correct one (other Greek letters are fine; only ω). Fix in `app/globals.css`: a `unicode-range` `@font-face` (`GreekFallback`, Greek U+0370–03FF + Greek-Extended U+1F00–1FFF → `local()` system faces) placed ahead of the Geist stack on `body`, so Greek codepoints resolve to a correct system glyph while Latin/numerals stay Geist untouched. `font-mono`/`font-display` set their own family and are unaffected (Saira already falls back correctly for Greek). Reproduced + verified in Chrome: ω resolves to the system lowercase glyph, Latin advance widths unchanged. Unblocks Greek-language posts.
+
 ## 0.230.1 — 2026-07-21
 
 ### Added

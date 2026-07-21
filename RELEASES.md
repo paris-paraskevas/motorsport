@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.2 — 2026-07-21
+
+**Greek text now renders correctly.** Fixed a font bug where a lowercase Greek omega appeared as a capital in posts.
+
 ## 0.230.1 — 2026-07-21
 
 **Internal.** Tooling to draft a lap-by-lap race analysis from our own timing data; no user-facing change.
