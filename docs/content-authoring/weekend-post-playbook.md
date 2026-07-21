@@ -91,8 +91,12 @@ Record in the comment block (these feed the insert):
 
 The article body (after `-->`) is the post; the leading `# H1` is dropped at
 conversion (the title lives in its own field), so the body must read cleanly
-without it. Keep it **≤50000 chars**. `heroImage`: a real existing curated image
-path, else `null` — never invent a URL.
+without it. Keep it **≤50000 chars**. `heroImage`: a licence-verified cover URL
+for the top of the post page (sourcing SOP in the `blog-authoring` skill §4 —
+Commons/Flickr-CC with credit, or Unsplash/Pexels), else omit the key — never
+invent a URL, never use an unverified-licence image. The reviewer can also set
+it later in the `/blog` editor. Shares always use the branded card
+(`app/(app)/blog/[slug]/opengraph-image.tsx`), cover or no cover.
 
 ## Step 5 — Handoff (approval-gated — NOT part of this routine)
 

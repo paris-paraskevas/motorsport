@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.0 — 2026-07-21
+
+**Blog posts now carry cover images, and shares look the part.** Editors can set a cover photo on any post and it displays above the article. Sharing any post to social media or messaging apps now shows a clean branded Paddock card instead of a random page image.
+
 ## 0.229.17 — 2026-07-20
 
 **Formula 2 & Formula 3 standings are back.** The drivers' and teams' championship tables for both series are populating again after their site rebuild had left them blank.

@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil } from 'lucide-react';
-import { PostHeader, POST_ARTICLE_CLASS, type PostAuthor } from './PostHeader';
+import { PostHeader, PostHero, POST_ARTICLE_CLASS, type PostAuthor } from './PostHeader';
 import { MarkdownEditor } from './MarkdownEditor';
 
 // Field limits — mirror lib/blog.ts TITLE_MAX/SUMMARY_MAX. Local literals because
@@ -23,35 +23,46 @@ const SUMMARY_MAX = 300;
 // fresh props drop the component back to view mode. No client-side markdown
 // rendering, so the rendered result (incl. live embeds) is always the server
 // pipeline's; `bodyNode` is that server-rendered article, passed in as a node.
-// Slug, series, hero image and publish time are immutable in this surface.
+// Slug, series and publish time are immutable in this surface; the cover image
+// (heroImage — the on-page article cover) is editable as of 0.230.0.
 
 export interface DraftEditorProps {
   id: string;
   title: string;
   summary: string;
   body: string;
+  /** Cover image URL (https:// or root-relative), or null. Shown above the
+   *  article body (the share card stays the branded Paddock card — operator
+   *  call 2026-07-21); editable here so review can always set one. */
+  heroImage: string | null;
   bodyNode: ReactNode;
   dateLabel: string;
   banner: { kind: 'draft' } | { kind: 'scheduled'; label: string };
   author: PostAuthor | null;
 }
 
-export function DraftEditor({ id, title, summary, body, bodyNode, dateLabel, banner, author }: DraftEditorProps) {
+export function DraftEditor({ id, title, summary, body, heroImage, bodyNode, dateLabel, banner, author }: DraftEditorProps) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
   const [draftSummary, setDraftSummary] = useState(summary);
   const [draftBody, setDraftBody] = useState(body);
+  const [draftHero, setDraftHero] = useState(heroImage ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const dirty = draftTitle !== title || draftSummary !== summary || draftBody !== body;
+  const dirty =
+    draftTitle !== title ||
+    draftSummary !== summary ||
+    draftBody !== body ||
+    draftHero.trim() !== (heroImage ?? '');
 
   function startEdit() {
     // Re-seed from props each time — a previous save refreshed them.
     setDraftTitle(title);
     setDraftSummary(summary);
     setDraftBody(body);
+    setDraftHero(heroImage ?? '');
     setError(null);
     setEditing(true);
   }
@@ -69,7 +80,12 @@ export function DraftEditor({ id, title, summary, body, bodyNode, dateLabel, ban
       const res = await fetch(`/api/blog/${id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title: draftTitle, summary: draftSummary, body: draftBody }),
+        body: JSON.stringify({
+          title: draftTitle,
+          summary: draftSummary,
+          body: draftBody,
+          heroImage: draftHero.trim() || null, // blank clears the cover
+        }),
       });
       const d = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok) {
@@ -137,6 +153,31 @@ export function DraftEditor({ id, title, summary, body, bodyNode, dateLabel, ban
             aria-label="Summary"
             required
           />
+          <div className="space-y-1.5">
+            <input
+              className={field}
+              type="url"
+              value={draftHero}
+              onChange={e => setDraftHero(e.target.value)}
+              maxLength={2048}
+              placeholder="Cover image URL (https://… or /path) — shown at the top of the post; blank = none"
+              aria-label="Cover image URL"
+            />
+            <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+              Copyright-safe sources: Wikimedia Commons / Flickr (CC filter) — add the credit line in the
+              body; Unsplash · Pexels · Pixabay — no credit needed. Landscape, ≥1200×630.
+            </p>
+            {draftHero.trim() && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={draftHero.trim()}
+                alt="Cover preview"
+                width={480}
+                height={252}
+                className="aspect-[1200/630] w-full max-w-md rounded-lg border border-border bg-surface object-cover"
+              />
+            )}
+          </div>
           <MarkdownEditor
             value={draftBody}
             onChange={setDraftBody}
@@ -170,6 +211,7 @@ export function DraftEditor({ id, title, summary, body, bodyNode, dateLabel, ban
             summary={summary}
             author={author ?? { name: null, image: null }}
           />
+          {heroImage && <PostHero src={heroImage} alt={title} />}
           <article className={POST_ARTICLE_CLASS}>{bodyNode}</article>
         </>
       )}
