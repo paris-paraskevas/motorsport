@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.10 — 2026-07-22
+
+### Added
+- F1 champions depth backfilled for **1956-1965** (`content/series/f1/champions.json`), same 3-source pass (StatsF1 official/net points + runner-ups, Wikipedia champions table for wins, margin-reconciled). Notable cases: 1958 Hawthorn's title on 42 net with a single win over Moss's four (41); 1961 runner-up Wolfgang von Trips (died at Monza); shared-drive/dropped-scores 1950s totals taken as officially classified (1956 Fangio 30); 1963 runner-up corrected to Graham Hill 29 (the champions-table margin mis-read → StatsF1 arbitrated). 1957/1956 keep no `constructorChampion` (the Constructors' title began in 1958). F1 now curated with full champion depth back to 1956; only 1950-1955 remains.
+
 ## 0.230.9 — 2026-07-22
 
 ### Added
