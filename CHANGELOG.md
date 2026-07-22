@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.12 — 2026-07-22
+
+### Added
+- **F1 schedule cross-check** (`npm run health:f1-schedule`) — diffs our rendered F1 weekend schedule (the ICS feed + curated `sessions.json` overrides) against **OpenF1's official session times**, catching the wrong-DAY / wrong-TIME curation errors the count-based sessions-health monitor can't. New pure `diffRoundSchedule` in `lib/f1-schedule-crosscheck.ts` (matched by normalized session type via `sessionSlug`; different UTC day → wrong-day, same-day start >30 min off → wrong-time; date-only sessions checked on day; our support sessions absent from OpenF1 are skipped, not flagged) + `scripts/health-f1-schedule.mts`. **F1-only** — OpenF1 is F1's official timing source; the other 14 series have no machine-readable official timetable to diff against (their sites are SPA / bot-blocked). **Local diagnostic, NOT wired into `/api/cron/health`**: a Vercel cron hitting OpenF1 is outbound datacenter code that must be preview-verified first (the 0.12.12 NASCAR precedent) — that wiring is a preview-gated follow-up. Note: an internal `rounds.json` off-window check was prototyped and dropped — it false-tripped on legitimate multi-day events (Le Mans week, Spa 24h test day) whose true span exceeds the race-day-only `rounds.json` window. Verified: 6/6 unit tests; run over 2026 → 10 completed rounds, 9 cross-checked, 45 sessions, **0 discrepancies** (our F1 schedule matches official); `tsc` + `next build` clean.
+
 ## 0.230.11 — 2026-07-22
 
 ### Added

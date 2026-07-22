@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.12 — 2026-07-22
+
+**Internal.** A tool that cross-checks our Formula 1 session times against the official timing source, to catch any wrong-day or wrong-time errors in the schedule.
+
 ## 0.230.11 — 2026-07-22
 
 **Every F1 champion, in full.** The Champions tab now shows points, wins and runner-up detail for every Formula 1 champion from 1950 to today, from Farina to Norris.
