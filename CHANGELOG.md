@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.11 — 2026-07-22
+
+### Added
+- F1 champions depth backfilled for **1950-1955**, completing the set — every Formula 1 champion **1950-2025** now carries points / wins / runner-up + margin. Same 3-source pass; the founding era's quirks handled: shared-drive **fractional points** (1954 runner-up González 25 1/7 ≈ 25.14, from a seven-way shared fastest lap), **half-points** (1953 Ascari 34.5), 1955 Fangio 40 net (the champions-table margin was noise — StatsF1 + a third source arbitrated), and no `constructorChampion` pre-1958 (the Constructors' title began that year). F1 champion depth is now complete end to end (76 seasons); the other 14 series are next.
+
 ## 0.230.10 — 2026-07-22
 
 ### Added

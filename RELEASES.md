@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.11 — 2026-07-22
+
+**Every F1 champion, in full.** The Champions tab now shows points, wins and runner-up detail for every Formula 1 champion from 1950 to today, from Farina to Norris.
+
 ## 0.230.10 — 2026-07-22
 
 **Champion history back to 1956.** The Champions tab now carries points, wins and runner-up detail for every Formula 1 champion from 1956 onward, into the Fangio era.
