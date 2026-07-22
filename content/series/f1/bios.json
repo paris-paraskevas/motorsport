@@ -1,0 +1,25 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats (the page renders live 'Season so far' separately, and volatile figures would go stale on the ISR page). Preferred over the Wikipedia-intro fallback; drivers without an entry keep the Wikipedia bio. key = slugify(driver name). PILOT: 2 samples (plumbing-first); scale to the rest of the grid + other series later. British English, no em dashes, no AI-tell phrases (house style). sources[] = the primary references checked against; not rendered.",
+  "drivers": {
+    "lewis-hamilton": {
+      "paragraphs": [
+        "Lewis Hamilton arrived in Formula 1 in 2007 as a McLaren protégé and lost the title by a single point in his rookie year. He took the first of his seven World Championships in 2008, then moved to Mercedes in 2013 and built the most dominant partnership of the hybrid era.",
+        "His seven titles, the first in 2008 and six more with Mercedes between 2014 and 2020, equal the all-time record, and he holds Formula 1's marks for career race wins and pole positions. The first Black driver to win the championship, he was knighted after his 2020 title. In 2025 he began a new chapter at Ferrari, the team he had wanted to drive for since childhood, still carrying the number 44."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lewis_Hamilton",
+        "https://www.formula1.com/en/drivers/lewis-hamilton"
+      ]
+    },
+    "fernando-alonso": {
+      "paragraphs": [
+        "Fernando Alonso broke into Formula 1 with Minardi in 2001 and, with Renault, won back-to-back World Championships in 2005 and 2006, ending Ferrari and Michael Schumacher's five-year grip on the title and becoming the sport's youngest double champion of the era.",
+        "A long second act followed: a title-less pursuit across McLaren and Ferrari, some of the finest driving of his generation without a car to match it, and a brief step away before he returned to keep rewriting the record books, becoming the first driver to start 400 Grands Prix. Beyond Formula 1 he has won the 24 Hours of Le Mans twice and the World Endurance Championship, the only driver to hold that title alongside the F1 crown. Now the oldest driver on the grid, he races for Aston Martin under the number 14."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fernando_Alonso",
+        "https://www.formula1.com/en/drivers/fernando-alonso"
+      ]
+    }
+  }
+}

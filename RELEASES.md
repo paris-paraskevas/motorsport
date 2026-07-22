@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.3 — 2026-07-22
+
+**Driver profiles get original write-ups.** Driver pages can now carry an original, fact-checked bio in place of a Wikipedia extract. Rolling out per driver, starting with a couple of F1 names.
+
 ## 0.230.2 — 2026-07-21
 
 **Greek text now renders correctly.** Fixed a font bug where a lowercase Greek omega appeared as a capital in posts.
