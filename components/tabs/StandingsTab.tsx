@@ -426,7 +426,7 @@ export async function StandingsTab({ series }: { series: Series }) {
       <div className="space-y-4">
         <StandingsView sections={sections} />
         <SourceLink
-          href="https://www.fiaformula2.com/Standings/Driver"
+          href="https://www.fiaformula2.com/en/standings/2026/drivers"
           label="fiaformula2.com"
         />
       </div>
@@ -475,7 +475,7 @@ export async function StandingsTab({ series }: { series: Series }) {
       <div className="space-y-4">
         <StandingsView sections={sections} />
         <SourceLink
-          href="https://www.fiaformula3.com/Standings/Driver"
+          href="https://www.fiaformula3.com/en/standings/2026/drivers"
           label="fiaformula3.com"
         />
       </div>

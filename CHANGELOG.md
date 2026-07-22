@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.4 — 2026-07-22
+
+### Fixed
+- F2/F3 "Source:" attribution links pointed at dead URLs after the FOM API migration (0.229.14/17). The rebuilt fiaformula2/3.com 404s the old `/Standings/Driver`, `/Standings` and `/Results` paths (confirmed live: all 404). Retargeted to the current pages, both 200-verified: standings source (Standings tab `StandingsTab.tsx`, weekend snapshot via `meta.json` `officialStandingsUrl`) → `/en/standings/2026/drivers`; results source (`ResultsTab.tsx`) → `/en/racing/2026`. Touched `components/tabs/StandingsTab.tsx`, `components/tabs/ResultsTab.tsx`, `content/series/f2|f3/meta.json` (6 links). Labels unchanged (still fiaformula2/3.com); the data source is unaffected (still the FOM API). `officialSite` roots still resolve (200), left as-is.
+
 ## 0.230.3 — 2026-07-22
 
 ### Added
