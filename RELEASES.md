@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.5 — 2026-07-22
+
+**Champions pages now show more depth.** Every champion's season now lists their points, wins, and who they beat (and by how much). Live for Formula 1 from 2006 onward, with more history and series to follow.
+
 ## 0.230.4 — 2026-07-22
 
 **Fixed the F2 and F3 source links.** The "Source" links on the Formula 2 and Formula 3 standings and results pages led to pages that no longer exist; they now open the current official pages.

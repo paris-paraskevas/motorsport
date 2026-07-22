@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.5 — 2026-07-22
+
+### Added
+- **Champions tab now shows per-season depth (Champion-Q&A).** A compact line under each champion: their points, GP wins, and the runner-up + winning margin. New progressive `ChampionDepth` in `components/tabs/ChampionsTab.tsx` (renders only where the fields are curated; `typeof` guards so a genuine 0-win champion still shows "0 wins"). This surfaces the `points`/`wins`/`runnerUp`/`runnerUpTeam`/`runnerUpPoints` data the `Champion` schema + F1 2016-2025 rows already carried but which nothing rendered — the display was the actual missing half of B3.1.
+- **F1 champions depth backfilled for 2006-2015** (`content/series/f1/champions.json`): points, wins, runner-up + team + points per season. RULE #1: every figure cross-checked against Wikipedia's WDC-champions table (champion points/wins/margin) and the per-season standings (runner-up), reconciled by arithmetic (champion points − margin = runner-up points); one source conflict caught and resolved (a 2009 season-page mis-extract of 95→"172"; the champions table's 95 pts / 11-margin → Vettel 84 is correct for the pre-2010 points system). First decade of the per-season backfill; older F1 seasons + other series follow. Verified: `tsc` + `next build`; browser-checked the depth line renders for both the backfilled decade and the pre-existing 2016-2025 rows.
+
 ## 0.230.4 — 2026-07-22
 
 ### Fixed

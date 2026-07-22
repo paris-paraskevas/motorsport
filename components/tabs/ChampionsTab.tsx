@@ -286,6 +286,32 @@ function TeamCell({
   return <TeamLinkResolver name={name} teamSlugMap={teamSlugMap} />;
 }
 
+// Compact championship-depth line (the "Champion-Q&A" surface): the champion's
+// points, GP wins, and the runner-up + winning margin, for seasons where those
+// fields are curated (`content/series/<slug>/champions.json`). Progressive —
+// renders nothing when the row has no depth data, so partially-curated series
+// (and older seasons) degrade cleanly to the plain year/driver/team row. Muted
+// mono, sits under the champion without crowding the decade list. `typeof`
+// checks (not truthiness) so a genuine 0-win champion still shows "0 wins".
+function ChampionDepth({ c }: { c: Champion }) {
+  const parts: string[] = [];
+  if (typeof c.points === 'number') parts.push(`${c.points} pts`);
+  if (typeof c.wins === 'number') parts.push(`${c.wins} ${c.wins === 1 ? 'win' : 'wins'}`);
+  if (c.runnerUp) {
+    const margin =
+      typeof c.points === 'number' && typeof c.runnerUpPoints === 'number'
+        ? +(c.points - c.runnerUpPoints).toFixed(1)
+        : null;
+    parts.push(margin != null ? `beat ${c.runnerUp} by ${margin}` : `runner-up ${c.runnerUp}`);
+  }
+  if (parts.length === 0) return null;
+  return (
+    <div className="ml-[3.75rem] mt-1 text-[11px] text-text-faint font-mono tabular-nums leading-snug">
+      {parts.join(' · ')}
+    </div>
+  );
+}
+
 function DriversSection({
   champions,
   driverSlugs,
@@ -349,6 +375,7 @@ function DriversSection({
                     </div>
                   )}
                 </div>
+                <ChampionDepth c={c} />
               </div>
             ))}
           </div>
