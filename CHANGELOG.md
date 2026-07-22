@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.3 — 2026-07-22
+
+### Added
+- Curated driver bios — plumbing + first two. `/drivers/<slug>` now prefers an authored, fact-checked bio from a new `content/series/<slug>/bios.json` sidecar over the Wikipedia-intro fallback (which stays for uncovered drivers). Mirrors `portraits.json`: `loadDriverBios` in `lib/series-content.ts`, shape `{ drivers: { <slug>: { paragraphs[], sources[] } } }`; new `CuratedAboutSection` renders it with a "Profile by Paddock" credit; header nationality/age still come from the Wikipedia intro. Bios are **evergreen career/identity only** — no live-season stats (the page renders live "Season so far" separately, and volatile figures would go stale on the ISR page; also sidesteps the RULE #1 current-season-inference trap). Seeded F1 Hamilton + Alonso, evergreen facts verified against Wikipedia + Formula1.com (no current-season claims). Rest of the grid + other 14 series scale later (operator-paced). Verified: `tsc` + `next build`; browser-checked the curated bio renders and the Wikipedia fallback still shows for a non-curated driver.
+
 ## 0.230.2 — 2026-07-21
 
 ### Fixed

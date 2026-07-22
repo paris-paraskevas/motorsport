@@ -99,6 +99,36 @@ export async function loadDriverPortraits(
   return file?.drivers ?? {};
 }
 
+/** One curated, original driver bio for /drivers/<slug> — an authored, RULE #1
+ * fact-checked replacement for the Wikipedia-intro fallback. `paragraphs` is the
+ * prose (evergreen career + identity ONLY — no live-season stats; the page renders
+ * live form separately, and volatile figures would go stale on the ISR page).
+ * `sources` are the primary references it was checked against (kept for the
+ * reviewer / fact-check trail; not rendered). */
+export interface DriverBio {
+  paragraphs: string[];
+  sources?: string[];
+}
+
+/** Sidecar shape: slugified-driver-name → bio. Underscore-prefixed keys
+ * (e.g. `_comment`) are file-level metadata; only `drivers` is read. */
+interface DriverBiosFile {
+  drivers?: Record<string, DriverBio>;
+}
+
+/** Curated driver bios (content/series/<slug>/bios.json) for /drivers/<slug>.
+ * Returns a slug→entry map (empty when the series has no sidecar). Preferred
+ * over the Wikipedia-intro bio, which stays as the fail-soft fallback for
+ * drivers without a curated entry. */
+export async function loadDriverBios(
+  slug: string,
+): Promise<Record<string, DriverBio>> {
+  const file = await readJsonIfExists<DriverBiosFile>(
+    path.join(SERIES_ROOT, slug, 'bios.json'),
+  );
+  return file?.drivers ?? {};
+}
+
 /** One declared car upgrade: the component, its primary reason (Performance /
  * Reliability / Circuit-specific + sub-reason), and a short factual detail. */
 export interface UpgradeItem {
