@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.6 — 2026-07-22
+
+### Added
+- F1 champions depth backfilled for **2005-1996** (`content/series/f1/champions.json`): points, wins, runner-up + team + points per season, rendered by the Champions-tab depth line (0.230.5). RULE #1: every figure cross-checked against Wikipedia's WDC-champions table + per-season standings, reconciled by margin arithmetic; era points systems verified (10-6-4-3-2-1 pre-2003, 10-8-6-5-4-3-2-1 from 2003). Two traps handled: the 1997 classified runner-up is Heinz-Harald Frentzen (42), not the championship-excluded Schumacher; and Villeneuve's 1997 win count was confirmed at 7 via a third source (Britannica + career stats) after a per-season page mis-extracted it as 4. Second decade of the backfill (2006-2015 in 0.230.5) — F1 now curated with full depth back to 1996.
+
 ## 0.230.5 — 2026-07-22
 
 ### Added
