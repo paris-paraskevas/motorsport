@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.4 — 2026-07-22
+
+**Fixed the F2 and F3 source links.** The "Source" links on the Formula 2 and Formula 3 standings and results pages led to pages that no longer exist; they now open the current official pages.
+
 ## 0.230.3 — 2026-07-22
 
 **Driver profiles get original write-ups.** Driver pages can now carry an original, fact-checked bio in place of a Wikipedia extract. Rolling out per driver, starting with a couple of F1 names.
