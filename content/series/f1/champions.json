@@ -69,10 +69,10 @@
   { "year": 1958, "driver": "Mike Hawthorn", "constructor": "Ferrari", "constructorChampion": "Vanwall", "points": 42, "wins": 1, "runnerUp": "Stirling Moss", "runnerUpTeam": "Vanwall", "runnerUpPoints": 41 },
   { "year": 1957, "driver": "Juan Manuel Fangio", "constructor": "Maserati", "points": 40, "wins": 4, "runnerUp": "Stirling Moss", "runnerUpTeam": "Vanwall", "runnerUpPoints": 25 },
   { "year": 1956, "driver": "Juan Manuel Fangio", "constructor": "Ferrari", "points": 30, "wins": 3, "runnerUp": "Stirling Moss", "runnerUpTeam": "Maserati", "runnerUpPoints": 27 },
-  { "year": 1955, "driver": "Juan Manuel Fangio", "constructor": "Mercedes" },
-  { "year": 1954, "driver": "Juan Manuel Fangio", "constructor": "Mercedes" },
-  { "year": 1953, "driver": "Alberto Ascari", "constructor": "Ferrari" },
-  { "year": 1952, "driver": "Alberto Ascari", "constructor": "Ferrari" },
-  { "year": 1951, "driver": "Juan Manuel Fangio", "constructor": "Alfa Romeo" },
-  { "year": 1950, "driver": "Giuseppe Farina", "constructor": "Alfa Romeo" }
+  { "year": 1955, "driver": "Juan Manuel Fangio", "constructor": "Mercedes", "points": 40, "wins": 4, "runnerUp": "Stirling Moss", "runnerUpTeam": "Mercedes", "runnerUpPoints": 23 },
+  { "year": 1954, "driver": "Juan Manuel Fangio", "constructor": "Mercedes", "points": 42, "wins": 6, "runnerUp": "José Froilán González", "runnerUpTeam": "Ferrari", "runnerUpPoints": 25.14 },
+  { "year": 1953, "driver": "Alberto Ascari", "constructor": "Ferrari", "points": 34.5, "wins": 5, "runnerUp": "Juan Manuel Fangio", "runnerUpTeam": "Maserati", "runnerUpPoints": 28 },
+  { "year": 1952, "driver": "Alberto Ascari", "constructor": "Ferrari", "points": 36, "wins": 6, "runnerUp": "Giuseppe Farina", "runnerUpTeam": "Ferrari", "runnerUpPoints": 24 },
+  { "year": 1951, "driver": "Juan Manuel Fangio", "constructor": "Alfa Romeo", "points": 31, "wins": 3, "runnerUp": "Alberto Ascari", "runnerUpTeam": "Ferrari", "runnerUpPoints": 25 },
+  { "year": 1950, "driver": "Giuseppe Farina", "constructor": "Alfa Romeo", "points": 30, "wins": 3, "runnerUp": "Juan Manuel Fangio", "runnerUpTeam": "Alfa Romeo", "runnerUpPoints": 27 }
 ]
