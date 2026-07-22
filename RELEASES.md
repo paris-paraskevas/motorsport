@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.7 — 2026-07-22
+
+**Champion history back to 1986.** The Champions tab's points, wins and runner-up detail now covers every Formula 1 champion from 1986 onward.
+
 ## 0.230.6 — 2026-07-22
 
 **More champion history.** The points, wins and runner-up detail on the Champions tab now covers every Formula 1 champion back to 1996.

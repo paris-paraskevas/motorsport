@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.7 — 2026-07-22
+
+### Added
+- F1 champions depth backfilled for **1986-1995** (`content/series/f1/champions.json`). RULE #1: cross-checked vs the Wikipedia champions table + per-season standings. The dropped-scores era (1986-1990, "best-N results") uses the OFFICIAL net championship points, not gross (e.g. 1988 Senna 90 counted / Prost 87; 1990 Prost 71 net of 2 dropped). Season-page extractor errors caught and third-sourced against Britannica / career-stats: 1993 Prost 99 pts / 7 wins → Senna 73 (season page mis-read 57 / 45), 1994 Schumacher 92 / 8 wins → Hill 91 (mis-read "1 win"), 1989 Prost 4 wins (not the mis-read 6). Third decade of the backfill (2006-2015 → 0.230.5, 1996-2005 → 0.230.6) — F1 now carries full champion depth back to 1986.
+
 ## 0.230.6 — 2026-07-22
 
 ### Added
