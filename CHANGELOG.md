@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.8 — 2026-07-22
+
+### Added
+- F1 champions depth backfilled for **1976-1985** (`content/series/f1/champions.json`). This era needed a careful 3-source pass (dropped scores, half-points, noisy old tables — the quick 2-source pass conflicted): official/net points + runner-ups from **StatsF1**, champion wins from the Wikipedia champions table, reconciled by margin arithmetic. Conflicts resolved: **1985 Prost is 73 net** (the Wikipedia champions table gave 64.5 and a season page 71 — both wrong); **1981 Piquet 50** (a season page mis-read 67). Correctly carries the **half-point 1984 title** (Lauda 72 to Prost 71.5, F1's smallest-ever margin) and the classified runner-ups (1978 Ronnie Peterson posthumously, 1979 Gilles Villeneuve, 1982 Didier Pironi). Fourth decade of the backfill — F1 now curated with full champion depth back to 1976.
+
 ## 0.230.7 — 2026-07-22
 
 ### Added
