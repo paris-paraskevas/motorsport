@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.230.9 — 2026-07-22
+
+### Added
+- F1 champions depth backfilled for **1966-1975** (`content/series/f1/champions.json`), same careful 3-source pass (StatsF1 official/net points + runner-ups, Wikipedia champions table for wins, margin-reconciled). Carries the **1970 posthumous champion** (Jochen Rindt, runner-up Jacky Ickx), 1975's half-points (Lauda 64.5), and the era's split-season runner-up (1966 John Surtees drove Ferrari then Cooper-Maserati; `runnerUpTeam` stored as Ferrari, a data-only field the depth line doesn't render). Fifth decade — F1 now curated with full champion depth back to 1966.
+
 ## 0.230.8 — 2026-07-22
 
 ### Added

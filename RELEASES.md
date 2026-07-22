@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.230.9 — 2026-07-22
+
+**Champion history back to 1966.** The Champions tab's points, wins and runner-up detail now reaches every Formula 1 champion from 1966 onward, including Jochen Rindt's 1970 posthumous title.
+
 ## 0.230.8 — 2026-07-22
 
 **Champion history back to 1976.** The Champions tab's points, wins and runner-up detail now reaches every Formula 1 champion from 1976 onward, including the half-point 1984 title.
