@@ -4,6 +4,28 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.235.0 — 2026-07-23
+
+### Added
+- **Five-theme gallery on the shared token layer.** New `:root[data-theme=…]` blocks in `app/globals.css` for Carbon (cool graphite blue-black), Ember (amber-phosphor instrument: every neutral on the accent's ~40° hue), Newsprint (warm paper in the Kindle/FT/Flexoki band) and Circuit (high-contrast light, bold rules); the base `:root` stays Midnight verbatim (zero change for existing users). All 5 palettes WCAG-gated ≥ 4.5:1 per text/surface pair by the session-21 swatch-board generator. `color-scheme` per theme; the `dark` class rides only on the dark family so every `dark:` variant + `prose-invert` keeps working.
+- **Theme runtime.** `components/theme/ThemeScript.tsx` — parser-blocking inline init as the first child of `<body>` in all four root layouts ((app)/(marketing)/(admin)/offline): reads `localStorage['paddock:theme']`, resolves `system` via `prefers-color-scheme` (dark→midnight, light→newsprint per the GitHub day/night precedent), sets `data-theme` + toggles `.dark` pre-paint. `components/theme/ThemePicker.tsx` — the Settings → Appearance section (System + 5 swatch-preview cards, self-coloured, hydration-safe active state), persists, applies live, updates `<meta name="theme-color">` to the active chassis, follows OS flips while on System, syncs across tabs via the storage event. Default stays `midnight`: nobody's app re-skins on ship day; System is opt-in.
+- **New tokens.** `--session-best` (broadcast timing purple, `#a78bfa` dark / `#6d28d9` light — groundwork, not yet consumed by UI; amber is barred from pace/delta meanings since it collides with timing-yellow) · `--live-pill` (LIVE pill text) · `--brand-fill` / `--tint-fill` (see below) · `--series-ink-mix` + `seriesInk()` in `lib/site.ts`.
+
+### Changed
+- **Token architecture: bare = legible, `-fill` = paint.** `--brand`/`--tint` are now always legible in role — on the light themes `--brand` becomes ink `#7d5300` and `--tint` re-derives per element as `color-mix(in srgb, var(--tint-fill) 52%, black)` (52% computed so the brightest series tint, IndyCar `#ffd100`, clears 4.5:1 on the darkest light surface; the per-element rule exists because custom properties resolve `var()` where DEFINED, so a `:root`-level derivation would never see the inline per-series `--tint-fill`). Vibrant fills moved to `bg/from/fill/stroke-brand-fill|tint-fill` via codemod — 100 call sites across 62 files; the 217 text/border/ring usages needed no edits and can't regress into illegibility. Pages injecting a series tint now set both `--tint` and `--tint-fill` (8 sites). shadcn bridge: `--primary`/`--chart-1`/`--sidebar-primary` → `var(--tint-fill)`.
+- **Inline series/team colours as text** now route through `seriesInk()` — 23 `style={{ color: X }}` sites (HomeContent ×14, news/drivers/teams/Champions, SectorBars/GhostLapReplay/GhostLap3D team-colour deltas) + 8 shorthand `style={{ color }}` sites (weekend/compare/analysis/session heroes' series-coloured full stops, WeekendNewsClient labels). Raw colour on dark (100% mix), auto-ink on light (52%).
+- **Light-tinted literals dispositioned** (14): LIVE pills `bg-red-500/15 text-red-300` → `bg-live/15 text-live-pill` (+ dots → `bg-live`) in SessionCard/WeekendSchedule/WeekendHero/session page; rain blues + caution ambers split with the `dark:` variant (`text-sky-700 dark:text-sky-300`, amber-700/800 on light) in SessionCard/WeekendWeatherStrip/CancelledRounds/DraftEditor/MarkdownEditor/FeedbackBoard. Carbon/Ember lift their red signal tokens slightly (`--live`/`--negative`) to hold 4.5:1 as text on their raised surfaces.
+- **Hardcoded leaks patched:** HomeContent/NewsPageContent active-chip `#07070a` → `var(--bg)`; GhostLap3D `text-[#ef4444]` → `text-negative` (the 3D scene's world colours stay, by design); scrollbar hover `#4a4a5a` → `color-mix` off `--border-strong`; SeriesPageView "Learn about" hairline grid gets breakpoint-aware filler cells (the exposed `bg-border` layer read as a mud block on light themes).
+
+### Fixed
+- Removed the standalone `html { color-scheme: dark }` (per-theme blocks own it).
+
+### Notes
+- Stays Midnight by design: OG/story share cards, `global-error`, `public/manifest.json` (installed-app splash), the marketing hatch band.
+- Known light-theme follow-ups (deliberately out of scope): landing decorative accents (DisciplinesGrid counters in cyan/acid/plasma wash out), recharts series palette on paper, `--session-best` adoption in results/analysis UI.
+- Verified: `tsc` + 918/918 vitest + `next build` (476/476) + a 5-theme browser matrix over home/standings/weekend/blog/calendar with DOM-probed computed colours; picker click-tested end to end (data-theme, `.dark`, meta theme-color, persistence).
+- Ops landmine hit during verification: an orphaned `next start` surviving a rebuild re-wrote stale ISR HTML into the fresh `.next` (old asset hashes) — kill the port's PID and clean-build when the served page contradicts the source.
+
 ## 0.234.1 — 2026-07-23
 
 ### Changed

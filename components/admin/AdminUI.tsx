@@ -20,7 +20,7 @@ type IconType = React.ComponentType<{ size?: number; className?: string }>;
 export function AdminPageHeader({ title, tagline }: { title: string; tagline: string }) {
   return (
     <header className="mb-6 flex items-stretch gap-3">
-      <span aria-hidden className="w-1 shrink-0 bg-brand" />
+      <span aria-hidden className="w-1 shrink-0 bg-brand-fill" />
       <div>
         <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
           {title}
@@ -155,7 +155,7 @@ export function DataBar({ value, max, className }: { value: number; max: number;
   const pct = max > 0 ? Math.max(2, Math.min(100, (value / max) * 100)) : 0;
   return (
     <div aria-hidden className={`h-0.5 w-full overflow-hidden rounded-full bg-border/60 ${className ?? ''}`}>
-      <div className="h-full rounded-full bg-brand/70" style={{ width: `${pct}%` }} />
+      <div className="h-full rounded-full bg-brand-fill/70" style={{ width: `${pct}%` }} />
     </div>
   );
 }

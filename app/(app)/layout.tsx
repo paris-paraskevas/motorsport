@@ -11,6 +11,7 @@ import { CookieConsent } from '@/components/CookieConsent';
 import { LaunchBanner } from '@/components/LaunchBanner';
 import { AssistantWidget } from '@/components/assistant/AssistantWidget';
 import { HeatmapTracker } from '@/components/HeatmapTracker';
+import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
@@ -97,6 +98,8 @@ export default async function RootLayout({
         className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
       >
         <body className="min-h-screen bg-bg text-text">
+          {/* First child on purpose: parser-blocking pre-paint theme init. */}
+          <ThemeScript />
           {/* Clerk's SDK + frontend API are the single biggest unused-JS item
               (audit baseline); warm the connection early. */}
           <link rel="preconnect" href="https://clerk.paddock-tracker.com" />

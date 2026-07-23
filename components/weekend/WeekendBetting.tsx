@@ -190,7 +190,7 @@ function SignedOutTeaser({ market }: { market: OpenMarket }) {
           ))}
         </div>
       )}
-      <Link href="/sign-in" className="inline-block rounded bg-brand px-4 py-1.5 font-semibold text-bg">
+      <Link href="/sign-in" className="inline-block rounded bg-brand-fill px-4 py-1.5 font-semibold text-bg">
         Sign in to {meta.cta}
       </Link>
     </div>

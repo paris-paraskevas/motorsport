@@ -103,7 +103,7 @@ function BarLink({
       {/* Timing-screen active marker — a hard amber rule across the cell top,
           not a pill or glow. */}
       {active && (
-        <span aria-hidden="true" className="absolute top-0 inset-x-3 h-0.5 bg-brand" />
+        <span aria-hidden="true" className="absolute top-0 inset-x-3 h-0.5 bg-brand-fill" />
       )}
       {avatarUrl ? (
         <>

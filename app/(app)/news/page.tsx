@@ -70,7 +70,7 @@ export default async function NewsPage() {
         ])}
       />
       <header className="mb-6 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
             News<span className="text-brand">.</span>

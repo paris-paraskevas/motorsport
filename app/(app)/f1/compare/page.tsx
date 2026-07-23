@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { loadAllDrivers, type DriverDetail } from '@/lib/people';
+import { seriesInk } from '@/lib/site';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import { driverSeasonForm, namesMatch, type DriverSeasonForm } from '@/lib/profile-stats';
@@ -181,7 +182,7 @@ export default async function F1ComparePage({
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
-      style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
+      style={{ '--tint': color, '--tint-fill': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       <div
         className="absolute top-0 left-0 right-0 h-px -z-10"
@@ -193,7 +194,7 @@ export default async function F1ComparePage({
           Formula 1 · Head-to-head
         </div>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
-          Compare drivers<span style={{ color }}>.</span>
+          Compare drivers<span style={{ color: seriesInk(color) }}>.</span>
         </h1>
         <p className="mt-3 max-w-prose text-sm text-text-muted">
           Pick two drivers to see this season side by side — points, position, wins, recent form, their race-by-race

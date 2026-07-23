@@ -8,7 +8,7 @@ export default function OfflinePage() {
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="max-w-md w-full">
         <div className="mb-5 flex items-stretch gap-3">
-          <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+          <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
           <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-none text-text">
             You&apos;re offline<span className="text-brand">.</span>
           </h1>
@@ -30,7 +30,7 @@ export default function OfflinePage() {
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a
           href="/app"
-          className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep px-4 py-2 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand-fill hover:bg-brand-deep px-4 py-2 transition-colors"
         >
           Try again
         </a>

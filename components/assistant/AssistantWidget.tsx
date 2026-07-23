@@ -227,7 +227,7 @@ export function AssistantWidget() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open the Race Engineer help chat"
-        className={`${anchor} inline-flex h-14 w-14 lg:h-[4.5rem] lg:w-[4.5rem] items-center justify-center rounded-full bg-brand text-bg shadow-lg transition-transform duration-(--duration-fast) hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
+        className={`${anchor} inline-flex h-14 w-14 lg:h-[4.5rem] lg:w-[4.5rem] items-center justify-center rounded-full bg-brand-fill text-bg shadow-lg transition-transform duration-(--duration-fast) hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
       >
         <UserCog className="size-6 lg:size-9" aria-hidden />
       </button>
@@ -244,7 +244,7 @@ export function AssistantWidget() {
       className={`${anchor} flex w-[min(23rem,calc(100vw-2rem))] h-[70dvh] max-h-[34rem] flex-col overflow-hidden rounded-2xl border border-border bg-surface-elevated shadow-2xl`}
     >
       <header className="flex items-center gap-2 border-b border-border px-4 py-3">
-        <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand/15 text-brand">
+        <span aria-hidden className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-fill/15 text-brand">
           <UserCog size={15} />
         </span>
         <div className="min-w-0 flex-1">
@@ -420,7 +420,7 @@ export function AssistantWidget() {
               onClick={() => send()}
               disabled={input.trim().length < 3 || busy}
               aria-label="Send"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-bg transition-opacity duration-(--duration-fast) hover:opacity-90 disabled:opacity-40"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-fill text-bg transition-opacity duration-(--duration-fast) hover:opacity-90 disabled:opacity-40"
             >
               <Send size={16} aria-hidden />
             </button>
@@ -488,7 +488,7 @@ function Bubble({ role, children }: { role: ChatMessage['role']; children: React
     <div className={mine ? 'flex justify-end' : 'flex justify-start'}>
       <div
         className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-          mine ? 'bg-brand/15 text-text' : 'bg-surface text-text'
+          mine ? 'bg-brand-fill/15 text-text' : 'bg-surface text-text'
         }`}
       >
         {children}

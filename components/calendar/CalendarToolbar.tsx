@@ -97,7 +97,7 @@ export function CalendarToolbar({
             }`}
           >
             Filters
-            {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="active" />}
+            {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand-fill" aria-label="active" />}
           </button>
         </div>
       </div>

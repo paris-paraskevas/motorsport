@@ -162,7 +162,7 @@ export function ForecastBetCard({
           type="button"
           onClick={place}
           disabled={busy || !valid || stake < 1 || stake > balance}
-          className="rounded bg-brand px-4 py-1.5 font-semibold text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-1.5 font-semibold text-bg disabled:opacity-40"
         >
           {busy ? 'Placing…' : valid ? `Bet ${stake}` : 'Pick 2+ legs'}
         </button>

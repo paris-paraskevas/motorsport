@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { seriesInk } from '@/lib/site';
 
 // Client renderer for the News tab — fetches the weekend's news from the cached
 // /api/weekend/news only when mounted (i.e. when the tab is first opened), so the
@@ -64,7 +65,7 @@ export function WeekendNewsClient({ slug, round }: { slug: string; round: number
         >
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
             <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color }}>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: seriesInk(color) }}>
               {seriesName}
             </span>
             <span className="text-border-strong">·</span>

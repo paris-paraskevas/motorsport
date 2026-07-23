@@ -235,7 +235,7 @@ export function Tour({ stops }: { stops: TourStop[] }) {
             <button
               type="button"
               onClick={() => (last ? end(true) : setStep(s => s + 1))}
-              className="min-h-6 px-3 py-1.5 bg-brand text-black font-mono text-[11px] uppercase tracking-[0.14em] font-bold hover:bg-brand-deep transition-colors duration-(--duration-fast)"
+              className="min-h-6 px-3 py-1.5 bg-brand-fill text-black font-mono text-[11px] uppercase tracking-[0.14em] font-bold hover:bg-brand-deep transition-colors duration-(--duration-fast)"
             >
               {last ? 'Done' : 'Next'}
             </button>

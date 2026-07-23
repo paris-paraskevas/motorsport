@@ -126,7 +126,7 @@ export default async function ChangelogPage() {
                             className={
                               'rounded-2xl border p-5 transition-colors duration-(--duration-fast) ' +
                               (isRunning
-                                ? 'border-brand/50 bg-brand/5 ring-1 ring-brand/30'
+                                ? 'border-brand/50 bg-brand-fill/5 ring-1 ring-brand/30'
                                 : 'border-border/60 bg-surface/40')
                             }
                           >
@@ -144,10 +144,10 @@ export default async function ChangelogPage() {
                                 </time>
                               )}
                               {isRunning && (
-                                <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/50 bg-brand/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold text-brand">
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/50 bg-brand-fill/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] font-semibold text-brand">
                                   <span
                                     aria-hidden="true"
-                                    className="h-1.5 w-1.5 rounded-full bg-brand"
+                                    className="h-1.5 w-1.5 rounded-full bg-brand-fill"
                                   />
                                   Running
                                 </span>

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
+import { seriesInk } from '@/lib/site';
 import { Pause, Play } from 'lucide-react';
 import * as THREE from 'three';
 import { computeDelta, type DriverTrace, type DistSample } from '@/lib/openf1/delta';
@@ -835,7 +836,7 @@ function StateChip({ driver, state, turn }: { driver: EnrichedDriver; state: Inp
       <span
         className={
           state === 'braking'
-            ? 'text-[#ef4444]'
+            ? 'text-negative'
             : state === 'flat'
               ? 'text-emerald-400'
               : 'text-amber-400'
@@ -1100,7 +1101,7 @@ export function GhostLap3D({
               <span className="text-text-faint">gap </span>
               <span
                 className="font-semibold"
-                style={{ color: gap > 0 ? driverA.teamColour : gap < 0 ? driverB.teamColour : 'var(--text)' }}
+                style={{ color: gap > 0 ? seriesInk(driverA.teamColour) : gap < 0 ? seriesInk(driverB.teamColour) : 'var(--text)' }}
               >
                 {fmtGap(gap)}s
               </span>{' '}

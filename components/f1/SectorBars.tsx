@@ -3,6 +3,7 @@
 // resolves a pair. Lap time + S1/S2/S3, CSS bars sized to each sector's share
 // of the slower lap, and a per-sector gap badge tinted to the faster driver.
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
+import { seriesInk } from '@/lib/site';
 import type { LapSummary } from '@/lib/openf1/decoder';
 
 // Lap: m:ss.SSS (1:23.456). Sector: ss.SSS (23.456) — sectors are always <2min.
@@ -84,7 +85,7 @@ export function SectorBars({
               {r.delta != null && (
                 <span
                   className="font-mono text-[11px] font-semibold tabular-nums"
-                  style={{ color: r.aFaster ? driverA.teamColour : r.bFaster ? driverB.teamColour : 'var(--text-faint)' }}
+                  style={{ color: r.aFaster ? seriesInk(driverA.teamColour) : r.bFaster ? seriesInk(driverB.teamColour) : 'var(--text-faint)' }}
                   // gap is expressed from the faster driver's perspective
                 >
                   {r.aFaster ? fmtGap(-r.delta) : fmtGap(r.delta)}
@@ -130,7 +131,7 @@ function DriverHead({
       </span>
       <span
         className="font-mono text-lg font-bold tabular-nums"
-        style={{ color: faster ? driver.teamColour : 'var(--text-muted)' }}
+        style={{ color: faster ? seriesInk(driver.teamColour) : 'var(--text-muted)' }}
       >
         {fmtLap(lapTime)}
       </span>

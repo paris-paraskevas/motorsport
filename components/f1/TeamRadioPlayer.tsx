@@ -51,7 +51,7 @@ export function TeamRadioPlayer({ src, label }: { src: string; label?: string })
 
       <div className="h-1 flex-1 overflow-hidden rounded-full bg-border">
         <div
-          className="h-full rounded-full bg-brand transition-[width] duration-(--duration-fast)"
+          className="h-full rounded-full bg-brand-fill transition-[width] duration-(--duration-fast)"
           style={{ width: `${pct}%` }}
         />
       </div>

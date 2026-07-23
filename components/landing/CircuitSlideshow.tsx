@@ -87,7 +87,7 @@ export function CircuitSlideshow() {
             aria-label={s.label}
             onClick={() => setIndex(i)}
             className={`h-1.5 rounded-full transition-all duration-(--duration-base) ${
-              i === index ? 'w-5 bg-brand' : 'w-1.5 bg-white/40 hover:bg-white/70'
+              i === index ? 'w-5 bg-brand-fill' : 'w-1.5 bg-white/40 hover:bg-white/70'
             }`}
           />
         ))}

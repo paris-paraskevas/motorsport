@@ -19,7 +19,7 @@ export default function ContributePage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-6 flex items-stretch gap-3">
-        <span aria-hidden className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden className="w-1 shrink-0 bg-brand-fill" />
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
             Add your series<span className="text-brand">.</span>

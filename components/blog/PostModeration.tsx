@@ -185,7 +185,7 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
                   type="button"
                   disabled={busy === p.id}
                   onClick={() => decide(p.id, 'approve')}
-                  className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40"
+                  className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40"
                 >
                   Approve + schedule
                 </button>

@@ -96,7 +96,7 @@ export function WeekendBlock({
         </time>
         <span className="ml-auto flex items-center gap-1.5">
           {showNextTag && (
-            <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 bg-brand text-black font-bold">
+            <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 bg-brand-fill text-black font-bold">
               next
             </span>
           )}
