@@ -1216,6 +1216,56 @@ Pre-existing stubs:
 
 ---
 
+## Week of 2026-07-20
+
+### Mon 2026-07-20 (session 18 — reactive: "/health doesn't work")
+
+Unplanned/reactive session (no morning plan). Operator flagged F2/F3 results missing → widened to a full data-health pass.
+
+- → done: ship #598 (0.229.13/14) — fix F2/F3/WRC RESULTS (WRC absolute-link fix; F2/F3 rewritten onto the FOM JSON API via new `lib/results/fom-api.ts`). Prod-verified.
+- → done: ship #599 (0.229.15/16) — new weekend-schedule health monitor (`npm run health:sessions`) + curated GT World / WRC / IndyCar / DTM schedules to green (15/15).
+- → done: ship #600 (0.229.17) — F2/F3 STANDINGS via the FOM API. `/health` now green everywhere: results 8/8, standings 13/13, sessions 15/15.
+- → done: session-18 handoff.
+- → deferred: post-Belgian-GP blog (operator queued; not started).
+- Won't-touch honored: no unrelated working-tree changes staged; blog left for next session.
+
+### Tue 2026-07-22 (session 19 — blog features + full F1 champion depth + F1 schedule cross-check)
+
+Long pick→build→verify→merge session (spanned 2026-07-20→22), mostly solo (ultracode declined). **13 PRs #601–#613, 0.230.0 → 0.230.12, all merged + prod-shipping.**
+
+- → done: **#601** blog cover images + branded OG share cards (fixed the profile-pic-on-share bug; covers render on-page, the branded card owns `og:image` for every post).
+- → done: **#602** F1 lap-by-lap analysis engine (`scripts/lapstory-context.mts` + playbook; OpenF1-grounded, draft-only) — Belgian GP lap-by-lap prod draft queued.
+- → done: **#603** Greek lowercase omega font fix (GeistSans malformed ω → `GreekFallback` unicode-range on `body`).
+- → done: **#604** driver-bios sidecar (plumbing + display; F1 Hamilton/Alonso seeded).
+- → done: **#605** F2/F3 stale "Source:" links retargeted to the rebuilt fiaformula2/3.com.
+- → done: **#606–#612** Champion-Q&A depth — the `ChampionDepth` display + FULL F1 champion backfill 1950–2025 (76 seasons, a decade per PR; StatsF1 + Wikipedia champions table, RULE #1; dropped-scores / half-points / posthumous / DSQ cases handled).
+- → done: **#613** F1 schedule cross-check (`npm run health:f1-schedule` vs OpenF1 official times; 45 sessions, 0 discrepancies).
+- → done: Belgian GP recap prod draft (operator scheduled/posted).
+- → dropped: sessions-health internal off-window (wrong-day) check — false-tripped legit multi-day events (Le Mans week, Spa 24h); superseded by the F1 OpenF1 cross-ref (#613).
+- → wrap: `docs/HANDOFF.md` + `IDEAS.md` + `SCHEDULE.md` reconciled (this entry); shipped IDEAS items removed.
+
+Won't-touch honored: operator's pre-existing uncommitted working-tree changes left untouched.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
+### Wed 2026-07-23 (session 20 — Hungary preview + 4 blog PRs + reactions migration + theme gallery approved)
+
+Long interactive session (blog features + PWA fix + a theme-gallery decision). No `[+Nm]` prefixes captured.
+
+- → done: **Hungary GP preview** — prod DB draft, operator scheduled it (operator's voice, weekend-post-grounded, RULE #1 fact-checked).
+- → done: **#614 (0.231.0)** IG-story share · **#615 (0.232.0)** like/dislike reactions (+ `post_reaction` migration applied to prod via Studio) · **#616 (0.233.0)** PWA external-link fix (manifest `scope` + drop `target=_blank`) · **#617 (0.234.0)** 9:16 portrait story card. `main` 0.230.12 → 0.234.0. Full detail + landmines in `docs/HANDOFF.md` (session-20 block).
+- → decided: **theme gallery** (5 themes: Midnight/Carbon/Ember/Newsprint/Circuit; design-first). Next step: draft palettes → visual swatch board → approve → build the theme system → preview → ship. A **claude.ai/design** exploration prompt was provided (chat; theme spec in HANDOFF session-20).
+- → found: **`.supabase-pat` is dead** (401) — rotate it; the reactions migration went via Studio instead.
+- → pending operator: phone-test (story fills 9:16 + Add-to-story; PWA posts stay in-app; reaction persists); rotate the PAT; approve theme palettes.
+
+Won't-touch honored: operator's pre-existing uncommitted working-tree changes untouched all session.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

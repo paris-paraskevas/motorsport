@@ -6,7 +6,110 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-15 (LATEST, session 17 — WRC per-stage + reachability, SEO internal-linking, home/nav cleanups, Cloudflare migration, repo/doc cleanup; ⚠ found results-health RED) — `main` = 0.229.11
+## ⚡ Next session pickup — 2026-07-23 (LATEST, session 20 — Hungary GP preview draft + 4 blog PRs #614-#617 + reactions migration + theme-gallery approved) — `main` = 0.234.0
+
+Long interactive session. **4 PRs #614-#617 (0.231.0 → 0.234.0), all merged + prod-verified by curl**, plus a prod blog draft and a prod DB migration (applied via Studio).
+
+### ✅ Shipped
+- **Hungary GP preview** — prod DB draft (id `4fe9e011-40f7-49b5-bea1-4ffa30926633`), operator scheduled it. Written in the OPERATOR's voice (grounded via the weekend-post skill; standings verbatim from the pack; RULE #1 fact-checked vs F1.com/Wikipedia). Voice reference = `drafts/f1-belgian-grand-prix-2026-recap.md` (operator/"Steve"). Draft at `drafts/f1-hungarian-grand-prix-2026-preview.md`.
+- **#614 (0.231.0) IG-story share** — the blog Share button now shares an IMAGE via `navigator.share({files})` so a phone's sheet offers Instagram → Add to story (IG only surfaces Stories for media, never a bare link). Image source superseded by #617.
+- **#615 (0.232.0) like/dislike reactions** — `components/blog/BlogReactions.tsx` (end-of-post) + `app/api/blog/reactions/route.ts` (GET/POST/DELETE) + `lib/blog-reactions.ts` + `post_reaction` table. Keyed by post SLUG; identity = Clerk `userId` (signed-in) OR `HMAC(CRON_SECRET, client-ip)` hash (anon — raw IP never stored); one reaction per identity; rate-limited (fail-open); fail-soft (zeros if table absent). **Migration APPLIED to prod via Studio** (operator ran the SQL — "Success. No rows returned").
+- **#616 (0.233.0) PWA external-link fix** — blog posts opened in an in-app browser (Custom Tab). Two causes: (1) manifest had no `scope` (start_url `/app`) → `/blog/*` out-of-scope → external; added `"scope":"/"`. (2) `PostModeration` draft-preview `<Link>` had `target="_blank"` → Custom Tab; removed. Verified `scope` live in prod manifest.
+- **#617 (0.234.0) 9:16 portrait story card** — new `app/(app)/blog/[slug]/story-image/route.tsx` (1080×1920 branded card, mirrors `opengraph-image`); `BlogShare` fetches it (via new `slug` prop) instead of the landscape og:image, so Story shares fill the phone. Verified 200 image/png in prod. og:image stays landscape for link scrapers.
+
+### ⚠ LANDMINES / notes
+- **`.supabase-pat` is DEAD** — 401 from Supabase's own Management API (verified: reaches the Express backend past Cloudflare, genuine reject; token is a clean `sbp_`+40). The `.env.blog` **service-role key still works** (different credential — it created the Hungary draft). **Regenerate the PAT** (supabase.com → Account → Access Tokens → overwrite `.supabase-pat`) so migrations run via API again; the reactions migration went in via Studio instead.
+- **Instagram Stories can't carry a tappable link from a shared image** (IG limitation). The card prints `paddock-tracker.com`; a clickable link needs the user to add a **Link sticker** manually (the Share bar's Copy-link button covers it). The only "baked-in" path is the native `instagram-stories://` intent + a Meta App ID — brittle from web, gated; not worth it.
+- **Theme = shared token layer**: `globals.css` `:root` tokens + `@theme inline` → Tailwind utilities drive the whole site. Near-total token discipline — only **1** arbitrary-hex leak (`GhostLap3D`, a 3D-scene colour) + ~2 stragglers (`HomeContent`, `NewsPageContent`) + layout `themeColor` meta + the OG/story image cards + `global-error` (all intentionally hardcoded). So re-theming = "flip the tokens + patch a handful," NOT every surface.
+
+### 🎨 QUEUED — Theme gallery (APPROVED, design-first, NOT started)
+Build an extensible theme SYSTEM (picker + System-follow + `localStorage` + no-flash init script) driven by the shared tokens; each theme = one token block + picker entry. **5 themes v1:** Midnight (dark, current), Carbon (cool graphite dark), Ember (warm amber dark), Newsprint (warm light: paper/ink/warm-gray), Circuit (high-contrast light). All WCAG AA; flat-hairline character kept; bright accents = fills (dark text), accent-text/signal darken per theme. Arch today is "dark promoted to `:root`" — split into light/dark + per-theme blocks; keep the `.dark` class for the `dark:` variant (dark-family themes carry `.dark`, light carry `light`/default). **Next step:** draft the 5 palettes → render a visual swatch board (HTML → screenshot) → operator eyeballs by eye → build → Vercel preview → ship. A **claude.ai/design prompt** to explore directions is recorded in `SCHEDULE.md` (session-20).
+
+### 📋 Pending / owed
+- **Operator phone-tests** (can't verify from here): story card fills 9:16 + IG Add-to-story; PWA posts stay in-app (reader tap + draft preview); a reaction tap persists.
+- **Rotate `.supabase-pat`** (dead — see above).
+- **Optional nicety (offered, not built):** auto-copy the post link on Share (one-tap Link-sticker paste for IG).
+- **B1 DONE** — operator confirmed admin console access granted.
+
+### 🔧 Working-tree state at wrap
+- Operator's pre-existing uncommitted changes STILL untouched: `components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/indycar.test.ts` + docs/drafts deletions.
+- 3 untracked drafts (Belgian recap + lap-by-lap, Hungarian preview) — DB has them; bin-able.
+- HANDOFF/IDEAS/SCHEDULE updated this wrap; docs-chore PR (version trio) to push to `main`. Left the working tree on branch `feat/blog-story-card` (merged); local feature branches remain (harmless).
+
+---
+
+## ⚡ Next session pickup — 2026-07-22 (session 19 — blog hero cards + lap-by-lap engine + Greek font fix + driver-bios plumbing + F2/F3 source links + FULL F1 champion depth + F1 schedule cross-check) — `main` = 0.230.12
+
+**13 PRs #601–#613 (0.230.0 → 0.230.12), all merged + prod-shipping.** Rapid pick→build→verify→PR→merge loop, mostly solo (ultracode declined).
+
+### ✅ Shipped
+- **#601 (0.230.0) blog cover images + branded share cards.** Root cause of "my profile pic shows when I share a post": the page emitted `og:image` only when `hero_image` was set (nothing could set it) → scrapers grabbed the byline avatar. Added editable `heroImage` (PATCH `/api/blog/[id]` → `updatePostContent`, https/root-relative only) + Cover field in `DraftEditor` + on-page `PostHero`; and `app/(app)/blog/[slug]/opengraph-image.tsx` owns `og:image` for EVERY post (series-tinted branded card; file-convention metadata overrides `generateMetadata`). A full-bleed photo-card variant was built + **dropped on review** — covers are on-page only.
+- **#602 (0.230.1) F1 lap-by-lap analysis engine.** `scripts/lapstory-context.mts` (F1-only) grounds a race-chronology pack off OpenF1 (`buildRaceStory`-style raw pulls + `fetchSessionClassification`): classification/DNFs (authoritative) + full-field overtakes flagged `likelyPitCycle`, lap-anchored via a lap clock. Retry-until-non-empty pacing (OpenF1 3 req/s throttles `race_control`/`pit`/`laps` to `[]` silently otherwise). Playbook `docs/content-authoring/lapstory-post-playbook.md` (analyst voice, RULE #1 fact-tiering). First output = Belgian GP lap-by-lap prod draft.
+- **#603 (0.230.2) Greek lowercase omega fix.** GeistSans ships a MALFORMED glyph for U+03C9 (ω drawn as capital Ω) — a real-but-wrong glyph, so the browser never fell back. `@font-face` `GreekFallback` (unicode-range Greek + Greek-Ext → `local()` system faces) ahead of Geist on `body` in `globals.css`. Reproduced + fixed in Chrome; Latin untouched.
+- **#604 (0.230.3) driver-bios sidecar (plumbing + 2).** New `content/series/<slug>/bios.json` (mirrors `portraits.json`) + `loadDriverBios` + `CuratedAboutSection` preferred over the Wikipedia-intro fallback on `/drivers/<slug>`. Evergreen career/identity only (no live stats). Seeded F1 Hamilton + Alonso, RULE #1-verified.
+- **#605 (0.230.4) F2/F3 stale source links.** The rebuilt fiaformula2/3.com 404s the old `/Standings/Driver` + `/Results` paths the Standings/Results tabs + `meta.json` `officialStandingsUrl` still linked. Retargeted to `/en/standings/2026/drivers` + `/en/racing/2026` (all 200-verified).
+- **#606–#612 (0.230.5 → 0.230.11) Champion-Q&A depth — display + FULL F1 backfill.** `ChampionDepth` line on the Champions tab (points · wins · runner-up + margin; progressive) surfaced the schema fields nothing rendered. Backfilled **every F1 champion 1950–2025** (76 seasons) a decade per PR. Method: **StatsF1** for official/net points + runner-ups, **Wikipedia champions table** for wins (StatsF1's win extraction is noisy), margin-reconciled, third-sourced on conflicts. Handled: dropped-scores net points (1988 Senna 90/Prost 87), half-points (1984 72/71.5), fractional shared-drive points (1954 González 25 1/7), posthumous champions (1970 Rindt), 1997 DSQ runner-up (Frentzen not Schumacher), + several per-season-page mis-extracts caught vs the champions table.
+- **#613 (0.230.12) F1 schedule cross-check.** `npm run health:f1-schedule` diffs our rendered F1 schedule (ICS + `sessions.json` overrides) vs OpenF1 official session times → wrong-DAY/wrong-TIME. Pure `diffRoundSchedule` (`lib/f1-schedule-crosscheck.ts`) + script. 2026 run: 45 sessions, **0 discrepancies**.
+
+### ⚠ LANDMINES / notes (new)
+- **GeistSans lowercase Greek omega is malformed** — never rely on Geist for Greek; the `GreekFallback` unicode-range @font-face on `body` (`globals.css`) routes Greek to a system face. Don't remove it.
+- **Blog `og:image` is owned by the file-convention `opengraph-image.tsx`**, not `generateMetadata` (file-based metadata wins). Every post gets the branded card; `heroImage` is on-page only.
+- **lapstory + weekend-post grounding engines are DRAFT-ONLY.** Automation (auto-draft) rides the still-unbuilt headless-`claude -p` cadence trigger (IDEAS B3.3); don't assume it's wired.
+- **`health:f1-schedule` is a LOCAL diagnostic, NOT in `/api/cron/health`** — a Vercel cron hitting OpenF1 is outbound datacenter code → preview-gated (0.12.12 precedent). Cron-wiring is a follow-up.
+- **sessions-health internal off-window (wrong-day) check was prototyped + DROPPED** — it false-tripped on legit multi-day events (Le Mans week, Spa 24h test day) whose true span exceeds the race-day-only `rounds.json` window. Reliable wrong-day/time detection needs an official reference → only F1 (OpenF1) has one; hence #613.
+- Twice this session a commit landed on `main` by mistake (caught pre-push, moved to a branch). Discipline: `git branch --show-current` before every commit.
+
+### 🧵 Prod blog drafts queued
+- **Belgian GP recap** (`f1-belgian-grand-prix-2026-recap`) — operator scheduled/posted.
+- **Belgian GP lap-by-lap** (`f1-belgian-grand-prix-2026-lap-by-lap`) — prod draft, `publish_at` null, awaiting operator schedule. (Both `drafts/*.md` are untracked locally; the DB has them.)
+
+### 📋 Next session — prioritized
+1. **Champions depth — other 14 series** (F1 done 1950–2025). Cleaner modern data than F1's founding era; display's built, so pure fact-checked data (StatsF1/official + Wikipedia table), a series/decade per PR.
+2. **Driver bios content** — plumbing shipped (#604); author the rest of the F1 grid + other series (RULE #1, evergreen). Ultracode-shaped (parallel per-driver research + adversarial fact-check) — operator opts in.
+3. **F1 schedule cross-check → prod cron** — fold `health:f1-schedule` into `/api/cron/health`. Outbound → **preview-paired** (operator runs the datacenter check).
+4. **Blog cadence automation** (B3.3) — the headless `claude -p` trigger the lapstory + weekend-post engines wait on. Infra-gated (metered GH Actions / cron pinger).
+5. Carryover: IndyCar RESULTS (preview-paired), Bing WMT, Cloudflare DNS confirms, analytics/heatmap env.
+
+### 🔧 Working-tree state at wrap
+- **NOT mine — operator's pre-existing uncommitted changes, left untouched:** `components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/indycar.test.ts`, + a batch of `docs/`/`drafts/` deletions.
+- **Untracked:** the 2 blog draft `.md`s above (DB has them; safe to bin).
+- HANDOFF/IDEAS/SCHEDULE updated this wrap (session 19); not yet committed (docs-to-`main` needs the version trio + a push ask).
+
+---
+
+## ⚡ Next session pickup — 2026-07-20 (session 18 — F2/F3/WRC results fix + weekend-schedule health monitor + full session-schedule curation + F2/F3 standings fix) — `main` = 0.229.17
+
+**3 PRs #598–#600 (0.229.12 → 0.229.17), all merged + prod-shipping + browser-verified.** Resolved the session-17 ⚠ (results-health RED 2+ days), fixed F2/F3 standings, and built a new weekend-schedule health dimension. **`/health` is now GREEN across all three surfaces: results 8/8, standings 13/13, sessions 15/15.**
+
+### ✅ Shipped
+- **#598 (0.229.13 WRC + 0.229.14 F2/F3)** — restore F2/F3/WRC RESULTS.
+  - **WRC:** Wikipedia switched the season page's "Report" links relative→absolute; the parser only accepted `/wiki/` → `perRallyUrl` null on every round → the completed-rounds filter dropped all 14. Fix: `normalizeWikiHref` (`lib/results/wrc.ts`) accepts relative + protocol-relative + absolute; the filter now keys on `winnerName` only (link-less winner → winner-only row, not dropped). Live 104 rows.
+  - **F2/F3:** the FIA rebuilt fiaformula2/3.com onto Next App-Router — old `/Standings/Driver` + `/Results?raceid=N` redirect to `/en/…`, **no `__NEXT_DATA__`** (RSC `__next_f`), and SSR is **feature-race-only**. Rewrote onto the FOM JSON API (`api.formula1.com/v2/core-fom-results`) via new shared **`lib/results/fom-api.ts`**; `f2.ts`/`f3.ts` are thin adapters (signatures unchanged). Live F2 711 / F3 369 rows; points reconcile 22/22 + 33/33.
+- **#599 (0.229.15 monitor + 0.229.16 curation)** — weekend-schedule health + curation.
+  - New **`lib/sessions-health.ts`** + `scripts/health-sessions.mts` (`npm run health:sessions`, folded into `npm run health` + `/api/cron/health` 503). Flags a completed round whose session count is `< median × 0.5` of its series (self-calibrating — NASCAR's uniform 1-session rounds don't trip; excludes `round < 1` strays).
+  - Curated to green (official timetables, RULE #1, UTC-converted): **GT World** Misano + Spa 24h, **WRC** Croatia + Portugal (also fixed Portugal's wrong TZ — it's WEST/UTC+1), **IndyCar** 7 rounds, **DTM** Norisring (was entirely missing). 15/15 green.
+- **#600 (0.229.17)** — F2/F3 STANDINGS via FOM API. New `fetchFomStandings` in `fom-api.ts` (driver + constructor breakdown; driver's team joined from the latest completed feature race since the breakdown omits it; wins = FR≥25). `fetchF2/F3Standings` keep signatures + `source_snapshot` wrap. 13/13 standings green; F2 Tsolov 161/Campos, F3 Ugochukwu 104/Campos, teams populated.
+
+### ⚠ LANDMINES (new)
+- **FOM API public apikeys** (`lib/results/fom-api.ts`): per-brand, scraped from each site's client bundle — F2 `MsEAL…`, F3 `gGX8k…`. Power **BOTH** F2/F3 results AND standings. If FOM rotates one → that series' results + standings go EMPTY; re-scrape from `"key":{"public":"…"}` in the site's `__next_f` flight config (fetch any race page, unescape the flight). Fail-soft to last-good KV/snapshot. NB the editorial endpoints (driver-listing) need a DIFFERENT key (401 with the results key).
+- **FOM round = `meetings[]` index+1**, NOT the API's `meetingNumber` (that's the F1 GP round; F2/F3 skip GPs, so e.g. F2 Barcelona = championship R5 but F1 R7). Points-array columns align to meetings order; SR = idx0, FR = idx1; feature win = FR ≥ 25 (bonus-inclusive).
+- **F2/F3 points = standings breakdown `[SR,FR]`** (canonical, incl. pole/FL), NOT per-session `racePoints` (omits bonuses — under-counts).
+- **`sessions.json` overrides REPLACE ICS entries** inside a `matchDate ±2-day` window — an INCOMPLETE override leaves a thin weekend (the Misano-showed-only-FP2 bug). Curate the FULL weekend or don't override.
+
+### 📋 Next session — prioritized
+1. **Post-Belgian-GP blog** — QUEUED, not started (deferred twice this session). Weekend digest / race-report; blog SOP (prod DB draft, `publish_at` null, RULE #1 fact-check).
+2. **Footer "Source:" links** — F2/F3 results + standings pages still link the OLD `fiaformula2.com/Standings/Driver` / `/Results` URLs (cosmetic; data's from the FOM API). One-line sweep.
+3. **sessions-health v1 gap** — catches MISSING sessions, not right-count-WRONG-DAY (e.g. a misdated FP). Needs official-timetable cross-referencing — later pass.
+4. Carryover: IndyCar RESULTS still on motorsport.com (preview-paired); Bing WMT; Cloudflare plugin + DNS confirms (session 17).
+
+### 🔧 Notes
+- Background research subagents were flaky under concurrency (DTM agent hung twice; env cap = **3 parallel** subagents). Inline/foreground research + direct `WebFetch` were reliable — prefer those for this kind of lookup.
+- PDF timetables (GTWCE/DTM) defeat pdfplumber/fitz text + table extraction on positioned-column layouts; **render to image (fitz) and read visually** for the hard ones.
+- `.playwright-mcp/` accumulated snapshot artifacts locally (untracked — consider gitignoring).
+
+---
+
+## ⚡ Next session pickup — 2026-07-15 (session 17 — WRC per-stage + reachability, SEO internal-linking, home/nav cleanups, Cloudflare migration, repo/doc cleanup; ⚠ found results-health RED) — `main` = 0.229.11
 
 **13 commits (0.228.8 → 0.229.11), all merged + prod-shipping.** Live-driven throughout. Shipped the WRC per-stage classification and made it reachable, a broad SEO internal-linking pass, nav/home cleanups, and repo/doc cleanup — then diagnosed a 2-day-red results health check (⚠ below). The Batch-1 "SEO content" audit found the content offensive already won (explainers exist + `featured`; the lever is internal linking + authority, not more content).
 
