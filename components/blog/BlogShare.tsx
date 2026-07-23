@@ -12,7 +12,7 @@ const noopSubscribe = () => () => {};
 // static post page; the network intents (Facebook / WhatsApp / X) are plain links
 // that work anywhere. Instagram has no web share-intent URL, so it is reachable
 // only through the native share sheet (mobile) — that is what the Share button is for.
-export function BlogShare({ url, title }: { url: string; title: string }) {
+export function BlogShare({ url, title, slug }: { url: string; title: string; slug: string }) {
   const [copied, setCopied] = useState(false);
 
   // Feature-detect navigator.share as a client-only value: the server snapshot is
@@ -39,16 +39,15 @@ export function BlogShare({ url, title }: { url: string; title: string }) {
   const nativeShare = async () => {
     const data: ShareData = { title, url };
     // Instagram (and other visual targets) only offer "Add to story" for MEDIA,
-    // never a bare link — so attach the post's branded card. Its URL is
-    // build-hashed (the opengraph-image route), so read it live from the
-    // rendered og:image tag rather than hardcoding a path that would 404.
+    // never a bare link — so attach the post's 9:16 portrait card, which fills a
+    // phone Story (the 1200x630 og:image would letterbox into a small band). The
+    // story-image route has a stable path, so fetch it directly by slug.
     try {
-      const ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content;
-      if (ogImage && typeof navigator.canShare === 'function') {
-        const res = await fetch(ogImage);
+      if (typeof navigator.canShare === 'function') {
+        const res = await fetch(`/blog/${encodeURIComponent(slug)}/story-image`);
         if (res.ok) {
           const blob = await res.blob();
-          const file = new File([blob], 'paddock-card.png', { type: blob.type || 'image/png' });
+          const file = new File([blob], 'paddock-story.png', { type: blob.type || 'image/png' });
           if (navigator.canShare({ files: [file] })) data.files = [file];
         }
       }

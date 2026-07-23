@@ -340,7 +340,7 @@ export default async function PostPage({
 
       {/* Share bar above the body so readers can share before reading. */}
       <div className="mb-8">
-        <BlogShare url={postUrl} title={post.frontmatter.title} />
+        <BlogShare url={postUrl} title={post.frontmatter.title} slug={slug} />
       </div>
 
       <article className={POST_ARTICLE_CLASS}>
