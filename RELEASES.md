@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.233.0 — 2026-07-23
+
+**App fix.** Opening a blog post inside the installed app no longer bounces you out into a separate in-app browser window. Posts now stay in the app.
+
 ## 0.232.0 — 2026-07-23
 
 **Like or dislike a post.** Every blog post now has a quick thumbs up or thumbs down at the end, so you can tell us what landed. You can react whether or not you're signed in.
