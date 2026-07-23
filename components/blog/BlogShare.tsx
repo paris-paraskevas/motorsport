@@ -37,10 +37,37 @@ export function BlogShare({ url, title }: { url: string; title: string }) {
   };
 
   const nativeShare = async () => {
+    const data: ShareData = { title, url };
+    // Instagram (and other visual targets) only offer "Add to story" for MEDIA,
+    // never a bare link — so attach the post's branded card. Its URL is
+    // build-hashed (the opengraph-image route), so read it live from the
+    // rendered og:image tag rather than hardcoding a path that would 404.
     try {
-      await navigator.share({ title, url });
+      const ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content;
+      if (ogImage && typeof navigator.canShare === 'function') {
+        const res = await fetch(ogImage);
+        if (res.ok) {
+          const blob = await res.blob();
+          const file = new File([blob], 'paddock-card.png', { type: blob.type || 'image/png' });
+          if (navigator.canShare({ files: [file] })) data.files = [file];
+        }
+      }
     } catch {
-      // User dismissed the sheet, or the share was cancelled — no-op.
+      // Couldn't build the image (fetch blocked / unsupported) — share link-only.
+    }
+    try {
+      await navigator.share(data);
+    } catch (err) {
+      // AbortError = the user dismissed the sheet. Any other error while sharing
+      // files means the platform rejected the file+link combo, so retry
+      // link-only so the button still does something.
+      if (data.files && (err as Error)?.name !== 'AbortError') {
+        try {
+          await navigator.share({ title, url });
+        } catch {
+          // cancelled — no-op
+        }
+      }
     }
   };
 
