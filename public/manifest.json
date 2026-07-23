@@ -3,6 +3,7 @@
   "short_name": "Paddock",
   "description": "Personal motorsport companion — calendars, standings, drivers and more",
   "start_url": "/app",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#07070a",
   "theme_color": "#07070a",

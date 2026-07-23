@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.233.0 — 2026-07-23
+
+### Fixed
+- **PWA: blog posts no longer break out into an in-app browser (Custom Tab).** Two causes. (1) `public/manifest.json` had no `scope` (start_url `/app`), so navigations to `/blog/*` (and any path outside `/app`) could be treated as out-of-scope and open in an external in-app browser — added `"scope": "/"` so the whole origin stays inside the installed app. (2) `components/blog/PostModeration.tsx` opened the draft-preview link with `target="_blank"`, which a standalone PWA renders as a Custom Tab — dropped it (and the "opens in a new tab" affordance) so previewing a draft navigates in-app; back returns to the queue.
+
 ## 0.232.0 — 2026-07-23
 
 ### Added
