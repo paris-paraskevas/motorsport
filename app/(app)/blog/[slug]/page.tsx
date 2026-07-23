@@ -20,6 +20,7 @@ import type { Post } from '@/lib/types';
 import { loadSeriesMeta } from '@/lib/series';
 import { tocFromMarkdown, type TocItem } from '@/lib/toc';
 import { BlogShare } from '@/components/blog/BlogShare';
+import { BlogReactions } from '@/components/blog/BlogReactions';
 
 // Force-dynamic: required for the admin scheduled-preview branch (currentUser),
 // and DB posts render at request time anyway. generateStaticParams stays
@@ -349,6 +350,8 @@ export default async function PostPage({
           <MDXRemote source={post.source} components={mdxComponents} />
         )}
       </article>
+
+      <BlogReactions slug={slug} />
           </div>
 
           <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">

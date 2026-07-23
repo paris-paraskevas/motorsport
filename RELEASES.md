@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.232.0 — 2026-07-23
+
+**Like or dislike a post.** Every blog post now has a quick thumbs up or thumbs down at the end, so you can tell us what landed. You can react whether or not you're signed in.
+
 ## 0.231.0 — 2026-07-23
 
 **Share posts to Instagram Stories.** On a phone, the Share button on a blog post now passes the post's branded card image to your share sheet, so Instagram and other apps can take it straight to a Story. The usual link sharing is unchanged.
