@@ -6,7 +6,19 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ---
 
-## Inbox (2026-07-15 — session 17 triage: completed items removed)
+## Inbox (2026-07-23 — session 20)
+
+- **Theme gallery (APPROVED, design-first) — the big Next.** Extensible theme system (picker + System-follow + localStorage + no-flash init) on the shared token layer (`globals.css` `:root` + `@theme inline`). 5 themes v1: **Midnight** (dark, current), **Carbon** (cool graphite dark), **Ember** (warm amber dark), **Newsprint** (warm light: paper/ink/warm-gray), **Circuit** (high-contrast light). Each WCAG AA; flat-hairline character kept; bright accents = fills, accent-text/signal darken per theme. Arch: split "dark-promoted-`:root`" into light/dark + per-theme blocks; keep `.dark` for the `dark:` variant. Patch the handful of hardcoded leaks (`GhostLap3D`, `HomeContent`, `NewsPageContent`, layout `themeColor`); OG/story cards + `global-error` stay dark by design. Design-first: palettes → visual swatch board → operator approves → build → Vercel preview → ship. A claude.ai/design exploration prompt was provided (session-20 chat; theme spec in `docs/HANDOFF.md` session-20).
+- **Rotate `.supabase-pat`** — it's DEAD (verified 401 from Supabase's Management API). Regenerate so migrations run via API again (the session-20 reactions migration went via Studio).
+- **Blog Share: auto-copy post link on Share** (offered, not built) — makes the IG Link-sticker paste one tap (IG can't attach a clickable link to a shared Story image — that's an IG limitation).
+- Blog **like/dislike reactions** shipped (#615) + **9:16 story card** (#617) + **IG-story share** (#614) + **PWA external-link fix** (#616). Follow-ups: reaction UI polish / a likes-based "suggested posts" list (the schema stores `user_id` for it).
+
+## Inbox (2026-07-22 — session 19)
+
+- **Champions depth — other 14 series.** F1 fully backfilled 1950–2025 (#606–#612) + the `ChampionDepth` display shipped. Continue points/wins/runner-up+margin into MotoGP / IndyCar / WEC / WSBK / F2 / F3 / FE / NASCAR / DTM / GT-World / WRC / NLS / ADAC (StatsF1 + official + Wikipedia champions table, RULE #1). Pure fact-checked data, a series/decade per PR.
+- **F1 schedule cross-check → prod cron.** `npm run health:f1-schedule` (#613) is a LOCAL diagnostic; fold it into `/api/cron/health` so wrong-day/time F1 schedule errors alert automatically. Outbound (OpenF1 from Vercel) → **preview-paired** (operator runs the datacenter check).
+- **sessions-health wrong-day (non-F1)** — the other 14 series have no machine-readable official timetable to diff (SPA/bot-blocked), so they stay on the count-based monitor; revisit per-series if/when an official source becomes reachable.
+- **Session-report variants (idea):** beyond the Sunday digest + the shipped lap-by-lap, add a Saturday qualifying-report post and (future) Friday free-practice write-ups for marquee weekends; extends the `weekend-post` cadence.
 
 - **[you] Cloudflare post-migration checks** — in the CF dashboard: Clerk records (`clerk.`/`accounts.`/`clkmail.` + the two DKIM CNAMEs) must be **DNS-only (grey cloud), NOT proxied**; SSL/TLS = **Full (strict)**; `dev.*` resolves; Vercel → Domains shows "Valid". Then install the CF Claude plugin (`claude plugin marketplace add cloudflare/skills` + `install cloudflare@cloudflare`) for agent DNS access. Site + Clerk sign-in confirmed healthy through CF as of session 17.
 - **IndyCar session times + results — PREVIEW-PAIRED** — outbound (motorsport.com/indycar). Build + local-verify the parser, open a PR **held UNMERGED** for the operator's Vercel preview pass (datacenter-IP check — the 0.12.12 NASCAR-regression rule). Never merge unverified outbound.
@@ -28,8 +40,8 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ## B3 — AdSense-readiness content (business priority) — operator 2026-07-12: DO these, don't defer (portraits + team logos KILLED)
 
-- **Champion-Q&A depth** — extend the `champions.json` schema (runner-up / margin / wins per champion-season) + curate the data, fact-checked per season. LARGE but operator-prioritised.
-- **Original driver bios** (W4 P5) — original write-ups replacing the Wikipedia-derived bios; fact-checked per driver.
+- **Champion-Q&A depth** — schema + `ChampionDepth` display DONE; **F1 fully backfilled 1950–2025** (#606–#612). Remaining = the other 14 series (promoted to the Inbox above).
+- **Original driver bios** (W4 P5) — sidecar plumbing + display DONE (#604; `bios.json` preferred over the Wikipedia intro, Hamilton/Alonso seeded). Remaining = author the rest of the F1 grid + other series (RULE #1, evergreen). Ultracode-shaped (parallel per-driver research + adversarial fact-check).
 - **Blog cadence automation** — a scheduled trigger that auto-DRAFTS the weekly marquee preview (Thu) + digest (Mon) as a prod DB draft for operator approval; infra shipped Phase-0 (#437), needs the headless `claude -p` GH Action trigger (pairs with the cron pinger).
 
 ## B4 — Data completeness & resilience

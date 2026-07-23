@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.234.1 — 2026-07-23
+
+**Behind the scenes.** Internal notes and planning.
+
 ## 0.234.0 — 2026-07-23
 
 **Better Story shares.** Sharing a blog post to an Instagram Story now uses a full-screen portrait card instead of a small letterboxed image.
