@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.231.0 — 2026-07-23
+
+**Share posts to Instagram Stories.** On a phone, the Share button on a blog post now passes the post's branded card image to your share sheet, so Instagram and other apps can take it straight to a Story. The usual link sharing is unchanged.
+
 ## 0.230.12 — 2026-07-22
 
 **Internal.** A tool that cross-checks our Formula 1 session times against the official timing source, to catch any wrong-day or wrong-time errors in the schedule.

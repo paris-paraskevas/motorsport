@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.231.0 — 2026-07-23
+
+### Changed
+- **Blog Share button shares the post's branded card image, not just the link** — so a phone's native share sheet surfaces Instagram → **Add to story** (Instagram only offers Stories for media, never a bare link), and other apps get a richer preview. `components/blog/BlogShare.tsx` `nativeShare` reads the live `og:image` URL from the rendered `<meta property="og:image">` (the `opengraph-image` route emits a per-build hashed URL like `…/opengraph-image-<id>?<hash>`, so the bare path 404s and can't be hardcoded), `fetch`es it, wraps it in a `File`, and attaches it via `navigator.share({ files })` guarded by `navigator.canShare({ files })`. Falls back to link-only when files are unsupported, and retries link-only (on non-`AbortError`) if a platform rejects the file+link combo. Reuses the existing 1200×630 landscape OG card; a 9:16 portrait story card is a possible follow-up.
+
 ## 0.230.12 — 2026-07-22
 
 ### Added
