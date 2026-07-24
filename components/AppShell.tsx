@@ -10,6 +10,7 @@ import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
 import { HeaderNavMenu } from './HeaderNavMenu';
+import { seriesSubPages } from '@/lib/tabs';
 import { PushSoundPlayer } from './PushSoundPlayer';
 import { SearchTrigger } from './search/SearchTrigger';
 
@@ -276,6 +277,11 @@ function MenuLinkList({ items }: { items: { href: string; label: string; desc: s
 // the /series hub and onboarding use). Leads with the F1 Telemetry & Analysis
 // hub (0.114.1) — the one cross-round destination that isn't a series tab.
 function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
+  const allSeries = groups.flatMap(g => g.series);
+  // Detail pane defaults to the first series (F1) and follows hover/focus.
+  const [activeSlug, setActiveSlug] = useState<string | undefined>(allSeries[0]?.slug);
+  const active = allSeries.find(s => s.slug === activeSlug) ?? allSeries[0];
+  const subPages = active ? seriesSubPages(active) : [];
   return (
     <div className="flex flex-col gap-4">
       <Link
@@ -311,27 +317,60 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
           History &amp; rules →
         </span>
       </Link>
-      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
-        {groups.map(g => (
-          <div key={g.category.id}>
-            <div className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
-              {g.category.label}
+      <div className="grid grid-cols-[1fr_13rem] border-t border-border pt-3">
+        {/* Master: category-grouped series. Hover/focus loads a series' pages
+            into the detail pane; click still navigates to the series hub. */}
+        <div className="grid grid-cols-2 gap-x-5 gap-y-4 pr-3">
+          {groups.map(g => (
+            <div key={g.category.id}>
+              <div className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                {g.category.label}
+              </div>
+              <ul className="flex flex-col">
+                {g.series.map(s => (
+                  <li key={s.slug}>
+                    <Link
+                      href={`/series/${s.slug}`}
+                      onMouseEnter={() => setActiveSlug(s.slug)}
+                      onFocus={() => setActiveSlug(s.slug)}
+                      data-heatmap-id={`nav:series:${s.slug}`}
+                      className={`flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface ${
+                        active?.slug === s.slug ? 'bg-surface' : ''
+                      }`}
+                    >
+                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
+                      <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        {/* Detail: the hovered/focused series' pages. */}
+        {active && (
+          <div className="border-l border-border pl-3">
+            <div className="mb-1.5 flex items-center gap-2">
+              <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: active.color }} />
+              <span className="truncate font-display text-sm font-extrabold uppercase tracking-wide text-text">
+                {active.name}
+              </span>
             </div>
             <ul className="flex flex-col">
-              {g.series.map(s => (
-                <li key={s.slug}>
+              {subPages.map(p => (
+                <li key={p.key}>
                   <Link
-                    href={`/series/${s.slug}`}
-                    className="flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    href={p.href}
+                    data-heatmap-id={`nav:series:${active.slug}:${p.key}`}
+                    className="block rounded-md px-2 py-1 text-[13px] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
                   >
-                    <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
-                    <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
+                    {p.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

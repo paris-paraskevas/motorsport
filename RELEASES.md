@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.238.0 — 2026-07-24
+
+**Jump straight to any series section.** On desktop, hovering a series in the Series menu now reveals its pages (calendar, standings, results, rounds, drivers, champions) right there. On phones, each series on the Series page shows the same quick links, so you can go straight to, say, F1 standings without an extra tap.
+
 ## 0.237.0 — 2026-07-24
 
 **Themes get their own page.** The theme picker now lives at Account → Theme, alongside Notifications and Championships, instead of sitting inline on the Account page.
