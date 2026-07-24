@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.238.1 — 2026-07-24
+
+### Fixed
+- **Series mega-menu: you can now actually reach a series' sub-pages.** 0.238.0 laid the series out in TWO columns with the detail pane on the right, so the pointer travelling from a left-column series (e.g. Formula 2) to its pages crossed the endurance column, and each row it passed over hijacked the detail pane before you arrived (the classic "menu-aim" steal — operator-reported). Rebuilt the menu as a **single series column with the detail pane immediately to its right**, so the path from a series to its pages crosses no other series — the steal is impossible by geometry, not papered over with a hover-intent delay (which can't survive a slow-moving pointer). The three cross-round shortcuts (F1 Analysis / Head-to-head / Series guides) are now compact chips along the top so the single column stays within the viewport; the panel narrowed to `34rem` and caps its height with scroll on short screens. Verified: a deliberately slow pointer glide from F2 straight to its Standings link stays on Formula 2 (previously it landed on IMSA).
+
 ## 0.238.0 — 2026-07-24
 
 ### Added

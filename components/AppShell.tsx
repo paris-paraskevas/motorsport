@@ -156,7 +156,7 @@ export function AppShell({
               dataTour="series"
               dataHeatmapId="nav:series"
               panelLabel="Browse series"
-              panelClassName="w-[40rem] max-w-[calc(100vw-1.5rem)]"
+              panelClassName="w-[34rem] max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-4.5rem)] overflow-y-auto"
             >
               <SeriesMegaMenu groups={groups} />
             </HeaderNavMenu>
@@ -278,52 +278,45 @@ function MenuLinkList({ items }: { items: { href: string; label: string; desc: s
 // hub (0.114.1) — the one cross-round destination that isn't a series tab.
 function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
   const allSeries = groups.flatMap(g => g.series);
-  // Detail pane defaults to the first series (F1) and follows hover/focus.
+  // The series list is a SINGLE column with the detail pane immediately to its
+  // right, so the pointer path from a series to its pages crosses no OTHER
+  // series. The earlier two-column layout let a row transited on the way to the
+  // detail hijack the pane (the classic "menu-aim" steal — you couldn't reach
+  // F2's pages without falling onto an endurance row en route); a single column
+  // makes that impossible by geometry, with no hover-intent timing hack.
+  // Defaults to the first series (F1) and follows hover/focus.
   const [activeSlug, setActiveSlug] = useState<string | undefined>(allSeries[0]?.slug);
   const active = allSeries.find(s => s.slug === activeSlug) ?? allSeries[0];
   const subPages = active ? seriesSubPages(active) : [];
   return (
-    <div className="flex flex-col gap-4">
-      <Link
-        href="/f1/analysis"
-        data-heatmap-id="nav:f1-analysis"
-        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
-        <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          Analysis &amp; Race Story →
-        </span>
-      </Link>
-      <Link
-        href="/f1/compare"
-        data-heatmap-id="nav:f1-compare"
-        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
-        <span className="text-[13px] font-semibold text-text">F1 Head-to-head</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          Compare two drivers →
-        </span>
-      </Link>
-      <Link
-        href="/information/series-guides"
-        data-heatmap-id="nav:series-guides"
-        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
-        <span className="text-[13px] font-semibold text-text">Series guides</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          History &amp; rules →
-        </span>
-      </Link>
-      <div className="grid grid-cols-[1fr_13rem] border-t border-border pt-3">
-        {/* Master: category-grouped series. Hover/focus loads a series' pages
-            into the detail pane; click still navigates to the series hub. */}
-        <div className="grid grid-cols-2 gap-x-5 gap-y-4 pr-3">
+    <div className="flex flex-col gap-3">
+      {/* Cross-round F1 tools + the guides hub — compact chips so the single
+          series column below stays within the viewport. */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { href: '/f1/analysis', label: 'F1 Analysis', heatmap: 'nav:f1-analysis' },
+          { href: '/f1/compare', label: 'F1 Head-to-head', heatmap: 'nav:f1-compare' },
+          { href: '/information/series-guides', label: 'Series guides', heatmap: 'nav:series-guides' },
+        ].map(sc => (
+          <Link
+            key={sc.href}
+            href={sc.href}
+            data-heatmap-id={sc.heatmap}
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
+          >
+            <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-brand-fill" />
+            {sc.label}
+            <span aria-hidden="true">→</span>
+          </Link>
+        ))}
+      </div>
+      <div className="grid grid-cols-[1fr_12rem] border-t border-border pt-3">
+        {/* Master: single column of category-grouped series. Hover/focus loads a
+            series' pages into the detail pane; click still navigates to the hub. */}
+        <div className="flex flex-col gap-3 pr-3">
           {groups.map(g => (
             <div key={g.category.id}>
-              <div className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+              <div className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
                 {g.category.label}
               </div>
               <ul className="flex flex-col">
