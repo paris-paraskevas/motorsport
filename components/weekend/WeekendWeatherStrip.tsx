@@ -61,7 +61,7 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
               </div>
               <div className="mt-1 text-xs text-text-muted truncate">{w.label}</div>
               {daily.precipProb >= 30 && (
-                <div className="mt-1 text-[11px] text-sky-300 tabular-nums font-mono">
+                <div className="mt-1 text-[11px] text-sky-700 dark:text-sky-300 tabular-nums font-mono">
                   {Math.round(daily.precipProb)}% rain
                 </div>
               )}

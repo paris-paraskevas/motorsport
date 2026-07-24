@@ -328,7 +328,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                     type="button"
                     onClick={enableNotif}
                     disabled={notifState === 'working'}
-                    className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
+                    className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand-fill hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
                   >
                     <Bell size={14} />
                     {notifState === 'working' ? 'Enabling…' : 'Enable notifications'}
@@ -364,7 +364,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                 <button
                   type="button"
                   onClick={saveSeriesAndNext}
-                  className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep px-5 py-2.5 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand-fill hover:bg-brand-deep px-5 py-2.5 transition-colors"
                 >
                   Continue {allSelected ? '(follow all)' : `(${selected.size})`}
                   <ChevronRight size={16} />
@@ -382,7 +382,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
                 <button
                   type="button"
                   onClick={finish}
-                  className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand hover:bg-brand-deep px-5 py-2.5 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand-fill hover:bg-brand-deep px-5 py-2.5 transition-colors"
                 >
                   Done
                   <ChevronRight size={16} />

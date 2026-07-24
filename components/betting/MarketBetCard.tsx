@@ -93,7 +93,7 @@ export function MarketBetCard({
             onClick={() => setPick(name)}
             className={`flex items-center justify-between rounded border px-3 py-2 text-sm ${
               pick === name
-                ? 'border-brand bg-brand/10 text-text'
+                ? 'border-brand bg-brand-fill/10 text-text'
                 : 'border-border text-text-muted hover:border-text-faint'
             }`}
           >
@@ -117,7 +117,7 @@ export function MarketBetCard({
           type="button"
           onClick={place}
           disabled={busy || !pick || stake < 1 || stake > balance}
-          className="rounded bg-brand px-4 py-1.5 font-semibold text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-1.5 font-semibold text-bg disabled:opacity-40"
         >
           {busy ? 'Placing…' : pick ? `Bet ${stake} on ${pick}` : 'Pick a driver'}
         </button>

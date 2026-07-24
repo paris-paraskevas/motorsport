@@ -146,7 +146,7 @@ export function MarkdownEditor({
             summary.errors
               ? 'border-red-500/60 text-red-400'
               : summary.warnings
-                ? 'border-amber-500/50 text-amber-300'
+                ? 'border-amber-500/50 text-amber-700 dark:text-amber-300'
                 : showLint
                   ? 'border-brand/60 text-brand'
                   : 'border-border text-text-muted hover:text-text'

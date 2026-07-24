@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
+import { seriesInk } from '@/lib/site';
 import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
@@ -304,7 +305,7 @@ export default async function DriverPage({
     <div
       className={`relative ${PAGE_WIDE}`}
       style={{
-        '--tint': driver.seriesColor,
+        '--tint': driver.seriesColor, '--tint-fill': driver.seriesColor,
         ['--series-color' as string]: driver.seriesColor,
       } as React.CSSProperties}
     >
@@ -372,7 +373,7 @@ export default async function DriverPage({
 
             <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
               {driver.name}
-              <span style={{ color: driver.seriesColor }}>.</span>
+              <span style={{ color: seriesInk(driver.seriesColor) }}>.</span>
             </h1>
 
             {(nationality || age != null) && (

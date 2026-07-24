@@ -123,7 +123,7 @@ export function ExactPositionBetCard({
           type="button"
           onClick={place}
           disabled={busy || !driver || mult == null || stake < 1 || stake > balance}
-          className="rounded bg-brand px-4 py-1.5 font-semibold text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-1.5 font-semibold text-bg disabled:opacity-40"
         >
           {busy ? 'Placing…' : `Bet ${stake} on ${driver} P${position}`}
         </button>

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pause, Play } from 'lucide-react';
 import { computeDelta, type DriverTrace } from '@/lib/openf1/delta';
+import { seriesInk } from '@/lib/site';
 import type { EnrichedDriver } from '@/lib/openf1/drivers';
 import type { TrackPath, TrackPoint } from '@/lib/openf1/track';
 
@@ -175,7 +176,7 @@ export function GhostLapReplay({
               <span className="text-text-faint">gap </span>
               <span
                 className="font-semibold"
-                style={{ color: gap > 0 ? driverA.teamColour : gap < 0 ? driverB.teamColour : 'var(--text)' }}
+                style={{ color: gap > 0 ? seriesInk(driverA.teamColour) : gap < 0 ? seriesInk(driverB.teamColour) : 'var(--text)' }}
               >
                 {fmtGap(gap)}s
               </span>{' '}

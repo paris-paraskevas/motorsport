@@ -29,7 +29,7 @@ export default async function AssistantInsightsPage() {
         <ArrowLeft size={13} /> Account
       </Link>
       <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden className="w-1 shrink-0 bg-brand-fill" />
         <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
           Assistant insights<span className="text-brand">.</span>
         </h1>

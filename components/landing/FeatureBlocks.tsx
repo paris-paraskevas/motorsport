@@ -104,10 +104,10 @@ function Vignette({ kind, flip }: { kind: 'calendar' | 'weekend' | 'news' | 'pus
           <div className="flex gap-2 font-mono text-xs text-text-muted">
             <span className="rounded-md border border-border bg-surface px-2 py-1">☁️ 19° / 12°</span>
             <span className="rounded-md border border-border bg-surface px-2 py-1">Circuit de la Sarthe</span>
-            <span className="rounded-md border border-brand/40 bg-brand/10 px-2 py-1 text-brand">Marquee</span>
+            <span className="rounded-md border border-brand/40 bg-brand-fill/10 px-2 py-1 text-brand">Marquee</span>
           </div>
           <div className="h-2 rounded-full bg-surface">
-            <div className="h-2 w-2/3 rounded-full bg-brand" />
+            <div className="h-2 w-2/3 rounded-full bg-brand-fill" />
           </div>
         </div>
       )}
@@ -132,7 +132,7 @@ function Vignette({ kind, flip }: { kind: 'calendar' | 'weekend' | 'news' | 'pus
       {kind === 'push' && (
         <div className="mx-auto max-w-xs rounded-xl border border-border bg-surface p-3 shadow-lg">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand font-display text-sm font-extrabold text-black">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-fill font-display text-sm font-extrabold text-black">
               P
             </span>
             <div className="min-w-0">

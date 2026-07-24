@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { seriesInk } from '@/lib/site';
 import type { Metadata } from 'next';
 import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
@@ -716,7 +717,7 @@ export default async function SessionPage({
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
-      style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
+      style={{ '--tint': color, '--tint-fill': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       <JsonLd
         data={breadcrumbLd([
@@ -774,8 +775,8 @@ export default async function SessionPage({
           {isLive && (
             <>
               <span className="text-border-strong">·</span>
-              <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-red-500/15 text-red-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
+                <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
                 live
               </span>
             </>
@@ -800,7 +801,7 @@ export default async function SessionPage({
 
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
           {sessionName}
-          <span style={{ color }}>.</span>
+          <span style={{ color: seriesInk(color) }}>.</span>
         </h1>
 
         <div className="mt-4 flex items-baseline gap-4 flex-wrap">

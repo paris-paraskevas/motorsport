@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.235.0 — 2026-07-23
+
+**Choose your look: five themes.** Paddock now comes in Midnight (the classic dark you know), Carbon (a cooler graphite dark for night races), Ember (a warm amber instrument feel), Newsprint (a paper-light theme that is easy on the eyes for long reads) and Circuit (a crisp high-contrast light built for daylight, grandstands and accessibility). Pick yours in Settings under Appearance, or choose System to match your device automatically. Every theme keeps Paddock's instrument character and meets accessibility contrast standards; nothing changes unless you switch.
+
 ## 0.234.1 — 2026-07-23
 
 **Behind the scenes.** Internal notes and planning.

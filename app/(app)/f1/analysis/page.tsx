@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
+import { seriesInk } from '@/lib/site';
 import { dateRangeLabel } from '@/lib/rounds';
 import { withSocialMeta } from '@/lib/seo';
 import { OpenF1Attribution } from '@/components/f1/OpenF1Attribution';
@@ -57,7 +58,7 @@ export default async function F1AnalysisPage() {
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
-      style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
+      style={{ '--tint': color, '--tint-fill': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       {/* Series-color hairline — the app-wide on-language accent. */}
       <div
@@ -71,7 +72,7 @@ export default async function F1AnalysisPage() {
         </div>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
           F1 Telemetry &amp; Analysis
-          <span style={{ color }}>.</span>
+          <span style={{ color: seriesInk(color) }}>.</span>
         </h1>
         <p className="mt-4 max-w-prose text-sm md:text-base text-text-muted leading-relaxed">
           Once a Grand Prix weekend has run, every session unlocks two free
@@ -87,7 +88,7 @@ export default async function F1AnalysisPage() {
           href="/f1/compare"
           className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
         >
-          <span aria-hidden style={{ color }}>
+          <span aria-hidden style={{ color: seriesInk(color) }}>
             ▸
           </span>
           Compare two drivers head-to-head →
@@ -123,7 +124,7 @@ export default async function F1AnalysisPage() {
                     href={`/series/f1/weekend/${r.round}/qualifying`}
                     className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-text-muted hover:text-text hover:border-tint transition-colors duration-(--duration-fast)"
                   >
-                    <span aria-hidden style={{ color }}>
+                    <span aria-hidden style={{ color: seriesInk(color) }}>
                       ▸
                     </span>
                     Qualifying Analysis
@@ -132,7 +133,7 @@ export default async function F1AnalysisPage() {
                     href={`/series/f1/weekend/${r.round}/race`}
                     className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-text-muted hover:text-text hover:border-tint transition-colors duration-(--duration-fast)"
                   >
-                    <span aria-hidden style={{ color }}>
+                    <span aria-hidden style={{ color: seriesInk(color) }}>
                       ▸
                     </span>
                     Race Story

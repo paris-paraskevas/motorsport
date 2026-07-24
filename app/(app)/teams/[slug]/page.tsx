@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
+import { seriesInk } from '@/lib/site';
 import { findTeamBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource, type SnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
@@ -236,7 +237,7 @@ export default async function TeamPage({
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
-      style={{ '--tint': accent } as React.CSSProperties}
+      style={{ '--tint': accent, '--tint-fill': accent } as React.CSSProperties}
     >
       <div
         className="absolute top-0 left-0 right-0 h-px -z-10"
@@ -250,7 +251,7 @@ export default async function TeamPage({
           <Link
             href={`/series/${team.seriesSlug}`}
             className="hover:underline underline-offset-4"
-            style={{ color: team.seriesColor }}
+            style={{ color: seriesInk(team.seriesColor) }}
           >
             {team.seriesName}
           </Link>
@@ -261,7 +262,7 @@ export default async function TeamPage({
           style={team.color ? { borderLeft: `4px solid ${team.color}`, paddingLeft: '0.75rem' } : undefined}
         >
           {team.name}
-          <span style={{ color: accent }}>.</span>
+          <span style={{ color: seriesInk(accent) }}>.</span>
         </h1>
       </header>
 

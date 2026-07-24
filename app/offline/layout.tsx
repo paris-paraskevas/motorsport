@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Saira_Condensed } from 'next/font/google';
+import { ThemeScript } from '@/components/theme/ThemeScript';
 import '../globals.css';
 
 // Root layout for the service worker's offline fallback route. The app has no
@@ -37,7 +38,10 @@ export default function OfflineLayout({
       lang="en"
       className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
     >
-      <body className="min-h-screen bg-bg text-text">{children}</body>
+      <body className="min-h-screen bg-bg text-text">
+        <ThemeScript />
+        {children}
+      </body>
     </html>
   );
 }

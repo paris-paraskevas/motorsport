@@ -178,7 +178,7 @@ export default async function WeekendPage({
     <div
       className={`relative ${PAGE_WIDE}`}
       style={{
-        '--tint': color,
+        '--tint': color, '--tint-fill': color,
         ['--series-color' as string]: color,
       } as React.CSSProperties}
     >

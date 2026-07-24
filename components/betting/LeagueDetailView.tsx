@@ -82,7 +82,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               maxLength={60}
               className="rounded border border-border bg-surface/40 px-2 py-1 font-mono text-sm text-text"
             />
-            <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">
+            <button type="submit" disabled={busy} className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40">
               Save
             </button>
             <button
@@ -142,7 +142,7 @@ export function LeagueDetailView({ league, currentUserId }: { league: LeagueDeta
               className="w-24 rounded border border-border bg-surface/40 px-2 py-1 text-text"
             />
             <span className="text-text-faint">credits / bet</span>
-            <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">
+            <button type="submit" disabled={busy} className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40">
               Save
             </button>
           </form>
@@ -404,7 +404,7 @@ function ProfileEditor({
         className="h-8 w-10 rounded border border-border bg-transparent"
         aria-label="Colour"
       />
-      <button type="submit" disabled={busy} className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40">
+      <button type="submit" disabled={busy} className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40">
         Save
       </button>
     </form>

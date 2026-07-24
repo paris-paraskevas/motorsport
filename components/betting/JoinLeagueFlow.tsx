@@ -80,7 +80,7 @@ export function JoinLeagueFlow({
               type="button"
               onClick={() => friend(true)}
               disabled={busy}
-              className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+              className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
             >
               Accept
             </button>
@@ -104,7 +104,7 @@ export function JoinLeagueFlow({
               type="button"
               onClick={join}
               disabled={busy}
-              className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+              className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
             >
               Join league
             </button>

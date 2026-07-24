@@ -85,7 +85,7 @@ export function PostComposer({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded bg-brand px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+        className="rounded bg-brand-fill px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
       >
         + New post
       </button>
@@ -140,7 +140,7 @@ export function PostComposer({
         <button
           type="submit"
           disabled={busy}
-          className="rounded bg-brand px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg disabled:opacity-40"
         >
           {busy ? 'Saving…' : 'Save draft'}
         </button>

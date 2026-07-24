@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { seriesInk } from '@/lib/site';
 import { ExternalLink } from 'lucide-react';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 
@@ -179,7 +180,7 @@ export function NewsPageContent({
               >
                 <span
                   className="w-1.5 h-1.5 rounded-full"
-                  style={{ backgroundColor: active ? '#07070a' : s.color }}
+                  style={{ backgroundColor: active ? 'var(--bg)' : s.color }}
                 />
                 {s.name}
                 <span className="tnum opacity-70">{s.count}</span>
@@ -249,7 +250,7 @@ export function NewsPageContent({
                     />
                     <span
                       className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold shrink-0"
-                      style={{ color: item.seriesColor }}
+                      style={{ color: seriesInk(item.seriesColor) }}
                     >
                       {item.seriesName}
                     </span>

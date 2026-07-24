@@ -4,6 +4,7 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Saira_Condensed } from 'next/font/google';
 import { SITE_URL } from '@/lib/site';
+import { ThemeScript } from '@/components/theme/ThemeScript';
 import '../globals.css';
 
 // Display face, self-hosted at build time by next/font (no runtime Google
@@ -58,7 +59,10 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
         lang="en"
         className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
       >
-        <body className="min-h-screen bg-bg text-text">{children}</body>
+        <body className="min-h-screen bg-bg text-text">
+          <ThemeScript />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

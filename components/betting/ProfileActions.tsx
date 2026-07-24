@@ -41,7 +41,7 @@ export function ProfileActions({ targetId, relationship }: { targetId: string; r
           type="button"
           disabled={busy}
           onClick={() => act('request')}
-          className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
         >
           Add friend
         </button>
@@ -52,7 +52,7 @@ export function ProfileActions({ targetId, relationship }: { targetId: string; r
           type="button"
           disabled={busy}
           onClick={() => act('accept')}
-          className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
         >
           Accept friend request
         </button>

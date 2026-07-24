@@ -48,7 +48,7 @@ export function LaunchBanner() {
       className="border-b border-border bg-surface-elevated"
     >
       <div className="w-full flex items-center gap-3 px-4 md:px-6 lg:px-8 py-2.5">
-        <span aria-hidden className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span aria-hidden className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
         <p className="min-w-0 flex-1 text-sm text-text">
           <span>{LAUNCH_ANNOUNCEMENT.message}</span>{' '}
           <Link
