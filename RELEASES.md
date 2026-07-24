@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.237.0 — 2026-07-24
+
+**Themes get their own page.** The theme picker now lives at Account → Theme, alongside Notifications and Championships, instead of sitting inline on the Account page.
+
 ## 0.236.0 — 2026-07-24
 
 **Purple means fastest.** Formula 1 practice analysis and the speed-trap board now highlight the session's fastest lap and top speed in timing purple, the same colour language the broadcast timing screens use.
