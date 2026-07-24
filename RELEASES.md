@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.239.0 — 2026-07-24
+
+**Upgrades for Belgium and Hungary.** The Formula 1 race-weekend pages now list the parts each team declared at Spa and the Hungaroring, including Aston Martin's 16-part B-spec car, sourced from the official FIA car-presentation submissions.
+
 ## 0.238.2 — 2026-07-24
 
 **Behind the scenes.** Housekeeping on our internal planning notes.

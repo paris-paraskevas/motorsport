@@ -1,0 +1,218 @@
+       2026 HUNGARIAN GRAND PRIX
+
+                            23 - 25 July 2026
+
+From   The FIA Formula 1 Media Delegate   Document                     9
+To     All Teams, All Officials           Date                         24 July 2026
+                                          Time                         10:54
+
+Title  Car Presentation Submissions
+
+Description Car Presentation Submissions
+
+Enclosed 2026 Hungarian Grand Prix - Car Presentation Submissions.pdf
+
+Roman De Lauw
+The FIA Formula 1 Media Delegate
+                                     Car Presentation ­ Hungarian Grand Prix
+                                           McLaren Mastercard F1 Team
+
+   Updated Primary reason            Geometric differences compared to   Brief description on how the update works
+                                                   previous version                   (min 20, max 100 words)
+   component     for update
+                                                                        A small revision to the rear wing endplate resulting
+1  Rear Wing       Performance -     Endplate modification              in improved flow conditioning and aerodynamic
+                 Flow Conditioning                                      characteristics across the full operating range.
+                                                                        A new floor and board featuring a modified base
+2 Floor Body     Performance ­       New floor and board                shape and furniture, resulting in an improvement in
+                   Local Load                                           flow conditioning and local load generated across
+                                                                        all conditions.
+3  Front Corner    Performance -     Revised Front Corner Furniture     A small modification to the front corner furniture
+                 Flow Conditioning                                      resulting in an improvement in flow conditioning
+                                                                        around the front tyre and resultant aerodynamic
+4  Front Corner  Circuit specific -  Increased Brake Cooling Exit       performance.
+                 Cooling Range                                          To meet the increased brake cooling demands of
+                                                                        this circuit, a larger front brake cooling exit has
+5 Rear Corner    Performance ­       Revised Rear Corner Furniture      been designed aiming at minimising the
+                   Local Load                                           detrimental impact on aerodynamic performance.
+                                                                        An update to the rear corner furniture, featuring a
+                                                                        revised winglet arrangement aiming at an efficient
+                                                                        increase of aerodynamic load.
+                                     Car Presentation ­ 2026 Hungarian Grand Prix
+                                         *Mercedes-AMG PETRONAS F1 Team*
+
+   Updated Primary reason for            Geometric differences compared to          Brief description on how the update works (min 20, max
+                                                    previous version                                            100 words)
+   component    update
+                                          Additional rear wing winglet added on         The new winglet increases local wing chord and camber
+1  Rear Wing    Circuit specific - Drag                    centreline                increasing local downforce and drag at a ratio appropriate for
+                         Range
+                                                                                                                  Budapest L/D.
+2  Coke/Engine  Cooling Range                     Wider bodywork rear exit
+       Cover                             Tail winglet merged into rear wing brace.  Increased exit size to achieve adequate mass flow through the
+                                                                                      sidepods to ensure we have adequate cooling for this track.
+3  Tail         Performance - Local
+                         Load                                                       Running the tail winglet into the rear wing brace increases local
+                                                                                     downforce and drag at a ratio appropriate for Budapest L/D.
+                                  Car Presentation ­ Hungarian Grand Prix
+                                            Oracle Red Bull Racing.
+
+         Updated  Primary reason  Geometric differences compared to previous     Brief description on how the update works
+       component     for update                            version                          (min 20, max 100 words)
+
+1 Rear Wing       Performance -   Revised pylon profiles                      By exploiting the permitted rear wing pylon
+                    Local Load                                                geometry, the camber of the pylons has been
+                                                                              increased to extract a little more load and maintain,
+2  Floor          Performance -   Revised diffuser geometry                   even enhance the flow stability.
+                    Local Load                                                Having observed some competitor designs, the
+                                                                              floor diffuser geometry has gained surface area
+3 Rear Wing       Performance -   Revised flap element geometry               adjacent to the rear impact structure offering a
+                    Local Load                                                local gain in load.
+                                                                              Following iterations of the rear wing design, a
+                                                                              revised flap pairing has become available for the
+                                                                              Hungarian GP offering more load from revised
+                                                                              camber and chord geometries. This change is
+                                                                              accompanied by a minor revised to the lower brace
+                                                                              (wing) geometry as part of the new design.
+                           Car Presentation ­ Hungarian Grand Prix
+                                      SCUDERIA FERRARI HP
+
+   Updated Primary reason  Geometric differences compared to  Brief description on how the update works
+                                         previous version                 (min 20, max 100 words)
+   component  for update
+
+1 Rear Wing                                                                                    Part of the standard development cycle, this further
+                           New flaps design with additional trailing edge iteration of rear wing has been focused on
+
+              Performance - devices, re-shaped endplate top inboard volume, new increasing load in a robust way. The additional
+
+   Rear Wing  Local Load   pillars. Also, an optional winglet cascade in the SM winglet cascade is meant to increase rear downforce
+   Endplate
+2                          fairing volume will be available   at the expense of aerodynamic efficiency, and is
+
+                                                              optional.
+                                  Car Presentation ­ Hungarian Grand Prix
+                                                      Williams
+
+Updated Primary reason Geometric differences compared to previous Brief description on how the update works
+
+component     for update          version                                             (min 20, max 100 words)
+
+1 Rear Wing   Circuit specific -  A new RW assembly configuration, with a change to   To suit the demands of the Hungaroring circuit, we
+2 Floor Body    Drag Range        the rear wing flap components.                      have introduced an optional rear wing flap
+                                                                                      geometry which offers an increase in downforce
+              Circuit specific -  A new Floor Bodywork configuration with the         across the rear of the car.
+                Drag Range        introduction of new geometry on the outboard Floor  A further circuit specific change, which modifies the
+                                  Winglet.                                            aerodynamic loading on the outboard floor body
+                                                                                      and surrounding components at the rear corner of
+                                                                                      the car.
+                                  Car Presentation ­ Hungarian Grand Prix
+                                          Visa Cash App Racing Bulls
+
+   Updated Primary reason for     Geometric differences compared to previous       Brief description on how the update works (min
+                                                         version                                     20, max 100 words)
+   component  update
+                                                                                  The roll hoop introduced at the previous event
+1  Roll Hoop    Performance ­     Addition of Roll Hoop Winglets                  creates additional freedom in that area. These
+              Flow Conditioning                                                   winglets improve the quality of the airflow reaching
+                                                                                  the rear of the car.
+2 Rear Wing   Performance ­       Updated SM pod geometry and wing auxiliary      A combination of changes to the SM pod and to the
+                Local Load        components                                      flaps & auxiliary components allows additional load
+                                                                                  to be generated by the rear wing, which is well
+3  Cooling    Circuit specific -  Additional options of bodywork cooling louvres  suited to the circuit characteristics.
+   Louvres    Cooling Range                                                       Opening the louvres on the bodywork allows more
+                                                                                  airflow through the radiators, increasing engine
+                                                                                  cooling and thus increasing the range of operating
+                                                                                  conditions.
+                               Car Presentation ­ Hungarian Grand Prix
+                                     Aston Martin Aramco F1 Team
+
+   Updated Primary reason      Geometric differences compared to                       Brief description on how the update works
+                                             previous version                                      (min 20, max 100 words)
+   component    for update
+
+1 Front Wing    Performance -  Revised front view and planview with chord
+                  Local Load   redistribution.
+2  Front Wing                  Updated body, diveplane and foot.                       The front wing, endplate and nose are a package to
+    Endplate    Performance -                                                          improve the performance of the front end of the
+                  Local Load   Longer, thinner nose.                                   car in combination with the other car updates.
+
+3  Nose         Performance -
+                  Local Load
+
+4 Front Corner  Performance -  Revised lip and longer rear deflector.                  The new front brake duct external elements work
+                  Local Load                                                           alongside the new front wing to manage flow
+                                                                                       around the front wheels.
+
+5 Floor Body    Performance -  Changes to all of the permitted surfaces of the floor.
+                  Local Load
+
+6 Floor Fences  Performance -  Updated floor leading edge vanes.                       All floor changes are developed as a package to
+7 Floor Edge      Local Load                                                           increase the load on the floor and therefore
+                               The foot/board and the area in front of the rear tyre   improve the car performance.
+                Performance -  have been modified.
+                  Local Load
+
+8  Diffuser     Performance -  Changes to the main diffuser, fences and winglet.
+                  Local Load
+9 Sidepod Inlet  Performance -  Inlet shape revised in line with the bodywork         The bodywork package has evolved to improve the
+                   Local Load   package.                                              feed to the rear of the car and complement the
+10  Coke/Engine                 Relative subtle changes to the shape of the           changes to the floor geometry.
+        Cover    Performance -  bodywork
+                   Local Load                                                         The louvres provide the usual range of options to
+11  Cooling                     Conceptually similar cooling panels.                  allow the setup of the cooling system for optimum
+    Louvres      Performance -                                                        performance depending on conditions.
+                   Local Load   Small changes to the leg positions and external
+12      Rear                    fairings.                                             The rear suspension and rear brake ducts
+    Suspension   Performance -                                                        modifications were developed with each other and
+                   Local Load   Subtle changes to the inlet, exit and vanes.          the changes to the rear of the floor.
+13 Rear Corner
+                 Performance -
+14 Rear Wing       Local Load   Chord is redistributed between the three elements,
+                                winglets added to the TE of the flap.
+15 Beam Wing     Performance -                                                        The three components of the rear wing increase
+                   Local Load   Change in twist distribution of the rear wing brace.  CM load while reducing SM drag, and are aligned
+                                                                                      with other changes to the rear of the car.
+                 Performance -
+16  Rear Wing      Local Load   All the surfaces have been revised.
+    Endplate
+                 Performance -
+                   Local Load
+                            Car Presentation ­ Hungarian Grand Prix
+                                       *TGR HAAS F1 TEAM*
+
+Updated Primary reason Geometric differences compared to previous Brief description on how the update works
+
+component    for update     version                                         (min 20, max 100 words)
+
+                                                                            The revised SM Fairing increases local aerodynamic
+
+1 Rear Wing  Performance -  Rear Wing SM Fairing optimization and new Rear  loading and, in combination with a more aggressive
+               Local Load   Wing gurney-flap                                Gurney flap configuration, contributes to increased
+
+                                                                            rear wing downforce.
+                                 Car Presentation ­ Hungarian Grand Prix
+                                            Audi Revolut F1 Team
+
+   Updated Primary reason        Geometric differences compared to   Brief description on how the update works
+                                               previous version                   (min 20, max 100 words)
+   component  for update
+                                                                    A revised rear wing endplate profile is introduced.
+1  Rear Wing   Performance ­     Endplate modification.             The update is intended to deliver a local
+              Flow conditioning                                     aerodynamic load increase while contributing to
+                                                                    the overall aerodynamic efficiency of the race car.
+                                        Car Presentation ­ Hungarian Grand Prix
+                                                     BWT Alpine F1 Team
+
+No updates submitted for this event.
+                               Car Presentation ­ Hungarian Grand Prix
+                                                   Cadillac
+
+Updated Primary reason         Geometric differences compared to                Brief description on how the update works
+                                             previous version                                (min 20, max 100 words)
+component       for update
+                                                                               The front brake duct surfaces have been updated to
+1 Front Corner  Performance ­  Updated inlet scoop and exit aperture surfaces  increase both the inlet and exit flow areas,
+                Brake Cooling                                                  improving airflow through the ducts and providing
+                                                                               additional brake cooling capacity
+
