@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.238.1 — 2026-07-24
+
+**Series menu fix.** Reaching a series' sections from the Series menu now works cleanly: moving your mouse across to Standings, Results and the rest no longer snaps the panel to a different series on the way.
+
 ## 0.238.0 — 2026-07-24
 
 **Jump straight to any series section.** On desktop, hovering a series in the Series menu now reveals its pages (calendar, standings, results, rounds, drivers, champions) right there. On phones, each series on the Series page shows the same quick links, so you can go straight to, say, F1 standings without an extra tap.
