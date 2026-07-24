@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.238.2 — 2026-07-24
+
+**Behind the scenes.** Housekeeping on our internal planning notes.
+
 ## 0.238.1 — 2026-07-24
 
 **Series menu fix.** Reaching a series' sections from the Series menu now works cleanly: moving your mouse across to Standings, Results and the rest no longer snaps the panel to a different series on the way.
