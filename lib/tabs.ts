@@ -55,6 +55,25 @@ export function railTabsFor(singleEvent: boolean | undefined, slug?: string): ty
   );
 }
 
+/** Sub-pages surfaced in the Series NAV — the desktop mega-menu detail pane and
+ *  the /series hub cards. The live/reference destinations a reader jumps between
+ *  per series, in reading order. Reuses tabsFor() so the single-event trim and
+ *  the F1-only Rounds gate live in ONE place; deliberately excludes the
+ *  editorial about/history + news (those live in the Learn block / News link). */
+export const NAV_SUBPAGE_KEYS = ['calendar', 'standings', 'results', 'tracks', 'drivers', 'champions'] as const;
+
+export function seriesSubPages(
+  meta: { slug: string; singleEvent?: boolean },
+): { key: TabKey; label: string; href: string }[] {
+  const allowed = new Set(tabsFor(meta.singleEvent, meta.slug).map(t => t.key));
+  return NAV_SUBPAGE_KEYS.filter(k => allowed.has(k)).map(k => ({
+    key: k,
+    // Single-event series call their honours roll "Past Winners", matching the rail.
+    label: meta.singleEvent && k === 'champions' ? 'Past Winners' : labelForTab(k),
+    href: k === 'calendar' ? `/series/${meta.slug}` : `/series/${meta.slug}/${k}`,
+  }));
+}
+
 export function resolveTab(
   value: string | string[] | undefined,
   singleEvent?: boolean,

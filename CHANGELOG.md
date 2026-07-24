@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.238.0 — 2026-07-24
+
+### Added
+- **Series nav now reaches each series' sub-pages directly.** New `seriesSubPages(meta)` in `lib/tabs.ts` (reuses `tabsFor()`, so the single-event trim and F1-only Rounds gate stay in one place) returns a series' live/reference destinations in reading order: Calendar, Standings, Results, Rounds, Drivers, Champions (filtered per series; single-event series show Calendar / Drivers / Past Winners only).
+  - **Desktop:** the Series header mega-menu (`components/AppShell.tsx` `SeriesMegaMenu`) becomes master-detail — the category-grouped series list on the left, and hovering or keyboard-focusing a series fills a right-hand pane with that series' pages (defaults to F1). Clicking a series name still navigates to its hub. Chosen over a sideways cascade flyout to avoid the two-gap hover-intent + viewport-edge problems and to stay in Paddock's flat idiom. The F1 Analysis / Head-to-head / Series-guides shortcuts are unchanged.
+  - **Mobile:** each series card on the `/series` hub (`app/(app)/series/page.tsx`) gains a mono sub-page link row, so a phone user jumps straight to (say) F1 Standings instead of landing on the hub and tabbing. The bottom-bar Series tab stays a direct destination (unchanged) — the operator ruling that a nav tab must not open a menu still holds.
+
 ## 0.237.0 — 2026-07-24
 
 ### Changed

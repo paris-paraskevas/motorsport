@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { loadAllSeries } from '@/lib/series';
 import { groupSeriesByCategory } from '@/lib/categories';
+import { seriesSubPages } from '@/lib/tabs';
 import { SectionHead } from '@/components/SectionHead';
 import { Accordion } from '@/components/Accordion';
 import type { Session } from '@/lib/types';
@@ -58,32 +59,52 @@ export default async function SeriesHubPage() {
             <div className="divide-y divide-border">
               {group.series.map(s => {
                 const next = nextBySlug.get(s.slug);
+                const subPages = seriesSubPages(s);
                 return (
-                  <Link
-                    key={s.slug}
-                    href={`/series/${s.slug}`}
-                    className="group flex items-center gap-3 py-3 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
-                  >
+                  <div key={s.slug} className="flex items-stretch gap-3 py-3 px-2 -mx-2 min-w-0">
                     <span
                       className="self-stretch w-[3px] shrink-0"
                       style={{ backgroundColor: s.color }}
                     />
-                    <span className="flex-1 min-w-0">
-                      <span className="block text-[15px] font-semibold text-text tracking-tight truncate">
-                        {s.name}
-                      </span>
-                      <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint truncate">
-                        {next ? `Next · ${next.title}` : 'No upcoming sessions'}
-                      </span>
-                    </span>
-                    <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
-                      {next ? dayLabel(next.start) : '—'}
-                    </span>
-                    <ArrowUpRight
-                      size={14}
-                      className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
-                    />
-                  </Link>
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        href={`/series/${s.slug}`}
+                        className="group flex items-center gap-3 min-w-0"
+                      >
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-[15px] font-semibold text-text tracking-tight truncate">
+                            {s.name}
+                          </span>
+                          <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint truncate">
+                            {next ? `Next · ${next.title}` : 'No upcoming sessions'}
+                          </span>
+                        </span>
+                        <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
+                          {next ? dayLabel(next.start) : '—'}
+                        </span>
+                        <ArrowUpRight
+                          size={14}
+                          className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
+                        />
+                      </Link>
+                      {/* Jump straight to a section instead of landing on the hub
+                          then tabbing across — the mobile counterpart to the
+                          desktop Series mega-menu's detail pane. */}
+                      {subPages.length > 1 && (
+                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                          {subPages.map(p => (
+                            <Link
+                              key={p.key}
+                              href={p.href}
+                              className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                            >
+                              {p.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
             </div>
