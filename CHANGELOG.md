@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.238.2 — 2026-07-24
+
+### Changed
+- Docs: `IDEAS.md` triage + de-numbering (no code change). Cleared shipped items (theme gallery, admin-console access), merged duplicates (champions depth, assistant-training, `.supabase-pat` rotation), moved SEO Phase 2b + trending-content to Parked with revisit triggers, relocated the "don't rewrite zero-click explainers" note to Killed, and reworded the `/api/just-missed` perf note (route still live, cron-mitigated) + the Cloudflare DNS spot-check for clarity. Dropped the `BN —` batch numbers — the section name is the identifier now (B1/B2 were done, leaving a pointless gap). `SCHEDULE.md` gains the session-21 plan entry.
+
 ## 0.238.1 — 2026-07-24
 
 ### Fixed

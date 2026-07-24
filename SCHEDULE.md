@@ -1266,6 +1266,21 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Wed 2026-07-23 (session 21 — theme gallery design phase: palettes + swatch board)
+
+Design-first phase of the approved theme gallery. Build starts only after the operator approves palettes by eye.
+
+- Answer the claude.ai/design context question (curated slice + screenshots, not the whole repo) → in-chat.
+- Draft the 5 theme palettes (Midnight / Carbon / Ember / Newsprint / Circuit) as full token sets: chassis (bg / surface / surface-elevated / border / border-strong / text ×3), accent as fill vs text/border, live/positive/negative signals per theme. Verify every text/surface pair ≥ 4.5:1 programmatically; record the ratios.
+- Render a visual swatch board — one self-contained HTML in the session scratchpad (race/series card + dense standings grid per theme, real SessionCard/StandingsTab markup patterns) → operator eyeballs in Chrome.
+- If approved with time left: ESPA the build plan (token split + picker + no-flash init); the build itself is its own gated step.
+
+Won't touch this session: theme build code in the repo, operator's uncommitted working-tree files (NextRaceCountdown / eslint.config / track-environment / indycar.test + doc deletions), blog/content work, carryover queue (champions depth, driver bios, IndyCar preview-paired, Bing WMT).
+
+Active: _(awaiting [+Nm] prefixes)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

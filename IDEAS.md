@@ -1,17 +1,22 @@
 # Paddock — ideas ledger
 
-Single source of truth for **open work only**. Completed items are NOT kept here — they live in git history + `CHANGELOG.md` + `docs/HANDOFF.md`. This file was triaged 2026-07-12: every "→ SHIPPED / DONE" entry was removed, leaving ~55 uncompleted items grouped into batches. Time-based plans live in `SCHEDULE.md`.
+Single source of truth for **open work only**. Completed items are NOT kept here: they live in git history + `CHANGELOG.md` + `docs/HANDOFF.md`. Re-triaged 2026-07-24 (session 21): shipped items cleared, duplicates merged, stale counts fixed. Time-based plans live in `SCHEDULE.md`.
 
-**Rules:** one line per item; group into batches; delete an item when it ships (history is the record); re-triage at session end. Recommended near-term order: **B1 → B2 → B3**, then operator's call.
+**Rules:** one line per item; group into batches; delete an item when it ships (history is the record); re-triage at session end.
 
 ---
 
+## Inbox (2026-07-24 — session 21)
+
+- **F2/F3 official-schedule cross-check.** The Hungary times drift (fixed 0.234.2) came from May's template-projected `sessions.json`; the official sites' "Add Calendar" button is an ECAL sync widget (no raw ICS to ingest), BUT the event pages' RSC payload carries the full timetable → build a fiaformula2/3.com schedule parser as the F2/F3 analogue of the F1 OpenF1 cross-check (#613). Outbound → preview-paired. Remaining projected rounds (Monza onward) need curation as itineraries publish regardless.
+- **Per-weekend "add to calendar" affordance** on our weekend pages (own ICS export or link-out to the official ECAL button) — operator idea, race morning.
+
 ## Inbox (2026-07-23 — session 20)
 
-- **Theme gallery (APPROVED, design-first) — the big Next.** Extensible theme system (picker + System-follow + localStorage + no-flash init) on the shared token layer (`globals.css` `:root` + `@theme inline`). 5 themes v1: **Midnight** (dark, current), **Carbon** (cool graphite dark), **Ember** (warm amber dark), **Newsprint** (warm light: paper/ink/warm-gray), **Circuit** (high-contrast light). Each WCAG AA; flat-hairline character kept; bright accents = fills, accent-text/signal darken per theme. Arch: split "dark-promoted-`:root`" into light/dark + per-theme blocks; keep `.dark` for the `dark:` variant. Patch the handful of hardcoded leaks (`GhostLap3D`, `HomeContent`, `NewsPageContent`, layout `themeColor`); OG/story cards + `global-error` stay dark by design. Design-first: palettes → visual swatch board → operator approves → build → Vercel preview → ship. A claude.ai/design exploration prompt was provided (session-20 chat; theme spec in `docs/HANDOFF.md` session-20).
+- **Theme gallery follow-ups.** The 5-theme system SHIPPED (0.235.0 #619: Midnight/Carbon/Ember/Newsprint/Circuit + picker + System-follow + no-flash init); picker moved to `/settings/theme` (0.237.0 #622); `--session-best` timing purple wired into practice + speed-trap boards (0.236.0 #621). Remaining polish: landing decorative accents (DisciplinesGrid cyan/acid/plasma) wash out on the light themes; recharts series palette on paper backgrounds; `--session-best` adoption in the other fastest-value surfaces (qualifying decoder, race story).
 - **Rotate `.supabase-pat`** — it's DEAD (verified 401 from Supabase's Management API). Regenerate so migrations run via API again (the session-20 reactions migration went via Studio).
 - **Blog Share: auto-copy post link on Share** (offered, not built) — makes the IG Link-sticker paste one tap (IG can't attach a clickable link to a shared Story image — that's an IG limitation).
-- Blog **like/dislike reactions** shipped (#615) + **9:16 story card** (#617) + **IG-story share** (#614) + **PWA external-link fix** (#616). Follow-ups: reaction UI polish / a likes-based "suggested posts" list (the schema stores `user_id` for it).
+- **Blog follow-ups** (reactions #615, story card #617, IG share #614, PWA fix #616 all shipped): reaction UI polish and a likes-based "suggested posts" list (the schema stores `user_id` for it).
 
 ## Inbox (2026-07-22 — session 19)
 
@@ -20,33 +25,24 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 - **sessions-health wrong-day (non-F1)** — the other 14 series have no machine-readable official timetable to diff (SPA/bot-blocked), so they stay on the count-based monitor; revisit per-series if/when an official source becomes reachable.
 - **Session-report variants (idea):** beyond the Sunday digest + the shipped lap-by-lap, add a Saturday qualifying-report post and (future) Friday free-practice write-ups for marquee weekends; extends the `weekend-post` cadence.
 
-- **[you] Cloudflare post-migration checks** — in the CF dashboard: Clerk records (`clerk.`/`accounts.`/`clkmail.` + the two DKIM CNAMEs) must be **DNS-only (grey cloud), NOT proxied**; SSL/TLS = **Full (strict)**; `dev.*` resolves; Vercel → Domains shows "Valid". Then install the CF Claude plugin (`claude plugin marketplace add cloudflare/skills` + `install cloudflare@cloudflare`) for agent DNS access. Site + Clerk sign-in confirmed healthy through CF as of session 17.
+- **[you] Cloudflare DNS spot-check** (operator task, ~5 min in the Cloudflare dashboard; nothing is known-broken). The site + sign-in already work through Cloudflare (verified session 17) — this is just confirming the DNS is set the safe way. Check: the Clerk email/auth records (`clerk.`, `accounts.`, `clkmail.` + the two DKIM CNAMEs) are **DNS-only** (grey cloud, not the orange proxy); SSL/TLS mode = **Full (strict)**; the `dev.` subdomain loads; Vercel → Domains shows every domain "Valid". Optional: install the Cloudflare Claude plugin so I can read/edit DNS directly next time (`claude plugin marketplace add cloudflare/skills`, then `install cloudflare@cloudflare`).
 - **IndyCar session times + results — PREVIEW-PAIRED** — outbound (motorsport.com/indycar). Build + local-verify the parser, open a PR **held UNMERGED** for the operator's Vercel preview pass (datacenter-IP check — the 0.12.12 NASCAR-regression rule). Never merge unverified outbound.
 - **Bing Webmaster Tools** — operator claims the domain + hands over a verification token → add the verification file (IndexNow already pings Bing each deploy).
 - **⏳ Operator env/infra to light up analytics + heatmap** (details in HANDOFF session-14): apply the 2 heatmap migrations; set GA4/GSC/Bing env in Vercel (keys in operator's Downloads). All verified live locally; prod is env-gated.
 - **Bahrain GP 2026** — NOT verified (operator confirmed). Reschedule parked until F1/FIA officially confirm; draft the marquee blog then.
-- **Trending content (ongoing)** — the existing ~138 `tracks.json` profiles are already content-deep (verified session 17: 133/138 rich articles), so this is about MORE venues + race-weekend "what time" landable content, not enriching the current set.
-- **SEO Phase 2b (deferred)** — session `force-dynamic`→ISR (F1 `auth()`-gate refactor) + `LocalTime` Athens-SSR canonical time + selective session sitemap. Low SEO value now; recommend not doing unsupervised.
 - **Doc hygiene (parked)** — trim `docs/HANDOFF.md` + `SCHEDULE.md` to the last ~2–3 sessions; archive older to `docs/handoff-archive.md`.
 - **Heatmap overlay blob customisable**: make the yellow colour / shadow around the mouse (click-heatmap overlay) user-adjustable; fits `/admin/behaviour` in the `/admin` redesign.
 - **All-time legends pages per series**: dedicated pages for the greats (Schumacher, Prost, Senna, Agostini, Rossi, ...), one set per series. Content, RULE #1, fact-checked.
-- **Better AI-assistant training**: improve the assistant's grounding + answer quality; relates to B8 Assistant Phase-2 (grounded Q&A over the `/information` hub).
-- **GSC zero-click clusters — content EXISTS, don't rewrite (session-17 audit).** Every high-demand explainer (DRS + 2026 replacement, all points systems, what-is/whats-new/weekend ×series, differences, rally, most-titles) is already in `content/information/answers/` AND `featured: true`. They're "crawled, currently not indexed" — an authority/time + internal-linking problem, not a content gap. Internal linking shipped session 17 (#588/#589/#592). Remaining lever = authority (backlinks/traffic) + Bing/GEO. Do NOT write duplicate explainers.
 - **TBC session times — WRC remaining rounds.** R9 Estonia curated (session 16). Remaining WRC date-only rounds are curatable into `content/series/wrc/sessions.json` (Wikipedia-assisted; wrc.com/ewrc bot-blocked from Vercel) as their itineraries publish — token-heavy, modest value. (IndyCar moved to the preview-paired Inbox item above.)
 
-## B1 — Feedback-board quick wins
+## AdSense-readiness content (business priority) — operator 2026-07-12: DO these, don't defer (portraits + team logos KILLED)
 
-- **Admin Console access** (operator action, no code) — grant the PROD Clerk "Paris Dev" account `publicMetadata.role:"admin"` (Clerk dashboard → Users → Paris Dev → Metadata → Public) so `/admin` + the `dev.` subdomain open for it. _(The other B1 items — feedback filter, blog mobile, driver-ratings + WEC-rules explainers — and the B2 tour rebuild all SHIPPED 2026-07-12, #512–#515.)_
-
-## B3 — AdSense-readiness content (business priority) — operator 2026-07-12: DO these, don't defer (portraits + team logos KILLED)
-
-- **Champion-Q&A depth** — schema + `ChampionDepth` display DONE; **F1 fully backfilled 1950–2025** (#606–#612). Remaining = the other 14 series (promoted to the Inbox above).
 - **Original driver bios** (W4 P5) — sidecar plumbing + display DONE (#604; `bios.json` preferred over the Wikipedia intro, Hamilton/Alonso seeded). Remaining = author the rest of the F1 grid + other series (RULE #1, evergreen). Ultracode-shaped (parallel per-driver research + adversarial fact-check).
 - **Blog cadence automation** — a scheduled trigger that auto-DRAFTS the weekly marquee preview (Thu) + digest (Mon) as a prod DB draft for operator approval; infra shipped Phase-0 (#437), needs the headless `claude -p` GH Action trigger (pairs with the cron pinger).
 
-## B4 — Data completeness & resilience
+## Data completeness & resilience
 
-_(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart undercount fix, GTWC canonical rounds, FE doubleheader weekend URLs + round-grouping regression guards, news-map completion (#519). **Operator 2026-07-12: BUILD all the below next — don't defer.** Several are outbound/server code that fails first on Vercel datacenter IPs → verify on a Vercel preview, not localhost; previews are SSO-walled, so the operator does the preview review (or provides a bypass secret). Build + local-verify what's possible, then flag the preview/prod check.)_
+_(Most of this batch was already done — verified 2026-07-12. SHIPPED: MotoGP chart undercount fix, GTWC canonical rounds, FE doubleheader weekend URLs + round-grouping regression guards, news-map completion (#519). **Operator 2026-07-12: BUILD all the below next — don't defer.** Several are outbound/server code that fails first on Vercel datacenter IPs → verify on a Vercel preview, not localhost; previews are SSO-walled, so the operator does the preview review (or provides a bypass secret). Build + local-verify what's possible, then flag the preview/prod check.)_
 
 - **F1 classification speed** — event-driven session warming off `sessions.json` (poll from session-end, not a flat tick); evaluate Jolpica as a faster race-classification source. _(datacenter-verify on a preview.)_
 - **Standings/results last-good resilience** — `withSourceSnapshot` already wraps the 9 standings modules + news + F1; extend it to the ~11 remaining `lib/results/*` modules. Fail-soft (can't regress) but resilience only PROVES on prod during an outage → preview/prod-gated.
@@ -57,21 +53,21 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 - **media.json seeds** — 11 of 15 series lack `content/series/<slug>/media.json` (have: wec/f1/f2/f3); populating needs fact-checked official-channel YouTube IDs (draft-scrutiny) + a geo-restriction audit.
 - **Curation patches** when timetables drop (ongoing, e.g. IMSA practice, FE session times).
 
-## B5 — Live / race-day data
+## Live / race-day data
 
 - **Live in-race data feed** — lap-by-lap / telemetry / sector splits for the live-now view (RapidAPI live-timing candidate; Pulselive for MotoGP/WSBK; Jolpica live for F1).
 - **Per-session results-fetch lifecycle** — Phase-1 positions/times at session end, Phase-2 media/reports days later; Formula E first (no results today).
 - **Live Now section** — expand the thin pinned strip to current session / lap / leader / gaps when live.
 - **Results table polish** — row hover-highlight (big screens) + an interval column + a leader-gap column (scope per-series data availability first).
 
-## B6 — Onboard / F1 telemetry (next phase)
+## Onboard / F1 telemetry (next phase)
 
 - **Broadcast cameras + all-driver roster** — lay every driver on the reconstructed track individually, pick any two; auto-director trackside cams (the director/cut logic is the real work).
 - **3D track comparison + throttle/brake "did X lift"** (feedback lane, now unblocked).
 - **Cockpit ghost indicator** — off-screen edge arrow + gap so the rival is locatable when out of the cockpit frame.
 - **Onboard 3D follow-ups** — pit-lane/garage readability, the downhill-outside barrier reading as a retaining wall, darken team-coloured tyres; real-geometry P2 (TUMFTM/Umeyama) is the marquee-circuit roadmap.
 
-## B7 — Betting & social
+## Betting & social
 
 - **Real-odds adapter** — bookmaker odds for the F1 winner via the RapidAPI gateway, clamped through the house band (model stays fallback for podium/top10/exact); needs a provider + paid-key decision + name-matching + datacenter verify.
 - **Bet-display refinement** — surface multiplier + potential return on PENDING bets; needs a data-model decision (A: persist the fixed multiplier at placement — a migration; B: read-side `odds_json`+`league_id` join). Settled-won bets can already show real credits won.
@@ -81,7 +77,7 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 - **Thread replies / markdown / submit rate-limit** (W7 deferred) + **comments thread** on race-weekend pages (Clerk-gated).
 - **Minigames** — guess-the-driver / guess-the-track / guess-next-turn (engagement/retention).
 
-## B8 — UX / IA / mobile polish
+## UX / IA / mobile polish
 
 - **W5 per-page layout spec** (desktop + phone) — one design session; feeds density + home.
 - **Information-density pass** — per-page "what does this answer in 5 seconds", the rest behind disclosure.
@@ -99,7 +95,7 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 - **UI/CSS inspiration pass** (5 reference libraries) + **landing scroll-driven animation** (car approaches on scroll; reduced-motion fallback).
 - **Mobile-first UI/UX audit.**
 
-## B9 — Notifications
+## Notifications
 
 - **Per-event-type push** — qualifying topper (RSS filter) / race winner / championship-deciding event.
 - **Custom per-user rules** — e.g. only F1 + MotoGP race day, skip practice.
@@ -107,33 +103,36 @@ _(Most of B4 was already done — verified 2026-07-12. SHIPPED: MotoGP chart und
 - **Hero images in push payload** (`payload.image` from curated circuit JPEGs / thumbnails).
 - **External cron pinger** — reliable blog/notify delivery on Hobby (cron-job.org every 15 min → `/api/cron/*` w/ `CRON_SECRET`); superseded if Vercel Pro. **NOTE: also now needed for ALL crons since the repo went private (GH Actions metered).**
 
-## B10 — Quality, infra & launch
+## Quality, infra & launch
 
-- **B-perf execution** — re-baseline first; Clerk lazy / 3rd-party deferral / CSS critical-path / idle-prefetch of hidden segments; + the `/api/just-missed` cold-on-cold TTFB (~13.8s).
+- **B-perf execution** — re-baseline first; Clerk lazy / 3rd-party deferral / CSS critical-path / idle-prefetch of hidden segments; + the `/api/just-missed` cold-on-cold TTFB (~13.8s — mitigated by the warm-results cron but not eliminated; the route still powers the home series-countdown/results widgets, so keep it on the perf list).
 - **WCAG 2.2 AA audit** + **motion / focus-state / dark-mode contrast** polish.
 - **Component tests** (vitest + Testing Library) + **Playwright E2E on preview deploys** + **route best-practices** (error boundaries + Suspense + Next 16 segment configs).
-- **Legacy lint cleanup** — 5 `react-hooks/set-state-in-effect` errors; **DRY `EnableNotifications`/`OnboardingWizard`**; championship-leader all-deselected empty-state. _(unused `lib/onboarding.ts` already deleted.)_
+- **Legacy lint cleanup** — re-audit `react-hooks/set-state-in-effect` (15 files reference the rule as of session 21; confirm real errors vs suppressions — the charter bans silencing checks); **DRY `EnableNotifications`/`OnboardingWizard`**; championship-leader all-deselected empty-state. _(unused `lib/onboarding.ts` already deleted.)_
 - **Admin content-authoring UI** — a lightweight page-authoring surface for when Claude isn't in the loop / Fotis edits.
 - **W8 v1.0 launch program** (POSTPONED) — "out of early access" banner flip + marketing channel plan (IG/FB/Reddit/X/YouTube); checklist done.
 - **Android app** — TWA/Bubblewrap → Play Store ($25), Digital Asset Links + store assets (post-v1.0).
-- **B12 Greek `/el/` route tree** (next-intl).
-- **Sentry** (`@sentry/nextjs` — needs the operator's DSN) · **rotate `sk_live_*` Clerk keys + `.supabase-pat`** · **dev/staging environment** (operator: maybe unneeded) · **feeder-intake Phase 2** (Supabase Storage + signed uploads >2 MB, Turnstile once Cloudflare keys exist, a normalize-then-approve admin step).
+- **Greek `/el/` route tree** (next-intl).
+- **Sentry** (`@sentry/nextjs` — needs the operator's DSN) · **rotate `sk_live_*` Clerk keys** (`.supabase-pat` rotation tracked in the s20 Inbox) · **dev/staging environment** (operator: maybe unneeded) · **feeder-intake Phase 2** (Supabase Storage + signed uploads >2 MB, Turnstile once Cloudflare keys exist, a normalize-then-approve admin step).
 - **User + consumer research** — site survey + subreddit pain-point mining + consumer-psychology framing.
 
 ---
 
 ## Parked (might do — revisit trigger)
 
+- **SEO Phase 2b** — session `force-dynamic`→ISR (F1 `auth()`-gate refactor) + `LocalTime` Athens-SSR canonical time + selective session sitemap. Low value now; **revisit only if session pages become an indexing priority**, and not unsupervised.
+- **Trending content** — MORE venues + race-weekend "what time" landing content (the ~138 existing track profiles are already deep). **Revisit when adding new venues or on a landing-content push.**
 - **GitHub Actions CI** (typecheck + vitest on PRs) — pair-debug a known-green workflow on a throwaway branch first; operator has zero tolerance for red checks.
 - **Public README + Mermaid architecture diagram** — post-v1.0 showcase.
 - **Era markers / sparklines on Champions** — after a champions.json cleanup.
 - **Another "Claude design" depth pass** (background warmth / theming) — after the next user-research pass.
 - **GDPR / cookie-consent banner refinement** — revisit at ~500 visitors/day or a real complaint.
-- **B8b SoftwareApplication JSON-LD on `/`** — blocked on real user reviews/ratings (invalid without `aggregateRating`).
+- **SoftwareApplication JSON-LD on `/`** — blocked on real user reviews/ratings (invalid without `aggregateRating`).
 - **Sportmonks F1 / API-Sports F1** — paid live-timing candidates; MUST test from a Vercel preview (datacenter-IP 403s) before adoption.
 
 ## Killed (won't do — one-line why)
 
+- **Duplicate zero-click explainers** — every high-demand explainer (DRS/2026, points systems, what-is/whats-new/weekend ×series, differences, rally, most-titles) already exists in `content/information/answers/` + `featured: true`; the gap is authority/indexing (backlinks, Bing/GEO), NOT content, and internal linking shipped session 17. Don't write duplicates. (session-17 audit)
 - **Driver portraits ×14 series** (killed 2026-07-12, operator) — long-tail licensing curation, not worth it.
 - **Team logos ×15** (killed 2026-07-12, operator) — no free / non-infringing source; keeping copyrighted logos would be a violation.
 - **Paddock-coins ledger** — superseded by the betting credits economy.
