@@ -6,7 +6,46 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-23 (LATEST, session 20 — Hungary GP preview draft + 4 blog PRs #614-#617 + reactions migration + theme-gallery approved) — `main` = 0.234.0
+## ⚡ Next session pickup — 2026-07-24 (LATEST, session 21 — theme gallery + 7 more ships + F1-upgrades parser) — `main` = 0.239.0
+
+Long build+ship session (2026-07-23 → 07-24). **8 versions 0.235.0 → 0.239.0, all merged + prod-verified.** HANDOFF/SCHEDULE lagged during the run; this block is the record.
+
+### ✅ Shipped
+- **0.235.0 (#619) five-theme gallery** — Midnight (default, unchanged) + Carbon/Ember/Newsprint/Circuit as `:root[data-theme]` token blocks on the shared layer; picker + System-follow + no-flash `ThemeScript` in all four root layouts; token flip so BARE `brand`/`tint` = legible ink and `-fill` = vibrant paint (100 fill sites codemodded, 31 inline series colours → `seriesInk()`); every text/surface pair WCAG ≥ 4.5:1 (scratchpad swatch-board generator). Research-backed (6 parallel agents): Carbon = cool-dark family, Ember = amber-phosphor instrument, Newsprint lifted into the Kindle/FT/Flexoki paper band, new `--session-best` timing purple (amber never carries pace).
+- **0.235.1 (#620) F2/F3 Hungary session-time fix** — curated blocks carried May's template slots; corrected to fiaformula2/3.com itineraries (F3 had wrong-DAY practice + the retired two-group quali). Browser-verified to the minute.
+- **0.236.0 (#621) timing purple wired** — `--session-best` on F1 Practice Analysis (P1 lap) + Speed Trap (top speed).
+- **0.237.0 (#622) theme picker → `/settings/theme`** — own page (sibling to notifications); Account hub gets a Palette nav row.
+- **0.238.0 (#623) series-nav sub-pages** — desktop Series mega-menu + `/series` cards expose each series' pages (Calendar/Standings/Results/Rounds/Drivers/Champions); new `seriesSubPages()` reuses `tabsFor()` (F1-only Rounds gate, single-event trim).
+- **0.238.1 (#624) menu-aim fix** — 0.238.0's two-column mega-menu let a transited series hijack the detail pane; rebuilt SINGLE-column so the pointer crosses no other series (fixed by geometry, not a timing hack). Proven with a slow-glide reproduction (F2→Standings stays on F2).
+- **0.238.2 (#625) IDEAS triage** — cleared shipped, merged dupes, parked SEO-2b/trending with triggers, moved the zero-click note to Killed, **dropped the `BN` batch numbers** (the section name is the identifier now).
+- **0.239.0 (#626) F1-upgrades parser Phase A** — see below.
+
+### 🔧 F1 upgrades — automated-ingest build (operator chose FULL CRON, not curation-first)
+- **Phase A DONE (0.239.0):** `lib/upgrades/f1-parse.ts` parses the FIA "Car Presentation Submissions" PDF (`pdftotext -layout`) → per-team `{component, reason, detail}` + a `warnings` confidence gate; 13 tests vs three real docs (fixtures in `tests/fixtures/f1-upgrades/`). Curated `content/series/f1/upgrades.json` R10 (Belgium, 21 parts) + R11 (Hungary, 37 incl. Aston's 16-part B-spec); renders on the F1 weekend page. **Finding that shapes B-D:** team/count/component/reason are auto-reliable across layouts; per-item `detail` is best-effort (the FIA "Brief description" column interleaves in -layout output) so it stays a curator-condensed field.
+- **Phases B-D pending:** B = outbound FIA fetch + serverless PDF extract (add `unpdf` + `next.config` `serverExternalPackages` — landmine-class; PREVIEW-GATED, operator runs the datacenter probe); C = KV read-path (`loadF1Upgrades` KV-first then file; Vercel FS is read-only); D = cron (fail-closed `CRON_SECRET`; validate-and-alert, NEVER blind-publish — clean parse auto-posts, flagged parse alerts). Weekly-cadence playbook doc still to write.
+
+### ⚠ LANDMINES / follow-ups (new)
+- **Prod-build fragility:** `/series/adac-ravenol-24h/drivers` static export flakes on its upstream Wikipedia fetch during static generation — it ERRORED the 0.239.0 prod build (a51c074) even though the identical #626 preview + local build passed 477/477. An **empty re-trigger commit** (`git commit --allow-empty` → push main; aea3859) cleared it. Harden the drivers tab to fail-soft during static export so a flaky upstream can't break a prod deploy. (Diagnosed via the Vercel MCP build logs.)
+- **`SENTRY_AUTH_TOKEN` is invalid (401)** — sourcemap upload fails on every Vercel build (non-fatal, but errors in the log). Rotate it.
+- Theme: OG/story share cards + `global-error` + `public/manifest.json` stay Midnight by design; `.dark` rides only the dark-family themes.
+
+### 📋 Next session — prioritised
+1. **Hungarian GP FP1 (Friday-practice) recap blog** — prod DB draft (RULE #1, house style); ground in OpenF1 FP1/FP2 + the curated R11 upgrades + media. Voice = `drafts/f1-belgian-grand-prix-2026-recap.md`. (Recommend combined FP1+FP2 over FP1-only.)
+2. Harden the ADAC drivers static export (build fragility above).
+3. F1-upgrades Phase B (preview-gated) when ready.
+4. Theme follow-ups parked in IDEAS (landing accents on light, recharts palette on paper, `--session-best` in more surfaces).
+5. Carryover: champions depth ×14, driver bios (ultracode), F1 schedule cross-check → cron, IndyCar results, Bing WMT, analytics/heatmap env, cron pinger.
+
+### 🩹 Owed (operator)
+- Rotate `.supabase-pat` (DEAD — use `.env.blog` service-role for blog drafts, Studio for migrations), `SENTRY_AUTH_TOKEN`, `sk_live` Clerk keys.
+- Cloudflare DNS spot-check (deferred, non-urgent, nothing broken).
+
+### 🔧 Working-tree state at wrap
+- Operator's pre-existing uncommitted files UNTOUCHED all session: `components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/indycar.test.ts` + docs/drafts deletions. 3 untracked drafts (DB has them). Local dev/prod server may be on `:3000` (kill by PID, never image name). Scratchpad holds the FIA PDFs + swatch board.
+
+---
+
+## ⚡ Next session pickup — 2026-07-23 (session 20 — Hungary GP preview draft + 4 blog PRs #614-#617 + reactions migration + theme-gallery approved) — `main` = 0.234.0
 
 Long interactive session. **4 PRs #614-#617 (0.231.0 → 0.234.0), all merged + prod-verified by curl**, plus a prod blog draft and a prod DB migration (applied via Studio).
 

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.239.1 — 2026-07-24
+
+### Changed
+- Docs: session-21 wrap. `docs/HANDOFF.md` gains the session-21 LATEST block (8 ships 0.235.0-0.239.0: theme gallery, F2/F3 Hungary times, timing purple, theme page, series-nav sub-pages + menu-aim fix, IDEAS triage, F1-upgrades parser Phase A; new landmines: the ADAC-drivers transient static-export build failure + the empty re-trigger-commit fix + the invalid `SENTRY_AUTH_TOKEN`); `SCHEDULE.md` session-21 outcomes. No code change.
+
 ## 0.239.0 — 2026-07-24
 
 ### Added

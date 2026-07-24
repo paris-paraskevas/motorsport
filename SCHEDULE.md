@@ -1277,7 +1277,15 @@ Design-first phase of the approved theme gallery. Build starts only after the op
 
 Won't touch this session: theme build code in the repo, operator's uncommitted working-tree files (NextRaceCountdown / eslint.config / track-environment / indycar.test + doc deletions), blog/content work, carryover queue (champions depth, driver bios, IndyCar preview-paired, Bing WMT).
 
-Active: _(awaiting [+Nm] prefixes)_
+Active: _(no `[+Nm]` prefixes captured)_
+
+The session ran far past the design-phase plan into a full build+ship day (2026-07-23 → 07-24), 8 versions:
+- → done: theme gallery — research (6-agent sweep) → WCAG-proven swatch board → operator eye-approval → built + shipped (0.235.0 #619); picker later moved to `/settings/theme` (0.237.0 #622).
+- → done: series-nav sub-pages (0.238.0 #623) + menu-aim single-column fix (0.238.1 #624).
+- → done: timing-purple `--session-best` (0.236.0 #621); F2/F3 Hungary session-time fix (0.235.1 #620); IDEAS triage + batch de-numbering (0.238.2 #625).
+- → done: F1-upgrades parser Phase A + Belgium/Hungary curated (0.239.0 #626). Operator chose full cron automation; Phases B-D (outbound/KV/cron) pending, preview-gated. Prod build hit a transient ADAC static-export error, cleared by an empty re-trigger commit.
+- → carried to next session: Hungarian GP FP1 recap blog draft; harden the ADAC drivers static export.
+- Won't-touch honored: operator's uncommitted working-tree files untouched throughout.
 
 ---
 
