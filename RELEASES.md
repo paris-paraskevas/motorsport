@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.234.2 — 2026-07-24
+
+**Corrected F2 and F3 times for the Hungary weekend.** Practice, qualifying and race times for Formula 2 and Formula 3 at the Hungaroring now match the official schedules to the minute, including F3's single qualifying session on Friday afternoon.
+
 ## 0.234.1 — 2026-07-23
 
 **Behind the scenes.** Internal notes and planning.

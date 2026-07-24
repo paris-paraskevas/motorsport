@@ -70,11 +70,10 @@
       "matchDate": "2026-07-26",
       "round": 8,
       "sessions": [
-        { "title": "F3 - Practice", "start": "2026-07-23T11:25:00Z", "end": "2026-07-23T12:10:00Z", "location": "Hungaroring, Budapest" },
-        { "title": "F3 - Qualifying Group A", "start": "2026-07-24T08:00:00Z", "end": "2026-07-24T08:14:00Z", "location": "Hungaroring, Budapest" },
-        { "title": "F3 - Qualifying Group B", "start": "2026-07-24T09:30:00Z", "end": "2026-07-24T09:44:00Z", "location": "Hungaroring, Budapest" },
-        { "title": "F3 - Sprint Race", "start": "2026-07-25T08:45:00Z", "end": "2026-07-25T09:30:00Z", "location": "Hungaroring, Budapest" },
-        { "title": "F3 - Feature Race", "start": "2026-07-26T05:55:00Z", "end": "2026-07-26T06:45:00Z", "location": "Hungaroring, Budapest" }
+        { "title": "F3 - Practice", "start": "2026-07-24T07:55:00Z", "end": "2026-07-24T08:40:00Z", "location": "Hungaroring, Budapest" },
+        { "title": "F3 - Qualifying", "start": "2026-07-24T13:00:00Z", "end": "2026-07-24T13:30:00Z", "location": "Hungaroring, Budapest" },
+        { "title": "F3 - Sprint Race", "start": "2026-07-25T08:05:00Z", "end": "2026-07-25T08:50:00Z", "location": "Hungaroring, Budapest" },
+        { "title": "F3 - Feature Race", "start": "2026-07-26T06:40:00Z", "end": "2026-07-26T07:30:00Z", "location": "Hungaroring, Budapest" }
       ]
     },
     {

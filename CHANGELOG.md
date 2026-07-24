@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.234.2 — 2026-07-24
+
+### Fixed
+- **F2/F3 Hungary session times corrected against the official itineraries** (operator-reported on race morning; fiaformula2.com / fiaformula3.com schedules, cross-anchored to F1's OpenF1 slots — the Friday ladder interleaves cleanly). The `content/series/f2|f3/sessions.json` Hungary blocks carried May's template-projected slots: F2 practice was 65 min early (08:00Z vs official 09:05Z), qualifying an hour early, sprint 5 min off; F3 had practice on the wrong DAY (Thu template vs official Fri 07:55Z), the retired two-group qualifying format instead of the official single 13:00–13:30Z session, and sprint/feature 40-45 min off. Feature times: F2 was already correct; F3 moved to 06:40Z. Browser-verified: both weekend pages render the official times to the minute in venue-local terms. Remaining template-projected rounds (Monza onward) still need per-event curation as official itineraries publish — the F1-only OpenF1 cross-check can't catch F2/F3 drift.
+
 ## 0.234.1 — 2026-07-23
 
 ### Changed
