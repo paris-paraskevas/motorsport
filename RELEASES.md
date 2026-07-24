@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.236.0 — 2026-07-24
+
+**Purple means fastest.** Formula 1 practice analysis and the speed-trap board now highlight the session's fastest lap and top speed in timing purple, the same colour language the broadcast timing screens use.
+
 ## 0.235.1 — 2026-07-24
 
 **Corrected F2 and F3 times for the Hungary weekend.** Practice, qualifying and race times for Formula 2 and Formula 3 at the Hungaroring now match the official schedules to the minute, including F3's single qualifying session on Friday afternoon.

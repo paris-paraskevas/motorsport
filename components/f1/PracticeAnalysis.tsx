@@ -133,7 +133,13 @@ export function PracticeAnalysis({
                       style={{ width: `${widthPct}%`, backgroundColor: colour }}
                     />
                   </div>
-                  <span className="w-[4.5rem] shrink-0 text-right font-mono text-xs font-semibold tabular-nums text-text">
+                  {/* Broadcast timing semantics: the session-fastest time is
+                      purple (--session-best), never amber (amber = brand only). */}
+                  <span
+                    className={`w-[4.5rem] shrink-0 text-right font-mono text-xs font-semibold tabular-nums ${
+                      i === 0 ? 'text-session-best' : 'text-text'
+                    }`}
+                  >
                     {fmtLap(e.lapDuration)}
                   </span>
                   <span className="w-16 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">

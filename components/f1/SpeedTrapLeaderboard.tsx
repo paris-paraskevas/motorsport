@@ -75,7 +75,13 @@ export function SpeedTrapLeaderboard({
                   style={{ width: `${widthPct}%`, backgroundColor: colour }}
                 />
               </div>
-              <span className="w-20 shrink-0 text-right font-mono text-xs font-semibold tabular-nums text-text">
+              {/* Session-best speed reads timing-purple, matching the fastest-lap
+                  convention (amber stays brand-only, never pace). */}
+              <span
+                className={`w-20 shrink-0 text-right font-mono text-xs font-semibold tabular-nums ${
+                  i === 0 ? 'text-session-best' : 'text-text'
+                }`}
+              >
                 {Math.round(e.topSpeed)}
                 <span className="ml-1 text-[10px] font-normal text-text-faint">km/h</span>
               </span>
