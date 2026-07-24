@@ -54,7 +54,7 @@ export default async function JoinLeaguePage({ params }: { params: Promise<{ tok
           no cashout.
         </p>
         <div className="flex flex-col gap-2">
-          <Link href={`/sign-up?redirect_url=${back}`} className="rounded bg-brand px-4 py-2 text-center font-semibold text-bg">
+          <Link href={`/sign-up?redirect_url=${back}`} className="rounded bg-brand-fill px-4 py-2 text-center font-semibold text-bg">
             Create an account &amp; join
           </Link>
           <Link

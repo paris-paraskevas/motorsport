@@ -5,6 +5,7 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Saira_Condensed } from 'next/font/google';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
+import { ThemeScript } from '@/components/theme/ThemeScript';
 import '../globals.css';
 
 // Display face for the Paddock 2.0 language — self-hosted at build time by
@@ -70,6 +71,7 @@ export default function MarketingLayout({
       className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
     >
       <body className="min-h-screen bg-bg text-text">
+        <ThemeScript />
         {children}
         <Analytics />
         <SpeedInsights />

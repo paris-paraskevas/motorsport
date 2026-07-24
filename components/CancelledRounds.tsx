@@ -26,12 +26,12 @@ export function CancelledRoundsBanner({
   return (
     <div
       role="status"
-      className="mb-6 rounded-md border border-amber-500/30 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-200/90"
+      className="mb-6 rounded-md border border-amber-500/30 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-700 dark:text-amber-200/90"
     >
-      <span className="font-medium text-amber-200">
+      <span className="font-medium text-amber-800 dark:text-amber-200">
         {count} round{count > 1 ? 's' : ''} cancelled this season
       </span>
-      <span className="text-amber-200/70"> — {names}.</span>
+      <span className="text-amber-700 dark:text-amber-200/70"> — {names}.</span>
     </div>
   );
 }
@@ -60,7 +60,7 @@ export function CancelledRoundsSection({
                 </span>
                 {round.name}
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-amber-300/80 font-semibold">
+              <span className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-300/80 font-semibold">
                 Cancelled
               </span>
             </div>

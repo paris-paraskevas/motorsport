@@ -111,7 +111,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       className={`relative ${PAGE_WIDE}`}
       style={
         {
-          '--tint': color,
+          '--tint': color, '--tint-fill': color,
           '--series-color': color,
         } as React.CSSProperties
       }
@@ -135,7 +135,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <header className="mb-5">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <div className="flex items-stretch gap-3 min-w-0">
-            <span aria-hidden="true" className="w-1 shrink-0 bg-tint" />
+            <span aria-hidden="true" className="w-1 shrink-0 bg-tint-fill" />
             <div className="min-w-0">
               <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text truncate">
                 {series.meta.name}
@@ -167,7 +167,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
               href={`/threads?series=${slug}`}
               className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
             >
-              <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint" />
+              <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint-fill" />
               {series.meta.name} threads →
             </Link>
           )}
@@ -175,7 +175,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
             href={`/series/${slug}/news`}
             className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
           >
-            <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint" />
+            <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint-fill" />
             News →
           </Link>
         </div>
@@ -187,7 +187,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
               href="/f1/analysis"
               className="inline-flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-1.5 transition-colors hover:bg-surface"
             >
-              <span aria-hidden="true" className="inline-block h-3.5 w-[3px] shrink-0 bg-tint" />
+              <span aria-hidden="true" className="inline-block h-3.5 w-[3px] shrink-0 bg-tint-fill" />
               <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
                 Analysis &amp; Race Story →
@@ -279,7 +279,7 @@ function SeriesLearnMore({
   return (
     <section aria-label={`Learn about ${name}`} className="mb-6 border border-border bg-surface-elevated">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-tint" />
+        <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-tint-fill" />
         <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-text">
           Learn about {name}
         </h2>
@@ -299,6 +299,22 @@ function SeriesLearnMore({
             </span>
           </Link>
         ))}
+        {/* Filler cells complete the last row per breakpoint: the hairline-grid
+            trick leaves the bg-border layer exposed where cells run out, which
+            reads as a mud block on the light themes (invisible on dark). One
+            div per potentially-missing cell, shown only where its column count
+            needs it. */}
+        {(() => {
+          const fill = (cols: number) => (links.length % cols === 0 ? 0 : cols - (links.length % cols));
+          const [f2, f3, f5] = [fill(2), fill(3), fill(5)];
+          return Array.from({ length: Math.max(f2, f3, f5) }, (_, i) => (
+            <div
+              key={`fill-${i}`}
+              aria-hidden="true"
+              className={`bg-surface-elevated ${i < f2 ? 'block' : 'hidden'} ${i < f3 ? 'sm:block' : 'sm:hidden'} ${i < f5 ? 'lg:block' : 'lg:hidden'}`}
+            />
+          ));
+        })()}
       </div>
     </section>
   );

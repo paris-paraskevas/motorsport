@@ -45,3 +45,12 @@ export const LAUNCH_ANNOUNCEMENT = {
   ctaLabel: "See what's new",
   ctaHref: '/changelog',
 } as const;
+
+// Series/team colours used AS TEXT (labels, headings, deltas). Vibrant hexes
+// wash out on the light themes, so the colour mixes toward black by the
+// per-theme --series-ink-mix (globals.css): 100% on dark themes (identical to
+// the raw colour), 52% on light (clears WCAG 4.5:1 for the brightest series
+// tint on the darkest light surface). Fills (dots, rules, bars) stay raw.
+export function seriesInk(colour: string): string {
+  return `color-mix(in srgb, ${colour} var(--series-ink-mix), black)`;
+}

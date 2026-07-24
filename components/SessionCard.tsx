@@ -53,8 +53,8 @@ export function SessionCard({
             {session.title}
           </span>
           {isLive && (
-            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-300 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
+            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-live/15 text-live-pill font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
               live
             </span>
           )}
@@ -94,7 +94,7 @@ export function SessionCard({
               {Math.round(weather.maxC)}°/{Math.round(weather.minC)}°
             </span>
             {weather.precipProb >= 30 && (
-              <span className="tabular-nums font-mono text-sky-300">
+              <span className="tabular-nums font-mono text-sky-700 dark:text-sky-300">
                 · {Math.round(weather.precipProb)}% rain
               </span>
             )}

@@ -112,14 +112,14 @@ export function DraftEditor({ id, title, summary, body, heroImage, bodyNode, dat
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-300">
+      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-xs text-amber-700 dark:text-amber-300">
         <span>{bannerText}</span>
         {!editing && (
           <button
             type="button"
             aria-label="Edit draft"
             onClick={startEdit}
-            className="shrink-0 rounded p-1 text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-200"
+            className="shrink-0 rounded p-1 text-amber-700 hover:text-amber-800 dark:text-amber-300 dark:hover:text-amber-200 transition-colors hover:bg-amber-500/20"
           >
             <Pencil size={14} />
           </button>
@@ -189,7 +189,7 @@ export function DraftEditor({ id, title, summary, body, heroImage, bodyNode, dat
             <button
               type="submit"
               disabled={busy}
-              className="rounded bg-brand px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg disabled:opacity-40"
+              className="rounded bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg disabled:opacity-40"
             >
               {busy ? 'Saving…' : 'Save'}
             </button>

@@ -283,7 +283,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
         data-heatmap-id="nav:f1-analysis"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
         <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
         <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
           Analysis &amp; Race Story →
@@ -294,7 +294,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
         data-heatmap-id="nav:f1-compare"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
         <span className="text-[13px] font-semibold text-text">F1 Head-to-head</span>
         <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
           Compare two drivers →
@@ -305,7 +305,7 @@ function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
         data-heatmap-id="nav:series-guides"
         className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
       >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
+        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand-fill" />
         <span className="text-[13px] font-semibold text-text">Series guides</span>
         <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
           History &amp; rules →

@@ -2,10 +2,11 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
-/* Tailwind v4 dark variant. Paddock is dark-only (June 2026 redesign);
-   both root layouts set class="dark" on <html>, so every dark: utility
-   (incl. prose dark:prose-invert and the shadcn primitives) fires
-   unconditionally. Light mode returns only as a deliberate future project. */
+/* Tailwind v4 dark variant. Paddock ships 5 themes (July 2026): the root layouts
+   SSR class="dark" (Midnight default) and ThemeScript sets data-theme + toggles
+   .dark pre-paint from localStorage. Dark-family themes (midnight/carbon/ember)
+   carry .dark so every dark: utility (incl. prose dark:prose-invert and the
+   shadcn primitives) fires; light themes (newsprint/circuit) drop it. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ─────────────────────────────────────────────────────────────
@@ -18,8 +19,11 @@
  *      Paddock tokens via var() so shadcn primitives inherit our palette
  *      without touching their CSS classes.
  *
- * Per-series accent: layout sets style={{ '--tint': meta.color }} on the
- * series root; Tailwind utility bg-tint / text-tint / ring-tint flows through.
+ * Per-series accent: pages set BOTH style={{ '--tint': color, '--tint-fill':
+ * color }} on their root; bare tint/brand utilities (text-tint, border-brand)
+ * are ALWAYS legible in role (light themes re-derive them as ink), while
+ * *-fill utilities (bg-tint-fill, bg-brand-fill) stay the vibrant paint and
+ * pair with --tint-contrast ink text.
  * ───────────────────────────────────────────────────────────── */
 
 :root {
@@ -40,14 +44,23 @@
      --text-muted (7:1) so the text → muted → faint hierarchy survives. */
   --text-faint: #84848e;
 
-  /* Per-series accent (default = brand amber, overridden inline) */
+  /* Per-series accent (default = brand amber, overridden inline; light themes
+     re-derive --tint per element from --tint-fill, see the theme blocks) */
   --tint: var(--brand);
+  --tint-fill: var(--brand-fill);
   --tint-contrast: #07070a;
+  /* seriesInk() (lib/site.ts) mix weight: raw colour on dark, 52% on light */
+  --series-ink-mix: 100%;
 
   /* Signal */
   --live: #ff2030;
   --positive: #10b981;
   --negative: #ef4444;
+  /* LIVE pill text over a live/15 wash (red-300 on dark chassis) */
+  --live-pill: #fca5a5;
+  /* Broadcast timing purple: session-fastest. Amber never carries pace meaning
+     (it collides with timing-yellow = slower). */
+  --session-best: #a78bfa;
 
   /* Motion */
   --duration-fast: 180ms;
@@ -63,7 +76,7 @@
   --card-foreground: var(--text);
   --popover: var(--surface-elevated);
   --popover-foreground: var(--text);
-  --primary: var(--tint);
+  --primary: var(--tint-fill);
   --primary-foreground: var(--tint-contrast);
   --secondary: var(--surface);
   --secondary-foreground: var(--text);
@@ -77,7 +90,7 @@
   --radius: 0.5rem;
 
   /* Charts — recharts default series; deeper theming at Stage 7 */
-  --chart-1: var(--tint);
+  --chart-1: var(--tint-fill);
   --chart-2: #38bdf8;
   --chart-3: #a78bfa;
   --chart-4: #f472b6;
@@ -86,7 +99,7 @@
   /* Sidebar token group (shadcn primitives use it) */
   --sidebar: var(--surface);
   --sidebar-foreground: var(--text);
-  --sidebar-primary: var(--tint);
+  --sidebar-primary: var(--tint-fill);
   --sidebar-primary-foreground: var(--tint-contrast);
   --sidebar-accent: var(--surface);
   --sidebar-accent-foreground: var(--text);
@@ -95,8 +108,10 @@
 }
 
 :root {
-  /* Paddock 2.0 accents */
+  /* Paddock 2.0 accents. --brand is always legible in role (light themes
+     override it to ink); --brand-fill is the vibrant paint, never overridden. */
   --brand: #ffb400;
+  --brand-fill: #ffb400;
   --brand-deep: #b87a00;
   --plasma: #ff5a1f;
   --acid: #c6ff3d;
@@ -123,6 +138,103 @@
   --ease-in-hard: cubic-bezier(0.5, 0, 0.75, 0);
 }
 
+/* ─────────────────────────────────────────────────────────────
+ * Themes. Base :root above IS Midnight (SSR default, zero-flash for the
+ * majority). ThemeScript sets data-theme pre-paint; dark-family themes keep
+ * class="dark", light themes drop it. Every text/surface pair here is
+ * WCAG-gated >= 4.5:1 by the swatch-board generator (session 21).
+ * OG/story cards, global-error and manifest.json stay Midnight by design.
+ * ───────────────────────────────────────────────────────────── */
+
+/* Carbon — cool graphite blue-black, steel hairlines (F1 TV #15151e family). */
+:root[data-theme='carbon'] {
+  --bg: #060a12;
+  --surface: #111721;
+  --surface-elevated: #171e2a;
+  --border: #2b3442;
+  --border-strong: #3e4a5c;
+  --text: #f0f4f9;
+  --text-muted: #9dabbc;
+  --text-faint: #8291a4;
+  --tint-contrast: #060a12;
+  /* Reds lifted to stay >= 4.5:1 as text on the raised cool surfaces. */
+  --live: #ff4753;
+  --negative: #f25f5f;
+}
+
+/* Ember — amber phosphor instrument: every neutral sits on the accent's ~40°
+   hue (one hue, five brightness tiers — the Amber CRT Retro / Bloomberg trick). */
+:root[data-theme='ember'] {
+  --bg: #0c0a05;
+  --surface: #1a140a;
+  --surface-elevated: #251d0f;
+  --border: #3e321c;
+  --border-strong: #554524;
+  --text: #f8f1e7;
+  --text-muted: #c0ab85;
+  --text-faint: #9a8760;
+  --tint-contrast: #0c0a05;
+  --live: #ff3d4a;
+  --negative: #f25c50;
+}
+
+/* Newsprint — warm paper in the shipped-paper band (Kindle/FT/Flexoki), warm
+   ink, black-mixed-into-paper rules. */
+:root[data-theme='newsprint'] {
+  color-scheme: light;
+  --bg: #f7f3e8;
+  --surface: #fbf7ec;
+  --surface-elevated: #fffcf2;
+  --border: #d6cebb;
+  --border-strong: #a99c80;
+  --text: #1e1a13;
+  --text-muted: #5b5342;
+  --text-faint: #6f6752;
+  --brand: #7d5300;
+  --tint-contrast: #1e1a13;
+  --live: #a80019;
+  --positive: #047857;
+  --negative: #a51818;
+  --live-pill: #a80019;
+  --session-best: #6d28d9;
+  --series-ink-mix: 52%;
+}
+
+/* Circuit — near-white, pure black ink, deliberately bold rules. The
+   high-contrast / daylight / accessibility pick, never the system default. */
+:root[data-theme='circuit'] {
+  color-scheme: light;
+  --bg: #f4f4f5;
+  --surface: #ffffff;
+  --surface-elevated: #fafafa;
+  --border: #52525b;
+  --border-strong: #18181b;
+  --text: #09090b;
+  --text-muted: #3f3f46;
+  --text-faint: #565661;
+  --brand: #7d5300;
+  --tint-contrast: #09090b;
+  --live: #a80019;
+  --positive: #047857;
+  --negative: #a51818;
+  --live-pill: #a80019;
+  --session-best: #6d28d9;
+  --series-ink-mix: 52%;
+}
+
+/* Light themes re-derive tint-as-ink PER ELEMENT: custom properties resolve
+   var() where they are DEFINED, so a :root-level derivation would never see
+   the per-series --tint-fill injected inline further down the tree. 52% is
+   computed: the brightest series tint (IndyCar #ffd100) lands at 4.53:1 on
+   the darkest light surface. Inline --tint on the injecting element itself
+   still wins there (inline beats stylesheet) — its descendants get the ink. */
+:root[data-theme='newsprint'],
+:root[data-theme='newsprint'] *,
+:root[data-theme='circuit'],
+:root[data-theme='circuit'] * {
+  --tint: color-mix(in srgb, var(--tint-fill) 52%, black);
+}
+
 /* Wide-screen tier: content scales up on 2K/32"+ panels (≥1700px). Named (not an
    arbitrary min-[1700px] variant) so it sorts AFTER 2xl in the cascade and wins. */
 @theme {
@@ -133,6 +245,7 @@
 @theme inline {
   /* Paddock 2.0 */
   --color-brand: var(--brand);
+  --color-brand-fill: var(--brand-fill);
   --color-brand-deep: var(--brand-deep);
   --color-plasma: var(--plasma);
   --color-acid: var(--acid);
@@ -157,11 +270,14 @@
   --color-text-faint: var(--text-faint);
 
   --color-tint: var(--tint);
+  --color-tint-fill: var(--tint-fill);
   --color-tint-contrast: var(--tint-contrast);
 
   --color-live: var(--live);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
+  --color-live-pill: var(--live-pill);
+  --color-session-best: var(--session-best);
 
   --font-mono: var(--font-geist-mono);
 
@@ -221,10 +337,6 @@
   src: local('Helvetica Neue'), local('Arial'), local('Segoe UI'), local('Roboto'),
     local('Noto Sans'), local('DejaVu Sans');
   unicode-range: U+0370-03FF, U+1F00-1FFF;
-}
-
-html {
-  color-scheme: dark;
 }
 
 html, body {
@@ -296,7 +408,8 @@ body {
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #4a4a5a;
+    /* toward --text = more contrast on any chassis, dark or light */
+    background: color-mix(in srgb, var(--border-strong) 70%, var(--text));
   }
   ::-webkit-scrollbar-corner {
     background: transparent;

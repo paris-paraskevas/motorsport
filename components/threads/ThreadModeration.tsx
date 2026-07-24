@@ -48,7 +48,7 @@ export function ThreadModeration({ threads }: { threads: Thread[] }) {
                 type="button"
                 disabled={busy === t.id}
                 onClick={() => decide(t.id, 'approve')}
-                className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40"
+                className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40"
               >
                 Approve
               </button>

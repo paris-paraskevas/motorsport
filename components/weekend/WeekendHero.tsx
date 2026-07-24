@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import type { Weekend } from '@/lib/types';
+import { seriesInk } from '@/lib/site';
 import { formatRelative } from '@/lib/date';
 import { weekendIsLive, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import type { CircuitLayout } from '@/lib/circuit-layout';
@@ -58,8 +59,8 @@ export function WeekendHero({
         {isLive && (
           <>
             <span className="text-border-strong">·</span>
-            <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-red-500/15 text-red-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
+            <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
+              <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
               live
             </span>
           </>
@@ -108,7 +109,7 @@ export function WeekendHero({
 
       <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
         {title}
-        <span style={{ color }}>.</span>
+        <span style={{ color: seriesInk(color) }}>.</span>
       </h1>
       {subtitle && (
         <p className="mt-1.5 text-text-muted text-base">{subtitle}</p>

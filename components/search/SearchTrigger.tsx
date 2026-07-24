@@ -41,7 +41,7 @@ export function SearchTrigger() {
         onClick={() => setOpen(true)}
         aria-label="Search"
         title="Search"
-        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-brand px-3 py-1.5 text-bg transition-colors duration-(--duration-fast) hover:bg-brand-deep"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-brand-fill px-3 py-1.5 text-bg transition-colors duration-(--duration-fast) hover:bg-brand-deep"
       >
         <Search size={16} aria-hidden />
         <span className="hidden sm:inline font-mono text-[11px] font-semibold uppercase tracking-[0.14em]">Search</span>

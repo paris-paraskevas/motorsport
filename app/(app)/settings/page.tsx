@@ -7,6 +7,7 @@ import { getAccountStats } from '@/lib/betting/account';
 import { AccountIdentity } from '@/components/AccountIdentity';
 import { AccountStats } from '@/components/AccountStats';
 import { AccountStaffLinks } from '@/components/AccountStaffLinks';
+import { ThemePicker } from '@/components/theme/ThemePicker';
 import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ export default async function AccountPage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
           Account<span className="text-brand">.</span>
         </h1>
@@ -34,6 +35,8 @@ export default async function AccountPage() {
 
       <AccountIdentity />
       {stats && <AccountStats stats={stats} />}
+
+      <ThemePicker />
 
       <nav className="border-t border-border">
         <Link

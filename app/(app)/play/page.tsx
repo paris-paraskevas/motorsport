@@ -22,7 +22,7 @@ function frame(children: ReactNode) {
   return (
     <div className={PAGE_WIDE}>
       <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
           Play<span className="text-brand">.</span>
         </h1>
@@ -48,7 +48,7 @@ export default async function PlayPage() {
     return frame(
       <div className="font-mono text-sm text-text-muted">
         <p className="mb-3">Sign in to claim your monthly credits and bet the grid.</p>
-        <Link href="/sign-in" className="inline-block rounded bg-brand px-4 py-2 font-semibold text-bg">
+        <Link href="/sign-in" className="inline-block rounded bg-brand-fill px-4 py-2 font-semibold text-bg">
           Sign in
         </Link>
       </div>,

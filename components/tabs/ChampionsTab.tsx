@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Champion, Series } from '@/lib/types';
 import { fetchChampions } from '@/lib/wikipedia-champions';
+import { seriesInk } from '@/lib/site';
 import {
   loadCuratedChampions,
   loadCuratedDrivers,
@@ -100,7 +101,7 @@ function TitleTallyBadge({ tally }: { tally: TitleTally | undefined }) {
           <span
             key={i}
             className={`h-2 w-[3px] rounded-full ${
-              i < filled ? 'bg-tint' : 'bg-border'
+              i < filled ? 'bg-tint-fill' : 'bg-border'
             }`}
           />
         ))}
@@ -253,7 +254,7 @@ function TeamLinkResolver({
   }
   // Historic teams: no profile page, so colour the text but don't link.
   if (ref?.color) {
-    return <span style={{ color: ref.color }}>{name}</span>;
+    return <span style={{ color: seriesInk(ref.color) }}>{name}</span>;
   }
   return <>{name}</>;
 }

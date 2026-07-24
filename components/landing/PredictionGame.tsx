@@ -84,7 +84,7 @@ export function PredictionGame() {
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Link
             href="/play"
-            className="rounded-full bg-brand px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"
+            className="rounded-full bg-brand-fill px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"
           >
             Play free&ensp;→
           </Link>
@@ -125,7 +125,7 @@ function Vignette({ kind, index }: { kind: 'odds' | 'leaderboard'; index: number
               <div
                 key={name as string}
                 className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
-                  picked ? 'border-brand/50 bg-brand/10' : 'border-border bg-surface'
+                  picked ? 'border-brand/50 bg-brand-fill/10' : 'border-border bg-surface'
                 }`}
               >
                 <span className={`font-sans font-semibold ${picked ? 'text-brand' : 'text-text'}`}>
@@ -158,7 +158,7 @@ function Vignette({ kind, index }: { kind: 'odds' | 'leaderboard'; index: number
               <div
                 key={name as string}
                 className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-xs ${
-                  lead ? 'border-brand/50 bg-brand/10' : 'border-border bg-surface'
+                  lead ? 'border-brand/50 bg-brand-fill/10' : 'border-border bg-surface'
                 }`}
               >
                 <span className="w-5 text-center font-mono">{medal}</span>

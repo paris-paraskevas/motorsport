@@ -50,7 +50,7 @@ export function LandingNav() {
           </SignedInOnly>
           <Link
             href="/app"
-            className="rounded-full bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"
+            className="rounded-full bg-brand-fill px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"
           >
             Open app&ensp;→
           </Link>

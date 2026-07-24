@@ -29,7 +29,7 @@ export default function MarketingError({
         </button>
         <Link
           href="/app"
-          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-black hover:bg-brand-deep transition-colors"
+          className="rounded-full bg-brand-fill px-5 py-2.5 text-sm font-semibold text-black hover:bg-brand-deep transition-colors"
         >
           Open the paddock
         </Link>

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
+import { seriesInk } from '@/lib/site';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Trophy, Tv, Users, UserPlus } from 'lucide-react';
 import type { Session } from '@/lib/types';
@@ -739,7 +740,7 @@ export function HomeContent({
                 </span>
                 <span
                   className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold"
-                  style={{ color: item.color }}
+                  style={{ color: seriesInk(item.color) }}
                 >
                   {item.seriesName}
                 </span>
@@ -787,7 +788,7 @@ export function HomeContent({
                   />
                   <span
                     className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold"
-                    style={{ color: next.color }}
+                    style={{ color: seriesInk(next.color) }}
                   >
                     {next.seriesName}
                   </span>
@@ -851,7 +852,7 @@ export function HomeContent({
                     />
                     <span
                       className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold"
-                      style={{ color: item.color }}
+                      style={{ color: seriesInk(item.color) }}
                     >
                       {item.seriesName}
                     </span>
@@ -1014,7 +1015,7 @@ export function HomeContent({
                             <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
                               <span
                                 className="font-semibold whitespace-nowrap shrink-0"
-                                style={{ color: item.color }}
+                                style={{ color: seriesInk(item.color) }}
                               >
                                 {item.seriesName}
                               </span>
@@ -1099,7 +1100,7 @@ export function HomeContent({
                   >
                     <span
                       className="w-1.5 h-1.5 rounded-full"
-                      style={{ backgroundColor: active ? '#07070a' : s.color }}
+                      style={{ backgroundColor: active ? 'var(--bg)' : s.color }}
                     />
                     {s.name}
                     <span className="tnum opacity-70">{s.count}</span>
@@ -1133,7 +1134,7 @@ export function HomeContent({
                       />
                       <span
                         className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold shrink-0"
-                        style={{ color: item.seriesColor }}
+                        style={{ color: seriesInk(item.seriesColor) }}
                       >
                         {item.seriesName}
                       </span>
@@ -1261,7 +1262,7 @@ export function HomeContent({
                     <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
                     <span
                       className="w-20 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
-                      style={{ color: s.color }}
+                      style={{ color: seriesInk(s.color) }}
                     >
                       {s.name}
                     </span>
@@ -1373,7 +1374,7 @@ export function HomeContent({
                       <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em]">
                         <span className="inline-flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: series.color }} />
-                          <span className="font-semibold" style={{ color: series.color }}>{series.name}</span>
+                          <span className="font-semibold" style={{ color: seriesInk(series.color) }}>{series.name}</span>
                         </span>
                         <span className="text-text-faint">· after {series.latestRound}</span>
                       </div>
@@ -1493,7 +1494,7 @@ export function HomeContent({
                       <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: item.color }} />
                       <span
                         className="w-20 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
-                        style={{ color: item.color }}
+                        style={{ color: seriesInk(item.color) }}
                       >
                         {item.seriesName}
                       </span>
@@ -1552,7 +1553,7 @@ export function HomeContent({
                           {j.raceName}
                         </span>
                         <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: j.color }}>
+                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: seriesInk(j.color) }}>
                             {j.seriesName}
                           </span>
                           {j.podium?.[0] && (
@@ -1596,7 +1597,7 @@ export function HomeContent({
                   <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
                     <span className="inline-flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="font-semibold" style={{ color: item.color }}>{item.seriesName}</span>
+                      <span className="font-semibold" style={{ color: seriesInk(item.color) }}>{item.seriesName}</span>
                     </span>
                     {item.session.location && (
                       <span className="inline-flex items-center gap-1 text-text-faint">
@@ -1688,7 +1689,7 @@ export function HomeContent({
                             <>
                               <span
                                 className="font-semibold whitespace-nowrap shrink-0"
-                                style={{ color: t.seriesColor ?? undefined }}
+                                style={{ color: t.seriesColor ? seriesInk(t.seriesColor) : undefined }}
                               >
                                 {t.seriesName}
                               </span>
@@ -1979,7 +1980,7 @@ export function HomeContent({
                           {item.session.title}
                         </span>
                         <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: item.color }}>
+                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: seriesInk(item.color) }}>
                             {item.seriesName}
                           </span>
                           <span>·</span>
@@ -2026,7 +2027,7 @@ export function HomeContent({
                   <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
                     <span className="inline-flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="font-semibold" style={{ color: item.color }}>{item.seriesName}</span>
+                      <span className="font-semibold" style={{ color: seriesInk(item.color) }}>{item.seriesName}</span>
                     </span>
                     {item.session.location && (
                       <span className="inline-flex items-center gap-1 text-text-faint">
@@ -2102,7 +2103,7 @@ export function HomeContent({
                         <ArrowUpRight size={12} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                       </Link>
                       <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                        <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: d.seriesColor }}>
+                        <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: seriesInk(d.seriesColor) }}>
                           {d.seriesName}
                         </span>
                         <span>·</span>
