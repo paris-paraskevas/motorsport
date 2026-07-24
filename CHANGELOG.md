@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.236.0 — 2026-07-24
+
+### Added
+- **Session-fastest values now read broadcast timing purple.** The `--session-best` token shipped with the theme gallery gets its first consumers: P1's lap time on the Practice Analysis fastest-laps board and the top reading on the Speed Trap leaderboard (`components/f1/PracticeAnalysis.tsx`, `components/f1/SpeedTrapLeaderboard.tsx`). Purple = session-fastest per broadcast timing semantics; amber stays brand-only and never carries pace meaning. Pit stops deliberately excluded (operational best, not track pace). AA-gated in all five themes (`#a78bfa` dark / `#6d28d9` light).
+
 ## 0.235.1 — 2026-07-24
 
 ### Fixed
