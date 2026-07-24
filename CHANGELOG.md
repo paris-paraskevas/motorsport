@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.237.0 — 2026-07-24
+
+### Changed
+- **Theme picker moved to its own settings page** at `/settings/theme` (operator ask; sibling pattern to `/settings/notifications`). New `app/(app)/settings/theme/page.tsx` (static — appearance is device-local, no auth dependency) renders the existing `ThemePicker`; the Account hub swaps the inline picker for a nav row (Palette icon, "Theme — Five looks, or match your device"). Route count 476 → 477.
+
 ## 0.236.0 — 2026-07-24
 
 ### Added
