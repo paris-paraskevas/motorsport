@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.239.0 — 2026-07-24
+
+### Added
+- **F1 upgrades ingest — Phase A: parser + Belgium/Hungary curated.** New `lib/upgrades/f1-parse.ts` turns a `pdftotext -layout` extraction of the FIA "Car Presentation Submissions" PDF into per-team component rows (`{ doc, date, gp, teams:[{team, items:[{component, reason, detail}]}], noUpdateTeams, warnings }`). Number-anchored + column-offset extraction with a vocabulary-driven reason normaliser; recovers single-spaced tables by cutting the component at reason keywords, and surfaces anything it can't cleanly resolve in `warnings` — the confidence gate for the eventual cron (Phases B-D): a clean parse can auto-publish, a flagged one alerts instead. 13 unit tests (`lib/upgrades/f1-parse.test.ts`) against three real docs as fixtures (R9 British / R10 Belgian / R11 Hungarian — three different layouts): reliably extracts metadata, team set, per-team item counts, components, reasons and "no updates"; per-item `detail` is best-effort (the FIA "Brief description" column interleaves in the -layout output, so it stays a curator-condensed field, matching how R1-R9 were authored).
+- **Curated `content/series/f1/upgrades.json` R10 + R11.** Belgian GP (9 teams, 21 parts) and Hungarian GP (10 teams, 37 parts incl. Aston Martin's 16-part B-spec). Structure from the parser; each `detail` hand-condensed from the FIA description, with the two degenerate R11 tables (Ferrari, Aston) hand-verified against the document (RULE #1). Renders on the F1 weekend page's Upgrades section. Cross-checked vs The Race / F1.com / motorsport.com.
+
 ## 0.238.2 — 2026-07-24
 
 ### Changed

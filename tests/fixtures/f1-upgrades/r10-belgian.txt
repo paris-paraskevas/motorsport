@@ -1,0 +1,185 @@
+       2026 BELGIAN GRAND PRIX
+
+                         17 - 19 July 2026
+
+From   The FIA Formula 1 Media Delegate   Document                   12
+To     All Teams, All Officials           Date                       17 July 2026
+                                          Time                       12:08
+
+Title  Car Presentation Submissions
+
+Description Car Presentation Submissions
+
+Enclosed 2026 Belgian Grand Prix - Car Presentation Submissions.pdf
+
+Roman De Lauw
+The FIA Formula 1 Media Delegate
+                                  Car Presentation ­ Belgian Grand Prix
+                                      McLaren Mastercard F1 Team
+
+   Updated Primary reason         Geometric differences compared to   Brief description on how the update works
+                                                previous version                   (min 20, max 100 words)
+   component  for update
+                                                                     A small revision to the rear wing endplate resulting
+1  Rear Wing    Performance -     Endplate modification              in improved flow conditioning and aerodynamic
+              Flow Conditioning                                      characteristics across the full operating range.
+                                                                     A new rear wing assembly specifically designed for
+2  Rear Wing  Circuit Specific ­  New Rear Wing assembly             the increased isochronal of this circuit, resulting in
+              Drag Reduction                                         an efficient reduction of drag in straight line and
+                                                                     cornering mode.
+                                         Car Presentation ­ 2026 Belgian Grand Prix
+                                           *Mercedes-AMG PETRONAS F1 Team*
+
+   Updated Primary reason for            Geometric differences compared to      Brief description on how the update works (min 20, max
+                                                    previous version                                         100 words)
+   component    update
+                                          Reduce camber upper wing elements     The upper wing element camber has been reduced to drop local
+1  Rear Wing    Circuit specific - Drag                                               downforce and drag at a level appropriate for Spa L/D.
+                         Range            Rear drum winglets position and span
+                                                                                Rear drum winglets position and span optimised around evolving
+2  Rear Corner  Performance - Local        Endplate top edge camber increased    onset flow and local load requirements ­ improved robustness
+                         Load
+                                                                                                      through operating envelope.
+3  Front Wing   Performance - Flow
+    Endplate        Conditioning                                                   Endplate top edge camber increased to improve front wing
+                                                                                  performance throughout the operating envelope, improving
+
+                                                                                                    onset flow to the rear of the car.
+                             Car Presentation ­ Belgian Grand Prix
+                                      Oracle Red Bull Racing.
+
+ Updated     Primary reason  Geometric differences compared to previous     Brief description on how the update works
+component       for update                            version                          (min 20, max 100 words)
+
+1 Rear Wing  Performance -   Revised pylon profiles                      Given the pylons now by regulation contact the
+               Local Load                                                mainplane underside, the interface is sensitive and
+                                                                         revised with pylon changes to existing element
+                                                                         profiles seeking to extract more load and at least
+                                                                         maintain flow stability.
+                                          Car Presentation ­ Belgian Grand Prix
+                                                    SCUDERIA FERRARI HP
+
+No updates submitted for this event.
+                                   Car Presentation ­ Belgian Grand Prix
+                                                     Williams
+
+   Updated Primary reason Geometric differences compared to previous Brief description on how the update works
+
+   component   for update          version                                         (min 20, max 100 words)
+
+1 Rear Corner  Circuit specific -  A revised rear brake duct winglet array         To suit the demands of the Spa-Francorchamps
+                 Drag Range                                                        circuit, we have reduced the loading on the rear
+                                                                                   corner which offers a local efficiency improvement.
+
+2 Floor Body   Circuit specific -                                                                     A further circuit specific change, altering the
+                 Drag Range        A local trim has been applied to the main Floor Body balance between downforce and drag at the rear of
+
+                                                                                                      the main floor.
+
+3  Floor Body    Performance - An updated main floor profile which adds volume to  To change the distribution of diffuser expansion
+               Flow Conditioning the central part of the diffuser.                 volume across the car operating envelope, a new
+                                                                                   floor body surface has been introduced.
+                                    Car Presentation ­ Belgian Grand Prix
+                                          Visa Cash App Racing Bulls
+
+   Updated Primary reason for       Geometric differences compared to previous   Brief description on how the update works (min
+                                                           version                                 20, max 100 words)
+   component     update
+                                                                                The profile of the sidepods has been modified to
+1  Coke/Engine     Performance ­    Updated sidepod & upper bodywork            provide better control of the airflow passing around
+       Cover     Flow Conditioning                                              the side of the car.
+                                                                                A narrower roll hoop has been introduced, which
+2  Roll Hoop       Performance ­    Revised roll hoop inlet shape               improves the flow quality reaching the back of the
+                 Flow Conditioning                                              car and on to the rear wing.
+                                                                                Detail changes on the front brake drum
+3  Front Corner    Performance ­    Updated brake drum assembly                 components bring improvements in air flow
+                 Flow Conditioning                                              management at the front of the car.
+                                                                                A number of changes to the mainplane and flap
+4 Rear Wing      Performance ­      New upper rear wing assembly                profiles allow the rear wing to generate downforce
+                   Local Load                                                   more efficiently, bringing performance
+                                                                                improvement at Spa and other circuits.
+                                          Car Presentation ­ Belgian Grand Prix
+                                               Aston Martin Aramco F1 Team
+
+No updates submitted for this event.
+                                 Car Presentation ­ Belgian Grand Prix
+                                          *TGR HAAS F1 TEAM*
+
+Updated Primary reason Geometric differences compared to previous Brief description on how the update works
+
+component     for update         version                                          (min 20, max 100 words)
+
+1 Front Wing  Performance - Revised Profiles and Pylon geometry      A revised Front Wing geometry has been
+
+              Local Load                                             introduced to increase local aerodynamic load
+
+                                                                     while maintaining aerodynamic efficiency,
+
+                                                                     improving airflow management and overall front-
+
+                                                                     end performance across a range of operating
+
+                                                                     conditions.
+
+2 Front Wing  Performance - Revised Endplate geometry                A revised Front Wing endplate geometry has been
+
+Endplate      Flow Conditioning                                      introduced to complement the updated Front Wing
+
+                                                                     profiles, optimising local airflow control and
+
+                                                                     maintaining aerodynamic efficiency across the front
+
+                                                                     wing assembly.
+
+3 Front Corner Performance - Marginal geometry changes to deflector  A circuit-specific Front Corner configuration has
+
+              Local Load                                             been made available, providing additional flexibility
+
+                                                                     to better match the aerodynamic load
+
+                                                                     requirements of this circuit.
+
+4 Beam Wing   Performance - Revised lower Rear Wing geometry         A new Lower Rear Wing configuration has been
+
+              Drag reduction                                         introduced as a circuit-specific option, providing
+
+                                                                     additional flexibility to align the car's aerodynamic
+
+                                                                     characteristics with the demands of this venue and
+
+                                                                     optimise overall performance.
+                                  Car Presentation ­ Belgian Grand Prix
+                                           Audi Revolut F1 Team
+
+   Updated Primary reason         Geometric differences compared to   Brief description on how the update works
+                                                previous version                   (min 20, max 100 words)
+   component  for update
+                                                                     A circuit-specific rear wing assembly has been
+1  Rear Wing  Circuit specific ­  Rear wing upper cluster            introduced to align the aerodynamic configuration
+                Drag Range                                           with the requirements of the upcoming event.
+                                                                     A minor refinement has been made to the diffuser
+2  Diffuser   Performance ­       Diffuser sidewall winglet          as part of the ongoing aerodynamic development
+                Local load                                           programme. The update is intended to enhance the
+                                                                     aerodynamic behaviour of the surrounding flow
+                                                                     field.
+                                 Car Presentation ­ Belgian Grand Prix
+                                           BWT Alpine F1 Team
+
+   Updated Primary reason        Geometric differences compared to                    Brief description on how the update works
+                                               previous version                                    (min 20, max 100 words)
+   component  for update
+                                                                                     The halo has been redesigned to improve
+1  Halo         Performance ­    Reprofiled halo fairing with an additional winglet  downstream flow management and provide
+              Flow Conditioning                                                      aerodynamic load towards the rear end of the car.
+                                  Car Presentation ­ Belgian Grand Prix
+                                                    Cadillac
+
+   Updated Primary reason         Geometric differences compared to                   Brief description on how the update works
+                                                previous version                                  (min 20, max 100 words)
+   component   for update
+
+1  Front Wing    Performance ­    Revised Front Wing Endplate footplate surfaces and  Updated Front Wing Endplate geometry improves
+    Endplate   Flow Conditioning  turning vanes, and addition of horizontal vane to   flow quality to the forward floor, increasing the
+                                  Endplate body                                       aerodynamic load generated in this area
+                                                                                      throughout the operating ride height range
+
