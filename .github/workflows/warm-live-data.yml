@@ -1,0 +1,39 @@
+name: Warm live-data cache (Cloudflare)
+
+# Community data APIs (jolpi.ca / FOM / Pulselive / motorsport.com / Wikipedia /
+# fiawec) rate-limit or block Cloudflare Workers' shared datacenter egress IPs,
+# so the live Worker CANNOT fetch standings/results itself. This job runs the
+# real fetchers from GitHub's clean IPs and writes the KV + Supabase last-good
+# caches the site reads — keeping every series fresh after each session.
+#
+# REQUIRES these repo secrets (Settings -> Secrets and variables -> Actions):
+#   KV_REST_API_URL, KV_REST_API_TOKEN            (Upstash / Vercel KV)
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY       (snapshot backstop)
+
+on:
+  schedule:
+    - cron: '*/20 * * * *' # every 20 min; dial down if Actions minutes are tight
+  workflow_dispatch: {}
+
+concurrency:
+  group: warm-live-data
+  cancel-in-progress: true
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      KV_REST_API_URL: ${{ secrets.KV_REST_API_URL }}
+      KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Warm all series' standings + results caches
+        run: npx tsx scripts/warm-live-data.mts

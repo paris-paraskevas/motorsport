@@ -54,25 +54,25 @@ describe('push-history (KV configured)', () => {
   });
 
   it('records an item and lists it back', async () => {
-    await recordSent('user_1', item('t30', 1));
+    await recordSent('user_1', item('t10', 1));
     const out = await listHistory('user_1');
     expect(out).toHaveLength(1);
-    expect(out[0].kind).toBe('t30');
+    expect(out[0].kind).toBe('t10');
     expect(out[0].title).toBe('Title 1');
     expect(out[0].url).toBe('/series/f1/weekend/1/qualifying');
     expect(out[0].seriesSlug).toBe('f1');
   });
 
   it('lists newest first', async () => {
-    await recordSent('user_2', item('t30', 1));
+    await recordSent('user_2', item('t10', 1));
     await recordSent('user_2', item('res', 2));
     await recordSent('user_2', item('analysis', 3));
     const out = await listHistory('user_2');
-    expect(out.map(i => i.kind)).toEqual(['analysis', 'res', 't30']);
+    expect(out.map(i => i.kind)).toEqual(['analysis', 'res', 't10']);
   });
 
   it('caps the stored list at 50 (newest kept), regardless of how many were recorded', async () => {
-    for (let n = 1; n <= 60; n++) await recordSent('user_3', item('t30', n));
+    for (let n = 1; n <= 60; n++) await recordSent('user_3', item('t10', n));
     // Stored list never exceeds the cap.
     expect(lists.get('paddock:push-history:user_3')!.length).toBe(50);
     // The newest (n=60) is at the head; the oldest survivor is n=11.
@@ -83,7 +83,7 @@ describe('push-history (KV configured)', () => {
   });
 
   it('honours the limit on read (default 30, custom respected)', async () => {
-    for (let n = 1; n <= 40; n++) await recordSent('user_4', item('t30', n));
+    for (let n = 1; n <= 40; n++) await recordSent('user_4', item('t10', n));
     const def = await listHistory('user_4'); // default 30
     expect(def).toHaveLength(30);
     const five = await listHistory('user_4', 5);
@@ -92,9 +92,9 @@ describe('push-history (KV configured)', () => {
   });
 
   it('scopes history per user', async () => {
-    await recordSent('user_a', item('t30', 1));
+    await recordSent('user_a', item('t10', 1));
     await recordSent('user_b', item('res', 2));
-    expect((await listHistory('user_a')).map(i => i.kind)).toEqual(['t30']);
+    expect((await listHistory('user_a')).map(i => i.kind)).toEqual(['t10']);
     expect((await listHistory('user_b')).map(i => i.kind)).toEqual(['res']);
   });
 
@@ -111,7 +111,7 @@ describe('push-history (KV unconfigured)', () => {
   });
 
   it('recordSent is a no-op and listHistory returns [] without touching KV', async () => {
-    await expect(recordSent('user_1', item('t30', 1))).resolves.toBeUndefined();
+    await expect(recordSent('user_1', item('t10', 1))).resolves.toBeUndefined();
     expect(await listHistory('user_1')).toEqual([]);
     expect(lists.size).toBe(0);
   });
@@ -134,7 +134,7 @@ describe('push-history fail-soft', () => {
       .mockImplementationOnce(async () => {
         throw new Error('KV outage');
       });
-    await expect(recordSent('user_err', item('t30', 1))).resolves.toBeUndefined();
+    await expect(recordSent('user_err', item('t10', 1))).resolves.toBeUndefined();
   });
 
   it('listHistory swallows a KV error and returns []', async () => {

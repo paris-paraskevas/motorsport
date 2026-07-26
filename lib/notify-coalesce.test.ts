@@ -46,10 +46,11 @@ describe('eligibleForNotify', () => {
     expect(eligibleForNotify(gate({ sessionsOn: false }), item('f1'))).toBe(false);
   });
 
-  it('applies the session-type filter to pre-session kinds only', () => {
+  it('applies the session-type filter to pre-session + live kinds only', () => {
     const practiceOff = { practice: false, qualifying: true, race: true };
-    // t30 practice reminder is blocked when practice is off…
-    expect(eligibleForNotify(gate({ sessionTypes: practiceOff }), item('f1', 't30', 'Practice 1'))).toBe(false);
+    // the 10-min reminder and "live now" for practice are blocked when practice is off…
+    expect(eligibleForNotify(gate({ sessionTypes: practiceOff }), item('f1', 't10', 'Practice 1'))).toBe(false);
+    expect(eligibleForNotify(gate({ sessionTypes: practiceOff }), item('f1', 'start', 'Practice 1'))).toBe(false);
     // …but a results push for the same session is not (results ignore the type filter).
     expect(eligibleForNotify(gate({ sessionTypes: practiceOff }), item('f1', 'res', 'Practice 1'))).toBe(true);
   });
@@ -68,7 +69,7 @@ describe('eligibleForNotify', () => {
 describe('coalescedPayload', () => {
   it('summarizes N items with the lead title + count and a stable digest tag', () => {
     const p = coalescedPayload(
-      [item('f1', 't30', 'Qualifying'), item('motogp', 'res'), item('wec', 'res')],
+      [item('f1', 't10', 'Qualifying'), item('motogp', 'res'), item('wec', 'res')],
       false,
     );
     expect(p.title).toBe('Paddock · 3 updates');

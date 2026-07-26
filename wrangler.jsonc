@@ -1,18 +1,38 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  "main": "worker.ts",
   "name": "motorsport",
   // nodejs_compat is REQUIRED for the Next runtime + this app's Node-heavy deps
   // (node-ical, web-push). compatibility_date must be >= 2024-09-23 for Next on
   // Workers; using a recent date to get the widest Node compat surface.
   "compatibility_date": "2025-09-23",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   // Serve the live domain from this Worker (routes intercept before the old
   // Vercel origin). The zone's DNS is already on Cloudflare, proxied.
   "routes": [
     { "pattern": "paddock-tracker.com/*", "zone_name": "paddock-tracker.com" },
     { "pattern": "www.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
   ],
+  // Cron Triggers — each fires scheduled() in worker.ts, mapped by cron string
+  // to the /api/cron/* route(s) in CRON_JOBS. notify runs every minute for tight
+  // session-relative reminders.
+  "triggers": {
+    "crons": [
+      "* * * * *",
+      "*/10 * * * *",
+      "*/15 * * * *",
+      "*/30 * * * *",
+      "7,22,37,52 * * * *",
+      "0 * * * *",
+      "47 */3 * * *",
+      "17 */6 * * *",
+      "29 */12 * * *",
+      "41 4 * * *",
+      "19 5 * * *",
+      "0 8 * * 1",
+      "20 6 * * 2"
+    ]
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
