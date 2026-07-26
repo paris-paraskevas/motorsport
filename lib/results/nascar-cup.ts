@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 
 export type { RaceResult, RaceResultEntry };
@@ -83,6 +84,16 @@ interface RaceLink {
   raceName: string;
 }
 
+const WIKIPEDIA_ORIGIN = 'https://en.wikipedia.org';
+
+/** Accept relative, protocol-relative and absolute en.wikipedia.org hrefs. */
+function normalizeWikiHref(href: string | undefined): string | null {
+  if (!href) return null;
+  if (href.startsWith('/wiki/')) return `${WIKIPEDIA_ORIGIN}${href}`;
+  const m = href.match(/^(?:https?:)?\/\/en\.wikipedia\.org(\/wiki\/[^\s]+)$/i);
+  return m ? `${WIKIPEDIA_ORIGIN}${m[1]}` : null;
+}
+
 // The season page's race-results table has one row per round. Each row
 // includes a "Report" anchor pointing to the per-race Wikipedia article.
 // We walk the wikitable rows, counting them as rounds 1..N in document
@@ -111,23 +122,24 @@ export function parseSeasonRaceLinks(html: string): RaceLink[] {
         const round = Number(roundText);
         if (!Number.isFinite(round) || round < 1 || round > 50) return;
 
-        // Find a /wiki/2026_* anchor anywhere in this row whose visible
-        // text is "Report" (the link Wikipedia uses for the per-race
-        // article). Fall back to any /wiki/2026_* link if no Report is
-        // present (some articles use a race-name link instead).
+        // Find a per-race-article anchor anywhere in this row — normally the
+        // "Report" link, else a race-name link. `href*=` (not `^=`) because
+        // Wikipedia serves these hrefs ABSOLUTE on some responses and relative
+        // on others; anchoring on the relative form silently emptied this feed
+        // (verified 2026-07-27: every href came back
+        // `https://en.wikipedia.org/wiki/2026_…`). Same break as the WRC parser
+        // in 0.229.13 — see `normalizeWikiHref` in lib/results/wrc.ts.
         let url: string | null = null;
         let raceName = '';
         $(tr)
-          .find('a[href^="/wiki/2026_"]')
+          .find('a[href*="/wiki/2026_"]')
           .each((_, a) => {
             if (url) return;
-            const href = $(a).attr('href');
+            const normalized = normalizeWikiHref($(a).attr('href'));
+            if (!normalized) return;
             const text = $(a).text().trim();
-            if (!href) return;
-            if (text === 'Report' || (!url && /^2026_/.test(href.slice(6)))) {
-              url = `https://en.wikipedia.org${href}`;
-              raceName = text === 'Report' ? '' : text;
-            }
+            url = normalized;
+            raceName = text === 'Report' ? '' : text;
           });
         if (!url) return;
         if (seen.has(url)) return;
@@ -259,7 +271,7 @@ async function defaultFetch(url: string): Promise<{ status: number; body: string
   }
 }
 
-export async function fetchNascarCupSeasonResults(
+async function fetchNascarCupSeasonResultsLive(
   options: FetchOptions,
 ): Promise<RaceResult[]> {
   const fetcher = options.fetchImpl ?? defaultFetch;
@@ -280,4 +292,18 @@ export async function fetchNascarCupSeasonResults(
   return settled
     .filter((r): r is RaceResult => r !== null)
     .sort((a, b) => a.round - b.round);
+}
+
+/**
+ * Public NASCAR Cup season results, over the durable `source_snapshot` last-good.
+ * `options.rounds` only maps race names to canonical round numbers (curated
+ * content), and `fetchImpl` is a test seam, so one snapshot slot is correct for
+ * every caller.
+ */
+export async function fetchNascarCupSeasonResults(
+  options: FetchOptions,
+): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:nascar-cup', () =>
+    fetchNascarCupSeasonResultsLive(options),
+  );
 }

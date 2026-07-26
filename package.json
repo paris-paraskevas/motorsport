@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.239.1",
+  "version": "0.240.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",

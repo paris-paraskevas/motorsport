@@ -7,6 +7,7 @@ import {
   writeResultsCache,
   seasonCacheKey,
 } from '@/lib/results-cache';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -317,7 +318,7 @@ export function parseDTMRaceClassification(html: string): RaceResultEntry[] | nu
   }
 }
 
-export async function fetchDTMSeasonResults(
+async function fetchDTMSeasonResultsLive(
   season: number,
   rounds?: { round: number; startDate: string }[],
 ): Promise<RaceResult[]> {
@@ -401,4 +402,19 @@ export async function fetchDTMSeasonResults(
 
   if (races.length > 0) await writeResultsCache(cacheKey, races);
   return races;
+}
+
+/**
+ * Public DTM season results: durable `source_snapshot` last-good beneath the KV
+ * window. `rounds` only maps event dates to canonical round numbers (curated
+ * content), so one snapshot slot serves every caller. `fetchDTMSeasonChartData`
+ * needs no wrapper — it derives from the already-snapshotted DTM standings.
+ */
+export async function fetchDTMSeasonResults(
+  season: number,
+  rounds?: { round: number; startDate: string }[],
+): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:dtm', () =>
+    fetchDTMSeasonResultsLive(season, rounds),
+  );
 }

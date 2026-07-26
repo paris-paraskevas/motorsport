@@ -60,3 +60,8 @@ const workerHandler = {
     }
   },
 };
+
+// Workers requires the entrypoint's DEFAULT export to carry fetch/scheduled;
+// named exports alone (the Durable Objects above) deploy as "no registered
+// event handlers". Keep this line — the whole site is served through it.
+export default workerHandler;

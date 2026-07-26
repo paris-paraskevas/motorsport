@@ -4,6 +4,7 @@ import type { Element } from 'domhandler';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import type { SessionClassification } from '@/lib/results/openf1';
 import { loadWrcStageResults } from '@/lib/series-content';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -777,7 +778,7 @@ export function parseSeasonChartPointsFromHtml(
   }
 }
 
-export async function fetchWRCSeasonChartPoints(
+async function fetchWRCSeasonChartPointsLive(
   season = 2026,
 ): Promise<RaceResult[]> {
   const seasonHtml = await fetchHtml(WIKIPEDIA_SEASON_URL);
@@ -785,9 +786,14 @@ export async function fetchWRCSeasonChartPoints(
   return parseSeasonChartPointsFromHtml(seasonHtml, season);
 }
 
+/** Per-round points for the standings trend chart, over the durable last-good. */
+export async function fetchWRCSeasonChartPoints(season = 2026): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:wrc-chart', () => fetchWRCSeasonChartPointsLive(season));
+}
+
 // ---- Orchestration ------------------------------------------------------
 
-export async function fetchWRCSeasonResults(
+async function fetchWRCSeasonResultsLive(
   season = 2026,
 ): Promise<RaceResult[]> {
   const seasonHtml = await fetchHtml(WIKIPEDIA_SEASON_URL);
@@ -836,4 +842,13 @@ export async function fetchWRCSeasonResults(
   return races
     .filter((r): r is RaceResult => r !== null)
     .sort((a, b) => a.round - b.round);
+}
+
+/**
+ * Public WRC season results, over the durable `source_snapshot` last-good.
+ * Wikipedia rate-limits Cloudflare's egress IPs, so on the Worker this serves
+ * what the clean-IP warm cron wrote; `DATA_SOURCE=db` skips upstream entirely.
+ */
+export async function fetchWRCSeasonResults(season = 2026): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:wrc', () => fetchWRCSeasonResultsLive(season));
 }

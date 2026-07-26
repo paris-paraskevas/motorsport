@@ -1,37 +1,148 @@
 // Warm EVERY series' live-data "last-good" caches (standings + results) from a
-// NON-Cloudflare host.
+// NON-Cloudflare host. THE ONLY WRITER of the site's data.
 //
 // Community data APIs (jolpi.ca for F1, FOM/Pulselive/Wikipedia/motorsport.com/
-// fiawec for the rest) rate-limit or block Cloudflare Workers' shared datacenter
-// egress IPs, so the site's per-request fetch fails on Workers and its KV +
-// Supabase-snapshot last-good caches never seed -> standings/results render empty
-// or stale. This runs the SAME production fetchers the health checks use (every
-// series), from a clean IP (a laptop or GitHub Actions): each fetch succeeds and
-// its `withLastGood`/snapshot writes the KV + snapshot the Cloudflare site reads.
-// Schedule it (GitHub Actions, clean IPs) so the data stays fresh after every
-// session. Reuses runStandingsHealth/runResultsHealth so it can never drift from
-// the registries the site actually fetches.
+// fiawec/Alkamel for the rest) rate-limit or block Cloudflare Workers' shared
+// datacenter egress IPs, so the site's per-request fetch fails on Workers. The
+// Worker therefore runs with `DATA_SOURCE=db` (see `isDbReadOnly` in
+// lib/source-snapshot.ts): it READS the KV + Supabase `source_snapshot` tiers and
+// never calls upstream, so whatever an API does at request time is irrelevant.
+// This script runs the SAME production fetchers from a clean IP (a laptop or
+// GitHub Actions) and their `withSourceSnapshot` / `withF1LastGood` wrappers
+// persist each payload — which is what the site then serves.
 //
-//   npx tsx --env-file=<prod KV + Supabase env> scripts/warm-live-data.mts
+// Two layers, deliberately:
+//   1. runStandingsHealth / runResultsHealth — the registries the health
+//      endpoint uses, so this can never drift from what the site fetches.
+//   2. EXTRA_SURFACES below — the slots those registries don't cover (results
+//      for the multi-class + content-coupled series, the F1 sprint/last-race
+//      slots, the WRC chart series). Each entry MUST call the fetcher with the
+//      same arguments the page passes: the snapshot key is per-surface, not
+//      per-argument, so warming with different args would store a payload the
+//      site doesn't want (IndyCar's curated-driver name normalisation is the
+//      live example).
+//
+//   npx tsx --env-file=.env.production.local scripts/warm-live-data.mts
 import { runStandingsHealth } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
+import { loadSeries } from '../lib/series';
+import { loadCuratedDrivers } from '../lib/series-content';
+import { fetchF1SeasonSprints, fetchF1LastRace } from '../lib/results/f1';
+import { fetchWRCSeasonChartPoints } from '../lib/results/wrc';
+import { fetchDTMSeasonResults } from '../lib/results/dtm';
+import { fetchNascarCupSeasonResults } from '../lib/results/nascar-cup';
+import { fetchNlsSeasonResults } from '../lib/results/nls';
+import { fetchAllGtWorldSeasonRaces } from '../lib/results/gt-world';
+import { fetchImsaSeasonResults } from '../lib/results/imsa';
+import { fetchWecSeasonResults } from '../lib/results/wec';
+import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
 
 if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
   console.error('KV_REST_API_URL / KV_REST_API_TOKEN missing — nothing to warm.');
   process.exit(1);
+}
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY missing — the durable snapshot tier is the one the site reads. Aborting.');
+  process.exit(1);
+}
+// A stray DATA_SOURCE=db in the runner's env would turn every fetcher below into
+// a reader and this whole run into a no-op. Fail loudly instead of silently.
+if (process.env.DATA_SOURCE === 'db') {
+  console.error('DATA_SOURCE=db is set — the writer would read instead of fetch. Unset it for this run.');
+  process.exit(1);
+}
+
+/** Row count for any payload shape the fetchers return (for the log only). */
+function rowsOf(v: unknown): number {
+  if (v == null) return 0;
+  if (Array.isArray(v)) return v.length;
+  if (typeof v === 'object') {
+    const o = v as Record<string, unknown>;
+    if (Array.isArray(o.feature) || Array.isArray(o.sprint)) {
+      return (o.feature as unknown[] ?? []).length + (o.sprint as unknown[] ?? []).length;
+    }
+    return 1;
+  }
+  return 0;
 }
 
 console.error('=== standings (all series) ===');
 const standings = await runStandingsHealth();
 for (const r of standings) console.error(`  ${r.label.padEnd(14)} ${r.status.padEnd(8)} ${r.rows} rows`);
 
-console.error('=== results (all series) ===');
+console.error('=== results (health registry) ===');
 const results = await runResultsHealth();
 for (const r of results) console.error(`  ${r.label.padEnd(14)} ${r.status.padEnd(8)} ${r.rows} rows`);
 
-const sOk = standings.filter(r => r.status !== 'DOWN').length;
-const rOk = results.filter(r => r.status !== 'DOWN').length;
-console.error(`\nseeded: ${sOk}/${standings.length} standings + ${rOk}/${results.length} results caches written for the Cloudflare site.`);
+// Surfaces the two registries don't reach. Sequential: these are the politest-
+// treated sources (Alkamel, fiawec CMS, SRO) and a burst is what gets an IP
+// blocked in the first place.
+const EXTRA_SURFACES: { label: string; run: () => Promise<unknown> }[] = [
+  { label: 'f1 sprints', run: () => fetchF1SeasonSprints() },
+  { label: 'f1 last race', run: () => fetchF1LastRace() },
+  { label: 'wrc chart', run: () => fetchWRCSeasonChartPoints() },
+  {
+    // Same args the Results tab passes (curated drivers normalise the names).
+    label: 'indycar (curated)',
+    run: async () => fetchIndyCarSeasonResults({ drivers: await loadCuratedDrivers('indycar') }),
+  },
+  {
+    label: 'dtm results',
+    run: async () => {
+      const series = await loadSeries('dtm');
+      return fetchDTMSeasonResults(series.meta.season, series.rounds?.rounds);
+    },
+  },
+  {
+    label: 'nascar results',
+    run: async () => {
+      const series = await loadSeries('nascar-cup');
+      const rounds = (series.rounds?.rounds ?? []).map(r => ({
+        round: r.round,
+        startDate: r.startDate,
+        name: r.name,
+      }));
+      return fetchNascarCupSeasonResults({ rounds });
+    },
+  },
+  {
+    label: 'nls results',
+    run: async () => {
+      const series = await loadSeries('nls');
+      return fetchNlsSeasonResults(series.meta.season);
+    },
+  },
+  {
+    label: 'gt-world results',
+    run: async () => {
+      const series = await loadSeries('gt-world');
+      return fetchAllGtWorldSeasonRaces(series.meta.season);
+    },
+  },
+  { label: 'imsa results', run: () => fetchImsaSeasonResults() },
+  { label: 'wec results', run: () => fetchWecSeasonResults() },
+];
+
+console.error('=== results (extra surfaces) ===');
+let extraOk = 0;
+for (const surface of EXTRA_SURFACES) {
+  const started = Date.now();
+  try {
+    const payload = await surface.run();
+    const rows = rowsOf(payload);
+    if (rows > 0) extraOk++;
+    console.error(`  ${surface.label.padEnd(18)} ${(rows > 0 ? 'OK' : 'EMPTY').padEnd(8)} ${rows} rows  ${Date.now() - started}ms`);
+  } catch (err) {
+    console.error(`  ${surface.label.padEnd(18)} ${'ERROR'.padEnd(8)} ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+const sOk = standings.filter(r => r.status === 'OK' || r.status === 'LOW').length;
+const rOk = results.filter(r => r.status === 'OK' || r.status === 'LOW').length;
+console.error(
+  `\nseeded: ${sOk}/${standings.length} standings + ${rOk}/${results.length} results` +
+    ` + ${extraOk}/${EXTRA_SURFACES.length} extra surfaces written for the Cloudflare site.`,
+);
 // Exit non-zero only if EVERYTHING failed (a real outage from this host), so a
 // scheduled run flags a genuine problem but tolerates one flaky source.
-process.exit(sOk + rOk > 0 ? 0 : 1);
+process.exit(sOk + rOk + extraOk > 0 ? 0 : 1);

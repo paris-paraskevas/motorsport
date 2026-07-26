@@ -1,6 +1,6 @@
 import { kv } from '@vercel/kv';
 import type { RaceResult } from '@/lib/types';
-import { readSnapshot, writeSnapshot } from '@/lib/source-snapshot';
+import { readSnapshot, writeSnapshot, isDbReadOnly } from '@/lib/source-snapshot';
 
 /**
  * KV "last-good" read-through for the F1 standings + results parsers, backed by
@@ -151,6 +151,15 @@ export async function withF1LastGood<T>(
   fetcher: () => Promise<T>,
   isEmpty: (result: T) => boolean,
 ): Promise<T> {
+  // DB-as-source-of-truth (`DATA_SOURCE=db`, Cloudflare Worker): read the two
+  // tiers, never fetch Jolpica, never write. See `isDbReadOnly`.
+  if (isDbReadOnly()) {
+    const hot = await readF1LastGood<T>(name);
+    if (hot != null) return hot;
+    const durable = await readSnapshot<T>(f1SnapshotKey(name));
+    if (durable != null) return reviveDates(durable);
+    return fetcher();
+  }
   const fresh = await fetcher();
   if (!isEmpty(fresh)) {
     // Both writes are awaited + individually fail-soft: neither a KV nor a

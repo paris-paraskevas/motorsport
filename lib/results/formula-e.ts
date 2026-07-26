@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 import type { AnyNode, Element } from 'domhandler';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 
@@ -959,7 +960,7 @@ async function fetchEventClassifications(
 // Top-level entry point.
 // ---------------------------------------------------------------------------
 
-export async function fetchFormulaESeasonResults(): Promise<RaceResult[]> {
+async function fetchFormulaESeasonResultsLive(): Promise<RaceResult[]> {
   const seasonHtml = await fetchHtml(`${WIKI_BASE}/${SEASON_PAGE}`);
   if (!seasonHtml) return [];
   const seasonRows = parseSeasonRows(seasonHtml);
@@ -1082,4 +1083,14 @@ export async function fetchFormulaESeasonResults(): Promise<RaceResult[]> {
   }));
 
   return races.sort((a, b) => a.round - b.round);
+}
+
+/**
+ * Public Formula E season results, over the durable `source_snapshot` last-good.
+ * Wikipedia + motorsportweek both block/ratelimit Cloudflare's egress IPs, so on
+ * the Worker this serves what the clean-IP warm cron wrote; under
+ * `DATA_SOURCE=db` nothing upstream is called at all.
+ */
+export async function fetchFormulaESeasonResults(): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:formula-e', fetchFormulaESeasonResultsLive);
 }

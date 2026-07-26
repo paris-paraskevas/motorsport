@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.240.0 — 2026-07-27
+
+**Standings and results are now stable and consistent.** Every series' championship tables and race results are served from our own database, refreshed on a schedule, instead of being re-fetched from each series' feed every time you open a page. Reloading a page no longer shows different numbers, and a feed having a bad minute can't leave a table half-filled or stuck mid-season.
+
+**NASCAR Cup race results are back.** Wikipedia changed the shape of its links and our reader quietly stopped finding any races; all 22 rounds of the season, with full finishing orders, are on the results page again.
+
 ## 0.239.1 — 2026-07-24
 
 **Behind the scenes.** Session housekeeping notes.

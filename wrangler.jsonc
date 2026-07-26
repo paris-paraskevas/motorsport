@@ -9,9 +9,14 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   // Serve the live domain from this Worker (routes intercept before the old
   // Vercel origin). The zone's DNS is already on Cloudflare, proxied.
+  // `dev.*` is the admin entry point. Its DNS record is already proxied through
+  // Cloudflare (verified 2026-07-27: `Server: cloudflare` + `CF-RAY`, forwarding
+  // to the disabled Vercel project → 402), so adding the route here is all that's
+  // needed to intercept it — no DNS change.
   "routes": [
     { "pattern": "paddock-tracker.com/*", "zone_name": "paddock-tracker.com" },
-    { "pattern": "www.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
+    { "pattern": "www.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" },
+    { "pattern": "dev.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
   ],
   // Cron Triggers — each fires scheduled() in worker.ts, mapped by cron string
   // to the /api/cron/* route(s) in CRON_JOBS. notify runs every minute for tight
@@ -32,6 +37,16 @@
       "0 8 * * 1",
       "20 6 * * 2"
     ]
+  },
+  // DB-as-single-source-of-truth. The community data APIs block Cloudflare's
+  // shared egress IPs, so the render path must never call them: with this set the
+  // standings/results loaders read the KV + Supabase `source_snapshot` tiers only
+  // (see `isDbReadOnly` in lib/source-snapshot.ts). The ONLY writer is
+  // `scripts/warm-live-data.mts`, run from clean IPs by the warm-live-data GitHub
+  // Action. Unset this and prod data goes non-deterministic again (a colo that
+  // isn't blocked returns partial data and overwrites the good cache).
+  "vars": {
+    "DATA_SOURCE": "db"
   },
   "assets": {
     "directory": ".open-next/assets",

@@ -6,6 +6,7 @@ import {
   writeResultsCache,
   seasonCacheKey,
 } from '@/lib/results-cache';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -266,7 +267,7 @@ function parseRounds(env: JsonApiEnvelope): RoundDescriptor[] {
  * weekend). The `raceName` carries the session label so the
  * SeasonResultsPanel renders three distinct cards per round.
  */
-export async function fetchWsbkSeasonResults(
+async function fetchWsbkSeasonResultsLive(
   season: number,
 ): Promise<RaceResult[]> {
   const cacheKey = seasonCacheKey('wsbk', season);
@@ -320,6 +321,15 @@ export async function fetchWsbkSeasonResults(
   });
   if (races.length > 0) await writeResultsCache(cacheKey, races);
   return races;
+}
+
+/**
+ * Public WSBK season results: durable `source_snapshot` last-good beneath the
+ * 3-hour KV window (Pulselive blocks Cloudflare's egress IPs). `fetchWsbkLastRace`
+ * reads through this, so it inherits the same DB-backed source.
+ */
+export async function fetchWsbkSeasonResults(season: number): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:wsbk', () => fetchWsbkSeasonResultsLive(season));
 }
 
 function orderOf(raceName: string): number {
