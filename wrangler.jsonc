@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "motorsport",
+  // nodejs_compat is REQUIRED for the Next runtime + this app's Node-heavy deps
+  // (node-ical, web-push). compatibility_date must be >= 2024-09-23 for Next on
+  // Workers; using a recent date to get the widest Node compat surface.
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  // Serve the live domain from this Worker (routes intercept before the old
+  // Vercel origin). The zone's DNS is already on Cloudflare, proxied.
+  "routes": [
+    { "pattern": "paddock-tracker.com/*", "zone_name": "paddock-tracker.com" },
+    { "pattern": "www.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+  // Added in later steps (need Cloudflare account resources):
+  //  - r2_buckets: NEXT_INC_CACHE_R2_BUCKET (ISR persistence)
+  //  - services: WORKER_SELF_REFERENCE (cache revalidation)
+  //  - images: IMAGES binding (next/image optimization)
+  //  - triggers.crons (the 13 /api/cron/* jobs)
+  //  - vars / secrets (Clerk, Supabase, KV_REST_API_*, VAPID, CRON_SECRET, Sentry)
+}

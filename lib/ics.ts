@@ -1,15 +1,12 @@
-import * as ical from 'node-ical';
+import ICAL from 'ical.js';
 import { Session } from './types';
 import { fetchUpstream } from './fetch-upstream';
 
-// node-ical attaches `dateOnly: true` (non-enumerable) on the Date instance
-// produced from DTSTART;VALUE=DATE entries. We can't trust the Date alone
-// because date-only is just midnight UTC, which would render at 02:00–03:00
-// in Athens (EEST/EET) and confuse users into thinking a race starts then.
-function hasDateOnly(d: Date | undefined): boolean {
-  if (!d) return false;
-  return (d as Date & { dateOnly?: boolean }).dateOnly === true;
-}
+// ICS parsing uses ical.js (pure JS) rather than node-ical: node-ical pulls in
+// Node-only internals that return nothing under the Cloudflare Workers runtime,
+// silently emptying every schedule. ical.js parses identically (verified against
+// node-ical on the live feeds, byte-for-byte on start/end/summary) and runs on
+// Workers. DTSTART;VALUE=DATE (all-day) entries surface via ICAL.Time#isDate.
 
 // Many non-F1 feeds (Google Calendar exports, ECAL exports, scraper-built
 // ICS) emit race weekends as DTSTART:YYYYMMDDT000000Z rather than
@@ -30,26 +27,44 @@ function looksLikeDateOnlyMidnight(start: Date, end: Date | undefined): boolean 
 
 export function parseIcs(text: string, seriesSlug: string): Session[] {
   if (!text.trim()) return [];
-  const events = ical.sync.parseICS(text);
+  let vevents;
+  try {
+    vevents = new ICAL.Component(ICAL.parse(text)).getAllSubcomponents('vevent');
+  } catch {
+    return []; // malformed ICS — degrade to empty, callers already fail soft
+  }
   const sessions: Session[] = [];
-  for (const key of Object.keys(events)) {
-    const ev = events[key] as ical.VEvent;
-    if (ev.type !== 'VEVENT') continue;
-    const start = ev.start as Date;
-    const end = ev.end as Date;
-    const dateOnly =
-      hasDateOnly(start) ||
-      hasDateOnly(end) ||
-      looksLikeDateOnlyMidnight(start, end);
-    sessions.push({
-      uid: String(ev.uid ?? key),
-      seriesSlug,
-      title: String(ev.summary ?? ''),
-      start,
-      end,
-      location: ev.location ? String(ev.location) : undefined,
-      ...(dateOnly ? { dateOnly: true } : {}),
-    });
+  for (const ve of vevents) {
+    try {
+      const ev = new ICAL.Event(ve);
+      const start = ev.startDate.toJSDate();
+      const startIsDate = ev.startDate.isDate === true;
+      // End is best-effort: default to the start when a feed omits DTEND/DURATION
+      // (Session.end is a required Date; a zero-length session beats a null crash).
+      let end: Date = start;
+      let endIsDate = false;
+      try {
+        const ed = ev.endDate;
+        if (ed) {
+          end = ed.toJSDate();
+          endIsDate = ed.isDate === true;
+        }
+      } catch {
+        /* no usable end — keep the start-as-end default */
+      }
+      const dateOnly = startIsDate || endIsDate || looksLikeDateOnlyMidnight(start, end);
+      sessions.push({
+        uid: String(ev.uid || ve.getFirstPropertyValue('uid') || ''),
+        seriesSlug,
+        title: String(ev.summary || ''),
+        start,
+        end,
+        location: ev.location ? String(ev.location) : undefined,
+        ...(dateOnly ? { dateOnly: true } : {}),
+      });
+    } catch {
+      continue; // event missing/invalid DTSTART — skip it, keep the rest
+    }
   }
   return sessions.sort((a, b) => a.start.getTime() - b.start.getTime());
 }

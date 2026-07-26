@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from '@/lib/content-fs';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';

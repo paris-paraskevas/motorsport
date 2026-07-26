@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync } from '@/lib/content-fs';
 import path from 'node:path';
 import type { SeriesRoundsFile } from '@/lib/types';
 import { BASE_CREDITS, PER_WEEKEND_CREDITS } from './constants';

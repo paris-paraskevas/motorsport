@@ -1,5 +1,5 @@
 import 'server-only';
-import fs from 'fs/promises';
+import fs from '@/lib/content-fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { slugify } from '../slug';
