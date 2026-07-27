@@ -12,10 +12,18 @@ import { loadMedia, highlightForRound } from '@/lib/media';
 // JUST MISSED data for the home, served as cacheable Ajax instead of computed
 // in the /app render. This is what un-sticks /app from dynamic: the WEC podium
 // path triggers a `no-store` live-component fetch, which forced the whole /app
-// route dynamic (cold-start ~20s, never edge-cached). Here it runs off the
-// static page path; the JSON response is CDN-cached (s-maxage) so the heavy
-// fetch fan-out runs at most once per window, not per visit.
-export const dynamic = 'force-dynamic';
+// route dynamic (cold-start ~20s, never edge-cached).
+//
+// Cached via ISR (`force-static` + revalidate, the app/api/search pattern), NOT
+// `force-dynamic` + s-maxage: that s-maxage contract was Vercel's edge cache and
+// died in the Cloudflare migration — Workers responses are never CDN-cached on
+// headers alone, so every visitor paid the full fan-out again (measured
+// 2026-07-27: 1.2s per hit on prod, 6-8s on the cron-less testing worker; the
+// route's own promise of "at most once per window" had quietly become "every
+// single request"). ISR stores it in the R2 incremental cache like a page:
+// same 5-minute staleness the s-maxage design intended, on both workers.
+export const dynamic = 'force-static';
+export const revalidate = 300;
 
 export async function GET() {
   const all = await loadAllSeries();
