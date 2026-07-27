@@ -74,7 +74,7 @@ And then, on Sunday, second place. Best of the mortals by a distance, a fourth p
 
 ## The rest of the points, and the fires
 
-[Isack Hadjar](/drivers/isack-hadjar) banked a beautiful sixth, spending the closing stint defending against cars on far fresher rubber, Russell's tyres twelve laps younger by the flag, and never cracking. Lawson's eighth, with [Arvid Lindblad](/drivers/arvid-lindblad) tenth, pushed Racing Bulls past Alpine in the constructors' table, 66 points to 61, after the two had arrived in Hungary dead level. Between them sat [Nico Hülkenberg](/drivers/nico-hulkenberg), ninth after relieving Lindblad of the place on lap 63, and onto the scoreboard for the first time all season: [Audi](/teams/audi)'s first cheer of a long year.
+[Isack Hadjar](/drivers/isack-hadjar) banked a beautiful sixth, spending the closing stint defending against cars on far fresher rubber, Russell's tyres twelve laps younger by the flag, and never cracking. Lawson's eighth, with [Arvid Lindblad](/drivers/arvid-lindblad) tenth, pushed Racing Bulls past Alpine in the constructors' table, 66 points to 61, after the two had arrived in Hungary dead level. Between them sat [Nico Hülkenberg](/drivers/nico-hulkenberg), ninth after relieving Lindblad of the place on lap 64, and onto the scoreboard for the first time all season: [Audi](/teams/audi)'s first cheer of a long year.
 
 Honest word for Aston Martin too. Practice was a mess, but qualifying and especially the race were as tidy as their season gets, [Lance Stroll](/drivers/lance-stroll) and Alonso bringing both cars home thirteenth and fourteenth in a 70-lap race of attrition. Alpine, [Williams](/teams/williams) and Haas, by contrast, were simply not there.
 
