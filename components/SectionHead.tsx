@@ -3,8 +3,8 @@
 // hub; series pages adopt it in PR 2c.
 export function SectionHead({ title, sub }: { title: string; sub?: string }) {
   return (
-    <div className="mb-3 flex items-baseline justify-between gap-3 border-b border-border pb-2">
-      <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-text">
+    <div className="relative mb-3 flex items-baseline justify-between gap-3 pb-3 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-linear-to-r after:from-border-strong after:via-border after:to-transparent">
+      <h2 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide text-text">
         {title}
         <span className="text-brand">.</span>
       </h2>
