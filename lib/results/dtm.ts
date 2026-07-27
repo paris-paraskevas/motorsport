@@ -240,7 +240,13 @@ function harvestPicker(
   season: number,
   meta: Map<string, EventMeta>,
 ): void {
-  $('a.msnt-select__option--event').each((_, a) => {
+  // motorsport.com dropped the `--event` modifier from the picker markup
+  // (verified 2026-07-27: the landing page carries `a.msnt-select__option` only,
+  // and the `--event` selector matched 0 of them) — which silently cut the feed
+  // down to the single event the landing URL redirects to. Match BOTH class
+  // forms and let `eventSlugFromUrl` reject anything that isn't a
+  // `/dtm/results/<season>/<slug>` link, so neither markup can empty this again.
+  $('a.msnt-select__option--event, a.msnt-select__option').each((_, a) => {
     const slug = eventSlugFromUrl($(a).attr('href') || '');
     if (!slug) return;
     const existing = meta.get(slug);
