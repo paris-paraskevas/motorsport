@@ -14,7 +14,11 @@ import { buildDecoderSummary } from '@/lib/openf1/decoder';
 // LIGHT by design: only the qualifying path calls buildDecoderSummary (one
 // drivers+laps fetch, KV read-through) to get pole/P2 codes; the race path is a
 // deep link only — no Race Story assembly here. Fail-soft to null throughout.
-export const dynamic = 'force-dynamic';
+// ISR (force-static + revalidate), not force-dynamic + s-maxage: the s-maxage
+// contract was Vercel's edge cache and died in the Cloudflare migration — see
+// app/(app)/api/just-missed/route.ts (0.243.0). Same staleness the header promised.
+export const dynamic = 'force-static';
+export const revalidate = 600;
 
 const F1_SLUG = 'f1';
 

@@ -8,7 +8,11 @@ import { loadAllSeriesMeta } from '@/lib/series';
 // generated and the Supabase read runs at most once per window, not per visit.
 // The most-recent APPROVED threads only; fail-soft (returns [] when the
 // community DB isn't configured or the query errors), so this never throws.
-export const dynamic = 'force-dynamic';
+// ISR (force-static + revalidate), not force-dynamic + s-maxage: the s-maxage
+// contract was Vercel's edge cache and died in the Cloudflare migration — see
+// app/(app)/api/just-missed/route.ts (0.243.0). Same staleness the header promised.
+export const dynamic = 'force-static';
+export const revalidate = 120;
 
 // Up to the max the widget's `count` setting allows (the client slices down).
 const LIMIT = 5;

@@ -12,7 +12,11 @@ import { loadAllDrivers } from '@/lib/people';
 // app route handler — this is app code, not a workflow script), edge-cached for
 // the window so every visitor in that window sees the same handful, then it
 // turns over. Fail-soft to [] throughout, so this never throws.
-export const dynamic = 'force-dynamic';
+// ISR (force-static + revalidate), not force-dynamic + s-maxage: the s-maxage
+// contract was Vercel's edge cache and died in the Cloudflare migration — see
+// app/(app)/api/just-missed/route.ts (0.243.0). Same staleness the header promised.
+export const dynamic = 'force-static';
+export const revalidate = 900;
 
 // How many drivers to ship; the client renders them as a rotating card stack and
 // can show fewer. Kept small — it's a discovery nudge, not a directory.
