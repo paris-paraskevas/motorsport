@@ -77,7 +77,7 @@ export function AppShell({
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
-        el.style.transform = `translate3d(${x - 160}px, ${y - 160}px, 0)`;
+        el.style.transform = `translate3d(${x - 220}px, ${y - 220}px, 0)`;
         if (!shown) {
           el.style.opacity = '1';
           shown = true;
@@ -243,10 +243,10 @@ export function AppShell({
       <div
         ref={glowRef}
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-[60] h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-300 will-change-transform"
+        className="pointer-events-none fixed left-0 top-0 z-[60] h-[440px] w-[440px] rounded-full opacity-0 transition-opacity duration-300 will-change-transform"
         style={{
           background:
-            'radial-gradient(circle, rgba(255,180,0,0.14), rgba(255,180,0,0.05) 45%, transparent 70%)',
+            'radial-gradient(circle, rgba(255,180,0,0.11) 0%, rgba(255,180,0,0.05) 40%, rgba(255,180,0,0.018) 62%, transparent 82%)',
           mixBlendMode: 'screen',
         }}
       />
