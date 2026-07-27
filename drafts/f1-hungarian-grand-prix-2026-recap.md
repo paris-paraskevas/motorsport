@@ -4,7 +4,7 @@ Per the Blog SOP: NOT public MDX. Updates the existing PROD DB draft 9dfddfc6 vi
 updatePostContent (publish_at stays NULL); operator approves + schedules in /blog.
 
 slug:      f1-hungarian-grand-prix-2026-recap
-title:     The sandbag paid off: Norris calls his shot and sweeps Hungary
+title:     F1 Hungary 2026: Norris takes it, Antonelli extends his lead, Russell claws back to 7th
 summary:   Lando Norris hid all Friday, told his team he would pull a 10 second gap on old tyres, then did it. Sainz ignored the blue flags and took out the leader, Piastri's gearbox finished the job, and Verstappen dragged a car he does not trust onto the podium. Antonelli leads by 50 into the break.
 series:    f1
 (heroImage: none — no free-licence Commons photo up yet; operator may add a cover in /blog)
@@ -33,8 +33,6 @@ FLAGS for the reviewer:
   2. "Fourth podium of the season" for VER (Canada, Austria, Belgium, Hungary) = also third in four.
   3. Cover image unset — no free-licence photo available yet.
 -->
-
-# The sandbag paid off: Norris calls his shot and sweeps Hungary
 
 Two Fridays running we have said it: [McLaren](/teams/mclaren) mumbling through practice and then finding half a second on Saturday is one of the sport's oldest routines. This time they ran the full act. [Lando Norris](/drivers/lando-norris) sat eleventh in FP1, said nothing, then took FP3, [pole](/series/f1/weekend/11) and [the race](/series/f1/weekend/11/race). His first win of the season he is supposed to be defending, at the track everyone had already handed to somebody else.
 
