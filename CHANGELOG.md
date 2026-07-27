@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.243.0 — 2026-07-27
+
+### Performance
+- **`/api/just-missed` + five `/api/home/*` routes moved to ISR — the `s-maxage` CDN contract died in the migration.** These routes were designed as "cacheable Ajax": `force-dynamic` + `Cache-Control: s-maxage` so the fan-out "runs at most once per window". That header contract was **Vercel's edge cache**; Cloudflare never caches Worker responses on headers alone (verified: no `cf-cache-status`/`x-nextjs-cache` on repeat prod hits), so since the migration every visitor re-ran every fan-out — just-missed measured 1.2s/hit on prod and 6-8s on the cron-less testing worker. Converted to `force-static` + `revalidate` (the `app/api/search` pattern, confirmed against the installed Next 16 route-handler docs), each keeping the exact staleness its own `s-maxage` declared: just-missed 300, spotlight 900, from-the-blog 300, upgrades 3600, latest-decoded 600, threads 120. Verified: just-missed 6-8s → **0.13s** `x-nextjs-cache: HIT` on testing, 1.2s → 0.29s on prod. NOT converted, each for cause: `bets` + `social` (user-shaped), `standings` + `movers` (read `?series=` — a static handler cannot use the request).
+
+### Notes
+- Testing worker redeployed with contributor commits after the `origin/testing` divergence was found and merged (the local branch had grown from a stale local-only commit; `merge-base --is-ancestor` now verified loudly for both sides). `origin/testing` pushed at the operator's request. The four warm-live-data repo secrets were set by the operator; the scheduled refresh activates when this branch reaches `main`.
+
 ## 0.242.0 — 2026-07-27
 
 ### Added

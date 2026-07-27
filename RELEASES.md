@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.243.0 — 2026-07-27
+
+**The home page's data widgets respond instantly again.** Several behind-the-scenes feeds the home page relies on had quietly lost their caching in our hosting move and were being recomputed for every single visitor; they are now cached properly and answer in a fraction of a second.
+
 ## 0.242.0 — 2026-07-27
 
 **The assistant is back.** A build slip had quietly removed the in-app assistant and stopped new notification sign-ups from registering; both are restored.
