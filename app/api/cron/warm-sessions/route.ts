@@ -11,6 +11,7 @@ import {
 import {
   fetchOpenF1WeekendSessions,
   fetchSessionClassification,
+  hasResolvedDrivers,
   type OpenF1Session,
 } from '@/lib/results/openf1';
 import {
@@ -89,6 +90,7 @@ interface WarmOutcome {
     | 'no-round'
     | 'no-openf1-match'
     | 'no-classification'
+    | 'no-driver-names'
     | 'capture-cap';
 }
 
@@ -160,6 +162,13 @@ export async function GET(req: Request) {
         // Likely still locked out or not yet published — never cache a miss;
         // the next 30-min tick retries.
         outcomes.push({ session: slug, round, status: 'no-classification' });
+        continue;
+      }
+      if (!hasResolvedDrivers(classification)) {
+        // Timing came back but the `/drivers` join didn't, so every row is a
+        // bare `#<car number>`. Caching that pins a nameless table for the full
+        // 7-day TTL; skip and let the next tick try again.
+        outcomes.push({ session: slug, round, status: 'no-driver-names' });
         continue;
       }
 

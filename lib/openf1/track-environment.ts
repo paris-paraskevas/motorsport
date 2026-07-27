@@ -185,7 +185,7 @@ export function buildEnvironment(
   }
   const farAway = new Vector3().subVectors(pts[farI], c); farAway.y = 0;
   const outSign: 1 | -1 = side[farI].dot(farAway) >= 0 ? 1 : -1;
-  const outfield = (_i?: number): 1 | -1 => outSign;
+  const outfield = (): 1 | -1 => outSign;
 
   // BARRIERS — a continuous low wall on each edge at a modest constant set-back. Each point
   // keeps its OWN centreline elevation (pts[i].y — smooth along the track). We deliberately
@@ -202,7 +202,7 @@ export function buildEnvironment(
   const grandstands: Placement[] = [];
   const banners: Placement[] = [];
   for (const i of corners) {
-    const s = outfield(i);
+    const s = outfield();
     const rotationY = Math.atan2(tans[i].x, tans[i].z);
     grandstands.push({
       position: drape(pts[i].clone().addScaledVector(side[i], s * (edgeAt(i, s) + runoff + STAND_MULT * w))),
@@ -223,7 +223,7 @@ export function buildEnvironment(
   const tStride = Math.max(1, Math.floor(n / TREES_TOTAL[tier]));
   const clearSq = (TREE_CLEAR_MULT * w) ** 2;
   for (let i = 0; i < n; i += tStride) {
-    const s = outfield(i);
+    const s = outfield();
     const jitter = Math.abs((rand() - 0.5) * w * 1.5);
     const rotationY = rand() * Math.PI * 2;
     const scale = 0.45 + rand() * 0.4;
@@ -267,13 +267,13 @@ function dropFolds(offsetPts: Vector3[], tans: Vector3[]): Vector3[] {
 
 function buildPit(
   pts: Vector3[], tans: Vector3[], side: Vector3[], ang: number[], w: number,
-  runoff: number, edgeAt: (i: number, s: 1 | -1) => number, outfield: (i: number) => 1 | -1,
+  runoff: number, edgeAt: (i: number, s: 1 | -1) => number, outfield: () => 1 | -1,
   drape: (v: Vector3) => Vector3,
 ): Pit | null {
   const n = pts.length;
   const { start, len } = longestStraight(ang);
   if (len < 10) return null; // no straight long enough for a pit complex
-  const s = outfield(start); // consistent along a straight
+  const s = outfield(); // consistent along a straight
   const gap = PIT_GAP_MULT * w;
   const laneW = PIT_LANE_MULT * w;
   const garageBack = GARAGE_BACK_MULT * w;

@@ -1,0 +1,64 @@
+{
+  // TESTING worker — serves testing.paddock-tracker.com from the `testing`
+  // branch so contributor work never has to touch main/prod. Deploy flow:
+  //   git checkout testing   (with the Cloudflare migration merged in)
+  //   npx opennextjs-cloudflare build && npx wrangler deploy -c wrangler.testing.jsonc
+  //   (secrets are per-worker: scripts mirror them from the prod worker once;
+  //    `wrangler secret put <KEY> --name motorsport-testing` for later changes)
+  //
+  // Differences from prod (wrangler.jsonc), each deliberate:
+  //  - NO `triggers` block: the crons (notify, publish-posts, …) must run ONCE,
+  //    on prod. A second worker firing them would double-send pushes and
+  //    double-publish posts against the same prod KV/Supabase.
+  //  - Route is the testing subdomain only (its DNS record already exists,
+  //    Cloudflare-proxied — verified 2026-07-27, it was 402ing at dead Vercel).
+  //  - Same R2 bucket but under the `testing-cache` prefix so the two workers'
+  //    ISR entries can never collide.
+  //  - WORKER_SELF_REFERENCE points at THIS worker (revalidation calls back in).
+  //  - DATA_SOURCE=db as on prod: testing reads the same seeded KV/Supabase
+  //    snapshots and never fetches (or writes) upstream data.
+  //    ⚠ App mutations (bets, threads, blog admin) DO hit the same prod
+  //    Supabase — fine for a two-person team, but know it.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": "worker.ts",
+  "name": "motorsport-testing",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "routes": [
+    { "pattern": "testing.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
+  ],
+  "vars": {
+    "DATA_SOURCE": "db",
+    "NEXT_INC_CACHE_R2_PREFIX": "testing-cache"
+  },
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "paddock-inc-cache"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "motorsport-testing"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"]
+    }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}

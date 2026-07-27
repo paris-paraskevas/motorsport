@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import type { Element } from 'domhandler';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 
 export type { RaceResult, RaceResultEntry };
@@ -344,7 +345,7 @@ export function parseNlsSeasonResults(html: string): NlsWinnerRow[] {
 // points=0 for every entry: NLS awards no season championship points, so a
 // non-zero value would be a fabrication (and profile-stats.ts already returns
 // null form for the series). The winners-only flat row doesn't render points.
-export async function fetchNlsSeasonResults(
+async function fetchNlsSeasonResultsLive(
   season = 2026,
 ): Promise<RaceResult[]> {
   const html = await fetchSeasonHtml();
@@ -381,4 +382,13 @@ export async function fetchNlsSeasonResults(
   }
 
   return races.sort((a, b) => a.round - b.round);
+}
+
+/**
+ * Public NLS season results, over the durable `source_snapshot` last-good — the
+ * Worker's egress IPs are rate-limited upstream, so it serves what the clean-IP
+ * warm cron wrote; `DATA_SOURCE=db` skips upstream entirely.
+ */
+export async function fetchNlsSeasonResults(season = 2026): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:nls', () => fetchNlsSeasonResultsLive(season));
 }

@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Saira_Condensed } from 'next/font/google';
@@ -128,8 +126,6 @@ export default async function RootLayout({
           <CookieConsent />
           <AssistantWidget />
           <HeatmapTracker />
-          <Analytics />
-          <SpeedInsights />
           {/* Deferred to lazyOnload (was afterInteractive): none of these are
               needed for first paint — AdSense isn't even approved yet, and GA4
               fires fine post-idle (consent updates queue into dataLayer, which

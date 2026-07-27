@@ -6,7 +6,11 @@ import { publishedPosts } from '@/lib/blog';
 // most once per window, not per visit. Latest published posts only; the
 // underlying query is fail-soft (returns [] when Supabase isn't configured or
 // errors), so this never throws.
-export const dynamic = 'force-dynamic';
+// ISR (force-static + revalidate), not force-dynamic + s-maxage: the s-maxage
+// contract was Vercel's edge cache and died in the Cloudflare migration — see
+// app/(app)/api/just-missed/route.ts (0.243.0). Same staleness the header promised.
+export const dynamic = 'force-static';
+export const revalidate = 300;
 
 // Up to the max the widget's `count` setting allows (the client slices down).
 const LIMIT = 6;

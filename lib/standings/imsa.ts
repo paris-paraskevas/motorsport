@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 // IMSA WeatherTech SportsCar Championship has four classes that each award
 // their own drivers' / teams' / manufacturers' titles. LMP2 is privateer-only
@@ -223,7 +224,7 @@ function readTable(
   return { header, rows };
 }
 
-export async function fetchImsaStandings(): Promise<ImsaStandings | null> {
+async function fetchImsaStandingsLive(): Promise<ImsaStandings | null> {
   let html: string;
   try {
     const res = await fetchUpstream(STANDINGS_URL, {
@@ -307,4 +308,19 @@ export async function fetchImsaStandings(): Promise<ImsaStandings | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Public IMSA standings fetch, wrapped in the durable `source_snapshot`
+ * last-good. The live parse fails closed (null) unless every class populated, so
+ * on Cloudflare — whose egress IPs the source blocks — this serves the last
+ * payload the clean-IP warm cron wrote. Under `DATA_SOURCE=db` the snapshot is
+ * read directly and the upstream page is never fetched.
+ */
+export async function fetchImsaStandings(): Promise<ImsaStandings | null> {
+  return withSourceSnapshot<ImsaStandings | null>(
+    'standings:imsa',
+    fetchImsaStandingsLive,
+    v => v == null || IMSA_CLASSES.every(c => (v.drivers[c]?.length ?? 0) === 0),
+  );
 }

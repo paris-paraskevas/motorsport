@@ -5,7 +5,11 @@ import { loadLatestF1Upgrades } from '@/lib/series-content';
 // opt-in home "F1 car upgrades" widget. Reads the curated FIA sidecar (fs), so
 // it's cheap + edge-cacheable; fail-soft to null. F1-only (only F1 publishes the
 // Car Presentation doc). Mirrors the /api/home/* defer-fetch pattern.
-export const dynamic = 'force-dynamic';
+// ISR (force-static + revalidate), not force-dynamic + s-maxage: the s-maxage
+// contract was Vercel's edge cache and died in the Cloudflare migration — see
+// app/(app)/api/just-missed/route.ts (0.243.0). Same staleness the header promised.
+export const dynamic = 'force-static';
+export const revalidate = 3600;
 
 export interface HomeUpgradesData {
   round: number;

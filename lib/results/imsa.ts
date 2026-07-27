@@ -1,5 +1,6 @@
 import { type ImsaClass } from '@/lib/standings/imsa';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 import manifest from '@/content/series/imsa/alkamel-rounds.json';
 
 // IMSA WeatherTech SportsCar Championship — full-class race results sourced
@@ -211,7 +212,7 @@ export async function fetchImsaRoundResults(
   }
 }
 
-export async function fetchImsaSeasonResults(): Promise<ImsaRoundResults[]> {
+async function fetchImsaSeasonResultsLive(): Promise<ImsaRoundResults[]> {
   const rounds = manifest.rounds ?? [];
   const settled = await Promise.all(
     rounds.map(r => fetchImsaRoundResults(r.url, r.round)),
@@ -219,4 +220,22 @@ export async function fetchImsaSeasonResults(): Promise<ImsaRoundResults[]> {
   return settled
     .filter((r): r is ImsaRoundResults => r !== null)
     .sort((a, b) => a.round - b.round);
+}
+
+/**
+ * Public IMSA season results, over the durable `source_snapshot` last-good —
+ * Alkamel's host blocks Cloudflare's egress IPs, so the Worker serves what the
+ * clean-IP warm cron wrote (and fetches nothing under `DATA_SOURCE=db`).
+ */
+export async function fetchImsaSeasonResults(): Promise<ImsaRoundResults[]> {
+  const rounds = await withSourceSnapshot<ImsaRoundResults[]>(
+    'results:imsa',
+    fetchImsaSeasonResultsLive,
+    v => v == null || v.length === 0,
+  );
+  // jsonb round-trips `date` to an ISO string; the results tab formats it.
+  return (rounds ?? []).map(r => ({
+    ...r,
+    date: r.date instanceof Date ? r.date : new Date(r.date),
+  }));
 }

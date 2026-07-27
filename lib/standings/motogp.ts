@@ -1,5 +1,6 @@
 import type { DriverStanding } from '@/lib/types';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 export type { DriverStanding };
 
@@ -88,7 +89,7 @@ export async function resolveMotoGPSeasonUuid(year: number): Promise<string | nu
 export const MOTOGP_API_BASE = API_BASE;
 export const MOTOGP_CATEGORY_UUID_EXPORT = MOTOGP_CATEGORY_UUID;
 
-export async function fetchMotoGPStandings(year: number): Promise<{
+async function fetchMotoGPStandingsLive(year: number): Promise<{
   drivers: DriverStanding[];
 } | null> {
   const seasonUuid = await resolveMotoGPSeasonUuid(year);
@@ -126,4 +127,21 @@ export async function fetchMotoGPStandings(year: number): Promise<{
 
   if (drivers.length < MIN_RIDERS) return null;
   return { drivers: drivers.sort((a, b) => a.position - b.position) };
+}
+
+/**
+ * Public MotoGP standings fetch, wrapped in the durable `source_snapshot`
+ * last-good (same contract as `lib/standings/dtm.ts`): Pulselive blocks
+ * Cloudflare's egress IPs, so on the Worker the live fetch returns null and this
+ * serves the last payload the clean-IP warm cron wrote. Under `DATA_SOURCE=db`
+ * the snapshot is read directly and Pulselive is never called.
+ */
+export async function fetchMotoGPStandings(year: number): Promise<{
+  drivers: DriverStanding[];
+} | null> {
+  return withSourceSnapshot(
+    'standings:motogp',
+    () => fetchMotoGPStandingsLive(year),
+    v => v == null || v.drivers.length === 0,
+  );
 }

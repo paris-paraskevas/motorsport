@@ -24,6 +24,10 @@ function pad(n: number): string {
   return n.toString().padStart(2, '0');
 }
 
+function getTargetDate(target: string): Date {
+  return new Date(target);
+}
+
 export function NextRaceCountdown({
   target,
   label,
@@ -33,12 +37,12 @@ export function NextRaceCountdown({
   label: string;
   color?: string;
 }) {
-  const targetDate = new Date(target);
   const [parts, setParts] = useState<CountdownParts | null>(() =>
-    partsBetween(targetDate, new Date()),
+    partsBetween(getTargetDate(target), new Date()),
   );
 
   useEffect(() => {
+    const targetDate = getTargetDate(target);
     const tick = () => setParts(partsBetween(targetDate, new Date()));
     tick();
     const id = setInterval(tick, 1000);

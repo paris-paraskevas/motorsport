@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
     // dot-dirs nor .gitignore, so without this every finding reports ~15×
     // and real errors drown (audit 4-3).
     ".claude/**",
+    ".agents/**",
     // Generated serwist bundles.
     "public/sw*.js",
     "public/swe-worker-*.js",

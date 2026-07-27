@@ -6,6 +6,7 @@ import type {
   CuratedDriversFile,
 } from '@/lib/types';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -423,10 +424,21 @@ export function parseSeasonResultsFromHtml(
   }
 }
 
-export async function fetchIndyCarSeasonResults(opts: {
+async function fetchIndyCarSeasonResultsLive(opts: {
   drivers?: CuratedDriversFile | null;
 }): Promise<RaceResult[]> {
   const html = await fetchHtml(WIKIPEDIA_URL);
   if (!html) return [];
   return parseSeasonResultsFromHtml(html, opts.drivers ?? null);
+}
+
+/**
+ * Public IndyCar season results, over the durable `source_snapshot` last-good.
+ * The curated `drivers` file only supplies name normalisation, so the payload is
+ * stable across callers and one snapshot slot serves them all.
+ */
+export async function fetchIndyCarSeasonResults(opts: {
+  drivers?: CuratedDriversFile | null;
+}): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:indycar', () => fetchIndyCarSeasonResultsLive(opts));
 }

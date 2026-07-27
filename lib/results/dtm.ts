@@ -7,6 +7,7 @@ import {
   writeResultsCache,
   seasonCacheKey,
 } from '@/lib/results-cache';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -239,7 +240,13 @@ function harvestPicker(
   season: number,
   meta: Map<string, EventMeta>,
 ): void {
-  $('a.msnt-select__option--event').each((_, a) => {
+  // motorsport.com dropped the `--event` modifier from the picker markup
+  // (verified 2026-07-27: the landing page carries `a.msnt-select__option` only,
+  // and the `--event` selector matched 0 of them) — which silently cut the feed
+  // down to the single event the landing URL redirects to. Match BOTH class
+  // forms and let `eventSlugFromUrl` reject anything that isn't a
+  // `/dtm/results/<season>/<slug>` link, so neither markup can empty this again.
+  $('a.msnt-select__option--event, a.msnt-select__option').each((_, a) => {
     const slug = eventSlugFromUrl($(a).attr('href') || '');
     if (!slug) return;
     const existing = meta.get(slug);
@@ -317,7 +324,7 @@ export function parseDTMRaceClassification(html: string): RaceResultEntry[] | nu
   }
 }
 
-export async function fetchDTMSeasonResults(
+async function fetchDTMSeasonResultsLive(
   season: number,
   rounds?: { round: number; startDate: string }[],
 ): Promise<RaceResult[]> {
@@ -401,4 +408,19 @@ export async function fetchDTMSeasonResults(
 
   if (races.length > 0) await writeResultsCache(cacheKey, races);
   return races;
+}
+
+/**
+ * Public DTM season results: durable `source_snapshot` last-good beneath the KV
+ * window. `rounds` only maps event dates to canonical round numbers (curated
+ * content), so one snapshot slot serves every caller. `fetchDTMSeasonChartData`
+ * needs no wrapper — it derives from the already-snapshotted DTM standings.
+ */
+export async function fetchDTMSeasonResults(
+  season: number,
+  rounds?: { round: number; startDate: string }[],
+): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:dtm', () =>
+    fetchDTMSeasonResultsLive(season, rounds),
+  );
 }

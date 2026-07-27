@@ -9,7 +9,9 @@
 // was unverified at first ship; per CLAUDE.md, verify on preview/prod before
 // trusting it (Jolpica precedent suggests fine).
 
-const BASE = 'https://api.openf1.org/v1';
+import { fetchOpenF1 } from '@/lib/openf1/client';
+import { loadCuratedDrivers } from '@/lib/series-content';
+
 const REVALIDATE_SECONDS = 300;
 
 export interface OpenF1Session {
@@ -74,16 +76,29 @@ export interface SessionClassification {
   entries: SessionClassificationEntry[];
 }
 
-async function fetchJson<T>(path: string): Promise<T | null> {
-  try {
-    const res = await fetch(`${BASE}${path}`, {
-      next: { revalidate: REVALIDATE_SECONDS },
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
+/**
+ * Every OpenF1 read in this module goes through the shared paced client
+ * (`lib/openf1/client.ts`), which enforces BOTH documented free-tier limits
+ * (3 req/s and 30 req/min) and routes through `fetchUpstream` for the timeout +
+ * failure logging.
+ *
+ * It used to call `fetch` directly: unpaced, untimed, and silent — a 429 became
+ * `null` with nothing in the logs. On a weekend session page, which fans out to
+ * several OpenF1 endpoints at once, that reliably throttled one call while its
+ * sibling succeeded. The visible symptom was the Hungary classification
+ * rendering `#1`, `#3` instead of driver names: `/session_result` returned, its
+ * parallel `/drivers` was throttled to `[]`, and the half-resolved result was
+ * then cached.
+ *
+ * `fetchOpenF1` always resolves to an array (`[]` on any failure), so this
+ * keeps the module's `T[] | null` contract by mapping empty → null; callers
+ * already branch on null.
+ */
+async function fetchJson<T>(path: string): Promise<T[] | null> {
+  const [endpoint, qs = ''] = path.replace(/^\//, '').split('?');
+  const filters = qs ? qs.split('&').filter(Boolean) : [];
+  const rows = await fetchOpenF1<T>(endpoint, {}, { filters, revalidate: REVALIDATE_SECONDS });
+  return rows.length > 0 ? rows : null;
 }
 
 /**
@@ -95,7 +110,7 @@ export async function fetchOpenF1WeekendSessions(
   start: Date,
   end: Date,
 ): Promise<OpenF1Session[]> {
-  const all = await fetchJson<OpenF1Session[]>(
+  const all = await fetchJson<OpenF1Session>(
     `/sessions?year=${start.getUTCFullYear()}`,
   );
   if (!all) return [];
@@ -169,16 +184,49 @@ function lastFiniteIndex(arr: Array<number | null>): number {
   return -1;
 }
 
+/**
+ * True when a classification carries real driver identities rather than the
+ * `#<car number>` placeholder used when the `/drivers` join comes back empty.
+ *
+ * Callers persist classifications to KV for 7 days, so a nameless one must never
+ * be written — that is exactly how the Hungary race sat cached as `#1 / #3 /
+ * #12` with blank teams while its timing data was perfectly correct. The visitor
+ * on the render that produced it still sees the timing; it just doesn't get
+ * frozen in for a week.
+ */
+export function hasResolvedDrivers(c: SessionClassification | null): boolean {
+  if (!c || c.entries.length === 0) return false;
+  return c.entries.some(e => e.driverName && !/^#\d+$/.test(e.driverName));
+}
+
 export async function fetchSessionClassification(
   session: OpenF1Session,
 ): Promise<SessionClassification | null> {
   const [results, drivers] = await Promise.all([
-    fetchJson<OpenF1Result[]>(`/session_result?session_key=${session.session_key}`),
-    fetchJson<OpenF1Driver[]>(`/drivers?session_key=${session.session_key}`),
+    fetchJson<OpenF1Result>(`/session_result?session_key=${session.session_key}`),
+    fetchJson<OpenF1Driver>(`/drivers?session_key=${session.session_key}`),
   ]);
   if (!results || results.length === 0) return null;
 
   const byNumber = new Map((drivers ?? []).map(d => [d.driver_number, d]));
+  // Belt-and-braces: if `/drivers` came back empty (throttled, or the session is
+  // inside OpenF1's paid live window), fall back to the curated F1 grid, which
+  // carries each driver's car number. Timing data is useless without identities,
+  // and this file is F1-only (OpenF1 covers no other series).
+  if (byNumber.size === 0) {
+    const curated = await loadCuratedDrivers('f1');
+    for (const team of curated?.teams ?? []) {
+      for (const d of team.drivers) {
+        if (d.number == null) continue;
+        byNumber.set(d.number, {
+          driver_number: d.number,
+          full_name: d.name,
+          name_acronym: d.code,
+          team_name: team.name,
+        });
+      }
+    }
+  }
   const isQualifying = /qualifying/i.test(session.session_name);
   const isRace = /^(sprint|race)$/i.test(session.session_name);
 

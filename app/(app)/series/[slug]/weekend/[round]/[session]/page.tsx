@@ -18,6 +18,7 @@ import {
 import {
   fetchOpenF1WeekendSessions,
   fetchSessionClassification,
+  hasResolvedDrivers,
   type OpenF1Session,
   type SessionClassification,
 } from '@/lib/results/openf1';
@@ -607,7 +608,10 @@ export default async function SessionPage({
       // Persist only a real result — never cache a null/empty miss, so a
       // transient upstream failure (e.g. the OpenF1 live-session 401) doesn't
       // freeze an empty page for the whole TTL; it retries next render instead.
-      if (classification || classClassifications.length > 0) {
+      // `hasResolvedDrivers` extends that to a HALF-failure: a classification
+      // whose driver join was throttled to `[]` renders `#1`/`#3` with blank
+      // teams, and caching that pinned the Hungary race in that state for days.
+      if ((classification && hasResolvedDrivers(classification)) || classClassifications.length > 0) {
         await writeResultsCache(
           cacheKey,
           { classification, classClassifications },

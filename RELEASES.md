@@ -1,5 +1,27 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.243.0 — 2026-07-27
+
+**The home page's data widgets respond instantly again.** Several behind-the-scenes feeds the home page relies on had quietly lost their caching in our hosting move and were being recomputed for every single visitor; they are now cached properly and answer in a fraction of a second.
+
+## 0.242.0 — 2026-07-27
+
+**The assistant is back.** A build slip had quietly removed the in-app assistant and stopped new notification sign-ups from registering; both are restored.
+
+**Behind the scenes.** A separate testing copy of the site now exists so new work can be tried safely away from the live site, and first visits to rarely-viewed pages got dramatically faster.
+
+## 0.241.0 — 2026-07-27
+
+**Pages load in a fraction of the time.** Pages are now held in a proper cache instead of being rebuilt for every single visitor, and the site no longer waits on outside data feeds while you sit there. The Formula 1 standings page went from over nine seconds to about a tenth of a second.
+
+**Session results show driver names again.** The Hungarian Grand Prix classification was listing car numbers with blank teams. The timing was right all along, but the driver list it pairs with had failed to load and got stored that way. Fixed, and results can no longer be saved without names attached.
+
+## 0.240.0 — 2026-07-27
+
+**Standings and results are now stable and consistent.** Every series' championship tables and race results are served from our own database, refreshed on a schedule, instead of being re-fetched from each series' feed every time you open a page. Reloading a page no longer shows different numbers, and a feed having a bad minute can't leave a table half-filled or stuck mid-season.
+
+**NASCAR Cup race results are back.** Wikipedia changed the shape of its links and our reader quietly stopped finding any races; all 22 rounds of the season, with full finishing orders, are on the results page again.
+
 ## 0.239.1 — 2026-07-24
 
 **Behind the scenes.** Session housekeeping notes.

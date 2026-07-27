@@ -1,6 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Saira_Condensed } from 'next/font/google';
@@ -59,7 +57,7 @@ export const viewport: Viewport = {
 // Marketing root layout — deliberately bare: no ClerkProvider, no AdSense,
 // no GA, no consent modal. Nothing here sets cookies or non-essential
 // storage, so the landing needs no consent UI; the workstation (app) group
-// keeps all of that. Vercel Analytics/Speed Insights are cookieless.
+// keeps all of that.
 export default function MarketingLayout({
   children,
 }: {
@@ -73,8 +71,6 @@ export default function MarketingLayout({
       <body className="min-h-screen bg-bg text-text">
         <ThemeScript />
         {children}
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

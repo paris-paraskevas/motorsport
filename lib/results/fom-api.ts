@@ -2,6 +2,7 @@ import type { RaceResult, RaceResultEntry, DriverStanding, ConstructorStanding }
 import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
 
@@ -336,7 +337,7 @@ async function mapWithLimit<T>(items: T[], limit: number, fn: (item: T) => Promi
  * throughout (empty bundle on any failure). Cached under a season key so the
  * fan-out runs at most once per 3-hour window.
  */
-export async function fetchFomSeason(brand: FomBrand, season: number): Promise<FomSeasonBundle> {
+async function fetchFomSeasonLive(brand: FomBrand, season: number): Promise<FomSeasonBundle> {
   const cacheKey = bundleCacheKey(brand, season);
   const cached = await readResultsCache<FomSeasonBundle>(cacheKey);
   if (cached) return cached;
@@ -391,6 +392,39 @@ export async function fetchFomSeason(brand: FomBrand, season: number): Promise<F
     await writeResultsCache(cacheKey, bundle);
   }
   return bundle;
+}
+
+/**
+ * Public season fetch (F2 + F3 results AND their weekend session pages), layered
+ * over the durable `source_snapshot` last-good beneath the 3-hour KV window. The
+ * KV tier is evictable and short; the snapshot is what keeps the tabs populated
+ * on Cloudflare, whose egress IPs api.formula1.com rate-limits. Under
+ * `DATA_SOURCE=db` the snapshot is read directly and the API is never called.
+ *
+ * `RaceResult.date` is a `Date`; jsonb stores it as an ISO string, so the read
+ * path rehydrates it (the F2/F3 tabs call `.toLocaleDateString` on it).
+ */
+export async function fetchFomSeason(brand: FomBrand, season: number): Promise<FomSeasonBundle> {
+  const bundle = await withSourceSnapshot<FomSeasonBundle>(
+    `results:fom:${brand}:${season}`,
+    () => fetchFomSeasonLive(brand, season),
+    v => v == null || (v.feature.length === 0 && v.sprint.length === 0),
+  );
+  return reviveBundleDates(bundle);
+}
+
+/** jsonb round-trips `Date` → ISO string; restore it on every race row. */
+function reviveBundleDates(bundle: FomSeasonBundle | undefined): FomSeasonBundle {
+  // The wrapper's catch can surface `undefined` (no snapshot, fetcher threw);
+  // every caller destructures the bundle, so normalise to the empty shape.
+  if (!bundle) return EMPTY_BUNDLE;
+  const races = (rows: RaceResult[]): RaceResult[] =>
+    rows.map(r => (r.date instanceof Date ? r : { ...r, date: new Date(r.date as unknown as string) }));
+  return {
+    ...bundle,
+    feature: races(bundle.feature ?? []),
+    sprint: races(bundle.sprint ?? []),
+  };
 }
 
 // ---- Standings ----------------------------------------------------------

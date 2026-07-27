@@ -160,6 +160,57 @@ describe('withSourceSnapshot — durable last-good', () => {
     });
   });
 
+  // DATA_SOURCE=db — the Cloudflare Worker's read-only data mode. The request
+  // path must never call upstream when a snapshot exists, and must never write.
+  describe('DB-as-source-of-truth mode (DATA_SOURCE=db)', () => {
+    beforeEach(() => {
+      process.env.DATA_SOURCE = 'db';
+    });
+    afterEach(() => {
+      delete process.env.DATA_SOURCE;
+    });
+
+    it('serves the snapshot WITHOUT running the fetcher', async () => {
+      await writeSnapshot('standings:dtm', GOOD);
+      const fetcher = vi.fn(async () => ({ drivers: [{ name: 'partial', points: 2 }] }));
+      const result = await withSourceSnapshot<Standings | null>('standings:dtm', fetcher, isEmpty);
+      expect(result).toEqual(GOOD);
+      expect(fetcher).not.toHaveBeenCalled();
+    });
+
+    it('never persists — a partial upstream payload cannot overwrite the DB', async () => {
+      await writeSnapshot('standings:dtm', GOOD);
+      // Force the miss path, then assert the fetched payload was NOT stored.
+      await withSourceSnapshot<Standings | null>(
+        'standings:other',
+        async () => ({ drivers: [{ name: 'partial', points: 2 }] }),
+        isEmpty,
+      );
+      expect(await readSnapshot<Standings>('standings:other')).toBeNull();
+      expect(await readSnapshot<Standings>('standings:dtm')).toEqual(GOOD);
+    });
+
+    it('an unseeded slot falls through to the fetcher rather than blanking', async () => {
+      const result = await withSourceSnapshot<Standings | null>(
+        'standings:unseeded',
+        async () => GOOD,
+        isEmpty,
+      );
+      expect(result).toEqual(GOOD);
+    });
+
+    it('an unseeded slot whose fetcher throws returns the empty value, not a throw', async () => {
+      const result = await withSourceSnapshot<Standings | null>(
+        'standings:unseeded',
+        async () => {
+          throw new Error('jolpica 429');
+        },
+        isEmpty,
+      );
+      expect(result).toBeUndefined();
+    });
+  });
+
   describe('FAIL-SOFT when Supabase throws', () => {
     it('a read outage on the failure path falls back to the fresh empty value', async () => {
       failReads = true;

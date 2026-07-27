@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { deriveIntervals } from './openf1';
+import { deriveIntervals, hasResolvedDrivers } from './openf1';
 
 // gap_to_leader shapes observed live from OpenF1 (see the module header):
 // numbers for timed rows, "+N LAP" strings for lapped cars, null for the
@@ -65,5 +65,48 @@ describe('deriveIntervals', () => {
   it('handles empty and single-row inputs', () => {
     expect(deriveIntervals([])).toEqual([]);
     expect(deriveIntervals([null])).toEqual([null]);
+  });
+});
+
+// The cache gate that stops a half-failed classification being frozen into KV
+// for its 7-day TTL. Reproduces the payload found cached for the 2026 Hungarian
+// GP: correct timing, but every driver reduced to a bare car number because the
+// parallel /drivers call was throttled to [].
+describe('hasResolvedDrivers', () => {
+  const entry = (driverName: string) => ({ position: 1, driverName, team: '' });
+
+  it('rejects the nameless payload that was cached for Hungary', () => {
+    expect(
+      hasResolvedDrivers({
+        isQualifying: false,
+        isRace: true,
+        entries: [entry('#1'), entry('#3'), entry('#12')],
+      }),
+    ).toBe(false);
+  });
+
+  it('accepts a classification with real driver names', () => {
+    expect(
+      hasResolvedDrivers({
+        isQualifying: false,
+        isRace: true,
+        entries: [entry('Lando Norris'), entry('#3')],
+      }),
+    ).toBe(true);
+  });
+
+  it('rejects null and empty classifications', () => {
+    expect(hasResolvedDrivers(null)).toBe(false);
+    expect(hasResolvedDrivers({ isQualifying: false, isRace: true, entries: [] })).toBe(false);
+  });
+
+  it('does not mistake a name containing a number for a placeholder', () => {
+    expect(
+      hasResolvedDrivers({
+        isQualifying: false,
+        isRace: false,
+        entries: [entry('Car #44 Mercedes')],
+      }),
+    ).toBe(true);
   });
 });

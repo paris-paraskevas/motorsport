@@ -6,7 +6,54 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-24 (LATEST, session 21 — theme gallery + 7 more ships + F1-upgrades parser) — `main` = 0.239.0
+## ⚡ Next session pickup — 2026-07-27 (LATEST, session 22 — MIGRATED PROD OFF VERCEL TO CLOUDFLARE WORKERS) — live on Cloudflare; `main` still 0.239.1 (NOT the deployed artifact)
+
+Emergency + huge session (2026-07-26 → 07-27). Vercel disabled the project (HTTP 402, Fluid Active CPU 300% over cap on race weekend); operator refused Pro ($25/mo). **Migrated the entire site to Cloudflare Workers via OpenNext (~$5/mo).** Live at paddock-tracker.com off Vercel. ALL work on branch `spike/cloudflare-opennext` — committed, **NOT pushed, NOT merged to main**.
+
+### ⚠️⚠️ READ FIRST — prod works FUNDAMENTALLY differently now
+- **Live site = the Cloudflare Worker** (project `motorsport`), served via Workers routes `paddock-tracker.com/*` + `www`. Vercel is bypassed (still 402; routes intercept before it).
+- **NO CI. `git push` does NOT deploy** — it only pokes the dead Vercel. To update the live site: **rebuild+deploy from local**: `npx opennextjs-cloudflare build && npx wrangler deploy` (repo root; wrangler is authed to operator's Cloudflare — pparaskevas.dev@gmail.com, acct 9f32c7e6…).
+- **`dev.paddock-tracker.com` is NOT routed to CF** (still hits dead Vercel → 402). Admin works on `paddock-tracker.com/blog` + `/admin`.
+
+### ✅ Migration shipped (branch, commit `8547812` + this session's follow-up commits)
+- OpenNext (`@opennextjs/cloudflare` 1.20.2) + wrangler; Next 16.2.6→16.2.12. `open-next.config.ts`, `wrangler.jsonc` (nodejs_compat + global_fetch_strictly_public; apex+www routes; 13 cron triggers).
+- **proxy.ts → middleware.ts** (Next 16 Proxy = Node runtime, OpenNext needs Edge).
+- **node-ical → ical.js** (`lib/ics.ts`; node-ical empty on workerd; verified byte-identical, 23 tests).
+- **content/** fs → build-time bundle** (THE blocker): unenv has NO runtime fs.readFile/readdir → every content page 404'd. `scripts/bundle-content.mts` → `lib/content-bundle.generated.ts` (prebuild/pretest hooks); `lib/content-fs.ts` shim (real-fs fallback for tests); 13 loaders swapped fs import.
+- Secrets on the Worker: pk_live Clerk (`.env.cloudflare.local`), prod Supabase (`.env.blog`), KV (prod), CRON_SECRET+Google-AI (`.env.local`). images.unoptimized; @vercel/analytics+speed-insights removed.
+
+### 🔴 DATA-EGRESS problem + fix (CRITICAL)
+- **Community data APIs block Cloudflare's shared egress IPs** — jolpi.ca 429 CONFIRMED; FOM/Pulselive/motorsport.com/Wikipedia/fiawec likely too. The Worker CANNOT fetch standings/results → they render EMPTY/wrong. (OpenF1 is NOT blocked → weekend/live-timing always works.) The exact "verify outbound on a real deploy" landmine.
+- **Fix (no site-code change):** the site already falls back to a KV + Supabase "last-good" cache on fetch failure; it was never seeded (every CF fetch 429s). `scripts/warm-live-data.mts` runs the real fetchers (via runStandingsHealth/runResultsHealth = ALL series) FROM A CLEAN IP → writes the KV+snapshot the Worker reads. **Seeded manually 2026-07-27: all 13 series standings + 8 results** (F1 core verified correct at wrap). BUT seeding is NOT a durable fix: the request path still calls the API first, so data is NON-DETERMINISTIC — a CF colo that isn't blocked returns partial/stale data and OVERWRITES the good cache. Real fix = DB-as-source-of-truth (Next-session Task 1). Re-seed meanwhile: `npx tsx --env-file=<prod KV+Supabase> scripts/warm-live-data.mts`.
+- **DURABLE:** `.github/workflows/warm-live-data.yml` runs it every 20 min on GitHub's clean IPs. **⚠️ OPERATOR MUST ADD 4 GITHUB REPO SECRETS: `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.** Until then the seed is FROZEN at round 11 (fine till Zandvoort 23 Aug; won't self-update).
+- **Reframe:** GitHub Actions is now ESSENTIAL (only clean-IP runner reaching the APIs). Keep warm-live-data; the OTHER 13 old crons are superseded by CF Cron Triggers + should be deleted.
+
+### 🔔 Crons + notifications (redesigned, live)
+- **13 Cloudflare Cron Triggers** via `worker.ts` (custom entry: re-exports OpenNext fetch + Durable Objects, adds `scheduled()`). scheduled() self-fetches `/api/cron/<job>` over HTTPS with the Worker's CRON_SECRET (in-process `handler.fetch` returned 402 → real `fetch` + global_fetch_strictly_public fixed it). notify bumped to every 1 min.
+- **Notification redesign** (`app/api/cron/notify/route.ts` + notify-ledger/coalesce + tests): REMOVED t30 (~30-min, redundant); TIGHTENED t10 to fire at exactly ~10 min; ADDED `start` = "🔴 Live now" at start; KEPT results-ready (races = the "at end" payoff) + F1 analysis-ready. 931 tests pass.
+- **⚠️ Push can't SEND yet** — VAPID keys not set → notify returns 500 each minute. Operator adds VAPID to `.env.cloudflare.local` (or accept a fresh keypair — invalidates existing subs). Can also make notify fail-quiet.
+
+### 📝 Blog — Hungary weekend
+- FP3 (`3ed431a1`) + Qualifying (`ee8c2620`) — operator APPROVED + PUBLISHED. **Race recap (`9dfddfc6`) left as a prod draft — operator writes it "together" next.** FP1 (`49e381b0`) + FP2 (`199b987b`) also drafted this session. All prod DB drafts (publish_at null); `.md` under `drafts/`. Story: Norris swept FP3+pole+win (McLaren Friday-sandbag → Sunday delivery); Piastri led/crashed(Sainz)/retired; Hamilton+Antonelli 3-place grid penalties.
+
+### 📋 Next session — prioritised (operator's order, 2026-07-27)
+1. **DATA = single source of truth in the DB; the site must NEVER call upstream APIs in the request path.** Data is STILL non-deterministically wrong: the Worker still *tries* jolpi/FOM/Pulselive/etc. on each request, so a Cloudflare colo that isn't blocked returns partial/stale data and OVERWRITES the good KV/Supabase cache. Fix = the operator's model: a cron fetches every series from a CLEAN IP and writes ALL of it (standings, results, drivers — every series) into the DB, and the site reads the DB ONLY, so whatever API fails is irrelevant. Concretely: (a) add a Worker read-only data mode (e.g. `DATA_SOURCE=db`) so `withF1LastGood` (`lib/f1-cache.ts`) + every per-series loader SKIP the upstream fetch and read KV→Supabase-snapshot deterministically; (b) `scripts/warm-live-data.mts` (via `.github/workflows/warm-live-data.yml`, GitHub clean IPs) is the ONLY writer — extend it to any surface still missing (multi-class series, driver season-form); (c) revalidate/purge the ISR page cache after a write (or make the data pages dynamic); (d) verify EVERY surface live (all series standings+results, driver pages, home widget).
+2. **Leftover infra:** Cloudflare Git auto-deploy (Workers Builds) so `git push` deploys; add the `dev.*` admin route (dev.paddock-tracker.com → the Worker); delete the 13 superseded GitHub crons (list under Owed); make notify fail-quiet until VAPID is set.
+3. **Race recap rewrite (together):** finish the Hungary race recap (prod draft `9dfddfc6`, `drafts/f1-hungarian-grand-prix-2026-recap.md`) in the operator's voice.
+
+### 🩹 Owed (operator) — explicit
+- **Add the 4 GitHub secrets** → turns on data auto-refresh (HIGHEST value).
+- **VAPID keys** → push actually sends.
+- **Delete the 13 redundant/failing GitHub crons** (`.github/workflows/{award-prizes,betting-notify,grant-credits,health,news,notify,open-markets,publish-posts,race-week,recheck-results,settle-markets,warm-results,warm-sessions}.yml`) — superseded.
+- Decide: keep Vercel as rollback or cancel Pro. Write the Race recap together. (Session-21 owed still stands: rotate `.supabase-pat`/`SENTRY_AUTH_TOKEN`/`sk_live`.)
+
+### 🔧 Working-tree / infra ledger
+- Branch `spike/cloudflare-opennext`. This session committed: migration (`8547812`), infra follow-ups (crons/notify/data-warm), blog drafts, this handoff, and the operator's pre-session WIP (NextRaceCountdown/eslint/openf1-track-env/indycar.test + docs/drafts deletions) as a separate labelled commit. NOT pushed, NOT merged.
+- `.env.cloudflare.local` (gitignored) = pk_live Clerk + blank VAPID/etc. scratchpad holds merged.env + warm/build logs. Local dev may be on :3000 (kill by PID).
+
+---
+
+## ⚡ Next session pickup — 2026-07-24 (session 21 — theme gallery + 7 more ships + F1-upgrades parser) — `main` = 0.239.0
 
 Long build+ship session (2026-07-23 → 07-24). **8 versions 0.235.0 → 0.239.0, all merged + prod-verified.** HANDOFF/SCHEDULE lagged during the run; this block is the record.
 

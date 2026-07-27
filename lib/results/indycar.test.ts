@@ -85,8 +85,8 @@ function buildTable(opts: {
 }
 
 // 12 finishers — enough to clear the MIN_FINISHERS_PER_RACE floor of 10.
-function twelveFinishers(positions: number[], modifier?: (i: number) => string): string[] {
-  return positions.map((p, i) => row({
+function twelveFinishers(positions: number[], modifier?: (position: number) => string): string[] {
+  return positions.map(p => row({
     pos: p,
     driver: `Driver ${p}`,
     cells: [{ inner: modifier ? modifier(p) : String(p) }],

@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from '@/lib/content-fs';
 import path from 'path';
 import { Session, SessionsOverridesFile, SessionOverrideBlock } from './types';
 

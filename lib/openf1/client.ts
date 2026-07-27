@@ -51,21 +51,43 @@ export function op(field: string, operator: OpenF1FilterOp, value: string | numb
 // throttle that slips through (cross-render / cross-instance contention). The
 // durable dataset caches layered above this client keep warm renders off the
 // network entirely, so this pacing only bites cold fetches.
+// OpenF1's free ("Community") tier documents TWO limits, not one:
+// "up to 3 requests per second and 30 requests per minute" (openf1.org, checked
+// 2026-07-27). The per-minute cap is the binding one — 3/s sustained is 180/min,
+// six times over — and pacing only the per-second rate is what let a weekend
+// session page burst past it. A throttled call returns [] here, and a caller
+// that then persists its degraded result freezes the damage into KV (that is
+// exactly how the Hungary classification ended up cached as "#1"/"#3" with no
+// names). So both buckets are enforced.
 const RATE_PER_SEC = 3;
 const BUCKET_CAP = 3;
+const RATE_PER_MIN = 30;
 let tokens = BUCKET_CAP;
 let lastRefill = Date.now();
+let minuteTokens = RATE_PER_MIN;
+let lastMinuteRefill = Date.now();
 
 async function takeToken(): Promise<void> {
   for (;;) {
     const now = Date.now();
     tokens = Math.min(BUCKET_CAP, tokens + ((now - lastRefill) / 1000) * RATE_PER_SEC);
     lastRefill = now;
-    if (tokens >= 1) {
+    // Refills at 30 per 60s, i.e. one token every 2s, capped at a full minute's
+    // allowance so an idle period can still burst up to 30.
+    minuteTokens = Math.min(
+      RATE_PER_MIN,
+      minuteTokens + ((now - lastMinuteRefill) / 60_000) * RATE_PER_MIN,
+    );
+    lastMinuteRefill = now;
+    if (tokens >= 1 && minuteTokens >= 1) {
       tokens -= 1;
+      minuteTokens -= 1;
       return;
     }
-    await new Promise(resolve => setTimeout(resolve, Math.ceil(1000 / RATE_PER_SEC)));
+    // Wait for whichever bucket is empty: a second-bucket stall clears in ~1/3s,
+    // a minute-bucket stall needs the full 2s inter-token gap.
+    const waitMs = minuteTokens < 1 ? Math.ceil(60_000 / RATE_PER_MIN) : Math.ceil(1000 / RATE_PER_SEC);
+    await new Promise(resolve => setTimeout(resolve, waitMs));
   }
 }
 
