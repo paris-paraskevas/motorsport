@@ -153,11 +153,18 @@ export async function withF1LastGood<T>(
 ): Promise<T> {
   // DB-as-source-of-truth (`DATA_SOURCE=db`, Cloudflare Worker): read the two
   // tiers, never fetch Jolpica, never write. See `isDbReadOnly`.
+  //
+  // SNAPSHOT FIRST here, unlike the fail-soft path below. Outside this mode KV is
+  // the hot tier because it's a per-render read-through; in this mode both tiers
+  // hold the SAME payload (one warm run writes both), so the only thing that
+  // differs is distance — measured from the Athens colo 2026-07-27: Supabase 17ms
+  // TCP RTT, the Upstash KV store 180ms (it is not in an EU region). Reading the
+  // near one first takes ~160ms off every F1 data render.
   if (isDbReadOnly()) {
-    const hot = await readF1LastGood<T>(name);
-    if (hot != null) return hot;
     const durable = await readSnapshot<T>(f1SnapshotKey(name));
     if (durable != null) return reviveDates(durable);
+    const hot = await readF1LastGood<T>(name);
+    if (hot != null) return hot;
     return fetcher();
   }
   const fresh = await fetcher();

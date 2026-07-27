@@ -351,7 +351,7 @@ describe('f1-cache last-good resilience', () => {
       delete process.env.DATA_SOURCE;
     });
 
-    it('serves the KV last-good without calling Jolpica at all', async () => {
+    it('serves a cached tier without calling Jolpica at all', async () => {
       vi.stubGlobal('fetch', mockFetch()); // seed KV in normal mode
       await fetchF1Standings();
       setSpy.mockClear();
