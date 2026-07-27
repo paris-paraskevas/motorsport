@@ -8,7 +8,14 @@ import { SeriesPageView, seriesTabMetadata } from '@/components/SeriesPageView';
 // lives at the bare /series/[slug] (this route 301-redirects `calendar` there),
 // so every entry here is a non-calendar tab. Statically ISR-cacheable — the
 // whole point of the migration off the `force-dynamic` `?tab=` page.
-export const revalidate = 300;
+//
+// 20 minutes, matching the warm-live-data cron that is the ONLY thing that
+// changes what these tabs render (standings/results now come from the DB, not a
+// per-request fetch). At the previous 300s these pages revalidated four times
+// per cron write — four R2 writes for one data change. The sibling routes stay
+// at 300s on purpose: they carry live session state and countdowns, which do
+// move between cron runs.
+export const revalidate = 1200;
 
 export async function generateStaticParams() {
   const slugs = await listSeriesSlugs();

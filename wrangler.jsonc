@@ -48,6 +48,36 @@
   "vars": {
     "DATA_SOURCE": "db"
   },
+  // ISR page cache (see open-next.config.ts). Without these the adapter falls
+  // back to its "dummy" cache and every request re-renders.
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "paddock-inc-cache"
+    }
+  ],
+  // The DO queue that runs background revalidation of stale pages. `service`
+  // MUST equal this worker's own `name` — the DO calls back in through it.
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "motorsport"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"]
+    }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
