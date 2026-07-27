@@ -19,7 +19,7 @@ export function AnalysisGate({
   return (
     <section
       className="my-6 border border-border bg-surface/40 px-6 py-8 text-center"
-      style={seriesColor ? ({ '--tint': seriesColor } as React.CSSProperties) : undefined}
+      style={seriesColor ? ({ '--tint': seriesColor, '--tint-fill': seriesColor } as React.CSSProperties) : undefined}
       aria-label={`${title} — sign in to unlock`}
     >
       <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-border text-text-faint">

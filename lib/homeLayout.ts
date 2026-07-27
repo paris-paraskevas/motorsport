@@ -10,7 +10,6 @@ export const HOME_LAYOUT_VERSION = 10;
 
 export type HomeElementId =
   | 'chyron'
-  | 'just-missed'
   | 'schedule'
   | 'news'
   | 'from-the-blog'
@@ -43,7 +42,6 @@ export interface HomeElementMeta {
 // stored order gets the new id appended).
 export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'chyron', label: 'Live / up next', hint: 'The broadcast strip — live session or the next countdown.', collapsible: false },
-  { id: 'just-missed', label: 'Just missed', hint: 'The latest results from your series.', collapsible: true },
   { id: 'schedule', label: 'This week', hint: 'This week’s sessions across your series.', collapsible: true },
   { id: 'news', label: 'News', hint: 'The Paddock wire — latest motorsport.com headlines.', collapsible: true },
   { id: 'from-the-blog', label: 'From the blog', hint: 'The latest Paddock long-reads and explainers.', collapsible: true },
@@ -70,9 +68,10 @@ const COLLAPSIBLE_IDS = HOME_ELEMENTS.filter(e => e.collapsible).map(e => e.id) 
 // hidden or reordered — personalization is additive, below the spine. They stay
 // in HOME_ELEMENTS (HomeContent renders them normally); reconcile pins them to
 // the front of `order` and strips them from `hidden`.
-// `just-missed` was removed from the spine (operator: "can't get rid of it") so
-// it is now hideable + reorderable like any other block; it still defaults to
-// second in the order and collapsed, so nothing changes for a user who keeps it.
+// The "Just missed" combined block was retired entirely (operator: "can't get
+// rid of it") — the per-series "Series results" (series-just-missed) widget
+// covers the same latest-results data. reconcile() drops the now-unknown id
+// from every stored layout, so it disappears for existing users too.
 export const SPINE_IDS = ['chyron'] as const satisfies readonly HomeElementId[];
 const SPINE_SET = new Set<HomeElementId>(SPINE_IDS);
 
@@ -107,7 +106,7 @@ export const AVAILABLE_WIDGETS: AvailableWidget[] = [];
 export interface WidgetSettings {
   /** Row spacing — applies to any widget. */
   density?: 'comfortable' | 'compact';
-  /** Item count — just-missed / news / from-the-blog / series-just-missed / series-countdowns. */
+  /** Item count — news / from-the-blog / series-just-missed / series-countdowns. */
   count?: number;
   /** Days shown — schedule (this week). */
   days?: number;
@@ -135,10 +134,9 @@ export interface HomeLayoutPrefs {
   config: HomeWidgetConfig;
 }
 
-// "Just missed" is collapsed by default (operator: home is busy — lead with
-// what's next, tuck the retrospective behind one tap). Existing users with no
-// stored `collapsed` field inherit this via reconcile().
-export const DEFAULT_COLLAPSED: HomeElementId[] = ['just-missed'];
+// Nothing is collapsed by default now that "Just missed" is retired. A present
+// stored `collapsed` array is still honoured per-user via reconcile().
+export const DEFAULT_COLLAPSED: HomeElementId[] = [];
 
 // Widgets that graduate from the gallery start HIDDEN — they're opt-in, not
 // forced onto an existing home (the home is deliberately lean). reconcile()

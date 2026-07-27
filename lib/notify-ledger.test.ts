@@ -60,9 +60,9 @@ describe('notify-ledger mark / unmark (KV configured)', () => {
   });
 
   it('wasNotified is false before marking, true after', async () => {
-    expect(await wasNotified('t30', 'uid-1')).toBe(false);
-    await markNotified('t30', 'uid-1');
-    expect(await wasNotified('t30', 'uid-1')).toBe(true);
+    expect(await wasNotified('start', 'uid-1')).toBe(false);
+    await markNotified('start', 'uid-1');
+    expect(await wasNotified('start', 'uid-1')).toBe(true);
   });
 
   it('unmarkNotified deletes the key so a later tick re-evaluates', async () => {
@@ -79,9 +79,9 @@ describe('notify-ledger mark / unmark (KV configured)', () => {
   });
 
   it('keys are namespaced per kind + uid (no cross-talk)', async () => {
-    await markNotified('t30', 'uid-3');
+    await markNotified('start', 'uid-3');
     expect(await wasNotified('t10', 'uid-3')).toBe(false); // different kind
-    expect(await wasNotified('t30', 'uid-other')).toBe(false); // different uid
+    expect(await wasNotified('start', 'uid-other')).toBe(false); // different uid
   });
 
   it('unmark of an unmarked key is a harmless no-op', async () => {
@@ -99,11 +99,11 @@ describe('notify-ledger (KV unconfigured)', () => {
   });
 
   it('treats everything as "never notified" and no-ops mark/unmark without touching KV', async () => {
-    expect(await wasNotified('t30', 'uid-x')).toBe(false);
-    await expect(markNotified('t30', 'uid-x')).resolves.toBeUndefined();
-    await expect(unmarkNotified('t30', 'uid-x')).resolves.toBeUndefined();
+    expect(await wasNotified('start', 'uid-x')).toBe(false);
+    await expect(markNotified('start', 'uid-x')).resolves.toBeUndefined();
+    await expect(unmarkNotified('start', 'uid-x')).resolves.toBeUndefined();
     expect(delSpy).not.toHaveBeenCalled();
     // Still "not notified" because the mark was a no-op.
-    expect(await wasNotified('t30', 'uid-x')).toBe(false);
+    expect(await wasNotified('start', 'uid-x')).toBe(false);
   });
 });

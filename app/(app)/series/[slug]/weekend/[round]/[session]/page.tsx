@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { seriesInk } from '@/lib/site';
 import type { Metadata } from 'next';
 import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
@@ -17,6 +18,7 @@ import {
 import {
   fetchOpenF1WeekendSessions,
   fetchSessionClassification,
+  hasResolvedDrivers,
   type OpenF1Session,
   type SessionClassification,
 } from '@/lib/results/openf1';
@@ -25,6 +27,7 @@ import { fetchF2SeasonResults } from '@/lib/results/f2';
 import { fetchF3SessionResults } from '@/lib/results/f3';
 import { fetchMotoGPSessionClassification } from '@/lib/results/motogp';
 import { fetchWsbkSessionClassification } from '@/lib/results/wsbk';
+import { fetchWrcStageClassification } from '@/lib/results/wrc';
 import { fetchImsaSeasonResults } from '@/lib/results/imsa';
 import { IMSA_CLASSES } from '@/lib/standings/imsa';
 import {
@@ -393,7 +396,11 @@ function weekendSessionNav(
 function SessionRail({ items }: { items: ReturnType<typeof weekendSessionNav>['items'] }) {
   return (
     <nav aria-label="Weekend sessions" className="mb-6 border-y border-border">
-      <div className="flex overflow-x-auto scrollbar-none gap-5">
+      {/* Wrap rather than horizontal-scroll: rallies have ~18 stage sessions,
+          and the old `overflow-x-auto scrollbar-none` hid SS11+ off-screen with
+          no scrollbar affordance. Few-session weekends (F1 etc.) still sit on
+          one line; many-session weekends wrap to a full, visible stage index. */}
+      <div className="flex flex-wrap gap-x-5 gap-y-1 py-1">
         {items.map(item => (
           <Link
             key={item.uid}
@@ -486,13 +493,18 @@ function ClassificationTable({
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2">
                 <span className="text-text text-sm font-medium truncate">{e.driverName}</span>
+                {e.coDriverName ? (
+                  <span className="hidden sm:inline text-text-muted text-xs font-normal truncate">/ {e.coDriverName}</span>
+                ) : null}
                 {e.driverCode ? (
                   <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
                     {e.driverCode}
                   </span>
                 ) : null}
               </div>
-              <div className="text-text-muted text-xs truncate">{e.team}</div>
+              <div className="text-text-muted text-xs truncate">
+                {e.car ? (e.team ? `${e.car} · ${e.team}` : e.car) : e.team}
+              </div>
             </div>
             {data.isQualifying ? (
               <span className="hidden sm:flex items-baseline gap-3 font-mono text-[11px] tabular-nums text-text-muted">
@@ -555,7 +567,12 @@ export default async function SessionPage({
   // so read a KV-persisted copy first and only hit upstream on a miss.
   let classification: SessionClassification | null = null;
   let classClassifications: { cls: string; data: SessionClassification }[] = [];
-  if (isPast) {
+  if (isPast && slug === 'wrc') {
+    // Curated per-stage content is a cheap local read and the operator edits it
+    // in place — skip the 7-day KV session cache so edits surface on the next
+    // deploy instead of being pinned stale for a week.
+    classification = await fetchWrcStageClassification(round, session.title);
+  } else if (isPast) {
     const cacheKey = sessionClassCacheKey(
       slug,
       series.meta.season,
@@ -591,7 +608,10 @@ export default async function SessionPage({
       // Persist only a real result — never cache a null/empty miss, so a
       // transient upstream failure (e.g. the OpenF1 live-session 401) doesn't
       // freeze an empty page for the whole TTL; it retries next render instead.
-      if (classification || classClassifications.length > 0) {
+      // `hasResolvedDrivers` extends that to a HALF-failure: a classification
+      // whose driver join was throttled to `[]` renders `#1`/`#3` with blank
+      // teams, and caching that pinned the Hungary race in that state for days.
+      if ((classification && hasResolvedDrivers(classification)) || classClassifications.length > 0) {
         await writeResultsCache(
           cacheKey,
           { classification, classClassifications },
@@ -701,7 +721,7 @@ export default async function SessionPage({
   return (
     <div
       className={`relative ${PAGE_WIDE}`}
-      style={{ '--tint': color, ['--series-color' as string]: color } as React.CSSProperties}
+      style={{ '--tint': color, '--tint-fill': color, ['--series-color' as string]: color } as React.CSSProperties}
     >
       <JsonLd
         data={breadcrumbLd([
@@ -759,8 +779,8 @@ export default async function SessionPage({
           {isLive && (
             <>
               <span className="text-border-strong">·</span>
-              <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-red-500/15 text-red-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 live-pulse" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
+                <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
                 live
               </span>
             </>
@@ -785,7 +805,7 @@ export default async function SessionPage({
 
         <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
           {sessionName}
-          <span style={{ color }}>.</span>
+          <span style={{ color: seriesInk(color) }}>.</span>
         </h1>
 
         <div className="mt-4 flex items-baseline gap-4 flex-wrap">
@@ -860,7 +880,7 @@ export default async function SessionPage({
         <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />
       )}
 
-      <CollapsibleSection title="Classification" defaultOpen>
+      <CollapsibleSection title={slug === 'wrc' ? 'Overall classification' : 'Classification'} defaultOpen>
         {classification ? (
           <ClassificationTable data={classification} showHeading={false} />
         ) : classClassifications.length > 0 ? (
@@ -874,9 +894,11 @@ export default async function SessionPage({
             <p className="text-text-muted text-sm">
               {slug === 'f1'
                 ? 'Classification not available for this session yet.'
-                : isRaceLikeTitle(session.title)
-                  ? 'Classification not available for this race yet — season results live on the series page.'
-                  : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
+                : slug === 'wrc'
+                  ? 'The full field for this stage isn’t published yet. The rally result and season standings live on the series page.'
+                  : isRaceLikeTitle(session.title)
+                    ? 'Classification not available for this race yet — season results live on the series page.'
+                    : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
             </p>
             <Link
               href={`/series/${slug}/results`}

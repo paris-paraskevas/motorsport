@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 // GT World Challenge Europe — per-event race results.
 //
@@ -344,7 +345,7 @@ export async function discoverGtWorldEventRaces(
 // Convenience: walk the season and pull every race classification we can
 // find. One outer call (listing) + N event calls (race-id lookup) + M race
 // calls (results). Each step fails closed individually.
-export async function fetchAllGtWorldSeasonRaces(
+async function fetchAllGtWorldSeasonRacesLive(
   year: number,
 ): Promise<GtWorldRaceResult[]> {
   const events = await discoverGtWorldEventListings(year);
@@ -361,4 +362,21 @@ export async function fetchAllGtWorldSeasonRaces(
   );
   const allRequests = requestLists.flat();
   return fetchGtWorldSeasonResults(year, allRequests);
+}
+
+/**
+ * Public GT World season walk, over the durable `source_snapshot` last-good.
+ * `GtWorldRaceResult` carries no `Date` fields, so the jsonb round-trip is
+ * lossless. sro-motorsports hosts block Cloudflare's egress IPs, so the Worker
+ * serves what the clean-IP warm cron wrote; `DATA_SOURCE=db` skips upstream.
+ */
+export async function fetchAllGtWorldSeasonRaces(
+  year: number,
+): Promise<GtWorldRaceResult[]> {
+  const races = await withSourceSnapshot<GtWorldRaceResult[]>(
+    'results:gt-world',
+    () => fetchAllGtWorldSeasonRacesLive(year),
+    v => v == null || v.length === 0,
+  );
+  return races ?? [];
 }

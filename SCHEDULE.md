@@ -1171,9 +1171,30 @@ Active: _(unsupervised overnight — no `[+Nm]` prefixes)_
 
 ---
 
-## Backlog stubs (next 1–2 weeks, no firm date yet)
+## Week of 2026-07-13
 
-**Operator 15-item batch (2026-06-11), organized into waves — port to IDEAS.md once #119 merges (its Inbox edits would conflict today):**
+_(Sessions 11–16, 2026-07-12 → 07-14, are recorded in `docs/HANDOFF.md`, not here — SCHEDULE lagged after session 10; HANDOFF is the maintained session record.)_
+
+### Wed 2026-07-15 — session 17 — WRC per-stage + reachability, SEO internal-linking, home/nav cleanups, Cloudflare migration
+
+10 commits, 0.228.8 → 0.229.8 (all merged/prod-shipping except the just-missed removal, which went direct to main via a branch slip — verified + green). Live-driven throughout.
+
+- → done: **#585** admin back-link → apex; **#586** WRC per-stage classification (R8 Acropolis pilot; eWRC gate passed via Playwright; adversarially verified); **#587** session rail wraps (18-stage rallies reachable); **#588/#589** weekend + calendar → circuit-profile links (+ Miami wrong-link fix); **#590** "Tracks" tab → "Rounds"; **#591** WRC skips the KV cache; **dc1d140** removed the "Just missed" home widget; **#592** series card → Points/What's new explainers; **#593** rally schedule rows clickable.
+- → audited: full suite green (tsc + 920 tests) across all 10. Batch-1 "SEO content" found already-done (every demand explainer exists + is featured) → internal linking is the lever, not new content.
+- → operator: Cloudflare migration mid-session (site + Clerk sign-in healthy through CF); Sachsenring blog posted.
+- → declined (scrutiny): rally per-stage FULL field (transient, low-value — headline shipped in #586); IndyCar results/times (outbound → preview-paired, next).
+
+Won't touch (deferred): IndyCar outbound (preview-paired), Bing (operator token), authority/distribution (off-platform), doc hygiene (trim HANDOFF/SCHEDULE).
+
+Active: _(live-driven session — no `[+Nm]` prefixes)_
+
+---
+
+## Backlog stubs (HISTORICAL — mostly shipped; current backlog is IDEAS.md)
+
+**Status (session-17 audit):** the W1–W8 wave + S5–S7 below have largely **shipped** across 0.10.x–0.22.x — verified in the codebase: per-session pages (`/weekend/[round]/[session]`), point-in-time weekend standings, series-tab polish, about/rules content per series, driver/team profile pages (`/drivers/[slug]`, `/teams/[slug]`), blog + threads + admin approval, the SEO baseline, and native non-F1 results/standings. **Still open:** W5 per-page layout spec, W6 Android TWA (post-v1.0), W8 v1.0 launch program (postponed), full Supabase-migration execution. The waves below are kept as a historical record; the **live** backlog lives in `IDEAS.md`.
+
+**Operator 15-item batch (2026-06-11), organized into waves:**
 
 - **W1 — Weekend page overhaul**: retheme to timing-screen language (radial wash still there), remove the back-to-series arrow, point-in-time standings (points as they stood at that GP — computable only where full per-round points exist: F1/F2/F3/NASCAR/WRC/DTM/IndyCar/FE/MotoGP/WSBK; F1 first, IMSA/GTWC excluded honestly), per-session pages with results at `/series/[slug]/weekend/[round]/[session]` (OpenF1 for F1 practices/quali; other series race-session only). 2–3 PRs.
 - **W2 — Series-tab polish**: ✅ shipped (PR #123, 0.26.0). Follow-up: curated historic-constructor color map so pre-current-grid champions color too.
@@ -1192,6 +1213,79 @@ Pre-existing stubs:
 - **SEO baseline (S5)** — sitemap, robots, JSON-LD, per-page metadata, OG image generators. Largely shipped via Track B; remaining bits fold into W8 launch checks.
 - **Detail-page enrichment (S6)** — `/drivers/[slug]`, `/teams/[slug]` → absorbed into W4.
 - **Native non-F1 results + standings (S7)** — MotoGP / WEC / IndyCar / NASCAR → largely shipped 0.11.x–0.12.x; WEC results remain (see W1's per-session pages + 0.12.8.1).
+
+---
+
+## Week of 2026-07-20
+
+### Mon 2026-07-20 (session 18 — reactive: "/health doesn't work")
+
+Unplanned/reactive session (no morning plan). Operator flagged F2/F3 results missing → widened to a full data-health pass.
+
+- → done: ship #598 (0.229.13/14) — fix F2/F3/WRC RESULTS (WRC absolute-link fix; F2/F3 rewritten onto the FOM JSON API via new `lib/results/fom-api.ts`). Prod-verified.
+- → done: ship #599 (0.229.15/16) — new weekend-schedule health monitor (`npm run health:sessions`) + curated GT World / WRC / IndyCar / DTM schedules to green (15/15).
+- → done: ship #600 (0.229.17) — F2/F3 STANDINGS via the FOM API. `/health` now green everywhere: results 8/8, standings 13/13, sessions 15/15.
+- → done: session-18 handoff.
+- → deferred: post-Belgian-GP blog (operator queued; not started).
+- Won't-touch honored: no unrelated working-tree changes staged; blog left for next session.
+
+### Tue 2026-07-22 (session 19 — blog features + full F1 champion depth + F1 schedule cross-check)
+
+Long pick→build→verify→merge session (spanned 2026-07-20→22), mostly solo (ultracode declined). **13 PRs #601–#613, 0.230.0 → 0.230.12, all merged + prod-shipping.**
+
+- → done: **#601** blog cover images + branded OG share cards (fixed the profile-pic-on-share bug; covers render on-page, the branded card owns `og:image` for every post).
+- → done: **#602** F1 lap-by-lap analysis engine (`scripts/lapstory-context.mts` + playbook; OpenF1-grounded, draft-only) — Belgian GP lap-by-lap prod draft queued.
+- → done: **#603** Greek lowercase omega font fix (GeistSans malformed ω → `GreekFallback` unicode-range on `body`).
+- → done: **#604** driver-bios sidecar (plumbing + display; F1 Hamilton/Alonso seeded).
+- → done: **#605** F2/F3 stale "Source:" links retargeted to the rebuilt fiaformula2/3.com.
+- → done: **#606–#612** Champion-Q&A depth — the `ChampionDepth` display + FULL F1 champion backfill 1950–2025 (76 seasons, a decade per PR; StatsF1 + Wikipedia champions table, RULE #1; dropped-scores / half-points / posthumous / DSQ cases handled).
+- → done: **#613** F1 schedule cross-check (`npm run health:f1-schedule` vs OpenF1 official times; 45 sessions, 0 discrepancies).
+- → done: Belgian GP recap prod draft (operator scheduled/posted).
+- → dropped: sessions-health internal off-window (wrong-day) check — false-tripped legit multi-day events (Le Mans week, Spa 24h); superseded by the F1 OpenF1 cross-ref (#613).
+- → wrap: `docs/HANDOFF.md` + `IDEAS.md` + `SCHEDULE.md` reconciled (this entry); shipped IDEAS items removed.
+
+Won't-touch honored: operator's pre-existing uncommitted working-tree changes left untouched.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
+### Wed 2026-07-23 (session 20 — Hungary preview + 4 blog PRs + reactions migration + theme gallery approved)
+
+Long interactive session (blog features + PWA fix + a theme-gallery decision). No `[+Nm]` prefixes captured.
+
+- → done: **Hungary GP preview** — prod DB draft, operator scheduled it (operator's voice, weekend-post-grounded, RULE #1 fact-checked).
+- → done: **#614 (0.231.0)** IG-story share · **#615 (0.232.0)** like/dislike reactions (+ `post_reaction` migration applied to prod via Studio) · **#616 (0.233.0)** PWA external-link fix (manifest `scope` + drop `target=_blank`) · **#617 (0.234.0)** 9:16 portrait story card. `main` 0.230.12 → 0.234.0. Full detail + landmines in `docs/HANDOFF.md` (session-20 block).
+- → decided: **theme gallery** (5 themes: Midnight/Carbon/Ember/Newsprint/Circuit; design-first). Next step: draft palettes → visual swatch board → approve → build the theme system → preview → ship. A **claude.ai/design** exploration prompt was provided (chat; theme spec in HANDOFF session-20).
+- → found: **`.supabase-pat` is dead** (401) — rotate it; the reactions migration went via Studio instead.
+- → pending operator: phone-test (story fills 9:16 + Add-to-story; PWA posts stay in-app; reaction persists); rotate the PAT; approve theme palettes.
+
+Won't-touch honored: operator's pre-existing uncommitted working-tree changes untouched all session.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
+### Wed 2026-07-23 (session 21 — theme gallery design phase: palettes + swatch board)
+
+Design-first phase of the approved theme gallery. Build starts only after the operator approves palettes by eye.
+
+- Answer the claude.ai/design context question (curated slice + screenshots, not the whole repo) → in-chat.
+- Draft the 5 theme palettes (Midnight / Carbon / Ember / Newsprint / Circuit) as full token sets: chassis (bg / surface / surface-elevated / border / border-strong / text ×3), accent as fill vs text/border, live/positive/negative signals per theme. Verify every text/surface pair ≥ 4.5:1 programmatically; record the ratios.
+- Render a visual swatch board — one self-contained HTML in the session scratchpad (race/series card + dense standings grid per theme, real SessionCard/StandingsTab markup patterns) → operator eyeballs in Chrome.
+- If approved with time left: ESPA the build plan (token split + picker + no-flash init); the build itself is its own gated step.
+
+Won't touch this session: theme build code in the repo, operator's uncommitted working-tree files (NextRaceCountdown / eslint.config / track-environment / indycar.test + doc deletions), blog/content work, carryover queue (champions depth, driver bios, IndyCar preview-paired, Bing WMT).
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+The session ran far past the design-phase plan into a full build+ship day (2026-07-23 → 07-24), 8 versions:
+- → done: theme gallery — research (6-agent sweep) → WCAG-proven swatch board → operator eye-approval → built + shipped (0.235.0 #619); picker later moved to `/settings/theme` (0.237.0 #622).
+- → done: series-nav sub-pages (0.238.0 #623) + menu-aim single-column fix (0.238.1 #624).
+- → done: timing-purple `--session-best` (0.236.0 #621); F2/F3 Hungary session-time fix (0.235.1 #620); IDEAS triage + batch de-numbering (0.238.2 #625).
+- → done: F1-upgrades parser Phase A + Belgium/Hungary curated (0.239.0 #626). Operator chose full cron automation; Phases B-D (outbound/KV/cron) pending, preview-gated. Prod build hit a transient ADAC static-export error, cleared by an empty re-trigger commit.
+- → carried to next session: Hungarian GP FP1 recap blog draft; harden the ADAC drivers static export.
+- Won't-touch honored: operator's uncommitted working-tree files untouched throughout.
 
 ---
 

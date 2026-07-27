@@ -12,7 +12,7 @@ const noopSubscribe = () => () => {};
 // static post page; the network intents (Facebook / WhatsApp / X) are plain links
 // that work anywhere. Instagram has no web share-intent URL, so it is reachable
 // only through the native share sheet (mobile) — that is what the Share button is for.
-export function BlogShare({ url, title }: { url: string; title: string }) {
+export function BlogShare({ url, title, slug }: { url: string; title: string; slug: string }) {
   const [copied, setCopied] = useState(false);
 
   // Feature-detect navigator.share as a client-only value: the server snapshot is
@@ -37,10 +37,36 @@ export function BlogShare({ url, title }: { url: string; title: string }) {
   };
 
   const nativeShare = async () => {
+    const data: ShareData = { title, url };
+    // Instagram (and other visual targets) only offer "Add to story" for MEDIA,
+    // never a bare link — so attach the post's 9:16 portrait card, which fills a
+    // phone Story (the 1200x630 og:image would letterbox into a small band). The
+    // story-image route has a stable path, so fetch it directly by slug.
     try {
-      await navigator.share({ title, url });
+      if (typeof navigator.canShare === 'function') {
+        const res = await fetch(`/blog/${encodeURIComponent(slug)}/story-image`);
+        if (res.ok) {
+          const blob = await res.blob();
+          const file = new File([blob], 'paddock-story.png', { type: blob.type || 'image/png' });
+          if (navigator.canShare({ files: [file] })) data.files = [file];
+        }
+      }
     } catch {
-      // User dismissed the sheet, or the share was cancelled — no-op.
+      // Couldn't build the image (fetch blocked / unsupported) — share link-only.
+    }
+    try {
+      await navigator.share(data);
+    } catch (err) {
+      // AbortError = the user dismissed the sheet. Any other error while sharing
+      // files means the platform rejected the file+link combo, so retry
+      // link-only so the button still does something.
+      if (data.files && (err as Error)?.name !== 'AbortError') {
+        try {
+          await navigator.share({ title, url });
+        } catch {
+          // cancelled — no-op
+        }
+      }
     }
   };
 

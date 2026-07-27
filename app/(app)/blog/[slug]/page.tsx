@@ -11,7 +11,7 @@ import { renderPostBody, type RenderedBody } from '@/lib/blog-embeds';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { DraftEditor } from '@/components/blog/DraftEditor';
 import { PostArticle } from '@/components/blog/PostArticle';
-import { POST_ARTICLE_CLASS } from '@/components/blog/PostHeader';
+import { POST_ARTICLE_CLASS, PostHero } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
 import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
@@ -20,6 +20,7 @@ import type { Post } from '@/lib/types';
 import { loadSeriesMeta } from '@/lib/series';
 import { tocFromMarkdown, type TocItem } from '@/lib/toc';
 import { BlogShare } from '@/components/blog/BlogShare';
+import { BlogReactions } from '@/components/blog/BlogReactions';
 
 // Force-dynamic: required for the admin scheduled-preview branch (currentUser),
 // and DB posts render at request time anyway. generateStaticParams stays
@@ -68,10 +69,14 @@ export async function generateMetadata({
   const post = db && db.status === 'published' ? dbToPost(db) : await loadPost(slug);
   if (!post && db) return { title: 'Draft preview' }; // admin preview metadata stays generic
   if (!post) return { title: 'Post not found' };
-  // Blog posts carry article-specific openGraph fields (publishedTime, hero
-  // images) that the shared withSocialMeta() helper doesn't model, so build
-  // the openGraph block directly here. Re-set siteName + url since the
-  // per-page override fully replaces the layout's openGraph block.
+  // Blog posts carry article-specific openGraph fields (publishedTime) that the
+  // shared withSocialMeta() helper doesn't model, so build the openGraph block
+  // directly here. Re-set siteName + url since the per-page override fully
+  // replaces the layout's openGraph block. og:image is NOT set here: the sibling
+  // opengraph-image.tsx owns it (hero photo when set, branded card otherwise) —
+  // file-based metadata overrides anything listed in this block anyway
+  // (node_modules/next/dist/docs/…/generate-metadata.md, "File-based metadata
+  // has the higher priority").
   return {
     title: post.frontmatter.title,
     description: post.frontmatter.summary,
@@ -82,7 +87,6 @@ export async function generateMetadata({
       siteName: 'Paddock Tracker',
       url: `${SITE_URL}/blog/${slug}`,
       publishedTime: post.frontmatter.publishedAt,
-      images: post.frontmatter.heroImage ? [post.frontmatter.heroImage] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
@@ -277,6 +281,7 @@ export default async function PostPage({
           title={post.frontmatter.title}
           summary={post.frontmatter.summary}
           body={db.body}
+          heroImage={db.heroImage}
           bodyNode={<PostArticle segments={rendered?.segments ?? []} />}
           dateLabel={formatDate(post.frontmatter.publishedAt)}
           banner={
@@ -329,9 +334,13 @@ export default async function PostPage({
         </p>
       </header>
 
+      {post.frontmatter.heroImage && (
+        <PostHero src={post.frontmatter.heroImage} alt={post.frontmatter.title} />
+      )}
+
       {/* Share bar above the body so readers can share before reading. */}
       <div className="mb-8">
-        <BlogShare url={postUrl} title={post.frontmatter.title} />
+        <BlogShare url={postUrl} title={post.frontmatter.title} slug={slug} />
       </div>
 
       <article className={POST_ARTICLE_CLASS}>
@@ -341,6 +350,8 @@ export default async function PostPage({
           <MDXRemote source={post.source} components={mdxComponents} />
         )}
       </article>
+
+      <BlogReactions slug={slug} />
           </div>
 
           <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">

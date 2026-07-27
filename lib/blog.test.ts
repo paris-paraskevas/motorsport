@@ -80,4 +80,34 @@ describe('updatePostContent', () => {
     inMock.mockResolvedValue({ error: { message: 'boom' }, count: null });
     await expect(updatePostContent('id-1', { title: 'T' })).rejects.toThrow(/boom/);
   });
+
+  // Hero image (0.230.0): editable cover for social share cards. https:// or
+  // root-relative only — the OG card and the post <img> embed it verbatim.
+  it('accepts an https hero image alone (trimmed) and updates hero_image', async () => {
+    await updatePostContent('id-1', { heroImage: '  https://upload.wikimedia.org/spa.jpg  ' });
+    const [fields] = updateMock.mock.calls[0] as [Record<string, string | null>];
+    expect(fields.hero_image).toBe('https://upload.wikimedia.org/spa.jpg');
+    expect(fields.title).toBeUndefined();
+  });
+
+  it('accepts a root-relative hero path', async () => {
+    await updatePostContent('id-1', { heroImage: '/blog/covers/spa-2026.jpg' });
+    const [fields] = updateMock.mock.calls[0] as [Record<string, string | null>];
+    expect(fields.hero_image).toBe('/blog/covers/spa-2026.jpg');
+  });
+
+  it('clears hero_image on null and on blank', async () => {
+    await updatePostContent('id-1', { heroImage: null });
+    await updatePostContent('id-1', { heroImage: '   ' });
+    for (const call of updateMock.mock.calls) {
+      expect((call[0] as Record<string, string | null>).hero_image).toBeNull();
+    }
+  });
+
+  it('rejects non-https / non-root-relative hero shapes before touching the DB', async () => {
+    for (const bad of ['http://insecure.example/x.jpg', 'javascript:alert(1)', '//evil.example/x.jpg', 'covers/x.jpg']) {
+      await expect(updatePostContent('id-1', { heroImage: bad })).rejects.toThrow(/hero image/);
+    }
+    expect(updateMock).not.toHaveBeenCalled();
+  });
 });

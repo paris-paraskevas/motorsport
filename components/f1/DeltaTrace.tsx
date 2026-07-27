@@ -224,7 +224,7 @@ export function DeltaTrace({
               type="monotone"
               dataKey="delta"
               name="delta"
-              stroke="var(--brand)"
+              stroke="var(--brand-fill)"
               strokeWidth={2.5}
               dot={false}
               connectNulls
@@ -237,7 +237,7 @@ export function DeltaTrace({
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-text-muted">
         <LegendChip colour={driverA.teamColour} label={`${driverA.code} speed`} />
         <LegendChip colour={driverB.teamColour} label={`${driverB.code} speed`} />
-        <LegendChip colour="var(--brand)" label="Cumulative delta" thick />
+        <LegendChip colour="var(--brand-fill)" label="Cumulative delta" thick />
       </div>
     </div>
   );

@@ -2,8 +2,58 @@ import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import type { Element } from 'domhandler';
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
+import type { SessionClassification } from '@/lib/results/openf1';
+import { loadWrcStageResults } from '@/lib/series-content';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 
 export type { RaceResult, RaceResultEntry };
+
+// ---- Curated per-stage classification (weekend session pages) ------------
+//
+// Rallies have no single "race": each round is a stage itinerary, and the
+// Wikipedia season feed the rest of this module scrapes carries only per-rally
+// WINNERS. The full per-stage field is curated offline (RULE #1:
+// eWRC-results.com + wrc.com) into content/series/wrc/stage-results.json and
+// mapped here into the shared SessionClassification the session page renders.
+// Rally, not race: no points column; the leader shows the cumulative time and
+// everyone else gap-to-leader + interval-to-the-car-ahead.
+
+// "WRC - SS17 Loutraki 2 - Wolf Power Stage (Greece)" -> "ss17";
+// "WRC - Shakedown (Greece)" -> "shakedown". Null when neither matches.
+export function wrcStageSlug(sessionTitle: string): string | null {
+  const ss = sessionTitle.match(/\bSS(\d+)\b/i);
+  if (ss) return `ss${Number(ss[1])}`;
+  if (/shakedown/i.test(sessionTitle)) return 'shakedown';
+  return null;
+}
+
+export async function fetchWrcStageClassification(
+  round: number,
+  sessionTitle: string,
+): Promise<SessionClassification | null> {
+  const stageSlug = wrcStageSlug(sessionTitle);
+  if (!stageSlug) return null;
+  const file = await loadWrcStageResults();
+  const stage = file?.rounds?.[String(round)]?.stages?.[stageSlug];
+  if (!stage || !Array.isArray(stage.entries) || stage.entries.length === 0) {
+    return null;
+  }
+  return {
+    isQualifying: false,
+    isRace: false,
+    entries: stage.entries.map(e => ({
+      position: e.position ?? null,
+      driverName: e.driverName,
+      coDriverName: e.coDriverName,
+      car: e.car,
+      team: e.team ?? '',
+      time: e.time,
+      gap: e.gap,
+      interval: e.interval,
+      status: e.status,
+    })),
+  };
+}
 
 // WRC per-rally full classification. The season page at
 // /wiki/2026_World_Rally_Championship carries two relevant tables:
@@ -81,6 +131,20 @@ function firstLinkOrText(
     if (t) linkText = t;
   });
   return cleanText(linkText || cell.text());
+}
+
+// Report-column cells link to the per-rally Wikipedia article. The href can
+// arrive relative ("/wiki/2026_Rally_Sweden"), protocol-relative
+// ("//en.wikipedia.org/wiki/…"), or absolute ("https://en.wikipedia.org/wiki/…")
+// depending on how the page HTML was rendered — Wikipedia switched the season
+// page to absolute hrefs mid-2026, which silently nulled every perRallyUrl and
+// emptied the whole feed. Accept all three; normalize to an absolute
+// en.wikipedia URL. Anything that is not an en.wikipedia /wiki/ link → null.
+function normalizeWikiHref(href: string | undefined): string | null {
+  if (!href) return null;
+  if (href.startsWith('/wiki/')) return `${WIKIPEDIA_ORIGIN}${href}`;
+  const m = href.match(/^(?:https?:)?\/\/en\.wikipedia\.org(\/wiki\/[^\s]+)$/i);
+  return m ? `${WIKIPEDIA_ORIGIN}${m[1]}` : null;
 }
 
 // ---- Calendar table — round → date map ----------------------------------
@@ -330,11 +394,9 @@ export function parseSeasonSummaryFromHtml(html: string): SeasonSummaryRow[] {
 
       let perRallyUrl: string | null = null;
       if (reportCol >= 0 && cells.length > reportCol) {
-        const link = $(cells[reportCol]).find('a').first();
-        const href = link.attr('href');
-        if (href && href.startsWith('/wiki/')) {
-          perRallyUrl = `${WIKIPEDIA_ORIGIN}${href}`;
-        }
+        perRallyUrl = normalizeWikiHref(
+          $(cells[reportCol]).find('a').first().attr('href'),
+        );
       }
 
       out.push({ round, rallyName, winnerName, coDriverName, team, perRallyUrl });
@@ -716,7 +778,7 @@ export function parseSeasonChartPointsFromHtml(
   }
 }
 
-export async function fetchWRCSeasonChartPoints(
+async function fetchWRCSeasonChartPointsLive(
   season = 2026,
 ): Promise<RaceResult[]> {
   const seasonHtml = await fetchHtml(WIKIPEDIA_SEASON_URL);
@@ -724,9 +786,14 @@ export async function fetchWRCSeasonChartPoints(
   return parseSeasonChartPointsFromHtml(seasonHtml, season);
 }
 
+/** Per-round points for the standings trend chart, over the durable last-good. */
+export async function fetchWRCSeasonChartPoints(season = 2026): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:wrc-chart', () => fetchWRCSeasonChartPointsLive(season));
+}
+
 // ---- Orchestration ------------------------------------------------------
 
-export async function fetchWRCSeasonResults(
+async function fetchWRCSeasonResultsLive(
   season = 2026,
 ): Promise<RaceResult[]> {
   const seasonHtml = await fetchHtml(WIKIPEDIA_SEASON_URL);
@@ -739,10 +806,11 @@ export async function fetchWRCSeasonResults(
   const dateByRound = new Map<number, Date>();
   for (const c of calendar) dateByRound.set(c.round, c.date);
 
-  // Fan-out per-rally fetches for completed rounds only.
-  const completed = summary.filter(
-    r => r.winnerName !== null && r.perRallyUrl !== null,
-  );
+  // Fan-out per-rally fetches for completed rounds (those with a winner). The
+  // per-rally article link is optional: a completed round whose Report link is
+  // missing or unrecognized still degrades to a winner-only row below rather
+  // than being dropped from the feed entirely.
+  const completed = summary.filter(r => r.winnerName !== null);
 
   const races = await Promise.all(
     completed.map(async row => {
@@ -774,4 +842,13 @@ export async function fetchWRCSeasonResults(
   return races
     .filter((r): r is RaceResult => r !== null)
     .sort((a, b) => a.round - b.round);
+}
+
+/**
+ * Public WRC season results, over the durable `source_snapshot` last-good.
+ * Wikipedia rate-limits Cloudflare's egress IPs, so on the Worker this serves
+ * what the clean-IP warm cron wrote; `DATA_SOURCE=db` skips upstream entirely.
+ */
+export async function fetchWRCSeasonResults(season = 2026): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:wrc', () => fetchWRCSeasonResultsLive(season));
 }

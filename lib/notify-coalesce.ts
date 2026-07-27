@@ -22,9 +22,9 @@ export interface QueuedNotification {
 }
 
 // Which queued notifications a signed-in subscriber is eligible for. `sessions`
-// is the umbrella toggle for the notify cron (pre-session reminders,
+// is the umbrella toggle for the notify cron (the 10-min reminder + "live now",
 // results-ready, F1 analysis); the per-session-type filter applies only to the
-// pre-session kinds; then followed-series + per-series mute. Pure → unit-tested.
+// reminder + live kinds; then followed-series + per-series mute. Pure → unit-tested.
 export interface NotifyGate {
   sessionsOn: boolean;
   sessionTypes: SessionTypePrefs | undefined;
@@ -35,7 +35,7 @@ export interface NotifyGate {
 export function eligibleForNotify(gate: NotifyGate, item: QueuedNotification): boolean {
   if (!gate.sessionsOn) return false;
   if (
-    (item.kind === 't30' || item.kind === 't10') &&
+    (item.kind === 't10' || item.kind === 'start') &&
     !sessionTypeAllowed(gate.sessionTypes, item.session.title)
   ) {
     return false;

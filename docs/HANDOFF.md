@@ -6,7 +6,283 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-14 (LATEST, session 15 — Sachsenring digest + blog-share + a11y/UX sweep + champion-depth + standings sub-tabs + cron-secret saga) — `main` = 0.227.4
+## ⚡ Next session pickup — 2026-07-27 (LATEST, session 22 — MIGRATED PROD OFF VERCEL TO CLOUDFLARE WORKERS) — live on Cloudflare; `main` still 0.239.1 (NOT the deployed artifact)
+
+Emergency + huge session (2026-07-26 → 07-27). Vercel disabled the project (HTTP 402, Fluid Active CPU 300% over cap on race weekend); operator refused Pro ($25/mo). **Migrated the entire site to Cloudflare Workers via OpenNext (~$5/mo).** Live at paddock-tracker.com off Vercel. ALL work on branch `spike/cloudflare-opennext` — committed, **NOT pushed, NOT merged to main**.
+
+### ⚠️⚠️ READ FIRST — prod works FUNDAMENTALLY differently now
+- **Live site = the Cloudflare Worker** (project `motorsport`), served via Workers routes `paddock-tracker.com/*` + `www`. Vercel is bypassed (still 402; routes intercept before it).
+- **NO CI. `git push` does NOT deploy** — it only pokes the dead Vercel. To update the live site: **rebuild+deploy from local**: `npx opennextjs-cloudflare build && npx wrangler deploy` (repo root; wrangler is authed to operator's Cloudflare — pparaskevas.dev@gmail.com, acct 9f32c7e6…).
+- **`dev.paddock-tracker.com` is NOT routed to CF** (still hits dead Vercel → 402). Admin works on `paddock-tracker.com/blog` + `/admin`.
+
+### ✅ Migration shipped (branch, commit `8547812` + this session's follow-up commits)
+- OpenNext (`@opennextjs/cloudflare` 1.20.2) + wrangler; Next 16.2.6→16.2.12. `open-next.config.ts`, `wrangler.jsonc` (nodejs_compat + global_fetch_strictly_public; apex+www routes; 13 cron triggers).
+- **proxy.ts → middleware.ts** (Next 16 Proxy = Node runtime, OpenNext needs Edge).
+- **node-ical → ical.js** (`lib/ics.ts`; node-ical empty on workerd; verified byte-identical, 23 tests).
+- **content/** fs → build-time bundle** (THE blocker): unenv has NO runtime fs.readFile/readdir → every content page 404'd. `scripts/bundle-content.mts` → `lib/content-bundle.generated.ts` (prebuild/pretest hooks); `lib/content-fs.ts` shim (real-fs fallback for tests); 13 loaders swapped fs import.
+- Secrets on the Worker: pk_live Clerk (`.env.cloudflare.local`), prod Supabase (`.env.blog`), KV (prod), CRON_SECRET+Google-AI (`.env.local`). images.unoptimized; @vercel/analytics+speed-insights removed.
+
+### 🔴 DATA-EGRESS problem + fix (CRITICAL)
+- **Community data APIs block Cloudflare's shared egress IPs** — jolpi.ca 429 CONFIRMED; FOM/Pulselive/motorsport.com/Wikipedia/fiawec likely too. The Worker CANNOT fetch standings/results → they render EMPTY/wrong. (OpenF1 is NOT blocked → weekend/live-timing always works.) The exact "verify outbound on a real deploy" landmine.
+- **Fix (no site-code change):** the site already falls back to a KV + Supabase "last-good" cache on fetch failure; it was never seeded (every CF fetch 429s). `scripts/warm-live-data.mts` runs the real fetchers (via runStandingsHealth/runResultsHealth = ALL series) FROM A CLEAN IP → writes the KV+snapshot the Worker reads. **Seeded manually 2026-07-27: all 13 series standings + 8 results** (F1 core verified correct at wrap). BUT seeding is NOT a durable fix: the request path still calls the API first, so data is NON-DETERMINISTIC — a CF colo that isn't blocked returns partial/stale data and OVERWRITES the good cache. Real fix = DB-as-source-of-truth (Next-session Task 1). Re-seed meanwhile: `npx tsx --env-file=<prod KV+Supabase> scripts/warm-live-data.mts`.
+- **DURABLE:** `.github/workflows/warm-live-data.yml` runs it every 20 min on GitHub's clean IPs. **⚠️ OPERATOR MUST ADD 4 GITHUB REPO SECRETS: `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.** Until then the seed is FROZEN at round 11 (fine till Zandvoort 23 Aug; won't self-update).
+- **Reframe:** GitHub Actions is now ESSENTIAL (only clean-IP runner reaching the APIs). Keep warm-live-data; the OTHER 13 old crons are superseded by CF Cron Triggers + should be deleted.
+
+### 🔔 Crons + notifications (redesigned, live)
+- **13 Cloudflare Cron Triggers** via `worker.ts` (custom entry: re-exports OpenNext fetch + Durable Objects, adds `scheduled()`). scheduled() self-fetches `/api/cron/<job>` over HTTPS with the Worker's CRON_SECRET (in-process `handler.fetch` returned 402 → real `fetch` + global_fetch_strictly_public fixed it). notify bumped to every 1 min.
+- **Notification redesign** (`app/api/cron/notify/route.ts` + notify-ledger/coalesce + tests): REMOVED t30 (~30-min, redundant); TIGHTENED t10 to fire at exactly ~10 min; ADDED `start` = "🔴 Live now" at start; KEPT results-ready (races = the "at end" payoff) + F1 analysis-ready. 931 tests pass.
+- **⚠️ Push can't SEND yet** — VAPID keys not set → notify returns 500 each minute. Operator adds VAPID to `.env.cloudflare.local` (or accept a fresh keypair — invalidates existing subs). Can also make notify fail-quiet.
+
+### 📝 Blog — Hungary weekend
+- FP3 (`3ed431a1`) + Qualifying (`ee8c2620`) — operator APPROVED + PUBLISHED. **Race recap (`9dfddfc6`) left as a prod draft — operator writes it "together" next.** FP1 (`49e381b0`) + FP2 (`199b987b`) also drafted this session. All prod DB drafts (publish_at null); `.md` under `drafts/`. Story: Norris swept FP3+pole+win (McLaren Friday-sandbag → Sunday delivery); Piastri led/crashed(Sainz)/retired; Hamilton+Antonelli 3-place grid penalties.
+
+### 📋 Next session — prioritised (operator's order, 2026-07-27)
+1. **DATA = single source of truth in the DB; the site must NEVER call upstream APIs in the request path.** Data is STILL non-deterministically wrong: the Worker still *tries* jolpi/FOM/Pulselive/etc. on each request, so a Cloudflare colo that isn't blocked returns partial/stale data and OVERWRITES the good KV/Supabase cache. Fix = the operator's model: a cron fetches every series from a CLEAN IP and writes ALL of it (standings, results, drivers — every series) into the DB, and the site reads the DB ONLY, so whatever API fails is irrelevant. Concretely: (a) add a Worker read-only data mode (e.g. `DATA_SOURCE=db`) so `withF1LastGood` (`lib/f1-cache.ts`) + every per-series loader SKIP the upstream fetch and read KV→Supabase-snapshot deterministically; (b) `scripts/warm-live-data.mts` (via `.github/workflows/warm-live-data.yml`, GitHub clean IPs) is the ONLY writer — extend it to any surface still missing (multi-class series, driver season-form); (c) revalidate/purge the ISR page cache after a write (or make the data pages dynamic); (d) verify EVERY surface live (all series standings+results, driver pages, home widget).
+2. **Leftover infra:** Cloudflare Git auto-deploy (Workers Builds) so `git push` deploys; add the `dev.*` admin route (dev.paddock-tracker.com → the Worker); delete the 13 superseded GitHub crons (list under Owed); make notify fail-quiet until VAPID is set.
+3. **Race recap rewrite (together):** finish the Hungary race recap (prod draft `9dfddfc6`, `drafts/f1-hungarian-grand-prix-2026-recap.md`) in the operator's voice.
+
+### 🩹 Owed (operator) — explicit
+- **Add the 4 GitHub secrets** → turns on data auto-refresh (HIGHEST value).
+- **VAPID keys** → push actually sends.
+- **Delete the 13 redundant/failing GitHub crons** (`.github/workflows/{award-prizes,betting-notify,grant-credits,health,news,notify,open-markets,publish-posts,race-week,recheck-results,settle-markets,warm-results,warm-sessions}.yml`) — superseded.
+- Decide: keep Vercel as rollback or cancel Pro. Write the Race recap together. (Session-21 owed still stands: rotate `.supabase-pat`/`SENTRY_AUTH_TOKEN`/`sk_live`.)
+
+### 🔧 Working-tree / infra ledger
+- Branch `spike/cloudflare-opennext`. This session committed: migration (`8547812`), infra follow-ups (crons/notify/data-warm), blog drafts, this handoff, and the operator's pre-session WIP (NextRaceCountdown/eslint/openf1-track-env/indycar.test + docs/drafts deletions) as a separate labelled commit. NOT pushed, NOT merged.
+- `.env.cloudflare.local` (gitignored) = pk_live Clerk + blank VAPID/etc. scratchpad holds merged.env + warm/build logs. Local dev may be on :3000 (kill by PID).
+
+---
+
+## ⚡ Next session pickup — 2026-07-24 (session 21 — theme gallery + 7 more ships + F1-upgrades parser) — `main` = 0.239.0
+
+Long build+ship session (2026-07-23 → 07-24). **8 versions 0.235.0 → 0.239.0, all merged + prod-verified.** HANDOFF/SCHEDULE lagged during the run; this block is the record.
+
+### ✅ Shipped
+- **0.235.0 (#619) five-theme gallery** — Midnight (default, unchanged) + Carbon/Ember/Newsprint/Circuit as `:root[data-theme]` token blocks on the shared layer; picker + System-follow + no-flash `ThemeScript` in all four root layouts; token flip so BARE `brand`/`tint` = legible ink and `-fill` = vibrant paint (100 fill sites codemodded, 31 inline series colours → `seriesInk()`); every text/surface pair WCAG ≥ 4.5:1 (scratchpad swatch-board generator). Research-backed (6 parallel agents): Carbon = cool-dark family, Ember = amber-phosphor instrument, Newsprint lifted into the Kindle/FT/Flexoki paper band, new `--session-best` timing purple (amber never carries pace).
+- **0.235.1 (#620) F2/F3 Hungary session-time fix** — curated blocks carried May's template slots; corrected to fiaformula2/3.com itineraries (F3 had wrong-DAY practice + the retired two-group quali). Browser-verified to the minute.
+- **0.236.0 (#621) timing purple wired** — `--session-best` on F1 Practice Analysis (P1 lap) + Speed Trap (top speed).
+- **0.237.0 (#622) theme picker → `/settings/theme`** — own page (sibling to notifications); Account hub gets a Palette nav row.
+- **0.238.0 (#623) series-nav sub-pages** — desktop Series mega-menu + `/series` cards expose each series' pages (Calendar/Standings/Results/Rounds/Drivers/Champions); new `seriesSubPages()` reuses `tabsFor()` (F1-only Rounds gate, single-event trim).
+- **0.238.1 (#624) menu-aim fix** — 0.238.0's two-column mega-menu let a transited series hijack the detail pane; rebuilt SINGLE-column so the pointer crosses no other series (fixed by geometry, not a timing hack). Proven with a slow-glide reproduction (F2→Standings stays on F2).
+- **0.238.2 (#625) IDEAS triage** — cleared shipped, merged dupes, parked SEO-2b/trending with triggers, moved the zero-click note to Killed, **dropped the `BN` batch numbers** (the section name is the identifier now).
+- **0.239.0 (#626) F1-upgrades parser Phase A** — see below.
+
+### 🔧 F1 upgrades — automated-ingest build (operator chose FULL CRON, not curation-first)
+- **Phase A DONE (0.239.0):** `lib/upgrades/f1-parse.ts` parses the FIA "Car Presentation Submissions" PDF (`pdftotext -layout`) → per-team `{component, reason, detail}` + a `warnings` confidence gate; 13 tests vs three real docs (fixtures in `tests/fixtures/f1-upgrades/`). Curated `content/series/f1/upgrades.json` R10 (Belgium, 21 parts) + R11 (Hungary, 37 incl. Aston's 16-part B-spec); renders on the F1 weekend page. **Finding that shapes B-D:** team/count/component/reason are auto-reliable across layouts; per-item `detail` is best-effort (the FIA "Brief description" column interleaves in -layout output) so it stays a curator-condensed field.
+- **Phases B-D pending:** B = outbound FIA fetch + serverless PDF extract (add `unpdf` + `next.config` `serverExternalPackages` — landmine-class; PREVIEW-GATED, operator runs the datacenter probe); C = KV read-path (`loadF1Upgrades` KV-first then file; Vercel FS is read-only); D = cron (fail-closed `CRON_SECRET`; validate-and-alert, NEVER blind-publish — clean parse auto-posts, flagged parse alerts). Weekly-cadence playbook doc still to write.
+
+### ⚠ LANDMINES / follow-ups (new)
+- **Prod-build fragility:** `/series/adac-ravenol-24h/drivers` static export flakes on its upstream Wikipedia fetch during static generation — it ERRORED the 0.239.0 prod build (a51c074) even though the identical #626 preview + local build passed 477/477. An **empty re-trigger commit** (`git commit --allow-empty` → push main; aea3859) cleared it. Harden the drivers tab to fail-soft during static export so a flaky upstream can't break a prod deploy. (Diagnosed via the Vercel MCP build logs.)
+- **`SENTRY_AUTH_TOKEN` is invalid (401)** — sourcemap upload fails on every Vercel build (non-fatal, but errors in the log). Rotate it.
+- Theme: OG/story share cards + `global-error` + `public/manifest.json` stay Midnight by design; `.dark` rides only the dark-family themes.
+
+### 📋 Next session — prioritised
+1. **Hungarian GP FP1 (Friday-practice) recap blog** — prod DB draft (RULE #1, house style); ground in OpenF1 FP1/FP2 + the curated R11 upgrades + media. Voice = `drafts/f1-belgian-grand-prix-2026-recap.md`. (Recommend combined FP1+FP2 over FP1-only.)
+2. Harden the ADAC drivers static export (build fragility above).
+3. F1-upgrades Phase B (preview-gated) when ready.
+4. Theme follow-ups parked in IDEAS (landing accents on light, recharts palette on paper, `--session-best` in more surfaces).
+5. Carryover: champions depth ×14, driver bios (ultracode), F1 schedule cross-check → cron, IndyCar results, Bing WMT, analytics/heatmap env, cron pinger.
+
+### 🩹 Owed (operator)
+- Rotate `.supabase-pat` (DEAD — use `.env.blog` service-role for blog drafts, Studio for migrations), `SENTRY_AUTH_TOKEN`, `sk_live` Clerk keys.
+- Cloudflare DNS spot-check (deferred, non-urgent, nothing broken).
+
+### 🔧 Working-tree state at wrap
+- Operator's pre-existing uncommitted files UNTOUCHED all session: `components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/indycar.test.ts` + docs/drafts deletions. 3 untracked drafts (DB has them). Local dev/prod server may be on `:3000` (kill by PID, never image name). Scratchpad holds the FIA PDFs + swatch board.
+
+---
+
+## ⚡ Next session pickup — 2026-07-23 (session 20 — Hungary GP preview draft + 4 blog PRs #614-#617 + reactions migration + theme-gallery approved) — `main` = 0.234.0
+
+Long interactive session. **4 PRs #614-#617 (0.231.0 → 0.234.0), all merged + prod-verified by curl**, plus a prod blog draft and a prod DB migration (applied via Studio).
+
+### ✅ Shipped
+- **Hungary GP preview** — prod DB draft (id `4fe9e011-40f7-49b5-bea1-4ffa30926633`), operator scheduled it. Written in the OPERATOR's voice (grounded via the weekend-post skill; standings verbatim from the pack; RULE #1 fact-checked vs F1.com/Wikipedia). Voice reference = `drafts/f1-belgian-grand-prix-2026-recap.md` (operator/"Steve"). Draft at `drafts/f1-hungarian-grand-prix-2026-preview.md`.
+- **#614 (0.231.0) IG-story share** — the blog Share button now shares an IMAGE via `navigator.share({files})` so a phone's sheet offers Instagram → Add to story (IG only surfaces Stories for media, never a bare link). Image source superseded by #617.
+- **#615 (0.232.0) like/dislike reactions** — `components/blog/BlogReactions.tsx` (end-of-post) + `app/api/blog/reactions/route.ts` (GET/POST/DELETE) + `lib/blog-reactions.ts` + `post_reaction` table. Keyed by post SLUG; identity = Clerk `userId` (signed-in) OR `HMAC(CRON_SECRET, client-ip)` hash (anon — raw IP never stored); one reaction per identity; rate-limited (fail-open); fail-soft (zeros if table absent). **Migration APPLIED to prod via Studio** (operator ran the SQL — "Success. No rows returned").
+- **#616 (0.233.0) PWA external-link fix** — blog posts opened in an in-app browser (Custom Tab). Two causes: (1) manifest had no `scope` (start_url `/app`) → `/blog/*` out-of-scope → external; added `"scope":"/"`. (2) `PostModeration` draft-preview `<Link>` had `target="_blank"` → Custom Tab; removed. Verified `scope` live in prod manifest.
+- **#617 (0.234.0) 9:16 portrait story card** — new `app/(app)/blog/[slug]/story-image/route.tsx` (1080×1920 branded card, mirrors `opengraph-image`); `BlogShare` fetches it (via new `slug` prop) instead of the landscape og:image, so Story shares fill the phone. Verified 200 image/png in prod. og:image stays landscape for link scrapers.
+
+### ⚠ LANDMINES / notes
+- **`.supabase-pat` is DEAD** — 401 from Supabase's own Management API (verified: reaches the Express backend past Cloudflare, genuine reject; token is a clean `sbp_`+40). The `.env.blog` **service-role key still works** (different credential — it created the Hungary draft). **Regenerate the PAT** (supabase.com → Account → Access Tokens → overwrite `.supabase-pat`) so migrations run via API again; the reactions migration went in via Studio instead.
+- **Instagram Stories can't carry a tappable link from a shared image** (IG limitation). The card prints `paddock-tracker.com`; a clickable link needs the user to add a **Link sticker** manually (the Share bar's Copy-link button covers it). The only "baked-in" path is the native `instagram-stories://` intent + a Meta App ID — brittle from web, gated; not worth it.
+- **Theme = shared token layer**: `globals.css` `:root` tokens + `@theme inline` → Tailwind utilities drive the whole site. Near-total token discipline — only **1** arbitrary-hex leak (`GhostLap3D`, a 3D-scene colour) + ~2 stragglers (`HomeContent`, `NewsPageContent`) + layout `themeColor` meta + the OG/story image cards + `global-error` (all intentionally hardcoded). So re-theming = "flip the tokens + patch a handful," NOT every surface.
+
+### 🎨 QUEUED — Theme gallery (APPROVED, design-first, NOT started)
+Build an extensible theme SYSTEM (picker + System-follow + `localStorage` + no-flash init script) driven by the shared tokens; each theme = one token block + picker entry. **5 themes v1:** Midnight (dark, current), Carbon (cool graphite dark), Ember (warm amber dark), Newsprint (warm light: paper/ink/warm-gray), Circuit (high-contrast light). All WCAG AA; flat-hairline character kept; bright accents = fills (dark text), accent-text/signal darken per theme. Arch today is "dark promoted to `:root`" — split into light/dark + per-theme blocks; keep the `.dark` class for the `dark:` variant (dark-family themes carry `.dark`, light carry `light`/default). **Next step:** draft the 5 palettes → render a visual swatch board (HTML → screenshot) → operator eyeballs by eye → build → Vercel preview → ship. A **claude.ai/design prompt** to explore directions is recorded in `SCHEDULE.md` (session-20).
+
+### 📋 Pending / owed
+- **Operator phone-tests** (can't verify from here): story card fills 9:16 + IG Add-to-story; PWA posts stay in-app (reader tap + draft preview); a reaction tap persists.
+- **Rotate `.supabase-pat`** (dead — see above).
+- **Optional nicety (offered, not built):** auto-copy the post link on Share (one-tap Link-sticker paste for IG).
+- **B1 DONE** — operator confirmed admin console access granted.
+
+### 🔧 Working-tree state at wrap
+- Operator's pre-existing uncommitted changes STILL untouched: `components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/indycar.test.ts` + docs/drafts deletions.
+- 3 untracked drafts (Belgian recap + lap-by-lap, Hungarian preview) — DB has them; bin-able.
+- HANDOFF/IDEAS/SCHEDULE updated this wrap; docs-chore PR (version trio) to push to `main`. Left the working tree on branch `feat/blog-story-card` (merged); local feature branches remain (harmless).
+
+---
+
+## ⚡ Next session pickup — 2026-07-22 (session 19 — blog hero cards + lap-by-lap engine + Greek font fix + driver-bios plumbing + F2/F3 source links + FULL F1 champion depth + F1 schedule cross-check) — `main` = 0.230.12
+
+**13 PRs #601–#613 (0.230.0 → 0.230.12), all merged + prod-shipping.** Rapid pick→build→verify→PR→merge loop, mostly solo (ultracode declined).
+
+### ✅ Shipped
+- **#601 (0.230.0) blog cover images + branded share cards.** Root cause of "my profile pic shows when I share a post": the page emitted `og:image` only when `hero_image` was set (nothing could set it) → scrapers grabbed the byline avatar. Added editable `heroImage` (PATCH `/api/blog/[id]` → `updatePostContent`, https/root-relative only) + Cover field in `DraftEditor` + on-page `PostHero`; and `app/(app)/blog/[slug]/opengraph-image.tsx` owns `og:image` for EVERY post (series-tinted branded card; file-convention metadata overrides `generateMetadata`). A full-bleed photo-card variant was built + **dropped on review** — covers are on-page only.
+- **#602 (0.230.1) F1 lap-by-lap analysis engine.** `scripts/lapstory-context.mts` (F1-only) grounds a race-chronology pack off OpenF1 (`buildRaceStory`-style raw pulls + `fetchSessionClassification`): classification/DNFs (authoritative) + full-field overtakes flagged `likelyPitCycle`, lap-anchored via a lap clock. Retry-until-non-empty pacing (OpenF1 3 req/s throttles `race_control`/`pit`/`laps` to `[]` silently otherwise). Playbook `docs/content-authoring/lapstory-post-playbook.md` (analyst voice, RULE #1 fact-tiering). First output = Belgian GP lap-by-lap prod draft.
+- **#603 (0.230.2) Greek lowercase omega fix.** GeistSans ships a MALFORMED glyph for U+03C9 (ω drawn as capital Ω) — a real-but-wrong glyph, so the browser never fell back. `@font-face` `GreekFallback` (unicode-range Greek + Greek-Ext → `local()` system faces) ahead of Geist on `body` in `globals.css`. Reproduced + fixed in Chrome; Latin untouched.
+- **#604 (0.230.3) driver-bios sidecar (plumbing + 2).** New `content/series/<slug>/bios.json` (mirrors `portraits.json`) + `loadDriverBios` + `CuratedAboutSection` preferred over the Wikipedia-intro fallback on `/drivers/<slug>`. Evergreen career/identity only (no live stats). Seeded F1 Hamilton + Alonso, RULE #1-verified.
+- **#605 (0.230.4) F2/F3 stale source links.** The rebuilt fiaformula2/3.com 404s the old `/Standings/Driver` + `/Results` paths the Standings/Results tabs + `meta.json` `officialStandingsUrl` still linked. Retargeted to `/en/standings/2026/drivers` + `/en/racing/2026` (all 200-verified).
+- **#606–#612 (0.230.5 → 0.230.11) Champion-Q&A depth — display + FULL F1 backfill.** `ChampionDepth` line on the Champions tab (points · wins · runner-up + margin; progressive) surfaced the schema fields nothing rendered. Backfilled **every F1 champion 1950–2025** (76 seasons) a decade per PR. Method: **StatsF1** for official/net points + runner-ups, **Wikipedia champions table** for wins (StatsF1's win extraction is noisy), margin-reconciled, third-sourced on conflicts. Handled: dropped-scores net points (1988 Senna 90/Prost 87), half-points (1984 72/71.5), fractional shared-drive points (1954 González 25 1/7), posthumous champions (1970 Rindt), 1997 DSQ runner-up (Frentzen not Schumacher), + several per-season-page mis-extracts caught vs the champions table.
+- **#613 (0.230.12) F1 schedule cross-check.** `npm run health:f1-schedule` diffs our rendered F1 schedule (ICS + `sessions.json` overrides) vs OpenF1 official session times → wrong-DAY/wrong-TIME. Pure `diffRoundSchedule` (`lib/f1-schedule-crosscheck.ts`) + script. 2026 run: 45 sessions, **0 discrepancies**.
+
+### ⚠ LANDMINES / notes (new)
+- **GeistSans lowercase Greek omega is malformed** — never rely on Geist for Greek; the `GreekFallback` unicode-range @font-face on `body` (`globals.css`) routes Greek to a system face. Don't remove it.
+- **Blog `og:image` is owned by the file-convention `opengraph-image.tsx`**, not `generateMetadata` (file-based metadata wins). Every post gets the branded card; `heroImage` is on-page only.
+- **lapstory + weekend-post grounding engines are DRAFT-ONLY.** Automation (auto-draft) rides the still-unbuilt headless-`claude -p` cadence trigger (IDEAS B3.3); don't assume it's wired.
+- **`health:f1-schedule` is a LOCAL diagnostic, NOT in `/api/cron/health`** — a Vercel cron hitting OpenF1 is outbound datacenter code → preview-gated (0.12.12 precedent). Cron-wiring is a follow-up.
+- **sessions-health internal off-window (wrong-day) check was prototyped + DROPPED** — it false-tripped on legit multi-day events (Le Mans week, Spa 24h test day) whose true span exceeds the race-day-only `rounds.json` window. Reliable wrong-day/time detection needs an official reference → only F1 (OpenF1) has one; hence #613.
+- Twice this session a commit landed on `main` by mistake (caught pre-push, moved to a branch). Discipline: `git branch --show-current` before every commit.
+
+### 🧵 Prod blog drafts queued
+- **Belgian GP recap** (`f1-belgian-grand-prix-2026-recap`) — operator scheduled/posted.
+- **Belgian GP lap-by-lap** (`f1-belgian-grand-prix-2026-lap-by-lap`) — prod draft, `publish_at` null, awaiting operator schedule. (Both `drafts/*.md` are untracked locally; the DB has them.)
+
+### 📋 Next session — prioritized
+1. **Champions depth — other 14 series** (F1 done 1950–2025). Cleaner modern data than F1's founding era; display's built, so pure fact-checked data (StatsF1/official + Wikipedia table), a series/decade per PR.
+2. **Driver bios content** — plumbing shipped (#604); author the rest of the F1 grid + other series (RULE #1, evergreen). Ultracode-shaped (parallel per-driver research + adversarial fact-check) — operator opts in.
+3. **F1 schedule cross-check → prod cron** — fold `health:f1-schedule` into `/api/cron/health`. Outbound → **preview-paired** (operator runs the datacenter check).
+4. **Blog cadence automation** (B3.3) — the headless `claude -p` trigger the lapstory + weekend-post engines wait on. Infra-gated (metered GH Actions / cron pinger).
+5. Carryover: IndyCar RESULTS (preview-paired), Bing WMT, Cloudflare DNS confirms, analytics/heatmap env.
+
+### 🔧 Working-tree state at wrap
+- **NOT mine — operator's pre-existing uncommitted changes, left untouched:** `components/NextRaceCountdown.tsx`, `eslint.config.mjs`, `lib/openf1/track-environment.ts`, `lib/results/indycar.test.ts`, + a batch of `docs/`/`drafts/` deletions.
+- **Untracked:** the 2 blog draft `.md`s above (DB has them; safe to bin).
+- HANDOFF/IDEAS/SCHEDULE updated this wrap (session 19); not yet committed (docs-to-`main` needs the version trio + a push ask).
+
+---
+
+## ⚡ Next session pickup — 2026-07-20 (session 18 — F2/F3/WRC results fix + weekend-schedule health monitor + full session-schedule curation + F2/F3 standings fix) — `main` = 0.229.17
+
+**3 PRs #598–#600 (0.229.12 → 0.229.17), all merged + prod-shipping + browser-verified.** Resolved the session-17 ⚠ (results-health RED 2+ days), fixed F2/F3 standings, and built a new weekend-schedule health dimension. **`/health` is now GREEN across all three surfaces: results 8/8, standings 13/13, sessions 15/15.**
+
+### ✅ Shipped
+- **#598 (0.229.13 WRC + 0.229.14 F2/F3)** — restore F2/F3/WRC RESULTS.
+  - **WRC:** Wikipedia switched the season page's "Report" links relative→absolute; the parser only accepted `/wiki/` → `perRallyUrl` null on every round → the completed-rounds filter dropped all 14. Fix: `normalizeWikiHref` (`lib/results/wrc.ts`) accepts relative + protocol-relative + absolute; the filter now keys on `winnerName` only (link-less winner → winner-only row, not dropped). Live 104 rows.
+  - **F2/F3:** the FIA rebuilt fiaformula2/3.com onto Next App-Router — old `/Standings/Driver` + `/Results?raceid=N` redirect to `/en/…`, **no `__NEXT_DATA__`** (RSC `__next_f`), and SSR is **feature-race-only**. Rewrote onto the FOM JSON API (`api.formula1.com/v2/core-fom-results`) via new shared **`lib/results/fom-api.ts`**; `f2.ts`/`f3.ts` are thin adapters (signatures unchanged). Live F2 711 / F3 369 rows; points reconcile 22/22 + 33/33.
+- **#599 (0.229.15 monitor + 0.229.16 curation)** — weekend-schedule health + curation.
+  - New **`lib/sessions-health.ts`** + `scripts/health-sessions.mts` (`npm run health:sessions`, folded into `npm run health` + `/api/cron/health` 503). Flags a completed round whose session count is `< median × 0.5` of its series (self-calibrating — NASCAR's uniform 1-session rounds don't trip; excludes `round < 1` strays).
+  - Curated to green (official timetables, RULE #1, UTC-converted): **GT World** Misano + Spa 24h, **WRC** Croatia + Portugal (also fixed Portugal's wrong TZ — it's WEST/UTC+1), **IndyCar** 7 rounds, **DTM** Norisring (was entirely missing). 15/15 green.
+- **#600 (0.229.17)** — F2/F3 STANDINGS via FOM API. New `fetchFomStandings` in `fom-api.ts` (driver + constructor breakdown; driver's team joined from the latest completed feature race since the breakdown omits it; wins = FR≥25). `fetchF2/F3Standings` keep signatures + `source_snapshot` wrap. 13/13 standings green; F2 Tsolov 161/Campos, F3 Ugochukwu 104/Campos, teams populated.
+
+### ⚠ LANDMINES (new)
+- **FOM API public apikeys** (`lib/results/fom-api.ts`): per-brand, scraped from each site's client bundle — F2 `MsEAL…`, F3 `gGX8k…`. Power **BOTH** F2/F3 results AND standings. If FOM rotates one → that series' results + standings go EMPTY; re-scrape from `"key":{"public":"…"}` in the site's `__next_f` flight config (fetch any race page, unescape the flight). Fail-soft to last-good KV/snapshot. NB the editorial endpoints (driver-listing) need a DIFFERENT key (401 with the results key).
+- **FOM round = `meetings[]` index+1**, NOT the API's `meetingNumber` (that's the F1 GP round; F2/F3 skip GPs, so e.g. F2 Barcelona = championship R5 but F1 R7). Points-array columns align to meetings order; SR = idx0, FR = idx1; feature win = FR ≥ 25 (bonus-inclusive).
+- **F2/F3 points = standings breakdown `[SR,FR]`** (canonical, incl. pole/FL), NOT per-session `racePoints` (omits bonuses — under-counts).
+- **`sessions.json` overrides REPLACE ICS entries** inside a `matchDate ±2-day` window — an INCOMPLETE override leaves a thin weekend (the Misano-showed-only-FP2 bug). Curate the FULL weekend or don't override.
+
+### 📋 Next session — prioritized
+1. **Post-Belgian-GP blog** — QUEUED, not started (deferred twice this session). Weekend digest / race-report; blog SOP (prod DB draft, `publish_at` null, RULE #1 fact-check).
+2. **Footer "Source:" links** — F2/F3 results + standings pages still link the OLD `fiaformula2.com/Standings/Driver` / `/Results` URLs (cosmetic; data's from the FOM API). One-line sweep.
+3. **sessions-health v1 gap** — catches MISSING sessions, not right-count-WRONG-DAY (e.g. a misdated FP). Needs official-timetable cross-referencing — later pass.
+4. Carryover: IndyCar RESULTS still on motorsport.com (preview-paired); Bing WMT; Cloudflare plugin + DNS confirms (session 17).
+
+### 🔧 Notes
+- Background research subagents were flaky under concurrency (DTM agent hung twice; env cap = **3 parallel** subagents). Inline/foreground research + direct `WebFetch` were reliable — prefer those for this kind of lookup.
+- PDF timetables (GTWCE/DTM) defeat pdfplumber/fitz text + table extraction on positioned-column layouts; **render to image (fitz) and read visually** for the hard ones.
+- `.playwright-mcp/` accumulated snapshot artifacts locally (untracked — consider gitignoring).
+
+---
+
+## ⚡ Next session pickup — 2026-07-15 (session 17 — WRC per-stage + reachability, SEO internal-linking, home/nav cleanups, Cloudflare migration, repo/doc cleanup; ⚠ found results-health RED) — `main` = 0.229.11
+
+**13 commits (0.228.8 → 0.229.11), all merged + prod-shipping.** Live-driven throughout. Shipped the WRC per-stage classification and made it reachable, a broad SEO internal-linking pass, nav/home cleanups, and repo/doc cleanup — then diagnosed a 2-day-red results health check (⚠ below). The Batch-1 "SEO content" audit found the content offensive already won (explainers exist + `featured`; the lever is internal linking + authority, not more content).
+
+### ⚠ CRITICAL — results health RED for 2+ days (F2 / F3 / WRC results EMPTY)
+The 6-hourly `.github/workflows/health.yml` has failed every run since ~2026-07-13 (HTTP 503 from `/api/cron/health`). Reproduced **locally** via `npm run health:results`, so it's **real source drift, NOT a datacenter-IP block**. All **13 standings OK**; **3 of 8 results feeds down** — `f2`, `f3`, `wrc` all return **EMPTY (0 rows)**:
+- **F2 + F3 — the FIA sites were REBUILT → parser rewrite needed.** `fiaformula2.com/Standings/Driver` now **308-redirects to `/en/standings/2026/drivers`**, and the new page has **no `__NEXT_DATA__`** — the exact JSON `lib/results/f2.ts` + `f3.ts` (`extractNextData`) depend on. Both parsers are dead at the root (wrong URL AND the extraction method is gone). Fix = find where the redesigned site now holds its data (embedded JSON / an API / SSR tables) and rewrite. F3 mirrors F2 (`fiaformula3.com`).
+- **WRC — parser drift, source is fine → smaller fix.** `en.wikipedia.org/wiki/2026_World_Rally_Championship` is HTTP 200 with `Season_summary` + all four winner columns present, but `fetchWRCSeasonResults` (`lib/results/wrc.ts`) returns `[]` — the table-navigation (mw-heading walk / `findColIndex`) regressed against a Wikipedia structure tweak. Data's all there → a parser debug. (Separate from the curated per-stage `content/series/wrc/stage-results.json` from #586, which is healthy.)
+- **Impact:** the F2/F3/WRC *results tabs* are empty/stale (fail-soft serves last-good where cached) — not a crash; `health.yml` stays red until fixed.
+
+### ✅ Shipped
+- **#585 (0.228.9)** fix(admin): "← Account" back-link → absolute apex `${SITE_URL}/settings` (relative 404s on `dev.`; `/account` has no route — `/settings` is it).
+- **#586 (0.229.0)** feat(wrc): per-stage overall classification on stage session pages. Curated `content/series/wrc/stage-results.json` → `loadWrcStageResults` → `fetchWrcStageClassification` (`lib/results/wrc.ts`) → a `wrc` branch in the session-page classification dispatch. `SessionClassificationEntry` gained optional `coDriverName`+`car`. Pilot: R8 Acropolis final classification (top 15 of 45), eWRC + wrc.com, adversarially verified CLEAN (incl. the post-penalty final order). **eWRC gate PASSED via Playwright — the 402 is anti-bot, a real browser reads it.**
+- **#587 (0.229.1)** fix(ui): weekend session rail `overflow-x-auto`→`flex-wrap` (18-stage rallies were cut off at ~SS10, hidden scrollbar).
+- **#588 (0.229.2)** feat(seo): weekend pages link the venue → its `/information/tracks/<slug>` profile.
+- **#589 (0.229.3)** feat(seo): "Circuits this season" links on the series calendar + **fixed a wrong-circuit bug** — `getTrackInfoByCircuitSlug` (from #588) used the greedy substring matcher so the Miami GP linked to Homestead-Miami Speedway; rebuilt on EXACT normalised-name equality. `lib/circuits.ts` now exports `loadCircuits` + `normalise`.
+- **#590 (0.229.4)** refactor: series "Tracks" tab → **"Rounds"** (its cards link weekends, not track profiles). Tab key stays `tracks` (no `/tracks` URL 404).
+- **#591 (0.229.5)** fix(wrc): stage classification skips the 7-day KV session cache (curated edits surface on the next deploy).
+- **dc1d140 (0.229.6)** feat(home): **removed the "Just missed" widget** (operator "can't get rid of it"; a prior hideable pass didn't satisfy). `series-just-missed` ("Series results") covers the data; the `/api/just-missed` route stays. ⚠ **committed direct to main (branch slip after the #591 merge) — verified + green, but no PR.**
+- **#592 (0.229.7)** feat(seo): series "Learn about" card links each series' Points + What's new explainers (`topics.ts` `pointsGuideForSeries`/`whatsNewGuideForSeries`, bespoke curated slugs verified vs `content/information/answers/`).
+- **#593 (0.229.8)** fix(wrc): rally weekend schedule rows are now clickable — `sessionLinkBase` (`weekend/[round]/page.tsx`) was missing `wrc`, so stage pages (and the #586 classification) were unreachable from the schedule.
+- **#594 (0.229.9)** docs: session-17 handoff.
+- **#595 (0.229.10)** chore: removed 6.6 MB of superseded design mockups (`docs/superpowers/design/mockups/*.webp` + `index.html`) + orphaned root `fe-champ.html`. Also cleared ~18 MB of gitignored root screenshots + `.playwright-mcp/`/`.aidesigner/` locally (no repo impact).
+- **#596 (0.229.11)** docs: pruned completed items from IDEAS + SCHEDULE (cross-checked vs CHANGELOG + code — blog embeds, NLS parser, `lib/onboarding.ts`, head-to-head all already shipped; SCHEDULE "Backlog stubs" reframed as historical, `IDEAS.md` is the live backlog).
+
+### 🌩 Cloudflare migration (operator, mid-session)
+- Nameservers moved to Cloudflare (account **`pparaskevas.dev@gmail.com`**). **Prod is healthy through CF** — paddock-tracker.com serves, no SSL/DNS errors; **Clerk sign-in confirmed working** (FAPI resolves; both `clerk.`/`accounts.` records survived the move).
+- **No CF integration in the codebase** (grep clean). Agent access = install the CF Claude Code plugin (`claude plugin marketplace add cloudflare/skills` + `claude plugin install cloudflare@cloudflare` + `/reload-plugins`; OAuth on first tool use) — **operator/interactive action**.
+- **⚠ LANDMINE — the Clerk DNS records MUST be "DNS only" (grey cloud), NOT proxied (orange)**, or CF intercepts Clerk's SSL/edge and auth breaks. **Operator to verify:** grey cloud on `clerk.`/`accounts.`/`clkmail.` + the two DKIM CNAMEs present; SSL/TLS mode = **Full (strict)** (Flexible → Vercel redirect loops); `dev.*` resolves; Vercel → Domains shows "Valid".
+
+### 🧭 Findings / decisions (the "scrutinise + audit" pass)
+- **Batch-1 "SEO content" = already done.** Every GSC-demand explainer (DRS + 2026 replacement, all points systems, what-is/whats-new/weekend ×series, differences, rally, most-titles records) exists in `content/information/answers/` AND is `featured: true`. Writing more is redundant + dilutive. The lever is internal linking (shipped #588/#589/#592) + authority/time — NOT content.
+- **Rally per-stage FULL field: scrutiny-declined** as low-value — per-stage running orders (SS1–16) are transient; the headline (final classification) shipped in #586. Not worth the metered seat.
+- **`/information/tracks/*` + the explainers were near internal-link orphans** → the "crawled, currently not indexed" bucket (100+ pages) is authority/time + linking, NOT thin content (Silverstone has a ~1,460-char article and still isn't indexed). The intentionally-noindexed `who-won-<year>` stubs are correct (scaled-content avoidance) — do NOT "fix" the GSC noindex validations.
+
+### 📋 Next session — prioritized
+1. **FIX results health (RED 2+ days — see ⚠ above).** (a) **WRC** parser debug (`lib/results/wrc.ts` — data's present on Wikipedia; fix the table-nav/column detect); (b) **F2 + F3** rewrite for the rebuilt FIA sites (new URL `/en/standings/2026/drivers`, no `__NEXT_DATA__` → reverse-engineer the new data source). All three are outbound → verify with `npm run health:results` locally + a preview pass before merge. WRC is the tractable one; F2/F3 are the bigger rewrite.
+2. **IndyCar session times + results — PREVIEW-PAIRED.** Outbound (motorsport.com/indycar): build + local-verify, PR **held UNMERGED** for the operator's Vercel preview pass (0.12.12 NASCAR-regression rule).
+3. **Bing Webmaster Tools** — operator claims the domain + hands over a verification token → add the verification file (IndexNow already pings Bing each deploy).
+4. **Distribution / authority** — on-platform SEO exhausted; indexing the 100+ not-indexed pages is now backlinks/traffic/time + CF CDN once the plugin's in.
+- Side: extend series-explainer links to more surfaces; doc hygiene (trim HANDOFF/SCHEDULE).
+
+### ⏳ Operator confirms owed
+- Cloudflare (all above). Install the CF plugin for agent DNS access. (Carryover: SportsEvent rich-results in GSC; the 100+ not-indexed is authority/time, not a bug.)
+
+---
+
+## ⚡ Next session pickup — 2026-07-14 (session 16 — calendar CSS fix + parallel batch (taste-calls / admin ② / WRC) + post-ship UI/SEO/proxy fixes + Fotis onboarding) — `main` = 0.228.7
+
+**12 PRs #572–#583 (0.227.6 → 0.228.7), all merged + prod-shipping.** Heavily live-driven (operator reviewing/redirecting throughout, batched decisions). Ran the green-lit ② `/admin` redesign + the 5 taste calls + WRC curation as parallel worktree agents, then a run of operator-reported post-ship fixes, then set up contributor onboarding for Fotis.
+
+### ✅ Shipped
+- **#572 (0.227.6)** calendar: `WeekendBlock` `border-y`→`border` (enclosed cards). The recurring "right side of box cut off" was an OPEN right edge (border-y only), NOT overflow — verified no h-overflow at 390/1676/1920.
+- **#573 (0.227.7)** nav: signed-in `/`→`/app` 307 in `proxy.ts` (guarded `!host.startsWith('dev.')`); anonymous + crawlers keep the static landing, so `/` stays the SEO home.
+- **#574 (0.227.8)** content(wrc): curated Rally Estonia R9 `sessions.json` (18 SS + shakedown, stored UTC, triple-sourced Wikipedia/rally-maps/motorsportscalendar).
+- **#575 (0.227.9)** ui taste-calls: F1 accent `#e10600`→`#ff4136` (AA), standings as semantic `<table>`, 44px header tap targets, bottom-bar `text-[9px]` (already), blog share-bar to top — PLUS an unrequested amber search-button restyle that shipped (operator chose to keep it).
+- **#576 (0.228.0)** feat(admin): ② multi-page redesign — hub + 7 gated routes, shared layout, amber nav rail, `AdminUI` kit, `loadOverlayData` relocated to `/behaviour`. **`requireAdmin()` is in NEW `lib/admin-guard.ts`** (NOT `lib/threads.ts` — it's client-bundled via `ThreadComposer`, can't import `server-only`).
+- **#577 (0.228.1)** fix(indycar): revert Chip Ganassi `#ff4136`→`#E10600` (AA sweep over-caught a team-color hex).
+- **#578 (0.228.2)** fix(header): mobile header overflow — `AppShell` `gap-2 lg:gap-6` + cluster `gap-1 sm:gap-1.5`, coffee icon-only `<380px` (the 44px targets widened the cluster past 390px).
+- **#579 (0.228.3)** fix(admin): **isolate admin from site chrome** — moved `app/(app)/admin/**`→`app/(admin)/**` (new minimal root layout, no AppShell/footer/assistant/bottom-bar); URLs unchanged (route-group parens). + KPI panel overflow fix (`min-w-0`/`truncate`).
+- **#580 (0.228.4)** feat(header): all header utils → amber brand fill (operator request).
+- **#581 (0.228.5)** fix(proxy): `dev.*` admin-only — 404 any dev path that isn't `/admin*`, `/api/*`, or a `?hm=1` heatmap frame. Apex untouched.
+- **#582 (0.228.6)** fix(seo): complete SportsEvent JSON-LD — `organizer`(+url)/`performer`/`offers`/`eventStatus`/`description`/`image`/`address`+`geo`, copied onto every `subEvent`. `image` = brand logo (OG route is build-hashed, unsafe to reference); `address` country-only (`circuits.json` has no city).
+- **#583 (0.228.7)** docs: `docs/ONBOARDING.md` (contributor guide).
+
+### 🧑‍💻 Fotis onboarding (in progress)
+- New contributor (has Vercel/Supabase/GitHub creds), starting on UI/UX.
+- `docs/ONBOARDING.md` merged. `testing.paddock-tracker.com` = long-lived **`testing`** branch (bootstrapped with empty commit `a0a19c7` — a same-SHA-as-main branch won't build or appear in Vercel's branch picker); operator assigned the domain.
+- **ENV NOT ISOLATED:** `testing` likely uses PROD Supabase+KV → keep it UI/UX-only, NO DB writes, until a separate testing Supabase/KV is set. Vercel domain+env checklist is in this session's chat.
+- **OPERATOR TO DO:** grant Fotis GitHub **write** + Vercel **team** + Clerk; share `.env.local`/`.clerk`/`.supabase-pat` out-of-band. Local Supabase optional for UI (most surfaces render from `content/*` + APIs).
+
+### 🧭 New landmines / patterns
+- Parallel agent PRs: a branch built off a **stale fetch loses the push-race** (a revert missed the taste-calls merge; caught + fixed via #577), and every stacked PR needs a **release-note union + version renumber** on merge. `next build` is the merge gate.
+- Admin now lives in **`app/(admin)/`** (own root layout); `dev.*` is admin-only in `proxy.ts`. Both dev blocks guard on `host.startsWith('dev.')`.
+- A branch pointing at an already-deployed SHA gets **no Vercel build** (dedup) → absent from the domain branch picker; a distinct (even empty) commit fixes it.
+
+### 📋 Next session — prioritized
+1. **Admin "← ACCOUNT" back-link → absolute apex `/account`** (relative now 404s on `dev.`). Small. In IDEAS inbox.
+2. **Rally full-field per-stage** (operator: curate the FULL field). GATE: confirm eWRC is readable via a real browser (Playwright — it 402s plain HTTP). Then per-stage content schema → curate **R8 Acropolis** (RULE #1) → render on stage session pages (`ClassificationTable`) → scale. Spike verdict: Wikipedia "Special stages" table = winner/time/leader per SS only (free, reachable); full ranked field needs eWRC (browser may pass) or the paid Blacktop API.
+3. **~5-PR audit.**
+- Side: optional branded `app/(admin)/not-found.tsx` (non-admins get a bare 404); `testing` env-var isolation; IDEAS Now/Next triage.
+
+### ⏳ Operator prod-confirms owed
+- 7 chrome-free `/admin` routes (admin-authed); `dev.` 404s `/app`; signed-in `/`→`/app`; SportsEvent rich-results clear in GSC. (Session-15 carryover: MotoGP digest live on `/blog`? all 13 crons 200 post-redeploy?)
+
+---
+
+## ⚡ Next session pickup — 2026-07-14 (session 15 — Sachsenring digest + blog-share + a11y/UX sweep + champion-depth + standings sub-tabs + cron-secret saga) — `main` = 0.227.4
 
 **15 PRs #556–#570 (0.225.3 → 0.227.4), all merged + prod-shipping**, plus prod: landed the MotoGP German GP digest as a DB draft + applied the 2 heatmap migrations. Long live-driven session, operator reviewing throughout. The ✅ list below is the first wave; ALSO shipped: **#563** dialog focus-trap (`lib/useFocusTrap.ts` for Modal+ContactModal), **#564** MotoGP champion-depth data, **#565** home a11y (heading levels / reduced-motion / decorative-icon aria / scroll-rail fades), **#566** SportsEvent `location` GSC fix, **#568** Standings Drivers/Constructors sub-tabs (`components/tabs/StandingsView.tsx`), **#569** calendar single-column, **#567/#570** release notes. All browser/data-verified before merge.
 

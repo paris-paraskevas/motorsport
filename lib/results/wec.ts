@@ -8,6 +8,7 @@ import {
   seasonCacheKey,
 } from '@/lib/results-cache';
 import { fetchWecStandings, type WecStandings } from '@/lib/standings/wec';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 // FIA WEC per-round race results, sourced from the results page's Symfony UX
 // Live Component on fiawec.com (probe 2026-06-12). There is no open JSON
@@ -376,7 +377,7 @@ async function fetchRound(
   };
 }
 
-export async function fetchWecSeasonResults(): Promise<WecRoundResults[]> {
+async function fetchWecSeasonResultsLive(): Promise<WecRoundResults[]> {
   const season = manifest.season;
   const cacheKey = seasonCacheKey('wec', season);
   const cached = await readResultsCache<WecRoundResults[]>(cacheKey);
@@ -416,6 +417,20 @@ export async function fetchWecSeasonResults(): Promise<WecRoundResults[]> {
     await writeResultsCache(cacheKey, out);
   }
   return out;
+}
+
+/**
+ * Public WEC season results: durable `source_snapshot` last-good beneath the
+ * KV window. fiawec.com blocks Cloudflare's egress IPs, so on the Worker this
+ * serves what the clean-IP warm cron wrote; `DATA_SOURCE=db` never calls the CMS.
+ */
+export async function fetchWecSeasonResults(): Promise<WecRoundResults[]> {
+  const rounds = await withSourceSnapshot<WecRoundResults[]>(
+    'results:wec',
+    fetchWecSeasonResultsLive,
+    v => v == null || v.length === 0,
+  );
+  return reviveRoundDates(rounds ?? []);
 }
 
 // KV round-trips serialize Dates to ISO strings; the generic results-cache

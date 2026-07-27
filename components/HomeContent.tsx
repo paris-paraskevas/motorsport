@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
+import { seriesInk } from '@/lib/site';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Trophy, Tv, Users, UserPlus } from 'lucide-react';
 import type { Session } from '@/lib/types';
@@ -326,11 +327,9 @@ export function HomeContent({
   // Both the combined Just missed block and the per-series Series results block
   // render from /api/just-missed — ONE shared fetch, fired when EITHER is shown +
   // expanded (mirrors the championship-leader + standings-snapshot fan-out).
-  const justMissedShown =
-    !layout.hidden.includes('just-missed') && !layout.collapsed.includes('just-missed');
   const seriesResultsShown =
     !layout.hidden.includes('series-just-missed') && !layout.collapsed.includes('series-just-missed');
-  const needJustMissed = justMissedShown || seriesResultsShown;
+  const needJustMissed = seriesResultsShown;
   useEffect(() => {
     if (!needJustMissed) return;
     let alive = true;
@@ -574,7 +573,6 @@ export function HomeContent({
   // widget's allowed range; the customise page persists them to layout.config.
   const cfg = (id: HomeElementId): WidgetSettings => layout.config[id] ?? {};
   const dense = (id: HomeElementId): boolean => (cfg(id).density ?? 'comfortable') === 'compact';
-  const jmCount = Math.min(Math.max(cfg('just-missed').count ?? 3, 1), 5);
   const schedDays = cfg('schedule').days === 3 ? 3 : 7;
   const newsCount = cfg('news').count ?? NEWS_LIMIT;
   const blogCount = cfg('from-the-blog').count ?? 4;
@@ -597,33 +595,6 @@ export function HomeContent({
   // a row list — so the [&_a]/[&_li] descendant variants the other blocks use
   // don't apply here).
   const chyronPad = dense('chyron') ? 'py-2.5' : 'py-4';
-
-  // JUST MISSED — filter to followed, capped to the widget's `count` (hero +
-  // rest). Rank cards that
-  // carry an actual podium ahead of link-out-only series, then by recency: the
-  // block's whole point is "who won", so a result we can show beats a more
-  // recent race we can only link out to (NASCAR/WSBK/F2 etc.).
-  const justMissedItems = (
-    hydrated && followed !== null
-      ? (justMissed ?? []).filter(j => followed.includes(j.seriesSlug))
-      : (justMissed ?? [])
-  )
-    .slice()
-    .sort((a, b) => {
-      const pa = a.podium && a.podium.length > 0 ? 1 : 0;
-      const pb = b.podium && b.podium.length > 0 ? 1 : 0;
-      if (pa !== pb) return pb - pa;
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    })
-    .slice(0, jmCount);
-  const jmHero = justMissedItems[0];
-  const jmRest = justMissedItems.slice(1);
-  // Hero "article" — the latest news item for the hero's series. Honest
-  // heuristic (latest series story, not guaranteed a race report), so it's
-  // labelled "Latest · <series>" rather than implied to be about the race.
-  const heroArticle = jmHero
-    ? news.find(n => n.seriesSlug === jmHero.seriesSlug)
-    : undefined;
 
   const liveItems = filteredSessions.filter(
     i => !i.session.dateOnly && i.session.start <= now && now <= i.session.end,
@@ -769,7 +740,7 @@ export function HomeContent({
                 </span>
                 <span
                   className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold"
-                  style={{ color: item.color }}
+                  style={{ color: seriesInk(item.color) }}
                 >
                   {item.seriesName}
                 </span>
@@ -817,7 +788,7 @@ export function HomeContent({
                   />
                   <span
                     className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold"
-                    style={{ color: next.color }}
+                    style={{ color: seriesInk(next.color) }}
                   >
                     {next.seriesName}
                   </span>
@@ -881,7 +852,7 @@ export function HomeContent({
                     />
                     <span
                       className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold"
-                      style={{ color: item.color }}
+                      style={{ color: seriesInk(item.color) }}
                     >
                       {item.seriesName}
                     </span>
@@ -931,158 +902,6 @@ export function HomeContent({
           </div>
         )}
       </section>
-      )}
-
-      {/* ── JUST MISSED — what just happened. Hero (latest finished race) +
-             up to 2 quiet rows. Podium for covered series, link-out otherwise.
-             (Slice 3 pairs this side-by-side with UP NEXT on desktop.) ── */}
-      {!isHidden('just-missed') && (
-        <section aria-label="Just missed" className="mb-8" style={{ order: orderOf('just-missed') }}>
-          <CollapsibleSectionHead
-            title="Just missed"
-            sub="latest results"
-            collapsed={isCollapsed('just-missed')}
-            onToggle={() => toggleCollapsed('just-missed')}
-          />
-          {!isCollapsed('just-missed') &&
-            (justMissed === null ? (
-              <div aria-hidden="true" className="space-y-2 border-y border-border py-4">
-                <div className="h-4 w-40 animate-pulse motion-reduce:animate-none bg-surface" />
-                <div className="h-8 w-3/4 max-w-sm animate-pulse motion-reduce:animate-none bg-surface" />
-                <div className="h-4 w-1/2 animate-pulse motion-reduce:animate-none bg-surface/60" />
-              </div>
-            ) : !jmHero ? (
-              <p className="border-y border-border py-4 font-mono text-sm text-text-faint">
-                Nothing wrapped up recently.
-              </p>
-            ) : (
-          <>
-          <div className="border-y border-border py-4">
-            <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
-              <span className="inline-flex items-center gap-1.5">
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: jmHero.color }}
-                />
-                <span className="font-semibold" style={{ color: jmHero.color }}>
-                  {jmHero.seriesName}
-                </span>
-              </span>
-              <span className="text-text-faint tnum">
-                {relativeAgo(new Date(jmHero.date), now)}
-              </span>
-            </div>
-            <a href={jmHero.resultsHref} className="group inline-block">
-              <span className="font-display text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-text leading-none">
-                {jmHero.raceName}
-              </span>
-            </a>
-            {jmHero.podium && jmHero.podium.length > 0 ? (
-              <ol className="mt-2.5 space-y-1">
-                {jmHero.podium.map(p => (
-                  <li
-                    key={p.position}
-                    className="flex items-baseline gap-2.5 text-sm min-w-0"
-                  >
-                    <span className="w-6 shrink-0 font-mono text-[11px] text-text-faint tnum">
-                      P{p.position}
-                    </span>
-                    <span
-                      className={
-                        p.position === 1
-                          ? 'font-semibold text-text'
-                          : 'text-text-muted'
-                      }
-                    >
-                      {p.name}
-                    </span>
-                    {p.detail && (
-                      <span className="min-w-0 truncate font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint">
-                        {p.detail}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <a
-                href={jmHero.resultsHref}
-                className="group mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-              >
-                See full results
-                <ArrowUpRight size={13} aria-hidden="true" />
-              </a>
-            )}
-            {heroArticle && (
-              <a
-                href={heroArticle.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group mt-3 block min-w-0"
-              >
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
-                  Latest · {jmHero.seriesName}
-                </span>
-                <span className="mt-0.5 flex items-start gap-1.5 text-sm leading-snug text-text-muted transition-colors duration-(--duration-fast) group-hover:text-text">
-                  <span className="min-w-0 line-clamp-2">{heroArticle.title}</span>
-                  <ExternalLink size={12} aria-hidden="true" className="mt-0.5 shrink-0 text-text-faint" />
-                </span>
-              </a>
-            )}
-            {jmHero.highlight && (
-              <a
-                href={`https://www.youtube.com/watch?v=${jmHero.highlight}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
-              >
-                <Play size={12} aria-hidden="true" />
-                Highlights
-                <ArrowUpRight size={12} aria-hidden="true" className="opacity-60" />
-              </a>
-            )}
-          </div>
-          {jmRest.length > 0 && (
-            <div className={`border-b border-border divide-y divide-border${dense('just-missed') ? ' [&_a]:py-1.5' : ''}`}>
-              {jmRest.map(j => (
-                <a
-                  key={j.seriesSlug}
-                  href={j.resultsHref}
-                  className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
-                >
-                  <span
-                    className="self-stretch w-[3px] shrink-0"
-                    style={{ backgroundColor: j.color }}
-                  />
-                  <span className="flex-1 min-w-0">
-                    <span className="block truncate text-[15px] font-semibold text-text tracking-tight">
-                      {j.raceName}
-                    </span>
-                    <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                      <span
-                        className="font-semibold whitespace-nowrap shrink-0"
-                        style={{ color: j.color }}
-                      >
-                        {j.seriesName}
-                      </span>
-                      {j.podium?.[0] && (
-                        <>
-                          <span>·</span>
-                          <span className="truncate">{j.podium[0].name}</span>
-                        </>
-                      )}
-                    </span>
-                  </span>
-                  <span className="shrink-0 font-mono text-[11px] text-text-muted tnum">
-                    {relativeAgo(new Date(j.date), now)}
-                  </span>
-                </a>
-              ))}
-            </div>
-          )}
-          </>
-            ))}
-        </section>
       )}
 
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
@@ -1196,7 +1015,7 @@ export function HomeContent({
                             <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
                               <span
                                 className="font-semibold whitespace-nowrap shrink-0"
-                                style={{ color: item.color }}
+                                style={{ color: seriesInk(item.color) }}
                               >
                                 {item.seriesName}
                               </span>
@@ -1281,7 +1100,7 @@ export function HomeContent({
                   >
                     <span
                       className="w-1.5 h-1.5 rounded-full"
-                      style={{ backgroundColor: active ? '#07070a' : s.color }}
+                      style={{ backgroundColor: active ? 'var(--bg)' : s.color }}
                     />
                     {s.name}
                     <span className="tnum opacity-70">{s.count}</span>
@@ -1315,7 +1134,7 @@ export function HomeContent({
                       />
                       <span
                         className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold shrink-0"
-                        style={{ color: item.seriesColor }}
+                        style={{ color: seriesInk(item.seriesColor) }}
                       >
                         {item.seriesName}
                       </span>
@@ -1443,7 +1262,7 @@ export function HomeContent({
                     <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
                     <span
                       className="w-20 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
-                      style={{ color: s.color }}
+                      style={{ color: seriesInk(s.color) }}
                     >
                       {s.name}
                     </span>
@@ -1555,7 +1374,7 @@ export function HomeContent({
                       <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em]">
                         <span className="inline-flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: series.color }} />
-                          <span className="font-semibold" style={{ color: series.color }}>{series.name}</span>
+                          <span className="font-semibold" style={{ color: seriesInk(series.color) }}>{series.name}</span>
                         </span>
                         <span className="text-text-faint">· after {series.latestRound}</span>
                       </div>
@@ -1675,7 +1494,7 @@ export function HomeContent({
                       <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: item.color }} />
                       <span
                         className="w-20 shrink-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em]"
-                        style={{ color: item.color }}
+                        style={{ color: seriesInk(item.color) }}
                       >
                         {item.seriesName}
                       </span>
@@ -1734,7 +1553,7 @@ export function HomeContent({
                           {j.raceName}
                         </span>
                         <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: j.color }}>
+                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: seriesInk(j.color) }}>
                             {j.seriesName}
                           </span>
                           {j.podium?.[0] && (
@@ -1778,7 +1597,7 @@ export function HomeContent({
                   <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
                     <span className="inline-flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="font-semibold" style={{ color: item.color }}>{item.seriesName}</span>
+                      <span className="font-semibold" style={{ color: seriesInk(item.color) }}>{item.seriesName}</span>
                     </span>
                     {item.session.location && (
                       <span className="inline-flex items-center gap-1 text-text-faint">
@@ -1870,7 +1689,7 @@ export function HomeContent({
                             <>
                               <span
                                 className="font-semibold whitespace-nowrap shrink-0"
-                                style={{ color: t.seriesColor ?? undefined }}
+                                style={{ color: t.seriesColor ? seriesInk(t.seriesColor) : undefined }}
                               >
                                 {t.seriesName}
                               </span>
@@ -2161,7 +1980,7 @@ export function HomeContent({
                           {item.session.title}
                         </span>
                         <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: item.color }}>
+                          <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: seriesInk(item.color) }}>
                             {item.seriesName}
                           </span>
                           <span>·</span>
@@ -2208,7 +2027,7 @@ export function HomeContent({
                   <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.14em]">
                     <span className="inline-flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="font-semibold" style={{ color: item.color }}>{item.seriesName}</span>
+                      <span className="font-semibold" style={{ color: seriesInk(item.color) }}>{item.seriesName}</span>
                     </span>
                     {item.session.location && (
                       <span className="inline-flex items-center gap-1 text-text-faint">
@@ -2284,7 +2103,7 @@ export function HomeContent({
                         <ArrowUpRight size={12} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                       </Link>
                       <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                        <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: d.seriesColor }}>
+                        <span className="font-semibold whitespace-nowrap shrink-0" style={{ color: seriesInk(d.seriesColor) }}>
                           {d.seriesName}
                         </span>
                         <span>·</span>

@@ -1,5 +1,205 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.241.0 — 2026-07-27
+
+**Pages load in a fraction of the time.** Pages are now held in a proper cache instead of being rebuilt for every single visitor, and the site no longer waits on outside data feeds while you sit there. The Formula 1 standings page went from over nine seconds to about a tenth of a second.
+
+**Session results show driver names again.** The Hungarian Grand Prix classification was listing car numbers with blank teams. The timing was right all along, but the driver list it pairs with had failed to load and got stored that way. Fixed, and results can no longer be saved without names attached.
+
+## 0.240.0 — 2026-07-27
+
+**Standings and results are now stable and consistent.** Every series' championship tables and race results are served from our own database, refreshed on a schedule, instead of being re-fetched from each series' feed every time you open a page. Reloading a page no longer shows different numbers, and a feed having a bad minute can't leave a table half-filled or stuck mid-season.
+
+**NASCAR Cup race results are back.** Wikipedia changed the shape of its links and our reader quietly stopped finding any races; all 22 rounds of the season, with full finishing orders, are on the results page again.
+
+## 0.239.1 — 2026-07-24
+
+**Behind the scenes.** Session housekeeping notes.
+
+## 0.239.0 — 2026-07-24
+
+**Upgrades for Belgium and Hungary.** The Formula 1 race-weekend pages now list the parts each team declared at Spa and the Hungaroring, including Aston Martin's 16-part B-spec car, sourced from the official FIA car-presentation submissions.
+
+## 0.238.2 — 2026-07-24
+
+**Behind the scenes.** Housekeeping on our internal planning notes.
+
+## 0.238.1 — 2026-07-24
+
+**Series menu fix.** Reaching a series' sections from the Series menu now works cleanly: moving your mouse across to Standings, Results and the rest no longer snaps the panel to a different series on the way.
+
+## 0.238.0 — 2026-07-24
+
+**Jump straight to any series section.** On desktop, hovering a series in the Series menu now reveals its pages (calendar, standings, results, rounds, drivers, champions) right there. On phones, each series on the Series page shows the same quick links, so you can go straight to, say, F1 standings without an extra tap.
+
+## 0.237.0 — 2026-07-24
+
+**Themes get their own page.** The theme picker now lives at Account → Theme, alongside Notifications and Championships, instead of sitting inline on the Account page.
+
+## 0.236.0 — 2026-07-24
+
+**Purple means fastest.** Formula 1 practice analysis and the speed-trap board now highlight the session's fastest lap and top speed in timing purple, the same colour language the broadcast timing screens use.
+
+## 0.235.1 — 2026-07-24
+
+**Corrected F2 and F3 times for the Hungary weekend.** Practice, qualifying and race times for Formula 2 and Formula 3 at the Hungaroring now match the official schedules to the minute, including F3's single qualifying session on Friday afternoon.
+
+## 0.235.0 — 2026-07-23
+
+**Choose your look: five themes.** Paddock now comes in Midnight (the classic dark you know), Carbon (a cooler graphite dark for night races), Ember (a warm amber instrument feel), Newsprint (a paper-light theme that is easy on the eyes for long reads) and Circuit (a crisp high-contrast light built for daylight, grandstands and accessibility). Pick yours in Settings under Appearance, or choose System to match your device automatically. Every theme keeps Paddock's instrument character and meets accessibility contrast standards; nothing changes unless you switch.
+
+## 0.234.1 — 2026-07-23
+
+**Behind the scenes.** Internal notes and planning.
+
+## 0.234.0 — 2026-07-23
+
+**Better Story shares.** Sharing a blog post to an Instagram Story now uses a full-screen portrait card instead of a small letterboxed image.
+
+## 0.233.0 — 2026-07-23
+
+**App fix.** Opening a blog post inside the installed app no longer bounces you out into a separate in-app browser window. Posts now stay in the app.
+
+## 0.232.0 — 2026-07-23
+
+**Like or dislike a post.** Every blog post now has a quick thumbs up or thumbs down at the end, so you can tell us what landed. You can react whether or not you're signed in.
+
+## 0.231.0 — 2026-07-23
+
+**Share posts to Instagram Stories.** On a phone, the Share button on a blog post now passes the post's branded card image to your share sheet, so Instagram and other apps can take it straight to a Story. The usual link sharing is unchanged.
+
+## 0.230.12 — 2026-07-22
+
+**Internal.** A tool that cross-checks our Formula 1 session times against the official timing source, to catch any wrong-day or wrong-time errors in the schedule.
+
+## 0.230.11 — 2026-07-22
+
+**Every F1 champion, in full.** The Champions tab now shows points, wins and runner-up detail for every Formula 1 champion from 1950 to today, from Farina to Norris.
+
+## 0.230.10 — 2026-07-22
+
+**Champion history back to 1956.** The Champions tab now carries points, wins and runner-up detail for every Formula 1 champion from 1956 onward, into the Fangio era.
+
+## 0.230.9 — 2026-07-22
+
+**Champion history back to 1966.** The Champions tab's points, wins and runner-up detail now reaches every Formula 1 champion from 1966 onward, including Jochen Rindt's 1970 posthumous title.
+
+## 0.230.8 — 2026-07-22
+
+**Champion history back to 1976.** The Champions tab's points, wins and runner-up detail now reaches every Formula 1 champion from 1976 onward, including the half-point 1984 title.
+
+## 0.230.7 — 2026-07-22
+
+**Champion history back to 1986.** The Champions tab's points, wins and runner-up detail now covers every Formula 1 champion from 1986 onward.
+
+## 0.230.6 — 2026-07-22
+
+**More champion history.** The points, wins and runner-up detail on the Champions tab now covers every Formula 1 champion back to 1996.
+
+## 0.230.5 — 2026-07-22
+
+**Champions pages now show more depth.** Every champion's season now lists their points, wins, and who they beat (and by how much). Live for Formula 1 from 2006 onward, with more history and series to follow.
+
+## 0.230.4 — 2026-07-22
+
+**Fixed the F2 and F3 source links.** The "Source" links on the Formula 2 and Formula 3 standings and results pages led to pages that no longer exist; they now open the current official pages.
+
+## 0.230.3 — 2026-07-22
+
+**Driver profiles get original write-ups.** Driver pages can now carry an original, fact-checked bio in place of a Wikipedia extract. Rolling out per driver, starting with a couple of F1 names.
+
+## 0.230.2 — 2026-07-21
+
+**Greek text now renders correctly.** Fixed a font bug where a lowercase Greek omega appeared as a capital in posts.
+
+## 0.230.1 — 2026-07-21
+
+**Internal.** Tooling to draft a lap-by-lap race analysis from our own timing data; no user-facing change.
+
+## 0.230.0 — 2026-07-21
+
+**Blog posts now carry cover images, and shares look the part.** Editors can set a cover photo on any post and it displays above the article. Sharing any post to social media or messaging apps now shows a clean branded Paddock card instead of a random page image.
+
+## 0.229.17 — 2026-07-20
+
+**Formula 2 & Formula 3 standings are back.** The drivers' and teams' championship tables for both series are populating again after their site rebuild had left them blank.
+
+## 0.229.16 — 2026-07-20
+
+**Fuller race-weekend schedules.** Filled in missing practice, qualifying and race sessions across GT World, WRC, IndyCar and DTM weekends, so every series' schedule now shows the complete timetable.
+
+## 0.229.15 — 2026-07-20
+
+**Internal.** Added a weekend-schedule health monitor that flags race weekends with incomplete session timetables.
+
+## 0.229.14 — 2026-07-20
+
+**Formula 2 & Formula 3 results are back.** After both series' sites were rebuilt, their results tabs had gone empty; they now show full feature, sprint, qualifying and practice classifications again, with correct championship points.
+
+## 0.229.13 — 2026-07-20
+
+**Rally results are back.** The World Rally Championship results tab is showing full stage-by-stage classifications again, after an upstream data-source change had briefly left it empty.
+
+## 0.229.12 — 2026-07-15
+
+**Internal.** Health-check notes.
+
+## 0.229.11 — 2026-07-15
+
+**Internal.** Planning-doc cleanup.
+
+## 0.229.10 — 2026-07-15
+
+**Internal.** Repository cleanup.
+
+## 0.229.9 — 2026-07-15
+
+**Internal.** Session notes and planning docs.
+
+## 0.229.8 — 2026-07-15
+
+**Tap into rally stages.** On rally weekends, each stage in the schedule now opens its own page with the running classification.
+
+## 0.229.7 — 2026-07-15
+
+**More to learn per series.** Each series page now links its points-system and 2026-changes explainers, next to history and rules.
+
+## 0.229.6 — 2026-07-15
+
+**Leaner home.** Removed the "Just missed" block from the home screen — recent results still live on each series page and in the per-series results widget.
+
+## 0.229.5 — 2026-07-15
+
+**Internal.** Curated rally classifications now update as soon as they're deployed.
+
+## 0.229.4 — 2026-07-15
+
+**Clearer tab name.** The series "Tracks" tab is now "Rounds" — it shows each round's circuit and links through to that race weekend.
+
+## 0.229.3 — 2026-07-15
+
+**Jump to any circuit.** Each series calendar now lists the season's circuits, each linking straight to its profile — and a wrong-circuit link (the Miami Grand Prix pointed at the wrong track) is fixed.
+
+## 0.229.2 — 2026-07-15
+
+**Circuit links on race weekends.** Each race weekend now links straight to its circuit's profile, so you can read about the track in a tap.
+
+## 0.229.1 — 2026-07-15
+
+**All stages visible.** On rally weekends, the stage bar now shows every stage at once instead of cutting off partway through.
+
+## 0.229.0 — 2026-07-15
+
+**Rally stage results.** World Rally Championship stage pages can now show the full field and running order, starting with the final classification of the Acropolis Rally in Greece. More stages and rallies to follow.
+
+## 0.228.9 — 2026-07-14
+
+**Internal.** Fixed an admin-only navigation link.
+
+## 0.228.8 — 2026-07-14
+
+**Internal.** Session notes and planning docs.
+
 ## 0.228.7 — 2026-07-14
 
 **Internal.** Contributor onboarding documentation.

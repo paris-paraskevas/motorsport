@@ -164,11 +164,9 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
             <li key={p.id} className="rounded-lg border border-border bg-surface/60 p-3">
               <Link
                 href={`/blog/${p.slug}`}
-                target="_blank"
                 className="font-semibold text-text underline-offset-2 hover:text-brand hover:underline"
               >
-                {p.title} <span aria-hidden="true">↗</span>
-                <span className="sr-only"> (opens full draft in a new tab)</span>
+                {p.title}
               </Link>
               <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
                 {p.slug}
@@ -187,7 +185,7 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
                   type="button"
                   disabled={busy === p.id}
                   onClick={() => decide(p.id, 'approve')}
-                  className="rounded bg-brand px-3 py-1 font-semibold text-bg disabled:opacity-40"
+                  className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40"
                 >
                   Approve + schedule
                 </button>

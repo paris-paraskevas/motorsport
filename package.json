@@ -1,18 +1,22 @@
 {
   "name": "motorsport",
-  "version": "0.228.7",
+  "version": "0.241.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
+    "prebuild": "tsx scripts/bundle-content.mts",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "pretest": "tsx scripts/bundle-content.mts",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "indexnow:submit": "tsx scripts/submit-sitemap-to-indexnow.ts",
     "health:standings": "tsx scripts/health-standings.mts",
     "health:results": "tsx scripts/health-results.mts",
-    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts",
+    "health:sessions": "tsx scripts/health-sessions.mts",
+    "health:f1-schedule": "tsx scripts/health-f1-schedule.mts",
+    "health": "tsx scripts/health-standings.mts && tsx scripts/health-results.mts && tsx scripts/health-sessions.mts",
     "assistant:eval": "tsx scripts/assistant-eval.mts",
     "prepare": "husky"
   },
@@ -38,9 +42,10 @@
     "fast-xml-parser": "^5.8.0",
     "geist": "^1.7.0",
     "gray-matter": "^4.0.3",
+    "ical.js": "^2.2.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.16.0",
-    "next": "16.2.6",
+    "next": "^16.2.12",
     "next-mdx-remote": "^6.0.0",
     "node-ical": "^0.26.1",
     "react": "19.2.4",
@@ -61,6 +66,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20",
@@ -69,12 +75,13 @@
     "@types/three": "^0.185.0",
     "@types/web-push": "^3.6.4",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6",
+    "eslint-config-next": "^16.2.12",
     "husky": "^9.1.7",
     "serwist": "^9.5.11",
     "tailwindcss": "^4",
     "tsx": "^4.22.3",
     "typescript": "^5",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "wrangler": "^4.114.0"
   }
 }

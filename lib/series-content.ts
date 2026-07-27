@@ -1,10 +1,11 @@
-import fs from 'fs/promises';
+import fs from '@/lib/content-fs';
 import path from 'path';
 import type {
   Champion,
   CuratedDriversFile,
   ResultsOverridesFile,
   StandingsOverridesFile,
+  WrcStageResultsFile,
 } from './types';
 
 const SERIES_ROOT = path.join(process.cwd(), 'content', 'series');
@@ -27,6 +28,16 @@ export function loadCuratedDrivers(slug: string): Promise<CuratedDriversFile | n
 export function loadCuratedChampions(slug: string): Promise<Champion[] | null> {
   return readJsonIfExists<Champion[]>(
     path.join(SERIES_ROOT, slug, 'champions.json'),
+  );
+}
+
+/** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
+ *  The rally results feed is winners-only, so the full per-stage field lives
+ *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is
+ *  absent. */
+export function loadWrcStageResults(): Promise<WrcStageResultsFile | null> {
+  return readJsonIfExists<WrcStageResultsFile>(
+    path.join(SERIES_ROOT, 'wrc', 'stage-results.json'),
   );
 }
 
@@ -84,6 +95,36 @@ export async function loadDriverPortraits(
 ): Promise<Record<string, DriverPortrait>> {
   const file = await readJsonIfExists<DriverPortraitsFile>(
     path.join(SERIES_ROOT, slug, 'portraits.json'),
+  );
+  return file?.drivers ?? {};
+}
+
+/** One curated, original driver bio for /drivers/<slug> — an authored, RULE #1
+ * fact-checked replacement for the Wikipedia-intro fallback. `paragraphs` is the
+ * prose (evergreen career + identity ONLY — no live-season stats; the page renders
+ * live form separately, and volatile figures would go stale on the ISR page).
+ * `sources` are the primary references it was checked against (kept for the
+ * reviewer / fact-check trail; not rendered). */
+export interface DriverBio {
+  paragraphs: string[];
+  sources?: string[];
+}
+
+/** Sidecar shape: slugified-driver-name → bio. Underscore-prefixed keys
+ * (e.g. `_comment`) are file-level metadata; only `drivers` is read. */
+interface DriverBiosFile {
+  drivers?: Record<string, DriverBio>;
+}
+
+/** Curated driver bios (content/series/<slug>/bios.json) for /drivers/<slug>.
+ * Returns a slug→entry map (empty when the series has no sidecar). Preferred
+ * over the Wikipedia-intro bio, which stays as the fail-soft fallback for
+ * drivers without a curated entry. */
+export async function loadDriverBios(
+  slug: string,
+): Promise<Record<string, DriverBio>> {
+  const file = await readJsonIfExists<DriverBiosFile>(
+    path.join(SERIES_ROOT, slug, 'bios.json'),
   );
   return file?.drivers ?? {};
 }

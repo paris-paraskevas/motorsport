@@ -344,6 +344,62 @@ describe('f1-cache last-good resilience', () => {
     });
   });
 
+  // DATA_SOURCE=db — the Cloudflare Worker's read-only mode. Jolpica must not be
+  // called when a cached tier answers, and a render must never write.
+  describe('DB-as-source-of-truth mode (DATA_SOURCE=db)', () => {
+    afterEach(() => {
+      delete process.env.DATA_SOURCE;
+    });
+
+    it('serves a cached tier without calling Jolpica at all', async () => {
+      vi.stubGlobal('fetch', mockFetch()); // seed KV in normal mode
+      await fetchF1Standings();
+      setSpy.mockClear();
+
+      process.env.DATA_SOURCE = 'db';
+      const jolpica = vi.fn();
+      vi.stubGlobal('fetch', (...args: unknown[]) => {
+        jolpica(...args);
+        return Promise.reject(new Error('should not be called'));
+      });
+      const result = await fetchF1Standings();
+      expect(result).not.toBeNull();
+      expect(result!.drivers[0].driverName).toBe('Max Verstappen');
+      expect(jolpica).not.toHaveBeenCalled();
+      expect(setSpy).not.toHaveBeenCalled(); // reader, never a writer
+    });
+
+    it('falls back to the durable snapshot when KV is empty, still without fetching', async () => {
+      snapshotConfigured = true;
+      snapshotTable.clear();
+      vi.stubGlobal('fetch', mockFetch()); // seed BOTH tiers
+      await fetchF1SeasonResults();
+      store.clear(); // evict the hot tier
+      setSpy.mockClear();
+
+      process.env.DATA_SOURCE = 'db';
+      const jolpica = vi.fn();
+      vi.stubGlobal('fetch', (...args: unknown[]) => {
+        jolpica(...args);
+        return Promise.reject(new Error('should not be called'));
+      });
+      const recovered = await fetchF1SeasonResults();
+      expect(recovered).toHaveLength(1);
+      expect(recovered[0].date).toBeInstanceOf(Date);
+      expect(jolpica).not.toHaveBeenCalled();
+      snapshotConfigured = false;
+    });
+
+    it('an unseeded slot fetches but does NOT write (cron stays the only writer)', async () => {
+      store.clear();
+      process.env.DATA_SOURCE = 'db';
+      vi.stubGlobal('fetch', mockFetch());
+      const result = await fetchF1Standings();
+      expect(result).not.toBeNull();
+      expect(setSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('KV read error is swallowed (fail open to fresh value)', () => {
     it('serves the fresh empty value when KV read throws on the failure path', async () => {
       const kvModule = await import('@vercel/kv');

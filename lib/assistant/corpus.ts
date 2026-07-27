@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from '@/lib/content-fs';
 import path from 'path';
 
 // Server-only. Loads the curated site-help corpus that grounds the assistant.

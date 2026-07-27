@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { sessionSlug, weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
@@ -15,10 +16,11 @@ import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
-import { Tv, ArrowUpRight } from 'lucide-react';
+import { Tv, ArrowUpRight, MapPin } from 'lucide-react';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { loadMedia, highlightForRound } from '@/lib/media';
 import { loadF1Upgrades, loadCuratedDrivers } from '@/lib/series-content';
+import { getTrackInfoByCircuitSlug } from '@/lib/information/registry';
 import { WeekendUpgrades } from '@/components/weekend/WeekendUpgrades';
 
 // ISR: weekend pages edge-cache (was force-dynamic — uncached, slow per hit).
@@ -124,10 +126,11 @@ export default async function WeekendPage({
       : `${series.meta.name} — ${weekendTitleLabel}`;
 
   // Per-session result pages: F1 via OpenF1; the listed series carry race-session
-  // classifications; WEC/IMSA/GT World render per-class tables; others stay
+  // classifications; WEC/IMSA/GT World render per-class tables; WRC stage pages
+  // show the curated per-stage overall classification (0.229.0). Others stay
   // unlinked. Passed straight to the Schedule so each session ROW links to its
   // page — no separate "Sessions" list (it duplicated the timetable).
-  const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world'].includes(slug)
+  const sessionLinkBase = ['f1', 'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup', 'wec', 'imsa', 'gt-world', 'wrc'].includes(slug)
     ? `/series/${slug}/weekend/${round}`
     : undefined;
 
@@ -144,6 +147,11 @@ export default async function WeekendPage({
   // ISR-safe; gracefully partial when a venue or roster isn't curated.
   const venueLocation = weekend.sessions.find(s => s.location)?.location;
   const circuitMatch = await matchCircuitEntry(venueLocation, weekendTitleLabel);
+  // Deep-link the venue to its /information circuit profile when one exists —
+  // those pages are otherwise reachable only from the tracks index + search.
+  const trackInfoSlug = circuitMatch
+    ? (await getTrackInfoByCircuitSlug()).get(circuitMatch.slug)
+    : undefined;
   // Rally / multi-venue rounds have no single circuit; fall back to the round's
   // curated host country (rounds.json) so SportsEvent still emits an address.
   const roundMeta = series.rounds?.rounds?.find((r) => r.round === round);
@@ -170,7 +178,7 @@ export default async function WeekendPage({
     <div
       className={`relative ${PAGE_WIDE}`}
       style={{
-        '--tint': color,
+        '--tint': color, '--tint-fill': color,
         ['--series-color' as string]: color,
       } as React.CSSProperties}
     >
@@ -222,6 +230,19 @@ export default async function WeekendPage({
         color={color}
         circuitLayout={circuitLayout}
       />
+
+      {trackInfoSlug && circuitMatch && (
+        <div className="mb-8">
+          <Link
+            href={`/information/tracks/${trackInfoSlug}`}
+            className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+          >
+            <MapPin size={13} />
+            About {circuitMatch.circuit.name}
+            <ArrowUpRight size={12} className="opacity-60" />
+          </Link>
+        </div>
+      )}
 
       {(raceHighlight || watch) && (
         <section className="mb-8 border-y border-border py-4">

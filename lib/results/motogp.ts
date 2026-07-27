@@ -1,5 +1,6 @@
 import type { RaceResult, RaceResultEntry } from '@/lib/types';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withRaceResultsSnapshot } from '@/lib/source-snapshot';
 import type { SessionClassification, SessionClassificationEntry } from '@/lib/results/openf1';
 import {
   MOTOGP_API_BASE,
@@ -222,7 +223,7 @@ export function pickScoringRace(candidates: (RaceResult | null)[]): RaceResult |
   return best;
 }
 
-export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult[]> {
+async function fetchMotoGPSeasonResultsLive(year: number): Promise<RaceResult[]> {
   const seasonUuid = await resolveMotoGPSeasonUuid(year);
   if (!seasonUuid) return [];
 
@@ -288,6 +289,15 @@ export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult
   });
 
   return races;
+}
+
+/**
+ * Public MotoGP season results, over the durable `source_snapshot` last-good —
+ * Pulselive blocks Cloudflare's egress IPs, so the Worker serves what the
+ * clean-IP warm cron wrote (and calls nothing upstream under `DATA_SOURCE=db`).
+ */
+export async function fetchMotoGPSeasonResults(year: number): Promise<RaceResult[]> {
+  return withRaceResultsSnapshot('results:motogp', () => fetchMotoGPSeasonResultsLive(year));
 }
 
 // --- Per-session classifications (practice / qualifying) ---------------------

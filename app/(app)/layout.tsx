@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Saira_Condensed } from 'next/font/google';
@@ -11,6 +9,7 @@ import { CookieConsent } from '@/components/CookieConsent';
 import { LaunchBanner } from '@/components/LaunchBanner';
 import { AssistantWidget } from '@/components/assistant/AssistantWidget';
 import { HeatmapTracker } from '@/components/HeatmapTracker';
+import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
@@ -97,6 +96,8 @@ export default async function RootLayout({
         className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
       >
         <body className="min-h-screen bg-bg text-text">
+          {/* First child on purpose: parser-blocking pre-paint theme init. */}
+          <ThemeScript />
           {/* Clerk's SDK + frontend API are the single biggest unused-JS item
               (audit baseline); warm the connection early. */}
           <link rel="preconnect" href="https://clerk.paddock-tracker.com" />
@@ -125,8 +126,6 @@ export default async function RootLayout({
           <CookieConsent />
           <AssistantWidget />
           <HeatmapTracker />
-          <Analytics />
-          <SpeedInsights />
           {/* Deferred to lazyOnload (was afterInteractive): none of these are
               needed for first paint — AdSense isn't even approved yet, and GA4
               fires fine post-idle (consent updates queue into dataLayer, which

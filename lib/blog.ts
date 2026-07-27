@@ -64,6 +64,19 @@ export function normalizeTags(raw: string[] | undefined | null): string[] {
 const COLS =
   'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, created_at';
 
+/** Normalize + shape-check a hero/cover image reference: null/blank → null;
+ *  otherwise it must be an absolute https:// URL or a root-relative /path —
+ *  the OG card and the post-page <img> embed it as-is, so anything else
+ *  (javascript:, protocol-relative, bare filenames) is rejected here. */
+function normalizeHeroImage(raw: string | null | undefined): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  if (v.length > 2048 || !/^(https:\/\/|\/)/.test(v) || v.startsWith('//')) {
+    throw new Error('hero image must be an https:// URL or a root-relative /path');
+  }
+  return v;
+}
+
 function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
   return {
     id: r.id as string,
@@ -125,7 +138,7 @@ export async function createDraft(authorId: string, input: DraftInput): Promise<
       body,
       series_slug: input.seriesSlug?.trim() || null,
       tags: normalizeTags(input.tags),
-      hero_image: input.heroImage?.trim() || null,
+      hero_image: normalizeHeroImage(input.heroImage),
       publish_at: input.publishAt ?? null,
       author_id: authorId,
     })
@@ -215,19 +228,22 @@ export interface PostContentPatch {
   title?: string;
   summary?: string;
   body?: string;
+  /** Cover image (shown above the article body): an https:// URL or
+   *  root-relative /path; null (or blank) clears it. */
+  heroImage?: string | null;
 }
 
-/** Edit a post's text in place (the /blog/[slug] admin-preview pencil — spec
- *  docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md). Only title /
- *  summary / body are editable; slug, series, hero image and publish time are
- *  immutable in this surface. Trims every provided field and enforces the same
- *  limits as createDraft. The UPDATE is status-guarded to 'draft' | 'approved'
+/** Edit a post's text + cover in place (the /blog/[slug] admin-preview pencil —
+ *  spec docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md; hero image
+ *  made editable 0.230.0 for social share cards). Slug, series and publish time
+ *  stay immutable in this surface. Trims every provided field and enforces the
+ *  same limits as createDraft. The UPDATE is status-guarded to 'draft' | 'approved'
  *  with an exact count, so a published or rejected post can never be silently
  *  rewritten — including the race where the publish cron takes an approved post
  *  live mid-edit (the caller maps that domain error to a 422). Returns the
  *  updated post id. */
 export async function updatePostContent(id: string, patch: PostContentPatch): Promise<string> {
-  const fields: Record<string, string> = {};
+  const fields: Record<string, string | null> = {};
   if (patch.title !== undefined) {
     const title = patch.title.trim();
     if (!title || title.length > TITLE_MAX) throw new Error(`title must be 1–${TITLE_MAX} characters`);
@@ -243,8 +259,11 @@ export async function updatePostContent(id: string, patch: PostContentPatch): Pr
     if (!body || body.length > BODY_MAX) throw new Error(`body must be 1–${BODY_MAX} characters`);
     fields.body = body;
   }
+  if (patch.heroImage !== undefined) {
+    fields.hero_image = normalizeHeroImage(patch.heroImage); // null clears
+  }
   if (Object.keys(fields).length === 0) {
-    throw new Error('at least one of title, summary, body is required');
+    throw new Error('at least one of title, summary, body, heroImage is required');
   }
 
   const { error, count } = await betDb()

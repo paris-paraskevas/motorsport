@@ -137,3 +137,54 @@ export function aboutGuideForSeries(slug: string): string | null {
   const whatIs = SERIES_WHAT_IS[slug];
   return whatIs ? `/information/${topicForSeries(slug)}/${whatIs}` : null;
 }
+
+// Bespoke curated answer filenames (NOT a template — F1's points slug differs
+// from the rest, NASCAR folds in playoffs), so mapped explicitly like
+// SERIES_WHAT_IS. Every slug below is a real content/information/answers/*.md.
+// Surfaced from the series page's "Learn about" card so these featured-but-
+// under-linked explainers get inbound links from an indexed series hub.
+const SERIES_POINTS: Record<string, string> = {
+  f1: 'how-the-f1-points-system-works',
+  'formula-e': 'how-formula-e-points-work',
+  indycar: 'how-indycar-points-work',
+  f2: 'how-f2-points-work',
+  f3: 'how-f3-points-work',
+  motogp: 'how-motogp-points-work',
+  wsbk: 'how-worldsbk-points-work',
+  wec: 'how-wec-points-work',
+  imsa: 'how-imsa-points-work',
+  'gt-world': 'how-gt-world-challenge-points-work',
+  dtm: 'how-dtm-points-work',
+  nls: 'how-nls-points-work',
+  wrc: 'how-wrc-points-work',
+  'nascar-cup': 'how-nascar-cup-points-and-playoffs-work',
+};
+
+const SERIES_WHATS_NEW: Record<string, string> = {
+  f1: 'whats-new-in-f1-2026',
+  'formula-e': 'whats-new-in-formula-e-2026',
+  indycar: 'whats-new-in-indycar-2026',
+  f2: 'whats-new-in-f2-2026',
+  f3: 'whats-new-in-f3-2026',
+  motogp: 'whats-new-in-motogp-2026',
+  wsbk: 'whats-new-in-worldsbk-2026',
+  wec: 'whats-new-in-wec-2026',
+  imsa: 'whats-new-in-imsa-2026',
+  'gt-world': 'whats-new-in-gt-world-challenge-2026',
+  dtm: 'whats-new-in-dtm-2026',
+  nls: 'whats-new-in-nls-2026',
+  wrc: 'whats-new-in-wrc-2026',
+  'nascar-cup': 'whats-new-in-nascar-cup-2026',
+};
+
+/** The /information "how <series> points work" guide path, or null. */
+export function pointsGuideForSeries(slug: string): string | null {
+  const s = SERIES_POINTS[slug];
+  return s ? `/information/${topicForSeries(slug)}/${s}` : null;
+}
+
+/** The /information "what's new in <series> 2026" guide path, or null. */
+export function whatsNewGuideForSeries(slug: string): string | null {
+  const s = SERIES_WHATS_NEW[slug];
+  return s ? `/information/${topicForSeries(slug)}/${s}` : null;
+}

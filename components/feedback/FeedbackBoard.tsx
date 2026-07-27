@@ -18,7 +18,7 @@ const STATUSES: Item['status'][] = ['open', 'considered', 'done', 'closed'];
 const KIND_LABEL: Record<Item['kind'], string> = { bug: 'Bug', feature: 'Feature', comment: 'Comment' };
 const STATUS_TONE: Record<Item['status'], string> = {
   open: 'text-brand',
-  considered: 'text-amber-300',
+  considered: 'text-amber-700 dark:text-amber-300',
   done: 'text-emerald-400',
   closed: 'text-text-faint',
 };
@@ -177,7 +177,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
           <button
             type="submit"
             disabled={busy}
-            className="rounded bg-brand px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg disabled:opacity-40"
+            className="rounded bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg disabled:opacity-40"
           >
             {busy ? 'Posting…' : 'Post'}
           </button>
@@ -203,7 +203,7 @@ export function FeedbackBoard({ canManage }: { canManage: boolean }) {
                   onClick={() => toggle(s)}
                   aria-pressed={on}
                   className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
-                    on ? 'border-brand bg-brand/10 text-text' : 'border-border text-text-faint hover:text-text-muted'
+                    on ? 'border-brand bg-brand-fill/10 text-text' : 'border-border text-text-faint hover:text-text-muted'
                   }`}
                 >
                   {s} <span className="tabular-nums">{counts[s]}</span>

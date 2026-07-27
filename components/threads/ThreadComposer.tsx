@@ -96,7 +96,7 @@ export function ThreadComposer({
         <button
           type="submit"
           disabled={busy || !title.trim() || !body.trim()}
-          className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+          className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
         >
           {busy ? 'Posting…' : 'Post for review'}
         </button>

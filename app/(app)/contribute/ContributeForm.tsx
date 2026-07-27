@@ -83,7 +83,7 @@ export function ContributeForm() {
   if (result?.ok) {
     return (
       <div className="rounded-2xl border border-border bg-surface-elevated p-8 text-center">
-        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-brand/15 text-brand">
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-brand-fill/15 text-brand">
           <Check size={22} />
         </div>
         <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-text">Got it — thank you</h2>

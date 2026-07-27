@@ -1,5 +1,5 @@
 import path from 'path';
-import fs from 'fs/promises';
+import fs from '@/lib/content-fs';
 import matter from 'gray-matter';
 import { renderMarkdown } from '@/lib/content';
 

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Compass, SlidersHorizontal, Trophy } from 'lucide-react';
+import { ArrowUpRight, Bell, Compass, Palette, SlidersHorizontal, Trophy } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
@@ -26,7 +26,7 @@ export default async function AccountPage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
           Account<span className="text-brand">.</span>
         </h1>
@@ -36,6 +36,17 @@ export default async function AccountPage() {
       {stats && <AccountStats stats={stats} />}
 
       <nav className="border-t border-border">
+        <Link
+          href="/settings/theme"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <Palette size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Theme</span>
+            <span className="block text-text-faint text-xs">Five looks, or match your device</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
         <Link
           href="/settings/customize"
           className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"

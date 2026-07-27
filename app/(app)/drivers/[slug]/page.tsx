@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
+import { seriesInk } from '@/lib/site';
 import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
@@ -12,7 +13,7 @@ import { fetchWikipediaBio, ageFromISO, flagEmoji, type WikipediaBio } from '@/l
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
 import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
-import { loadDriverPortraits } from '@/lib/series-content';
+import { loadDriverPortraits, loadDriverBios, type DriverBio } from '@/lib/series-content';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE } from '@/lib/site';
 
@@ -84,6 +85,29 @@ function AboutSection({ bio }: { bio: WikipediaBio }) {
         >
           Wikipedia &rarr;
         </a>
+      </div>
+    </section>
+  );
+}
+
+// Curated, authored bio (content/series/<slug>/bios.json) — preferred over the
+// Wikipedia AboutSection above. Same layout; credited to Paddock, no external
+// source link (original prose, fact-checked against the sources kept in the JSON).
+function CuratedAboutSection({ bio }: { bio: DriverBio }) {
+  return (
+    <section className="mb-8 border-y border-border py-4">
+      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+        About
+      </h2>
+      <div className="space-y-3">
+        {bio.paragraphs.map((p, i) => (
+          <p key={i} className="text-sm text-text-muted leading-relaxed">
+            {p}
+          </p>
+        ))}
+      </div>
+      <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        Profile by Paddock
       </div>
     </section>
   );
@@ -268,6 +292,9 @@ export default async function DriverPage({
   // stays F1-only. Both fail-soft — no portrait → the header renders exactly as
   // before (no image).
   const portrait = (await loadDriverPortraits(driver.seriesSlug))[slug] ?? null;
+  // Curated bio preferred over the Wikipedia intro (fetched above, still used for
+  // the header nationality/age + as the About fallback for uncovered drivers).
+  const curatedBio = (await loadDriverBios(driver.seriesSlug))[slug] ?? null;
   let headshotUrl: string | null = portrait?.src ?? null;
   if (!headshotUrl && driver.seriesSlug === 'f1' && driver.number != null) {
     const headshots = await f1HeadshotsByNumber();
@@ -278,7 +305,7 @@ export default async function DriverPage({
     <div
       className={`relative ${PAGE_WIDE}`}
       style={{
-        '--tint': driver.seriesColor,
+        '--tint': driver.seriesColor, '--tint-fill': driver.seriesColor,
         ['--series-color' as string]: driver.seriesColor,
       } as React.CSSProperties}
     >
@@ -346,7 +373,7 @@ export default async function DriverPage({
 
             <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
               {driver.name}
-              <span style={{ color: driver.seriesColor }}>.</span>
+              <span style={{ color: seriesInk(driver.seriesColor) }}>.</span>
             </h1>
 
             {(nationality || age != null) && (
@@ -413,7 +440,11 @@ export default async function DriverPage({
         </section>
       )}
 
-      {bio && <AboutSection bio={bio} />}
+      {curatedBio ? (
+        <CuratedAboutSection bio={curatedBio} />
+      ) : (
+        bio && <AboutSection bio={bio} />
+      )}
 
       {mentions.length > 0 && <NewsMentionsSection items={mentions} />}
 

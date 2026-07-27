@@ -139,7 +139,7 @@ export function LeaguesPanel({
               close();
               setModal('create');
             }}
-            className="rounded bg-brand px-3 py-1.5 font-semibold text-bg"
+            className="rounded bg-brand-fill px-3 py-1.5 font-semibold text-bg"
           >
             Create
           </button>
@@ -229,7 +229,7 @@ export function LeaguesPanel({
                   Copy
                 </button>
               </div>
-              <button type="button" onClick={close} className="rounded bg-brand px-4 py-2 font-semibold text-bg">
+              <button type="button" onClick={close} className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg">
                 Done
               </button>
             </div>
@@ -253,7 +253,7 @@ export function LeaguesPanel({
                 type="button"
                 onClick={create}
                 disabled={busy || !name.trim()}
-                className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+                className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
               >
                 {busy ? 'Creating…' : 'Create league'}
               </button>
@@ -283,7 +283,7 @@ export function LeaguesPanel({
               type="button"
               onClick={join}
               disabled={busy || !code.trim()}
-              className="rounded bg-brand px-4 py-2 font-semibold text-bg disabled:opacity-40"
+              className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
             >
               {busy ? 'Joining…' : 'Join league'}
             </button>

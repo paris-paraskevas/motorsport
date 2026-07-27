@@ -10,6 +10,7 @@ import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
 import { HeaderUtils } from './HeaderUtils';
 import { HeaderNavMenu } from './HeaderNavMenu';
+import { seriesSubPages } from '@/lib/tabs';
 import { PushSoundPlayer } from './PushSoundPlayer';
 import { SearchTrigger } from './search/SearchTrigger';
 
@@ -155,7 +156,7 @@ export function AppShell({
               dataTour="series"
               dataHeatmapId="nav:series"
               panelLabel="Browse series"
-              panelClassName="w-[40rem] max-w-[calc(100vw-1.5rem)]"
+              panelClassName="w-[34rem] max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-4.5rem)] overflow-y-auto"
             >
               <SeriesMegaMenu groups={groups} />
             </HeaderNavMenu>
@@ -276,62 +277,93 @@ function MenuLinkList({ items }: { items: { href: string; label: string; desc: s
 // the /series hub and onboarding use). Leads with the F1 Telemetry & Analysis
 // hub (0.114.1) — the one cross-round destination that isn't a series tab.
 function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
+  const allSeries = groups.flatMap(g => g.series);
+  // The series list is a SINGLE column with the detail pane immediately to its
+  // right, so the pointer path from a series to its pages crosses no OTHER
+  // series. The earlier two-column layout let a row transited on the way to the
+  // detail hijack the pane (the classic "menu-aim" steal — you couldn't reach
+  // F2's pages without falling onto an endurance row en route); a single column
+  // makes that impossible by geometry, with no hover-intent timing hack.
+  // Defaults to the first series (F1) and follows hover/focus.
+  const [activeSlug, setActiveSlug] = useState<string | undefined>(allSeries[0]?.slug);
+  const active = allSeries.find(s => s.slug === activeSlug) ?? allSeries[0];
+  const subPages = active ? seriesSubPages(active) : [];
   return (
-    <div className="flex flex-col gap-4">
-      <Link
-        href="/f1/analysis"
-        data-heatmap-id="nav:f1-analysis"
-        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
-        <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          Analysis &amp; Race Story →
-        </span>
-      </Link>
-      <Link
-        href="/f1/compare"
-        data-heatmap-id="nav:f1-compare"
-        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
-        <span className="text-[13px] font-semibold text-text">F1 Head-to-head</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          Compare two drivers →
-        </span>
-      </Link>
-      <Link
-        href="/information/series-guides"
-        data-heatmap-id="nav:series-guides"
-        className="flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0 bg-brand" />
-        <span className="text-[13px] font-semibold text-text">Series guides</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          History &amp; rules →
-        </span>
-      </Link>
-      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
-        {groups.map(g => (
-          <div key={g.category.id}>
-            <div className="mb-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
-              {g.category.label}
+    <div className="flex flex-col gap-3">
+      {/* Cross-round F1 tools + the guides hub — compact chips so the single
+          series column below stays within the viewport. */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { href: '/f1/analysis', label: 'F1 Analysis', heatmap: 'nav:f1-analysis' },
+          { href: '/f1/compare', label: 'F1 Head-to-head', heatmap: 'nav:f1-compare' },
+          { href: '/information/series-guides', label: 'Series guides', heatmap: 'nav:series-guides' },
+        ].map(sc => (
+          <Link
+            key={sc.href}
+            href={sc.href}
+            data-heatmap-id={sc.heatmap}
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
+          >
+            <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-brand-fill" />
+            {sc.label}
+            <span aria-hidden="true">→</span>
+          </Link>
+        ))}
+      </div>
+      <div className="grid grid-cols-[1fr_12rem] border-t border-border pt-3">
+        {/* Master: single column of category-grouped series. Hover/focus loads a
+            series' pages into the detail pane; click still navigates to the hub. */}
+        <div className="flex flex-col gap-3 pr-3">
+          {groups.map(g => (
+            <div key={g.category.id}>
+              <div className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                {g.category.label}
+              </div>
+              <ul className="flex flex-col">
+                {g.series.map(s => (
+                  <li key={s.slug}>
+                    <Link
+                      href={`/series/${s.slug}`}
+                      onMouseEnter={() => setActiveSlug(s.slug)}
+                      onFocus={() => setActiveSlug(s.slug)}
+                      data-heatmap-id={`nav:series:${s.slug}`}
+                      className={`flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface ${
+                        active?.slug === s.slug ? 'bg-surface' : ''
+                      }`}
+                    >
+                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
+                      <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        {/* Detail: the hovered/focused series' pages. */}
+        {active && (
+          <div className="border-l border-border pl-3">
+            <div className="mb-1.5 flex items-center gap-2">
+              <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: active.color }} />
+              <span className="truncate font-display text-sm font-extrabold uppercase tracking-wide text-text">
+                {active.name}
+              </span>
             </div>
             <ul className="flex flex-col">
-              {g.series.map(s => (
-                <li key={s.slug}>
+              {subPages.map(p => (
+                <li key={p.key}>
                   <Link
-                    href={`/series/${s.slug}`}
-                    className="flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    href={p.href}
+                    data-heatmap-id={`nav:series:${active.slug}:${p.key}`}
+                    className="block rounded-md px-2 py-1 text-[13px] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
                   >
-                    <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
-                    <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
+                    {p.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

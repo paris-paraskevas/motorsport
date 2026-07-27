@@ -27,14 +27,14 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// The GitHub Actions cron fires every 15 minutes. Each pre-session window is
-// 15 minutes wide, so every session gets exactly one tick per window; the KV
-// ledger absorbs late/double ticks. (Was a single [10,35] window before
-// 0.22.0 — operator spec is a heads-up at ~30 AND ~10 minutes out.)
-const T30_MAX_MIN = 35;
-const T30_MIN_MIN = 20;
-const T10_MAX_MIN = 15;
-const T10_MIN_MIN = 0;
+// The cron runs every minute (Cloudflare Cron Trigger), so each notification
+// fires at the first tick inside its window and the KV ledger dedups the rest.
+// Two moments per session: a reminder ~10 minutes before the start, and a
+// "live now" buzz at the start. Windows are a couple of minutes wide to survive
+// an occasional missed/late tick.
+const PRE_SESSION_MAX_MIN = 10; // "starts in ~10 min" reminder: fire at <= 10 min out
+const LIVE_MAX_MIN = 1; // "live now": upper edge, 1 min before the start
+const LIVE_MIN_MIN = -2; // ...down to 2 min after start (catch a late tick)
 // Results lookback: how long after a race ends we keep checking whether the
 // results feed has it. Covers slow upstreams (Wikipedia editors, scrape lag).
 const RESULTS_LOOKBACK_MIN = 8 * 60;
@@ -95,6 +95,27 @@ function preSessionPayload(
     color: session.seriesColor,
     actions: [
       { action: 'open', title: 'Open' },
+      { action: 'mute', title: 'Mute series' },
+    ],
+    data: { seriesSlug: session.seriesSlug },
+  };
+}
+
+// "Live now" — deep-links to the session's weekend page when the round resolves
+// (same slug the session page uses), else the series landing.
+function livePayload(session: CandidateSession, round: number | undefined): PushPayload {
+  const url =
+    round !== undefined
+      ? `/series/${session.seriesSlug}/weekend/${round}/${sessionSlug(session.title)}`
+      : `/series/${session.seriesSlug}`;
+  return {
+    title: `🔴 ${session.seriesName} · ${session.title}`,
+    body: `Live now · ${fmtTime(session.start)} Athens`,
+    url,
+    tag: `paddock-live-${session.uid}`,
+    color: session.seriesColor,
+    actions: [
+      { action: 'open', title: 'Watch' },
       { action: 'mute', title: 'Mute series' },
     ],
     data: { seriesSlug: session.seriesSlug },
@@ -192,20 +213,22 @@ export async function GET(req: Request) {
         const mins = minutesUntil(s.start, now);
         const round = roundFor(roundLookup, series.meta.slug, s.uid);
 
-        if (mins > T30_MIN_MIN && mins <= T30_MAX_MIN) {
-          if (!(await wasNotified('t30', s.uid))) {
-            queue.push({
-              kind: 't30',
-              session: candidate,
-              payload: preSessionPayload(candidate, Math.round(mins), round),
-            });
-          }
-        } else if (mins > T10_MIN_MIN && mins <= T10_MAX_MIN) {
+        // "Starts in ~10 min" — one reminder, at the first tick <= 10 min out.
+        if (mins > LIVE_MAX_MIN && mins <= PRE_SESSION_MAX_MIN) {
           if (!(await wasNotified('t10', s.uid))) {
             queue.push({
               kind: 't10',
               session: candidate,
               payload: preSessionPayload(candidate, Math.round(mins), round),
+            });
+          }
+        } else if (mins <= LIVE_MAX_MIN && mins > LIVE_MIN_MIN) {
+          // "Live now" — one buzz as the session goes green.
+          if (!(await wasNotified('start', s.uid))) {
+            queue.push({
+              kind: 'start',
+              session: candidate,
+              payload: livePayload(candidate, round),
             });
           }
         }

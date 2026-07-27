@@ -676,7 +676,7 @@ export async function ResultsTab({ series }: { series: Series }) {
           <SeasonResultsPanel races={sprint} heading="Sprint races" seriesSlug={slug} weekendRounds={weekendRounds} />
         ) : null}
         <SourceLink
-          href="https://www.fiaformula2.com/Results"
+          href="https://www.fiaformula2.com/en/racing/2026"
           label="fiaformula2.com"
         />
       </div>
@@ -698,7 +698,7 @@ export async function ResultsTab({ series }: { series: Series }) {
       <div className="space-y-4">
         <SeasonResultsPanel races={merged} seriesSlug={slug} weekendRounds={weekendRounds} />
         <SourceLink
-          href="https://www.fiaformula3.com/Results"
+          href="https://www.fiaformula3.com/en/racing/2026"
           label="fiaformula3.com"
         />
       </div>

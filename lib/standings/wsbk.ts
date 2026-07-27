@@ -1,5 +1,6 @@
 import type { DriverStanding, ConstructorStanding } from '@/lib/types';
 import { fetchUpstream } from '@/lib/fetch-upstream';
+import { withSourceSnapshot } from '@/lib/source-snapshot';
 
 export type { DriverStanding, ConstructorStanding };
 
@@ -161,7 +162,7 @@ async function fetchJson<T>(url: string): Promise<T | null> {
  * this module accepts it as a parameter to keep the loader pure and easy to
  * test with fixtures.
  */
-export async function fetchWsbkStandings(season: number): Promise<{
+async function fetchWsbkStandingsLive(season: number): Promise<{
   drivers: DriverStanding[];
   constructors: ConstructorStanding[];
 } | null> {
@@ -176,4 +177,21 @@ export async function fetchWsbkStandings(season: number): Promise<{
   if (!drivers || !constructors) return null;
 
   return { drivers, constructors };
+}
+
+/**
+ * Public WSBK standings fetch, wrapped in the durable `source_snapshot`
+ * last-good — Pulselive blocks Cloudflare's egress IPs, so on the Worker this
+ * serves what the clean-IP warm cron wrote. Under `DATA_SOURCE=db` the snapshot
+ * is read directly and Pulselive is never called.
+ */
+export async function fetchWsbkStandings(season: number): Promise<{
+  drivers: DriverStanding[];
+  constructors: ConstructorStanding[];
+} | null> {
+  return withSourceSnapshot(
+    'standings:wsbk',
+    () => fetchWsbkStandingsLive(season),
+    v => v == null || v.drivers.length === 0,
+  );
 }

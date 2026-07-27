@@ -1,15 +1,15 @@
 import { kv } from '@vercel/kv';
 
 // Dedupe ledger for the notify cron. One key per (session, notification kind);
-// the cron fires every 15 min and each send window is 15 min wide, so without
-// this a late/early tick could double-send (and a redeploy mid-window would).
+// the cron fires every minute and each send window is a few minutes wide, so
+// without this a repeated tick would re-send (and a redeploy mid-window would).
 // KV-less environments no-op as "never notified" — harmless locally, and in
 // prod the subscriptions themselves live in KV, so the cron exits before any
 // send if KV is down.
 
 export type NotifyKind =
-  | 't30'
   | 't10'
+  | 'start'
   | 'res'
   | 'analysis'
   | 'bet-lock'
@@ -25,8 +25,8 @@ const KEY_PREFIX = 'paddock:notified:';
 // bet-settled is "once ever per round" so its TTL must outlive any re-query of
 // the same settled round (30d — far longer than the settled-market scan window).
 const TTL_SECONDS: Record<NotifyKind, number> = {
-  t30: 48 * 3600,
   t10: 48 * 3600,
+  start: 48 * 3600,
   res: 7 * 24 * 3600,
   // F1 "analysis ready" (Qualifying Decoder / Race Story): one-shot per session,
   // immutable once sent. 7d (like results) outlives the 30-90min send window and

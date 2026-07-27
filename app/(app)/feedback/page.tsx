@@ -20,7 +20,7 @@ export default async function FeedbackPage() {
   return (
     <div className={PAGE_READ}>
       <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
           Feedback<span className="text-brand">.</span>
         </h1>

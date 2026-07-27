@@ -152,7 +152,7 @@ export function CalendarFilters({
           <button
             type="button"
             onClick={save}
-            className="bg-brand px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+            className="bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
           >
             Save
           </button>

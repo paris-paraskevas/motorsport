@@ -1,5 +1,6 @@
 import { betDb, isBettingConfigured } from '@/lib/betting/client';
 import { logSourceError } from '@/lib/fetch-upstream';
+import type { RaceResult } from '@/lib/types';
 
 // Durable last-good cache + health record for upstream feeds, in Postgres
 // (the `source_snapshot` table). The DB-as-fallback the operator asked for:
@@ -20,6 +21,28 @@ import { logSourceError } from '@/lib/fetch-upstream';
 // Date objects (e.g. news `pubDate`) must rehydrate them after a last-good read.
 
 const STALE_AFTER_MINUTES = 24 * 60; // a source unrefreshed for >24h is flagged in health
+
+/**
+ * DB-as-single-source-of-truth mode (`DATA_SOURCE=db`, set on the Cloudflare
+ * Worker only).
+ *
+ * The community data APIs (jolpi.ca, FOM, Pulselive, motorsport.com, Wikipedia,
+ * fiawec) rate-limit or block Cloudflare's shared egress IPs. Before this flag
+ * the request path still *tried* them on every render, so a colo that wasn't
+ * blocked returned PARTIAL data which then overwrote the good last-good cache —
+ * data was non-deterministic (prod 2026-07-27: the F1 season chart stopped at
+ * round 5 while the season was at round 11).
+ *
+ * In this mode the render path is a READER, never a writer:
+ *   - a present snapshot is served as-is and the upstream fetch never runs;
+ *   - a MISSING slot still falls through to the fetcher (so a surface the warm
+ *     cron hasn't covered yet isn't blank) but its result is NEVER persisted.
+ * `scripts/warm-live-data.mts` — run from a clean IP by the warm-live-data
+ * GitHub Action, without this flag — is the only writer.
+ */
+export function isDbReadOnly(): boolean {
+  return process.env.DATA_SOURCE === 'db';
+}
 
 export interface SourceHealth {
   key: string;
@@ -100,6 +123,19 @@ export async function withSourceSnapshot<T>(
   fetcher: () => Promise<T>,
   isEmpty: (v: T) => boolean = defaultIsEmpty,
 ): Promise<T> {
+  if (isDbReadOnly()) {
+    const stored = await readSnapshot<T>(key);
+    if (stored !== null) return stored;
+    // Unseeded slot: serve whatever the fetcher manages (better than blank) but
+    // never write it — only the clean-IP warm cron may seed the DB. Logged so a
+    // permanently unseeded surface is visible instead of silently degrading.
+    logSourceError(`db-only:snapshot-miss:${key}`, 'no stored payload');
+    try {
+      return await fetcher();
+    } catch {
+      return undefined as unknown as T;
+    }
+  }
   let fresh: T;
   try {
     fresh = await fetcher();
@@ -116,6 +152,34 @@ export async function withSourceSnapshot<T>(
   }
   const lastGood = await readSnapshot<T>(key);
   return lastGood !== null ? lastGood : fresh;
+}
+
+/**
+ * `withSourceSnapshot` specialised for the season-results parsers, whose payload
+ * is `RaceResult[]`. Two reasons this exists rather than each parser calling the
+ * generic form: (1) jsonb round-trips `date` to an ISO string and every results
+ * surface formats that field, so the read path MUST rehydrate it; (2) the
+ * empty-and-fail-soft contract (`[]`, never undefined) is identical for all of
+ * them. Nested `RaceResultEntry` rows carry no dates.
+ */
+export async function withRaceResultsSnapshot(
+  key: string,
+  fetcher: () => Promise<RaceResult[]>,
+): Promise<RaceResult[]> {
+  const rows = await withSourceSnapshot<RaceResult[]>(
+    key,
+    fetcher,
+    v => v == null || v.length === 0,
+  );
+  return reviveRaceDates(rows);
+}
+
+/** ISO string → `Date` on every row's `date`; tolerates a null/undefined list. */
+export function reviveRaceDates(rows: RaceResult[] | null | undefined): RaceResult[] {
+  if (!Array.isArray(rows)) return [];
+  return rows.map(r =>
+    r?.date instanceof Date ? r : { ...r, date: new Date(r?.date as unknown as string) },
+  );
 }
 
 /** Per-source freshness for the health endpoint, newest first. */

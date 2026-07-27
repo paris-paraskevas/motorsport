@@ -27,8 +27,8 @@ export const HEALTH_SEASON = 2026;
 function buildChecks(season: number): Check[] {
   return [
     { slug: 'f1',         label: 'Formula 1',  source: 'Jolpica API',         run: () => fetchF1Standings(),           min: 15 },
-    { slug: 'f2',         label: 'Formula 2',  source: 'motorsport.com',      run: () => fetchF2Standings(),           min: 12 },
-    { slug: 'f3',         label: 'Formula 3',  source: 'motorsport.com',      run: () => fetchF3Standings(),           min: 12 },
+    { slug: 'f2',         label: 'Formula 2',  source: 'FOM API',             run: () => fetchF2Standings(),           min: 12 },
+    { slug: 'f3',         label: 'Formula 3',  source: 'FOM API',             run: () => fetchF3Standings(),           min: 12 },
     { slug: 'motogp',     label: 'MotoGP',     source: 'Pulselive API',       run: () => fetchMotoGPStandings(season), min: 12 },
     { slug: 'wsbk',       label: 'WSBK',       source: 'Pulselive API',       run: () => fetchWsbkStandings(season),   min: 10 },
     { slug: 'indycar',    label: 'IndyCar',    source: 'motorsport.com API',  run: () => fetchIndyCarStandings(),      min: 12 },

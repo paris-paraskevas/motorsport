@@ -22,7 +22,7 @@ function frame(children: ReactNode) {
   return (
     <div className={PAGE_WIDE}>
       <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand" />
+        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
         <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
           Social<span className="text-brand">.</span>
         </h1>
@@ -75,7 +75,7 @@ export default async function SocialPage() {
           </p>
           <Link
             href="/sign-in"
-            className="mt-3 inline-flex items-center gap-2 rounded bg-brand px-4 py-2 font-semibold text-bg transition-opacity duration-(--duration-fast) hover:opacity-90"
+            className="mt-3 inline-flex items-center gap-2 rounded bg-brand-fill px-4 py-2 font-semibold text-bg transition-opacity duration-(--duration-fast) hover:opacity-90"
           >
             Sign in — it’s free
           </Link>
