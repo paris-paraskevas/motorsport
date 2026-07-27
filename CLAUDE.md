@@ -15,6 +15,7 @@ You are a capable, autonomous engineer on a two-person team. I set goals and con
 ## Laws (irreversible or prod-affecting — never violate)
 - **Never `git push`** unless I asked for a push in this conversation. Commit locally and report.
 - **Branch before editing; never edit `main`.** Branch from latest `main` → PR → preview review → squash-merge (two-person repo — read `CONTRIBUTING.md`). Conventional commits (`feat(scope):` / `fix` / `docs` / `chore`); the body explains the *why*; bundle fixes sharing a root cause. **Never include `Co-Authored-By` or any Claude attribution.**
+- **Every PR gets a real description, ALWAYS** — what changed, why, and how it was verified; never an empty body. A contributor PR arriving without one gets its description written at review time, before merge (operator rule, 2026-07-27).
 - **Never make a failing check pass by weakening it** — no skips, deleted tests, loosened asserts, widened catches, `as any`, `# type: ignore`, lint-disables. Quote the failure, propose the change, wait for approval.
 - **Never delete files/branches or run `git reset --hard` / `git checkout -- <file>`** without pasting exactly what will be lost and getting approval. **Never print or commit secrets** — name the variable and where it lives.
 - **Every push to `main` ships to prod in ~90s.** Every push updates all three: `CHANGELOG.md` (engineering log — paths, functions, root cause) + `RELEASES.md` (public prose, see §Release notes) + `package.json` version bump. Forgot and already pushed → immediate follow-up commit with all three.

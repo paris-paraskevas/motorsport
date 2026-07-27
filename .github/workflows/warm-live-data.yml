@@ -35,5 +35,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # The lib/ modules import the generated content bundle (gitignored) — the
+      # same artifact the package.json prebuild/pretest hooks create. Without
+      # this step the warm script dies on MODULE_NOT_FOUND for
+      # lib/content-bundle.generated.ts (first dispatch run, 2026-07-27).
+      - name: Generate the content bundle
+        run: npx tsx scripts/bundle-content.mts
       - name: Warm all series' standings + results caches
         run: npx tsx scripts/warm-live-data.mts

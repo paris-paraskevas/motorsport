@@ -1,10 +1,25 @@
 {
   // TESTING worker — serves testing.paddock-tracker.com from the `testing`
-  // branch so contributor work never has to touch main/prod. Deploy flow:
-  //   git checkout testing   (with the Cloudflare migration merged in)
-  //   npx opennextjs-cloudflare build && npx wrangler deploy -c wrangler.testing.jsonc
-  //   (secrets are per-worker: scripts mirror them from the prod worker once;
-  //    `wrangler secret put <KEY> --name motorsport-testing` for later changes)
+  // branch so contributor work never has to touch main/prod.
+  //
+  // Deploy by hand:  npm run deploy:testing   (build + deploy + POPULATE)
+  // Workers Builds:  build   `npx opennextjs-cloudflare build`
+  //                  deploy  `npm run deploy:cf:testing`
+  //
+  // ⚠ The deploy command MUST carry `-c wrangler.testing.jsonc`. Workers Builds
+  // defaults to a bare `npx wrangler deploy`, which reads the repo-root
+  // wrangler.jsonc — the PRODUCTION config (`name: motorsport`) — so a push to
+  // `testing` would deploy over prod.
+  // ⚠ The populate step is not optional: R2 cache keys are namespaced by
+  // BUILD_ID, so every deploy orphans the warm cache and this worker (no traffic,
+  // no crons) then serves cold renders indefinitely.
+  // ⚠ Workers Builds keeps BUILD variables separate from runtime vars, and Next
+  // inlines NEXT_PUBLIC_* at build. Set as BUILD variables or the built worker
+  // loses client-side Clerk, the assistant, and push subscribe:
+  // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, NEXT_PUBLIC_ASSISTANT_ENABLED=1,
+  // NEXT_PUBLIC_VAPID_PUBLIC_KEY, DATA_SOURCE=db.
+  //
+  // Secrets are per-worker: `wrangler secret put <KEY> --name motorsport-testing`.
   //
   // Differences from prod (wrangler.jsonc), each deliberate:
   //  - NO `triggers` block: the crons (notify, publish-posts, …) must run ONCE,
