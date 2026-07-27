@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.242.0 — 2026-07-27
+
+### Added
+- **testing.paddock-tracker.com — a second Worker (`motorsport-testing`) for contributor work off `main`.** New `wrangler.testing.jsonc`: same runtime shape as prod but NO cron triggers (a second worker would double-fire pushes/publishes against the shared prod KV/Supabase), its own R2 prefix (`testing-cache`) so ISR entries can't collide, `WORKER_SELF_REFERENCE` pointing at itself, `DATA_SOURCE=db`. The subdomain's DNS was already Cloudflare-proxied (it 402'd at dead Vercel), so the route alone intercepts it. Deployed from the `testing` branch merged with the spike (Fotis's 3 commits preserved as ancestors; worktree at `../Motorsport-testing`); 11 secrets mirrored into its write-only store (operator-approved — the remaining names carry blank values locally and are testing-irrelevant: VAPID private/webhook/Resend/GA4/GSC/Bing). Deploy flow for the branch: build in the worktree, `wrangler deploy -c wrangler.testing.jsonc`.
+
+### Fixed
+- **The AI assistant vanished from prod — build-time env loss.** `AssistantWidget` gates on `process.env.NEXT_PUBLIC_ASSISTANT_ENABLED !== '1'` and Next inlines `NEXT_PUBLIC_*` at build; the var lived only in `.env.cloudflare.local`, a filename Next never reads, so every rebuild this session shipped the widget compiled out. Same mechanism silently broke NEW push subscriptions: `NEXT_PUBLIC_VAPID_PUBLIC_KEY` was also missing from Next-readable env. Both copied into `.env.production.local` with a warning comment; rebuilt + redeployed; `/privacy` carries the widget markup again. (`NEXT_PUBLIC_COFFEE_URL` was never set anywhere — it has a hardcoded fallback.)
+- **Deploy-time R2 cache population no longer fails.** The default chunk size overwhelms the R2 proxy ("Failed to send request to R2 worker" after 15 retries); `--cacheChunkSize 5` uploads all 560+ entries cleanly. Prod + testing both populated; testing went from ~4.7s cold TTFB to 0.15-0.19s `x-nextjs-cache: HIT` across `/`, `/app`, `/calendar`. Closes the 0.241.0 "population skipped" note — future deploys should use `opennextjs-cloudflare deploy` with that flag (or populate after a plain `wrangler deploy`).
+
+### Notes
+- Hungary blog: race recap rewritten in the operator's voice, approved + published by the operator (10:15 UTC). The accidental earlier publish was traced: `publishDuePosts` fires on `status='approved'` + `publish_at <= now`, and the draft carried a pre-baked past timestamp from creation — it went out 8 seconds after approval flipped it. The stale timestamp was nulled before re-approval; push ledger confirmed no notification went out for the accident. Lap-by-lap ledger drafted (`drafts/f1-hungarian-grand-prix-2026-lap-by-lap.md`, validated `--dry`) — NOT inserted into the DB per the lapstory guardrails; operator runs the insert.
+
 ## 0.241.0 — 2026-07-27
 
 ### Added

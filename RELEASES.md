@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.242.0 — 2026-07-27
+
+**The assistant is back.** A build slip had quietly removed the in-app assistant and stopped new notification sign-ups from registering; both are restored.
+
+**Behind the scenes.** A separate testing copy of the site now exists so new work can be tried safely away from the live site, and first visits to rarely-viewed pages got dramatically faster.
+
 ## 0.241.0 — 2026-07-27
 
 **Pages load in a fraction of the time.** Pages are now held in a proper cache instead of being rebuilt for every single visitor, and the site no longer waits on outside data feeds while you sit there. The Formula 1 standings page went from over nine seconds to about a tenth of a second.
