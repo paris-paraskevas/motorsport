@@ -1313,6 +1313,24 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Tue 2026-07-28 (session 24 — author pages, then the author-CMS scope change)
+
+Operator's order at the start: 1. author pages · 2. format button · 3. content expansion 586 → 1500+ · 4. indexing fixes. Ultracode declined for 1-2, flagged as fitting for the CMS research.
+
+- → done: **author pages** (0.245.0, branch `feat/author-pages`, commit `5209bcf`, NOT pushed). `author` table + `/authors` + `/authors/<slug>`, `ProfilePage`/`Person` JSON-LD with a stable `@id` that `articleLd` now stamps on every post's author, bylines linking on the post page and the `/blog` cards, sitemap entries. Gates: typecheck clean, 969 tests pass, lint clean on the changed paths.
+- → scope change mid-session: the operator replaced the operator-seeded-bio design with a full author CMS — self-service profiles, an `in_review` state, submission and approval emails, an import-article path, and a become-an-author request form. Researched against primary sources (WordPress roles + capabilities, Ghost staff roles, Strapi review workflows, Google's spam policies) rather than training. Decisions taken: add `in_review` and keep `draft` private; add a `contributor` role below `writer`; imports store the original URL and canonical to it; author account + profile self-service first.
+- → done: **profile self-service** (same commit) — `/settings/author`, `PUT /api/author`, per-post profile visibility, pure shared validation in `lib/author-profile.ts` (12 new tests).
+- → BLOCKED: browser verification. A dev server carrying the prod service-role key was correctly refused (it is the WRITER-mode-against-prod shape), and the Docker daemon is down so local Supabase cannot start. Needs either the operator's ok to `git push origin testing`, or Docker Desktop started.
+- → owed by operator: apply `alter table post add column if not exists hide_on_author_page boolean not null default false;` (the `author` table DDL is already applied).
+- → found, not fixed: `npm run lint` OOMs repo-wide because `eslint.config.mjs` `globalIgnores` never got `.open-next/**` (332 MB, 3,112 JS files since the Cloudflare migration). One line fixes it; offered, not taken. Also noted: published blog posts are absent from `lib/sitemap-data.ts` entirely.
+- → not started: phases 2-4 of the CMS (submission loop, import, author requests) and tasks 2-4 of the session brief.
+
+Won't touch this session (honored): prod deploys and the operator's four manual items, the KV region migration, `metadataBase`, the `middleware`/`proxy.ts` doc reconciliation, branch pruning, `npm audit`.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
