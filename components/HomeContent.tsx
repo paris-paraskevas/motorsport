@@ -31,6 +31,9 @@ interface NewsItemSerialized {
   link: string;
   pubDate: string;
   description?: string;
+  /** Feed thumbnail (see enclosureImage in lib/news.ts). Optional — the card
+      falls back to its series-colour wash. */
+  image?: string;
   seriesSlug: string;
   seriesName: string;
   seriesColor: string;
@@ -1316,10 +1319,10 @@ export function HomeContent({
             </div>
           ) : (
             /* Article cards, not a divided list — the wire is the home's only
-               editorial surface. The feed carries no image field and the
-               upstream photography is agency-licensed, so the cover art is
-               CSS: the series colour as a wash rising into a thick foot rule
-               under a tracked kicker chip, the share cards' language
+               editorial surface. Cover art is the feed's own thumbnail where the
+               item has one (operator decision 2026-07-28), over a series-colour
+               wash that shows through when it doesn't and when a load fails. The
+               wash + kicker + foot rule is the share cards' language
                (app/(app)/blog/[slug]/opengraph-image.tsx). Density tightens
                gutters + card padding; the row-squeezing [&_a]:py-1.5 the other
                blocks use would collapse a card. */
@@ -1337,6 +1340,8 @@ export function HomeContent({
                     {/* overflow-hidden clips the hover scale so the wash can
                         never bleed past the card edge. */}
                     <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-surface-elevated">
+                      {/* The wash stays underneath unconditionally so a blocked
+                          or 404'd thumbnail degrades to it instead of a hole. */}
                       <div
                         aria-hidden="true"
                         className="absolute inset-0 transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.04]"
@@ -1344,6 +1349,22 @@ export function HomeContent({
                           backgroundImage: `linear-gradient(to top, color-mix(in srgb, ${item.seriesColor} 58%, transparent), color-mix(in srgb, ${item.seriesColor} 14%, transparent) 45%, transparent)`,
                         }}
                       />
+                      {item.image && (
+                        /* Feed thumbnail, shown per the operator decision of
+                           2026-07-28 (see enclosureImage in lib/news.ts for the
+                           licensing note). Plain <img>: next.config.ts sets
+                           images.unoptimized for the Workers runtime, so
+                           next/image would be the same raw cross-origin fetch
+                           while forcing motorsport.com's CDN into remotePatterns.
+                           Lazy + async-decode keeps ten of these off the LCP path. */
+                        <img
+                          src={item.image}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.04]"
+                        />
+                      )}
                       {/* Kicker rides the clean top of the wash: over the
                           coloured foot its seriesInk would sit on a mix of its
                           own hue and go muddy on the two light themes. */}

@@ -114,6 +114,7 @@ export default async function Home() {
       link: item.link,
       pubDate: item.pubDate.toISOString(),
       description: item.description,
+      image: item.image,
       seriesSlug: item.seriesSlug,
       seriesName: meta.name,
       seriesColor: meta.color,

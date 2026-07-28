@@ -65,6 +65,32 @@ export interface AggregatedNewsItem extends NewsItem {
   seriesSlug: string;
 }
 
+/* Article thumbnail off the RSS <enclosure> (the parser is configured with
+   ignoreAttributes:false, so `@_url` is already in hand). motorsport.com ships
+   one on effectively every item; the shape is
+   <enclosure url="…jpg" type="image/jpeg" length="…"/>.
+
+   Displayed under an explicit operator decision (2026-07-28) after the licensing
+   position was put to them: these are the publisher's own commercial photographs,
+   the feed carries no credit metadata to attribute them with, and an <enclosure>
+   URL is not a usage grant. Cards link back to the source article and label it.
+
+   Only https absolute URLs with an image/* type are accepted — a feed is
+   untrusted input, and this value goes straight into an <img src>. */
+function enclosureImage(enclosure: unknown): string | undefined {
+  const list = Array.isArray(enclosure) ? enclosure : [enclosure];
+  for (const e of list) {
+    if (!e || typeof e !== 'object') continue;
+    const rec = e as Record<string, unknown>;
+    const url = typeof rec['@_url'] === 'string' ? rec['@_url'].trim() : '';
+    const type = typeof rec['@_type'] === 'string' ? rec['@_type'] : '';
+    if (!url.startsWith('https://') || url.length > 2048) continue;
+    if (type && !type.startsWith('image/')) continue;
+    return url;
+  }
+  return undefined;
+}
+
 // motorsport.com cross-posts one article to multiple category feeds, each with a
 // category-specific URL (`/f1/news/<slug>/` vs `/wec/news/<slug>/`). The article
 // SLUG (last path segment) is its canonical identity across categories — keying
@@ -260,7 +286,13 @@ export async function fetchNews(seriesSlug: string): Promise<NewsItem[]> {
       // Strip "Keep reading" tail from motorsport.com descriptions
       const description = descRaw.replace(/\s*Keep reading\s*$/i, '').slice(0, 240);
 
-      out.push({ title, link, pubDate, description: description || undefined });
+      out.push({
+        title,
+        link,
+        pubDate,
+        description: description || undefined,
+        image: enclosureImage(item.enclosure),
+      });
     }
     return out;
   } catch {

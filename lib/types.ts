@@ -111,6 +111,10 @@ export interface NewsItem {
   link: string;
   pubDate: Date;
   description?: string;
+  /** Article thumbnail from the feed's <enclosure>, https-only (see
+      enclosureImage in lib/news.ts). Present on essentially every upstream item,
+      but optional by contract — every consumer needs a no-image path. */
+  image?: string;
 }
 
 export type SignificanceTier = 'marquee' | 'finale' | 'weighted' | 'note';

@@ -50,6 +50,42 @@ describe('fetchNews', () => {
     expect(items[1].title).toBe('Story two');
   });
 
+  it('takes the <enclosure> image, and rejects non-https / non-image ones', async () => {
+    // Real motorsport.com items always carry an enclosure; the guard exists
+    // because a feed is untrusted input and the value lands in an <img src>.
+    const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>T</title><link>https://example.com</link>
+  <item>
+    <title>With image</title><link>https://example.com/a</link>
+    <pubDate>Mon, 12 May 2026 10:00:00 +0000</pubDate>
+    <enclosure url="https://cdn.example.com/car.jpg" type="image/jpeg" length="1234"/>
+  </item>
+  <item>
+    <title>Insecure</title><link>https://example.com/b</link>
+    <pubDate>Mon, 12 May 2026 09:00:00 +0000</pubDate>
+    <enclosure url="http://cdn.example.com/car.jpg" type="image/jpeg" length="1234"/>
+  </item>
+  <item>
+    <title>Not an image</title><link>https://example.com/c</link>
+    <pubDate>Mon, 12 May 2026 08:00:00 +0000</pubDate>
+    <enclosure url="https://cdn.example.com/pod.mp3" type="audio/mpeg" length="1234"/>
+  </item>
+  <item>
+    <title>No enclosure</title><link>https://example.com/d</link>
+    <pubDate>Mon, 12 May 2026 07:00:00 +0000</pubDate>
+  </item>
+</channel></rss>`;
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(rss, { status: 200, headers: { 'Content-Type': 'application/rss+xml' } }),
+    );
+    const items = await fetchNews('f1');
+    expect(items).toHaveLength(4);
+    expect(items[0].image).toBe('https://cdn.example.com/car.jpg');
+    expect(items[1].image).toBeUndefined();
+    expect(items[2].image).toBeUndefined();
+    expect(items[3].image).toBeUndefined();
+  });
+
   it('returns [] for an unknown series slug', async () => {
     const items = await fetchNews('not-a-series');
     expect(items).toEqual([]);
