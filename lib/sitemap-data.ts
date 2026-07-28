@@ -5,6 +5,7 @@ import { tabsFor } from './tabs';
 import { SITE_URL } from './site';
 import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
+import { listAuthors } from './authors';
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
 // entirely; `lastmod` is the only acted-upon hint, and only when its accuracy
@@ -99,5 +100,19 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     ...indexedInfo.map((e) => ({ url: `${SITE_URL}/information/${e.topic}/${e.slug}` })),
   ];
 
-  return [...staticUrls, ...seriesUrls, ...weekendChunks.flat(), ...infoUrls];
+  // Author pages — one per row in `author`, so the set is editorially controlled
+  // by definition (a row requires a bio). The /authors index only ships once at
+  // least one profile exists; an empty index would be a thin page advertised to
+  // Google. listAuthors is fail-soft, so an unreachable DB drops these entries
+  // rather than failing the whole sitemap.
+  const authors = await listAuthors();
+  const authorUrls: MetadataRoute.Sitemap =
+    authors.length > 0
+      ? [
+          { url: `${SITE_URL}/authors` },
+          ...authors.map((a) => ({ url: `${SITE_URL}/authors/${a.slug}` })),
+        ]
+      : [];
+
+  return [...staticUrls, ...seriesUrls, ...weekendChunks.flat(), ...infoUrls, ...authorUrls];
 }

@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { ArrowUpRight, LayoutDashboard, MessageSquare } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, MessageSquare, PenLine } from 'lucide-react';
 import { useAuth, useUser } from '@clerk/nextjs';
 
 // The staff-only rows on /settings, resolved CLIENT-side via useUser so the
@@ -13,20 +13,38 @@ export function AccountStaffLinks() {
   const role = user?.publicMetadata?.role;
   const isStaff = role === 'admin' || role === 'moderator';
   const isAdmin = role === 'admin';
-  if (!isLoaded || !isSignedIn || !isStaff) return null;
+  // Writers are not "staff" for the rows below, but they own an author profile —
+  // so this component's gate is the union, and each row keeps its own condition.
+  const isWriter = role === 'writer' || role === 'admin';
+  if (!isLoaded || !isSignedIn || (!isStaff && !isWriter)) return null;
   return (
     <>
-      <Link
-        href="/feedback"
-        className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
-      >
-        <MessageSquare size={18} className="shrink-0 text-text-muted" />
-        <span className="min-w-0 flex-1">
-          <span className="block text-text text-base font-semibold">Feedback</span>
-          <span className="block text-text-faint text-xs">Triage bugs, ideas and comments (staff)</span>
-        </span>
-        <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
-      </Link>
+      {isWriter && (
+        <Link
+          href="/settings/author"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <PenLine size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Author profile</span>
+            <span className="block text-text-faint text-xs">Your bio, links and which posts show</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+      )}
+      {isStaff && (
+        <Link
+          href="/feedback"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <MessageSquare size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Feedback</span>
+            <span className="block text-text-faint text-xs">Triage bugs, ideas and comments (staff)</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+      )}
       {isAdmin && (
         // Cross-subdomain link to the admin surface — a full navigation (plain
         // <a>, not next/link) since dev.paddock-tracker.com is a different host,

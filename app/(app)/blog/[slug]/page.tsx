@@ -3,18 +3,19 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { currentUser, clerkClient } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { listPostSlugs, loadPost, loadAllPosts } from '@/lib/posts';
 import { getPostBySlug, publishedPosts, type BlogPost } from '@/lib/blog';
+import { getAuthorByClerkId } from '@/lib/authors';
+import { resolveAuthorIdentity } from '@/lib/author-identity';
 import { isAdmin, isWriter } from '@/lib/threads';
 import { renderPostBody, type RenderedBody } from '@/lib/blog-embeds';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { DraftEditor } from '@/components/blog/DraftEditor';
 import { PostArticle } from '@/components/blog/PostArticle';
-import { POST_ARTICLE_CLASS, PostHero } from '@/components/blog/PostHeader';
+import { POST_ARTICLE_CLASS, PostHeader, PostHero } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
 import { articleLd, breadcrumbLd } from '@/lib/json-ld';
-import { readResultsCache, writeResultsCache } from '@/lib/results-cache';
 import { SITE_URL } from '@/lib/site';
 import type { Post } from '@/lib/types';
 import { loadSeriesMeta } from '@/lib/series';
@@ -120,34 +121,6 @@ function formatDateTime(iso: string): string {
   });
 }
 
-// Byline identity — name + avatar resolved from CLERK (the source the author
-// edits in their account), KV-cached 1h, fail-soft to the stored display name
-// (no avatar) if Clerk is unreachable / the user can't be resolved. Clerk is
-// authoritative here, which is why the byline can differ from app_user.display_name.
-// The ENTIRE body is inside the try (the KV read/write used to sit outside it):
-// the byline is a decoration, and no decoration may 500 a blog URL.
-async function resolveBlogAuthor(
-  authorId: string,
-  fallbackName: string | null,
-): Promise<{ name: string | null; image: string | null }> {
-  try {
-    const key = `paddock:blog-author:${authorId}`;
-    const cached = await readResultsCache<{ name: string | null; image: string | null }>(key);
-    if (cached) return cached;
-    const u = await (await clerkClient()).users.getUser(authorId);
-    const name =
-      u.fullName ||
-      [u.firstName, u.lastName].filter(Boolean).join(' ').trim() ||
-      u.username ||
-      fallbackName;
-    const result = { name: name ?? null, image: u.imageUrl || null };
-    await writeResultsCache(key, result, 60 * 60);
-    return result;
-  } catch {
-    return { name: fallbackName, image: null };
-  }
-}
-
 // Fail-soft Clerk session lookup. The admin-preview gate is a decoration on a
 // public route: if Clerk misbehaves (local dev without a warm handshake, a
 // backend-API blip), the viewer downgrades to anonymous — the draft hides
@@ -233,9 +206,19 @@ export default async function PostPage({
   }
   if (!post) notFound();
 
-  // Byline author (name + avatar) from Clerk — DB posts only (MDX posts have no
-  // author_id). Helper is fail-soft, so a Clerk hiccup just drops the avatar.
-  const author = db ? await resolveBlogAuthor(db.authorId, db.authorName) : { name: null, image: null };
+  // Byline author — DB posts only (MDX posts have no author_id). The avatar comes
+  // from Clerk (fail-soft: a hiccup just drops it). The profile row, when the writer
+  // has one, supplies BOTH the name they chose in /settings/author and the link;
+  // with no row the byline stays the Clerk name as plain text, exactly as before.
+  const [identity, profile] = db
+    ? await Promise.all([resolveAuthorIdentity(db.authorId, db.authorName), getAuthorByClerkId(db.authorId)])
+    : [{ name: null, image: null }, null];
+  const authorSlug = profile?.slug ?? null;
+  const author = {
+    name: profile?.displayName ?? identity.name,
+    image: identity.image,
+    href: authorSlug ? `/authors/${authorSlug}` : null,
+  };
 
   const postUrl = `${SITE_URL}/blog/${slug}`;
 
@@ -262,7 +245,14 @@ export default async function PostPage({
           { name: post.frontmatter.title, url: postUrl },
         ])}
       />
-      <JsonLd data={articleLd({ post, url: postUrl })} />
+      <JsonLd
+        data={articleLd({
+          post,
+          url: postUrl,
+          authorName: author.name,
+          authorUrl: authorSlug ? `${SITE_URL}/authors/${authorSlug}` : null,
+        })}
+      />
       <Link
         href="/blog"
         className="inline-flex items-center gap-1 text-xs font-medium text-text-faint hover:text-text-muted transition-colors duration-(--duration-fast) mb-6"
@@ -294,45 +284,16 @@ export default async function PostPage({
       ) : (
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12 lg:items-start">
           <div className="min-w-0 max-w-3xl">
-      <header className="mb-8">
-        <div className="flex items-baseline gap-3 mb-3 flex-wrap">
-          <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
-            {formatDate(post.frontmatter.publishedAt)}
-          </time>
-          {post.frontmatter.tags?.map(tag => (
-            <span
-              key={tag}
-              className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted bg-surface border border-border rounded-full px-2 py-0.5"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-        <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
-          {post.frontmatter.title}
-        </h1>
-        {author.name && (
-          <div className="mt-3 flex items-center gap-2">
-            {author.image && (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={author.image}
-                  alt=""
-                  width={28}
-                  height={28}
-                  loading="lazy"
-                  className="h-7 w-7 rounded-full object-cover border border-border bg-surface"
-                />
-              </>
-            )}
-            <span className="text-sm font-medium text-text-muted">By {author.name}</span>
-          </div>
-        )}
-        <p className="mt-4 text-base text-text-muted leading-relaxed">
-          {post.frontmatter.summary}
-        </p>
-      </header>
+      {/* PostHeader instead of a copy of its markup: the byline link has to be
+          identical here and in DraftEditor's view mode, and this path had drifted
+          into a byte-for-byte duplicate of the component it documents. */}
+      <PostHeader
+        dateLabel={formatDate(post.frontmatter.publishedAt)}
+        tags={post.frontmatter.tags}
+        title={post.frontmatter.title}
+        summary={post.frontmatter.summary}
+        author={author}
+      />
 
       {post.frontmatter.heroImage && (
         <PostHero src={post.frontmatter.heroImage} alt={post.frontmatter.title} />
