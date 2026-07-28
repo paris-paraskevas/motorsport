@@ -1289,6 +1289,30 @@ The session ran far past the design-phase plan into a full build+ship day (2026-
 
 ---
 
+### Mon 2026-07-27 → Tue 2026-07-28 (session 23 — data determinism, page cache, main/prod convergence)
+
+Operator's priority order at the start: 1. data (make the DB the source of truth), 2. experience (load time), 3. race recap, 4. everything else.
+
+- → done: **DB-as-source-of-truth** (0.240.0). `DATA_SOURCE=db` read-only mode; every standings/results surface given a durable snapshot slot (3 standings + 13 results fetchers had none or only a 3-hour KV window); warm script extended from the health registries to all 10 uncovered surfaces. Prod evidence of the bug before the fix: three renders, three byte lengths, F1 chart frozen at round 5.
+- → done: **R2 ISR page cache + DO queue + regional cache** (0.241.0). `incrementalCache` had been at the `"dummy"` default, so every request re-rendered. `/series/f1/standings` 9.34s → 0.12s.
+- → done: **dead `s-maxage` sweep** (0.243.0) — just-missed + five `/api/home/*` routes to ISR; the header contract died with Vercel.
+- → done: **testing environment** (0.242.0) — second worker on `testing.paddock-tracker.com`, no crons, own cache prefix; operator wired Workers Builds to the `testing` branch.
+- → done: **Unicode heading slugs** (0.244.0) — Greek headings had all collapsed to one anchor id.
+- → done: **parser repairs** — NASCAR results 0 → 22 races, DTM 2 → 6 and correctly numbered, OpenF1 rate limits (3/s **and** 30/min) + curated driver fallback + a cache gate; 2 poisoned classifications repaired in place out of 227 scanned.
+- → done: **assistant + push restored**, then a self-inflicted VAPID regression caught and fixed (blank build-time `NEXT_PUBLIC_*` overrides a real runtime secret).
+- → done: **main and prod converged.** #629 brought the whole Cloudflare migration onto `main` (which was still Vercel-era 0.239.1); #628 (contributor UI, description written at review time), #630, #631, #632, #633, #635, #636 followed. The warm-live-data workflow reaching the default branch is what let the cron start self-running.
+- → done: **the silent-writer saga.** The cron reported success while writing nothing for ~20 hours: quoted env values → `Invalid supabaseUrl`, then Node 20 → no native WebSocket. Both invisible locally (node --env-file strips quotes; this machine runs Node 24). Fixed, and the script now proves its own writes and fails when it writes nothing.
+- → done: **blog** — Hungary recap + lap-by-lap published by the operator; Greek per-team report card drafted; a contributor draft given an errors-only pass (6 factual fixes) with prose preserved.
+- → done: **observability enabled** on both workers after a Clerk-handshake 500 on testing proved undiagnosable (logs were being discarded).
+- → partial: **experience.** Big wins landed, but `npm run deploy` still builds in writer mode, and the KV store's 180ms distance is unresolved (a real migration).
+- → skipped deliberately: Smart Placement (Cloudflare's own gotchas say it degrades asset-serving workers like ours), KV region move, `metadataBase` gap, the `middleware`/`proxy` doc reconciliation.
+
+Next session, operator-set order: **1. author pages** (accounts + contact + their post list) · **2. format button** · **3. content expansion 586 → 1500+ pages** · **4. indexing fixes (46 noindex)**. Briefs in `IDEAS.md`.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.244.1 — 2026-07-28
+
+### Changed
+- Docs: session-23 wrap. `docs/HANDOFF.md` gains the session-23 LATEST block (0.240.0-0.244.0 + PRs #629-#636: DB-as-source-of-truth, R2 page cache, the dead-`s-maxage` sweep, the testing environment, Unicode heading slugs, the NASCAR/DTM/OpenF1 parser repairs, the assistant/push restoration, and the silent-writer saga in full) plus nine new landmines — BUILD_ID-namespaced R2 keys, `wrangler deploy` delegating to the OpenNext CLI, build-vs-runtime variables in Workers Builds, the `-c` requirement that stops a testing push deploying over prod, why Smart Placement is wrong for this worker, and the 17ms-vs-180ms latency geography of Supabase against the KV store. `SCHEDULE.md` records the session against the operator's stated priority order. `IDEAS.md` gains the operator-set next-session order at the top: author pages, format button, content expansion to 1500+ pages, indexing fixes — each with what already exists and the decisions still open. No code change.
+
 ## 0.244.0 — 2026-07-27
 
 ### Fixed

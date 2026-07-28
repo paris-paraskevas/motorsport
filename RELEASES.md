@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.244.1 — 2026-07-28
+
+**Behind the scenes.** Internal notes and planning updated. No change to the site.
+
 ## 0.244.0 — 2026-07-27
 
 **Jump links now work on Greek articles.** On posts written in Greek, the contents list in the sidebar sent every link to the same spot. Each section now gets its own working link.
