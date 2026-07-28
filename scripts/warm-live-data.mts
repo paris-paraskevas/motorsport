@@ -25,6 +25,8 @@
 //   npx tsx --env-file=.env.production.local scripts/warm-live-data.mts
 import { runStandingsHealth } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
+import { readSnapshot } from '../lib/source-snapshot';
+import { betDb } from '../lib/betting/client';
 import { loadSeries } from '../lib/series';
 import { loadCuratedDrivers } from '../lib/series-content';
 import { fetchF1SeasonSprints, fetchF1LastRace } from '../lib/results/f1';
@@ -140,9 +142,39 @@ for (const surface of EXTRA_SURFACES) {
 const sOk = standings.filter(r => r.status === 'OK' || r.status === 'LOW').length;
 const rOk = results.filter(r => r.status === 'OK' || r.status === 'LOW').length;
 console.error(
-  `\nseeded: ${sOk}/${standings.length} standings + ${rOk}/${results.length} results` +
-    ` + ${extraOk}/${EXTRA_SURFACES.length} extra surfaces written for the Cloudflare site.`,
+  `\nfetched: ${sOk}/${standings.length} standings + ${rOk}/${results.length} results` +
+    ` + ${extraOk}/${EXTRA_SURFACES.length} extra surfaces.`,
 );
-// Exit non-zero only if EVERYTHING failed (a real outage from this host), so a
-// scheduled run flags a genuine problem but tolerates one flaky source.
+
+// PROVE the writes landed. Counting successful FETCHES was the bug: every
+// snapshot write can fail (fail-soft by design, so a Supabase blip never breaks
+// a render) while this script still printed "seeded 13/13" and the workflow went
+// green. That masked two real outages in a row — quoted env values giving
+// "Invalid supabaseUrl", then Node 20 giving "detected without native WebSocket
+// support" — during which the site's only writer silently wrote nothing for
+// hours. The DB is the product here, so a run that writes nothing must fail.
+const durable = await readSnapshot<unknown>('f1:standings');
+const { data: freshest } = await betDb()
+  .from('source_snapshot')
+  .select('source_key, fetched_at')
+  .order('fetched_at', { ascending: false })
+  .limit(1);
+const newest = freshest?.[0]?.fetched_at ? Date.parse(String(freshest[0].fetched_at)) : 0;
+const ageMin = newest ? Math.round((Date.now() - newest) / 60000) : Infinity;
+console.error(
+  `newest source_snapshot row: ${freshest?.[0]?.source_key ?? 'NONE'} (${
+    Number.isFinite(ageMin) ? `${ageMin} min old` : 'never written'
+  })`,
+);
+
+// A write from THIS run should be seconds old. 10 minutes of slack covers a slow
+// full sweep; anything older means nothing was persisted.
+if (durable == null || ageMin > 10) {
+  console.error(
+    'FAILED: no snapshot was written by this run. The fetches may have succeeded, but the' +
+      ' DB the site reads was not updated. Check the [source] …:write:… lines above.',
+  );
+  process.exit(1);
+}
+console.error(`seeded OK: the DB the site reads was updated by this run.`);
 process.exit(sOk + rOk + extraOk > 0 ? 0 : 1);
