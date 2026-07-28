@@ -32,7 +32,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22+, not 20: @supabase/supabase-js needs native WebSocket, and on
+          # Node 20 EVERY snapshot write died with "Node.js 20 detected without
+          # native WebSocket support" while the job still reported success
+          # (writeSnapshot is fail-soft). Local runs never caught it — this
+          # machine is on Node 24.
+          node-version: 22
           cache: npm
       - run: npm ci
       # The lib/ modules import the generated content bundle (gitignored) — the
