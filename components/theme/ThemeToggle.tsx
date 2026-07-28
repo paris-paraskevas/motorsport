@@ -47,7 +47,7 @@ export function ThemeToggle() {
       aria-label={label}
       title={label}
       data-heatmap-id="chrome:theme"
-      className="inline-flex min-h-11 min-w-11 items-center justify-center border border-border bg-surface/60 text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
+      className="inline-flex h-9 w-9 items-center justify-center border border-border bg-surface/60 text-text-muted transition-colors duration-(--duration-fast) hover:border-border-strong hover:text-text"
     >
       {dark ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
     </button>

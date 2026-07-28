@@ -752,7 +752,11 @@ export function HomeContent({
       {/* ── Jump-to launcher — fixed quick-access nav, pinned directly under the
              chyron hero (order 1 sits between the chyron at 0 and the first
              controllable block at ≥2). Shown to everyone; all content is public. ── */}
-      <div className="mb-14 md:mb-20 xl:col-span-12" style={{ order: 1 }}>
+      {/* Sits tight under the chyron on purpose: as a lone bordered rail with
+          section-sized margins above and below it read as an orphan strip
+          (operator 2026-07-28). Small gap + the same surface panel as the
+          sections below binds it to the page. */}
+      <div className="mb-8 md:mb-10 xl:col-span-12" style={{ order: 1 }}>
         <HomeLauncher series={series} />
       </div>
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the lead
@@ -763,7 +767,7 @@ export function HomeContent({
         aria-label={liveItems.length > 0 ? 'Live now' : 'Lead story and up next'}
         data-tour="chyron"
         style={{ order: orderOf('chyron') }}
-        className="relative mb-14 md:mb-20 border-t border-b-2 border-border-strong bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:col-span-12"
+        className="relative mb-4 md:mb-5 border-t border-b-2 border-border-strong bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:col-span-12"
       >
         {/* Series-coloured rail — scales the schedule row's 3px spine up to the
             full-bleed hero band, so the dominant block is identified by series
@@ -891,13 +895,25 @@ export function HomeContent({
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.03]"
                   />
                 ) : (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.03]"
-                    style={{
-                      backgroundImage: `linear-gradient(to top, color-mix(in srgb, ${leadAccent} 62%, transparent), color-mix(in srgb, ${leadAccent} 16%, transparent) 48%, transparent)`,
-                    }}
-                  />
+                  /* No cover on the post — the common case, since heroImage is
+                     optional in the editor. A bare wash read as a broken image
+                     (operator 2026-07-28), so the series wordmark is ghosted over
+                     it to make the panel look authored rather than failed. */
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.03]"
+                      style={{
+                        backgroundImage: `linear-gradient(to top, color-mix(in srgb, ${leadAccent} 62%, transparent), color-mix(in srgb, ${leadAccent} 16%, transparent) 48%, transparent)`,
+                      }}
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-3 bottom-4 truncate font-display text-[clamp(1.75rem,5vw,3rem)] font-extrabold uppercase leading-none tracking-wide text-text/15"
+                    >
+                      {leadTag}
+                    </span>
+                  </>
                 )}
                 <span
                   className={`absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate border px-2 py-1 font-mono text-[10px] leading-none font-bold uppercase tracking-[0.2em]${leadSeries ? '' : ' border-brand/40 text-brand'}`}
@@ -1093,7 +1109,7 @@ export function HomeContent({
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
       {!isHidden('schedule') && (
-        <section aria-label="This week's sessions" data-tour="week" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('schedule') }}>
+        <section aria-label="This week's sessions" data-tour="week" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('schedule') }}>
           <CollapsibleSectionHead
             title="This week"
             sub={`${weekItems.length} sessions · ${tz}`}
@@ -1168,7 +1184,7 @@ export function HomeContent({
                       </span>
                     </span>
                   </summary>
-                  <div className={`border-y border-border divide-y divide-border${dense('schedule') ? ' [&_a]:py-1.5' : ''}`}>
+                  <div className={`divide-y divide-border border-t border-border${dense('schedule') ? ' [&_a]:py-1.5' : ''}`}>
                     {day.sessions.map(s => {
                       const item = itemByUid.get(s.uid);
                       if (!item) return null;
@@ -1178,7 +1194,7 @@ export function HomeContent({
                         <Link
                           key={`${s.seriesSlug}-${s.uid}`}
                           href={hrefFor(item)}
-                          className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                          className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                         >
                           <span
                             className="self-stretch w-[3px] shrink-0"
@@ -1244,7 +1260,7 @@ export function HomeContent({
       )}
 
       {!isHidden('news') && (
-        <section aria-label="Latest news" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('news') }}>
+        <section aria-label="Latest news" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('news') }}>
           <CollapsibleSectionHead
             title="Paddock wire"
             sub="motorsport.com"
@@ -1388,7 +1404,7 @@ export function HomeContent({
              customise gallery). The latest published posts, defer-fetched when
              the block is shown + expanded. ── */}
       {!isHidden('from-the-blog') && (
-        <section aria-label="From the blog" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('from-the-blog') }}>
+        <section aria-label="From the blog" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('from-the-blog') }}>
           <CollapsibleSectionHead
             title="From the blog"
             sub="long-reads"
@@ -1407,12 +1423,12 @@ export function HomeContent({
               No posts published yet.
             </p>
           ) : (
-            <div className={`border-y border-border divide-y divide-border${dense('from-the-blog') ? ' [&_a]:py-1.5' : ''}`}>
+            <div className={`divide-y divide-border border-t border-border${dense('from-the-blog') ? ' [&_a]:py-1.5' : ''}`}>
               {blogPosts.slice(0, blogCount).map(p => (
                 <Link
                   key={p.slug}
                   href={`/blog/${p.slug}`}
-                  className="group block py-3 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  className="group block py-3 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                 >
                   <div className="mb-1 flex items-center gap-2 min-w-0">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-brand shrink-0">
@@ -1451,7 +1467,7 @@ export function HomeContent({
 
       {/* ── CHAMPIONSHIP LEADER — opt-in. Who leads each series you follow. ── */}
       {!isHidden('championship-leader') && (
-        <section aria-label="Championship leader" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('championship-leader') }}>
+        <section aria-label="Championship leader" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('championship-leader') }}>
           <CollapsibleSectionHead
             title="Championship leader"
             sub="who's on top"
@@ -1473,12 +1489,12 @@ export function HomeContent({
                 Pick a series in Customise to see its leader.
               </p>
             ) : (
-              <div className={`border-y border-border divide-y divide-border${dense('championship-leader') ? ' [&_a]:py-1.5' : ''}`}>
+              <div className={`divide-y divide-border border-t border-border${dense('championship-leader') ? ' [&_a]:py-1.5' : ''}`}>
                 {leaderRows.map(s => (
                   <Link
                     key={s.slug}
                     href={`/series/${s.slug}/standings`}
-                    className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                   >
                     <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
                     <span
@@ -1506,7 +1522,7 @@ export function HomeContent({
       {/* ── STANDINGS SNAPSHOT — opt-in. Top 5 of one chosen series (picked in
              Customise; defaults to the first one with data). ── */}
       {!isHidden('standings-snapshot') && (
-        <section aria-label="Standings snapshot" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('standings-snapshot') }}>
+        <section aria-label="Standings snapshot" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('standings-snapshot') }}>
           {(() => {
             const brief =
               standings && standings.length > 0
@@ -1532,7 +1548,7 @@ export function HomeContent({
                     </p>
                   ) : (
                     <>
-                      <ol className={`border-y border-border divide-y divide-border${dense('standings-snapshot') ? ' [&_li]:py-1.5' : ''}`}>
+                      <ol className={`divide-y divide-border border-t border-border${dense('standings-snapshot') ? ' [&_li]:py-1.5' : ''}`}>
                         {brief.top.slice(0, snapRows).map(row => (
                           <li key={row.position} className="flex items-baseline gap-3 py-2 px-2 -mx-2">
                             <span
@@ -1565,7 +1581,7 @@ export function HomeContent({
              change per eligible series (F1/F3/MotoGP), from the same trend the
              Standings tab charts. Fetch is deferred to when the block is shown. ── */}
       {!isHidden('standings-movers') && (
-        <section aria-label="Standings movers" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('standings-movers') }}>
+        <section aria-label="Standings movers" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('standings-movers') }}>
           <CollapsibleSectionHead
             title="Standings movers"
             sub="since the last race"
@@ -1604,7 +1620,7 @@ export function HomeContent({
                           No position changes this round.
                         </p>
                       ) : (
-                        <ol className={`border-y border-border divide-y divide-border${dense('standings-movers') ? ' [&_li]:py-1.5' : ''}`}>
+                        <ol className={`divide-y divide-border border-t border-border${dense('standings-movers') ? ' [&_li]:py-1.5' : ''}`}>
                           {changed.map(m => {
                             const up = (m.delta ?? 0) > 0;
                             return (
@@ -1633,7 +1649,7 @@ export function HomeContent({
              declared parts per team (curated from the FIA Car Presentation doc),
              linking to the weekend's full Upgrades section. ── */}
       {!isHidden('f1-upgrades') && (
-        <section aria-label="F1 car upgrades" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('f1-upgrades') }}>
+        <section aria-label="F1 car upgrades" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('f1-upgrades') }}>
           <CollapsibleSectionHead
             title="F1 car upgrades"
             sub="latest weekend"
@@ -1692,7 +1708,7 @@ export function HomeContent({
           })
           .slice(0, cdCount);
         return (
-          <section aria-label="Series countdowns" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('series-countdowns') }}>
+          <section aria-label="Series countdowns" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('series-countdowns') }}>
             <CollapsibleSectionHead
               title="Series countdowns"
               sub={`${rows.length} series`}
@@ -1705,12 +1721,12 @@ export function HomeContent({
                   No upcoming sessions in your followed series.
                 </p>
               ) : (
-                <div className={`border-y border-border divide-y divide-border${dense('series-countdowns') ? ' [&_a]:py-1.5' : ''}`}>
+                <div className={`divide-y divide-border border-t border-border${dense('series-countdowns') ? ' [&_a]:py-1.5' : ''}`}>
                   {rows.map(item => (
                     <Link
                       key={item.seriesSlug}
                       href={hrefFor(item)}
-                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                     >
                       <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: item.color }} />
                       <span
@@ -1743,7 +1759,7 @@ export function HomeContent({
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .slice(0, sjmCount);
         return (
-          <section aria-label="Series results" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('series-just-missed') }}>
+          <section aria-label="Series results" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('series-just-missed') }}>
             <CollapsibleSectionHead
               title="Series results"
               sub="latest per series"
@@ -1761,12 +1777,12 @@ export function HomeContent({
                   Nothing wrapped up recently.
                 </p>
               ) : (
-                <div className={`border-y border-border divide-y divide-border${dense('series-just-missed') ? ' [&_a]:py-1.5' : ''}`}>
+                <div className={`divide-y divide-border border-t border-border${dense('series-just-missed') ? ' [&_a]:py-1.5' : ''}`}>
                   {rows.map(j => (
                     <a
                       key={j.seriesSlug}
                       href={j.resultsHref}
-                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                     >
                       <span className="self-stretch w-[3px] shrink-0" style={{ backgroundColor: j.color }} />
                       <span className="flex-1 min-w-0">
@@ -1801,7 +1817,7 @@ export function HomeContent({
         const item = upcomingItems.find(i => circuitLayoutByUid?.[i.session.uid]);
         const layout = item ? circuitLayoutByUid?.[item.session.uid] : undefined;
         return (
-          <section aria-label="Circuit map" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('track-layout') }}>
+          <section aria-label="Circuit map" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('track-layout') }}>
             <CollapsibleSectionHead
               title="Circuit map"
               sub={layout ? layout.name : 'next round'}
@@ -1874,7 +1890,7 @@ export function HomeContent({
       {/* ── PADDOCK CHATTER (threads) — opt-in. The newest approved community
              threads, defer-fetched when shown + expanded. Links into /threads. ── */}
       {!isHidden('threads') && (
-        <section aria-label="Paddock chatter" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('threads') }}>
+        <section aria-label="Paddock chatter" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('threads') }}>
           <CollapsibleSectionHead
             title="Paddock chatter"
             sub="latest threads"
@@ -1893,12 +1909,12 @@ export function HomeContent({
               </p>
             ) : (
               <>
-                <div className={`border-y border-border divide-y divide-border${dense('threads') ? ' [&_a]:py-1.5' : ''}`}>
+                <div className={`divide-y divide-border border-t border-border${dense('threads') ? ' [&_a]:py-1.5' : ''}`}>
                   {threads.slice(0, threadsCount).map(t => (
                     <Link
                       key={t.id}
                       href={`/threads/${t.id}`}
-                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                     >
                       <MessageSquare size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)" />
                       <span className="flex-1 min-w-0">
@@ -1939,7 +1955,7 @@ export function HomeContent({
       {/* ── YOUR BETS & CREDITS — opt-in, signed-in only. Open bets + balance +
              next market closing, CTA to /play. Anon → a subtle sign-in nudge. ── */}
       {!isHidden('bets') && (
-        <section aria-label="Your bets and credits" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('bets') }}>
+        <section aria-label="Your bets and credits" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('bets') }}>
           <CollapsibleSectionHead
             title="Your bets & credits"
             sub={bets?.signedIn ? `${bets.balance.toLocaleString()} cr` : 'play money'}
@@ -2027,7 +2043,7 @@ export function HomeContent({
              (with their rank) + a friends summary, linking into /social. Anon →
              a subtle sign-in nudge. Empty → a join-a-league CTA. ── */}
       {!isHidden('social') && (
-        <section aria-label="Your leagues and friends" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('social') }}>
+        <section aria-label="Your leagues and friends" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('social') }}>
           <CollapsibleSectionHead
             title="Leagues & friends"
             sub={social?.signedIn ? `${social.friends.count} friend${social.friends.count === 1 ? '' : 's'}` : 'play money'}
@@ -2055,7 +2071,7 @@ export function HomeContent({
                       <li key={l.id}>
                         <Link
                           href={`/social/leagues/${l.id}`}
-                          className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                          className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                         >
                           <Trophy size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
                           <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-text tracking-tight">
@@ -2080,7 +2096,7 @@ export function HomeContent({
 
                 <Link
                   href="/social/friends"
-                  className="group mt-3 flex items-center gap-3 border-t border-border pt-3 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  className="group mt-3 flex items-center gap-3 border-t border-border pt-3 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                 >
                   <UserPlus size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
                   <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-text tracking-tight">
@@ -2101,7 +2117,7 @@ export function HomeContent({
       {/* ── LATEST DECODED (F1) — opt-in. The most recent past F1 round's
              qualifying (→ Decoder, pole + P2 codes) and race (→ Race Story). ── */}
       {!isHidden('latest-decoded') && (
-        <section aria-label="Latest Analysis" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('latest-decoded') }}>
+        <section aria-label="Latest Analysis" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('latest-decoded') }}>
           <CollapsibleSectionHead
             title="Latest Analysis"
             sub={decoded ? decoded.gp : 'F1 analysis'}
@@ -2173,7 +2189,7 @@ export function HomeContent({
       {!isHidden('where-to-watch') && (() => {
         const rows = upcomingItems.filter(i => i.watch).slice(0, wtwCount);
         return (
-          <section aria-label="Where to watch" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('where-to-watch') }}>
+          <section aria-label="Where to watch" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('where-to-watch') }}>
             <CollapsibleSectionHead
               title="Where to watch"
               sub={`${rows.length} session${rows.length === 1 ? '' : 's'}`}
@@ -2186,14 +2202,14 @@ export function HomeContent({
                   No broadcast links for your upcoming sessions.
                 </p>
               ) : (
-                <div className={`border-y border-border divide-y divide-border${dense('where-to-watch') ? ' [&_a]:py-1.5' : ''}`}>
+                <div className={`divide-y divide-border border-t border-border${dense('where-to-watch') ? ' [&_a]:py-1.5' : ''}`}>
                   {rows.map(item => (
                     <a
                       key={`${item.seriesSlug}-${item.session.uid}`}
                       href={item.watch!.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface"
+                      className="group flex items-center gap-3 py-2.5 px-2 -mx-2 min-w-0 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
                     >
                       <Tv size={14} aria-hidden="true" className="shrink-0 text-text-faint group-hover:text-brand transition-colors duration-(--duration-fast)" />
                       <span className="flex-1 min-w-0">
@@ -2228,7 +2244,7 @@ export function HomeContent({
         const w = item ? weatherByUid?.[item.session.uid] : undefined;
         const wl = w ? weatherLabel(w.weatherCode) : null;
         return (
-          <section aria-label="Next-race weather" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('next-weather') }}>
+          <section aria-label="Next-race weather" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('next-weather') }}>
             <CollapsibleSectionHead
               title="Next-race weather"
               sub={item ? item.seriesName : 'next round'}
@@ -2287,7 +2303,7 @@ export function HomeContent({
              drivers from the curated lineups, deep-linked into /drivers and
              /teams. Defer-fetched (edge-cached + time-rotated route). ── */}
       {!isHidden('driver-spotlight') && (
-        <section aria-label="Driver spotlight" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7 xl:col-span-6" style={{ order: orderOf('driver-spotlight') }}>
+        <section aria-label="Driver spotlight" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('driver-spotlight') }}>
           <CollapsibleSectionHead
             title="Driver spotlight"
             sub="from your series"
@@ -2305,7 +2321,7 @@ export function HomeContent({
                 No drivers to spotlight right now.
               </p>
             ) : (
-              <div className={`border-y border-border divide-y divide-border${dense('driver-spotlight') ? ' [&_a]:py-1.5' : ''}`}>
+              <div className={`divide-y divide-border border-t border-border${dense('driver-spotlight') ? ' [&_a]:py-1.5' : ''}`}>
                 {spotlight.slice(0, spotlightCount).map(d => (
                   <div
                     key={`${d.seriesSlug}-${d.slug}`}
@@ -2425,7 +2441,7 @@ function HomeSkeleton() {
         <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:gap-16">
           <div>
             <div className="mb-3 h-5 w-28 bg-surface" />
-            <div className="border-y border-border divide-y divide-border">
+            <div className="divide-y divide-border border-t border-border">
               {[0, 1, 2, 3, 4].map(i => (
                 <div key={i} className="h-12 bg-surface/60" />
               ))}
@@ -2433,7 +2449,7 @@ function HomeSkeleton() {
           </div>
           <div className="mt-10 lg:mt-0">
             <div className="mb-3 h-5 w-28 bg-surface" />
-            <div className="border-y border-border divide-y divide-border">
+            <div className="divide-y divide-border border-t border-border">
               {[0, 1, 2, 3, 4].map(i => (
                 <div key={i} className="h-14 bg-surface/60" />
               ))}

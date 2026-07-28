@@ -247,8 +247,12 @@ export function AppShell({
         aria-hidden="true"
         className="pointer-events-none fixed left-0 top-0 z-[60] h-[440px] w-[440px] rounded-full opacity-0 transition-opacity duration-300 will-change-transform"
         style={{
+          // Softened hard (operator 2026-07-28: "TOO MUCH"). Peak alpha drops
+          // 0.11 -> 0.035 and the falloff starts sooner, so it reads as a hint
+          // that something is under the cursor rather than a spotlight. Kept on
+          // `screen` — swapping the blend mode would tint the light themes.
           background:
-            'radial-gradient(circle, rgba(255,180,0,0.11) 0%, rgba(255,180,0,0.05) 40%, rgba(255,180,0,0.018) 62%, transparent 82%)',
+            'radial-gradient(circle, rgba(255,180,0,0.035) 0%, rgba(255,180,0,0.015) 35%, rgba(255,180,0,0.005) 58%, transparent 76%)',
           mixBlendMode: 'screen',
         }}
       />

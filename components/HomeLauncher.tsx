@@ -76,8 +76,8 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
   );
 
   return (
-    <nav ref={ref} aria-label="Jump to" className="flex flex-wrap items-center gap-2 border-b border-border py-2.5">
-      <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.18em] text-text-faint">Jump to</span>
+    <nav ref={ref} aria-label="Jump to" className="flex flex-wrap items-center gap-2 border border-border bg-surface px-3 py-2.5 md:px-4">
+      <span className="mr-2.5 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint">Jump to</span>
 
       <Link href="/calendar" data-heatmap-id="home:launcher:calendar" className={chip}>
         <CalendarDays size={13} aria-hidden /> Calendar

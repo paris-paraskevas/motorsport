@@ -41,10 +41,10 @@ export function SearchTrigger() {
         onClick={() => setOpen(true)}
         aria-label="Search"
         title="Search"
-        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full bg-brand-fill px-3 py-1.5 text-bg transition-colors duration-(--duration-fast) hover:bg-brand-deep"
+        className="inline-flex h-9 min-w-9 items-center justify-center gap-1.5 bg-brand-fill px-2.5 text-bg transition-colors duration-(--duration-fast) hover:bg-brand-deep"
       >
-        <Search size={16} aria-hidden />
-        <span className="hidden sm:inline font-mono text-[11px] font-semibold uppercase tracking-[0.14em]">Search</span>
+        <Search size={15} aria-hidden />
+        <span className="hidden sm:inline font-mono text-[11px] font-semibold tracking-[0.06em]">Search</span>
       </button>
       {/* Portal to <body>: the trigger lives in the fixed nav header (its own
           stacking context), so an inline overlay's backdrop-blur only frosts

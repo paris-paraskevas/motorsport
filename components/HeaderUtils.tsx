@@ -63,7 +63,7 @@ export function HeaderUtils({
             type="button"
             aria-label="Sign in"
             data-heatmap-id="chrome:sign-in"
-            className="inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-bold text-black bg-brand-fill hover:bg-brand-deep rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
+            className="inline-flex items-center justify-center gap-1.5 h-9 min-w-9 text-xs font-bold text-black bg-brand-fill hover:bg-brand-deep px-2.5 transition-colors duration-(--duration-fast)"
           >
             <LogIn size={13} />
             <span className="hidden sm:inline">Sign in</span>
