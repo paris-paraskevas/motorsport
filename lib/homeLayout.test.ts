@@ -40,7 +40,7 @@ describe('homeLayout.reconcile', () => {
     // A user's hide of a core widget (news) sticks; 'bogus' is unknown (dropped).
     // No stored order → all opt-in widgets are "newly seen" → hidden.
     const r = reconcileHomeLayout({ hidden: ['news', 'bogus'] as never });
-    expect(r.hidden).toEqual(['news', 'from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']);
+    expect(r.hidden).toEqual(['news', 'from-the-blog', 'championship-leader', 'standings-movers', 'series-just-missed', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'driver-spotlight', 'f1-upgrades']);
   });
 
   it('parseHomeLayout rejects non-object / non-array fields, accepts valid', () => {
@@ -85,7 +85,7 @@ describe('homeLayout.defaultHidden (opt-in widgets)', () => {
     // pre-v5 prefs: a full order WITHOUT the opt-in widgets, empty hidden.
     const r = reconcileHomeLayout({ order: ['chyron', 'schedule', 'news'], hidden: [] });
     expect(r.order).toContain('from-the-blog');
-    expect(r.hidden).toEqual(['from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades']);
+    expect(r.hidden).toEqual(['from-the-blog', 'championship-leader', 'standings-movers', 'series-just-missed', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'driver-spotlight', 'f1-upgrades']);
   });
 
   it('respects the user choice once the widget is already in their stored order', () => {
@@ -98,15 +98,22 @@ describe('homeLayout.defaultHidden (opt-in widgets)', () => {
     expect(reconcileHomeLayout({ order: [...full], hidden: ['from-the-blog'] }).hidden).toEqual(['from-the-blog']);
   });
 
-  it('default-hides the three new widgets-pack ids for a fresh layout (opt-in)', () => {
+  it('default-hides the remaining widgets-pack ids, but next-weather now ships on', () => {
+    // next-weather graduated to default-visible with the 2026-07-28 home rebuild
+    // (it fills the left column and costs no extra request — it reads the
+    // weatherByUid prop the page already passes).
     const r = reconcileHomeLayout(null);
-    for (const id of ['where-to-watch', 'next-weather', 'driver-spotlight'] as const) {
+    for (const id of ['where-to-watch', 'driver-spotlight'] as const) {
       expect(r.order).toContain(id);
       expect(r.hidden).toContain(id);
     }
     expect(DEFAULT_HOME_LAYOUT.hidden).toContain('where-to-watch');
-    expect(DEFAULT_HOME_LAYOUT.hidden).toContain('next-weather');
     expect(DEFAULT_HOME_LAYOUT.hidden).toContain('driver-spotlight');
+    for (const id of ['standings-snapshot', 'next-weather', 'track-layout', 'series-countdowns'] as const) {
+      expect(r.order).toContain(id);
+      expect(r.hidden).not.toContain(id);
+      expect(DEFAULT_HOME_LAYOUT.hidden).not.toContain(id);
+    }
   });
 
   it('keeps a user-shown widgets-pack id shown once it is in their stored order', () => {

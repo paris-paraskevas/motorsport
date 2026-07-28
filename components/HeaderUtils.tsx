@@ -1,12 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { Coffee, LogIn, Mail, MessageSquare, Settings } from 'lucide-react';
+import { LogIn, MessageSquare, Settings } from 'lucide-react';
 import { SignInButton, useAuth, useUser } from '@clerk/nextjs';
-import { openContactModal } from './ContactModal';
 import { NotificationBell } from './NotificationBell';
 
-const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
-
+// Header right cluster — account actions ONLY. Support affordances (Contact,
+// Buy me a coffee) live in the Footer's Site column: they are destinations
+// people seek out, not things the chrome should sell on every page.
 export function HeaderUtils({
   className = '',
 }: {
@@ -21,28 +21,6 @@ export function HeaderUtils({
 
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
-      <button
-        type="button"
-        onClick={openContactModal}
-        aria-label="Contact"
-        data-heatmap-id="chrome:contact"
-        className="inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-bold text-black bg-brand-fill hover:bg-brand-deep rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
-      >
-        <Mail size={13} />
-        <span className="hidden sm:inline">Contact</span>
-      </button>
-      <a
-        href={COFFEE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Buy me a coffee"
-        data-heatmap-id="chrome:coffee"
-        className="inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 text-xs font-bold text-black bg-brand-fill hover:bg-brand-deep rounded-full px-3 py-1.5 transition-colors duration-(--duration-fast)"
-      >
-        <Coffee size={13} />
-        <span className="hidden sm:inline">Buy me a coffee</span>
-        <span className="hidden min-[380px]:inline sm:hidden">Coffee</span>
-      </a>
       {/* Notification center — sent-push history, signed-in only, all viewports
           (NotificationBell self-gates on Clerk auth and renders nothing when
           signed out). */}

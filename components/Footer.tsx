@@ -1,23 +1,44 @@
+'use client';
+// Client-side because the Contact entry opens ContactModal through a window
+// event, which needs a click handler. Costs nothing: the footer's only consumer,
+// AppShell, is already a client component.
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
+import { openContactModal } from '@/components/ContactModal';
+
+const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
 function FooterLink({
   href,
   dataHeatmapId,
+  external,
   children,
 }: {
   href: string;
   dataHeatmapId?: string;
+  // Off-site destinations render a plain anchor: next/link is for in-app routes
+  // and carries neither the new-tab target nor the rel guard.
+  external?: boolean;
   children: React.ReactNode;
 }) {
+  const className = 'block py-0.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)';
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-heatmap-id={dataHeatmapId}
+        className={className}
+      >
+        {children}
+      </a>
+    );
+  }
   return (
-    <Link
-      href={href}
-      data-heatmap-id={dataHeatmapId}
-      className="block py-0.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-    >
+    <Link href={href} data-heatmap-id={dataHeatmapId} className={className}>
       {children}
     </Link>
   );
@@ -48,6 +69,17 @@ export function Footer() {
             <FooterLink href="/threads" dataHeatmapId="footer:threads">Threads</FooterLink>
             <FooterLink href="/changelog" dataHeatmapId="footer:changelog">Release notes</FooterLink>
             <FooterLink href="/settings" dataHeatmapId="footer:account">Account</FooterLink>
+            {/* Contact is a no-op unless AppShell still mounts <ContactModal /> —
+                this button only dispatches the open event. */}
+            <button
+              type="button"
+              onClick={openContactModal}
+              data-heatmap-id="footer:contact"
+              className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast) text-left w-full bg-transparent border-0 p-0 cursor-pointer font-inherit"
+            >
+              Contact
+            </button>
+            <FooterLink href={COFFEE_URL} dataHeatmapId="footer:coffee" external>Buy me a coffee</FooterLink>
             <ManageCookiesButton />
           </div>
           <div>

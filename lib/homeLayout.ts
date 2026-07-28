@@ -42,21 +42,26 @@ export interface HomeElementMeta {
 // stored order gets the new id appended).
 export const HOME_ELEMENTS: HomeElementMeta[] = [
   { id: 'chyron', label: 'Live / up next', hint: 'The broadcast strip — live session or the next countdown.', collapsible: false },
+  // Default order is also a height-pairing decision. The 12-col grid places two
+  // orderable sections per row, and `items-start` leaves the height difference
+  // under the shorter one — which is why `schedule | news` left a ~320px void.
+  // standings-snapshot is comparable in height to the schedule, and the circuit
+  // map to the wire, so the pairs sit level.
   { id: 'schedule', label: 'This week', hint: 'This week’s sessions across your series.', collapsible: true },
+  { id: 'standings-snapshot', label: 'Standings snapshot', hint: 'The top of the table for one series, refreshed each round.', collapsible: true },
   { id: 'news', label: 'News', hint: 'The Paddock wire — latest motorsport.com headlines.', collapsible: true },
+  { id: 'track-layout', label: 'Circuit map', hint: 'The track layout for the next round you follow (F1 for now).', collapsible: true },
+  { id: 'next-weather', label: 'Next-race weather', hint: 'The forecast for your next followed round.', collapsible: true },
+  { id: 'series-countdowns', label: 'Series countdowns', hint: 'A separate next-session countdown for each series you follow.', collapsible: true },
   { id: 'from-the-blog', label: 'From the blog', hint: 'The latest Paddock long-reads and explainers.', collapsible: true },
   { id: 'championship-leader', label: 'Championship leader', hint: 'Who’s leading each series you follow, and by how much.', collapsible: true },
-  { id: 'standings-snapshot', label: 'Standings snapshot', hint: 'The top of the table for one series, refreshed each round.', collapsible: true },
   { id: 'standings-movers', label: 'Standings movers', hint: 'Who climbed or fell in the championship after the latest round (F1, F3, MotoGP).', collapsible: true },
-  { id: 'series-countdowns', label: 'Series countdowns', hint: 'A separate next-session countdown for each series you follow.', collapsible: true },
   { id: 'series-just-missed', label: 'Series results', hint: 'The latest result for each series you follow, split out by series.', collapsible: true },
-  { id: 'track-layout', label: 'Circuit map', hint: 'The track layout for the next round you follow (F1 for now).', collapsible: true },
   { id: 'threads', label: 'Paddock chatter', hint: 'The newest approved community threads — tap in to read or reply.', collapsible: true },
   { id: 'bets', label: 'Your bets & credits', hint: 'Your open bets, credit balance and the next market closing. Signed-in only.', collapsible: true },
   { id: 'social', label: 'Your leagues & friends', hint: 'Your prediction leagues (with your rank) and a friends summary. Signed-in only.', collapsible: true },
   { id: 'latest-decoded', label: 'Latest Analysis', hint: 'The most recent F1 qualifying + race, deep-linked to the Qualifying Analysis and Race Story.', collapsible: true },
   { id: 'where-to-watch', label: 'Where to watch', hint: 'Broadcast links for your next few upcoming sessions.', collapsible: true },
-  { id: 'next-weather', label: 'Next-race weather', hint: 'The forecast for your next followed round.', collapsible: true },
   { id: 'driver-spotlight', label: 'Driver spotlight', hint: 'A rotating driver from your series, with links into Drivers and Teams.', collapsible: true },
   { id: 'f1-upgrades', label: 'F1 car upgrades', hint: 'What each team brought to the latest F1 weekend, from the official FIA filings.', collapsible: true },
 ];
@@ -142,7 +147,18 @@ export const DEFAULT_COLLAPSED: HomeElementId[] = [];
 // forced onto an existing home (the home is deliberately lean). reconcile()
 // default-hides each of these the first time a user's stored prefs meet it (the
 // id isn't yet in their `order`); once it's there, their show/hide choice wins.
-export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-snapshot', 'standings-movers', 'series-countdowns', 'series-just-missed', 'track-layout', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'next-weather', 'driver-spotlight', 'f1-upgrades'];
+// Four graduate to visible-by-default (operator 2026-07-28): the home's left
+// column was ~70% empty because only chyron + schedule + news shipped on, and
+// the schedule is far shorter than the wire it pairs with. These four fill that
+// column with what a race weekend actually needs, and three of them cost NO
+// extra request — series-countdowns reads `items`, track-layout reads
+// `circuitLayoutByUid`, next-weather reads `weatherByUid`, all already on the
+// page. Only standings-snapshot adds a (deferred) /api/home/standings call.
+// NOTE: this reaches guests immediately (they reset to DEFAULT_HOME_LAYOUT on
+// every load) but NOT signed-in users whose stored `order` already lists these
+// ids — reconcile() returns their own hidden array verbatim, and nothing
+// version-gates a reset. Existing accounts opt in via /settings/customize.
+export const DEFAULT_HIDDEN: HomeElementId[] = ['from-the-blog', 'championship-leader', 'standings-movers', 'series-just-missed', 'threads', 'bets', 'social', 'latest-decoded', 'where-to-watch', 'driver-spotlight', 'f1-upgrades'];
 const DEFAULT_HIDDEN_SET = new Set<HomeElementId>(DEFAULT_HIDDEN);
 
 export const DEFAULT_HOME_LAYOUT: HomeLayoutPrefs = {
