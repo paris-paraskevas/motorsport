@@ -7,14 +7,14 @@ import {
 } from './results-cache';
 import type { RaceResult } from '@/lib/types';
 
-// In-memory KV mock. The real `@vercel/kv` is replaced wholesale so the cache
+// In-memory KV mock. The real `lib/kv` is replaced wholesale so the cache
 // helper's `kv.get` / `kv.set` calls become hash lookups, and we can assert
 // the round-trip behaviour without a network.
 const store = new Map<string, unknown>();
 const setSpy = vi.fn();
 const getSpy = vi.fn();
 
-vi.mock('@vercel/kv', () => ({
+vi.mock('./kv', () => ({
   kv: {
     get: vi.fn(async (key: string) => {
       getSpy(key);
@@ -158,7 +158,7 @@ describe('readResultsCache / writeResultsCache', () => {
   });
 
   it('readResultsCache swallows KV errors and pretends miss', async () => {
-    const kvModule = await import('@vercel/kv');
+    const kvModule = await import('./kv');
     const original = kvModule.kv.get;
     (kvModule.kv.get as unknown as { mockImplementationOnce: (fn: () => Promise<unknown>) => void })
       .mockImplementationOnce(async () => {

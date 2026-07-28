@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/kv';
 import { auth } from '@clerk/nextjs/server';
 import { allowRequest, clientIp } from '@/lib/rate-limit';
 import { sendEmail, renderBrandedEmail } from '@/lib/email';

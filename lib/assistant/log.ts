@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from '../kv';
 
 // Best-effort assistant usage logging in Vercel KV — NEVER throws (a logging
 // failure must not break an answer). Powers the admin insights page: what people
