@@ -1,6 +1,6 @@
 {
   "name": "motorsport",
-  "version": "0.244.2",
+  "version": "0.245.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -24,7 +24,11 @@
     "cf:populate:testing": "opennextjs-cloudflare populateCache remote -c wrangler.testing.jsonc --cacheChunkSize 5",
     "deploy": "npm run cf:build && wrangler deploy && npm run cf:populate",
     "deploy:testing": "npm run cf:build && wrangler deploy -c wrangler.testing.jsonc && npm run cf:populate:testing",
-    "deploy:cf:testing": "wrangler deploy -c wrangler.testing.jsonc && (npm run cf:populate:testing || echo \"populate skipped, non-fatal: cache warms on first visit\")"
+    "deploy:cf:testing": "wrangler deploy -c wrangler.testing.jsonc && (npm run cf:populate:testing || echo \"populate skipped, non-fatal: cache warms on first visit\")",
+    "deploy:cf": "wrangler deploy && npm run cf:populate",
+    "cf:populate:paris": "opennextjs-cloudflare populateCache remote -c wrangler.paris.jsonc --cacheChunkSize 5",
+    "deploy:paris": "npm run cf:build && wrangler deploy -c wrangler.paris.jsonc && npm run cf:populate:paris",
+    "deploy:cf:paris": "wrangler deploy -c wrangler.paris.jsonc && (npm run cf:populate:paris || echo \"populate skipped, non-fatal: cache warms on first visit\")"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.3",

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.245.0 — 2026-07-28
+
+**Behind the scenes.** Each of us now has a private copy of the site to try work on before it goes live, and shipping to the real site happens only when a change is formally approved. No change to the site itself.
+
 ## 0.244.2 — 2026-07-28
 
 **Behind the scenes.** Internal notes updated. No change to the site.

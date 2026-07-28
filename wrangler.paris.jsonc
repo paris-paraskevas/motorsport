@@ -1,0 +1,89 @@
+{
+  // PARIS PREVIEW worker — serves paris.paddock-tracker.com from the
+  // `testing-paris` branch, so the operator's own in-progress work has a live URL
+  // that neither prod nor Fotis's `testing` deploy can overwrite.
+  //
+  // Deploy by hand:  npm run deploy:paris   (build + deploy + POPULATE)
+  // Workers Builds:  Production branch  `testing-paris`
+  //                  Build command      `npm run cf:build`
+  //                  Deploy command     `npm run deploy:cf:paris`
+  //                  Build variables    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  //                                     NEXT_PUBLIC_ASSISTANT_ENABLED=1, DATA_SOURCE=db
+  //
+  // ⚠ Every landmine from wrangler.testing.jsonc applies here identically: the
+  // build MUST be the OpenNext build (`worker.ts` imports `./.open-next/worker.js`),
+  // the deploy command MUST carry `-c wrangler.paris.jsonc` or a bare
+  // `npx wrangler deploy` reads the root config and deploys over PRODUCTION, and
+  // the populate step is mandatory because R2 cache keys are namespaced by BUILD_ID.
+  //
+  // ⚠ No DNS record is needed. The zone carries wildcard `*.paddock-tracker.com`
+  // A records (proxied), so any subdomain already resolves; the `routes` entry
+  // below is what makes this Worker answer for it. Note the corollary: a subdomain
+  // with NO worker route falls through the wildcard to the origin IPs, which still
+  // point at Vercel.
+  //
+  // Secrets: mirrors the TESTING set (10), deliberately NOT prod's 23. No
+  // RESEND_API_KEY (a preview must not email the operator), no VAPID_PRIVATE_KEY
+  // (must not push to real subscribers), no GA4/GSC/Bing keys (must not pollute
+  // analytics). Set with `wrangler secret bulk <file> -c wrangler.paris.jsonc`.
+  //
+  // Differences from prod (wrangler.jsonc), each deliberate:
+  //  - NO `triggers` block: crons must run ONCE, on prod. A third worker firing
+  //    them would triple-send pushes and re-publish posts against the same prod
+  //    KV/Supabase.
+  //  - Route is the paris subdomain only.
+  //  - Same R2 bucket under the `paris-cache` prefix, so this worker's ISR entries
+  //    can never collide with prod's or testing's.
+  //  - WORKER_SELF_REFERENCE points at THIS worker (revalidation calls back in).
+  //  - DATA_SOURCE=db: reads the seeded snapshots, never fetches or writes upstream.
+  //    ⚠ App mutations (bets, threads, blog admin, author profiles) DO hit the same
+  //    prod Supabase. Know it before clicking Save on a preview.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": "worker.ts",
+  "name": "motorsport-paris",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "routes": [
+    { "pattern": "paris.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
+  ],
+  "vars": {
+    "DATA_SOURCE": "db",
+    "NEXT_INC_CACHE_R2_PREFIX": "paris-cache"
+  },
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "paddock-inc-cache"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "motorsport-paris"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"]
+    }
+  ],
+  // Keep logs. Without this a 500 leaves no trace unless `wrangler tail` happened
+  // to be attached when it occurred.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}
