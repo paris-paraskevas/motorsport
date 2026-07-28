@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.244.2 — 2026-07-28
+
+### Changed
+- Docs: handoff corrected after the Workers Builds pipeline went autonomous at wrap. The two items it listed as owed by the operator (the corrupted deploy command, the missing Supabase build variables) are done, and a push to `testing` now builds and deploys itself: `Workers Builds: motorsport-testing completed/success` on `b6c4ac2` → deployment `a8416429` created by Cloudflare, testing serving 0.244.1 at `x-nextjs-cache: HIT` 0.43-0.58s with real data in the prerendered pages (Antonelli 219, gap 50 — which is what proves the build variables took, since a build without Supabase produces empty data pages), production untouched. State-at-wrap block updated with the two deploy paths so the next session doesn't have to re-derive them: prod is `npm run deploy` from `main`, testing is `git push origin testing`. No code change.
+
 ## 0.244.1 — 2026-07-28
 
 ### Changed

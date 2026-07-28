@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.244.2 — 2026-07-28
+
+**Behind the scenes.** Internal notes updated. No change to the site.
+
 ## 0.244.1 — 2026-07-28
 
 **Behind the scenes.** Internal notes and planning updated. No change to the site.
