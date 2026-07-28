@@ -83,6 +83,14 @@
       "new_sqlite_classes": ["DOQueueHandler"]
     }
   ],
+  // Keep logs. Without this, a 500 on this worker leaves NO trace: the dashboard
+  // shows nothing after the fact and the only way to see the exception is to have
+  // `wrangler tail` already running when it happens (which is how the Clerk
+  // handshake 500 of 2026-07-27 went undiagnosed on the first pass).
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
