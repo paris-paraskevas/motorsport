@@ -13,6 +13,7 @@ import { HeaderNavMenu } from './HeaderNavMenu';
 import { seriesSubPages } from '@/lib/tabs';
 import { PushSoundPlayer } from './PushSoundPlayer';
 import { SearchTrigger } from './search/SearchTrigger';
+import { ThemeToggle } from './theme/ThemeToggle';
 
 // One nav system since 0.17.0 (operator: "navigation menu and burger bar can
 // go"): a single fixed header on every viewport — wordmark + inline links on
@@ -219,6 +220,7 @@ export function AppShell({
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
+            <ThemeToggle />
             <SearchTrigger />
             <div data-tour="account"><HeaderUtils /></div>
           </div>
