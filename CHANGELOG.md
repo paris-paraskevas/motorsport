@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.244.0 — 2026-07-27
+
+### Fixed
+- **Greek headings collapsed to a single anchor, breaking the table of contents on any non-Latin post.** `slugify` in `lib/toc.ts` stripped with `[^a-z0-9]+`, so every Greek heading produced the `section` fallback: one shared id, duplicate ids in the rendered HTML, and a sidebar ToC whose links all pointed at the same place (measured: `Ο ΑΠΟΛΟΓΙΣΜΟΣ`, `ΘΕΤΙΚΑ` and `ΑΡΝΗΤΙΚΑ` all became `section`). Now Unicode-aware (`\p{L}\p{N}`) with diacritics folded first (NFD, drop `\p{M}`), so `Ο απολογισμός` and `Ο ΑΠΟΛΟΓΙΣΜΟΣ` both give `ο-απολογισμος` and Latin headings behave exactly as before. The helper is shared by all three ToC consumers (DB id injection, MDX heading components, sidebar list), so ids and links stay in step. New `lib/toc.test.ts`, 7 cases, covering the regression, diacritic folding, the empty-heading fallback and dedupe.
+
+### Notes
+- Blog: Greek per-team report card drafted (`f4cdedd7`, `f1-hungary-2026-report-card-gr`) as an alternative to a contributor draft, which is left untouched; it omits five claims that failed cross-check, including a 358 km/h speed-trap figure our own OpenF1 pull puts at 346. A second contributor draft (`ad1fc1e9`) got an errors-only editing pass at the operator's instruction: round 11 not thirteen, Hamilton's stops on 13 and 30 not 14 and 31, Piastri on his third set at lap 38, a pit-exit duel with Norris that never happened (he overcut), Hamilton's third consecutive penalty not his second, plus two mangled parentheticals and punctuation typos. Prose left as the author wrote it; two claims unverifiable from our data were confirmed by the operator.
+
 ## 0.243.0 — 2026-07-27
 
 ### Performance

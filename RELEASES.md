@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.244.0 — 2026-07-27
+
+**Jump links now work on Greek articles.** On posts written in Greek, the contents list in the sidebar sent every link to the same spot. Each section now gets its own working link.
+
 ## 0.243.0 — 2026-07-27
 
 **The home page's data widgets respond instantly again.** Several behind-the-scenes feeds the home page relies on had quietly lost their caching in our hosting move and were being recomputed for every single visitor; they are now cached properly and answer in a fraction of a second.

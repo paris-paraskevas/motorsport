@@ -9,13 +9,28 @@ export interface TocItem {
   level: 2 | 3;
 }
 
-/** Stable heading slug — lowercase, runs of non-alphanumerics to single hyphens. */
+/**
+ * Stable heading slug — lowercase, runs of non-letters/digits to single hyphens.
+ *
+ * Unicode-aware on purpose. The old `[^a-z0-9]+` stripped every non-Latin
+ * character, so a Greek-language post collapsed EVERY heading to the `section`
+ * fallback: one shared id, a table of contents whose links all pointed at the
+ * same place, and duplicate ids in the HTML. `\p{L}\p{N}` keeps Greek (and any
+ * other script) while behaving identically for Latin headings.
+ *
+ * Diacritics are folded away first (NFD, then drop combining marks) so an anchor
+ * stays readable in a URL and a heading matches itself whether or not it was
+ * written with accents: "Ο απολογισμός" and "Ο ΑΠΟΛΟΓΙΣΜΟΣ" both give
+ * `ο-απολογισμος`. Collisions are still handled by the caller's dedupe.
+ */
 export function slugify(text: string): string {
   return (
     text
       .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{M}+/gu, '')
       .replace(/&amp;/g, '&')
-      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/[^\p{L}\p{N}]+/gu, '-')
       .replace(/^-+|-+$/g, '') || 'section'
   );
 }
