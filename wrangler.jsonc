@@ -78,6 +78,15 @@
       "new_sqlite_classes": ["DOQueueHandler"]
     }
   ],
+  // Keep logs. Without this a production 500 leaves NO trace: the dashboard
+  // shows nothing after the event and the exception is only visible if
+  // `wrangler tail` happened to be running at the time. Sampling at 1 (keep
+  // everything) because this site's request volume is nowhere near the point
+  // where log ingestion is a cost concern.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

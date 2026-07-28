@@ -3,8 +3,19 @@
   // branch so contributor work never has to touch main/prod.
   //
   // Deploy by hand:  npm run deploy:testing   (build + deploy + POPULATE)
-  // Workers Builds:  build   `npx opennextjs-cloudflare build`
-  //                  deploy  `npm run deploy:cf:testing`
+  // Workers Builds:  Production branch  `testing`
+  //                  Build command      `npm run cf:build`
+  //                  Deploy command     `npm run deploy:cf:testing`
+  //                  Build variables    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  //                                     NEXT_PUBLIC_ASSISTANT_ENABLED=1, DATA_SOURCE=db
+  //
+  // ⚠ The build command must be the OPENNEXT build, not `npm run build`. Plain
+  // `next build` emits only `.next/`, while `worker.ts` imports
+  // `./.open-next/worker.js` — so wrangler deploy then fails on a missing entry
+  // (Workers Builds' first real run, 2026-07-27, failed exactly this way).
+  // Cloudflare will also nag that the root wrangler.jsonc's `name` does not match
+  // this Worker: ignore it. The root config is PRODUCTION on purpose; the `-c`
+  // flag in the deploy command is what selects this one.
   //
   // ⚠ The deploy command MUST carry `-c wrangler.testing.jsonc`. Workers Builds
   // defaults to a bare `npx wrangler deploy`, which reads the repo-root
@@ -72,6 +83,14 @@
       "new_sqlite_classes": ["DOQueueHandler"]
     }
   ],
+  // Keep logs. Without this, a 500 on this worker leaves NO trace: the dashboard
+  // shows nothing after the fact and the only way to see the exception is to have
+  // `wrangler tail` already running when it happens (which is how the Clerk
+  // handshake 500 of 2026-07-27 went undiagnosed on the first pass).
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
