@@ -6,7 +6,61 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-27 (LATEST, session 22 — MIGRATED PROD OFF VERCEL TO CLOUDFLARE WORKERS) — live on Cloudflare; `main` still 0.239.1 (NOT the deployed artifact)
+## ⚡ Next session pickup — 2026-07-28 (LATEST, session 23 — DB-as-source-of-truth, R2 page cache, the silent-writer saga) — `main` = 0.244.0 AND prod runs it
+
+Long session (2026-07-27 → 07-28). **Versions 0.240.0 → 0.244.0, PRs #629-#636, all merged; `main` and prod are finally the same code.** The Vercel-era `main` (0.239.1) knew nothing about Cloudflare until #629 landed.
+
+### 📌 NEXT SESSION — operator-set priority order
+**1. Author pages** (accounts, contact, post list) · **2. Format button** · **3. Content expansion 586 → 1500+ pages** · **4. Indexing fixes (46 noindex)**. Full briefs, including what already exists and the decisions to make, are at the top of `IDEAS.md`.
+
+### ✅ Shipped
+- **0.240.0 DB as the single source of truth.** `DATA_SOURCE=db` (`isDbReadOnly()`, `lib/source-snapshot.ts`) makes `withSourceSnapshot` + `withF1LastGood` pure readers: a present snapshot is served and upstream is never called; an unseeded slot falls through to a fetch but **never writes**. Root cause it fixed, measured on prod: three consecutive renders of `/series/f1/standings` returned three different byte lengths, and the F1 season chart was frozen at **round 5** mid-season, because a partial response from a non-blocked colo overwrote the good cache. Every surface got a durable slot first: standings for **motogp/wsbk/imsa** had no wrapper at all; results for **f2/f3/dtm/wec/wsbk** had only a 3-hour KV window; results for **motogp/wrc/formula-e/indycar/nascar-cup/gt-world/imsa/nls** had nothing. Public names/signatures unchanged (live parser renamed `fetchX…Live`).
+- **0.241.0 R2 ISR page cache + DO queue + regional cache.** `open-next.config.ts` had been passing `{}`, leaving `incrementalCache` at the adapter's `"dummy"` default, so **every request re-rendered** (`x-nextjs-cache: MISS` on every hit). Result: `/series/f1/standings` **9.34s → 0.12s**. The DO queue is not optional — the dummy queue *throws* from `queue.send`, which is exactly what a stale ISR page calls.
+- **0.243.0 dead `s-maxage` sweep.** `/api/just-missed` + five `/api/home/*` routes promised "the fan-out runs at most once per window" via `Cache-Control: s-maxage`. That was **Vercel's** edge cache; Cloudflare never caches Worker responses on headers alone, so since the migration every visitor re-ran every fan-out (just-missed: 1.2s on prod, 6-8s on testing). Converted to `force-static` + `revalidate`. `bets`/`social` (user-shaped) and `standings`/`movers` (read `?series=`) stay dynamic.
+- **0.242.0 testing environment.** `testing.paddock-tracker.com` on a second worker (`motorsport-testing`, `wrangler.testing.jsonc`): no cron triggers (a second worker would double-fire pushes/publishes against shared prod KV/Supabase), own R2 prefix `testing-cache`, self-reference binding, `DATA_SOURCE=db`. Operator connected Workers Builds to the `testing` branch.
+- **0.244.0 Unicode heading slugs.** `lib/toc.ts` stripped with `[^a-z0-9]+`, so on a Greek post **every heading became `section`**: one shared anchor, duplicate ids, a ToC pointing everywhere at once. Now `\p{L}\p{N}` with diacritics folded. 7 new tests.
+- **Parser + data repairs.** NASCAR results **0 → 22 races** (Wikipedia now serves `/wiki/` hrefs absolute; the selector anchored on relative). DTM **2 → 6 races** and correctly numbered (motorsport.com dropped the `--event` modifier from its picker, so discovery found nothing and the feed fell back to one event, mislabelled R1 with another event's date). OpenF1 classifications: both documented rate limits now enforced (**3/s AND 30/min**; 3/s sustained is 180/min), curated-grid fallback for the driver join, and `hasResolvedDrivers` gating both cache writes — a scan of all 227 cached classifications found exactly 2 poisoned (Hungary quali + race, `#1`/`#3` with blank teams), repaired in place.
+- **Assistant + push restored.** `NEXT_PUBLIC_*` are inlined at **build** time even in server code; the vars lived only in `.env.cloudflare.local`, a filename Next never reads, so rebuilds shipped the assistant compiled out and broke new push subscriptions. Then I briefly made it worse by copying a **blank** `NEXT_PUBLIC_VAPID_PUBLIC_KEY` in, which inlined `""` and overrode the Worker's real runtime secret (`vapidConfigured` true → false). Absent, not blank, is correct.
+- **Observability enabled on both workers** — they were discarding all logs, so a 500 left no trace unless `wrangler tail` happened to be attached.
+
+### 🔴 THE SILENT-WRITER SAGA (read this before trusting any green tick)
+The warm cron reported success while writing **nothing** for ~20 hours. Three layers:
+1. **Quoted env values.** `.env.production.local` wraps values in `"`; `node --env-file` strips them, `gh secret set --body "$(grep|cut)"` does not. Supabase got `"https://…"` → `Invalid supabaseUrl` on every write.
+2. **Node 20.** Once URLs were valid, `@supabase/supabase-js` failed every write with *"Node.js 20 detected without native WebSocket support"*. The workflow pinned 20; the dev machine runs 24, so it was unreproducible locally. Now **22** (matches Cloudflare's build image).
+3. **The blind spot:** the script counted successful **fetches** and printed "seeded 13/13" while `writeSnapshot` failed on every key. Fail-soft is right for the render path, wrong for the writer. It now **reads back the newest `source_snapshot` row and exits non-zero if the run wrote nothing**. Verified: run 30347280388, 0 write failures, `seeded OK`.
+**The data only looked fresh because `npm run deploy` builds in writer mode** (no `DATA_SOURCE=db`), so local deploys re-fetch every series from the dev machine's IP and write the DB — the same non-determinism we removed from the request path, still sitting in the deploy path. **Not yet fixed.**
+
+### ⚠ LANDMINES (new this session)
+1. **R2 cache keys are namespaced by `BUILD_ID`** — every deploy orphans the whole warm cache, so every route is a MISS until first visit. Invisible on prod (traffic re-warms), brutal on testing (no traffic, no crons). `npm run deploy` / `deploy:testing` now chain the populate; **never deploy without it**. Default chunk size fails against the R2 proxy — `--cacheChunkSize 5` is required.
+2. **`wrangler deploy` inside an OpenNext project delegates to `opennextjs-cloudflare deploy`** by design (`dist/cli/commands/deploy.js` sets `OPEN_NEXT_DEPLOY=true` to break the recursion). That is why a plain `wrangler deploy` runs the cache-population step.
+3. **Workers Builds keeps BUILD variables separate from runtime vars.** `NEXT_PUBLIC_*` inline at build, so without them the built worker loses client-side Clerk, the assistant and push subscribe. Same trap for `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`: without them the build prerenders **every data page empty** (seen live: `db-only:snapshot-miss` for all 13 series).
+4. **The Workers Builds deploy command MUST carry `-c wrangler.testing.jsonc`.** The default bare `npx wrangler deploy` reads the root config, which is **production** — a push to `testing` would deploy over prod.
+5. **The build command must be the OpenNext build**, not `npm run build`. Plain `next build` emits only `.next/`, while `worker.ts` imports `./.open-next/worker.js`.
+6. **Do NOT enable Smart Placement** on this worker. Cloudflare's own gotchas: it degrades Workers that serve static assets or have cached backend calls (2-5x slower on assets), which is our profile. The documented pattern would be a separate backend Worker.
+7. **`worker.ts` needs its default export.** Only the named DO re-exports were present at one point; Workers rejects that as "no registered event handlers".
+8. **`CLAUDE.md` landmine #2 is now wrong** — it says middleware is `proxy.ts` in Next 16, but the migration renamed it to `middleware.ts` because OpenNext needs the Edge runtime. Next warns about the deprecation on every build. Needs reconciling.
+9. **Latency geography:** Supabase is 17ms TCP RTT from the Athens colo, the **Upstash KV store 180ms** (it is not in an EU region). DB-mode F1 reads now hit the snapshot first for that reason. Moving KV is a real migration — `paddock:push:*`, `paddock:user:*`, `paddock:followed*`, `paddock:consent:*`, `paddock:contact:*` are not regenerable.
+
+### 📝 Blog
+- **Hungary recap** — operator published it. The accidental early publish was traced: `publishDuePosts` fires on `status='approved'` + `publish_at <= now`, and the row carried a pre-baked past timestamp, so it went live 8 seconds after approval. Timestamp nulled before re-approval; ledger confirmed no push went out for the accident.
+- **Lap-by-lap** (`e27e5b63`) — published by the operator.
+- **Greek per-team report card** (`f4cdedd7`, `f1-hungary-2026-report-card-gr`) — NEW draft written from verified data as an alternative to Stylianos's `7adb13f4`, which is **untouched**. Omits five claims that failed cross-check, including a 358 km/h speed trap our OpenF1 pull puts at 346.
+- **"The 'finally' defending champion"** (`ad1fc1e9`) — errors-only pass at the operator's instruction, prose left as written: round 11 not thirteen, Hamilton's stops 13/30 not 14/31, Piastri on his third set at lap 38, a Norris pit-exit duel that never happened (he overcut), Hamilton's third consecutive penalty not second, two mangled parentheticals. Two claims unverifiable from our data were **operator-confirmed**. Suggestions were handed over, not applied.
+
+### 🩹 Owed (operator)
+- **Workers Builds: Deploy command** is still the corrupted `npx wrangler deploy -c │ │ command │ versions upload │ wrangler.testing.jsonc` (real corruption, not a UI artifact — the log shows `/bin/sh: 2: │: not found`). Set it to exactly `npm run deploy:cf:testing`. Build command is already correct.
+- **Workers Builds: add `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` as BUILD variables** (the three `NEXT_PUBLIC_*`/`DATA_SOURCE` ones are set), or every CF build ships empty data pages.
+- Approve/schedule the two remaining drafts. Decide on **Secrets Store** (would stop duplicating 11 secrets into the testing worker). Fotis's Cloudflare access. Vercel: keep as rollback or cancel, and disconnect its GitHub app (it posts a red `Account is blocked` check on every commit).
+- Carryover: rotate `.supabase-pat` / `SENTRY_AUTH_TOKEN` / `sk_live`.
+- **VAPID public key** — still needed for *new* push subscriptions (`lib/pushClient.ts` needs it inlined at build); sending to existing subscribers works.
+
+### 🔧 State at wrap
+- `main` = 0.244.0 + #636; prod worker `0df9d041`-era plus the observability deploy; testing worker on 0.244.0 with a contributor's header theme toggle, 0.15-0.48s across routes. Warm cron self-runs every 20 min and now proves its writes. Worktree for the testing branch at `../Motorsport-testing`.
+- Known-unfixed: `npm run deploy` writer mode (above), `metadataBase` missing on some routes so OG images resolve against `localhost:3000`, ~39 non-fatal `Failed to copy node_modules/…` errors for mdx packages during CF bundling, 28 npm vulnerabilities (27 high), `compatibility_date` 2025-09-23 flagged as old, IMSA results cover 5 of 7 completed rounds, DTM's upstream publishes only 3 of 5, and `/api/home/movers` returns `delta: 0` for every driver (suspicious).
+
+---
+
+## ⚡ Session 22 — 2026-07-27 (MIGRATED PROD OFF VERCEL TO CLOUDFLARE WORKERS) — live on Cloudflare; `main` still 0.239.1 (NOT the deployed artifact)
 
 Emergency + huge session (2026-07-26 → 07-27). Vercel disabled the project (HTTP 402, Fluid Active CPU 300% over cap on race weekend); operator refused Pro ($25/mo). **Migrated the entire site to Cloudflare Workers via OpenNext (~$5/mo).** Live at paddock-tracker.com off Vercel. ALL work on branch `spike/cloudflare-opennext` — committed, **NOT pushed, NOT merged to main**.
 
