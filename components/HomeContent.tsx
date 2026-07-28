@@ -594,7 +594,7 @@ export function HomeContent({
   // Density on the chyron tightens its vertical padding (it's a single strip, not
   // a row list — so the [&_a]/[&_li] descendant variants the other blocks use
   // don't apply here).
-  const chyronPad = dense('chyron') ? 'py-2.5' : 'py-4';
+  const chyronPad = dense('chyron') ? 'py-4' : 'py-7 md:py-9';
 
   const liveItems = filteredSessions.filter(
     i => !i.session.dateOnly && i.session.start <= now && now <= i.session.end,
@@ -709,7 +709,7 @@ export function HomeContent({
       {/* ── Jump-to launcher — fixed quick-access nav, pinned directly under the
              chyron hero (order 1 sits between the chyron at 0 and the first
              controllable block at ≥2). Shown to everyone; all content is public. ── */}
-      <div className="mb-8 3xl:col-span-2" style={{ order: 1 }}>
+      <div className="mb-14 md:mb-20 3xl:col-span-2" style={{ order: 1 }}>
         <HomeLauncher series={series} />
       </div>
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next
@@ -719,15 +719,24 @@ export function HomeContent({
         aria-label={liveItems.length > 0 ? 'Live now' : 'Up next'}
         data-tour="chyron"
         style={{ order: orderOf('chyron') }}
-        className="mb-8 border-y border-border bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 3xl:col-span-2"
+        className="relative mb-14 md:mb-20 border-t border-b-2 border-border-strong bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 3xl:col-span-2"
       >
+        {/* Series-coloured rail — scales the schedule row's 3px spine up to the
+            full-bleed hero band, so the dominant block is identified by series
+            colour before any text is read. Raw series hex on a fill is the
+            sanctioned use (see lib/site.ts — only text goes through seriesInk). */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-[3px]"
+          style={{ backgroundColor: liveItems[0]?.color ?? next?.color ?? 'var(--brand)' }}
+        />
         {liveItems.length > 0 ? (
           <div className="divide-y divide-border">
             {liveItems.map(item => (
               <div key={`${item.seriesSlug}-${item.session.uid}`} className={chyronPad}>
               <Link
                 href={hrefFor(item)}
-                className="group flex flex-wrap items-center gap-x-4 gap-y-1"
+                className="group flex flex-wrap items-center gap-x-3 gap-y-2"
               >
                 <span className="inline-flex items-center gap-2">
                   <span className="relative inline-flex">
@@ -744,7 +753,7 @@ export function HomeContent({
                 >
                   {item.seriesName}
                 </span>
-                <span className="font-display text-xl md:text-2xl font-bold uppercase tracking-wide text-text basis-full md:basis-auto md:flex-1 min-w-0 truncate">
+                <span className="font-display text-[clamp(2.5rem,7vw,3.75rem)] font-extrabold uppercase tracking-wide text-text leading-[0.9] text-balance basis-full md:basis-auto md:flex-1 min-w-0">
                   {item.session.title}
                 </span>
                 <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
@@ -777,8 +786,8 @@ export function HomeContent({
             className="group flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6"
           >
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
-                <span className="font-mono text-[11px] uppercase tracking-[0.2em] font-bold text-brand">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-2">
+                <span className="inline-flex items-center bg-brand-fill px-2 py-1 font-mono text-[11px] leading-none uppercase tracking-[0.2em] font-bold text-tint-contrast">
                   Up next
                 </span>
                 <span className="inline-flex items-center gap-1.5">
@@ -800,10 +809,11 @@ export function HomeContent({
                   </span>
                 )}
               </div>
-              <div className="font-display text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-text leading-none truncate">
+              <h2 className="font-display text-[clamp(2.5rem,7vw,3.75rem)] font-extrabold uppercase tracking-wide text-text leading-[0.9] text-balance">
                 {next.session.title}
-              </div>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                <span className="text-brand">.</span>
+              </h2>
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] leading-tight uppercase tracking-[0.12em] text-text-muted">
                 <span className="tnum">
                   {next.session.dateOnly
                     ? 'This weekend · time TBC'
@@ -823,11 +833,11 @@ export function HomeContent({
               </div>
             </div>
             {!next.session.dateOnly && (
-              <div className="shrink-0 text-left md:text-right">
-                <div className="text-3xl md:text-4xl font-bold text-text">
+              <div className="shrink-0 text-left md:text-right md:min-w-[11ch]">
+                <div className="text-[clamp(2.75rem,10vw,4.5rem)] font-bold leading-none text-text tnum">
                   <Countdown to={next.session.start} initialNow={now} />
                 </div>
-                <div className="mt-0.5 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
+                <div className="mt-2 inline-flex items-center gap-1 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
                   {roundFor(next.seriesSlug, next.session.uid) ? 'Open weekend' : 'Open series'}
                   <ArrowUpRight size={12} aria-hidden="true" />
                 </div>
@@ -835,16 +845,16 @@ export function HomeContent({
             )}
           </Link>
           {heroUpNext.length > 0 && (
-            <div className="mt-3 border-t border-border pt-2.5">
-              <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+            <div className="mt-6 border-t border-border pt-3">
+              <div className="mb-2 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint">
                 Also today
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2.5">
                 {heroUpNext.map(item => (
                   <Link
                     key={`${item.seriesSlug}-${item.session.uid}`}
                     href={hrefFor(item)}
-                    className="group flex items-center gap-2.5 min-w-0"
+                    className="group flex items-center gap-2 min-w-0"
                   >
                     <span
                       className="w-1.5 h-1.5 shrink-0 rounded-full"
@@ -907,7 +917,7 @@ export function HomeContent({
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
       {!isHidden('schedule') && (
-        <section aria-label="This week's sessions" data-tour="week" className="mb-8" style={{ order: orderOf('schedule') }}>
+        <section aria-label="This week's sessions" data-tour="week" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('schedule') }}>
           <CollapsibleSectionHead
             title="This week"
             sub={`${weekItems.length} sessions · ${tz}`}
@@ -955,7 +965,7 @@ export function HomeContent({
                 ).values(),
               );
               return (
-                <details key={day.label} open={defaultOpen} className="group mb-3">
+                <details key={day.label} open={defaultOpen} className="group mb-6">
                   <summary className="flex cursor-pointer list-none items-baseline gap-2 py-1 [&::-webkit-details-marker]:hidden">
                     {dayTag && (
                       <span className="font-display text-sm font-extrabold uppercase tracking-wide text-brand">
@@ -1012,11 +1022,8 @@ export function HomeContent({
                                 </span>
                               )}
                             </span>
-                            <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint min-w-0">
-                              <span
-                                className="font-semibold whitespace-nowrap shrink-0"
-                                style={{ color: seriesInk(item.color) }}
-                              >
+                            <span className="mt-1 flex items-center gap-1.5 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint min-w-0">
+                              <span className="font-semibold whitespace-nowrap shrink-0 text-text-muted">
                                 {item.seriesName}
                               </span>
                               {s.location && (
@@ -1061,7 +1068,7 @@ export function HomeContent({
       )}
 
       {!isHidden('news') && (
-        <section aria-label="Latest news" className="mb-8" style={{ order: orderOf('news') }}>
+        <section aria-label="Latest news" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('news') }}>
           <CollapsibleSectionHead
             title="Paddock wire"
             sub="motorsport.com"
@@ -1127,18 +1134,15 @@ export function HomeContent({
                     rel="noopener noreferrer"
                     className="group block py-3 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
                   >
-                    <div className="flex items-center gap-2 mb-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1.5 min-w-0">
                       <span
                         className="w-1.5 h-1.5 rounded-full shrink-0"
                         style={{ backgroundColor: item.seriesColor }}
                       />
-                      <span
-                        className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold shrink-0"
-                        style={{ color: seriesInk(item.seriesColor) }}
-                      >
+                      <span className="font-mono text-[10px] leading-none uppercase tracking-[0.12em] font-semibold shrink-0 text-text-muted">
                         {item.seriesName}
                       </span>
-                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0">
+                      <span className="font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint tnum shrink-0">
                         · {relativeAgo(pubDate, now)}
                       </span>
                       <ExternalLink
@@ -1147,7 +1151,7 @@ export function HomeContent({
                         className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
                       />
                     </div>
-                    <h3 className="text-sm font-semibold leading-snug tracking-tight text-text">
+                    <h3 className="text-[15px] font-semibold leading-normal text-text">
                       {item.title}
                     </h3>
                   </a>
@@ -1167,7 +1171,7 @@ export function HomeContent({
              customise gallery). The latest published posts, defer-fetched when
              the block is shown + expanded. ── */}
       {!isHidden('from-the-blog') && (
-        <section aria-label="From the blog" className="mb-8" style={{ order: orderOf('from-the-blog') }}>
+        <section aria-label="From the blog" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('from-the-blog') }}>
           <CollapsibleSectionHead
             title="From the blog"
             sub="long-reads"
@@ -1230,7 +1234,7 @@ export function HomeContent({
 
       {/* ── CHAMPIONSHIP LEADER — opt-in. Who leads each series you follow. ── */}
       {!isHidden('championship-leader') && (
-        <section aria-label="Championship leader" className="mb-8" style={{ order: orderOf('championship-leader') }}>
+        <section aria-label="Championship leader" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('championship-leader') }}>
           <CollapsibleSectionHead
             title="Championship leader"
             sub="who's on top"
@@ -1285,7 +1289,7 @@ export function HomeContent({
       {/* ── STANDINGS SNAPSHOT — opt-in. Top 5 of one chosen series (picked in
              Customise; defaults to the first one with data). ── */}
       {!isHidden('standings-snapshot') && (
-        <section aria-label="Standings snapshot" className="mb-8" style={{ order: orderOf('standings-snapshot') }}>
+        <section aria-label="Standings snapshot" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('standings-snapshot') }}>
           {(() => {
             const brief =
               standings && standings.length > 0
@@ -1344,7 +1348,7 @@ export function HomeContent({
              change per eligible series (F1/F3/MotoGP), from the same trend the
              Standings tab charts. Fetch is deferred to when the block is shown. ── */}
       {!isHidden('standings-movers') && (
-        <section aria-label="Standings movers" className="mb-8" style={{ order: orderOf('standings-movers') }}>
+        <section aria-label="Standings movers" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('standings-movers') }}>
           <CollapsibleSectionHead
             title="Standings movers"
             sub="since the last race"
@@ -1412,7 +1416,7 @@ export function HomeContent({
              declared parts per team (curated from the FIA Car Presentation doc),
              linking to the weekend's full Upgrades section. ── */}
       {!isHidden('f1-upgrades') && (
-        <section aria-label="F1 car upgrades" className="mb-8" style={{ order: orderOf('f1-upgrades') }}>
+        <section aria-label="F1 car upgrades" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('f1-upgrades') }}>
           <CollapsibleSectionHead
             title="F1 car upgrades"
             sub="latest weekend"
@@ -1471,7 +1475,7 @@ export function HomeContent({
           })
           .slice(0, cdCount);
         return (
-          <section aria-label="Series countdowns" className="mb-8" style={{ order: orderOf('series-countdowns') }}>
+          <section aria-label="Series countdowns" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('series-countdowns') }}>
             <CollapsibleSectionHead
               title="Series countdowns"
               sub={`${rows.length} series`}
@@ -1522,7 +1526,7 @@ export function HomeContent({
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .slice(0, sjmCount);
         return (
-          <section aria-label="Series results" className="mb-8" style={{ order: orderOf('series-just-missed') }}>
+          <section aria-label="Series results" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('series-just-missed') }}>
             <CollapsibleSectionHead
               title="Series results"
               sub="latest per series"
@@ -1580,7 +1584,7 @@ export function HomeContent({
         const item = upcomingItems.find(i => circuitLayoutByUid?.[i.session.uid]);
         const layout = item ? circuitLayoutByUid?.[item.session.uid] : undefined;
         return (
-          <section aria-label="Circuit map" className="mb-8" style={{ order: orderOf('track-layout') }}>
+          <section aria-label="Circuit map" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('track-layout') }}>
             <CollapsibleSectionHead
               title="Circuit map"
               sub={layout ? layout.name : 'next round'}
@@ -1653,7 +1657,7 @@ export function HomeContent({
       {/* ── PADDOCK CHATTER (threads) — opt-in. The newest approved community
              threads, defer-fetched when shown + expanded. Links into /threads. ── */}
       {!isHidden('threads') && (
-        <section aria-label="Paddock chatter" className="mb-8" style={{ order: orderOf('threads') }}>
+        <section aria-label="Paddock chatter" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('threads') }}>
           <CollapsibleSectionHead
             title="Paddock chatter"
             sub="latest threads"
@@ -1718,7 +1722,7 @@ export function HomeContent({
       {/* ── YOUR BETS & CREDITS — opt-in, signed-in only. Open bets + balance +
              next market closing, CTA to /play. Anon → a subtle sign-in nudge. ── */}
       {!isHidden('bets') && (
-        <section aria-label="Your bets and credits" className="mb-8" style={{ order: orderOf('bets') }}>
+        <section aria-label="Your bets and credits" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('bets') }}>
           <CollapsibleSectionHead
             title="Your bets & credits"
             sub={bets?.signedIn ? `${bets.balance.toLocaleString()} cr` : 'play money'}
@@ -1806,7 +1810,7 @@ export function HomeContent({
              (with their rank) + a friends summary, linking into /social. Anon →
              a subtle sign-in nudge. Empty → a join-a-league CTA. ── */}
       {!isHidden('social') && (
-        <section aria-label="Your leagues and friends" className="mb-8" style={{ order: orderOf('social') }}>
+        <section aria-label="Your leagues and friends" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('social') }}>
           <CollapsibleSectionHead
             title="Leagues & friends"
             sub={social?.signedIn ? `${social.friends.count} friend${social.friends.count === 1 ? '' : 's'}` : 'play money'}
@@ -1880,7 +1884,7 @@ export function HomeContent({
       {/* ── LATEST DECODED (F1) — opt-in. The most recent past F1 round's
              qualifying (→ Decoder, pole + P2 codes) and race (→ Race Story). ── */}
       {!isHidden('latest-decoded') && (
-        <section aria-label="Latest Analysis" className="mb-8" style={{ order: orderOf('latest-decoded') }}>
+        <section aria-label="Latest Analysis" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('latest-decoded') }}>
           <CollapsibleSectionHead
             title="Latest Analysis"
             sub={decoded ? decoded.gp : 'F1 analysis'}
@@ -1952,7 +1956,7 @@ export function HomeContent({
       {!isHidden('where-to-watch') && (() => {
         const rows = upcomingItems.filter(i => i.watch).slice(0, wtwCount);
         return (
-          <section aria-label="Where to watch" className="mb-8" style={{ order: orderOf('where-to-watch') }}>
+          <section aria-label="Where to watch" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('where-to-watch') }}>
             <CollapsibleSectionHead
               title="Where to watch"
               sub={`${rows.length} session${rows.length === 1 ? '' : 's'}`}
@@ -2007,7 +2011,7 @@ export function HomeContent({
         const w = item ? weatherByUid?.[item.session.uid] : undefined;
         const wl = w ? weatherLabel(w.weatherCode) : null;
         return (
-          <section aria-label="Next-race weather" className="mb-8" style={{ order: orderOf('next-weather') }}>
+          <section aria-label="Next-race weather" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('next-weather') }}>
             <CollapsibleSectionHead
               title="Next-race weather"
               sub={item ? item.seriesName : 'next round'}
@@ -2066,7 +2070,7 @@ export function HomeContent({
              drivers from the curated lineups, deep-linked into /drivers and
              /teams. Defer-fetched (edge-cached + time-rotated route). ── */}
       {!isHidden('driver-spotlight') && (
-        <section aria-label="Driver spotlight" className="mb-8" style={{ order: orderOf('driver-spotlight') }}>
+        <section aria-label="Driver spotlight" className="mb-14 md:mb-20 border-t-2 border-border-strong pt-6 md:pt-7" style={{ order: orderOf('driver-spotlight') }}>
           <CollapsibleSectionHead
             title="Driver spotlight"
             sub="from your series"
@@ -2161,19 +2165,19 @@ function CollapsibleSectionHead({
   onToggle: () => void;
 }) {
   return (
-    <h2 className="mb-3">
+    <h2 className="mb-5">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={!collapsed}
-        className="relative flex w-full items-baseline justify-between gap-3 pb-3 text-left after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-linear-to-r after:from-border-strong after:via-border after:to-transparent"
+        className="relative flex w-full items-baseline justify-between gap-3 pb-2.5 text-left after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-linear-to-r after:from-border-strong after:via-border after:to-border"
       >
         <span className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide text-text">
           {title}
           <span className="text-brand">.</span>
         </span>
         <span className="inline-flex items-center gap-2">
-          {sub && <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">{sub}</span>}
+          {sub && <span className="font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-muted">{sub}</span>}
           <ChevronDown
             size={15}
             aria-hidden="true"
