@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Tour } from '@/components/Tour';
 import { seriesInk } from '@/lib/site';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ChevronDown, Coins, ExternalLink, MapPin, MessageSquare, Play, Trophy, Tv, Users, UserPlus } from 'lucide-react';
 import type { Session } from '@/lib/types';
 import type { DailyWeather } from '@/lib/weather';
@@ -571,6 +571,94 @@ export function HomeContent({
   // the non-followed ones away — the personalization flash. Skeleton → your
   // paddock, never other-series data. Guests resolve from localStorage in ~1
   // frame; signed-in returns from the local mirror (see useFollowedSeries).
+  /* ── Masonry row-span solver ───────────────────────────────────────────────
+     A plain 12-col row grid puts two blocks per row and `items-start` leaves the
+     height difference between them empty: the taller block sets the row height and
+     the shorter one's leftover is unreachable — `grid-flow-dense` cannot reclaim it
+     because the hole sits INSIDE a row rather than being an empty cell.
+
+     So the grid runs on a fine auto-row track and each block's measured height is
+     expressed as a row span, which turns that leftover into real empty cells for
+     dense packing to backfill. Identity:
+       span = ceil((height + marginBottom) / row)
+
+     The grid's own row-gap is 0 on purpose: with a 32px row gap the span
+     granularity becomes 4+32=36px rather than 4px, and every block over-reserves
+     by up to a full gap — which is what left ~90px voids on the first attempt.
+     Spacing lives in each block's margin-bottom instead, folded into its span.
+
+     Three things keep this from being the footgun it was on the first attempt:
+
+     1. Spans live in React state and render through `style`. Written imperatively
+        they were erased on every render, because these blocks already own a
+        `style` prop for their `order`.
+     2. The fine track is applied ONLY once spans exist (`masonry` below). A fixed
+        4px auto-row does not grow to fit an unspanned item, so without this the
+        blocks all reserve one 4px row and pile onto row 1. Layout must never
+        DEPEND on this effect having run — with no spans it degrades to the plain
+        row grid, gaps and all.
+     3. +1 row of slack per block, so content that grows slightly between a resize
+        and the next solve overflows into spare track instead of the next block.
+
+     Measurement needs no reset pass: `items-start` means a block's height is its
+     CONTENT height whatever span it carries, so writing a span cannot change what
+     was just measured — which is what would otherwise make the observer loop. */
+  const masonryRef = useRef<HTMLDivElement>(null);
+  const [spans, setSpans] = useState<Record<string, number>>({});
+  const masonry = Object.keys(spans).length > 0;
+  useEffect(() => {
+    const root = masonryRef.current;
+    if (!root) return;
+    const ROW = 4;
+    const mq = window.matchMedia('(min-width: 1280px)');
+
+    const solve = () => {
+      const blocks = Array.from(root.querySelectorAll('[data-home-block]')) as HTMLElement[];
+      // Below the grid breakpoint it is a plain flex column; drop every span so
+      // none of this can leak into the stacked mobile layout.
+      if (!mq.matches) {
+        setSpans(prev => (Object.keys(prev).length === 0 ? prev : {}));
+        return;
+      }
+      const next: Record<string, number> = {};
+      for (const el of blocks) {
+        const id = el.dataset.homeBlock;
+        if (!id) continue;
+        const h = el.getBoundingClientRect().height;
+        if (h <= 0) continue; // display:none / not yet laid out — leave it unspanned
+        // Row gap is 0 (see the container); the visual gap is the block's own
+        // margin-bottom, so it has to be inside the reserved track or the next
+        // block lands on top of it.
+        const mb = parseFloat(getComputedStyle(el).marginBottom) || 0;
+        next[id] = Math.max(1, Math.ceil((h + mb) / ROW) + 1);
+      }
+      setSpans(prev => {
+        const keys = Object.keys(next);
+        if (keys.length === Object.keys(prev).length && keys.every(k => prev[k] === next[k])) {
+          return prev;
+        }
+        return next;
+      });
+    };
+
+    solve();
+    // Heights move constantly here: deferred widgets post-load, sections collapse,
+    // countdowns retick. One observer over the container plus each block catches
+    // all of it; the callback runs after layout and before paint, so a corrected
+    // span usually lands in the same frame the content grew in.
+    const ro = new ResizeObserver(solve);
+    ro.observe(root);
+    for (const el of Array.from(root.querySelectorAll('[data-home-block]'))) ro.observe(el);
+    mq.addEventListener('change', solve);
+    return () => {
+      ro.disconnect();
+      mq.removeEventListener('change', solve);
+    };
+    // `layout` and `hydrated` are the only things that change block MEMBERSHIP.
+    // hydrated matters most: the grid is not mounted on the first render (the
+    // skeleton is), so without it the effect bails on a null ref and never re-runs.
+  }, [layout, hydrated]);
+
   if (!hydrated) return <HomeSkeleton />;
 
   const filteredSessions =
@@ -743,6 +831,17 @@ export function HomeContent({
     const i = layout.order.indexOf(id);
     return (i < 0 ? 99 : i) * 2;
   };
+  // Every direct grid child goes through this: the customise `order`, the masonry
+  // span, and the id the solver measures against, in one place. A child WITHOUT
+  // data-home-block would never get a span and would overlap its neighbours.
+  const blockProps = (id: string, order: number) => ({
+    'data-home-block': id,
+    style: {
+      order,
+      gridRowEnd: spans[id] ? `span ${spans[id]}` : undefined,
+    } as React.CSSProperties,
+  });
+
   const isHidden = (id: HomeElementId): boolean => layout.hidden.includes(id);
   const isCollapsed = (id: HomeElementId): boolean => layout.collapsed.includes(id);
 
@@ -765,7 +864,12 @@ export function HomeContent({
           Uniform spans also keep auto-placement hole-free under any order. The
           chyron's full-bleed negative margins are only safe while it spans the
           whole row; narrow it and they bleed into the neighbouring column. */}
-      <div className="flex flex-col xl:grid xl:grid-cols-12 xl:gap-x-8 xl:items-start 3xl:gap-x-10">
+      <div
+        ref={masonryRef}
+        className={`flex flex-col xl:grid xl:grid-cols-12 xl:gap-x-8 xl:gap-y-0 xl:items-start 3xl:gap-x-10${
+          masonry ? ' xl:auto-rows-[4px] xl:grid-flow-row-dense' : ''
+        }`}
+      >
       {/* ── Jump-to launcher — fixed quick-access nav, pinned directly under the
              chyron hero (order 1 sits between the chyron at 0 and the first
              controllable block at ≥2). Shown to everyone; all content is public. ── */}
@@ -773,7 +877,7 @@ export function HomeContent({
           section-sized margins above and below it read as an orphan strip
           (operator 2026-07-28). Small gap + the same surface panel as the
           sections below binds it to the page. */}
-      <div className="mb-8 md:mb-10 xl:col-span-12" style={{ order: 1 }}>
+      <div className="mb-8 xl:col-span-12" {...blockProps('launcher', 1)}>
         <HomeLauncher series={series} />
       </div>
       {/* ── Chyron — the broadcast strip. Live takes over; otherwise the lead
@@ -783,8 +887,8 @@ export function HomeContent({
       <section
         aria-label={liveItems.length > 0 ? 'Live now' : 'Lead story and up next'}
         data-tour="chyron"
-        style={{ order: orderOf('chyron') }}
-        className="relative mb-4 md:mb-5 border-t border-b-2 border-border-strong bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:col-span-12"
+        {...blockProps('chyron', orderOf('chyron'))}
+        className="relative mb-8 border-t border-b-2 border-border-strong bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:col-span-12"
       >
         {/* Series-coloured rail — scales the schedule row's 3px spine up to the
             full-bleed hero band, so the dominant block is identified by series
@@ -1155,7 +1259,7 @@ export function HomeContent({
       {/* ── Two columns on desktop: schedule | wire. Stacked on mobile,
              schedule first. No tabs anywhere. ── */}
       {!isHidden('schedule') && (
-        <section aria-label="This week's sessions" data-tour="week" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('schedule') }}>
+        <section aria-label="This week's sessions" data-tour="week" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('schedule', orderOf('schedule'))}>
           <CollapsibleSectionHead
             title="This week"
             sub={`${weekItems.length} sessions · ${tz}`}
@@ -1306,7 +1410,7 @@ export function HomeContent({
       )}
 
       {!isHidden('news') && (
-        <section aria-label="Latest news" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('news') }}>
+        <section aria-label="Latest news" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('news', orderOf('news'))}>
           <CollapsibleSectionHead
             title="Paddock wire"
             sub="motorsport.com"
@@ -1468,7 +1572,7 @@ export function HomeContent({
              customise gallery). The latest published posts, defer-fetched when
              the block is shown + expanded. ── */}
       {!isHidden('from-the-blog') && (
-        <section aria-label="From the blog" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('from-the-blog') }}>
+        <section aria-label="From the blog" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('from-the-blog', orderOf('from-the-blog'))}>
           <CollapsibleSectionHead
             title="From the blog"
             sub="long-reads"
@@ -1531,7 +1635,7 @@ export function HomeContent({
 
       {/* ── CHAMPIONSHIP LEADER — opt-in. Who leads each series you follow. ── */}
       {!isHidden('championship-leader') && (
-        <section aria-label="Championship leader" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('championship-leader') }}>
+        <section aria-label="Championship leader" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('championship-leader', orderOf('championship-leader'))}>
           <CollapsibleSectionHead
             title="Championship leader"
             sub="who's on top"
@@ -1586,7 +1690,7 @@ export function HomeContent({
       {/* ── STANDINGS SNAPSHOT — opt-in. Top 5 of one chosen series (picked in
              Customise; defaults to the first one with data). ── */}
       {!isHidden('standings-snapshot') && (
-        <section aria-label="Standings snapshot" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('standings-snapshot') }}>
+        <section aria-label="Standings snapshot" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('standings-snapshot', orderOf('standings-snapshot'))}>
           {(() => {
             const brief =
               standings && standings.length > 0
@@ -1645,7 +1749,7 @@ export function HomeContent({
              change per eligible series (F1/F3/MotoGP), from the same trend the
              Standings tab charts. Fetch is deferred to when the block is shown. ── */}
       {!isHidden('standings-movers') && (
-        <section aria-label="Standings movers" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('standings-movers') }}>
+        <section aria-label="Standings movers" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('standings-movers', orderOf('standings-movers'))}>
           <CollapsibleSectionHead
             title="Standings movers"
             sub="since the last race"
@@ -1713,7 +1817,7 @@ export function HomeContent({
              declared parts per team (curated from the FIA Car Presentation doc),
              linking to the weekend's full Upgrades section. ── */}
       {!isHidden('f1-upgrades') && (
-        <section aria-label="F1 car upgrades" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('f1-upgrades') }}>
+        <section aria-label="F1 car upgrades" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('f1-upgrades', orderOf('f1-upgrades'))}>
           <CollapsibleSectionHead
             title="F1 car upgrades"
             sub="latest weekend"
@@ -1772,7 +1876,7 @@ export function HomeContent({
           })
           .slice(0, cdCount);
         return (
-          <section aria-label="Series countdowns" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('series-countdowns') }}>
+          <section aria-label="Series countdowns" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('series-countdowns', orderOf('series-countdowns'))}>
             <CollapsibleSectionHead
               title="Series countdowns"
               sub={`${rows.length} series`}
@@ -1823,7 +1927,7 @@ export function HomeContent({
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .slice(0, sjmCount);
         return (
-          <section aria-label="Series results" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('series-just-missed') }}>
+          <section aria-label="Series results" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('series-just-missed', orderOf('series-just-missed'))}>
             <CollapsibleSectionHead
               title="Series results"
               sub="latest per series"
@@ -1881,7 +1985,7 @@ export function HomeContent({
         const item = upcomingItems.find(i => circuitLayoutByUid?.[i.session.uid]);
         const layout = item ? circuitLayoutByUid?.[item.session.uid] : undefined;
         return (
-          <section aria-label="Circuit map" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('track-layout') }}>
+          <section aria-label="Circuit map" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('track-layout', orderOf('track-layout'))}>
             <CollapsibleSectionHead
               title="Circuit map"
               sub={layout ? layout.name : 'next round'}
@@ -1954,7 +2058,7 @@ export function HomeContent({
       {/* ── PADDOCK CHATTER (threads) — opt-in. The newest approved community
              threads, defer-fetched when shown + expanded. Links into /threads. ── */}
       {!isHidden('threads') && (
-        <section aria-label="Paddock chatter" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('threads') }}>
+        <section aria-label="Paddock chatter" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('threads', orderOf('threads'))}>
           <CollapsibleSectionHead
             title="Paddock chatter"
             sub="latest threads"
@@ -2019,7 +2123,7 @@ export function HomeContent({
       {/* ── YOUR BETS & CREDITS — opt-in, signed-in only. Open bets + balance +
              next market closing, CTA to /play. Anon → a subtle sign-in nudge. ── */}
       {!isHidden('bets') && (
-        <section aria-label="Your bets and credits" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('bets') }}>
+        <section aria-label="Your bets and credits" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('bets', orderOf('bets'))}>
           <CollapsibleSectionHead
             title="Your bets & credits"
             sub={bets?.signedIn ? `${bets.balance.toLocaleString()} cr` : 'play money'}
@@ -2107,7 +2211,7 @@ export function HomeContent({
              (with their rank) + a friends summary, linking into /social. Anon →
              a subtle sign-in nudge. Empty → a join-a-league CTA. ── */}
       {!isHidden('social') && (
-        <section aria-label="Your leagues and friends" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('social') }}>
+        <section aria-label="Your leagues and friends" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('social', orderOf('social'))}>
           <CollapsibleSectionHead
             title="Leagues & friends"
             sub={social?.signedIn ? `${social.friends.count} friend${social.friends.count === 1 ? '' : 's'}` : 'play money'}
@@ -2181,7 +2285,7 @@ export function HomeContent({
       {/* ── LATEST DECODED (F1) — opt-in. The most recent past F1 round's
              qualifying (→ Decoder, pole + P2 codes) and race (→ Race Story). ── */}
       {!isHidden('latest-decoded') && (
-        <section aria-label="Latest Analysis" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('latest-decoded') }}>
+        <section aria-label="Latest Analysis" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('latest-decoded', orderOf('latest-decoded'))}>
           <CollapsibleSectionHead
             title="Latest Analysis"
             sub={decoded ? decoded.gp : 'F1 analysis'}
@@ -2253,7 +2357,7 @@ export function HomeContent({
       {!isHidden('where-to-watch') && (() => {
         const rows = upcomingItems.filter(i => i.watch).slice(0, wtwCount);
         return (
-          <section aria-label="Where to watch" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('where-to-watch') }}>
+          <section aria-label="Where to watch" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('where-to-watch', orderOf('where-to-watch'))}>
             <CollapsibleSectionHead
               title="Where to watch"
               sub={`${rows.length} session${rows.length === 1 ? '' : 's'}`}
@@ -2308,7 +2412,7 @@ export function HomeContent({
         const w = item ? weatherByUid?.[item.session.uid] : undefined;
         const wl = w ? weatherLabel(w.weatherCode) : null;
         return (
-          <section aria-label="Next-race weather" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('next-weather') }}>
+          <section aria-label="Next-race weather" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('next-weather', orderOf('next-weather'))}>
             <CollapsibleSectionHead
               title="Next-race weather"
               sub={item ? item.seriesName : 'next round'}
@@ -2367,7 +2471,7 @@ export function HomeContent({
              drivers from the curated lineups, deep-linked into /drivers and
              /teams. Defer-fetched (edge-cached + time-rotated route). ── */}
       {!isHidden('driver-spotlight') && (
-        <section aria-label="Driver spotlight" className="mb-8 md:mb-10 border border-border bg-surface p-4 md:p-5 xl:col-span-6" style={{ order: orderOf('driver-spotlight') }}>
+        <section aria-label="Driver spotlight" className="mb-8 border border-border bg-surface p-4 md:p-5 xl:col-span-6" {...blockProps('driver-spotlight', orderOf('driver-spotlight'))}>
           <CollapsibleSectionHead
             title="Driver spotlight"
             sub="from your series"
