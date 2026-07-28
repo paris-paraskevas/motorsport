@@ -42,6 +42,10 @@ interface HomeBlogItem {
   summary: string;
   seriesSlug: string | null;
   publishedAt: string | null;
+  /** Curated cover URL, licence-gated by normalizeHeroImage (lib/blog.ts).
+      Usually null — the lead-story card falls back to its gradient. Mirrors
+      HomeBlogItem in app/(app)/api/home/from-the-blog/route.ts. */
+  heroImage: string | null;
 }
 
 interface HomeStandingsItem {
@@ -349,11 +353,17 @@ export function HomeContent({
   // FROM THE BLOG — same defer-fetch shape as just-missed: the latest published
   // posts load only when the (opt-in, default-hidden) block is both shown and
   // expanded, so a home that never enables it pays nothing for it.
+  // This ONE response also feeds the chyron's lead-story card, which ships
+  // visible by default while this widget is default-hidden — hence the gate is
+  // "chyron shown OR widget shown + expanded", never two fetches of the same
+  // endpoint.
   const [blogPosts, setBlogPosts] = useState<HomeBlogItem[] | null>(null);
   const blogHidden = layout.hidden.includes('from-the-blog');
   const blogCollapsed = layout.collapsed.includes('from-the-blog');
+  const chyronHidden = layout.hidden.includes('chyron');
+  const needBlog = !chyronHidden || !(blogHidden || blogCollapsed);
   useEffect(() => {
-    if (blogHidden || blogCollapsed) return;
+    if (!needBlog) return;
     let alive = true;
     fetch('/api/home/from-the-blog')
       .then(r => (r.ok ? r.json() : []))
@@ -366,7 +376,7 @@ export function HomeContent({
     return () => {
       alive = false;
     };
-  }, [blogHidden, blogCollapsed]);
+  }, [needBlog]);
 
   // STANDINGS WIDGETS (championship-leader + standings-snapshot) — ONE fetch for
   // both, defer-loaded only when at least one is shown + expanded. The route
@@ -682,6 +692,31 @@ export function HomeContent({
   const nextWeather = next ? weatherByUid?.[next.session.uid] : undefined;
   const nextW = nextWeather ? weatherLabel(nextWeather.weatherCode) : null;
 
+  // LEAD STORY — the newest published post fronts the band and the countdown
+  // demotes to the strip beneath it (operator brief 2026-07-28). Reads the
+  // from-the-blog payload already fetched above: no new route, no new type.
+  // `blogPosts === null` is still loading; `[]` means no posts OR a failed fetch
+  // (the catch normalises both to []) and falls through to the blog-invite copy,
+  // so the hero can never render as an empty box.
+  const lead = blogPosts?.[0] ?? null;
+  const leadSeries = lead?.seriesSlug
+    ? series.find(s => s.slug === lead.seriesSlug) ?? null
+    : null;
+  // Fills (the cover wash, the foot rule) take the raw series colour — the
+  // sanctioned use; the tag's TEXT goes through seriesInk. A post with no series
+  // (or one we don't carry) falls back to the brand token, like the rail below.
+  const leadAccent = leadSeries?.color ?? 'var(--brand)';
+  const leadTagStyle = leadSeries
+    ? { color: seriesInk(leadSeries.color), borderColor: seriesInk(leadSeries.color) }
+    : undefined;
+  const leadTag = leadSeries?.name ?? 'Paddock';
+  const leadHref = lead ? `/blog/${lead.slug}` : '/blog';
+  const leadTitle = lead ? lead.title : 'Long-reads from the paddock';
+  const leadSummary = lead
+    ? lead.summary
+    : 'Previews, race reports and explainers from the Paddock desk.';
+  const leadCta = lead ? 'Read article' : 'Open the blog';
+
   // Home-layout customization: each top-level block gets a CSS `order` from the
   // user's prefs (so the DEFAULT order renders identically), and hidden blocks
   // are dropped. Applied on a flex column below.
@@ -720,11 +755,12 @@ export function HomeContent({
       <div className="mb-14 md:mb-20 xl:col-span-12" style={{ order: 1 }}>
         <HomeLauncher series={series} />
       </div>
-      {/* ── Chyron — the broadcast strip. Live takes over; otherwise the next
-             session with a ticking countdown. ── */}
+      {/* ── Chyron — the broadcast strip. Live takes over; otherwise the lead
+             story fronts it and the next session rides beneath as a compact
+             countdown strip. ── */}
       {!isHidden('chyron') && (
       <section
-        aria-label={liveItems.length > 0 ? 'Live now' : 'Up next'}
+        aria-label={liveItems.length > 0 ? 'Live now' : 'Lead story and up next'}
         data-tour="chyron"
         style={{ order: orderOf('chyron') }}
         className="relative mb-14 md:mb-20 border-t border-b-2 border-border-strong bg-surface -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 xl:col-span-12"
@@ -739,6 +775,7 @@ export function HomeContent({
           style={{ backgroundColor: liveItems[0]?.color ?? next?.color ?? 'var(--brand)' }}
         />
         {liveItems.length > 0 ? (
+          <>
           <div className="divide-y divide-border">
             {liveItems.map(item => (
               <div key={`${item.seriesSlug}-${item.session.uid}`} className={chyronPad}>
@@ -787,136 +824,267 @@ export function HomeContent({
               </div>
             ))}
           </div>
-        ) : next ? (
-          <div className={chyronPad}>
-          <Link
-            href={hrefFor(next)}
-            className="group flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6"
-          >
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-2">
-                <span className="inline-flex items-center bg-brand-fill px-2 py-1 font-mono text-[11px] leading-none uppercase tracking-[0.2em] font-bold text-tint-contrast">
-                  Up next
+          {/* Live outranks editorial: while anything is on track the lead story
+              collapses to one subordinate line, so the rows above stay the
+              dominant thing in the band. */}
+          {lead && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border py-3">
+              <span className="font-mono text-[10px] leading-none font-semibold uppercase tracking-[0.14em] text-text-faint">
+                Lead story
+              </span>
+              <Link
+                href={`/blog/${lead.slug}`}
+                className="inline-flex min-w-0 flex-1 items-center gap-1.5 text-text hover:text-brand transition-colors duration-(--duration-fast)"
+              >
+                <span className="min-w-0 truncate text-sm font-semibold tracking-tight">
+                  {lead.title}
                 </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: next.color }}
-                  />
-                  <span
-                    className="font-mono text-[11px] uppercase tracking-[0.14em] font-semibold"
-                    style={{ color: seriesInk(next.color) }}
-                  >
-                    {next.seriesName}
-                  </span>
-                </span>
-                {next.session.location && (
-                  <span className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
-                    <MapPin size={11} aria-hidden="true" />
-                    {next.session.location.split(',')[0].trim()}
-                  </span>
-                )}
-              </div>
-              <h2 className="font-display text-[clamp(2.5rem,7vw,3.75rem)] font-extrabold uppercase tracking-wide text-text leading-[0.9] text-balance">
-                {next.session.title}
-                <span className="text-brand">.</span>
-              </h2>
-              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] leading-tight uppercase tracking-[0.12em] text-text-muted">
-                <span className="tnum">
-                  {next.session.dateOnly
-                    ? 'This weekend · time TBC'
-                    : `${next.session.start.toLocaleDateString('en-GB', {
-                        weekday: 'short',
-                        timeZone: 'UTC',
-                      })} ${timeHM(next.session.start, clock)} ${tz}`}
-                </span>
-                {nextWeather && nextW && (
-                  <span className="tnum">
-                    {nextW.emoji} {Math.round(nextWeather.maxC)}°/
-                    {Math.round(nextWeather.minC)}°
-                    {nextWeather.precipProb >= 30 &&
-                      ` · ${Math.round(nextWeather.precipProb)}% rain`}
-                  </span>
-                )}
-              </div>
-            </div>
-            {!next.session.dateOnly && (
-              <div className="shrink-0 text-left md:text-right md:min-w-[11ch]">
-                <div className="text-[clamp(2.75rem,10vw,4.5rem)] font-bold leading-none text-text tnum">
-                  <Countdown to={next.session.start} initialNow={now} />
-                </div>
-                <div className="mt-2 inline-flex items-center gap-1 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
-                  {roundFor(next.seriesSlug, next.session.uid) ? 'Open weekend' : 'Open series'}
-                  <ArrowUpRight size={12} aria-hidden="true" />
-                </div>
-              </div>
-            )}
-          </Link>
-          {heroUpNext.length > 0 && (
-            <div className="mt-6 border-t border-border pt-3">
-              <div className="mb-2 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint">
-                Also today
-              </div>
-              <div className="flex flex-col gap-2.5">
-                {heroUpNext.map(item => (
-                  <Link
-                    key={`${item.seriesSlug}-${item.session.uid}`}
-                    href={hrefFor(item)}
-                    className="group flex items-center gap-2 min-w-0"
-                  >
-                    <span
-                      className="w-1.5 h-1.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span
-                      className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold"
-                      style={{ color: seriesInk(item.color) }}
-                    >
-                      {item.seriesName}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-text">
-                      {item.session.title}
-                    </span>
-                    <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
-                      {timeHM(item.session.start, clock)} {tz}
-                    </span>
-                    <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">
-                      <Countdown to={item.session.start} initialNow={now} />
-                    </span>
-                  </Link>
-                ))}
-              </div>
+                <ArrowUpRight size={12} aria-hidden="true" className="shrink-0 opacity-60" />
+              </Link>
             </div>
           )}
-          {next.watch && (
-            <a
-              href={next.watch.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
-            >
-              <Tv size={12} aria-hidden="true" />
-              Watch on {next.watch.service}
-              <ArrowUpRight size={12} aria-hidden="true" className="opacity-60" />
-            </a>
-          )}
-          </div>
+          </>
         ) : (
-          <div className="py-4 text-sm text-text-faint">
-            {isEmptyFromFilter ? (
-              <>
-                No upcoming sessions in your followed series.{' '}
-                <Link
-                  href="/settings"
-                  className="text-text-muted underline underline-offset-2 hover:text-text"
+          <div className={chyronPad}>
+          {/* ── LEAD STORY — the home's front page (operator brief 2026-07-28:
+                 editorial takes prime real estate, the countdown demotes to the
+                 strip below). The cover is the post's own `heroImage` when it has
+                 one — operator-curated and licence-gated by normalizeHeroImage
+                 (lib/blog.ts), the only third-party art in this app cleared for
+                 display — and the series-colour gradient otherwise. Most posts
+                 carry no cover, so the gradient is the common path, not the edge.
+                 Four paths, all clean: loading (skeleton), a post with a cover, a
+                 post without, and no post at all (blog-invite copy, so the hero
+                 is never an empty box). ── */}
+          {blogPosts === null ? (
+            <div
+              aria-hidden="true"
+              className="grid gap-5 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center md:gap-8"
+            >
+              <div className="aspect-[16/10] w-full animate-pulse motion-reduce:animate-none border border-border bg-surface-elevated" />
+              <div className="space-y-3">
+                <div className="h-3 w-24 animate-pulse motion-reduce:animate-none bg-surface-elevated" />
+                <div className="h-9 w-full animate-pulse motion-reduce:animate-none bg-surface-elevated" />
+                <div className="h-9 w-2/3 animate-pulse motion-reduce:animate-none bg-surface-elevated/60" />
+                <div className="h-10 w-36 animate-pulse motion-reduce:animate-none bg-surface-elevated/60" />
+              </div>
+            </div>
+          ) : (
+            <div className="group grid gap-5 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center md:gap-8">
+              {/* Cover panel — the series colour rising out of a thick foot rule,
+                  the wire cards' language at hero scale. The headline sits in the
+                  SECOND column, never on the wash: over the strong end of the mix
+                  its contrast would ride on the series hue and go muddy on the
+                  two light themes. */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden border border-border bg-surface-elevated">
+                {lead?.heroImage ? (
+                  /* next/image is pointless here — next.config.ts sets
+                     images.unoptimized (the Workers runtime has no optimizer), so
+                     this is a raw fetch either way. Lazy + async-decode keeps it
+                     off the critical path; the gradient below stays as the
+                     backdrop, so a failed load degrades to it rather than a hole. */
+                  <img
+                    src={lead.heroImage}
+                    alt={`Cover image for “${lead.title}”`}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.03]"
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.03]"
+                    style={{
+                      backgroundImage: `linear-gradient(to top, color-mix(in srgb, ${leadAccent} 62%, transparent), color-mix(in srgb, ${leadAccent} 16%, transparent) 48%, transparent)`,
+                    }}
+                  />
+                )}
+                <span
+                  className={`absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate border px-2 py-1 font-mono text-[10px] leading-none font-bold uppercase tracking-[0.2em]${leadSeries ? '' : ' border-brand/40 text-brand'}`}
+                  style={leadTagStyle}
                 >
-                  Manage
+                  {leadTag}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 bottom-0 h-1.5"
+                  style={{ backgroundColor: leadAccent }}
+                />
+              </div>
+              <div className="min-w-0">
+                <div className="mb-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                  <span className="inline-flex items-center bg-brand-fill px-2 py-1 font-mono text-[11px] leading-none uppercase tracking-[0.2em] font-bold text-tint-contrast">
+                    Lead story
+                  </span>
+                  {lead?.publishedAt && (
+                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum">
+                      {relativeAgo(new Date(lead.publishedAt), now)}
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-display text-[clamp(1.75rem,4.2vw,3rem)] font-extrabold tracking-tight text-text leading-[1.03] text-balance">
+                  <Link
+                    href={leadHref}
+                    className="hover:text-brand transition-colors duration-(--duration-fast)"
+                  >
+                    {leadTitle}
+                  </Link>
+                </h2>
+                {leadSummary && (
+                  <p className="mt-2.5 max-w-prose text-sm md:text-base leading-snug text-text-muted line-clamp-2">
+                    {leadSummary}
+                  </p>
+                )}
+                <Link
+                  href={leadHref}
+                  className="mt-4 inline-flex items-center gap-1.5 bg-brand-fill px-4 py-2.5 font-mono text-[11px] leading-none font-bold uppercase tracking-[0.16em] text-tint-contrast transition-opacity duration-(--duration-fast) hover:opacity-90"
+                >
+                  {leadCta}
+                  <ArrowUpRight size={13} aria-hidden="true" />
                 </Link>
-                .
-              </>
-            ) : (
-              'Nothing scheduled yet.'
+              </div>
+            </div>
+          )}
+          {next ? (
+            <>
+            {/* UP NEXT — demoted from the old 4.5rem hero countdown to one compact
+                strip. Every fact the hero carried survives (series, session,
+                local time, venue, forecast, broadcast); only the type scale drops,
+                so the lead story above clearly outranks it. The session title and
+                the affordance are separate anchors: the old hero was one big link,
+                which a card that owns its own links can no longer nest inside. */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border border-border bg-surface-elevated px-3 py-2.5">
+              <span className="inline-flex items-center bg-brand-fill px-2 py-1 font-mono text-[10px] leading-none uppercase tracking-[0.2em] font-bold text-tint-contrast">
+                Up next
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  aria-hidden="true"
+                  className="w-2 h-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: next.color }}
+                />
+                <span
+                  className="font-mono text-[10px] uppercase tracking-[0.14em] font-semibold"
+                  style={{ color: seriesInk(next.color) }}
+                >
+                  {next.seriesName}
+                </span>
+              </span>
+              <Link
+                href={hrefFor(next)}
+                className="inline-flex min-w-0 basis-full items-center gap-1.5 text-text hover:text-brand transition-colors duration-(--duration-fast) md:basis-auto md:flex-1"
+              >
+                <span className="min-w-0 truncate text-sm font-semibold tracking-tight">
+                  {next.session.title}
+                </span>
+                <ArrowUpRight size={12} aria-hidden="true" className="shrink-0 opacity-60" />
+              </Link>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
+                {next.session.dateOnly
+                  ? 'This weekend · time TBC'
+                  : `${next.session.start.toLocaleDateString('en-GB', {
+                      weekday: 'short',
+                      timeZone: 'UTC',
+                    })} ${timeHM(next.session.start, clock)} ${tz}`}
+              </span>
+              {next.session.location && (
+                <span className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+                  <MapPin size={11} aria-hidden="true" />
+                  {next.session.location.split(',')[0].trim()}
+                </span>
+              )}
+              {nextWeather && nextW && (
+                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
+                  {nextW.emoji} {Math.round(nextWeather.maxC)}°/
+                  {Math.round(nextWeather.minC)}°
+                  {nextWeather.precipProb >= 30 &&
+                    ` · ${Math.round(nextWeather.precipProb)}% rain`}
+                </span>
+              )}
+              {!next.session.dateOnly && (
+                <span className="ml-auto font-mono text-sm md:text-base font-bold leading-none text-text tnum">
+                  <Countdown to={next.session.start} initialNow={now} />
+                </span>
+              )}
+              {next.watch ? (
+                <a
+                  href={next.watch.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 border border-border-strong px-2.5 py-1.5 font-mono text-[10px] leading-none font-semibold uppercase tracking-[0.14em] text-text-muted hover:text-brand transition-colors duration-(--duration-fast)"
+                >
+                  <Tv size={12} aria-hidden="true" />
+                  Watch live
+                  <ArrowUpRight size={11} aria-hidden="true" className="opacity-60" />
+                </a>
+              ) : (
+                <Link
+                  href={hrefFor(next)}
+                  className="inline-flex items-center gap-1.5 border border-border-strong px-2.5 py-1.5 font-mono text-[10px] leading-none font-semibold uppercase tracking-[0.14em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+                >
+                  {roundFor(next.seriesSlug, next.session.uid) ? 'Open weekend' : 'Open series'}
+                  <ArrowUpRight size={11} aria-hidden="true" />
+                </Link>
+              )}
+            </div>
+            {heroUpNext.length > 0 && (
+              <div className="mt-3">
+                <div className="mb-2 font-mono text-[10px] leading-none uppercase tracking-[0.12em] text-text-faint">
+                  Also today
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  {heroUpNext.map(item => (
+                    <Link
+                      key={`${item.seriesSlug}-${item.session.uid}`}
+                      href={hrefFor(item)}
+                      className="group flex items-center gap-2 min-w-0"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="w-1.5 h-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span
+                        className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold"
+                        style={{ color: seriesInk(item.color) }}
+                      >
+                        {item.seriesName}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-text">
+                        {item.session.title}
+                      </span>
+                      <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted tnum">
+                        {timeHM(item.session.start, clock)} {tz}
+                      </span>
+                      <span className="shrink-0 font-mono text-sm font-semibold tnum text-text">
+                        <Countdown to={item.session.start} initialNow={now} />
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
+            </>
+          ) : (
+            /* No session to count down to — the strip's slot carries the reason
+               instead, so the band never ends on a dangling lead card. */
+            <div className="mt-6 border border-border bg-surface-elevated px-3 py-2.5 text-sm text-text-faint">
+              {isEmptyFromFilter ? (
+                <>
+                  No upcoming sessions in your followed series.{' '}
+                  <Link
+                    href="/settings"
+                    className="text-text-muted underline underline-offset-2 hover:text-text"
+                  >
+                    Manage
+                  </Link>
+                  .
+                </>
+              ) : (
+                'Nothing scheduled yet.'
+              )}
+            </div>
+          )}
           </div>
         )}
       </section>
@@ -2176,8 +2344,8 @@ export function HomeContent({
         stops={[
           {
             selector: '[data-tour="chyron"]',
-            title: 'Live, or next up',
-            body: 'This strip is the broadcast chyron: when a session is on track it takes over with a live marker; otherwise it counts down to the next one, in your time zone.',
+            title: 'The lead story, live and next up',
+            body: 'The top of your home leads with our latest long-read. When a session is on track it takes over with a live marker; otherwise the strip underneath counts down to the next one, in your time zone.',
           },
           {
             selector: '[data-tour="week"]',

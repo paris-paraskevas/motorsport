@@ -21,6 +21,11 @@ export interface HomeBlogItem {
   summary: string;
   seriesSlug: string | null;
   publishedAt: string | null;
+  /** Operator-curated cover URL, already licence-gated by normalizeHeroImage in
+      lib/blog.ts (absolute https:// or root-relative only). Projected so the home
+      lead-story card can show real photography; null is the common case and the
+      card falls back to its series-colour gradient. */
+  heroImage: string | null;
 }
 
 export async function GET() {
@@ -31,6 +36,7 @@ export async function GET() {
     summary: p.summary,
     seriesSlug: p.seriesSlug,
     publishedAt: p.publishedAt,
+    heroImage: p.heroImage,
   }));
   return NextResponse.json(items, {
     headers: {
