@@ -36,10 +36,11 @@ LEFT ALONE ON PURPOSE (operator: leave the prose) — see the suggestion list ha
   and the omissions (Bearman's blue-flag penalty, Leclerc's fastest lap, the race-wide blue-flag
   GPS failure that explains the Sainz contact).
 
-STILL UNVERIFIED — confirm before publishing (RULE #1):
-  - "At turn 5 he cleared Lindblad round the outside": not in our on-track overtake feed (which is
-    not exhaustive), so neither confirmed nor refuted.
-  - "this incident delayed Piastri's pit stop by a lap": causation not verifiable from timing.
+OPERATOR-CONFIRMED 2026-07-27 (were unverifiable from our data; the operator watched the race and
+confirmed both, so they stand as written):
+  - "At turn 5 he cleared Lindblad round the outside": absent from our on-track overtake feed, which
+    is not exhaustive.
+  - "this incident delayed Piastri's pit stop by a lap": causation not derivable from timing.
 -->
 
 ## From pole, but not into the lead
