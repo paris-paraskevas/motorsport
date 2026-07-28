@@ -701,9 +701,19 @@ export function HomeContent({
   // `blogPosts === null` is still loading; `[]` means no posts OR a failed fetch
   // (the catch normalises both to []) and falls through to the blog-invite copy,
   // so the hero can never render as an empty box.
-  const lead = blogPosts?.[0] ?? null;
-  const leadSeries = lead?.seriesSlug
-    ? series.find(s => s.slug === lead.seriesSlug) ?? null
+  // Source cascade, because `publishedPosts()` (lib/blog.ts:170) reads the
+  // Supabase `post` table ONLY: the three posts on /blog are legacy MDX files in
+  // content/posts, so on a day with no DB post the payload is [] and the hero had
+  // nothing to lead with. Falling back to the top wire story keeps the band a
+  // real front page — and the wire now carries a photograph, so this is also the
+  // path that guarantees the hero is never art-less. Editorial still outranks the
+  // wire when a post exists.
+  const leadPost = blogPosts?.[0] ?? null;
+  const leadWire = !leadPost && topNews.length > 0 ? topNews[0] : null;
+  const lead = leadPost;
+  const leadSeriesSlug = leadPost?.seriesSlug ?? leadWire?.seriesSlug ?? null;
+  const leadSeries = leadSeriesSlug
+    ? series.find(s => s.slug === leadSeriesSlug) ?? null
     : null;
   // Fills (the cover wash, the foot rule) take the raw series colour — the
   // sanctioned use; the tag's TEXT goes through seriesInk. A post with no series
@@ -713,12 +723,16 @@ export function HomeContent({
     ? { color: seriesInk(leadSeries.color), borderColor: seriesInk(leadSeries.color) }
     : undefined;
   const leadTag = leadSeries?.name ?? 'Paddock';
-  const leadHref = lead ? `/blog/${lead.slug}` : '/blog';
-  const leadTitle = lead ? lead.title : 'Long-reads from the paddock';
-  const leadSummary = lead
-    ? lead.summary
-    : 'Previews, race reports and explainers from the Paddock desk.';
-  const leadCta = lead ? 'Read article' : 'Open the blog';
+  // The wire lead leaves the site, so it needs the same target/rel the cards use.
+  const leadExternal = !leadPost && Boolean(leadWire);
+  const leadHref = leadPost ? `/blog/${leadPost.slug}` : leadWire ? leadWire.link : '/blog';
+  const leadImage = leadPost?.heroImage ?? leadWire?.image ?? null;
+  const leadTitle = leadPost?.title ?? leadWire?.title ?? 'Long-reads from the paddock';
+  const leadSummary =
+    leadPost?.summary ??
+    leadWire?.description ??
+    'Previews, race reports and explainers from the Paddock desk.';
+  const leadCta = leadPost ? 'Read article' : leadWire ? 'Read the story' : 'Open the blog';
 
   // Home-layout customization: each top-level block gets a CSS `order` from the
   // user's prefs (so the DEFAULT order renders identically), and hidden blocks
@@ -884,16 +898,17 @@ export function HomeContent({
                   its contrast would ride on the series hue and go muddy on the
                   two light themes. */}
               <div className="relative aspect-[16/10] w-full overflow-hidden border border-border bg-surface-elevated">
-                {lead?.heroImage ? (
-                  /* next/image is pointless here — next.config.ts sets
+                {leadImage ? (
+                  /* A post's own cover, or the wire lead's feed thumbnail.
+                     next/image is pointless here — next.config.ts sets
                      images.unoptimized (the Workers runtime has no optimizer), so
-                     this is a raw fetch either way. Lazy + async-decode keeps it
-                     off the critical path; the gradient below stays as the
-                     backdrop, so a failed load degrades to it rather than a hole. */
+                     this is a raw fetch either way. eager, because this one IS the
+                     LCP element; the gradient stays behind it so a failed load
+                     degrades to the wash rather than a hole. */
                   <img
-                    src={lead.heroImage}
-                    alt={`Cover image for “${lead.title}”`}
-                    loading="lazy"
+                    src={leadImage}
+                    alt=""
+                    loading="eager"
                     decoding="async"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-(--duration-fast) motion-safe:group-hover:scale-[1.03]"
                   />
@@ -935,32 +950,60 @@ export function HomeContent({
                   <span className="inline-flex items-center bg-brand-fill px-2 py-1 font-mono text-[11px] leading-none uppercase tracking-[0.2em] font-bold text-tint-contrast">
                     Lead story
                   </span>
-                  {lead?.publishedAt && (
+                  {(leadPost?.publishedAt || leadWire) && (
                     <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum">
-                      {relativeAgo(new Date(lead.publishedAt), now)}
+                      {leadPost?.publishedAt
+                        ? relativeAgo(new Date(leadPost.publishedAt), now)
+                        : `${relativeAgo(new Date(leadWire!.pubDate), now)} · motorsport.com`}
                     </span>
                   )}
                 </div>
+                {/* A wire lead leaves the site, so it gets a plain <a> with
+                    target/rel; a post stays internal and keeps next/link
+                    prefetching. Same classes either way. */}
                 <h2 className="font-display text-[clamp(1.75rem,4.2vw,3rem)] font-extrabold tracking-tight text-text leading-[1.03] text-balance">
-                  <Link
-                    href={leadHref}
-                    className="hover:text-brand transition-colors duration-(--duration-fast)"
-                  >
-                    {leadTitle}
-                  </Link>
+                  {leadExternal ? (
+                    <a
+                      href={leadHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-brand transition-colors duration-(--duration-fast)"
+                    >
+                      {leadTitle}
+                    </a>
+                  ) : (
+                    <Link
+                      href={leadHref}
+                      className="hover:text-brand transition-colors duration-(--duration-fast)"
+                    >
+                      {leadTitle}
+                    </Link>
+                  )}
                 </h2>
                 {leadSummary && (
                   <p className="mt-2.5 max-w-prose text-sm md:text-base leading-snug text-text-muted line-clamp-2">
                     {leadSummary}
                   </p>
                 )}
-                <Link
-                  href={leadHref}
-                  className="mt-4 inline-flex items-center gap-1.5 bg-brand-fill px-4 py-2.5 font-mono text-[11px] leading-none font-bold uppercase tracking-[0.16em] text-tint-contrast transition-opacity duration-(--duration-fast) hover:opacity-90"
-                >
-                  {leadCta}
-                  <ArrowUpRight size={13} aria-hidden="true" />
-                </Link>
+                {leadExternal ? (
+                  <a
+                    href={leadHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-1.5 bg-brand-fill px-4 py-2.5 font-mono text-[11px] leading-none font-bold uppercase tracking-[0.16em] text-tint-contrast transition-opacity duration-(--duration-fast) hover:opacity-90"
+                  >
+                    {leadCta}
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </a>
+                ) : (
+                  <Link
+                    href={leadHref}
+                    className="mt-4 inline-flex items-center gap-1.5 bg-brand-fill px-4 py-2.5 font-mono text-[11px] leading-none font-bold uppercase tracking-[0.16em] text-tint-contrast transition-opacity duration-(--duration-fast) hover:opacity-90"
+                  >
+                    {leadCta}
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </Link>
+                )}
               </div>
             </div>
           )}
