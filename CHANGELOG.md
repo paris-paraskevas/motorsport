@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.245.0 — 2026-07-28
+
+### Added
+- **A preview Worker per developer, restoring the branch → URL → PR → prod shape the Vercel workflow had.** `wrangler.paris.jsonc` adds `motorsport-paris` on `paris.paddock-tracker.com`, fed by the `testing-paris` branch, alongside the existing `motorsport-testing` on `testing.paddock-tracker.com` fed by `testing`. Cloudflare cannot do this the way Vercel did: **Preview URLs are not generated for Workers that implement a Durable Object** (their docs), and `worker.ts:21` exports three, so a live URL requires a real Worker and one Worker serves one deployment — two devs pushing to a shared preview would silently overwrite each other. Verified live: version `b623abde`, `/` and `/blog` and `/authors/paris-paraskevas` all 200 with `x-nextjs-cache: HIT` at 0.42-0.50s, 987 cache entries populated, and `pk_live_` keys in the HTML (which is what makes sign-in work there and impossible on localhost, since a Clerk production instance binds its session cookie to the app domain).
+- **No DNS record was required.** The zone carries wildcard `*.paddock-tracker.com` A records, proxied — which is also why `testing` has always worked without a record of its own. Corollary worth knowing: a subdomain with **no** Worker route falls through that wildcard to the origin IPs, which still point at **Vercel**.
+- Scripts: `deploy:paris` (build + deploy + populate), `deploy:cf:paris` (the Workers Builds counterpart), `cf:populate:paris`, and `deploy:cf` — the production counterpart of `deploy:cf:testing`, for Workers Builds to run on `main`. Its populate is deliberately **fatal** where testing's is swallowed: prod traffic does re-warm the R2 cache, but a silent cold cache is what 0.241.0 existed to fix, so the build should go red and say so.
+
+### Changed
+- **`CONTRIBUTING.md` rewritten where it had become false.** It still told contributors "Vercel auto-creates a preview deploy; the URL lands as a PR comment", and pointed them at a `.env.example` that does not exist. Now documents the three branch/worker/URL tiers, what previews share with prod (the same Supabase, KV and R2 bucket — so app mutations on a preview write to **prod data**), what they deliberately cannot do (no `RESEND_API_KEY`, no `VAPID_PRIVATE_KEY`, no analytics keys, no cron triggers), the cherry-pick-from-workshop ritual, the `merge origin/main -X theirs` sync, and where every secret lives plus the three traps that have each cost a session.
+- Preview secrets mirror testing's **10**, not prod's 23, so a preview cannot email the operator, push to real subscribers, or pollute analytics.
+
 ## 0.244.2 — 2026-07-28
 
 ### Changed
