@@ -174,7 +174,10 @@ export async function publishedPosts(): Promise<BlogPost[]> {
       .from('post')
       .select(COLS)
       .eq('status', 'published')
-      .order('published_at', { ascending: false });
+      // nullsFirst:false — Postgres sorts NULLs FIRST on DESC, and a post flipped
+      // to published by hand keeps published_at null (only publishDuePosts stamps
+      // it), which pinned undated posts to the top of the feed.
+      .order('published_at', { ascending: false, nullsFirst: false });
     if (error || !data) return [];
     return withNames(data);
   } catch {
@@ -196,7 +199,12 @@ export async function publishedPostsByAuthor(clerkUserId: string): Promise<BlogP
       .eq('status', 'published')
       .eq('author_id', clerkUserId)
       .eq('hide_on_author_page', false)
-      .order('published_at', { ascending: false });
+      // nullsFirst:false because Postgres sorts NULLs FIRST on a DESC order, and a
+      // post published by hand keeps published_at null (decidePost only approves;
+      // publishDuePosts is what stamps the date). Without this, an undated post
+      // pins itself to the top of the author's page — seen live: a 13 Jul recap
+      // sitting above two 27 Jul races.
+      .order('published_at', { ascending: false, nullsFirst: false });
     if (error || !data) return [];
     return withNames(data);
   } catch {
@@ -224,7 +232,9 @@ export async function authorPostVisibility(clerkUserId: string): Promise<AuthorP
       .select('id, slug, title, published_at, hide_on_author_page')
       .eq('status', 'published')
       .eq('author_id', clerkUserId)
-      .order('published_at', { ascending: false });
+      // Same NULL-ordering guard as publishedPostsByAuthor, so the author's own
+      // list matches the order readers see.
+      .order('published_at', { ascending: false, nullsFirst: false });
     if (error || !data) return [];
     return data.map(r => ({
       id: r.id as string,
@@ -280,7 +290,9 @@ export async function publishedPostsForSeries(seriesSlug: string, limit = 4): Pr
       .select(COLS)
       .eq('status', 'published')
       .or(`series_slug.eq.${seriesSlug},tags.cs.{${seriesSlug}}`)
-      .order('published_at', { ascending: false })
+      // Same NULL-ordering guard as publishedPosts — and it matters more here,
+      // where the list is capped: an undated post would consume a slot at the top.
+      .order('published_at', { ascending: false, nullsFirst: false })
       .limit(limit);
     if (error || !data) return [];
     return withNames(data);
