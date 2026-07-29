@@ -1289,6 +1289,20 @@ The session ran far past the design-phase plan into a full build+ship day (2026-
 
 ---
 
+### Wed 2026-07-29 (session 24 — home magazine rebuild on `testing`; PAUSED on a licensing decision)
+
+Operator brief: turn the home from "a cold text-heavy server telemetry dashboard" into a motorsport magazine — header cleanup, lead-story hero, fill the dead space, visual news cards, a real grid — plus a light-theme toggle. All work on `testing` only, deployed via Workers Builds to `testing.paddock-tracker.com`. `main` and prod untouched.
+
+- → done: **magazine card grid for Paddock Wire**, **12-col grid + masonry row-span solver** (browser-verified in Chromium: 0 overlaps, worst gap 39px at 1920/1280; spans correctly cleared below 1280), **lead-story hero with the countdown demoted to a strip**, **surface panels on every section**, **readability pass** (the arbitrary `text-[10px]`/`text-[11px]` line-height bug that inflated every intra-group gap), **header decluttered** (coffee + contact → footer), **light/dark toggle left of Search** (light themes already existed; only the control was missing), **pointer glow softened**, **dead space root-caused to `DEFAULT_HIDDEN`** — 4 already-built widgets graduated to visible, 3 of them costing no extra request.
+- → partial: **news thumbnails.** Wired and live, but they are motorsport.com's photographs. Operator authorised knowingly, then asked for the licensing position to be verified — it came back negative on four Terms-of-Use clauses with no licence anywhere in the feed and no partnership in place. **Not yet removed; no email sent.** Permission email drafted and ready (recipient, wording, screenshot requirement, paid fallback all in `docs/HANDOFF.md`).
+- → lesson (cost a broken deploy): shipped the masonry solver on a green tsc + 950 tests, and it collapsed the whole page — the effect bailed on a null ref forever because it sat above the `hydrated` early return with `[layout]` deps, and imperative span writes were erased by React on every render since those blocks own a `style` prop for `order`. Reverted within the hour (`a52ec00`), rebuilt with spans in React state and the fine row track applied ONLY when spans exist, so layout can never depend on the effect having run. `HomeContent` has no test coverage and neither tsc nor eslint can see a layout collapse — that class of change needs a real browser pass before it goes out.
+
+Won't touch (deferred): merging any of this to `main`; the `/series/motogp/weekend/12` 500; the `/api/home/from-the-blog` `force-static` staleness; the `.open-next` eslint OOM; circuit-map alias matching; Clerk's Midnight-only modal on light themes.
+
+Active: _(resumed later — session paused by the operator with the licensing decision open)_
+
+---
+
 ### Mon 2026-07-27 → Tue 2026-07-28 (session 23 — data determinism, page cache, main/prod convergence)
 
 Operator's priority order at the start: 1. data (make the DB the source of truth), 2. experience (load time), 3. race recap, 4. everything else.

@@ -6,7 +6,60 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-28 (LATEST, session 23 — DB-as-source-of-truth, R2 page cache, the silent-writer saga) — `main` = 0.244.0 AND prod runs it
+## ⚡ Next session pickup — 2026-07-29 (LATEST, session 24 — home magazine rebuild on `testing`; ONE BLOCKING DECISION) — `testing` = 9e957e4, NOT merged to `main`
+
+Paused mid-flight, to be resumed. Everything below is on the **`testing` branch only** and live at `testing.paddock-tracker.com`. **Nothing merged to `main`; prod is untouched.**
+
+### 🛑 RESUME HERE — the blocking decision
+**The wire card + hero thumbnails are motorsport.com's photographs, displayed without permission.** Operator authorised it knowingly on 2026-07-28 after the risk was put to them; on 07-29 they asked for the licensing position to be checked properly, and it came back negative. Nothing has been removed yet and **no email has been sent**.
+
+Verified against primary sources:
+- `motorsport.com/info/terms-of-use/` prohibits it in four separate clauses — **§4.1** no distribution of any part of the site without prior written authorisation; **§4.3** no accessing content "through any technology or means other than the pages of the Motorsport.com Website itself"; **§4.4** no commercial use, naming "primary purpose of gaining advertising … revenue" (we run AdSense); **§5.1** content "may not be … displayed … without prior written consent", provided "for your information and personal use only".
+- The RSS feed grants nothing: no `<copyright>`, no `<rights>`, no `media:credit`, no `media:copyright`, no `dc:creator`. Only `<docs>` → the RSS spec. Footer reads "© 2026 Motorsport Network All rights reserved."
+- They run an active DMCA channel (`copyright@motorsport.com`, full §512(c)(3) procedure at `/info/copyright/`) and `robots.txt` disallows `/*/photos/*/*`.
+- Motorsport Network also owns **Motorsport Images** (the LAT archive) — a commercial photo-licensing business, so these are a revenue product.
+- **No partnership exists** (operator confirmed 07-29).
+- All 36 images on the page come from ONE publisher — `cdn-1…cdn-9.motorsport.com` — and `lib/news.ts` has exactly one upstream, `https://www.motorsport.com/rss`. No permissive source is mixed in.
+- Free alternatives cannot feed a *wire*: Commons has **0 files** in `Category:2026 Formula One season`, `…MotoGP season`, `…World Rally Championship season`, versus 156k for "Lewis Hamilton". Free-licence libraries are archival; a wire card needs today's photo. Free images DO work for evergreen surfaces (driver/circuit/blog covers) — the existing `content/series/f1/portraits.json` (22 free-licensed portraits) is the proven pattern.
+
+**Recommended, agreed direction:** pull the thumbnails, switch the wire + hero to generated OG-style card art (owned outright — `app/(app)/blog/[slug]/opengraph-image.tsx` establishes the visual language), THEN send the permission email. Order matters: "we are holding off pending your consent" is only true if the images are down first.
+
+**The email is drafted and ready** (narrow ask: display only the feed's own `<enclosure>` thumbnail at ~400px beside their headline, visible `motorsport.com` credit, link-back on headline and image, no article text, removal on request; cites their own §4.6 embeddable-player precedent of "limited use with link-back"). Send to **`sales@motorsport.com`** (the address on `/info/press/` + `/info/about-us/`), cc `press@motorsport.com`; fallback `us.info@motorsport.com` (Motorsport.com Inc., 650 Madison Avenue, New York). **Never** `copyright@motorsport.com` — that is the takedown inbox. Send from an `@paddock-tracker.com` address, signed **Fotis Petrou**, stating it is a two-person independent project (Fotis Petrou + Paris Paraskevas), with a screenshot attached that visibly shows the thumbnail size, the credit and the link-back. Paid fallback: **motorsportimages.com**. Realistic outcomes, in order: no reply · "licence it" · yes with conditions.
+
+### ✅ Shipped to `testing` this session (8 commits, `b22c297..9e957e4`)
+- **Magazine card grid for Paddock Wire** — the text list became bordered cards: fixed-ratio art block (series-colour gradient wash into a solid foot rule + tracked mono kicker), headline, standfirst, metadata footer. 1-up on phones, 2-up from `sm`.
+- **12-column grid + masonry row-span solver.** Sections were `mb-8` in a 2-col grid whose `items-start` left the height difference as void (~320px under "This week"); `dense` cannot reclaim it because the hole is *inside* a row. Now a 4px auto-row track with each block's height as a `grid-row` span, `span = ceil((height + marginBottom) / 4) + 1`, row-gap **0** (a 32px row gap makes the granularity 36px, not 4px — that mistake left ~90px voids on the first pass). Browser-verified in Chromium 1228: 1920/1280 → grid, 8/8 spanned, 0 overlaps, worst gap 39px; 1100/480 → flex column, 0 spanned.
+- **Dead space root cause was config, not layout:** 15 of 18 widgets were in `DEFAULT_HIDDEN`. `standings-snapshot`, `track-layout`, `next-weather`, `series-countdowns` now ship visible — all four already existed and three cost **no** extra request. Default order in `HOME_ELEMENTS` is now also a height-pairing decision (schedule↔standings, wire↔circuit map).
+- **Lead-story hero + demoted countdown.** Editorial fronts the band; the countdown is one compact strip (dot, title, time, venue, forecast, small mono digits, "Watch live"). Live sessions still take over at full hero scale. Cascade: post-with-cover → top wire story → blog-invite card. `/api/home/from-the-blog` now projects `heroImage` (it was on `BlogPost` but never serialised).
+- **Readability.** `text-[10px]`/`text-[11px]` are *arbitrary* Tailwind values, so v4 emits font-size with **no paired line-height** — all 61 micro-labels inherited `1.5` from preflight, inflating every 2px intra-group gap to ~7px and destroying the hierarchy in the browser while it looked right in source. Added `leading-none`, fixed four gap inversions, normalised 7 tracking values to `0.12em`. Series colour moved off 10px text onto the 3px spine (WSBK `#0066b3` 3.40:1, WRC `#d92626` 4.08:1 — both failed AA).
+- **Surface panels** on every section (`border-border` + `bg-surface` + `p-4 md:p-5`), which forced two coupled edits: inner `border-y border-border` doubled the panel edge (12×) and `hover:bg-surface` was invisible on a `bg-surface` panel (9× → `surface-elevated`).
+- **Header decluttered + light-theme toggle.** Buy-me-a-coffee and Contact moved to the footer's Site column (this also cleared the unlabelled-mobile-button a11y failure at `docs/perf-baselines.md:75`). `ThemeToggle` mounts left of Search; light themes already existed (`newsprint`, `circuit`, 0.235.0) — only the control was missing. New: `lib/theme.ts` (store extracted from `ThemePicker`, which now imports it back) + `components/theme/ThemeToggle.tsx`. Remembers last dark and last light pick so Carbon survives a round trip.
+- **Pointer glow softened** — peak alpha `0.11` → `0.035`, earlier falloff, blend stays `screen` (changing it tints the light themes). Search/Sign-in/theme are square and `h-9` (was `rounded-full`, `min-h-11` — note tap targets are now 36px, above the WCAG 24px minimum but below the 44px the rest of the chrome uses).
+
+### ⚠ Session 24 landmines
+1. **`publishedPosts()` (`lib/blog.ts:170`) is DB-only.** The three posts on `/blog` are legacy MDX in `content/posts/`, invisible to it — so with no DB post the payload is `[]`. MDX frontmatter has **no cover field**, so merging MDX in would fix the empty state but not the picture.
+2. **`/api/home/from-the-blog` is `force-static` + `revalidate = 300`**, so it bakes whatever the build could reach; observed flapping between a real post and `[]`. Underlying fix not done.
+3. **`DEFAULT_HIDDEN` changes never reach existing signed-in layouts** — `reconcile()` returns their stored `hidden` verbatim and nothing version-gates a reset (`HOME_LAYOUT_VERSION` is written but never read). Guests reset every load. Check defaults in a private window; operator must Reset on `/settings/customize`.
+4. **A grid child without `data-home-block` reserves ONE 4px row and everything after it overlaps.** This shipped broken once (`fc17912`, reverted in `a52ec00`): the effect sat above the `hydrated` early return with `[layout]` deps, so it bailed on a null ref forever and no span was ever applied. Also: spans MUST render from React state — these blocks own a `style` prop for `order`, so imperative writes are erased on every render. And the fine track must be applied **only when spans exist**, so layout never *depends* on the effect having run.
+5. **Never `col-start-*` on an orderable section** — CSS `order` drives grid auto-placement but is ignored the moment explicit line placement is used, which would silently kill `/settings/customize`.
+6. **`grid-flow-dense` can pull a later block into an earlier hole**, so visual order will not always match the customise order. Accepted trade for zero dead space.
+7. **Verification gap that caused the one broken deploy:** `HomeContent` has no test coverage and tsc/eslint cannot see a layout collapse. Playwright is NOT a dependency — install `playwright-core` with `--no-save --no-package-lock` and point `executablePath` at the cached `~/AppData/Local/ms-playwright/chromium-1228/chrome-win64/chrome.exe`. **That install silently re-resolves `@clerk/nextjs` and produces bogus `colorText` type errors in untouched layout files — run `npm ci` afterwards.**
+8. **`npm run dev` needs `npx tsx scripts/bundle-content.mts` first.** `lib/content-bundle.generated.ts` is gitignored and only wired to `prebuild`/`pretest`, so a fresh checkout 500s with "Can't resolve './content-bundle.generated'". There is no `predev` hook.
+
+### ⏳ Open / owed
+- **THE DECISION above** — pull images + send email, or keep and accept the risk.
+- `9e957e4` leans on wire thumbnails existing. **If the images come out, revisit** — with no wire art the editorial post should win the hero back.
+- `GET /series/motogp/weekend/12` → **500** on testing (seen in the operator's console). Real server error, uninvestigated.
+- Hydration warning on `/app` in headless Chromium (no extensions, so not the ColorZilla noise): *"A tree hydrated but some attributes of the server rendered HTML didn't match"*. Note `components/NextRaceCountdown.tsx:63` documents that a mismatch can wipe the pre-hydration `data-theme` off `<html>`.
+- **Circuit maps:** 21 layouts (f1db, CC BY 4.0) vs 98 venues. Silverstone/Spa/Lusail/Barcelona/Red Bull Ring/Monza/Hungaroring already exist and are shared with MotoGP/WEC/DTM rounds but are not alias-matched — the cheapest win. Madrid (`madring`) is the only 2026 F1 round with no map.
+- Clerk sign-in modal is hard-coded to Midnight hexes (`app/(app)/layout.tsx:83-92`) — wrong on the two light themes, now one click away.
+- Two `@next/next/no-img-element` advisories (lint exits 0) — deliberately **not** silenced, unlike `components/blog/PostHeader.tsx:32` which disables the rule inline.
+- Thumbnails cover the home wire only; `/news`, per-series `NewsTab`, driver/team pages and the weekend rail read the same pipeline and now carry the field unused.
+- `npm run lint` OOMs at 8GB when `.open-next/` is present (317MB / 4,930 files) — `eslint.config.mjs` ignores `.next/**` but not `.open-next/**`.
+
+---
+
+## Session 23 — 2026-07-28 (DB-as-source-of-truth, R2 page cache, the silent-writer saga) — `main` = 0.244.0 AND prod runs it
 
 Long session (2026-07-27 → 07-28). **Versions 0.240.0 → 0.244.0, PRs #629-#636, all merged; `main` and prod are finally the same code.** The Vercel-era `main` (0.239.1) knew nothing about Cloudflare until #629 landed.
 
