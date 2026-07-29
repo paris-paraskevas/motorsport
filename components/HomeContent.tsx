@@ -795,10 +795,18 @@ export function HomeContent({
   // nothing to lead with. Falling back to the top wire story keeps the band a
   // real front page — and the wire now carries a photograph, so this is also the
   // path that guarantees the hero is never art-less. Editorial still outranks the
-  // wire when a post exists.
-  const leadPost = blogPosts?.[0] ?? null;
+  // wire when a post exists — but ONLY when that post can bring its own art.
+  // heroImage is optional in the editor and usually unset, and a cover-less post
+  // blocked the wire fallback, which is why the band kept coming up as a bare
+  // gradient: a post existed, so the wire was never consulted. A post with no
+  // cover now stays out of the hero (it still shows in "From the blog") and the
+  // top wire story leads instead, because that always carries a photograph.
+  const newestPost = blogPosts?.[0] ?? null;
+  const leadPost = newestPost?.heroImage ? newestPost : null;
   const leadWire = !leadPost && topNews.length > 0 ? topNews[0] : null;
-  const lead = leadPost;
+  // The live branch's subordinate "Lead story" line links the newest post
+  // whatever its art, since it is a text line with no cover panel.
+  const lead = newestPost;
   const leadSeriesSlug = leadPost?.seriesSlug ?? leadWire?.seriesSlug ?? null;
   const leadSeries = leadSeriesSlug
     ? series.find(s => s.slug === leadSeriesSlug) ?? null
