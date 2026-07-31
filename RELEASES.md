@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.247.0 — 2026-07-31
+
+**Every championship answer we hold is now visible to search engines.** Pages answering "who won the 1985 world championship" and 487 others like them existed on the site but were hidden from Google. All of them are now listed, across all fifteen series, taking the reference section from around 310 findable pages to roughly 780.
+
 ## 0.246.2 — 2026-07-31
 
 **Writers without a profile photo now get a proper initial instead of a blank grey avatar.** Their author page and the authors list show a designed placeholder rather than a stock one.

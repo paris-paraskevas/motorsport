@@ -9,9 +9,11 @@ import type { Champion, SeriesMeta } from '../types';
 // Q&A entries generated from our OWN curated, already-fact-checked champions
 // data (content/series/<slug>/champions.json). Every fact here traces to a
 // vetted repo file — so these are `verified`. They give the section genuine
-// scale (hundreds of pages) with zero fabrication risk. Most ship un-featured
-// (noindex, on-site-search only); only the current champion + the record pages
-// per series are featured (indexable) — see registry.ts.
+// scale (hundreds of pages) with zero fabrication risk. Since 2026-07-31 every
+// champion page ships featured (indexable) — see the note at the loop that builds
+// them. The record pages stay gated on hasStableName(), which is a factual guard,
+// not an indexing one: F2/F3 were rebranded from GP2/GP3, so a "most titles"
+// aggregate for them would silently mix two eras.
 
 const WIKI = 'https://en.wikipedia.org/wiki/';
 // Curation date. A constant (not new Date()) so build output is deterministic.
@@ -282,10 +284,20 @@ export async function generateInfoEntries(): Promise<InfoEntry[]> {
     const champs = await loadCuratedChampions(meta.slug);
     if (!champs || champs.length === 0) continue;
     const topic = topicForSeries(meta.slug, meta.category);
-    const maxYear = Math.max(...champs.map((c) => c.year));
 
+    // EVERY champion page is featured, i.e. indexable (operator decision,
+    // 2026-07-31). Previously only `c.year === maxYear` was, which left 473 of
+    // 488 rendering noindex and showing up in Search Console as "Excluded by
+    // 'noindex' tag" — working as designed, but leaving real answers invisible.
+    //
+    // The reason it is safe to flip: these are not the thin, templated pages
+    // Google's scaled-content policy targets. Measured across all 488 before the
+    // change: shortest body 188 characters, median 316, longest 495, and not one
+    // is a single sentence — each names the champion, their team, the secondary
+    // title and title-count context. Every fact traces to a vetted
+    // content/series/<slug>/champions.json, which is why they are `verified`.
     for (const c of [...champs].sort((a, b) => b.year - a.year)) {
-      out.push(whoWonEntry(meta, c, champs, topic, c.year === maxYear));
+      out.push(whoWonEntry(meta, c, champs, topic, true));
     }
     const md = mostDriverTitlesEntry(meta, champs, topic);
     if (md) out.push(md);
