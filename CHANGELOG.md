@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.245.3 — 2026-07-31
+
+### Fixed
+- **`npm run lint` was dead on every branch cut from `main` since the Cloudflare migration.** `eslint.config.mjs` `globalIgnores` never gained `.open-next/**`, and the script is a bare `eslint`, so every run walked that directory — **332 MB across 3,112 JS files** — and died with `FATAL ERROR: Ineffective mark-compacts near heap limit`, still fatal at `--max-old-space-size=8192`. Added alongside the existing `.next/**` entry, with `.wrangler/**`. Landed on its own rather than waiting for the author-pages PR that first carried it, because until it merged every new branch had no lint gate. Verified: `npm run lint` now exits **0**, surfacing two pre-existing `no-unused-vars` warnings in `lib/content-fs.ts` that were unreachable while the run crashed.
+
 ## 0.245.2 — 2026-07-31
 
 ### Fixed

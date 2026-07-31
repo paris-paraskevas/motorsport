@@ -20,6 +20,13 @@ const eslintConfig = defineConfig([
     // Generated serwist bundles.
     "public/sw*.js",
     "public/swe-worker-*.js",
+    // OpenNext/Wrangler build output, created in the repo root by the Cloudflare
+    // migration. `.open-next` alone is 332 MB / 3112 JS files, and because bare
+    // `eslint` lints the whole cwd, walking it killed the process outright:
+    // "FATAL ERROR: Ineffective mark-compacts near heap limit" — still fatal at
+    // --max-old-space-size=8192. Same shape as the ".next/**" entry above.
+    ".open-next/**",
+    ".wrangler/**",
   ]),
 ]);
 
