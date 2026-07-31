@@ -158,6 +158,14 @@ export interface SeriesRoundEntry {
   // single circuit matches, so SportsEvent can still emit location.address
   // (lib/json-ld.ts). Circuit-based rounds derive their country from circuits.json.
   countryCode?: string;
+  // Host circuit, when the event's NAME does not identify it. Set for the 2026
+  // "Bahrain Grand Prix", which runs at Sepang International Circuit in Malaysia:
+  // without this, circuit resolution falls back to the round name and lands on
+  // Sakhir, giving the wrong weather, map, coordinates and timezone. Must match a
+  // name or alias in content/circuits.json. Consulted via venueCandidates()
+  // (lib/circuits.ts), which uses it ALONE rather than as one candidate among
+  // several — see the comment there for why.
+  venue?: string;
   cancelled?: boolean;
   // Set when a round was rescheduled mid-season (e.g. MotoGP Qatar 2026
   // moved from April to November). Original dates preserved for UI display.

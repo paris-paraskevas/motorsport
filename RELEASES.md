@@ -1,5 +1,10 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.245.2 — 2026-07-31
+
+**The cancelled Bahrain Grand Prix is back on the calendar, in October and in Malaysia.** The race was called off from its April date, and it now runs on 2-4 October at Sepang. The weekend shows where it moved from, and its weather and location details point at Sepang rather than Bahrain, which is where the race name would otherwise have sent them. The rounds after it have each shifted up by one.
+
+**Endurance racing's last two rounds are corrected.** The World Endurance Championship season now ends with six-hour races at Barcelona on 18 October and Monza on 8 November. Qatar and Bahrain have left the calendar and no longer appear. Session times for the two new races will follow once the organisers publish them.
 ## 0.245.1 — 2026-07-28
 
 **Behind the scenes.** A third private copy of the site, so another writer can try their work before it goes live. No change to the site.
