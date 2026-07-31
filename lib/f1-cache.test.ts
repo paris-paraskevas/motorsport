@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // In-memory KV mock, same approach as lib/results-cache.test.ts: replace the
-// real @vercel/kv wholesale so kv.get / kv.set become hash lookups, and assert
+// real lib/kv wholesale so kv.get / kv.set become hash lookups, and assert
 // the round-trip + last-good behaviour without a network. JSON-cycling on read
 // simulates KV returning Date objects as ISO strings.
 const store = new Map<string, unknown>();
 const setSpy = vi.fn();
 const getSpy = vi.fn();
 
-vi.mock('@vercel/kv', () => ({
+vi.mock('./kv', () => ({
   kv: {
     get: vi.fn(async (key: string) => {
       getSpy(key);
@@ -402,7 +402,7 @@ describe('f1-cache last-good resilience', () => {
 
   describe('KV read error is swallowed (fail open to fresh value)', () => {
     it('serves the fresh empty value when KV read throws on the failure path', async () => {
-      const kvModule = await import('@vercel/kv');
+      const kvModule = await import('./kv');
       (kvModule.kv.get as unknown as { mockImplementationOnce: (fn: () => Promise<unknown>) => void })
         .mockImplementationOnce(async () => {
           throw new Error('KV outage');

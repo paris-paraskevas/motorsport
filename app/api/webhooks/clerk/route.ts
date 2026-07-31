@@ -1,6 +1,6 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks';
 import type { NextRequest } from 'next/server';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/kv';
 import { sendEmail, renderBrandedEmail } from '@/lib/email';
 import { SITE_URL, SITE_TITLE } from '@/lib/site';
 

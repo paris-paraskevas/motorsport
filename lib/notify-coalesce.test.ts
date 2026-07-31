@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 
-// notify-coalesce → userPrefs → @vercel/kv at import time; stub it (the pure
+// notify-coalesce → userPrefs → lib/kv at import time; stub it (the pure
 // helpers under test never touch KV).
-vi.mock('@vercel/kv', () => ({ kv: {} }));
+vi.mock('./kv', () => ({ kv: {} }));
 
 import {
   eligibleForNotify,

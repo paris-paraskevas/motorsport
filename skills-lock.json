@@ -31,60 +31,6 @@
       "skillPath": "skills/frameworks/clerk-nextjs-patterns/SKILL.md",
       "computedHash": "cdcb9f08d567058fca7563ad8c67a4a2a2f3b9f286294e1caeb1ea5407dfebc6"
     },
-    "clerk-nuxt-patterns": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/frameworks/clerk-nuxt-patterns/SKILL.md",
-      "computedHash": "25c785bbf5174a654daa7aa8d04b9f22a0cab9eb667f1e04ed071f49a528dad6"
-    },
-    "clerk-orgs": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/features/clerk-orgs/SKILL.md",
-      "computedHash": "e4d0a432226e6782ea70e81f65e2f78939e4df39e42e578467972e348fe1ed64"
-    },
-    "clerk-react-patterns": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/frameworks/clerk-react-patterns/SKILL.md",
-      "computedHash": "e6b7e52013ca836db3a8d901b3c116370da83970398b6f9d7d1e1138ba442be8"
-    },
-    "clerk-react-router-patterns": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/frameworks/clerk-react-router-patterns/SKILL.md",
-      "computedHash": "43e707b42ad44fc6d7f7b97656903e038edb8f4573c344a7e47fac4a6491e4de"
-    },
-    "clerk-setup": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/core/clerk-setup/SKILL.md",
-      "computedHash": "bbf0711ddcc8d8d0dcd148c0061ab83c7d66225a60a28caba62ef76e4384fa54"
-    },
-    "clerk-swift": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/mobile/clerk-swift/SKILL.md",
-      "computedHash": "f818efacdbddc5398fb569f1ebc0ff98b33d4456fb406ce8da70b359fad80ac9"
-    },
-    "clerk-tanstack-patterns": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/frameworks/clerk-tanstack-patterns/SKILL.md",
-      "computedHash": "70566866acbf48b4a982c2ee700c2b94d7c6aa4b47a4f6870fccc3b2e80cfd59"
-    },
-    "clerk-testing": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/features/clerk-testing/SKILL.md",
-      "computedHash": "7502df29d90ea1f14ecbd16bf91c10717bb765eafde3d247499bc60c91d1ff91"
-    },
-    "clerk-vue-patterns": {
-      "source": "clerk/skills",
-      "sourceType": "github",
-      "skillPath": "skills/frameworks/clerk-vue-patterns/SKILL.md",
-      "computedHash": "39422e2655a33860fd37bd2ece88417e2662cd172b896ebd1f12dcc9c367aeee"
-    },
     "clerk-webhooks": {
       "source": "clerk/skills",
       "sourceType": "github",

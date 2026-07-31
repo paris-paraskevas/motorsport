@@ -17,6 +17,9 @@ Three branches, three Cloudflare Workers, three URLs. Nothing else deploys anywh
 | `main` | `motorsport` | paddock-tracker.com | nobody pushes directly | a PR is merged |
 | `testing` | `motorsport-testing` | testing.paddock-tracker.com | Fotis | every push |
 | `testing-paris` | `motorsport-paris` | paris.paddock-tracker.com | Paris | every push |
+| `testing-panagiotis` | `motorsport-panagiotis` | panagiotis.paddock-tracker.com | Panagiotis | every push |
+
+Adding a fifth is now two steps: copy a `wrangler.<name>.jsonc` (changing `name`, the route, the R2 prefix and `WORKER_SELF_REFERENCE`), then `npm run secrets:sync -- <name>`. Do **not** add a `triggers` block: the crons must fire exactly once, on prod.
 
 Why three workers rather than a preview URL per branch: Cloudflare does not generate Preview URLs for a Worker that implements a Durable Object, and `worker.ts` exports three of them. A live URL therefore means a real Worker, and one Worker serves one deployment — so if both devs pushed to the same preview Worker, the later push would silently replace the earlier one.
 

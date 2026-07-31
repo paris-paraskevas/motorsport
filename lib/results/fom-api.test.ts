@@ -13,7 +13,7 @@ import {
 
 // In-memory KV stand-in — cache path is a no-op unless env vars are set.
 const kvStore = new Map<string, unknown>();
-vi.mock('@vercel/kv', () => ({
+vi.mock('../kv', () => ({
   kv: {
     get: vi.fn(async (key: string) => {
       const raw = kvStore.get(key);

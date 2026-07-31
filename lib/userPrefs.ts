@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 import { classifySession } from './calendar-grid';
 import { reconcileHomeLayout, type HomeLayoutPrefs } from './homeLayout';
 
