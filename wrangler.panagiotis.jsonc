@@ -1,0 +1,86 @@
+{
+  // PANAGIOTIS PREVIEW worker — serves panagiotis.paddock-tracker.com from the
+  // `testing-panagiotis` branch, so his in-progress work has a live URL that no
+  // other dev's deploy can overwrite.
+  //
+  // Deploy by hand:  npm run deploy:panagiotis   (build + deploy + POPULATE)
+  // Secrets:         npm run secrets:sync -- panagiotis
+  // Workers Builds:  Production branch  `testing-panagiotis`
+  //                  Build command      `npm run cf:build`
+  //                  Deploy command     `npm run deploy:cf:panagiotis`
+  //                  Build variables    DATA_SOURCE=db,
+  //                                     NEXT_PUBLIC_ASSISTANT_ENABLED=1,
+  //                                     SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+  //                                     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  //
+  // ⚠ Every landmine from wrangler.testing.jsonc applies identically. The two that
+  // bite hardest: the build MUST be the OpenNext build (`worker.ts` imports
+  // `./.open-next/worker.js`), and the deploy command MUST carry
+  // `-c wrangler.panagiotis.jsonc` — Workers Builds defaults to a bare
+  // `npx wrangler deploy`, which reads the repo-root config, which is PRODUCTION.
+  //
+  // ⚠ No DNS record needed: the zone carries wildcard `*.paddock-tracker.com` A
+  // records (proxied), so the subdomain already resolves and the `routes` entry
+  // below is what makes this Worker answer for it. Corollary: a subdomain with NO
+  // worker route falls through that wildcard to the origin IPs, which still point
+  // at Vercel.
+  //
+  // Differences from prod (wrangler.jsonc), each deliberate:
+  //  - NO `triggers` block: crons must fire exactly ONCE, on prod. A fourth worker
+  //    firing them would quadruple-send pushes and re-publish posts against the
+  //    same prod KV/Supabase.
+  //  - Own R2 prefix (`panagiotis-cache`) so ISR entries cannot collide with prod's,
+  //    testing's or paris's.
+  //  - WORKER_SELF_REFERENCE points at THIS worker (revalidation calls back in).
+  //  - DATA_SOURCE=db: reads the seeded snapshots, never fetches or writes upstream.
+  //    ⚠ App mutations (bets, threads, blog admin, author profiles) DO hit the same
+  //    prod Supabase. Know it before clicking Save on a preview.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": "worker.ts",
+  "name": "motorsport-panagiotis",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "routes": [
+    { "pattern": "panagiotis.paddock-tracker.com/*", "zone_name": "paddock-tracker.com" }
+  ],
+  "vars": {
+    "DATA_SOURCE": "db",
+    "NEXT_INC_CACHE_R2_PREFIX": "panagiotis-cache"
+  },
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "paddock-inc-cache"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "motorsport-panagiotis"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"]
+    }
+  ],
+  // Keep logs. Without this a 500 leaves no trace unless `wrangler tail` happened to
+  // be attached when it occurred.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}
