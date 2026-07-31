@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.246.1 — 2026-07-31
+
+**Blog posts can now be found by search engines properly.** Every published post is listed in the site index we hand to Google; previously only the blog front page was, so posts had to be discovered by crawling.
+
 ## 0.246.0 — 2026-07-31
 
 **Writers have a page of their own.** Every author now has a public page collecting their bio, their links and everything they have published, and the byline on a post takes you straight to it. Authors write and edit that page themselves, and choose which of their posts appear on it.

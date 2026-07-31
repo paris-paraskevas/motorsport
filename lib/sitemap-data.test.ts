@@ -5,6 +5,7 @@ import { loadSeries } from './series';
 import { groupByWeekend } from './group';
 import { weekendLabel } from './weekend';
 import { circuitLayoutFor } from './circuit-layout';
+import { listPostSlugs } from './posts';
 import { SITE_URL } from './site';
 
 describe('buildSitemapEntries', () => {
@@ -92,6 +93,27 @@ describe('buildSitemapEntries', () => {
       .map((u) => u.url.split('/').pop()!);
     const sorted = [...seriesSlugs].sort((a, b) => a.localeCompare(b));
     expect(seriesSlugs).toEqual(sorted);
+  });
+
+  // The sitemap advertised /blog but not a single post on it, so the site's most
+  // original content was discoverable only by crawling the index — which is the
+  // "Crawled - currently not indexed" shape sitting in Search Console. Only the
+  // MDX posts are asserted here: publishedPosts() needs Supabase and fails soft to
+  // an empty list in tests, which is itself the behaviour the last case pins.
+  it('advertises every legacy MDX blog post', async () => {
+    const urls = (await buildSitemapEntries()).map((u) => u.url);
+    const slugs = await listPostSlugs();
+    expect(slugs.length).toBeGreaterThan(0);
+    for (const slug of slugs) {
+      expect(urls).toContain(`${SITE_URL}/blog/${slug}`);
+    }
+  });
+
+  it('emits each blog URL once and keeps /blog itself', async () => {
+    const urls = (await buildSitemapEntries()).map((u) => u.url);
+    const blogPosts = urls.filter((u) => u.startsWith(`${SITE_URL}/blog/`));
+    expect(new Set(blogPosts).size).toBe(blogPosts.length);
+    expect(urls).toContain(`${SITE_URL}/blog`);
   });
 
   it('no entry carries lastModified / changeFrequency / priority (Google ignores all three in 2026)', async () => {
