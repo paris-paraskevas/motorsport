@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.246.0 — 2026-07-31
+
+**Writers have a page of their own.** Every author now has a public page collecting their bio, their links and everything they have published, and the byline on a post takes you straight to it. Authors write and edit that page themselves, and choose which of their posts appear on it.
 ## 0.245.3 — 2026-07-31
 
 **Behind the scenes.** A broken developer check is working again. No change to the site.

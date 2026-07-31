@@ -174,12 +174,108 @@ export async function publishedPosts(): Promise<BlogPost[]> {
       .from('post')
       .select(COLS)
       .eq('status', 'published')
-      .order('published_at', { ascending: false });
+      // nullsFirst:false — Postgres sorts NULLs FIRST on DESC, and a post flipped
+      // to published by hand keeps published_at null (only publishDuePosts stamps
+      // it), which pinned undated posts to the top of the feed.
+      .order('published_at', { ascending: false, nullsFirst: false });
     if (error || !data) return [];
     return withNames(data);
   } catch {
     return [];
   }
+}
+
+/** One author's published posts, newest first — the /authors/<slug> page. Posts the
+ *  author has hidden from their own profile are excluded here and nowhere else
+ *  (they stay live at /blog/<slug> and in the feed). Same fail-soft contract as
+ *  publishedPosts(): an unreachable DB yields an empty list rather than a 500 on a
+ *  public page. */
+export async function publishedPostsByAuthor(clerkUserId: string): Promise<BlogPost[]> {
+  if (!isBettingConfigured() || !clerkUserId) return [];
+  try {
+    const { data, error } = await betDb()
+      .from('post')
+      .select(COLS)
+      .eq('status', 'published')
+      .eq('author_id', clerkUserId)
+      .eq('hide_on_author_page', false)
+      // nullsFirst:false because Postgres sorts NULLs FIRST on a DESC order, and a
+      // post published by hand keeps published_at null (decidePost only approves;
+      // publishDuePosts is what stamps the date). Without this, an undated post
+      // pins itself to the top of the author's page — seen live: a 13 Jul recap
+      // sitting above two 27 Jul races.
+      .order('published_at', { ascending: false, nullsFirst: false });
+    if (error || !data) return [];
+    return withNames(data);
+  } catch {
+    return [];
+  }
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export interface AuthorPostVisibility {
+  id: string;
+  slug: string;
+  title: string;
+  publishedAt: string | null;
+  hidden: boolean;
+}
+
+/** The author's own published posts WITH their hide flags — the settings screen
+ *  (which must show hidden ones, unlike the public page). */
+export async function authorPostVisibility(clerkUserId: string): Promise<AuthorPostVisibility[]> {
+  if (!isBettingConfigured() || !clerkUserId) return [];
+  try {
+    const { data, error } = await betDb()
+      .from('post')
+      .select('id, slug, title, published_at, hide_on_author_page')
+      .eq('status', 'published')
+      .eq('author_id', clerkUserId)
+      // Same NULL-ordering guard as publishedPostsByAuthor, so the author's own
+      // list matches the order readers see.
+      .order('published_at', { ascending: false, nullsFirst: false });
+    if (error || !data) return [];
+    return data.map(r => ({
+      id: r.id as string,
+      slug: r.slug as string,
+      title: r.title as string,
+      publishedAt: (r.published_at as string | null) ?? null,
+      hidden: Boolean(r.hide_on_author_page),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/** Set exactly which of the author's published posts are hidden from their
+ *  profile. Two scoped UPDATEs rather than per-id writes, and both are filtered on
+ *  `author_id = clerkUserId`, so a forged id in the list cannot touch a post the
+ *  caller does not own. */
+export async function setAuthorPostVisibility(clerkUserId: string, hiddenIds: string[]): Promise<void> {
+  const db = betDb();
+  const now = new Date().toISOString();
+  // UUID-shaped only: the "show the rest" update below interpolates these ids into
+  // a PostgREST `not.in.(…)` filter string, so anything carrying a comma or a
+  // parenthesis would alter the query rather than just fail to match.
+  const ids = [...new Set(hiddenIds.filter(id => typeof id === 'string' && UUID_RE.test(id)))];
+
+  const hide = db
+    .from('post')
+    .update({ hide_on_author_page: true, updated_at: now })
+    .eq('author_id', clerkUserId)
+    .eq('status', 'published');
+  const { error: hideError } = ids.length > 0 ? await hide.in('id', ids) : { error: null };
+  if (hideError) throw new Error(`could not update visibility: ${hideError.message}`);
+
+  const show = db
+    .from('post')
+    .update({ hide_on_author_page: false, updated_at: now })
+    .eq('author_id', clerkUserId)
+    .eq('status', 'published')
+    .eq('hide_on_author_page', true);
+  const { error: showError } = ids.length > 0 ? await show.not('id', 'in', `(${ids.join(',')})`) : await show;
+  if (showError) throw new Error(`could not update visibility: ${showError.message}`);
 }
 
 /** Published posts for a series' page — matched by the primary series_slug OR a
@@ -194,7 +290,9 @@ export async function publishedPostsForSeries(seriesSlug: string, limit = 4): Pr
       .select(COLS)
       .eq('status', 'published')
       .or(`series_slug.eq.${seriesSlug},tags.cs.{${seriesSlug}}`)
-      .order('published_at', { ascending: false })
+      // Same NULL-ordering guard as publishedPosts — and it matters more here,
+      // where the list is capped: an undated post would consume a slot at the top.
+      .order('published_at', { ascending: false, nullsFirst: false })
       .limit(limit);
     if (error || !data) return [];
     return withNames(data);

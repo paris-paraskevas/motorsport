@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 // Shared /blog/[slug] post header: date + tags row, title, byline, summary.
 // Two real consumers (the extraction rule's bar): the public server path in
 // app/(app)/blog/[slug]/page.tsx and DraftEditor's view mode (spec
@@ -8,6 +10,10 @@
 export interface PostAuthor {
   name: string | null;
   image: string | null;
+  /** `/authors/<slug>` when this author has a public profile — the byline becomes
+   *  a link. Absent/null (legacy MDX posts, a writer with no profile row, the
+   *  DraftEditor's view mode) keeps it plain text. */
+  href?: string | null;
 }
 
 /** Article body wrapper classes — single-sourced so the public path and the
@@ -86,7 +92,19 @@ export function PostHeader({
               />
             </>
           )}
-          <span className="text-sm font-medium text-text-muted">By {author.name}</span>
+          <span className="text-sm font-medium text-text-muted">
+            By{' '}
+            {author.href ? (
+              <Link
+                href={author.href}
+                className="text-text underline decoration-border underline-offset-4 transition-colors duration-(--duration-fast) hover:text-brand hover:decoration-brand"
+              >
+                {author.name}
+              </Link>
+            ) : (
+              author.name
+            )}
+          </span>
         </div>
       )}
       <p className="mt-4 text-base text-text-muted leading-relaxed">

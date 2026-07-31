@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { loadAllPosts } from '@/lib/posts';
 import { publishedPosts } from '@/lib/blog';
+import { listAuthors } from '@/lib/authors';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
@@ -23,6 +24,11 @@ interface Card {
   summary: string;
   publishedAt: string;
   tags?: string[];
+  /** Only set for authors with a public profile — the card byline IS the link to
+   *  it, so a writer with no profile row (and every legacy MDX post) shows no
+   *  byline here, exactly as before. Name comes from the profile row rather than
+   *  Clerk: it's curated, and it keeps the list off the Clerk Backend API. */
+  author?: { name: string; slug: string };
 }
 
 function formatDate(iso: string): string {
@@ -37,12 +43,16 @@ function formatDate(iso: string): string {
 }
 
 export default async function BlogIndexPage() {
-  const [dbPosts, mdxPosts, seriesMetas] = await Promise.all([
+  const [dbPosts, mdxPosts, seriesMetas, authors] = await Promise.all([
     publishedPosts(),
     loadAllPosts(),
     loadAllSeriesMeta(),
+    listAuthors(),
   ]);
   const nameBySlug = new Map(seriesMetas.map(m => [m.slug, m.name] as const));
+  const profileByAuthorId = new Map(
+    authors.map(a => [a.clerkUserId, { name: a.displayName, slug: a.slug }] as const),
+  );
 
   const mdxCards: Card[] = mdxPosts.map(p => ({
     slug: p.slug,
@@ -58,6 +68,7 @@ export default async function BlogIndexPage() {
     summary: p.summary,
     publishedAt: p.publishedAt ?? p.createdAt,
     tags: p.seriesSlug ? [nameBySlug.get(p.seriesSlug) ?? p.seriesSlug] : undefined,
+    author: profileByAuthorId.get(p.authorId),
   }));
 
   const bySlug = new Map<string, Card>();
@@ -117,23 +128,30 @@ export default async function BlogIndexPage() {
         <ul className="divide-y divide-border/60">
           {posts.map(post => (
             <li key={post.slug} className="py-5 first:pt-0 last:pb-0">
-              <Link
-                href={`/blog/${post.slug}`}
-                className="block group"
-              >
-                <div className="flex items-baseline gap-3 mb-1.5 flex-wrap">
-                  <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
-                    {formatDate(post.publishedAt)}
-                  </time>
-                  {post.tags?.map(tag => (
-                    <span
-                      key={tag}
-                      className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted bg-surface border border-border rounded-full px-2 py-0.5"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              {/* The meta row sits OUTSIDE the card link: the author link is a
+                  second destination, and an <a> inside an <a> is invalid HTML. */}
+              <div className="flex items-baseline gap-3 mb-1.5 flex-wrap">
+                <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
+                  {formatDate(post.publishedAt)}
+                </time>
+                {post.tags?.map(tag => (
+                  <span
+                    key={tag}
+                    className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted bg-surface border border-border rounded-full px-2 py-0.5"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {post.author && (
+                  <Link
+                    href={`/authors/${post.author.slug}`}
+                    className="text-[11px] uppercase tracking-[0.16em] text-text-muted font-semibold font-mono transition-colors duration-(--duration-fast) hover:text-brand"
+                  >
+                    {post.author.name}
+                  </Link>
+                )}
+              </div>
+              <Link href={`/blog/${post.slug}`} className="block group">
                 <h2 className="text-text text-xl font-semibold tracking-tight leading-snug group-hover:text-tint transition-colors duration-(--duration-fast)">
                   {post.title}
                 </h2>

@@ -279,7 +279,24 @@ export function qaPageLd(args: {
   };
 }
 
-export function articleLd(args: { post: Post; url: string }): object {
+// `authorName` / `authorUrl` are set for DB posts, where the byline is a real
+// resolved writer and (when they have a profile) a real /authors/<slug> URL —
+// pointing author.url at that page is what ties every post to one author entity.
+// MDX posts pass neither and keep the site-owner default they've always had.
+export function articleLd(args: {
+  post: Post;
+  url: string;
+  authorName?: string | null;
+  authorUrl?: string | null;
+}): object {
+  const author: Record<string, unknown> = {
+    '@type': 'Person',
+    name: args.authorName || 'Paris Paraskevas',
+  };
+  if (args.authorUrl) {
+    author['@id'] = `${args.authorUrl}#person`;
+    author.url = args.authorUrl;
+  }
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -291,16 +308,46 @@ export function articleLd(args: { post: Post; url: string }): object {
     // gains an actual edit history (frontmatter `updatedAt` or git log),
     // wire that here.
     dateModified: args.post.frontmatter.publishedAt,
-    author: {
-      '@type': 'Person',
-      name: 'Paris Paraskevas',
-    },
+    author,
     publisher: { '@id': ORG_ID },
   };
   if (args.post.frontmatter.heroImage) {
     ld.image = args.post.frontmatter.heroImage;
   }
   return ld;
+}
+
+// ProfilePage + Person for /authors/<slug>. The Person carries the same `@id`
+// (`<page-url>#person`) that articleLd stamps on every post's author, so the
+// writer resolves as ONE entity across the site instead of a repeated name
+// string. `sameAs` takes the profile's outbound links: those are the identity
+// claims that let a search engine reconcile the person with their off-site
+// presence, which is the whole point of having the page.
+export function profilePageLd(args: {
+  name: string;
+  url: string;
+  bio: string;
+  jobTitle?: string | null;
+  image?: string | null;
+  sameAs?: string[];
+}): object {
+  const person: Record<string, unknown> = {
+    '@type': 'Person',
+    '@id': `${args.url}#person`,
+    name: args.name,
+    url: args.url,
+    description: args.bio,
+    worksFor: { '@id': ORG_ID },
+  };
+  if (args.jobTitle) person.jobTitle = args.jobTitle;
+  if (args.image) person.image = args.image;
+  if (args.sameAs && args.sameAs.length > 0) person.sameAs = args.sameAs;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    url: args.url,
+    mainEntity: person,
+  };
 }
 
 // Article schema for a series' curated History essay (/series/<slug>/history).

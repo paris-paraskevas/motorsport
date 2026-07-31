@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { qaPageLd, sportsEventLd } from './json-ld';
-import type { Series, Weekend } from './types';
+import { articleLd, profilePageLd, qaPageLd, sportsEventLd } from './json-ld';
+import type { Post, Series, Weekend } from './types';
 
 // JSON-LD builders emit `object`; round-trip through JSON to assert on the
 // actual serialized shape (this is what ships in the page <head>).
@@ -195,5 +195,80 @@ describe('sportsEventLd', () => {
     expect((sub.performer as Json[])[0]['@type']).toBe('SportsOrganization');
     expect((sub.location as Json).address).toBeTruthy();
     expect((sub.offers as Json).url).toBe('https://f1tv.formula1.com');
+  });
+});
+
+describe('profilePageLd', () => {
+  const ld = asJson(
+    profilePageLd({
+      name: 'Stylianos Christopoulos',
+      url: 'https://paddock-tracker.com/authors/stylianos-christopoulos',
+      bio: 'Writes about F1 strategy.',
+      jobTitle: 'Contributor',
+      image: 'https://img.clerk.com/abc',
+      sameAs: ['https://x.com/example'],
+    }),
+  );
+  const person = ld.mainEntity as Json;
+
+  it('is a ProfilePage wrapping a Person', () => {
+    expect(ld['@type']).toBe('ProfilePage');
+    expect(person['@type']).toBe('Person');
+    expect(person.name).toBe('Stylianos Christopoulos');
+    expect(person.description).toBe('Writes about F1 strategy.');
+    expect(person.jobTitle).toBe('Contributor');
+    expect(person.image).toBe('https://img.clerk.com/abc');
+    expect(person.sameAs).toEqual(['https://x.com/example']);
+    expect((person.worksFor as Json)['@id']).toBe('https://paddock-tracker.com/#org');
+  });
+
+  // The whole point of the @id: articleLd stamps the same one on every post's
+  // author, so the writer is one entity rather than a repeated name string.
+  it('gives the Person a stable @id that matches the article author', () => {
+    const url = 'https://paddock-tracker.com/authors/stylianos-christopoulos';
+    expect(person['@id']).toBe(`${url}#person`);
+    const post: Post = {
+      slug: 'p',
+      frontmatter: { title: 'T', summary: 'S', publishedAt: '2026-07-20' },
+      source: '',
+    };
+    const article = asJson(
+      articleLd({ post, url: 'https://paddock-tracker.com/blog/p', authorName: 'Stylianos Christopoulos', authorUrl: url }),
+    );
+    const author = article.author as Json;
+    expect(author['@id']).toBe(person['@id']);
+    expect(author.url).toBe(url);
+    expect(author.name).toBe('Stylianos Christopoulos');
+  });
+
+  it('omits the optional fields it was not given', () => {
+    const bare = asJson(profilePageLd({ name: 'N', url: 'u', bio: 'b' }));
+    const p = bare.mainEntity as Json;
+    expect(p.jobTitle).toBeUndefined();
+    expect(p.image).toBeUndefined();
+    expect(p.sameAs).toBeUndefined();
+  });
+});
+
+describe('articleLd author', () => {
+  const post: Post = {
+    slug: 'p',
+    frontmatter: { title: 'T', summary: 'S', publishedAt: '2026-07-20' },
+    source: '',
+  };
+
+  // MDX posts (the legacy file-based blog) pass no author and must keep the
+  // site-owner byline they have always emitted.
+  it('falls back to the site owner with no author url', () => {
+    const author = asJson(articleLd({ post, url: 'u' })).author as Json;
+    expect(author.name).toBe('Paris Paraskevas');
+    expect(author.url).toBeUndefined();
+    expect(author['@id']).toBeUndefined();
+  });
+
+  it('keeps the resolved name when the author has no profile page', () => {
+    const author = asJson(articleLd({ post, url: 'u', authorName: 'Παναγιώτης Λουτριώτης' })).author as Json;
+    expect(author.name).toBe('Παναγιώτης Λουτριώτης');
+    expect(author.url).toBeUndefined();
   });
 });
