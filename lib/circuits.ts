@@ -72,6 +72,30 @@ export async function matchCircuitEntry(
   return null;
 }
 
+/**
+ * Candidate strings for a weekend's venue, in PRIORITY order — which
+ * {@link matchCircuitEntry} does not itself provide: it flattens every alias,
+ * sorts them longest-first, and returns the first alias contained in ANY
+ * candidate. So passing a curated venue alongside the round name would let the
+ * wrong circuit win purely on alias string length.
+ *
+ * A curated `venue` is therefore used ALONE. It exists precisely for rounds whose
+ * name identifies a different place than the host circuit: the 2026 Bahrain Grand
+ * Prix runs at Sepang International Circuit in Malaysia, and resolving it by name
+ * would return Sakhir — wrong weather, wrong map, wrong coordinates, and a
+ * timezone three hours out.
+ *
+ * With no curated venue, behaviour is unchanged: the session location first (from
+ * the feed, when it publishes one), then the weekend title.
+ */
+export function venueCandidates(args: {
+  venue?: string;
+  location?: string;
+  title?: string;
+}): Array<string | undefined> {
+  return args.venue ? [args.venue] : [args.location, args.title];
+}
+
 /** As {@link matchCircuitEntry} but returns just the circuit (back-compat). */
 export async function matchCircuit(
   ...candidates: Array<string | undefined>
