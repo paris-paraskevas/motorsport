@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.246.2 — 2026-07-31
+
+**Writers without a profile photo now get a proper initial instead of a blank grey avatar.** Their author page and the authors list show a designed placeholder rather than a stock one.
+
 ## 0.246.1 — 2026-07-31
 
 **Blog posts can now be found by search engines properly.** Every published post is listed in the site index we hand to Google; previously only the blog front page was, so posts had to be discovered by crawling.

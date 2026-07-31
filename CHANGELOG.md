@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.246.2 — 2026-07-31
+
+### Fixed
+- **Authors without a profile photo got Clerk's generic grey avatar instead of our initial tile.** `resolveAuthorIdentity` trusted `imageUrl`, which Clerk **always** populates — with no uploaded photo it serves its own generated placeholder, so the editorial fallback could never render. Observed live on `/authors`: the Greek contributor's row showed Clerk's default. Now gated on `hasImage`, which is the only way to tell an uploaded photo from a generated one. The KV cache key gained a `v2:` segment in the same change, because entries written before the gate had already cached the placeholder as a real image and a plain key reuse would have served the old behaviour for up to an hour; v1 entries expire on their own TTL.
+
+### Changed
+- **`CLAUDE.md` landmine #2 corrected — it had been telling every reader the opposite of the truth.** It said middleware is `proxy.ts`, not `middleware.ts`. The repo has `middleware.ts` and no `proxy.ts`: the Cloudflare migration renamed it back because OpenNext needs the Edge runtime. Next 16 prefers `proxy.ts` and warns `The "middleware" file convention is deprecated` on every build, so the landmine now states that the warning is expected and must not be "fixed" on sight, since renaming without confirming OpenNext support breaks the deploy. The stack table's `app/` row was stale too (it named `proxy.ts` and omitted the `(admin)` route group).
+
+### Notes
+- **Investigated, not fixed, with findings recorded so the next attempt starts ahead:** (1) `/authors` builds as `ƒ` (dynamic) while `/blog` builds as `○` (prerendered) despite doing comparable work; the only meaningful difference is the `clerkClient()` call inside `resolveAuthorIdentity`, but `/authors/[slug]` calls it too and *does* prerender, so that explanation is incomplete and each experiment costs a ~4 minute build. (2) The `metadataBase` warning fires **20 times per build** even though all three root layouts (`(app)`, `(marketing)`, `(admin)`) set it; the only two routes outside those groups are `app/offline/page.tsx` (exports no metadata) and `app/opengraph-image.tsx`, which does not account for 20. Next does not name the offending routes in the warning.
+
 ## 0.246.1 — 2026-07-31
 
 ### Fixed
