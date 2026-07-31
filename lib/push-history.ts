@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 
 /**
  * Per-user sent-notification history. Every push that actually reaches a

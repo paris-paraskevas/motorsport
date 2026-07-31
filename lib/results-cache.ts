@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 import type { RaceResult } from '@/lib/types';
 import { logSourceError } from '@/lib/fetch-upstream';
 

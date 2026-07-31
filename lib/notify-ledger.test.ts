@@ -7,12 +7,12 @@ import {
 } from './notify-ledger';
 
 // In-memory KV mock (same approach as results-cache.test.ts): replace
-// `@vercel/kv` wholesale so set/get/del become Map operations and we can assert
+// `lib/kv` wholesale so set/get/del become Map operations and we can assert
 // the mark / unmark round-trip without a network.
 const store = new Map<string, unknown>();
 const delSpy = vi.fn();
 
-vi.mock('@vercel/kv', () => ({
+vi.mock('./kv', () => ({
   kv: {
     get: vi.fn(async (key: string) => {
       const v = store.get(key);

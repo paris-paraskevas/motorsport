@@ -4,10 +4,10 @@ import { recordSent, listHistory, type PushHistoryItem } from './push-history';
 // In-memory KV LIST mock. Model each list as a JS array with index 0 = head
 // (newest), matching Redis: LPUSH prepends to the head, LRANGE 0..n reads from
 // the head, LTRIM 0..n keeps the head slice. This mirrors how recordSent /
-// listHistory use the real `@vercel/kv` list API.
+// listHistory use the real `lib/kv` list API.
 const lists = new Map<string, unknown[]>();
 
-vi.mock('@vercel/kv', () => ({
+vi.mock('./kv', () => ({
   kv: {
     lpush: vi.fn(async (key: string, ...values: unknown[]) => {
       const arr = lists.get(key) ?? [];
@@ -129,7 +129,7 @@ describe('push-history fail-soft', () => {
   });
 
   it('recordSent swallows a KV error (never breaks a send)', async () => {
-    const kvModule = await import('@vercel/kv');
+    const kvModule = await import('./kv');
     (kvModule.kv.lpush as unknown as { mockImplementationOnce: (fn: () => Promise<unknown>) => void })
       .mockImplementationOnce(async () => {
         throw new Error('KV outage');
@@ -138,7 +138,7 @@ describe('push-history fail-soft', () => {
   });
 
   it('listHistory swallows a KV error and returns []', async () => {
-    const kvModule = await import('@vercel/kv');
+    const kvModule = await import('./kv');
     (kvModule.kv.lrange as unknown as { mockImplementationOnce: (fn: () => Promise<unknown>) => void })
       .mockImplementationOnce(async () => {
         throw new Error('KV outage');

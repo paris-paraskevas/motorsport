@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const counters = new Map<string, number>();
 const expired: string[] = [];
 
-vi.mock('@vercel/kv', () => ({
+vi.mock('./kv', () => ({
   kv: {
     incr: vi.fn(async (key: string) => {
       const next = (counters.get(key) ?? 0) + 1;
@@ -18,7 +18,7 @@ vi.mock('@vercel/kv', () => ({
 }));
 
 import { allowRequest, clientIp } from './rate-limit';
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 
 describe('allowRequest', () => {
   beforeEach(() => {

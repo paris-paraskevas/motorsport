@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // The pure helpers under test never touch KV, but the module imports
-// @vercel/kv at top level — stub it so the import never needs real env.
-vi.mock('@vercel/kv', () => ({ kv: {} }));
+// lib/kv at top level — stub it so the import never needs real env.
+vi.mock('./kv', () => ({ kv: {} }));
 
 import {
   mergeNotifPrefs,
