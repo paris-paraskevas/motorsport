@@ -26,7 +26,7 @@ You are a capable, autonomous engineer on a two-person team. I set goals and con
 
 ## Landmines (facts you can't infer — get one wrong and prod breaks or fails silently)
 1. `next.config.ts` needs BOTH `serverExternalPackages: ["node-ical"]` AND `outputFileTracingIncludes` — remove either and production fetches break.
-2. Middleware is `proxy.ts` in Next 16, not `middleware.ts` (`clerkMiddleware()` itself unchanged).
+2. Middleware is **`middleware.ts`**, not `proxy.ts` (`clerkMiddleware()` itself unchanged). Next 16 prefers `proxy.ts` and warns `The "middleware" file convention is deprecated` on **every** build — that warning is expected and must not be "fixed" on sight: the Cloudflare migration renamed it back to `middleware.ts` because OpenNext needs the Edge runtime. Renaming it without first confirming OpenNext support breaks the deploy.
 3. KV env vars are unprefixed (`KV_REST_API_URL`, `KV_REST_API_TOKEN`) — reject the Vercel Marketplace "STORAGE" prefix.
 4. Clerk publishable key keeps the `NEXT_PUBLIC_` prefix exactly; the Marketplace integration creates empty Production placeholders — paste real values manually.
 5. Notification badge must be monochrome (`public/icons/badge-96.png`; regenerate via `scripts/gen-badge.py`).
@@ -60,7 +60,7 @@ Next.js 16 App Router · React 19 · Tailwind v4 · `@serwist/next` PWA · Clerk
 
 | Path | Purpose |
 |---|---|
-| `app/` | App Router routes (route-groups `(app)` / `(marketing)`); `proxy.ts` is middleware |
+| `app/` | App Router routes (route-groups `(app)` / `(marketing)` / `(admin)`); `middleware.ts` at the repo root is the middleware |
 | `components/` | React components; `components/weekend/*` = race-weekend page |
 | `lib/` | Pure modules; server-only helpers end in `*-loader.ts` to keep client bundles clean |
 | `content/series/<slug>/` | Per-series curated data (meta, drivers, champions, rounds, session overrides, fallback ICS) |
