@@ -5,7 +5,7 @@ import { loadSeries } from '@/lib/series';
 import { sessionSlug, weekendFor, weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { WeekendHero } from '@/components/weekend/WeekendHero';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
-import { matchCircuitEntry } from '@/lib/circuits';
+import { matchCircuitEntry, venueCandidates } from '@/lib/circuits';
 import { WeekendWeatherStrip } from '@/components/weekend/WeekendWeatherStrip';
 import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendTabs } from '@/components/weekend/WeekendTabs';
@@ -137,16 +137,21 @@ export default async function WeekendPage({
   // Circuit-layout schematic for the hero (F1 2026 calendar in v1, from f1db) —
   // resolved by the round's venue/name via the shared circuit matcher. ISR-safe
   // (fs reads); gracefully null for circuits we haven't curated a map for.
-  const circuitLayout = await circuitLayoutFor(
-    weekend.sessions.find(s => s.location)?.location,
-    weekendTitleLabel,
-  );
+  // roundMeta first: a curated `venue` overrides name-based circuit resolution,
+  // and both the map and the structured-data lookup below need it.
+  const roundMeta = series.rounds?.rounds?.find((r) => r.round === round);
+  const venueCandidateList = venueCandidates({
+    venue: roundMeta?.venue,
+    location: weekend.sessions.find(s => s.location)?.location,
+    title: weekendTitleLabel,
+  });
+  const circuitLayout = await circuitLayoutFor(...venueCandidateList);
 
   // SportsEvent structured-data enrichment (SEO): resolve the venue's circuit
   // (address/geo) and the series' curated teams (performers). Both fs reads,
   // ISR-safe; gracefully partial when a venue or roster isn't curated.
-  const venueLocation = weekend.sessions.find(s => s.location)?.location;
-  const circuitMatch = await matchCircuitEntry(venueLocation, weekendTitleLabel);
+  const venueLocation = roundMeta?.venue ?? weekend.sessions.find(s => s.location)?.location;
+  const circuitMatch = await matchCircuitEntry(...venueCandidateList);
   // Deep-link the venue to its /information circuit profile when one exists —
   // those pages are otherwise reachable only from the tracks index + search.
   const trackInfoSlug = circuitMatch
@@ -154,7 +159,7 @@ export default async function WeekendPage({
     : undefined;
   // Rally / multi-venue rounds have no single circuit; fall back to the round's
   // curated host country (rounds.json) so SportsEvent still emits an address.
-  const roundMeta = series.rounds?.rounds?.find((r) => r.round === round);
+  // (roundMeta is resolved above, where the venue override is applied.)
   const roster = await loadCuratedDrivers(slug);
   const eventDescription =
     `Round ${round} of the ${series.meta.season} ${series.meta.name} season` +

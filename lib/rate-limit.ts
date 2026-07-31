@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 
 // Fixed-window KV rate limiter (security audit 2026-06-11). Guards the
 // unauthenticated write surface (/api/contact) and cheap-to-abuse authed

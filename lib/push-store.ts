@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 import type { PushSubscription } from 'web-push';
 import { isAllowedPushEndpoint } from './push-hosts';
 

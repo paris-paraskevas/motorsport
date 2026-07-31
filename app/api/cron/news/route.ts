@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/kv';
 import { NEWS_SLUG_MAP, fetchNews, articleKey, isRecentArticle } from '@/lib/news';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';

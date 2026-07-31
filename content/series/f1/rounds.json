@@ -16,23 +16,16 @@
     { "round": 13, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "Italian Grand Prix" },
     { "round": 14, "startDate": "2026-09-11", "endDate": "2026-09-13", "name": "Spanish Grand Prix (Madrid)" },
     { "round": 15, "startDate": "2026-09-24", "endDate": "2026-09-26", "name": "Azerbaijan Grand Prix" },
-    { "round": 16, "startDate": "2026-10-09", "endDate": "2026-10-11", "name": "Singapore Grand Prix" },
-    { "round": 17, "startDate": "2026-10-23", "endDate": "2026-10-25", "name": "United States Grand Prix" },
-    { "round": 18, "startDate": "2026-10-30", "endDate": "2026-11-01", "name": "Mexico City Grand Prix" },
-    { "round": 19, "startDate": "2026-11-06", "endDate": "2026-11-08", "name": "São Paulo Grand Prix" },
-    { "round": 20, "startDate": "2026-11-19", "endDate": "2026-11-22", "name": "Las Vegas Grand Prix" },
-    { "round": 21, "startDate": "2026-11-27", "endDate": "2026-11-29", "name": "Qatar Grand Prix" },
-    { "round": 22, "startDate": "2026-12-04", "endDate": "2026-12-06", "name": "Abu Dhabi Grand Prix" }
+    { "round": 16, "startDate": "2026-10-02", "endDate": "2026-10-04", "name": "Bahrain Grand Prix", "venue": "Sepang International Circuit", "countryCode": "MY", "previousStartDate": "2026-04-10", "previousEndDate": "2026-04-12", "rescheduleNote": "relocated to Sepang, Malaysia" },
+    { "round": 17, "startDate": "2026-10-09", "endDate": "2026-10-11", "name": "Singapore Grand Prix" },
+    { "round": 18, "startDate": "2026-10-23", "endDate": "2026-10-25", "name": "United States Grand Prix" },
+    { "round": 19, "startDate": "2026-10-30", "endDate": "2026-11-01", "name": "Mexico City Grand Prix" },
+    { "round": 20, "startDate": "2026-11-06", "endDate": "2026-11-08", "name": "São Paulo Grand Prix" },
+    { "round": 21, "startDate": "2026-11-19", "endDate": "2026-11-22", "name": "Las Vegas Grand Prix" },
+    { "round": 22, "startDate": "2026-11-27", "endDate": "2026-11-29", "name": "Qatar Grand Prix" },
+    { "round": 23, "startDate": "2026-12-04", "endDate": "2026-12-06", "name": "Abu Dhabi Grand Prix" }
   ],
   "cancelledRounds": [
-    {
-      "originalRound": 4,
-      "name": "Bahrain Grand Prix",
-      "originalStartDate": "2026-04-10",
-      "originalEndDate": "2026-04-12",
-      "reason": "Middle East conflict",
-      "rescheduleStatus": "Under discussion for the 2-4 October weekend, not yet officially confirmed by F1/FIA"
-    },
     {
       "originalRound": 5,
       "name": "Saudi Arabian Grand Prix",

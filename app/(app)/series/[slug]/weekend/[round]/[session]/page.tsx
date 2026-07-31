@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
-import { matchCircuitEntry } from '@/lib/circuits';
+import { matchCircuitEntry, venueCandidates } from '@/lib/circuits';
 import type { Weekend } from '@/lib/types';
 import { LocalTime } from '@/components/LocalTime';
 import {
@@ -698,15 +698,21 @@ export default async function SessionPage({
   // weekend page (venue/name via the shared circuit matcher; fs reads, so it
   // gracefully nulls for circuits without a layout).
   const watch = series.meta.watch;
-  const venueLocation = weekend.sessions.find(s => s.location)?.location;
-  const circuitLayout = await circuitLayoutFor(venueLocation, weekendTitle);
+  // roundMeta first: a curated `venue` overrides name-based circuit resolution
+  // (the 2026 Bahrain GP runs at Sepang), and both lookups below depend on it.
+  const roundMeta = series.rounds?.rounds?.find(r => r.round === round);
+  const venueCandidateList = venueCandidates({
+    venue: roundMeta?.venue,
+    location: weekend.sessions.find(s => s.location)?.location,
+    title: weekendTitle,
+  });
+  const circuitLayout = await circuitLayoutFor(...venueCandidateList);
 
   // SportsEvent enrichment for the session event — the same circuit (address/geo)
   // + round (host country / cancellation) resolution the weekend page does, so
   // the session-level SportsEvent carries a full address, not a name-only Place.
   // fs reads, cheap; gracefully partial when a venue/round isn't curated.
-  const circuitMatch = await matchCircuitEntry(venueLocation, weekendTitle);
-  const roundMeta = series.rounds?.rounds?.find(r => r.round === round);
+  const circuitMatch = await matchCircuitEntry(...venueCandidateList);
 
   // Per-session structured data: a breadcrumb (Home > series > weekend >
   // session) plus a session-level SportsEvent whose startDate is the real

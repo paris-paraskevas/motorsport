@@ -1,8 +1,21 @@
 What's new in Paddock Tracker. Newest first.
 
-## 0.246.0 — 2026-07-28
+## 0.246.0 — 2026-07-31
 
 **Writers have a page of their own.** Every author now has a public page collecting their bio, their links and everything they have published, and the byline on a post takes you straight to it. Authors write and edit that page themselves, and choose which of their posts appear on it.
+## 0.245.3 — 2026-07-31
+
+**Behind the scenes.** A broken developer check is working again. No change to the site.
+
+## 0.245.2 — 2026-07-31
+
+**The cancelled Bahrain Grand Prix is back on the calendar, in October and in Malaysia.** The race was called off from its April date, and it now runs on 2-4 October at Sepang. The weekend shows where it moved from, and its weather and location details point at Sepang rather than Bahrain, which is where the race name would otherwise have sent them. The rounds after it have each shifted up by one.
+
+**Endurance racing's last two rounds are corrected.** The World Endurance Championship season now ends with six-hour races at Barcelona on 18 October and Monza on 8 November. Qatar and Bahrain have left the calendar and no longer appear. Session times for the two new races will follow once the organisers publish them.
+## 0.245.1 — 2026-07-28
+
+**Behind the scenes.** A third private copy of the site, so another writer can try their work before it goes live. No change to the site.
+
 ## 0.245.0 — 2026-07-28
 
 **Behind the scenes.** Each of us now has a private copy of the site to try work on before it goes live, and shipping to the real site happens only when a change is formally approved. No change to the site itself.

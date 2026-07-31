@@ -28,7 +28,11 @@
     "deploy:cf": "wrangler deploy && npm run cf:populate",
     "cf:populate:paris": "opennextjs-cloudflare populateCache remote -c wrangler.paris.jsonc --cacheChunkSize 5",
     "deploy:paris": "npm run cf:build && wrangler deploy -c wrangler.paris.jsonc && npm run cf:populate:paris",
-    "deploy:cf:paris": "wrangler deploy -c wrangler.paris.jsonc && (npm run cf:populate:paris || echo \"populate skipped, non-fatal: cache warms on first visit\")"
+    "deploy:cf:paris": "wrangler deploy -c wrangler.paris.jsonc && (npm run cf:populate:paris || echo \"populate skipped, non-fatal: cache warms on first visit\")",
+    "cf:populate:panagiotis": "opennextjs-cloudflare populateCache remote -c wrangler.panagiotis.jsonc --cacheChunkSize 5",
+    "deploy:panagiotis": "npm run cf:build && wrangler deploy -c wrangler.panagiotis.jsonc && npm run cf:populate:panagiotis",
+    "deploy:cf:panagiotis": "wrangler deploy -c wrangler.panagiotis.jsonc && (npm run cf:populate:panagiotis || echo \"populate skipped, non-fatal: cache warms on first visit\")",
+    "secrets:sync": "tsx --env-file=.env.production.local scripts/sync-worker-secrets.mts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.3",
@@ -43,9 +47,7 @@
     "@serwist/next": "^9.5.11",
     "@supabase/supabase-js": "^2.108.2",
     "@types/leaflet": "^1.9.21",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/kv": "^3.0.0",
-    "@vercel/speed-insights": "^2.0.0",
+    "@upstash/redis": "^1.38.0",
     "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
     "domhandler": "^5.0.3",

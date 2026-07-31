@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './kv';
 
 // Dedupe ledger for the notify cron. One key per (session, notification kind);
 // the cron fires every minute and each send window is a few minutes wide, so

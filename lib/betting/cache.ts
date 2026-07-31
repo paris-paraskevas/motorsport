@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from '../kv';
 
 // Server-only. A thin KV read-through for the hot betting *display* reads — open
 // markets (identical for every viewer) and per-league win-rate leaderboards.
