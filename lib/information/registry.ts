@@ -34,7 +34,16 @@ import { loadCircuits, normalise } from '@/lib/circuits';
 // 2026-07-13: raised 322 → 323 for "who has won the most MotoGP titles" (a GSC
 // top-query gap; premier-class + all-class + by-manufacturer records, triple-
 // verified against motogp.com / FIM / Wikipedia before promotion).
-export const INFORMATION_MAX_INDEXED = 323;
+// 2026-07-31: raised 323 → 900 (operator decision) so all 488 generated champion
+// pages become indexable, taking the section from 310 indexed to ~783. The cap
+// existed as the anti-"scaled content" control, and the reason it is safe to
+// loosen HERE is that the pages it was holding back are not thin: measured across
+// all 488, shortest body 188 characters, median 316, longest 495, none a single
+// sentence, every fact traceable to a vetted champions.json. What the cap still
+// guards is genuinely low-quality bulk, so it is raised, not removed — 900 leaves
+// roughly seven seasons of headroom (~15 new champion pages a year) before anyone
+// has to think about it again, and the console.warn below still fires first.
+export const INFORMATION_MAX_INDEXED = 900;
 
 interface RegistryState {
   all: InfoEntry[];
