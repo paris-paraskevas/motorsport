@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.246.1 — 2026-07-31
+
+### Fixed
+- **Published blog posts were absent from the sitemap entirely.** `lib/sitemap-data.ts` advertised `/blog` but not one post on it, so the site's most original content was discoverable only by crawling the index — which is precisely the "Crawled - currently not indexed" shape sitting in Search Console. Now emits every published post from both sources the `/blog` page merges (DB posts via `publishedPosts`, legacy MDX via `loadAllPosts`), deduped by slug with the DB winning to match that page's own precedence, sorted for deterministic build-to-build output. Both reads are fail-soft: a Supabase hiccup or an unreadable content directory drops the blog entries rather than failing the whole sitemap, since a sitemap that 500s costs every URL and not just these. 2 new tests.
+- Noted, not changed: `lib/sitemap-data.test.ts:22-26` asserts F1 has 22 weekend URLs and still passes after 0.245.2 added a 23rd round, because weekend URLs derive from **sessions**, not `rounds.json`. On prod, where real session data exists, the Sepang round is advertised; in tests it is not.
+
 ## 0.246.0 — 2026-07-31
 
 ### Added

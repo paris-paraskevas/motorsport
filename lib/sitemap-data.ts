@@ -6,6 +6,8 @@ import { SITE_URL } from './site';
 import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
 import { listAuthors } from './authors';
+import { publishedPosts } from './blog';
+import { loadAllPosts } from './posts';
 
 // Google's 2026 sitemap guidance: `priority` and `changefreq` are ignored
 // entirely; `lastmod` is the only acted-upon hint, and only when its accuracy
@@ -114,5 +116,30 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
         ]
       : [];
 
-  return [...staticUrls, ...seriesUrls, ...weekendChunks.flat(), ...infoUrls, ...authorUrls];
+  // Blog posts. The sitemap advertised /blog but not a single post on it, so the
+  // site's most original content was reachable only by crawling the index — which
+  // is exactly the "Crawled - currently not indexed" shape sitting in Search
+  // Console. Both sources the /blog page merges are included, DB winning on a slug
+  // collision to match that page's own precedence, and each is fail-soft: a
+  // Supabase hiccup or an unreadable content directory drops these entries rather
+  // than failing the whole sitemap.
+  const [dbPosts, mdxPosts] = await Promise.all([
+    publishedPosts().catch(() => []),
+    loadAllPosts().catch(() => []),
+  ]);
+  const postSlugs = new Set<string>();
+  for (const p of mdxPosts) postSlugs.add(p.slug);
+  for (const p of dbPosts) postSlugs.add(p.slug);
+  const blogUrls: MetadataRoute.Sitemap = [...postSlugs]
+    .sort()
+    .map((slug) => ({ url: `${SITE_URL}/blog/${slug}` }));
+
+  return [
+    ...staticUrls,
+    ...seriesUrls,
+    ...weekendChunks.flat(),
+    ...infoUrls,
+    ...authorUrls,
+    ...blogUrls,
+  ];
 }
