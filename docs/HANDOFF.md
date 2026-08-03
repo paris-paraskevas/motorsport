@@ -6,7 +6,50 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-07-28 (LATEST, session 23 — DB-as-source-of-truth, R2 page cache, the silent-writer saga) — `main` = 0.244.0 AND prod runs it
+## ⚡ Next session pickup — 2026-08-03 (LATEST, session 24-25 — author CMS, per-dev workers, all Vercel out, 1122 sitemap URLs) — `main` = 0.248.0 AND prod runs it
+
+Long session (2026-07-28 → 08-03). **0.244.2 → 0.248.0, PRs #639-#647, all merged, prod auto-deployed each time.**
+
+### 📌 NEXT SESSION — start here
+1. **`PostModeration` empty state is bad, practically and optically** (operator, with screenshot). Copy says "write one above" but the button is INSIDE the box; leaks "the publish cron" at users; stale since #647 (drafts are private now, the flow is Submit for review); em dash violates house style. Visually: amber tint wash + `rounded-2xl` against a house style of hairline borders and sharp corners. Needs a visual proposal before building (`feedback-paddock-visual-decisions`).
+2. **Item 13 — article imports:** `post.original_url`, canonical pointing off-site, provenance shown on the post. Needs a migration (operator names the SQL).
+3. Then: item 14 (become-an-author form + `contributor` role), 17 (format button), 20 (other 13 series calendars unverified), 25 (dev-loop speed), 26 (prod perf re-baseline — see the operator's own IDEAS Inbox entry).
+
+### ✅ Shipped
+- **Author pages + self-service profiles (0.246.0, #640).** New `author` table keyed on `clerk_user_id`; `/authors`, `/authors/<slug>`, `/settings/author`; bylines link on post pages and `/blog` cards; `ProfilePage`/`Person` JSON-LD with a stable `@id` that `articleLd` stamps on every post's author. `author.display_name` outranks Clerk (the author typed it into our form). `venueCandidates`-style precedence lesson: `matchCircuitEntry` returns the LONGEST alias found in ANY candidate, so candidate order carries no priority.
+- **Three-tier Cloudflare pipeline (0.245.0-0.245.1, #639/#641).** `main`→prod, `testing`→Fotis, `testing-paris`→operator, `testing-panagiotis`→Panagiotis. Four workers. **Merge-to-prod is verified autonomous** (31b153e9 → 35499c28 ~6 min after merging #641, no hand deploy). `scripts/sync-worker-secrets.mts` makes a new preview one command.
+- **Every Vercel package removed (0.245.1).** `@vercel/kv` → `@upstash/redis` behind a new `lib/kv.ts`; parity proven against the live store both ways before repointing, then a round trip through `lib/results-cache`. Zero exceptions in 623 prod log lines after deploy.
+- **Calendar corrections (0.245.2, #642).** F1 gained the rescheduled **Bahrain GP at Sepang, 2-4 Oct** (round 16, renumbering 17-23); WEC's rounds 7-8 replaced with **Barcelona 18 Oct** and **Monza 8 Nov** (Qatar and Bahrain left the calendar).
+- **1122 sitemap URLs, from 586.** Blog posts were absent entirely (0.246.1, #644); all 488 champion pages made indexable (0.247.0, #646) taking the information hub 310 → ~783.
+- **Submission loop (0.248.0, #647).** `in_review` status, Submit action, author gets an approval email with the scheduled time. **Security tightening: a writer could previously approve — and therefore publish — their own post.** Now admin-only (`app/api/blog/[id]/route.ts:57`).
+- Lint gate restored (0.245.3, #643) and the photo-less-author initial tile (0.246.2, #645).
+
+### ⚠ LANDMINES (new)
+1. **Cloudflare does not generate Preview URLs for a Worker with a Durable Object** — `worker.ts:21` exports three. A live URL therefore means a real Worker; per-branch previews are impossible without one worker per branch.
+2. **The zone has wildcard `*.paddock-tracker.com` A records, proxied, pointing at VERCEL IPs.** That is why new subdomains need no DNS record — and why a subdomain with **no** Worker route falls through to Vercel. Retrieve the VAPID key before cancelling Vercel; repointing those records needs the DNS-scoped token (in `.cloudflare-dns-token`).
+3. **Cloudflare Secrets Store is unusable here**: bindings are async-only (`await env.X.get()`) while this codebase and the Clerk/Supabase SDKs read `process.env` synchronously. Reasoning is recorded in `scripts/sync-worker-secrets.mts`.
+4. **`matchCircuitEntry` ignores candidate order** — longest alias in ANY candidate wins. A curated `venue` must be passed ALONE (`venueCandidates`, `lib/circuits.ts`).
+5. **`.open-next` (332 MB / 3112 files) must stay in `eslint.config.mjs` globalIgnores** or `npm run lint` OOMs at any heap size.
+6. **The VAPID public key exists nowhere** — not in the repo, not in git history, and Cloudflare secrets are write-only. `.env.cloudflare.local:23-25` are empty. It is self-generated (`web-push`), so no vendor has it. Recover from a live browser subscription (`pushManager.getSubscription().options.applicationServerKey`) or from Vercel's env vars, else regenerate and lose **6** subscriptions.
+7. **`bash` eats backticks inside double-quoted `node -e`** — it mangled a CHANGELOG entry mid-session. Use the Edit tool for prose containing backticks.
+
+### 🔴 The MotoGP enrichment failure (read before retrying champions depth)
+402 of 488 champion pages have no points/wins/runner-up. An inline attempt on MotoGP's 67 missing seasons: a deterministic parser (no numbers through a model) read 63, then a cross-check against the repo's independently curated champion **names** rejected **13** — each naming a real champion of a *different class* that season with plausible points attached. Of the 50 survivors, two were checked against a second source: 1993 matched exactly, **1975 conflicted** (84 pts/4 wins in the season article vs 70/3 in Agostini's own, likely gross vs net under the dropped-scores rule). One failure in a sample of two, so **nothing was written** — `champions.json` is untouched. Reusable: the parser + fetched wikitext (session scratchpad) and the name cross-check pattern, which generalises to every series. Conclusion: this needs two-source-per-row verification, i.e. the ultracode pass, not a single-source parse. **ADAC 24h (54 rows) and NLS (16) must NOT be enriched** — single-race/crew winners with no championship points or runner-up.
+
+### 🩹 Owed (operator)
+- VAPID public key (see landmine 6). Approve/schedule the two blog drafts. Rotate `SENTRY_AUTH_TOKEN`, `sk_live`, and `SUPABASE_SERVICE_ROLE_KEY` (it appeared in a session transcript).
+- Cancel Vercel + disconnect its GitHub app, then Claude repoints the DNS off Vercel IPs.
+- GSC export of the noindex list to close out the indexing work.
+- Signed-in click-throughs Claude cannot do (Clerk production issues no session on localhost): `/settings/author` form, and the new submit→approve→email flow at `paris.paddock-tracker.com/blog`.
+
+### 🔧 State at wrap
+- `main` = **0.248.0**, prod runs it, zero open PRs. Four workers live: prod, testing, paris (`c29834a2`, auto-deploys), panagiotis (`af05e59d`, **build config still needed**).
+- Investigated and deliberately deferred, findings recorded: `/authors` builds `ƒ` while `/blog` builds `○` (the `clerkClient()` explanation is contradicted by `/authors/[slug]` prerendering); the `metadataBase` warning fires **20×** per build though all three root layouts set it.
+- Unresolved: one test flake seen once (`1 failed | 968 passed`), never reproduced in three runs, name not captured. WEC rounds 7-8 render at their own URLs but are absent from the series calendar list until the warm cron reseeds sessions.
+
+---
+
+## ⚡ Session 23 — 2026-07-28 (session 23 — DB-as-source-of-truth, R2 page cache, the silent-writer saga) — `main` = 0.244.0 AND prod runs it
 
 Long session (2026-07-27 → 07-28). **Versions 0.240.0 → 0.244.0, PRs #629-#636, all merged; `main` and prod are finally the same code.** The Vercel-era `main` (0.239.1) knew nothing about Cloudflare until #629 landed.
 
