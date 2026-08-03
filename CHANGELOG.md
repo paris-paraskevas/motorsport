@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.248.0 — 2026-08-03
+
+### Added
+- **`in_review`: drafts are finally private, and submitting is an explicit act** (migration `20260803120000_post_in_review.sql`, applied by the operator). `draft` had been doing two jobs — a writer's private workspace *and* the review queue — and because `POST /api/blog` notified on every insert, saving half a paragraph pinged the operator. Writers responded by not saving, which is the opposite of what a draft is for. Now `draft` notifies nobody, `in_review` is a deliberate submission that fires the existing admin email + push, and `approved`/`published`/`rejected` are unchanged. This is WordPress's "Pending Review" and Ghost's contributor model, both of which separate "can write" from "can publish" the same way. The constraint was dropped and recreated because Postgres has no ALTER for a check expression; its current definition was read from `pg_constraint` first rather than assumed, confirming the widening cannot invalidate an existing row.
+- **`submitPost`** (`lib/blog.ts`), guarded to `draft` only with an exact count, so a double-submit is a no-op rather than a second notification and a decided post cannot be dragged back into the queue. Exposed as `action: 'submit'` on `POST /api/blog/[id]`, which is now the **only** path that alerts the operator.
+- **The author finally hears back.** `notifyAuthorDecision` (`lib/blog-notify.ts`) emails the writer on approve or reject, carrying the scheduled publish time rendered in Europe/Athens with the zone named. `decidePost` previously flipped the status and notified nobody, so a writer had to poll the console to learn whether their work was going live. Email only, deliberately: a contributor is not necessarily a push subscriber, and a timestamp does not fit a notification body. New `blog-decision` ledger kind, keyed per post **and** per outcome+time, so a reschedule legitimately re-notifies with the new time while a retry of the same decision cannot double-send. Fires in `after()`, so a mail hiccup can never fail the decision that has already been committed.
+- **Three queues in the blog console** (`inReview` added to `GET /api/blog` and `PostModeration`): private drafts with a "Submit for review" button, submissions awaiting a decision, and scheduled posts. A writer sees their submission's state and is told they can still edit it; only an admin gets the approve/reject controls.
+
+### Changed
+- **A writer can no longer approve their own post.** `authorizePostActor` granted a writer every action on a post they own, which included `approve` — so a writer could schedule and therefore publish their own work, quietly bypassing the approval SOP the whole blog process is built on. Deciding is now admin-only; submitting is the writer's action. This is a deliberate tightening and the point of the review state.
+- **`updatePostContent` accepts `in_review`.** A submitted piece stays editable while it waits, which is the difference between submitting and publishing; `published` and `rejected` remain locked. The existing test asserting the old two-status contract was updated to the new one rather than loosened.
+- **`scripts/draft-post.mts` submits after creating.** A script-authored post arrives finished, so leaving it as a private draft would hide it from the operator's queue — the opposite of what that script is for.
+
+### Notes
+- **Correcting an earlier claim in this changelog's own voice:** the publish lag is bounded at roughly **15 minutes**, not the ~20 previously stated. `app/api/cron/publish-posts/route.ts:42-43` already calls `revalidatePath` for `/blog` and each published post, so there is no 300-second ISR tail to add; and approving a post whose time has already passed publishes it inline and immediately (`app/api/blog/[id]/route.ts:105-116`). The only remaining lever is the `*/15` cron cadence in `worker.ts:30`.
+
 ## 0.247.0 — 2026-07-31
 
 ### Added

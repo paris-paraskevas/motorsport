@@ -8,7 +8,19 @@ import { displayNames } from './betting/friends';
 // rest of the schema; all access goes through here. Display names resolve at
 // read time (never stored).
 
-export type PostStatus = 'draft' | 'approved' | 'published' | 'rejected';
+// draft      — the writer's private workspace. Notifies nobody.
+// in_review  — submitted. Fires the admin notification; awaits a decision.
+// approved   — scheduled, with a publish_at the cron acts on.
+// published  — live.
+// rejected   — terminal.
+// `draft` used to do the first two jobs at once, so a half-written save pinged the
+// operator and writers learned not to save (migration 20260803120000).
+export type PostStatus = 'draft' | 'in_review' | 'approved' | 'published' | 'rejected';
+
+/** Statuses an admin can decide on. A writer submits `draft` → `in_review`; the
+ *  operator can still approve straight from `draft`, which is what the headless
+ *  scripts/draft-post path and their own hand-authored drafts rely on. */
+export const DECIDABLE_STATUSES: PostStatus[] = ['draft', 'in_review'];
 
 export interface BlogPost {
   id: string;
@@ -368,16 +380,38 @@ export async function updatePostContent(id: string, patch: PostContentPatch): Pr
     .from('post')
     .update({ ...fields, updated_at: new Date().toISOString() }, { count: 'exact' })
     .eq('id', id)
-    .in('status', ['draft', 'approved']);
+    // in_review included: a submitted piece stays editable while it waits for a
+    // decision, which is the whole point of submitting rather than publishing.
+    .in('status', ['draft', 'in_review', 'approved']);
   if (error) throw new Error(`updatePostContent failed: ${error.message}`);
-  if (!count) throw new Error('post is not editable (only drafts and scheduled posts can be edited)');
+  if (!count) throw new Error('post is not editable (only drafts, submissions and scheduled posts can be edited)');
   return id;
 }
 
-/** Approve (schedule) or reject a draft (admin only — caller pre-verified).
- *  Approve REQUIRES a publish_at (param overrides the draft-time value); the post
- *  stays hidden until the publish cron flips it at that time. Status-guarded to
- *  'draft' so a double-submit / race can't re-decide an already-decided post. */
+/** Submit a draft for review: 'draft' → 'in_review' (the owning writer, or an
+ *  admin — caller pre-verified). Status-guarded so a double-submit is a no-op
+ *  rather than a second notification, and so an already-decided post cannot be
+ *  dragged back into the queue. Returns the submitted post for the notifier. */
+export async function submitPost(id: string): Promise<BlogPost> {
+  const now = new Date().toISOString();
+  const { data, error, count } = await betDb()
+    .from('post')
+    .update({ status: 'in_review', updated_at: now }, { count: 'exact' })
+    .eq('id', id)
+    .eq('status', 'draft')
+    .select(COLS);
+  if (error) throw new Error(`submitPost failed: ${error.message}`);
+  if (!count || !data?.[0]) throw new Error('post is not a draft (already submitted or decided?)');
+  const [post] = await withNames(data);
+  return post;
+}
+
+/** Approve (schedule) or reject a submitted post (admin only — caller
+ *  pre-verified). Approve REQUIRES a publish_at (param overrides the draft-time
+ *  value); the post stays hidden until the publish cron flips it at that time.
+ *  Status-guarded to DECIDABLE_STATUSES so a double-submit / race can't re-decide
+ *  an already-decided post, while still letting the operator approve straight from
+ *  'draft' — which their own hand-authored drafts and scripts/draft-post rely on. */
 export async function decidePost(
   id: string,
   adminId: string,
@@ -392,9 +426,9 @@ export async function decidePost(
       .from('post')
       .update({ status: 'rejected', updated_at: now }, { count: 'exact' })
       .eq('id', id)
-      .eq('status', 'draft');
+      .in('status', DECIDABLE_STATUSES);
     if (error) throw new Error(`decidePost failed: ${error.message}`);
-    if (!count) throw new Error('post is not a draft (already decided?)');
+    if (!count) throw new Error('post is not awaiting a decision (already decided?)');
     return;
   }
 
@@ -413,9 +447,9 @@ export async function decidePost(
       { count: 'exact' },
     )
     .eq('id', id)
-    .eq('status', 'draft');
+    .in('status', DECIDABLE_STATUSES);
   if (error) throw new Error(`decidePost failed: ${error.message}`);
-  if (!count) throw new Error('post is not a draft (already decided?)');
+  if (!count) throw new Error('post is not awaiting a decision (already decided?)');
 }
 
 /** Move an already-approved (scheduled, not-yet-published) post to a new

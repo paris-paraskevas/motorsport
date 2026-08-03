@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.248.0 — 2026-08-03
+
+**Writers can now save work in progress privately, and submit it when it is ready.** Saving a half-finished draft no longer alerts the editor, and there is a Submit button for when a piece is done.
+
+**And writers hear back.** When a post is approved, its author gets an email telling them so and when it goes live, instead of having to check the site to find out.
+
 ## 0.247.0 — 2026-07-31
 
 **Every championship answer we hold is now visible to search engines.** Pages answering "who won the 1985 world championship" and 487 others like them existed on the site but were hidden from Google. All of them are now listed, across all fifteen series, taking the reference section from around 310 findable pages to roughly 780.

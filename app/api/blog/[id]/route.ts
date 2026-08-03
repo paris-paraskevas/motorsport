@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isAdmin, isWriter } from '@/lib/threads';
 import { isPushConfigured } from '@/lib/push';
-import { decidePost, reschedulePost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
+import { decidePost, reschedulePost, submitPost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
 import { announcePublishedPosts } from '@/lib/notify-blog';
+import { notifyAdminsDraftReady, notifyAuthorDecision } from '@/lib/blog-notify';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -42,16 +43,58 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   } catch {
     return NextResponse.json({ error: 'invalid body' }, { status: 400 });
   }
-  if (body.action !== 'approve' && body.action !== 'reject' && body.action !== 'reschedule') {
+  if (
+    body.action !== 'approve' &&
+    body.action !== 'reject' &&
+    body.action !== 'reschedule' &&
+    body.action !== 'submit'
+  ) {
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
+  }
+  // Only an admin decides. A writer may submit their own post (authorizePostActor
+  // already proved ownership) but must not approve or reject it — that separation
+  // is the whole point of the review state.
+  if (body.action !== 'submit' && !isAdmin(await currentUser())) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const publishAt = typeof body.publishAt === 'string' ? body.publishAt : undefined;
   try {
+    if (body.action === 'submit') {
+      const submitted = await submitPost(id);
+      // Off the critical path: the submission is already committed, and a notify
+      // hiccup must not fail it. This is the ONLY path that alerts the operator —
+      // creating a draft deliberately does not.
+      after(async () => {
+        try {
+          await notifyAdminsDraftReady({ id: submitted.id, title: submitted.title });
+        } catch (e) {
+          console.error('submit notify failed:', e);
+        }
+      });
+      return NextResponse.json({ ok: true, status: submitted.status });
+    }
     if (body.action === 'reschedule') {
       if (!publishAt) return NextResponse.json({ error: 'publishAt required to reschedule' }, { status: 422 });
       await reschedulePost(id, publishAt);
     } else {
       await decidePost(id, userId, body.action === 'approve', publishAt);
+      // Tell the author what happened, with the scheduled time. Previously nothing
+      // did, so a writer had to poll the console to find out.
+      const decided = gate;
+      after(async () => {
+        try {
+          await notifyAuthorDecision({
+            id: decided.id,
+            title: decided.title,
+            slug: decided.slug,
+            authorId: decided.authorId,
+            approved: body.action === 'approve',
+            publishAt: publishAt ?? decided.publishAt,
+          });
+        } catch (e) {
+          console.error('author decision notify failed:', e);
+        }
+      });
     }
     // Approving OR re-scheduling can leave a post due now (publish_at in the past)
     // — publish + notify it immediately instead of waiting for the

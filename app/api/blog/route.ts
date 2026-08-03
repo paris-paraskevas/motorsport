@@ -5,7 +5,6 @@ import { ensureAppUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
 import { isAdmin, isWriter } from '@/lib/threads';
 import { createDraft, listPosts } from '@/lib/blog';
-import { notifyAdminsDraftReady } from '@/lib/blog-notify';
 import { listSeriesSlugs } from '@/lib/series';
 
 export const runtime = 'nodejs';
@@ -25,11 +24,15 @@ export async function GET() {
   // (the [id] routes authorize each action per-post by ownership).
   const authorScope = admin ? undefined : userId;
   try {
-    const [drafts, scheduled] = await Promise.all([
+    // Three queues now: `drafts` are private workspaces (a writer's own, or every
+    // writer's for an admin), `inReview` is what awaits a decision, `scheduled` is
+    // approved-and-waiting. `drafts` used to double as the review queue.
+    const [drafts, inReview, scheduled] = await Promise.all([
       listPosts('draft', undefined, authorScope),
+      listPosts('in_review', undefined, authorScope),
       listPosts('approved', undefined, authorScope),
     ]);
-    return NextResponse.json({ drafts, scheduled, isAdmin: admin });
+    return NextResponse.json({ drafts, inReview, scheduled, isAdmin: admin });
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'unknown' }, { status: 500 });
   }
@@ -91,7 +94,10 @@ export async function POST(req: Request) {
       } catch {
         /* best-effort */
       }
-      await notifyAdminsDraftReady({ id, title: str(body.title) });
+      // Deliberately NO admin notification here. Creating a draft is a private
+      // act; the operator is alerted when the writer SUBMITS it (action 'submit'
+      // on /api/blog/[id]). Notifying on create is what made every half-finished
+      // save ping the operator, so writers stopped saving.
     });
     return NextResponse.json({ ok: true, id });
   } catch (err) {
