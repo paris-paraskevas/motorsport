@@ -1331,6 +1331,23 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Mon 2026-08-03 (session 25 — corrects the session-24 entry above, which was written mid-flight and went stale)
+
+The 2026-07-28 entry says the paris worker was "not started" and browser verification "BLOCKED". Both were resolved later the same session; this entry is the accurate record for 07-28 → 08-03.
+
+- → done: **author pages + self-service profiles** (0.246.0 #640), **three-tier Cloudflare pipeline + a worker per dev** (0.245.0/0.245.1 #639 #641), **every Vercel package removed** (`@vercel/kv` → `@upstash/redis` behind `lib/kv.ts`, parity proven both directions), **F1/WEC calendar corrections** (0.245.2 #642), **lint gate restored** (0.245.3 #643), **blog posts + all 488 champion pages indexed** (0.246.1 #644, 0.247.0 #646 — sitemap 586 → **1122**), **photo-less-author initial tile** (0.246.2 #645), **submission loop with `in_review` + author approval email** (0.248.0 #647).
+- → verified: **merge-to-prod is autonomous** (prod moved 31b153e9 → 35499c28 ~6 min after a merge, no hand deploy), and prod ran clean on the new KV client (623 log lines, zero exceptions).
+- → refused to ship: the **MotoGP champions enrichment**. Name cross-check rejected 13 of 63 parsed rows; of 50 survivors, 1 of 2 spot-checks conflicted (1975: 84/4 vs 70/3). `champions.json` untouched. Needs two-source-per-row verification.
+- → found, not fixed (findings in `docs/HANDOFF.md`): `/authors` builds dynamic where `/blog` prerenders; `metadataBase` warns 20× per build despite all three root layouts setting it; one unreproduced test flake.
+- → operator flagged at wrap: the `PostModeration` empty state is bad practically and optically (copy says "write one above" but the button is inside; leaks "the publish cron"; stale since #647; em dash; amber wash + `rounded-2xl` against the house style). First task next session, needs a visual proposal.
+- → not started: item 13 (article imports) onward.
+
+Won't-touch honored: `IDEAS.md` left alone all session (it carries the operator's own uncommitted Inbox entry on post-migration perf re-baselining).
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

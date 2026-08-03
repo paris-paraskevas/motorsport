@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.248.1 — 2026-08-03
+
+**Behind the scenes.** Internal notes updated. No change to the site.
+
 ## 0.248.0 — 2026-08-03
 
 **Writers can now save work in progress privately, and submit it when it is ready.** Saving a half-finished draft no longer alerts the editor, and there is a Submit button for when a piece is done.
