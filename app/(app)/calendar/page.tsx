@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
+import { groupByWeekend } from '@/lib/group';
+import type { CalendarWeekend } from '@/components/calendar/types';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -40,6 +42,28 @@ export default async function CalendarPage() {
     )
     .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());
 
+  // Weekends for the agenda view. groupByWeekend is the same resolution the
+  // per-series Calendar tab and the ICS feed run on, so a round's number, name
+  // and date range read identically wherever they appear. Flattened across
+  // series and sorted by first session, since the agenda interleaves them.
+  const weekends: CalendarWeekend[] = all
+    .flatMap(s =>
+      groupByWeekend(s.sessions, now, s.rounds).map(w => ({
+        key: `${s.meta.slug}:${w.key}`,
+        seriesSlug: s.meta.slug,
+        seriesName: s.meta.name,
+        color: s.meta.color,
+        round: w.round,
+        roundName: w.roundName ?? w.label,
+        dateRangeLabel: w.dateRangeLabel,
+        location: w.sessions.find(x => x.location)?.location,
+        isPast: w.isPast,
+        rescheduleNote: w.rescheduleNote,
+        sessions: w.sessions,
+      })),
+    )
+    .sort((a, b) => a.sessions[0].start.getTime() - b.sessions[0].start.getTime());
+
   // Pass the whole season (past + future), not just upcoming — otherwise the
   // month navigator has no past months to page into. It defaults to the
   // current month (pickDefaultMonth) and the ← button steps back through the
@@ -56,14 +80,21 @@ export default async function CalendarPage() {
           { name: 'Calendar', url: `${SITE_URL}/calendar` },
         ])}
       />
-      <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
-        <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
-          Calendar<span className="text-brand">.</span>
-        </h1>
-      </header>
+      {/* The nav already marks Calendar as the active section and the control
+          deck below carries the month as its dominant type, so a second giant
+          "CALENDAR." wordmark was pure duplication. The heading survives for
+          crawlers and screen readers, the same trade /app makes. */}
+      <h1 className="sr-only">
+        Motorsport calendar — every F1, MotoGP, WEC, Formula E, WRC, IndyCar,
+        NASCAR, IMSA and DTM session, in your timezone
+      </h1>
 
-      <CalendarView items={flat} roundByKey={roundByKey} serverNow={now.toISOString()} />
+      <CalendarView
+        items={flat}
+        weekends={weekends}
+        roundByKey={roundByKey}
+        serverNow={now.toISOString()}
+      />
     </div>
   );
 }

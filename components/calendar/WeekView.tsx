@@ -9,47 +9,73 @@ export function WeekView({
   now,
   buckets,
   roundByKey,
+  utc,
   onSelectDay,
 }: {
   anchor: Date;
   now: Date;
   buckets: Map<string, CalendarEntry[]>;
   roundByKey?: Record<string, number>;
+  utc: boolean;
   onSelectDay: (d: Date) => void;
 }) {
   const days = weekDays(anchor, now);
   return (
-    <div className="grid grid-cols-1 gap-px bg-border md:grid-cols-7">
-      {days.map(cell => {
-        const entries = buckets.get(cell.key) ?? [];
-        return (
-          <div key={cell.key} className="bg-bg p-2">
-            <button
-              type="button"
-              onClick={() => onSelectDay(cell.date)}
-              className="mb-1 flex w-full items-baseline gap-1.5 text-left"
+    <div className="border border-border bg-surface p-2 md:p-3">
+      <div className="grid grid-cols-1 gap-px bg-border-strong/40 md:grid-cols-7">
+        {days.map(cell => {
+          const entries = buckets.get(cell.key) ?? [];
+          const isRaceDay = cell.date.getDay() === 5 || cell.date.getDay() === 6 || cell.date.getDay() === 0;
+          return (
+            <div
+              key={cell.key}
+              className={`p-2 ${
+                cell.isToday
+                  ? 'bg-surface-elevated'
+                  : isRaceDay
+                    ? 'bg-surface-elevated/60'
+                    : 'bg-surface'
+              }`}
             >
-              <span className={`font-display text-sm font-bold uppercase tracking-wide ${cell.isToday ? 'text-brand' : 'text-text'}`}>
-                {new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(cell.date)}
-              </span>
-              <span className="font-mono text-xs tabular-nums text-text-muted">{cell.date.getDate()}</span>
-            </button>
-            {entries.length === 0 ? (
-              <span className="font-mono text-[11px] text-text-faint">—</span>
-            ) : (
-              <div className="flex flex-col gap-0.5">
-                {entries.map(e => (
-                  <SessionPill
-                    key={`${e.seriesSlug}-${e.session.uid}`}
-                    entry={e}
-                    round={roundByKey?.[`${e.seriesSlug}:${e.session.uid}`]}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+              <button
+                type="button"
+                onClick={() => onSelectDay(cell.date)}
+                className="mb-1.5 flex w-full items-baseline gap-1.5 border-b-2 border-border-strong pb-1 text-left"
+              >
+                <span
+                  className={`font-display text-sm font-extrabold uppercase tracking-wide ${
+                    cell.isToday ? 'text-brand' : 'text-text'
+                  }`}
+                >
+                  {new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(cell.date)}
+                </span>
+                <span className="font-mono text-sm font-bold text-text-muted tnum">
+                  {cell.date.getDate()}
+                </span>
+                {entries.length > 0 && (
+                  <span className="ml-auto font-mono text-[10px] text-text-faint tnum">
+                    {entries.length}
+                  </span>
+                )}
+              </button>
+              {entries.length === 0 ? (
+                <span className="px-1 font-mono text-xs text-text-faint">—</span>
+              ) : (
+                <div className="flex flex-col gap-0.5">
+                  {entries.map(e => (
+                    <SessionPill
+                      key={`${e.seriesSlug}-${e.session.uid}`}
+                      entry={e}
+                      round={roundByKey?.[`${e.seriesSlug}:${e.session.uid}`]}
+                      utc={utc}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -1,28 +1,61 @@
 'use client';
 
 import Link from 'next/link';
+import { classifySession, sessionTimeLabel } from '@/lib/calendar-grid';
+import { seriesInk } from '@/lib/site';
 import type { CalendarEntry } from './types';
 
-function timeLabel(session: CalendarEntry['session']): string {
-  if (session.dateOnly) return 'TBC';
-  return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }).format(session.start);
-}
-
-// Compact entry for dense month/week cells: series-color dot + time-or-TBC +
-// truncated title, linking to the weekend (or series) page. stopPropagation so a
-// pill click doesn't also trigger the day cell's "open day view".
-export function SessionPill({ entry, round }: { entry: CalendarEntry; round?: number }) {
-  const { session, color, seriesSlug } = entry;
+// Compact entry for the week view's day columns: series-colour spine, time (or
+// "TBC"), and the session title, linking to the weekend page.
+//
+// Type scale is deliberately 13px, not the old 11px. The tokens were never the
+// readability problem — --text-muted measures 7.85:1 on the page background —
+// but 11px body text in a dense grid is unreadable regardless of ratio, and the
+// colleague review flagged exactly this.
+export function SessionPill({
+  entry,
+  round,
+  utc,
+}: {
+  entry: CalendarEntry;
+  round?: number;
+  utc?: boolean;
+}) {
+  const { session, color, seriesSlug, seriesName } = entry;
   const href = round ? `/series/${seriesSlug}/weekend/${round}` : `/series/${seriesSlug}`;
+  const isRace = classifySession(session.title) === 'race';
   return (
     <Link
       href={href}
-      onClick={e => e.stopPropagation()}
-      className="flex min-w-0 items-center gap-1.5 rounded px-1 py-0.5 text-[11px] hover:bg-surface"
+      className="flex min-w-0 items-baseline gap-1.5 rounded-sm px-1 py-1 transition-colors duration-(--duration-fast) hover:bg-surface-elevated"
     >
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-      <span className="shrink-0 font-mono tabular-nums text-text-muted">{timeLabel(session)}</span>
-      <span className="min-w-0 truncate text-text">{session.title}</span>
+      <span
+        aria-hidden="true"
+        className="mt-1 h-3 w-[3px] shrink-0 self-start"
+        style={{ backgroundColor: color }}
+      />
+      <span className="min-w-0 flex-1">
+        <span
+          className="font-mono text-[10px] font-semibold uppercase tracking-[0.1em]"
+          style={{ color: seriesInk(color) }}
+        >
+          {seriesName}
+        </span>
+        <span
+          className={`block truncate text-[13px] ${
+            isRace ? 'font-semibold text-text' : 'text-text-muted'
+          }`}
+        >
+          {session.title}
+        </span>
+      </span>
+      <span
+        className={`shrink-0 font-mono text-[11px] tnum ${
+          isRace ? 'font-bold text-text' : 'text-text-muted'
+        }`}
+      >
+        {sessionTimeLabel(session, utc)}
+      </span>
     </Link>
   );
 }

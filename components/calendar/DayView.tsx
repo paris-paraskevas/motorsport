@@ -12,11 +12,13 @@ export function DayView({
   now,
   buckets,
   roundByKey,
+  utc,
 }: {
   anchor: Date;
   now: Date;
   buckets: Map<string, CalendarEntry[]>;
   roundByKey?: Record<string, number>;
+  utc: boolean;
 }) {
   const [orderBy, setOrderBy] = useState<OrderBy>('time');
 
@@ -28,8 +30,11 @@ export function DayView({
 
   if (entries.length === 0) {
     return (
-      <div className="border border-border bg-surface/40 p-8 text-center">
-        <div className="text-sm text-text-faint">Nothing scheduled this day.</div>
+      <div className="border border-border bg-surface p-8 text-center">
+        <div className="font-display text-lg font-extrabold uppercase tracking-wide text-text">
+          Nothing scheduled
+        </div>
+        <p className="mt-1.5 text-sm text-text-muted">No sessions on this day.</p>
       </div>
     );
   }
@@ -58,6 +63,7 @@ export function DayView({
       color={e.color}
       round={roundByKey?.[`${e.seriesSlug}:${e.session.uid}`]}
       now={now}
+      utc={utc}
     />
   );
 

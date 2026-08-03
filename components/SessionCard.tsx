@@ -12,6 +12,7 @@ export function SessionCard({
   round,
   weather,
   now = new Date(),
+  utc = false,
 }: {
   session: Session;
   color: string;
@@ -22,6 +23,10 @@ export function SessionCard({
   // 5-min ISR, left finished sessions tagged "LIVE" until the next rebuild —
   // the LIVE-and-"past"-at-once contradiction on /calendar (heuristic walk).
   now?: Date;
+  // Render the clock time in UTC instead of the device zone — set by the
+  // calendar's "times in" control. Defaults to false, so every other call site
+  // keeps the <LocalTime> behaviour unchanged.
+  utc?: boolean;
 }) {
   const isLive = !session.dateOnly && session.start <= now && now <= session.end;
   const isPast = !isLive && session.end < now;
@@ -74,7 +79,19 @@ export function SessionCard({
                 : session.start.toISOString()
             }
           >
-            {session.dateOnly ? formatLocalDay(session.start) : <LocalTime instant={session.start.getTime()} />}
+            {session.dateOnly ? (
+              formatLocalDay(session.start)
+            ) : utc ? (
+              `${new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'UTC',
+                weekday: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              }).format(session.start)} UTC`
+            ) : (
+              <LocalTime instant={session.start.getTime()} />
+            )}
           </time>
           {session.location && (
             <>

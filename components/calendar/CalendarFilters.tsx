@@ -2,101 +2,85 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { Accordion } from '@/components/Accordion';
-import type { SessionKind } from '@/lib/calendar-grid';
+import { SESSION_KINDS, type SessionKind } from '@/lib/calendar-grid';
 
-const TYPES: { kind: SessionKind; label: string }[] = [
-  { kind: 'practice', label: 'Practice' },
-  { kind: 'qualifying', label: 'Qualifying' },
-  { kind: 'race', label: 'Race' },
-];
+const LABELS: Record<SessionKind, { label: string; hint: string }> = {
+  practice: { label: 'Practice', hint: 'Free practice, warm-ups, shakedowns, testing' },
+  qualifying: { label: 'Qualifying', hint: 'Qualifying, Hyperpole, Superpole, shootouts' },
+  race: { label: 'Race', hint: 'Races, sprints, features, rally stages' },
+  other: { label: 'Other', hint: 'Anything else — parades, ceremonial starts, briefings' },
+};
 
 // One filter option = a checkbox row (single brand accent, not a coloured fill).
-// Series keep a small colour dot for identity, but the control itself is plain.
 function CheckRow({
   label,
+  hint,
   checked,
   onToggle,
-  dotColor,
   strong,
 }: {
   label: string;
+  hint?: string;
   checked: boolean;
   onToggle: () => void;
-  dotColor?: string;
   strong?: boolean;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2.5 py-1.5 text-sm">
-      <input type="checkbox" checked={checked} onChange={onToggle} className="h-4 w-4 shrink-0 accent-brand" />
-      {dotColor && (
-        <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: dotColor }} />
-      )}
-      <span className={`${checked ? 'text-text' : 'text-text-muted'}${strong ? ' font-semibold' : ''}`}>{label}</span>
+    <label className="flex cursor-pointer items-start gap-2.5 py-2 text-sm">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        className="mt-0.5 h-4 w-4 shrink-0 accent-brand"
+      />
+      <span className="min-w-0">
+        <span className={`${checked ? 'text-text' : 'text-text-muted'}${strong ? ' font-semibold' : ''}`}>
+          {label}
+        </span>
+        {hint && <span className="mt-0.5 block text-xs text-text-faint">{hint}</span>}
+      </span>
     </label>
   );
 }
 
-// Calendar filters as a modal box (opened from the toolbar's Filters button).
+// Session-type filter. Series selection lives on the legend chip bar in the
+// control deck now — it was invisible in here, and the page needed a colour key
+// anyway, so one control does both jobs.
+//
 // DRAFT model: edits stay local and the calendar does NOT change until Save
-// commits them. Reset re-selects everything; Save applies + closes; the X /
-// backdrop cancels (discards the draft). Both accordions carry a "Select all"
-// toggle, so showing just one session type or one series is a single click
-// instead of unticking the rest.
+// commits them. Reset re-selects everything; the X / backdrop discards.
+//
+// 'Other' is an explicit option for the first time. It used to ride along
+// implicitly — shown only while all three named kinds were selected — so
+// unticking Practice ALSO silently dropped every session classifySession didn't
+// recognise, with nothing in the UI to say so.
 export function CalendarFilters({
   initialTypes,
-  initialSeriesSel,
-  series,
   onApply,
   onClose,
 }: {
   initialTypes: Set<SessionKind>;
-  initialSeriesSel: Set<string> | null; // null = all present
-  series: { slug: string; color: string }[];
-  onApply: (types: Set<SessionKind>, seriesSel: Set<string> | null) => void;
+  onApply: (types: Set<SessionKind>) => void;
   onClose: () => void;
 }) {
-  const allSlugs = series.map(s => s.slug);
-  const [draftTypes, setDraftTypes] = useState<Set<SessionKind>>(() => new Set(initialTypes));
-  const [draftSeries, setDraftSeries] = useState<Set<string>>(() => new Set(initialSeriesSel ?? allSlugs));
+  const [draft, setDraft] = useState<Set<SessionKind>>(() => new Set(initialTypes));
 
-  const toggleType = (k: SessionKind) =>
-    setDraftTypes(cur => {
+  const toggle = (k: SessionKind) =>
+    setDraft(cur => {
       const next = new Set(cur);
       if (next.has(k)) next.delete(k);
       else next.add(k);
       return next;
     });
-  const toggleSeries = (slug: string) =>
-    setDraftSeries(cur => {
-      const next = new Set(cur);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
-  const allTypesSelected = draftTypes.size === TYPES.length;
-  const toggleAllTypes = () => setDraftTypes(allTypesSelected ? new Set() : new Set(TYPES.map(t => t.kind)));
-  const allSeriesSelected = allSlugs.length > 0 && draftSeries.size === allSlugs.length;
-  const toggleAllSeries = () => setDraftSeries(allSeriesSelected ? new Set() : new Set(allSlugs));
-
-  const reset = () => {
-    setDraftTypes(new Set(['practice', 'qualifying', 'race']));
-    setDraftSeries(new Set(allSlugs));
-  };
-  const save = () => {
-    // Normalise "everything selected" back to the all-present sentinel (null) so
-    // the filter stays "all" even if the present set later changes.
-    const seriesSel = draftSeries.size === allSlugs.length ? null : new Set(draftSeries);
-    onApply(new Set(draftTypes), seriesSel);
-    onClose();
-  };
+  const allSelected = draft.size === SESSION_KINDS.length;
+  const toggleAll = () => setDraft(allSelected ? new Set() : new Set(SESSION_KINDS));
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 p-4 pt-20"
       role="dialog"
       aria-modal="true"
-      aria-label="Calendar filters"
+      aria-label="Session filters"
       onClick={onClose}
     >
       <div
@@ -104,55 +88,43 @@ export function CalendarFilters({
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <span className="font-display text-sm font-bold uppercase tracking-wide text-text">Filters</span>
+          <span className="font-display text-base font-bold uppercase tracking-wide text-text">
+            Sessions
+          </span>
           <button type="button" onClick={onClose} aria-label="Close" className="text-text-muted hover:text-text">
             <X size={16} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4">
-          <Accordion title="Session" titleClassName="font-display uppercase tracking-wide">
-            <div>
-              <CheckRow label="Select all" checked={allTypesSelected} onToggle={toggleAllTypes} strong />
-              <div className="my-1 border-t border-border/60" />
-              {TYPES.map(({ kind, label }) => (
-                <CheckRow key={kind} label={label} checked={draftTypes.has(kind)} onToggle={() => toggleType(kind)} />
-              ))}
-            </div>
-          </Accordion>
-          {series.length > 1 && (
-            <Accordion title="Series" titleClassName="font-display uppercase tracking-wide">
-              <div>
-                <CheckRow label="Select all" checked={allSeriesSelected} onToggle={toggleAllSeries} strong />
-                <div className="my-1 border-t border-border/60" />
-                <div className="grid grid-cols-2 gap-x-4">
-                  {series.map(s => (
-                    <CheckRow
-                      key={s.slug}
-                      label={s.slug.toUpperCase()}
-                      checked={draftSeries.has(s.slug)}
-                      onToggle={() => toggleSeries(s.slug)}
-                      dotColor={s.color}
-                    />
-                  ))}
-                </div>
-              </div>
-            </Accordion>
-          )}
+        <div className="flex-1 overflow-y-auto px-4 py-2">
+          <CheckRow label="Select all" checked={allSelected} onToggle={toggleAll} strong />
+          <div className="my-1 border-t border-border/60" />
+          {SESSION_KINDS.map(kind => (
+            <CheckRow
+              key={kind}
+              label={LABELS[kind].label}
+              hint={LABELS[kind].hint}
+              checked={draft.has(kind)}
+              onToggle={() => toggle(kind)}
+            />
+          ))}
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t border-border px-4 py-3">
           <button
             type="button"
-            onClick={reset}
-            className="border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+            onClick={() => setDraft(new Set(SESSION_KINDS))}
+            className="border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
             Reset
           </button>
           <button
             type="button"
-            onClick={save}
-            className="bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+            onClick={() => {
+              onApply(new Set(draft));
+              onClose();
+            }}
+            className="bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-tint-contrast transition-opacity duration-(--duration-fast) hover:opacity-90"
           >
             Save
           </button>
