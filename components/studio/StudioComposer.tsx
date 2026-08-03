@@ -34,6 +34,7 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
   const [seriesSlug, setSeriesSlug] = useState('');
   const [tags, setTags] = useState('');
   const [heroImage, setHeroImage] = useState('');
+  const [originalUrl, setOriginalUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,6 +68,7 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
           seriesSlug: seriesSlug || undefined,
           tags: tags.split(',').map(t => t.trim()).filter(Boolean),
           heroImage: heroImage || undefined,
+          originalUrl: originalUrl || undefined,
         }),
       });
       const d = (await res.json().catch(() => ({}))) as { ok?: boolean; id?: string; error?: string };
@@ -157,6 +159,20 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
             placeholder="https://… (optional)"
           />
         </Field>
+        <Field label="Imported from (original URL)">
+          <input
+            className={`${FIELD} font-mono text-xs`}
+            value={originalUrl}
+            onChange={e => setOriginalUrl(e.target.value)}
+            placeholder="https://… (imports only)"
+          />
+        </Field>
+        {originalUrl.trim() && (
+          <p className="font-mono text-[10px] leading-relaxed text-text-faint">
+            Import: the post will credit and canonically point to this URL, so search engines index
+            the original, not our copy. Leave blank for original writing.
+          </p>
+        )}
         <p className="font-mono text-[10px] leading-relaxed text-text-faint">
           A series-slug tag (e.g. f1) also surfaces the post on that series&apos; page. Cover
           sources: Wikimedia Commons / Flickr (CC filter, credit in the body) · Unsplash · Pexels ·

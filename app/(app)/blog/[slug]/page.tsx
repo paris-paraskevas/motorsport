@@ -82,6 +82,12 @@ export async function generateMetadata({
   return {
     title: post.frontmatter.title,
     description: post.frontmatter.summary,
+    // An imported article canonicalizes to its ORIGINAL off-site URL, so the
+    // import adds no indexable page of ours — the original keeps the equity.
+    // Original writing sets no canonical here, exactly as before.
+    ...(db?.status === 'published' && db.originalUrl
+      ? { alternates: { canonical: db.originalUrl } }
+      : {}),
     openGraph: {
       type: 'article',
       title: post.frontmatter.title,
@@ -279,6 +285,7 @@ export default async function PostPage({
           title={post.frontmatter.title}
           summary={post.frontmatter.summary}
           heroImage={db.heroImage}
+          originalUrl={db.originalUrl}
           bodyNode={<PostArticle segments={rendered?.segments ?? []} />}
           dateLabel={formatDate(post.frontmatter.publishedAt)}
           banner={previewBanner}
@@ -296,6 +303,7 @@ export default async function PostPage({
         title={post.frontmatter.title}
         summary={post.frontmatter.summary}
         author={author}
+        originalUrl={db?.originalUrl}
       />
 
       {post.frontmatter.heroImage && (

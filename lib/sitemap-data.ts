@@ -129,7 +129,10 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   ]);
   const postSlugs = new Set<string>();
   for (const p of mdxPosts) postSlugs.add(p.slug);
-  for (const p of dbPosts) postSlugs.add(p.slug);
+  // Imported articles (original_url set) canonicalize off-site — advertising a
+  // URL whose canonical says "index somewhere else" is a mixed signal, so the
+  // sitemap carries original writing only.
+  for (const p of dbPosts) if (p.originalUrl === null) postSlugs.add(p.slug);
   const blogUrls: MetadataRoute.Sitemap = [...postSlugs]
     .sort()
     .map((slug) => ({ url: `${SITE_URL}/blog/${slug}` }));

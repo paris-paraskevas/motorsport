@@ -57,6 +57,7 @@ export async function POST(req: Request) {
     seriesSlug?: unknown;
     tags?: unknown;
     heroImage?: unknown;
+    originalUrl?: unknown;
     publishAt?: unknown;
   };
   try {
@@ -86,6 +87,8 @@ export async function POST(req: Request) {
       seriesSlug,
       tags,
       heroImage: str(body.heroImage) || null,
+      // Import provenance — createDraft validates the shape (https:// only).
+      originalUrl: str(body.originalUrl) || null,
       publishAt: typeof body.publishAt === 'string' ? body.publishAt : null,
     });
     after(async () => {
