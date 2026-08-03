@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.255.0 — 2026-08-03
+
+### Fixed
+- **On-demand revalidation works on Cloudflare (operator pick: "DO").** `open-next.config.ts` never set a `tagCache`, leaving the adapter dummy in place — `writeTags` a silent `return;`, `isStale` always false — so every `revalidatePath`/`revalidateTag` on prod (blog publish, approve-inline, author-profile edits) did nothing; staleness was bounded only by the 300 s ISR window + ≤30 min regional cache (proven, session 26). Now: `doShardedTagCache({ baseShardSize: 4, regionalCache: true })` — Durable Objects, no new storage product; the `DOShardedTagCache` class already rode `worker.ts`'s re-exports. All four wrangler configs gain the `NEXT_TAG_CACHE_DO_SHARDED` binding + a `v2` sqlite-class migration. The per-shard regional cache (5 s TTL) bounds revalidation visibility at ~5 s, which is the contract the publish path wants.
+
 ## 0.254.0 — 2026-08-03
 
 ### Fixed
