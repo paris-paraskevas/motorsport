@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.251.1 — 2026-08-03
+
+### Changed
+- **The dev file-watcher no longer indexes `.open-next`** (item 25). Next 16's built-in ignore list is hard-coded to `node_modules`/`.git`/`.next` (`next/dist/build/webpack-config.js` `baseWatchOptions`) and its config surface reads only `pollIntervalMs`, so the 330+ MB / 3k+ file OpenNext deploy tree was being watched on every `next dev` — and rewritten under the watcher by every local deploy. A dev-only `webpack()` hook in `next.config.ts` restates the defaults (`ignored` replaces wholesale) and adds `**/.open-next/**`. The bigger dev-loop lever — the forced `--webpack` (80f8ed7: serwist vs the Turbopack default) now that `@serwist/turbopack` 9.5.12 exists — is queued in IDEAS as its own preview-gated migration.
+- **Stale-landmine note:** `next.config.ts` no longer carries `serverExternalPackages`/`outputFileTracingIncludes` — that pair was the Vercel-era node-ical requirement (CLAUDE.md landmine 1), retired when the Cloudflare migration swapped node-ical for ical.js and bundled `content/**` at build time. Nothing was removed here; recording it so nobody "restores" them.
+
 ## 0.251.0 — 2026-08-03
 
 ### Added
