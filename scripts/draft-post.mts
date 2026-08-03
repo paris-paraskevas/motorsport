@@ -12,7 +12,7 @@
 // otherwise) — so locally it just creates the draft; on prod env it also notifies.
 import { readFileSync } from 'node:fs';
 import { ensureAppUser } from '@/lib/betting/credits';
-import { createDraft, type DraftInput } from '@/lib/blog';
+import { createDraft, submitPost, type DraftInput } from '@/lib/blog';
 import { parseDraftMarkdown } from '@/lib/blog-draft-md';
 import { notifyAdminsDraftReady } from '@/lib/blog-notify';
 
@@ -67,6 +67,12 @@ const id = await createDraft(authorId, {
   publishAt: input.publishAt ?? null,
 });
 console.log(`draft created: id=${id} slug=${input.slug}`);
+
+// Straight into the review queue. A script-authored post arrives FINISHED, so
+// leaving it as a private draft would hide it from the operator's queue — the
+// opposite of what this script is for. Human drafts stay private until submitted.
+await submitPost(id);
+console.log('submitted for review: status=in_review');
 
 try {
   await notifyAdminsDraftReady({ id, title: input.title });

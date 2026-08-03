@@ -54,7 +54,7 @@ function toLocalInput(iso: string | null): string {
 export function PostModeration({ series }: { series: { slug: string; name: string }[] }) {
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
-  const [data, setData] = useState<{ drafts: PostRow[]; scheduled: PostRow[] } | null>(null);
+  const [data, setData] = useState<{ drafts: PostRow[]; inReview: PostRow[]; scheduled: PostRow[]; isAdmin: boolean } | null>(null);
   const [hidden, setHidden] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -71,8 +71,8 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
         setError(`load failed (${res.status})`);
         return;
       }
-      const d = (await res.json()) as { drafts?: PostRow[]; scheduled?: PostRow[] };
-      setData({ drafts: d.drafts ?? [], scheduled: d.scheduled ?? [] });
+      const d = (await res.json()) as { drafts?: PostRow[]; inReview?: PostRow[]; scheduled?: PostRow[]; isAdmin?: boolean };
+      setData({ drafts: d.drafts ?? [], inReview: d.inReview ?? [], scheduled: d.scheduled ?? [], isAdmin: d.isAdmin === true });
     } catch {
       setError('load failed');
     }
@@ -96,8 +96,8 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
           setError(`load failed (${res.status})`);
           return;
         }
-        const d = (await res.json()) as { drafts?: PostRow[]; scheduled?: PostRow[] };
-        if (!cancelled) setData({ drafts: d.drafts ?? [], scheduled: d.scheduled ?? [] });
+        const d = (await res.json()) as { drafts?: PostRow[]; inReview?: PostRow[]; scheduled?: PostRow[]; isAdmin?: boolean };
+        if (!cancelled) setData({ drafts: d.drafts ?? [], inReview: d.inReview ?? [], scheduled: d.scheduled ?? [], isAdmin: d.isAdmin === true });
       } catch {
         if (!cancelled) setError('load failed');
       }
@@ -107,7 +107,7 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
     };
   }, [isSignedIn]);
 
-  async function decide(id: string, action: 'approve' | 'reject' | 'reschedule', localWhen?: string) {
+  async function decide(id: string, action: 'approve' | 'reject' | 'reschedule' | 'submit', localWhen?: string) {
     setBusy(id);
     setError(null);
     try {
@@ -148,7 +148,7 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
 
   if (!isLoaded || !isSignedIn || hidden || !data) return null;
 
-  const empty = data.drafts.length === 0 && data.scheduled.length === 0;
+  const empty = data.drafts.length === 0 && data.inReview.length === 0 && data.scheduled.length === 0;
 
   return (
     <section className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
@@ -173,34 +173,106 @@ export function PostModeration({ series }: { series: { slug: string; name: strin
                 {p.seriesSlug ? ` · ${p.seriesSlug}` : ' · site-wide'}
               </div>
               <p className="mb-2 text-sm text-text-muted">{p.summary}</p>
+              {/* A draft is private: the only action its author needs is to submit
+                  it. An admin additionally keeps the direct approve path, which is
+                  what their own hand-authored drafts rely on. */}
               <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="datetime-local"
-                  value={when[p.id] ?? defaultLocalDateTime()}
-                  onChange={e => setWhen(w => ({ ...w, [p.id]: e.target.value }))}
-                  className="rounded border border-border bg-bg px-2 py-1 font-mono text-xs text-text"
-                  aria-label="Publish time"
-                />
                 <button
                   type="button"
                   disabled={busy === p.id}
-                  onClick={() => decide(p.id, 'approve')}
+                  onClick={() => decide(p.id, 'submit')}
                   className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40"
                 >
-                  Approve + schedule
+                  Submit for review
                 </button>
-                <button
-                  type="button"
-                  disabled={busy === p.id}
-                  onClick={() => decide(p.id, 'reject')}
-                  className="rounded border border-border px-3 py-1 font-mono text-sm text-text-muted disabled:opacity-40"
-                >
-                  Reject
-                </button>
+                {data.isAdmin && (
+                  <>
+                    <input
+                      type="datetime-local"
+                      value={when[p.id] ?? defaultLocalDateTime()}
+                      onChange={e => setWhen(w => ({ ...w, [p.id]: e.target.value }))}
+                      className="rounded border border-border bg-bg px-2 py-1 font-mono text-xs text-text"
+                      aria-label="Publish time"
+                    />
+                    <button
+                      type="button"
+                      disabled={busy === p.id}
+                      onClick={() => decide(p.id, 'approve')}
+                      className="rounded border border-border px-3 py-1 font-mono text-sm text-text disabled:opacity-40"
+                    >
+                      Approve + schedule
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy === p.id}
+                      onClick={() => decide(p.id, 'reject')}
+                      className="rounded border border-border px-3 py-1 font-mono text-sm text-text-muted disabled:opacity-40"
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {data.inReview.length > 0 && (
+        <div className="mt-4">
+          <h3 className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-400">
+            Awaiting review
+          </h3>
+          <ul className="space-y-3">
+            {data.inReview.map(p => (
+              <li key={p.id} className="rounded-lg border border-amber-500/30 bg-surface/60 p-3">
+                <Link
+                  href={`/blog/${p.slug}`}
+                  className="font-semibold text-text underline-offset-2 hover:text-brand hover:underline"
+                >
+                  {p.title}
+                </Link>
+                <div className="mb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+                  {p.slug}
+                  {p.seriesSlug ? ` · ${p.seriesSlug}` : ' · site-wide'}
+                </div>
+                <p className="mb-2 text-sm text-text-muted">{p.summary}</p>
+                {data.isAdmin ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="datetime-local"
+                      value={when[p.id] ?? defaultLocalDateTime()}
+                      onChange={e => setWhen(w => ({ ...w, [p.id]: e.target.value }))}
+                      className="rounded border border-border bg-bg px-2 py-1 font-mono text-xs text-text"
+                      aria-label="Publish time"
+                    />
+                    <button
+                      type="button"
+                      disabled={busy === p.id}
+                      onClick={() => decide(p.id, 'approve')}
+                      className="rounded bg-brand-fill px-3 py-1 font-semibold text-bg disabled:opacity-40"
+                    >
+                      Approve + schedule
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy === p.id}
+                      onClick={() => decide(p.id, 'reject')}
+                      className="rounded border border-border px-3 py-1 font-mono text-sm text-text-muted disabled:opacity-40"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                ) : (
+                  // A writer sees their submission's state but cannot decide it.
+                  <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+                    Submitted · waiting on the editor. You can still edit it.
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {data.scheduled.length > 0 && (

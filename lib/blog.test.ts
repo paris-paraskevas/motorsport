@@ -64,11 +64,14 @@ describe('updatePostContent', () => {
     expect(fields.updated_at).toBeTruthy();
   });
 
-  it('status-guards the UPDATE to draft|approved (exact count)', async () => {
+  // in_review joined the editable set with migration 20260803120000: a submitted
+  // post stays editable while it waits on a decision, which is the difference
+  // between submitting and publishing. published/rejected remain locked.
+  it('status-guards the UPDATE to draft|in_review|approved (exact count)', async () => {
     await updatePostContent('id-1', { title: 'T' });
     expect(updateMock.mock.calls[0][1]).toEqual({ count: 'exact' });
     expect(eqMock).toHaveBeenCalledWith('id', 'id-1');
-    expect(inMock).toHaveBeenCalledWith('status', ['draft', 'approved']);
+    expect(inMock).toHaveBeenCalledWith('status', ['draft', 'in_review', 'approved']);
   });
 
   it('maps a zero-count update (published/rejected — incl. the cron race) to a domain error', async () => {

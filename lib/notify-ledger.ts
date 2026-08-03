@@ -15,6 +15,7 @@ export type NotifyKind =
   | 'bet-lock'
   | 'bet-settled'
   | 'blog-draft'
+  | 'blog-decision'
   | 'blog-publish';
 
 const KEY_PREFIX = 'paddock:notified:';
@@ -38,6 +39,11 @@ const TTL_SECONDS: Record<NotifyKind, number> = {
   // publish announce is once-ever per post (30d, like bet-settled) so an
   // overlapping cron tick can't double-announce the same post.
   'blog-draft': 48 * 3600,
+  // The author's approved/rejected email. Keyed per post AND per outcome+time, so
+  // a reschedule legitimately re-notifies with the new time while a retry of the
+  // same decision cannot double-send. 30d so a key cannot expire and let an old
+  // decision re-fire if the same post is touched again.
+  'blog-decision': 30 * 24 * 3600,
   'blog-publish': 30 * 24 * 3600,
 };
 
