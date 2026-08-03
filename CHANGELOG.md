@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.252.1 — 2026-08-03
+
+### Added
+- **The /write-for-us doorway is now findable** (operator: "needs to be shown somewhere, like if you click your profile picture"). The header's profile-picture pill lands on /settings, so that page's `AccountStaffLinks` now shows every signed-in NON-author a "Become an author?" row ("Show us your work, or send us a draft article. It costs nothing."); authors keep their Studio + profile rows. The `/blog` header pill becomes two-state: authors see "Studio →", everyone else — signed-out and pre-hydration included, so virtually nobody sees a swap — sees "Write for Paddock →". The footer's Site column gains "Write for Paddock" (covers anonymous visitors everywhere).
+
 ## 0.252.0 — 2026-08-03
 
 ### Added
