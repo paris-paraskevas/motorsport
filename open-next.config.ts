@@ -30,8 +30,18 @@ import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
 import { withRegionalCache } from "@opennextjs/cloudflare/overrides/incremental-cache/regional-cache";
 import doQueue from "@opennextjs/cloudflare/overrides/queue/do-queue";
+import doShardedTagCache from "@opennextjs/cloudflare/overrides/tag-cache/do-sharded-tag-cache";
 
 export default defineCloudflareConfig({
   incrementalCache: withRegionalCache(r2IncrementalCache, { mode: "long-lived" }),
   queue: doQueue,
+  // tagCache was UNSET until 0.255.0, which left the adapter's dummy in place:
+  // writeTags was a silent no-op and isStale always false, so every
+  // revalidatePath/revalidateTag on prod (blog publish, author edits) did
+  // NOTHING (proven 2026-08-03, docs/HANDOFF.md session 26). Durable Objects
+  // sharded cache (operator pick "DO" over D1 — no new storage product; the
+  // DOShardedTagCache class already rides worker.ts). regionalCache absorbs
+  // the read amplification; its 5s TTL bounds how long a revalidation takes
+  // to become visible, which is exactly the contract we want.
+  tagCache: doShardedTagCache({ baseShardSize: 4, regionalCache: true }),
 });
