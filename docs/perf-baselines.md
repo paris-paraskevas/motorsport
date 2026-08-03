@@ -138,6 +138,37 @@ First field snapshot since the caching + defer work landed. **Both platforms imp
 
 **→ NEXT-SESSION CLS hunt (queued).** CLS regressed since May. Suspects: (a) images/embeds without reserved `width`/`height` (May plan already flagged the Wikipedia History-tab `<img>`, rank 5); (b) late-injected UI shifting content — the Race Engineer chat launcher, banners; (c) web-font swap; (d) recently-added on-page bylines / enriched blocks. **PSI lab not captured this snapshot** — grab PSI desktop+mobile at the start of the CLS session for layout-shift attribution.
 
+## 2026-08-03 — post-Cloudflare re-baseline (0.252.1 live during capture; first row of the Workers era)
+
+First snapshot since the Vercel → Cloudflare migration (07-26/27). **Field source is GONE** (Vercel Speed Insights dep removed 0.245.1) — PSI reported "Discover what your real users are experiencing: No Data". **Replacement decision: Cloudflare Web Analytics RUM is ALREADY collecting** (this very report shows `static.cloudflareinsights.com/beacon.min.js` on the page), so the CF dashboard becomes the field source going forward; GSC CWV as the slow-moving cross-check.
+
+### PSI lab — `/` (operator-run, pagespeed.web.dev, Lighthouse 13.4.1)
+
+| Metric | Mobile | Desktop |
+|---|---|---|
+| **Performance** | **71** | **78** |
+| FCP | 1.7 s | 0.5 s |
+| **LCP** | **15.3 s** | 3.3 s |
+| TBT | 60 ms | 20 ms |
+| CLS | **0** | **0** |
+| Speed Index | 4.9 s | 2.0 s |
+| Accessibility | 96 | 100 |
+| Best Practices | 96 | 96 |
+| SEO | 100 | 100 |
+
+**The May CLS problem is GONE (0 on both)** and TBT/unused-JS collapsed vs the May row (mobile TBT 60 ms; unused JS 616 KiB → 164 KiB — AdSense/GTM lazyOnload + the Cloudflare stack did their job; the only 3rd party left on the critical path is the 11 KiB CF beacon).
+
+**The whole story is now ONE problem: the landing carousel images.** LCP breakdown (mobile): TTFB 10 ms · resource load 100 ms · **resource load delay 1,510 ms + element render delay 5,650 ms**. Causes, all in the landing hero/marquee carousel:
+1. `/landing/circuits/*.jpg` are raw JPEGs totalling **4,112 KiB** (monaco 979 KiB, nordschleife 743, rally-finland 638…) served via `images: unoptimized` at ~1900px for ~500-700px slots. PSI est. savings **3,684-3,925 KiB** (WebP/AVIF + responsive sizes).
+2. The LCP image is **`loading="lazy"`** and mounts at **`opacity-0`** with a 700 ms fade (`transition-opacity duration-700 … opacity-0`) — LCP counts the paint at full visibility, so the fade + lazy discovery alone add ~5.6 s of render delay.
+3. No `fetchpriority="high"` / preload on the first slide; zero preconnects (fine — everything is 1st-party now).
+
+**Queued fix bundle (one PR, est. mobile LCP 15.3 s → ~2.5-3 s):** convert the seven circuit JPEGs to properly-sized WebP (~150-250 KiB each), eager-load + `fetchpriority="high"` the first visible slide only, start slide 1 at full opacity (keep the fade for subsequent slides), add `sizes`. Cosmetic extras from the report: carousel dot touch-targets (a11y 96 mobile), the two non-composited `width` dot animations, `Array.prototype.at`-class polyfills (13 KiB legacy JS).
+
+**Security headers flagged by PSI** (Best Practices 96): CSP is still report-only (by design — the promote-to-enforcing plan lives in `next.config.ts`), no COOP header. Unchanged since the audit; listed here so the trend row exists.
+
+Context for trend readers: this row is NOT comparable to Vercel-era rows for TTFB/route-level RES (different platform, different field source, R2 ISR cache since 0.241.0). Treat 2026-08-03 as the new epoch line.
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |
