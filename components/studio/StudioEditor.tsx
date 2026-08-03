@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { MarkdownEditor } from '@/components/blog/MarkdownEditor';
+import { readinessChecks } from '@/lib/post-ready';
 import {
   STATUS_META,
   defaultLocalDateTime,
@@ -76,6 +77,20 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [linkNote, setLinkNote] = useState<string | null>(null);
+
+  // Live post-readiness over the CURRENT (possibly unsaved) fields — the
+  // checklist reflects what Save would persist, not what the server has.
+  const readiness = useMemo(
+    () =>
+      readinessChecks({
+        summary,
+        seriesSlug: post.seriesSlug,
+        heroImage: hero.trim() || null,
+        body,
+      }),
+    [summary, hero, body, post.seriesSlug],
+  );
 
   const dirty =
     title !== post.title ||
@@ -117,6 +132,41 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
     }
     router.refresh();
     setBusy(false);
+  }
+
+  // Auto-link (deterministic, insert-only — lib/post-ready): the result replaces
+  // the EDITOR body as unsaved changes, so the author reads the diff in place
+  // (or via Preview) and Save is the accept step. Nothing persists here.
+  async function autoLink() {
+    setBusy(true);
+    setError(null);
+    setLinkNote(null);
+    try {
+      const res = await fetch('/api/blog/format', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ body }),
+      });
+      const d = (await res.json().catch(() => ({}))) as {
+        body?: string;
+        added?: { name: string }[];
+        error?: string;
+      };
+      if (!res.ok || typeof d.body !== 'string') {
+        setError(d.error ?? `Failed (${res.status}).`);
+        return;
+      }
+      if (!d.added || d.added.length === 0) {
+        setLinkNote('No new links found: every known name is either absent or already linked.');
+        return;
+      }
+      setBody(d.body);
+      setLinkNote(`Linked ${d.added.map(a => a.name).join(', ')}. Review, then save.`);
+    } catch {
+      setError('Network error. Try again.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   const meta = STATUS_META[post.status];
@@ -174,6 +224,34 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
             Open preview ↗
           </Link>
         </div>
+
+        <section>
+          <h3 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+            Post-ready
+          </h3>
+          <ul className="space-y-1.5">
+            {readiness.map(c => (
+              <li key={c.key} className="text-xs leading-snug">
+                <span className={c.ok ? 'text-text-muted' : 'text-amber-700 dark:text-amber-300'}>
+                  <span aria-hidden="true" className="mr-1.5 font-mono">
+                    {c.ok ? '✓' : '✗'}
+                  </span>
+                  {c.label}
+                </span>
+                {!c.ok && <span className="block pl-4 text-text-faint">{c.hint}</span>}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={autoLink}
+            className="mt-2.5 w-full rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
+          >
+            Auto-link names
+          </button>
+          {linkNote && <p className="mt-1.5 text-xs leading-snug text-text-muted">{linkNote}</p>}
+        </section>
 
         <Field label="Cover image URL">
           <input

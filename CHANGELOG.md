@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.252.0 — 2026-08-03
+
+### Added
+- **Post-ready checklist + Auto-link in the studio editor (item 17, the format button's deterministic half** — scope picked from three options; AI-proposed section headings are the gated phase 2 in IDEAS**).** The editor rail gains a live POST-READY list computed from the *unsaved* fields (`lib/post-ready.ts` `readinessChecks`): summary, series tag, cover, ≥2 `##` sections (the post page's ToC threshold), ≥1 internal link — failing rows carry the reader-facing consequence as the hint. **Auto-link names** (`POST /api/blog/format`, author-gated) wraps the FIRST mention of every known driver/team/series in a link to its Paddock page and returns the result into the editor as unsaved changes — the author reads, then Save is the accept step; nothing persists server-side.
+- **The linker is deterministic and insert-only by construction** (`autoLinkBody`): exact case-sensitive names on Unicode word boundaries (Greek prose works), longest name first, first mention only, and a masked-region list it never touches — existing links, inline/fenced code, `[[data embeds]]`, heading lines, blockquotes, bare URLs. Entity priority on duplicate names: base-slug drivers (Verstappen links to the F1 page, not `-24h`), then teams, then series. 11 unit tests including the insert-only invariant (stripping added link syntax reproduces the input byte-identically).
+
 ## 0.251.1 — 2026-08-03
 
 ### Changed

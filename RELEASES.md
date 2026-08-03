@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.252.0 — 2026-08-03
+
+**Writers get a post-ready checklist.** The writing studio now shows what a draft still needs before it reads well on the site, and a one-click helper links the first mention of any driver, team or series to its page. The writer always reviews before anything is saved.
+
 ## 0.251.1 — 2026-08-03
 
 **Behind the scenes.** Faster local development for the people building the site. No change to the site.
