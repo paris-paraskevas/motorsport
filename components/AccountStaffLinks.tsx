@@ -18,9 +18,27 @@ export function AccountStaffLinks() {
   // (Inline rather than lib/threads canAuthor: same ladder, kept local like the
   // isStaff line above so this client file adds no import weight.)
   const authors = role === 'contributor' || role === 'writer' || role === 'admin';
-  if (!isLoaded || !isSignedIn || (!isStaff && !authors)) return null;
+  if (!isLoaded || !isSignedIn) return null;
   return (
     <>
+      {/* The recruiting doorway (operator, 2026-08-03): every signed-in reader
+          who is NOT yet an author sees the invitation where their profile
+          picture leads — the header Account pill lands here. */}
+      {!authors && !isStaff && (
+        <Link
+          href="/write-for-us"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <PenLine size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Become an author?</span>
+            <span className="block text-text-faint text-xs">
+              Show us your work, or send us a draft article. It costs nothing.
+            </span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+      )}
       {authors && (
         <Link
           href="/studio"

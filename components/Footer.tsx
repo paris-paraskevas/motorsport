@@ -45,6 +45,7 @@ export function Footer() {
             <FooterLink href="/information" dataHeatmapId="footer:learn">Learn</FooterLink>
             <FooterLink href="/news" dataHeatmapId="footer:news">News</FooterLink>
             <FooterLink href="/blog" dataHeatmapId="footer:blog">Blog</FooterLink>
+            <FooterLink href="/write-for-us" dataHeatmapId="footer:write-for-us">Write for Paddock</FooterLink>
             <FooterLink href="/threads" dataHeatmapId="footer:threads">Threads</FooterLink>
             <FooterLink href="/changelog" dataHeatmapId="footer:changelog">Release notes</FooterLink>
             <FooterLink href="/settings" dataHeatmapId="footer:account">Account</FooterLink>

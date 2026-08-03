@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.252.1 — 2026-08-03
+
+**Becoming an author is easier to find.** The invitation to write for Paddock now appears in your account page, on the blog, and in the footer, instead of hiding behind the authors list.
+
 ## 0.252.0 — 2026-08-03
 
 **Writers get a post-ready checklist.** The writing studio now shows what a draft still needs before it reads well on the site, and a one-click helper links the first mention of any driver, team or series to its page. The writer always reviews before anything is saved.
