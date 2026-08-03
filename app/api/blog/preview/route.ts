@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { isWriter } from '@/lib/threads';
+import { canAuthor } from '@/lib/threads';
 import { renderPreviewHtml } from '@/lib/blog-embeds';
 
 export const runtime = 'nodejs';
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isWriter(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!canAuthor(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   let body: { body?: unknown };
   try {

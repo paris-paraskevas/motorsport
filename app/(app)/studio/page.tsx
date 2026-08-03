@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { isAdmin } from '@/lib/threads';
-import { requireWriter } from '@/lib/admin-guard';
+import { requireAuthor } from '@/lib/admin-guard';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { listPosts, publishedPosts, type BlogPost } from '@/lib/blog';
 import { RowActions } from '@/components/studio/RowActions';
@@ -96,7 +96,7 @@ function Section({
 }
 
 export default async function StudioPage() {
-  const user = await requireWriter();
+  const user = await requireAuthor();
   const admin = isAdmin(user);
   const scope = admin ? undefined : user.id;
 

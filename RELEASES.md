@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.251.0 — 2026-08-03
+
+**You can apply to write for Paddock.** A new Write for Paddock page takes applications: tell us what you would cover, show some work, and if it fits you get a writing studio and a public author page with your byline. Every application gets a reply.
+
 ## 0.250.0 — 2026-08-03
 
 **Republished articles now credit their source.** When a piece originally appeared elsewhere, the post names and links the original publication, and search engines are told to treat the original as the version that counts.

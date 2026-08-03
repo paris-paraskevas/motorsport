@@ -3,6 +3,8 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { Users } from 'lucide-react';
 import { requireAdmin } from '@/lib/admin-guard';
 import { AdminPageHeader, KpiTile, Sparkline, TelemetryPanel, Unavailable } from '@/components/admin/AdminUI';
+import { AuthorRequestActions } from '@/components/admin/AuthorRequestActions';
+import { listAuthorRequests, type AuthorRequest } from '@/lib/author-requests';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Users · Admin' };
@@ -54,14 +56,55 @@ function signupCadence(recent: UserRow[]): number[] {
   return series;
 }
 
+// Pending become-an-author applications (/write-for-us). Fail-soft to []: the
+// page must render even before the author_request migration exists in an env.
+async function loadPendingRequests(): Promise<AuthorRequest[]> {
+  try {
+    return await listAuthorRequests('pending');
+  } catch {
+    return [];
+  }
+}
+
 export default async function AdminUsersPage() {
   await requireAdmin();
-  const users = await loadUserStats();
+  const [users, requests] = await Promise.all([loadUserStats(), loadPendingRequests()]);
   const cadence = users ? signupCadence(users.recent) : [];
 
   return (
     <div>
-      <AdminPageHeader title="Users" tagline="Accounts · roles · recent sign-ups" />
+      <AdminPageHeader title="Users" tagline="Accounts · roles · author applications · recent sign-ups" />
+      {requests.length > 0 && (
+        <div className="mb-6">
+          <TelemetryPanel title="Author applications" meta={`${requests.length} pending`} flush>
+            <ul className="divide-y divide-border">
+              {requests.map(r => (
+                <li key={r.id} className="space-y-2 px-4 py-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="font-semibold text-text">{r.displayName}</span>
+                    <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                      {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-muted">{r.pitch}</p>
+                  {r.links && (
+                    <p className="break-all font-mono text-[11px] text-text-faint">{r.links}</p>
+                  )}
+                  {r.sample && (
+                    <details className="text-sm text-text-muted">
+                      <summary className="cursor-pointer font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+                        Writing sample
+                      </summary>
+                      <p className="mt-2 whitespace-pre-wrap leading-relaxed">{r.sample}</p>
+                    </details>
+                  )}
+                  <AuthorRequestActions id={r.id} />
+                </li>
+              ))}
+            </ul>
+          </TelemetryPanel>
+        </div>
+      )}
       {users === null ? (
         <Unavailable note="Clerk API unavailable right now." />
       ) : (

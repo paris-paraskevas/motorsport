@@ -3,7 +3,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
-import { isAdmin, isWriter } from '@/lib/threads';
+import { canAuthor } from '@/lib/threads';
 import { getAuthorByClerkId, upsertAuthorProfile, type AuthorLink } from '@/lib/authors';
 import { authorPostVisibility, setAuthorPostVisibility } from '@/lib/blog';
 import { allowRequest } from '@/lib/rate-limit';
@@ -15,17 +15,17 @@ export const dynamic = 'force-dynamic';
 // /authors/<slug>. Both handlers key every read and write on the caller's Clerk id,
 // so there is no path to another author's row. Writer-or-admin only; a reader with
 // no writing role has no profile to edit.
-async function requireWriter(): Promise<{ userId: string } | NextResponse> {
+async function requireAuthor(): Promise<{ userId: string } | NextResponse> {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const user = await currentUser();
-  if (!isWriter(user) && !isAdmin(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!canAuthor(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   return { userId };
 }
 
 export async function GET() {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const gate = await requireWriter();
+  const gate = await requireAuthor();
   if (gate instanceof NextResponse) return gate;
 
   const [profile, posts] = await Promise.all([
@@ -37,7 +37,7 @@ export async function GET() {
 
 export async function PUT(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
-  const gate = await requireWriter();
+  const gate = await requireAuthor();
   if (gate instanceof NextResponse) return gate;
 
   // Authenticated, but still capped: a save rewrites a public page and busts its

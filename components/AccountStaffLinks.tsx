@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { ArrowUpRight, LayoutDashboard, MessageSquare, PenLine } from 'lucide-react';
+import { ArrowUpRight, LayoutDashboard, MessageSquare, NotebookPen, PenLine } from 'lucide-react';
 import { useAuth, useUser } from '@clerk/nextjs';
 
 // The staff-only rows on /settings, resolved CLIENT-side via useUser so the
@@ -13,13 +13,28 @@ export function AccountStaffLinks() {
   const role = user?.publicMetadata?.role;
   const isStaff = role === 'admin' || role === 'moderator';
   const isAdmin = role === 'admin';
-  // Writers are not "staff" for the rows below, but they own an author profile —
+  // Authors are not "staff" for the rows below, but they own a studio + profile —
   // so this component's gate is the union, and each row keeps its own condition.
-  const isWriter = role === 'writer' || role === 'admin';
-  if (!isLoaded || !isSignedIn || (!isStaff && !isWriter)) return null;
+  // (Inline rather than lib/threads canAuthor: same ladder, kept local like the
+  // isStaff line above so this client file adds no import weight.)
+  const authors = role === 'contributor' || role === 'writer' || role === 'admin';
+  if (!isLoaded || !isSignedIn || (!isStaff && !authors)) return null;
   return (
     <>
-      {isWriter && (
+      {authors && (
+        <Link
+          href="/studio"
+          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+        >
+          <NotebookPen size={18} className="shrink-0 text-text-muted" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-text text-base font-semibold">Studio</span>
+            <span className="block text-text-faint text-xs">Write, submit and track your posts</span>
+          </span>
+          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+        </Link>
+      )}
+      {authors && (
         <Link
           href="/settings/author"
           className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
