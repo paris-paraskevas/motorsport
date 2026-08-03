@@ -25,9 +25,12 @@ export function utcDayKeyOf(d: Date): string {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 }
 
-/** The day cell a session belongs in: device-local for timed, UTC for date-only. */
-export function localDayKey(session: Session): string {
-  return session.dateOnly ? utcDayKeyOf(session.start) : dayKeyOf(session.start);
+/** The day cell a session belongs in: device-local for timed, UTC for date-only.
+ *  `utc` is the calendar's "times in" mode — when the user pins UTC, a timed
+ *  session must bucket by its UTC date too, or a 23:00-local session would show
+ *  a UTC clock time in the cell for the wrong calendar day. */
+export function localDayKey(session: Session, utc = false): string {
+  return session.dateOnly || utc ? utcDayKeyOf(session.start) : dayKeyOf(session.start);
 }
 
 export function startOfDay(d: Date): Date {
@@ -92,15 +95,107 @@ export function weekDays(anchor: Date, today: Date): DayCell[] {
 }
 
 /** Group entries by their local day key. */
-export function bucketByDay<T extends { session: Session }>(entries: T[]): Map<string, T[]> {
+export function bucketByDay<T extends { session: Session }>(entries: T[], utc = false): Map<string, T[]> {
   const m = new Map<string, T[]>();
   for (const e of entries) {
-    const k = localDayKey(e.session);
+    const k = localDayKey(e.session, utc);
     const arr = m.get(k);
     if (arr) arr.push(e);
     else m.set(k, [e]);
   }
   return m;
+}
+
+export interface DayEvent<T> {
+  key: string;
+  seriesSlug: string;
+  seriesName: string;
+  color: string;
+  round?: number;
+  entries: T[];
+}
+
+/** Collapse a day's sessions into one block per series-round.
+ *
+ *  This is what makes a month cell readable. A busy Saturday carries 15 sessions
+ *  across six series — as sessions that needs a "+12 more" cliff to fit; as
+ *  events it is six rows that fit whole. The round is part of the key so a
+ *  doubleheader (Formula E London R16 + R17) stays two blocks, not one. */
+export function groupIntoEvents<
+  T extends { session: Session; color: string; seriesSlug: string; seriesName: string },
+>(entries: T[], roundOf: (entry: T) => number | undefined): DayEvent<T>[] {
+  const out: DayEvent<T>[] = [];
+  const byKey = new Map<string, DayEvent<T>>();
+  for (const e of entries) {
+    const round = roundOf(e);
+    const key = `${e.seriesSlug}:${round ?? '-'}`;
+    let ev = byKey.get(key);
+    if (!ev) {
+      ev = {
+        key,
+        seriesSlug: e.seriesSlug,
+        seriesName: e.seriesName,
+        color: e.color,
+        round,
+        entries: [],
+      };
+      byKey.set(key, ev);
+      out.push(ev);
+    }
+    ev.entries.push(e);
+  }
+  return out;
+}
+
+/** Compact series labels for the tightest surfaces — a mobile month cell is
+ *  ~38px of weekday column, where "GT World Challenge" clips to "GT W" and says
+ *  nothing. Abbreviating is editorial, not algorithmic ("NASCAR Cup" shortens to
+ *  NASCAR, "Formula E" to FE), so this is an explicit map over the 15 curated
+ *  series with a derived fallback for anything scaffolded later. */
+const SERIES_CODES: Record<string, string> = {
+  'adac-ravenol-24h': 'ADAC24',
+  dtm: 'DTM',
+  f1: 'F1',
+  f2: 'F2',
+  f3: 'F3',
+  'formula-e': 'FE',
+  'gt-world': 'GTWC',
+  imsa: 'IMSA',
+  indycar: 'INDY',
+  motogp: 'MOTOGP',
+  'nascar-cup': 'NASCAR',
+  nls: 'NLS',
+  wec: 'WEC',
+  wrc: 'WRC',
+  wsbk: 'WSBK',
+};
+
+export function seriesCode(slug: string): string {
+  return SERIES_CODES[slug] ?? slug.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, 6);
+}
+
+/** Clock label for a session. Date-only sessions have no real hour at all
+ *  (Session.dateOnly) and read "TBC" — never a fabricated 00:00. */
+export function sessionTimeLabel(session: Session, utc = false): string {
+  if (session.dateOnly) return 'TBC';
+  return new Intl.DateTimeFormat('en-GB', {
+    ...(utc ? { timeZone: 'UTC' } : {}),
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(session.start);
+}
+
+/** Short zone name for the "times in" indicator. Returns 'GMT' before the
+ *  clock syncs so the pre-hydration render matches the server's. */
+export function tzLabel(now: Date, clock: boolean, utc = false): string {
+  if (utc) return 'UTC';
+  if (!clock) return 'GMT';
+  return (
+    new Intl.DateTimeFormat('en-GB', { timeZoneName: 'short' })
+      .formatToParts(now)
+      .find(p => p.type === 'timeZoneName')?.value ?? 'local'
+  );
 }
 
 export function monthLabel(d: Date): string {
@@ -124,11 +219,16 @@ export function dayLabel(d: Date): string {
 
 export type SessionKind = 'practice' | 'qualifying' | 'race' | 'other';
 
+/** Every kind the filter can select, in display order. 'other' is a REAL option
+ *  rather than an implicit tag-along: it used to be shown only while all three
+ *  named kinds were selected, so unticking Practice silently also dropped every
+ *  session classifySession didn't recognise (a WRC shakedown, a support race). */
+export const SESSION_KINDS: SessionKind[] = ['practice', 'qualifying', 'race', 'other'];
+
 /** Coarse session type for the calendar's event filter. Client-safe (no server
  *  imports). Order matters: practice + qualifying are tested before race so a
  *  "Sprint Qualifying" reads as qualifying (not race) and a warm-up reads as
- *  practice. Anything unrecognised is 'other' (shown only when no type filter
- *  is applied). */
+ *  practice. Anything unrecognised is 'other'. */
 export function classifySession(title: string): SessionKind {
   const t = title.toLowerCase();
   if (/\b(practice|free practice|fp\d|warm[- ]?up|shakedown|test session|testing)\b/.test(t)) return 'practice';
