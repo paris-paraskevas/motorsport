@@ -15,13 +15,15 @@ export interface DraftPreviewProps {
   title: string;
   summary: string;
   heroImage: string | null;
+  /** Import provenance — previews render the same line readers will see. */
+  originalUrl?: string | null;
   bodyNode: ReactNode;
   dateLabel: string;
   banner: { kind: 'draft' } | { kind: 'in_review' } | { kind: 'scheduled'; label: string };
   author: PostAuthor | null;
 }
 
-export function DraftPreview({ id, title, summary, heroImage, bodyNode, dateLabel, banner, author }: DraftPreviewProps) {
+export function DraftPreview({ id, title, summary, heroImage, originalUrl, bodyNode, dateLabel, banner, author }: DraftPreviewProps) {
   const bannerText =
     banner.kind === 'draft'
       ? 'Draft preview · not yet submitted · only you and editors can see this'
@@ -46,6 +48,7 @@ export function DraftPreview({ id, title, summary, heroImage, bodyNode, dateLabe
         title={title}
         summary={summary}
         author={author ?? { name: null, image: null }}
+        originalUrl={originalUrl}
       />
       {heroImage && <PostHero src={heroImage} alt={title} />}
       <article className={POST_ARTICLE_CLASS}>{bodyNode}</article>

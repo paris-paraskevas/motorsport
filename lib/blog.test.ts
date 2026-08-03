@@ -29,7 +29,7 @@ vi.mock('./betting/client', () => ({
 }));
 vi.mock('./betting/friends', () => ({ displayNames: vi.fn() }));
 
-import { updatePostContent, TITLE_MAX, BODY_MAX } from './blog';
+import { updatePostContent, normalizeOriginalUrl, TITLE_MAX, BODY_MAX } from './blog';
 
 beforeEach(() => {
   updateMock.mockClear();
@@ -112,5 +112,40 @@ describe('updatePostContent', () => {
       await expect(updatePostContent('id-1', { heroImage: bad })).rejects.toThrow(/hero image/);
     }
     expect(updateMock).not.toHaveBeenCalled();
+  });
+});
+
+// Import provenance (item 13, migration 20260803130000): the stored URL is
+// emitted verbatim as rel=canonical and as the provenance href, so the shape
+// gate is stricter than hero_image — absolute https:// with a real host, or
+// nothing. Root-relative is meaningless for an EXTERNAL original.
+describe('normalizeOriginalUrl', () => {
+  it('passes a clean https URL through verbatim (trimmed)', () => {
+    expect(normalizeOriginalUrl('  https://www.motorsport.com/f1/news/example-123/  ')).toBe(
+      'https://www.motorsport.com/f1/news/example-123/',
+    );
+  });
+
+  it('maps null / undefined / blank to null (an original piece)', () => {
+    expect(normalizeOriginalUrl(null)).toBeNull();
+    expect(normalizeOriginalUrl(undefined)).toBeNull();
+    expect(normalizeOriginalUrl('   ')).toBeNull();
+  });
+
+  it('rejects everything that is not an absolute https URL with a dotted host', () => {
+    for (const bad of [
+      'http://insecure.example/story',
+      'javascript:alert(1)',
+      '//protocol-relative.example/story',
+      '/blog/our-own-path',
+      'motorsport.com/bare-domain',
+      'https://localhost/story',
+    ]) {
+      expect(() => normalizeOriginalUrl(bad)).toThrow(/original URL/);
+    }
+  });
+
+  it('caps the length at 2048', () => {
+    expect(() => normalizeOriginalUrl(`https://a.example/${'x'.repeat(2048)}`)).toThrow(/2048/);
   });
 });

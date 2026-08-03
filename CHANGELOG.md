@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.250.0 — 2026-08-03
+
+### Added
+- **Article imports (item 13).** A post republished from elsewhere now stores where it came from: migration `20260803130000_post_original_url.sql` adds nullable `post.original_url` (**⚠ apply BEFORE deploying this code** — `lib/blog.ts` COLS selects the column, and against a prod schema without it every post query errors and fail-softs to an empty blog). When set: the published page emits `rel=canonical` pointing at the ORIGINAL off-site URL (`app/(app)/blog/[slug]/page.tsx` `generateMetadata` `alternates.canonical`), the sitemap skips the post (`lib/sitemap-data.ts` — advertising a URL whose canonical says "index elsewhere" is a mixed signal), and readers see "Originally published at <host> ↗" under the byline (`PostHeader`'s new `Provenance`, rendered identically on the draft/review/scheduled previews). So an import adds no indexable page of ours; the original keeps the search equity.
+- **Set once at creation, like slug/series/tags:** a new "Imported from (original URL)" field in the studio composer (`POST /api/blog` accepts `originalUrl`), shown read-only in the editor rail. `normalizeOriginalUrl` (`lib/blog.ts`, exported + tested) gates the shape strictly — absolute `https://` with a dotted host, ≤ 2048, or nothing — because the value is emitted verbatim as the canonical href. NULL = original writing; every existing row stays untouched.
+
 ## 0.249.0 — 2026-08-03
 
 ### Added

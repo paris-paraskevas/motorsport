@@ -33,6 +33,11 @@ export interface BlogPost {
   /** Free-form tags (normalized kebab). A series slug here surfaces the post on
    *  that series' page too, beyond the single seriesSlug. */
   tags: string[];
+  /** Where an IMPORTED article was originally published (https:// URL), or null
+   *  for an original Paddock piece. Set once at creation. When present, the post
+   *  page's rel=canonical points HERE and the sitemap skips the post, so an
+   *  import adds no indexable page; the page shows the provenance to readers. */
+  originalUrl: string | null;
   status: PostStatus;
   authorId: string;
   authorName: string | null;
@@ -74,7 +79,7 @@ export function normalizeTags(raw: string[] | undefined | null): string[] {
 }
 
 const COLS =
-  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, created_at';
+  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, original_url, created_at';
 
 /** Normalize + shape-check a hero/cover image reference: null/blank → null;
  *  otherwise it must be an absolute https:// URL or a root-relative /path —
@@ -89,6 +94,28 @@ function normalizeHeroImage(raw: string | null | undefined): string | null {
   return v;
 }
 
+/** Normalize + shape-check an import's original URL: null/blank → null (an
+ *  original piece); otherwise it must parse as an absolute https:// URL — it is
+ *  emitted verbatim as rel=canonical and as the provenance link's href, so
+ *  anything else (http:, javascript:, a bare domain, our own /path) is rejected
+ *  here. Stricter than hero_image on purpose: an off-site canonical pointing at
+ *  garbage de-indexes the post for nothing. */
+export function normalizeOriginalUrl(raw: string | null | undefined): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  if (v.length > 2048) throw new Error('original URL must be at most 2048 characters');
+  let parsed: URL;
+  try {
+    parsed = new URL(v);
+  } catch {
+    throw new Error('original URL must be an absolute https:// URL');
+  }
+  if (parsed.protocol !== 'https:' || !parsed.hostname.includes('.')) {
+    throw new Error('original URL must be an absolute https:// URL');
+  }
+  return v;
+}
+
 function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
   return {
     id: r.id as string,
@@ -98,6 +125,7 @@ function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
     body: r.body as string,
     seriesSlug: (r.series_slug as string | null) ?? null,
     tags: (r.tags as string[] | null) ?? [],
+    originalUrl: (r.original_url as string | null) ?? null,
     status: r.status as PostStatus,
     authorId: r.author_id as string,
     authorName: name,
@@ -121,6 +149,9 @@ export interface DraftInput {
   seriesSlug?: string | null;
   tags?: string[];
   heroImage?: string | null;
+  /** Import provenance (https:// URL) — see BlogPost.originalUrl. Create-time
+   *  only, like slug/series/tags. */
+  originalUrl?: string | null;
   publishAt?: string | null;
 }
 
@@ -151,6 +182,7 @@ export async function createDraft(authorId: string, input: DraftInput): Promise<
       series_slug: input.seriesSlug?.trim() || null,
       tags: normalizeTags(input.tags),
       hero_image: normalizeHeroImage(input.heroImage),
+      original_url: normalizeOriginalUrl(input.originalUrl),
       publish_at: input.publishAt ?? null,
       author_id: authorId,
     })

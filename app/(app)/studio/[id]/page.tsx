@@ -71,6 +71,7 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
           heroImage: post.heroImage,
           seriesSlug: post.seriesSlug,
           tags: post.tags,
+          originalUrl: post.originalUrl,
           status: post.status,
           publishAt: post.publishAt,
         }}
