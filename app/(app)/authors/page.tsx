@@ -105,6 +105,16 @@ export default async function AuthorsPage() {
           ))}
         </ul>
       )}
+
+      <p className="mt-8 border-t border-border pt-5 text-sm text-text-muted">
+        Want a byline here?{' '}
+        <Link
+          href="/write-for-us"
+          className="font-medium text-text underline decoration-border underline-offset-4 transition-colors duration-(--duration-fast) hover:text-brand hover:decoration-brand"
+        >
+          Write for Paddock →
+        </Link>
+      </p>
     </div>
   );
 }

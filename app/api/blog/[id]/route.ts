@@ -2,7 +2,7 @@ import { NextResponse, after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
-import { isAdmin, isWriter } from '@/lib/threads';
+import { isAdmin, canAuthor } from '@/lib/threads';
 import { isPushConfigured } from '@/lib/push';
 import { decidePost, reschedulePost, submitPost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
 import { announcePublishedPosts } from '@/lib/notify-blog';
@@ -20,7 +20,7 @@ async function authorizePostActor(id: string, userId: string): Promise<BlogPost 
   if (!post) return NextResponse.json({ error: 'not found' }, { status: 404 });
   const user = await currentUser();
   if (isAdmin(user)) return post;
-  if (isWriter(user) && post.authorId === userId) return post;
+  if (canAuthor(user) && post.authorId === userId) return post;
   return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 }
 

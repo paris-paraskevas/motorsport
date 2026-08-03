@@ -36,14 +36,18 @@ export function isStaff(user: { publicMetadata?: { role?: unknown } } | null | u
   return role === 'admin' || role === 'moderator';
 }
 
-/** Writer = Clerk `publicMetadata.role === 'writer'`. Admins are a superset —
- *  they keep every writer capability. A writer is a self-service author for
- *  their OWN blog posts (create, edit until publish, approve + schedule/publish);
- *  route handlers MUST additionally enforce ownership (post.author_id === userId)
- *  for anything post-specific — this helper only proves the role. */
-export function isWriter(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
+/** Author ladder (Clerk `publicMetadata.role`): `admin` > `writer` (trusted,
+ *  hand-picked) > `contributor` (granted via the /write-for-us application).
+ *  All three can author: create + edit their OWN drafts, submit for review, and
+ *  run a public author profile. Capabilities are identical today — the split is
+ *  trust standing (a contributor is the revocable stranger tier), and deciding
+ *  (approve/reject/schedule) stayed admin-only in 0.248.0 regardless. Route
+ *  handlers MUST additionally enforce ownership (post.author_id === userId) for
+ *  anything post-specific — this helper only proves the role. (Replaced
+ *  isWriter in 0.251.0; same contract plus the contributor rung.) */
+export function canAuthor(user: { publicMetadata?: { role?: unknown } } | null | undefined): boolean {
   const role = user?.publicMetadata?.role;
-  return role === 'writer' || role === 'admin';
+  return role === 'contributor' || role === 'writer' || role === 'admin';
 }
 
 function toThread(r: Record<string, unknown>, name: string | null): Thread {

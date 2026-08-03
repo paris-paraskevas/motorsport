@@ -3,7 +3,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { ensureAppUser } from '@/lib/betting/credits';
 import { setDisplayNameIfMissing, clerkDisplayName } from '@/lib/betting/friends';
-import { isAdmin, isWriter } from '@/lib/threads';
+import { isAdmin, canAuthor } from '@/lib/threads';
 import { createDraft, listPosts } from '@/lib/blog';
 import { listSeriesSlugs } from '@/lib/series';
 
@@ -19,7 +19,7 @@ export async function GET() {
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const user = await currentUser();
   const admin = isAdmin(user);
-  if (!admin && !isWriter(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!admin && !canAuthor(user)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   // Writers are scoped to their own posts; they can still act on what they see
   // (the [id] routes authorize each action per-post by ownership).
   const authorScope = admin ? undefined : userId;
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   if (!isBettingConfigured()) return NextResponse.json({ error: 'not available' }, { status: 503 });
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  if (!isWriter(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!canAuthor(await currentUser())) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
   let body: {
     slug?: unknown;

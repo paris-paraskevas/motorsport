@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
-import { isAdmin, isWriter } from '@/lib/threads';
+import { canAuthor } from '@/lib/threads';
 import { getAuthorByClerkId } from '@/lib/authors';
 import { authorPostVisibility } from '@/lib/blog';
 import { slugify } from '@/lib/slug';
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default async function AuthorProfileSettingsPage() {
   const { userId } = await auth();
   const user = await currentUser();
-  if (!userId || !isBettingConfigured() || (!isWriter(user) && !isAdmin(user))) notFound();
+  if (!userId || !isBettingConfigured() || !canAuthor(user)) notFound();
 
   const [profile, posts] = await Promise.all([getAuthorByClerkId(userId), authorPostVisibility(userId)]);
 

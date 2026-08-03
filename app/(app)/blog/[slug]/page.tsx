@@ -8,7 +8,7 @@ import { listPostSlugs, loadPost, loadAllPosts } from '@/lib/posts';
 import { getPostBySlug, publishedPosts, type BlogPost } from '@/lib/blog';
 import { getAuthorByClerkId } from '@/lib/authors';
 import { resolveAuthorIdentity } from '@/lib/author-identity';
-import { isAdmin, isWriter } from '@/lib/threads';
+import { isAdmin, canAuthor } from '@/lib/threads';
 import { renderPostBody, type RenderedBody } from '@/lib/blog-embeds';
 import { mdxComponents } from '@/components/mdx/mdx-components';
 import { DraftPreview } from '@/components/blog/DraftPreview';
@@ -149,7 +149,7 @@ async function safeCurrentUser() {
 async function canPreviewUnpublished(db: BlogPost): Promise<boolean> {
   const u = await safeCurrentUser();
   if (isAdmin(u)) return true;
-  return isWriter(u) && db.authorId === u?.id;
+  return canAuthor(u) && db.authorId === u?.id;
 }
 
 interface RecentPost {

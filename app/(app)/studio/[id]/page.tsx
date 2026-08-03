@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { isAdmin } from '@/lib/threads';
-import { requireWriter } from '@/lib/admin-guard';
+import { requireAuthor } from '@/lib/admin-guard';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getPostById } from '@/lib/blog';
 import { StudioEditor } from '@/components/studio/StudioEditor';
@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: 'Edit post' };
 // PATCH API refuses them), so they render a status card instead of the editor.
 export default async function StudioPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await requireWriter();
+  const user = await requireAuthor();
   const admin = isAdmin(user);
 
   const post = isBettingConfigured() ? await getPostById(id) : null;
