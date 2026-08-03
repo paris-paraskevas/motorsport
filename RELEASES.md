@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.249.0 — 2026-08-03
+
+**Writing moved into its own studio.** Everything about drafting, reviewing and scheduling posts now lives on a dedicated workspace with a proper full-page editor, instead of a cramped box at the top of the blog. The blog page itself is back to being just the blog.
+
+**Submitted posts can be read again.** A piece waiting for review briefly could not be opened by its author or the editor; that is fixed.
+
+**Three broken June articles were removed.** They had stopped rendering after an infrastructure change, so their links led nowhere. The rest of the blog is unaffected.
+
 ## 0.248.1 — 2026-08-03
 
 **Behind the scenes.** Internal notes updated. No change to the site.

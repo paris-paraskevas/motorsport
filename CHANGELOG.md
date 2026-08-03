@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.249.0 — 2026-08-03
+
+### Added
+- **The studio: authoring + moderation get a dedicated surface, off the public blog page** (operator directive — drafts and the composer rendering inside `/blog` was the wrong app layout, and the amber `rounded-2xl` console violated the house style). Three writer-gated routes under `app/(app)/studio/`: `/studio` (pipeline dashboard: in review / drafts / scheduled / live sections with counts and per-row actions), `/studio/new` (full-page composer — the old inline form had an 8-row textarea squeezed into the listing page), `/studio/[id]` (full-page editor: title/summary/cover/body per the PATCH contract, slug/series/tags shown read-only, actions in a rail; Submit/Approve disabled while there are unsaved changes so what ships is always what was last saved). Layout-level gate `requireWriter()` (new, in `lib/admin-guard.ts`) 404s non-writers anonymous included; robots noindex; `force-dynamic`. The API surface is unchanged — `GET/POST /api/blog`, `POST/PATCH /api/blog/[id]` as before; the dashboard reads `listPosts`/`publishedPosts` server-side with the same writer-scoping as the GET.
+- **`components/studio/`**: `studio-shared.ts` (status meta + datetime-local plumbing + the one action fetch, plain module so server pages and client components share it), `RowActions.tsx`, `StudioComposer.tsx`, `StudioEditor.tsx`. `components/blog/StudioLink.tsx` is the only editor-facing element left on `/blog`: a writers-only pill (client-side role check so the page stays revalidate-cached).
+
+### Fixed
+- **An `in_review` post 404'd its own preview.** `/blog/[slug]`'s unpublished-preview gate (page + `generateMetadata`) allowed only `draft`/`approved`, so the moment a writer submitted, the review queue's title link — and the admin's "read it before approving" path — hit a 404. `in_review` is now previewable by the same owner-or-admin rule, with its own banner state.
+- **Stale sitemap test re-pinned, not loosened:** `lib/sitemap-data.test.ts` asserted 22 F1 weekend URLs from the era when Bahrain AND Saudi were both cancelled; 0.245.2 (#642) deliberately restored Bahrain at Sepang as round 16, so the intended count is 23 (verified against `content/series/f1/rounds.json`: 23 rounds, Saudi the only cancellation). This failure pre-dated this branch — the suite fails identically on `main`.
+
+### Changed
+- **`components/blog/PostModeration.tsx` + `PostComposer.tsx` retired** (absorbed by the studio); **`DraftEditor.tsx` → `DraftPreview.tsx`** — the `/blog/[slug]` unpublished preview keeps its banner (now a hairline left rule, not an amber wash) and links "Edit in studio" instead of hosting the in-place pencil editor, returning it to a server component. The flagged empty state ("write one above", the publish-cron leak, the em dash) is gone with the console.
+- **Review deep links** (`lib/blog-notify.ts` email CTA + admin push URL): `/blog?review=1` (a marker no code ever read) → `/studio/<id>`, straight to the post's editor page where the approve/reject controls live.
+
+### Removed
+- **The three legacy MDX posts** (`content/posts/{2026-half-season-review, how-paddock-keeps-15-series-honest, le-mans-2026-preview}.mdx`, all 11 Jun 2026) — operator call, mid-session with screenshot: their pages no longer render on the live Cloudflare runtime (the mdx package copy failures noted in the session-23 handoff), so the `/blog` cards linked to broken URLs. Their sitemap/feed/search entries leave with them (all three surfaces derive from `loadAllPosts()`, empty-safe). The sitemap test that asserted "advertises every legacy MDX blog post" now pins the opposite — `content/posts` EMPTY — which doubles as a guard for the blog SOP's "no new MDX posts" rule. The MDX render pipeline itself (`lib/posts.ts`, the `[slug]` MDXRemote branch) stays for now: dead-code removal is a separate decision.
+
 ## 0.248.1 — 2026-08-03
 
 ### Changed

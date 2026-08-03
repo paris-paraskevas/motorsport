@@ -20,10 +20,13 @@ describe('buildSitemapEntries', () => {
     expect(seriesUrls).toHaveLength(15);
   });
 
-  it('F1 has 22 weekend URLs in 2026 (cancelled Bahrain + Saudi rounds excluded)', async () => {
+  it('F1 has 23 weekend URLs in 2026 (Saudi cancelled; Bahrain back, rescheduled at Sepang)', async () => {
+    // 24 original rounds - Saudi (cancelled) - Bahrain (cancelled) = 22 until
+    // 0.245.2 restored Bahrain as round 16 at Sepang (2-4 Oct) → 23. Stale-guard:
+    // if this fails, re-check content/series/f1/rounds.json before touching it.
     const urls = await buildSitemapEntries();
     const f1Weekends = urls.filter((u) => u.url.includes('/series/f1/weekend/'));
-    expect(f1Weekends).toHaveLength(22);
+    expect(f1Weekends).toHaveLength(23);
   });
 
   it('Formula E emits all 17 weekend URLs (doubleheader race 2s split into their own weekends)', async () => {
@@ -95,18 +98,14 @@ describe('buildSitemapEntries', () => {
     expect(seriesSlugs).toEqual(sorted);
   });
 
-  // The sitemap advertised /blog but not a single post on it, so the site's most
-  // original content was discoverable only by crawling the index — which is the
-  // "Crawled - currently not indexed" shape sitting in Search Console. Only the
-  // MDX posts are asserted here: publishedPosts() needs Supabase and fails soft to
-  // an empty list in tests, which is itself the behaviour the last case pins.
-  it('advertises every legacy MDX blog post', async () => {
-    const urls = (await buildSitemapEntries()).map((u) => u.url);
+  // The legacy MDX posts were retired in 0.249.0 (operator call: their pages
+  // stopped rendering on the Cloudflare runtime, so the cards linked to broken
+  // URLs). This pins content/posts EMPTY — the blog SOP forbids new MDX posts
+  // (they auto-publish on merge, unsigned); if one legitimately returns, it must
+  // also be re-added to the sitemap assertions here.
+  it('carries no legacy MDX blog posts (retired 0.249.0; DB posts are the blog)', async () => {
     const slugs = await listPostSlugs();
-    expect(slugs.length).toBeGreaterThan(0);
-    for (const slug of slugs) {
-      expect(urls).toContain(`${SITE_URL}/blog/${slug}`);
-    }
+    expect(slugs).toHaveLength(0);
   });
 
   it('emits each blog URL once and keeps /blog itself', async () => {

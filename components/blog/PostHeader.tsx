@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 // Shared /blog/[slug] post header: date + tags row, title, byline, summary.
 // Two real consumers (the extraction rule's bar): the public server path in
-// app/(app)/blog/[slug]/page.tsx and DraftEditor's view mode (spec
+// app/(app)/blog/[slug]/page.tsx and DraftPreview (spec
 // docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md). Presentational
 // and hook-free so it renders identically from the RSC tree and the client
 // editor.
@@ -12,7 +12,7 @@ export interface PostAuthor {
   image: string | null;
   /** `/authors/<slug>` when this author has a public profile — the byline becomes
    *  a link. Absent/null (legacy MDX posts, a writer with no profile row, the
-   *  DraftEditor's view mode) keeps it plain text. */
+   *  DraftPreview) keeps it plain text. */
   href?: string | null;
 }
 
@@ -30,7 +30,7 @@ export const POST_ARTICLE_CLASS =
    prose-table:block prose-table:overflow-x-auto prose-table:max-w-full`;
 
 /** Cover image between the header and the body. Same two consumers as
- *  PostHeader (public page + DraftEditor view mode). Fixed 1200×630 box
+ *  PostHeader (public page + DraftPreview). Fixed 1200×630 box
  *  with object-cover, so odd source dimensions crop instead of reflowing
  *  the page; eager-loaded — when present it's the LCP. */
 export function PostHero({ src, alt }: { src: string; alt: string }) {
