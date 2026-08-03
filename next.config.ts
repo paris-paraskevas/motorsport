@@ -59,6 +59,21 @@ const nextConfig: NextConfig = {
   // so serve unoptimized (one component uses next/image). A Cloudflare Images
   // custom loader can be added later if optimization is wanted.
   images: { unoptimized: true },
+  webpack(config, { dev }) {
+    if (dev) {
+      // Next's built-in dev-watch ignore list is ONLY node_modules/.git/.next
+      // (next/dist/build/webpack-config.js baseWatchOptions), and the config
+      // surface reads nothing but pollIntervalMs — so .open-next (330+ MB /
+      // 3k+ files of OpenNext deploy artifacts) gets indexed by the file
+      // watcher and every local deploy rewrites it under a running dev server.
+      // `ignored` replaces the default wholesale, so restate it, then extend.
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: ["**/node_modules/**", "**/.git/**", "**/.next/**", "**/.open-next/**"],
+      };
+    }
+    return config;
+  },
   async redirects() {
     // /social is the social hub; leagues have their own page at /social/leagues
     // (0.90.0). League detail + join keep their own routes. Old links — notably
