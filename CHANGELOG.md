@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.253.1 — 2026-08-03
+
+### Changed
+- Docs: the post-Cloudflare perf re-baseline row in `docs/perf-baselines.md` (item 26 closed). Operator-run PSI: mobile 71 / desktop 78, CLS **0** on both (the May regression is gone), TBT collapsed — and one dominant problem left: the landing carousel serves 4.1 MB of raw oversized JPEGs with the LCP image lazy-loaded behind an opacity-0 fade → mobile LCP 15.3 s. Fix bundle queued (WebP + sizes + eager/fetchpriority first slide + fade-skip on slide 1; est. → ~2.5-3 s). Field-source decision recorded: Cloudflare Web Analytics RUM (already collecting via the beacon) replaces the dead Vercel Speed Insights, with GSC CWV as cross-check. No code change.
+
 ## 0.253.0 — 2026-08-03
 
 ### Added

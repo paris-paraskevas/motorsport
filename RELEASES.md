@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.253.1 — 2026-08-03
+
+**Behind the scenes.** Fresh performance measurements recorded after the infrastructure move. No change to the site.
+
 ## 0.253.0 — 2026-08-03
 
 **The whole site reads more comfortably.** New typography built for long reading and fast scanning: a calmer background that stops bright text from glowing on OLED screens, driver names in a dedicated condensed face, and the numbers you actually scan, like points and gaps, in bright aligned figures. Articles get a narrower, easier reading width.
