@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.254.0 — 2026-08-03
+
+### Fixed
+- **The landing LCP disaster (mobile 15.3 s, PSI 2026-08-03 baseline).** Three compounding causes in `CircuitSlideshow`: all seven hero photos mounted eagerly (4,112 KiB of raw ~1900px JPEGs served under `images: unoptimized`), the LCP preload carried no priority hint, and everything queued behind CSS on slow links. Now: the seven circuit photos are 1600w WebP q78 (**4,112 → 1,673 KiB total**, monaco 979 → 476), the slideshow mounts ONLY the active + outgoing slide (initial page load fetches ONE ~190 KiB image; each next slide fetches at its turn), and slide 0 carries `fetchPriority="high"` on both the img and its preload (verified in the SSR HTML). The crossfade behavior is unchanged — the outgoing slide stays mounted through the fade. Est. mobile LCP → ~2.5-3 s; re-measure per the perf-baselines protocol after 24 h.
+
 ## 0.253.1 — 2026-08-03
 
 ### Changed
