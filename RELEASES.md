@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.253.0 — 2026-08-03
+
+**The whole site reads more comfortably.** New typography built for long reading and fast scanning: a calmer background that stops bright text from glowing on OLED screens, driver names in a dedicated condensed face, and the numbers you actually scan, like points and gaps, in bright aligned figures. Articles get a narrower, easier reading width.
+
+**Dyslexic mode.** A new switch in Settings → Theme swaps the site's type to OpenDyslexic with looser line spacing, and remembers your choice on that device.
+
 ## 0.252.2 — 2026-08-03
 
 **Behind the scenes.** Internal notes updated. No change to the site.

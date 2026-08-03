@@ -91,22 +91,22 @@ function DriversTable({
           <caption className="sr-only">{heading}</caption>
           <thead>
             <tr className="border-b border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-              <th scope="col" className="w-10 py-2 pr-3 text-right font-semibold">
+              <th scope="col" className="w-10 py-2 pr-3 text-right font-normal">
                 Pos
               </th>
-              <th scope="col" className="py-2 pr-3 text-left font-semibold">
+              <th scope="col" className="py-2 pr-3 text-left font-normal">
                 {nameLabel}
               </th>
               {showTeam ? (
-                <th scope="col" className="py-2 pr-3 text-left font-semibold">
+                <th scope="col" className="py-2 pr-3 text-left font-normal">
                   Team
                 </th>
               ) : null}
-              <th scope="col" className="py-2 pl-3 text-right font-semibold">
+              <th scope="col" className="py-2 pl-3 text-right font-normal">
                 Pts
               </th>
               {showWins ? (
-                <th scope="col" className="w-12 py-2 pl-3 text-right font-semibold">
+                <th scope="col" className="w-12 py-2 pl-3 text-right font-normal">
                   Wins
                 </th>
               ) : null}
@@ -124,7 +124,7 @@ function DriversTable({
                 </td>
                 <td className="py-2 pr-3 align-baseline">
                   <span className="inline-flex items-baseline gap-2">
-                    <span className="font-medium text-text">{d.driverName}</span>
+                    <span className="font-condensed text-[15px] font-semibold text-text">{d.driverName}</span>
                     {d.driverCode ? (
                       <span className="border border-border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-faint">
                         {d.driverCode}
@@ -137,11 +137,11 @@ function DriversTable({
                     {d.team}
                   </td>
                 ) : null}
-                <td className="py-2 pl-3 text-right align-baseline font-mono font-semibold tabular-nums text-text">
+                <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] font-semibold tabular-nums text-numeral">
                   {d.points}
                 </td>
                 {showWins ? (
-                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[11px] tabular-nums text-text-faint">
+                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] tabular-nums text-text-faint">
                     {d.wins != null ? d.wins : ''}
                   </td>
                 ) : null}
@@ -179,17 +179,17 @@ function ConstructorsTable({
           <caption className="sr-only">{heading}</caption>
           <thead>
             <tr className="border-b border-border font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-              <th scope="col" className="w-10 py-2 pr-3 text-right font-semibold">
+              <th scope="col" className="w-10 py-2 pr-3 text-right font-normal">
                 Pos
               </th>
-              <th scope="col" className="py-2 pr-3 text-left font-semibold">
+              <th scope="col" className="py-2 pr-3 text-left font-normal">
                 {nameLabel}
               </th>
-              <th scope="col" className="py-2 pl-3 text-right font-semibold">
+              <th scope="col" className="py-2 pl-3 text-right font-normal">
                 Pts
               </th>
               {showWins ? (
-                <th scope="col" className="w-12 py-2 pl-3 text-right font-semibold">
+                <th scope="col" className="w-12 py-2 pl-3 text-right font-normal">
                   Wins
                 </th>
               ) : null}
@@ -205,14 +205,14 @@ function ConstructorsTable({
                 >
                   {c.position}
                 </td>
-                <td className="py-2 pr-3 align-baseline font-medium text-text">
+                <td className="py-2 pr-3 align-baseline font-condensed text-[15px] font-semibold text-text">
                   {c.name}
                 </td>
-                <td className="py-2 pl-3 text-right align-baseline font-mono font-semibold tabular-nums text-text">
+                <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] font-semibold tabular-nums text-numeral">
                   {c.points}
                 </td>
                 {showWins ? (
-                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[11px] tabular-nums text-text-faint">
+                  <td className="py-2 pl-3 text-right align-baseline font-mono text-[13px] tabular-nums text-text-faint">
                     {c.wins != null ? c.wins : ''}
                   </td>
                 ) : null}

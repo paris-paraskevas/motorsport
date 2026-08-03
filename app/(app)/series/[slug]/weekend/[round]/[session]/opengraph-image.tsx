@@ -61,7 +61,7 @@ export default async function Image({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#07070a',
+          background: '#121215',
           color: '#f5f5f7',
           padding: '72px',
           borderBottom: `14px solid ${color}`,

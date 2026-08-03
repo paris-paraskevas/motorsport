@@ -267,14 +267,18 @@ function DriverCell({
   driverSlugs: Set<string>;
 }) {
   const slug = slugify(nameForSlugMatch(name));
+  // Names render in the condensed face (the board's quarantine) — one wrapper
+  // here covers every champions row.
   if (driverSlugs.has(slug)) {
     return (
-      <Link href={`/drivers/${slug}`} className={LINK_CLASS}>
-        {name}
-      </Link>
+      <span className="font-condensed text-[15px] font-semibold">
+        <Link href={`/drivers/${slug}`} className={LINK_CLASS}>
+          {name}
+        </Link>
+      </span>
     );
   }
-  return <>{name}</>;
+  return <span className="font-condensed text-[15px] font-semibold">{name}</span>;
 }
 
 function TeamCell({

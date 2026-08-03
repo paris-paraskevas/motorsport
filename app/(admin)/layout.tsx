@@ -1,21 +1,14 @@
 import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
-import { Saira_Condensed } from 'next/font/google';
+import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL } from '@/lib/site';
 import { ThemeScript } from '@/components/theme/ThemeScript';
+import '@fontsource/opendyslexic/400.css';
+import '@fontsource/opendyslexic/700.css';
 import '../globals.css';
 
 // Display face, self-hosted at build time by next/font (no runtime Google
 // request; GDPR-clean), the same face the (app) and (marketing) roots load.
-const saira = Saira_Condensed({
-  subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
-  variable: '--font-saira',
-  display: 'swap',
-});
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: 'Admin',
@@ -23,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#07070a',
+  themeColor: '#121215',
   width: 'device-width',
   initialScale: 1,
 };
@@ -46,18 +39,18 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
       signUpFallbackRedirectUrl="/app"
       appearance={{
         variables: {
-          colorBackground: '#14141a',
-          colorText: '#f5f5f7',
+          colorBackground: '#1b1b21',
+          colorText: '#e4e4e8',
           colorPrimary: '#ffb400',
-          colorTextOnPrimaryBackground: '#07070a',
-          colorInputBackground: '#1a1a22',
-          colorInputText: '#f5f5f7',
+          colorTextOnPrimaryBackground: '#121215',
+          colorInputBackground: '#222229',
+          colorInputText: '#e4e4e8',
         },
       }}
     >
       <html
         lang="en"
-        className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
+        className={`dark ${FONT_CLASSES}`}
       >
         <body className="min-h-screen bg-bg text-text">
           <ThemeScript />

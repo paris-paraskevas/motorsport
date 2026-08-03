@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.253.0 — 2026-08-03
+
+### Added
+- **The Plex type system + reading-comfort ground** (operator board spec, "READING COMFORT"). IBM Plex Sans (variable, Greek subset) replaces Geist Sans as the app-wide face at base weight 400; IBM Plex Mono replaces Geist Mono behind the existing `--font-mono` token; IBM Plex Sans Condensed arrives as `--font-condensed`, **quarantined to names** — standings/results name cells (15px semibold), multi-class crew rows, champions entries. `--font-display` (Saira's 193 call sites) repoints to the sans stack, so headings inherit the body face with zero churn; Saira and the `geist` package are removed. All three faces load from one shared `lib/fonts.ts` across the four root layouts, self-hosted at build.
+- **Ground `#121215`, body text `#E4E4E8`** — the board's OLED-halation fix: lifted ground + slightly dimmed body copy at ~no perceived-contrast cost (measured 14.75:1, past AAA). Surfaces lift proportionally (`#1b1b21`/`#222229`, borders `#30303b`/`#40404d`) so the depth ladder survives; `--text-faint` re-tuned to `#8a8a94` (≥4.5:1 on all three lifted surfaces, measured). **Full white is reserved for numerals you scan**: new `--numeral` token (per-theme values) on points/gaps at 13px tabular mono; table header labels drop to weight 400 per the board. Blog articles get the reading measure: 17px/1.62 at max 64ch. Followed hexes: Clerk appearance, OG/story cards, `global-error`, ThemePicker swatches, `manifest.json`, `themeColor` — the old `#07070a` is gone repo-wide.
+- **Dyslexic mode** (`/settings/theme` → Readability): swaps the entire type system to self-hosted OpenDyslexic (fontsource; the font files download only when the mode is on) with looser leading, via a token override on `html[data-dyslexic]` — which is why the fonts moved to CSS variables. Persists like the theme (`ThemeScript` applies it pre-paint; `DyslexicToggle` uses the ThemePicker `useSyncExternalStore` pattern). Mono deliberately stays Plex Mono in this mode: tabular data loses alignment in OpenDyslexic.
+- **The GeistSans Greek-omega fallback hack retired** — Plex Sans ships a real Greek subset; verified visually (lowercase ω renders correctly, distinct from Ω).
+
 ## 0.252.2 — 2026-08-03
 
 ### Changed

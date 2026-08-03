@@ -80,7 +80,7 @@ function ResultRow({ entry }: { entry: RaceResultEntry }) {
       </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-text text-sm font-medium truncate">
+          <span className="font-condensed text-[15px] font-semibold text-text truncate">
             {entry.driverName}
           </span>
           {entry.driverCode ? (
@@ -91,10 +91,10 @@ function ResultRow({ entry }: { entry: RaceResultEntry }) {
         </div>
         <div className="text-text-muted text-xs truncate">{entry.team}</div>
       </div>
-      <span className="text-text-muted text-[11px] font-mono tabular-nums text-right w-20 truncate">
+      <span className="text-text-muted text-[13px] font-mono tabular-nums text-right w-20 truncate">
         {entry.time ?? entry.status}
       </span>
-      <span className="text-text text-sm font-mono tabular-nums text-right w-10">
+      <span className="text-numeral text-[13px] font-mono font-semibold tabular-nums text-right w-10">
         {entry.points}
       </span>
     </li>
@@ -269,7 +269,7 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
       </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-text text-sm font-medium truncate">
+          <span className="font-condensed text-[15px] font-semibold text-text truncate">
             {entry.drivers || entry.team}
           </span>
           <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
@@ -281,7 +281,7 @@ function ImsaResultRow({ entry }: { entry: ImsaRaceEntry }) {
           {entry.vehicle ? ` · ${entry.vehicle}` : ''}
         </div>
       </div>
-      <span className="text-text-muted text-[11px] font-mono tabular-nums text-right w-24 truncate">
+      <span className="text-text-muted text-[13px] font-mono tabular-nums text-right w-24 truncate">
         {entry.gap || entry.status}
       </span>
     </li>
@@ -474,7 +474,7 @@ function GtWorldResultRow({ entry }: { entry: GtWorldRaceResultEntry }) {
       </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-text text-sm font-medium truncate">
+          <span className="font-condensed text-[15px] font-semibold text-text truncate">
             {entry.drivers.join(' · ')}
           </span>
           <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
@@ -486,7 +486,7 @@ function GtWorldResultRow({ entry }: { entry: GtWorldRaceResultEntry }) {
           {entry.car ? ` · ${entry.car}` : ''}
         </div>
       </div>
-      <span className="text-text-muted text-[11px] font-mono tabular-nums text-right w-24 truncate">
+      <span className="text-text-muted text-[13px] font-mono tabular-nums text-right w-24 truncate">
         {entry.gap || entry.time || ''}
       </span>
     </li>
