@@ -25,30 +25,52 @@ const INTERVAL_MS = 5000;
 // keeps the CC attribution visible.
 export function CircuitSlideshow() {
   const [index, setIndex] = useState(0);
+  // The slide we're fading FROM — the only non-active slide that needs to be in
+  // the DOM. Mounting all seven downloaded 4.1 MB of photos before first paint
+  // (mobile LCP 15.3 s, PSI 2026-08-03); now the initial load is ONE image and
+  // each next slide fetches when its turn comes.
+  const [prev, setPrev] = useState<number | null>(null);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const id = setInterval(() => setIndex(i => (i + 1) % SLIDES.length), INTERVAL_MS);
+    const id = setInterval(
+      () =>
+        setIndex(i => {
+          setPrev(i);
+          return (i + 1) % SLIDES.length;
+        }),
+      INTERVAL_MS,
+    );
     return () => clearInterval(id);
   }, []);
 
   const active = SLIDES[index];
+  const pick = (i: number) => {
+    setPrev(index);
+    setIndex(i);
+  };
 
   return (
     <div className="relative h-72 overflow-hidden rounded-2xl border border-border sm:h-80">
-      {SLIDES.map((s, i) => (
-        <Image
-          key={s.img}
-          src={s.img}
-          alt={i === index ? `${s.label} — ${s.caption}` : ''}
-          fill
-          priority={i === 0}
-          sizes="(max-width: 1024px) 100vw, 480px"
-          className={`object-cover transition-opacity duration-700 ease-out ${
-            i === index ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-      ))}
+      {SLIDES.map((s, i) => {
+        if (i !== index && i !== prev) return null;
+        return (
+          <Image
+            key={s.img}
+            src={s.img}
+            alt={i === index ? `${s.label} — ${s.caption}` : ''}
+            fill
+            priority={i === 0}
+            // The LCP element: the preload existed but carried no priority hint
+            // (PSI flagged it), so the fetch queued behind CSS on slow links.
+            fetchPriority={i === 0 ? 'high' : undefined}
+            sizes="(max-width: 1024px) 100vw, 480px"
+            className={`object-cover transition-opacity duration-700 ease-out ${
+              i === index ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        );
+      })}
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10"
@@ -85,7 +107,7 @@ export function CircuitSlideshow() {
             role="tab"
             aria-selected={i === index}
             aria-label={s.label}
-            onClick={() => setIndex(i)}
+            onClick={() => pick(i)}
             className={`h-1.5 rounded-full transition-all duration-(--duration-base) ${
               i === index ? 'w-5 bg-brand-fill' : 'w-1.5 bg-white/40 hover:bg-white/70'
             }`}
