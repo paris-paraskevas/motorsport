@@ -29,6 +29,9 @@ export interface StudioEditorPost {
   heroImage: string | null;
   seriesSlug: string | null;
   tags: string[];
+  /** Import provenance (create-time only, read-only here) — non-null marks the
+   *  post as an import whose canonical points off-site. */
+  originalUrl: string | null;
   status: 'draft' | 'in_review' | 'approved';
   publishAt: string | null;
 }
@@ -163,6 +166,7 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
           <RailFact label="Slug" value={post.slug} />
           <RailFact label="Series" value={post.seriesSlug ?? 'site-wide'} />
           {post.tags.length > 0 && <RailFact label="Tags" value={post.tags.join(', ')} />}
+          {post.originalUrl !== null && <RailFact label="Imported from" value={post.originalUrl} />}
           <Link
             href={`/blog/${post.slug}`}
             className="inline-block font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"

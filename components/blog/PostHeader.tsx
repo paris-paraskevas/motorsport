@@ -46,18 +46,45 @@ export function PostHero({ src, alt }: { src: string; alt: string }) {
   );
 }
 
+/** Provenance line for an IMPORTED article (post.original_url set): names the
+ *  source host and links out with the crediting rel. The page's rel=canonical
+ *  points at this same URL, so readers and crawlers get the same story. */
+function Provenance({ url }: { url: string }) {
+  let host: string;
+  try {
+    host = new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return null; // malformed rows can't render a link worth clicking
+  }
+  return (
+    <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+      Originally published at{' '}
+      <a
+        href={url}
+        rel="external noopener"
+        className="text-text-muted underline decoration-border underline-offset-4 transition-colors duration-(--duration-fast) hover:text-text"
+      >
+        {host} ↗
+      </a>
+    </p>
+  );
+}
+
 export function PostHeader({
   dateLabel,
   tags,
   title,
   summary,
   author,
+  originalUrl,
 }: {
   dateLabel: string;
   tags?: string[];
   title: string;
   summary: string;
   author: PostAuthor;
+  /** Import provenance — renders the "Originally published at" line. */
+  originalUrl?: string | null;
 }) {
   return (
     <header className="mb-8">
@@ -107,6 +134,7 @@ export function PostHeader({
           </span>
         </div>
       )}
+      {originalUrl != null && originalUrl !== '' && <Provenance url={originalUrl} />}
       <p className="mt-4 text-base text-text-muted leading-relaxed">
         {summary}
       </p>
