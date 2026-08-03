@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.252.2 — 2026-08-03
+
+### Changed
+- Docs: session-26 wrap. `docs/HANDOFF.md` gains the LATEST block (0.249.0 → 0.252.1, PRs #649-#655): the studio, imports, /write-for-us + the contributor ladder, post-ready + Auto-link, the calendar-verification verdict (12 series checked, zero drift), the `revalidatePath`-is-a-no-op finding with the adapter source quoted, and five new landmines (GitHub closes stacked PRs on base-branch delete; keyless PSI quota; stale-`.next` version artifact; CLAUDE.md landmine 1 is stale; the vitest flake capture protocol). `SCHEDULE.md` session-26 outcomes; `IDEAS.md` triaged (shipped items removed, tagCache + AI-headings + Turbopack entries added, the operator's /play-revamp and perf-re-baseline entries carried). No code change.
+
 ## 0.252.1 — 2026-08-03
 
 ### Added

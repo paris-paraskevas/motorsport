@@ -1338,7 +1338,20 @@ Operator's order: **1. blog editor section replan/rebuild** (drafts/new-post aut
 - Plan: investigate current `/blog` admin/editor code → ASCII/screenshot options → operator picks → build task 1 → ESPA task 2 (migration SQL presented for naming) → build → continue down the list as time allows.
 - Won't touch this session: champions enrichment (needs the two-source ultracode pass; ADAC 24h + NLS never), operator's open items (VAPID recovery, panagiotis worker config, key rotations, Vercel cancellation, GSC export, signed-in click-throughs), prod Supabase writes without the operator naming the action, the operator's uncommitted IDEAS.md entry.
 
-Active: _(awaiting [+Nm] prefixes)_
+Outcomes — **7 PRs merged (#649–#655), 0.248.1 → 0.252.1, prod verified on each**; every list item cleared except item 26's two gated halves:
+
+- → done: **the studio** (0.249.0 #649, "Full studio" picked from 3 ASCII options): `/studio` pipeline dashboard + `/studio/new` composer + `/studio/[id]` editor; `/blog` back to a pure listing; PostModeration/PostComposer retired, DraftEditor → DraftPreview; review deep-links → `/studio/<id>`. Also fixed in it: `in_review` posts 404'd their own preview (page + generateMetadata gates); stale F1 sitemap test re-pinned 22→23 (Bahrain-at-Sepang, pre-existing failure on main).
+- → done: **operator mid-session ask** — the three dead June MDX posts removed (broken on the CF runtime); sitemap 1122 → 1119; the sitemap test now pins `content/posts` empty as the no-new-MDX guard.
+- → done: **article imports** (0.250.0 #651; #650 was auto-closed by GitHub when its base branch deleted — recreated): `post.original_url` (migration operator-applied), off-site canonical, sitemap skip, "Originally published at <host>" provenance; composer field + editor rail fact.
+- → done: **/write-for-us + contributor role** (0.251.0 #652): application form → `author_request` table (operator-applied SQL) → admin queue on `/admin/users` → approve grants Clerk `role=contributor` (merge semantics verified against @clerk/backend types, grant-before-flip ordering); `canAuthor()` replaced `isWriter()` at all ten gates; decision emails both ways.
+- → done: **discoverability** (0.252.1 #655, operator ask): "Become an author?" row on /settings for signed-in non-authors, two-state /blog pill (Studio → / Write for Paddock →), footer link.
+- → done: **format button, deterministic half** (0.252.0 #654, option 1 of 3 picked): POST-READY checklist in the editor rail + Auto-link names (`/api/blog/format`, insert-only linker, 11 unit tests). AI headings = gated phase 2 in IDEAS.
+- → done: **item 25**: `--webpack` traced to the serwist commit (80f8ed7; `@serwist/turbopack` 9.5.12 now exists — migration queued in IDEAS); the dev watcher DOES index `.open-next` (Next hard-codes its ignore list) → dev-only `webpack()` watchOptions fix shipped (0.251.1 #653). Also recorded: CLAUDE.md landmine 1 (serverExternalPackages pair) is stale post-Cloudflare.
+- → done: **item 20 SOLO** (ultracode declined by operator): all 12 verifiable series' remaining-2026 calendars checked against official + independent sources — **zero drift** (the F1/WEC staleness came from Middle East reschedules that don't touch the rest). F3's Madrid finale is real; our F3 round-2 gap correctly mirrors the cancelled Bahrain F1 weekend; our F1 Baku dates already carry the Remembrance-Day Saturday shift. ADAC 24h N/A (no rounds.json, single past event).
+- → partial: **item 26** — OpenNext lever audit DONE: `revalidatePath` is a **silent no-op** on prod (dummy tagCache `writeTags`/`isStale` quoted from the adapter); all targets have `revalidate=300` so staleness is bounded (~5 min ISR + ≤30 min regional cache), not permanent; fix proposal = `doShardedTagCache` or D1 tag cache, preview-gated, operator names the infra. PSI lab pass BLOCKED on keyless quota → operator runs pagespeed.web.dev or provides an API key, then the baseline row gets appended.
+- Also: prod-version confusion resolved (prod was current; 0.245.3 was the stale `testing-paris` branch tip; per-dev workers show their branch), paris worker used as the signed-in review surface all day, the operator's click-throughs passed.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 

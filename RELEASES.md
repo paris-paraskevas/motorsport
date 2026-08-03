@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.252.2 — 2026-08-03
+
+**Behind the scenes.** Internal notes updated. No change to the site.
+
 ## 0.252.1 — 2026-08-03
 
 **Becoming an author is easier to find.** The invitation to write for Paddock now appears in your account page, on the blog, and in the footer, instead of hiding behind the authors list.
