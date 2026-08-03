@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.255.0 — 2026-08-03
+
+**Published posts and profile edits appear immediately.** Approving a post or editing an author page now refreshes the affected pages within seconds, instead of waiting out a cache window.
+
 ## 0.254.0 — 2026-08-03
 
 **The landing page loads dramatically faster on phones.** The big circuit photos were the culprit: they now load one at a time in a lighter format, so the first picture appears in a fraction of the old time on mobile connections.
