@@ -6,7 +6,7 @@ import { THEME_STORAGE_KEY } from '@/components/theme/ThemeScript';
 // Palette metadata for the picker previews only — the live values are the
 // :root[data-theme=…] token blocks in globals.css (WCAG-gated there).
 const THEMES = [
-  { key: 'midnight', label: 'Midnight', hint: 'Classic dark. The default', bg: '#07070a', surface: '#14141a', text: '#f5f5f7', accent: '#ffb400', dark: true },
+  { key: 'midnight', label: 'Midnight', hint: 'Classic dark. The default', bg: '#121215', surface: '#1b1b21', text: '#e4e4e8', accent: '#ffb400', dark: true },
   { key: 'carbon', label: 'Carbon', hint: 'Cool graphite. Night races', bg: '#060a12', surface: '#111721', text: '#f0f4f9', accent: '#ffb400', dark: true },
   { key: 'ember', label: 'Ember', hint: 'Amber instrument. Evening', bg: '#0c0a05', surface: '#1a140a', text: '#f8f1e7', accent: '#ffb400', dark: true },
   { key: 'newsprint', label: 'Newsprint', hint: 'Paper light. Long reads', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#7d5300', dark: false },
@@ -72,7 +72,7 @@ function Swatch({ theme }: { theme: (typeof THEMES)[number] }) {
 function SystemSwatch() {
   return (
     <span aria-hidden="true" className="flex h-12 w-full border border-border">
-      <span className="flex-1" style={{ backgroundColor: '#07070a' }} />
+      <span className="flex-1" style={{ backgroundColor: '#121215' }} />
       <span className="flex-1" style={{ backgroundColor: '#f7f3e8' }} />
     </span>
   );

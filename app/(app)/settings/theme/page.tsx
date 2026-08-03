@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ThemePicker } from '@/components/theme/ThemePicker';
+import { DyslexicToggle } from '@/components/theme/DyslexicToggle';
 import { PAGE_READ } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function ThemePage() {
         </h1>
       </header>
       <ThemePicker />
+      <DyslexicToggle />
     </div>
   );
 }

@@ -61,6 +61,9 @@ export function AppShell({
   // highlight where the mouse is. Desktop-mouse only and off under reduced
   // motion; pointer-events:none so it never intercepts a click. Driven by a ref
   // + rAF (no React state) so mousemove costs no re-render.
+  // Diameter in px — the transform below offsets by half of it to stay centred.
+  // 440 → 140 (operator, 2026-08-03: much smaller circle).
+  const GLOW_SIZE = 140;
   const glowRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const finePointer = window.matchMedia('(pointer: fine)').matches;
@@ -77,7 +80,7 @@ export function AppShell({
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
-        el.style.transform = `translate3d(${x - 220}px, ${y - 220}px, 0)`;
+        el.style.transform = `translate3d(${x - GLOW_SIZE / 2}px, ${y - GLOW_SIZE / 2}px, 0)`;
         if (!shown) {
           el.style.opacity = '1';
           shown = true;
@@ -243,10 +246,12 @@ export function AppShell({
       <div
         ref={glowRef}
         aria-hidden="true"
-        className="pointer-events-none fixed left-0 top-0 z-[60] h-[440px] w-[440px] rounded-full opacity-0 transition-opacity duration-300 will-change-transform"
+        className="pointer-events-none fixed left-0 top-0 z-[60] rounded-full opacity-0 transition-opacity duration-300 will-change-transform"
         style={{
+          width: GLOW_SIZE,
+          height: GLOW_SIZE,
           background:
-            'radial-gradient(circle, rgba(255,180,0,0.11) 0%, rgba(255,180,0,0.05) 40%, rgba(255,180,0,0.018) 62%, transparent 82%)',
+            'radial-gradient(circle, rgba(255,180,0,0.14) 0%, rgba(255,180,0,0.06) 45%, rgba(255,180,0,0.02) 65%, transparent 82%)',
           mixBlendMode: 'screen',
         }}
       />

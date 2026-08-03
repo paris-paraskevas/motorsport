@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/nextjs';
 // layout (or template) itself throws, so it replaces the root layout entirely
 // and MUST render its own <html> and <body>. App CSS, fonts and component
 // libraries may not be available here, so everything is styled inline with the
-// Paddock token hex values (globals.css: --bg #07070a, --surface #14141a,
+// Paddock token hex values (globals.css: --bg #121215, --surface #1b1b21,
 // --text #f5f5f7, --text-muted #a1a1aa, --text-faint #84848e, --border #2a2a35).
 export default function GlobalError({
   error,
@@ -26,7 +26,7 @@ export default function GlobalError({
         style={{
           margin: 0,
           minHeight: '100vh',
-          backgroundColor: '#07070a',
+          backgroundColor: '#121215',
           color: '#f5f5f7',
           fontFamily:
             'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -129,7 +129,7 @@ export default function GlobalError({
                   gap: '8px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: '#07070a',
+                  color: '#121215',
                   backgroundColor: '#f5f5f7',
                   border: 'none',
                   borderRadius: '9999px',

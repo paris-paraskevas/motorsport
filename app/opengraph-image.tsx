@@ -19,7 +19,7 @@ export default async function OpengraphImage() {
     (
       <div
         style={{
-          background: '#07070a',
+          background: '#121215',
           width: '100%',
           height: '100%',
           display: 'flex',

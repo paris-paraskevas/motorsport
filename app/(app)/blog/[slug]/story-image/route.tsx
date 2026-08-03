@@ -75,7 +75,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#07070a',
+          background: '#121215',
           color: '#f5f5f7',
           padding: '110px 84px',
           borderBottom: `30px solid ${card.color}`,

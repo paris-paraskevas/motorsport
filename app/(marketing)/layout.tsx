@@ -1,19 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
-import { Saira_Condensed } from 'next/font/google';
+import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { ThemeScript } from '@/components/theme/ThemeScript';
+import '@fontsource/opendyslexic/400.css';
+import '@fontsource/opendyslexic/700.css';
 import '../globals.css';
-
-// Display face for the Paddock 2.0 language — self-hosted at build time by
-// next/font (no runtime Google request; GDPR-clean).
-const saira = Saira_Condensed({
-  subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
-  variable: '--font-saira',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -49,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#07070a',
+  themeColor: '#121215',
   width: 'device-width',
   initialScale: 1,
 };
@@ -66,7 +57,7 @@ export default function MarketingLayout({
   return (
     <html
       lang="en"
-      className={`dark ${GeistSans.className} ${GeistMono.variable} ${saira.variable}`}
+      className={`dark ${FONT_CLASSES}`}
     >
       <body className="min-h-screen bg-bg text-text">
         <ThemeScript />

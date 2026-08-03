@@ -8,6 +8,9 @@
 // dark→midnight / light→newsprint (GitHub precedent: system-light lands on the
 // soft paper theme, never high-contrast).
 export const THEME_STORAGE_KEY = 'paddock:theme';
+/** '1' = dyslexic mode on (html[data-dyslexic] swaps the font tokens to
+ *  OpenDyslexic — globals.css). Same pre-paint contract as the theme. */
+export const DYSLEXIC_STORAGE_KEY = 'paddock:dyslexic';
 
 const INIT = `(function(){try{
 var K={midnight:1,carbon:1,ember:1,newsprint:1,circuit:1};
@@ -17,6 +20,7 @@ var r=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'m
 var d=document.documentElement;
 d.dataset.theme=r;
 d.classList.toggle('dark',r!=='newsprint'&&r!=='circuit');
+if(localStorage.getItem('${DYSLEXIC_STORAGE_KEY}')==='1')d.dataset.dyslexic='1';
 }catch(e){}})();`;
 
 export function ThemeScript() {

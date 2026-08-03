@@ -29,26 +29,32 @@
 :root {
   color-scheme: dark;
 
-  /* ── Paddock 2.0 chassis ── */
-  --bg: #07070a;
-  --surface: #14141a;
-  --surface-elevated: #1a1a22;
-  --border: #2a2a35;
-  --border-strong: #3a3a48;
+  /* ── Paddock 2.0 chassis — reading-comfort ground (operator board 2026-08-03).
+     #F2F2F4-on-#0B0B0C halates on OLED; lifting the ground to #121215 and
+     dropping body text to #E4E4E8 removes the bleed at ~no perceived-contrast
+     cost (measured 14.75:1, comfortably past AAA). Surfaces lift with the
+     ground so the bg → card → elevated depth ladder survives. ── */
+  --bg: #121215;
+  --surface: #1b1b21;
+  --surface-elevated: #222229;
+  --border: #30303b;
+  --border-strong: #40404d;
 
-  --text: #f5f5f7;
+  --text: #e4e4e8;
   --text-muted: #a1a1aa;
-  /* #71717a measured 3.6–4.2:1 on bg/surface/elevated — below WCAG AA 4.5:1
-     for the session times + micro-labels that use it (heuristic walk 2026-06).
-     #84848e clears 4.5:1 on all three surface layers while staying dimmer than
-     --text-muted (7:1) so the text → muted → faint hierarchy survives. */
-  --text-faint: #84848e;
+  /* Cleared ≥ 4.5:1 on ALL THREE lifted surfaces (4.62 on elevated, measured
+     2026-08-03) while staying dimmer than --text-muted so the text → muted →
+     faint hierarchy survives. */
+  --text-faint: #8a8a94;
+  /* Full white is RESERVED for numerals you scan (times/gaps/points — the
+     board's rule); body copy never uses it. */
+  --numeral: #f5f5f7;
 
   /* Per-series accent (default = brand amber, overridden inline; light themes
      re-derive --tint per element from --tint-fill, see the theme blocks) */
   --tint: var(--brand);
   --tint-fill: var(--brand-fill);
-  --tint-contrast: #07070a;
+  --tint-contrast: #121215;
   /* seriesInk() (lib/site.ts) mix weight: raw colour on dark, 52% on light */
   --series-ink-mix: 100%;
 
@@ -156,6 +162,7 @@
   --text: #f0f4f9;
   --text-muted: #9dabbc;
   --text-faint: #8291a4;
+  --numeral: #ffffff;
   --tint-contrast: #060a12;
   /* Reds lifted to stay >= 4.5:1 as text on the raised cool surfaces. */
   --live: #ff4753;
@@ -173,6 +180,7 @@
   --text: #f8f1e7;
   --text-muted: #c0ab85;
   --text-faint: #9a8760;
+  --numeral: #fff8ec;
   --tint-contrast: #0c0a05;
   --live: #ff3d4a;
   --negative: #f25c50;
@@ -190,6 +198,7 @@
   --text: #1e1a13;
   --text-muted: #5b5342;
   --text-faint: #6f6752;
+  --numeral: #100d08;
   --brand: #7d5300;
   --tint-contrast: #1e1a13;
   --live: #a80019;
@@ -212,6 +221,7 @@
   --text: #09090b;
   --text-muted: #3f3f46;
   --text-faint: #565661;
+  --numeral: #000000;
   --brand: #7d5300;
   --tint-contrast: #09090b;
   --live: #a80019;
@@ -253,10 +263,15 @@
   --color-cyan: var(--cyan);
   --color-live-deep: var(--live-deep);
 
-  /* No var(--font-geist-sans) here: the layouts load Geist via .className
-     (no CSS variable), and one undefined var() in a font list invalidates
-     the whole declaration at computed-value time. */
-  --font-display: var(--font-saira), 'Saira Condensed', sans-serif;
+  /* The Plex system (operator board 2026-08-03 "READING COMFORT"): Sans 400
+     app-wide, Condensed quarantined to names, Mono for the data register. All
+     three arrive as CSS variables from lib/fonts.ts on <html>, so the dyslexic
+     override below can swap the whole system by reassigning tokens.
+     --font-display survives as an alias of the sans stack: its ~190 call sites
+     keep their weight/tracking classes and simply inherit the body face. */
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-condensed: var(--font-plex-condensed), var(--font-plex-sans), sans-serif;
 
   /* Paddock-native */
   --color-bg: var(--bg);
@@ -279,7 +294,12 @@
   --color-live-pill: var(--live-pill);
   --color-session-best: var(--session-best);
 
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* Numerals you scan (times, gaps, points) get FULL brightness — the board's
+     rule: body copy sits at --text (#e4e4e8 on dark), white is reserved for
+     data. Light themes override --numeral next to their text tokens. */
+  --color-numeral: var(--numeral);
 
   /* shadcn / base-nova surface for primitives */
   --color-background: var(--background);
@@ -324,20 +344,25 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* GeistSans ships a MALFORMED lowercase Greek omega: U+03C9 (ω) is drawn as a
-   capital Ω. It's a real (wrong) glyph, not a missing one, so the browser never
-   falls back on its own and Greek-language content reads wrong (reported by a
-   Greek writer, reproduced in Chrome 2026-07-21). Force the Greek + Greek-Extended
-   ranges to a correct system face, ahead of Geist; unicode-range scopes this to
-   Greek codepoints only, so Latin/numerals stay Geist untouched. Applied to the
-   body font stack below (prose inherits it). Verified: ω resolves to the system
-   glyph, Latin advance widths unchanged. */
-@font-face {
-  font-family: 'GreekFallback';
-  src: local('Helvetica Neue'), local('Arial'), local('Segoe UI'), local('Roboto'),
-    local('Noto Sans'), local('DejaVu Sans');
-  unicode-range: U+0370-03FF, U+1F00-1FFF;
+/* Dyslexic mode (html[data-dyslexic="1"], persisted like the theme): the whole
+   type system swaps to OpenDyslexic by token reassignment — sans, display AND
+   condensed (names must not stay condensed in this mode); mono keeps Plex Mono
+   (tabular data loses alignment in OpenDyslexic). The @fontsource files load
+   lazily: browsers fetch a @font-face only when an element actually uses the
+   family, so readers who never enable the mode never download it. */
+html[data-dyslexic='1'] {
+  --font-sans: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
+  --font-display: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
+  --font-condensed: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
 }
+html[data-dyslexic='1'] body {
+  /* BDA guidance: looser leading + a little tracking help most dyslexic readers. */
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* The GeistSans Greek-omega fallback hack (2026-07-21) retired with Geist:
+   IBM Plex Sans ships a real Greek subset (loaded in lib/fonts.ts). */
 
 html, body {
   color: var(--text);
@@ -355,12 +380,11 @@ html, body {
 body {
   background-color: var(--bg);
   min-height: 100vh;
-  /* GreekFallback (Greek codepoints only) ahead of the Geist stack — fixes the
-     malformed Geist lowercase omega. GeistSans/"GeistSans Fallback" are the geist
-     package's stable family names (loaded via .className on <html>, no CSS var).
-     Body sets this explicitly so the whole document (incl. blog prose) inherits it;
-     font-mono / font-display utilities set their own family and are unaffected. */
-  font-family: 'GreekFallback', GeistSans, 'GeistSans Fallback', sans-serif;
+  /* Weight 400 is the base (the board's dark-ground rule: at 500 the counters
+     close up); bold spans still bold via their utilities. The var indirection
+     is what makes the dyslexic token swap above reach everything at once. */
+  font-family: var(--font-sans);
+  font-weight: 400;
 }
 
 /* Tabular numerals — used for times, points, positions. */
