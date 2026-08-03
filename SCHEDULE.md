@@ -1331,6 +1331,17 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Mon 2026-08-03 (session 26 — blog editor rebuild + article imports)
+
+Operator's order: **1. blog editor section replan/rebuild** (drafts/new-post authoring must leave the `/blog` listing for a dedicated page; visual options BEFORE build) · **2. item 13 article imports** (`post.original_url`, off-site canonical, provenance on the post; migration — operator names the SQL) · then 14 (become-an-author + `contributor` role) · 17 (format button) · 20 (13 series calendars unverified) · 25 (dev-loop speed) · 26 (prod perf re-baseline).
+
+- Plan: investigate current `/blog` admin/editor code → ASCII/screenshot options → operator picks → build task 1 → ESPA task 2 (migration SQL presented for naming) → build → continue down the list as time allows.
+- Won't touch this session: champions enrichment (needs the two-source ultracode pass; ADAC 24h + NLS never), operator's open items (VAPID recovery, panagiotis worker config, key rotations, Vercel cancellation, GSC export, signed-in click-throughs), prod Supabase writes without the operator naming the action, the operator's uncommitted IDEAS.md entry.
+
+Active: _(awaiting [+Nm] prefixes)_
+
+---
+
 ### Mon 2026-08-03 (session 25 — corrects the session-24 entry above, which was written mid-flight and went stale)
 
 The 2026-07-28 entry says the paris worker was "not started" and browser verification "BLOCKED". Both were resolved later the same session; this entry is the accurate record for 07-28 → 08-03.

@@ -6,7 +6,7 @@ import { loadAllSeriesMeta } from '@/lib/series';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
-import { PostModeration } from '@/components/blog/PostModeration';
+import { StudioLink } from '@/components/blog/StudioLink';
 
 export const revalidate = 300;
 
@@ -86,19 +86,22 @@ export default async function BlogIndexPage() {
           { name: 'Blog', url: `${SITE_URL}/blog` },
         ])}
       />
-      <header className="mb-8">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
-          Writing
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-2">
+            Writing
+          </div>
+          <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+            Blog
+          </h1>
+          <p className="mt-3 text-sm text-text-muted">
+            Analysis, recaps, and opinion across motorsport championships.
+          </p>
         </div>
-        <h1 className="text-text text-3xl md:text-4xl font-bold tracking-tight leading-tight">
-          Blog
-        </h1>
-        <p className="mt-3 text-sm text-text-muted">
-          Analysis, recaps, and opinion across motorsport championships.
-        </p>
+        {/* Authoring + moderation live at /studio now; this pill (writers only,
+            null for readers) is the only editor-facing element on the page. */}
+        <StudioLink />
       </header>
-
-      <PostModeration series={seriesMetas.map(m => ({ slug: m.slug, name: m.name }))} />
 
       <Link
         href="/threads"

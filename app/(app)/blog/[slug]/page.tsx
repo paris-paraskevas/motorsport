@@ -11,7 +11,7 @@ import { resolveAuthorIdentity } from '@/lib/author-identity';
 import { isAdmin, isWriter } from '@/lib/threads';
 import { renderPostBody, type RenderedBody } from '@/lib/blog-embeds';
 import { mdxComponents } from '@/components/mdx/mdx-components';
-import { DraftEditor } from '@/components/blog/DraftEditor';
+import { DraftPreview } from '@/components/blog/DraftPreview';
 import { PostArticle } from '@/components/blog/PostArticle';
 import { POST_ARTICLE_CLASS, PostHeader, PostHero } from '@/components/blog/PostHeader';
 import { JsonLd } from '@/components/JsonLd';
@@ -64,7 +64,8 @@ export async function generateMetadata({
   // minutes after 0.160.0). Same visibility rule as the page branch.
   if (db && db.status !== 'published' && !(await loadPost(slug))) {
     const previewable =
-      (db.status === 'approved' || db.status === 'draft') && (await canPreviewUnpublished(db));
+      (db.status === 'approved' || db.status === 'draft' || db.status === 'in_review') &&
+      (await canPreviewUnpublished(db));
     if (!previewable) notFound();
   }
   const post = db && db.status === 'published' ? dbToPost(db) : await loadPost(slug);
@@ -182,23 +183,30 @@ export default async function PostPage({
 
   let post: Post | null = null;
   let rendered: RenderedBody | null = null; // set for DB posts (rendered segments + ToC)
-  let scheduledAt: string | null = null; // admin preview of a scheduled (approved) post
-  let draftPreview = false; // admin preview of a still-draft post (not yet scheduled)
+  // Preview banner for a not-yet-published post, or null on the public path.
+  let previewBanner: { kind: 'draft' } | { kind: 'in_review' } | { kind: 'scheduled'; label: string } | null = null;
 
   const db = await getPostBySlug(slug);
   if (db) {
     if (db.status === 'published') {
       post = dbToPost(db);
       rendered = await renderPostBody(db.body);
-    } else if ((db.status === 'approved' || db.status === 'draft') && (await canPreviewUnpublished(db))) {
-      // Not yet live (scheduled, or still a draft) — previewable by an admin or
+    } else if (
+      (db.status === 'approved' || db.status === 'draft' || db.status === 'in_review') &&
+      (await canPreviewUnpublished(db))
+    ) {
+      // Not yet live (draft, submitted, or scheduled) — previewable by an admin or
       // the writer who owns it, so they can read the whole piece before it's live.
+      // in_review included since 0.249.0: the review queue links here, and the gate
+      // previously 404'd exactly the posts waiting on a decision.
       post = dbToPost(db);
       rendered = await renderPostBody(db.body);
-      scheduledAt = db.status === 'approved' ? db.publishAt : null;
-      draftPreview = db.status === 'draft';
+      previewBanner =
+        db.status === 'approved'
+          ? { kind: 'scheduled', label: formatDateTime(db.publishAt ?? db.createdAt) }
+          : { kind: db.status };
     } else {
-      notFound(); // rejected / (draft|approved)-but-not-admin → hidden; slug is taken
+      notFound(); // rejected / unpublished-but-not-yours → hidden; slug is taken
     }
   } else {
     post = await loadPost(slug); // MDX fallback
@@ -261,31 +269,26 @@ export default async function PostPage({
         Back to blog
       </Link>
 
-      {/* Admin preview (draft/scheduled): DraftEditor owns the amber banner +
-          header + article and swaps them for the in-place markdown editor via
-          the pencil (spec 2026-07-03). The public/published path below is
-          untouched. db is always set here — only DB posts have these states. */}
-      {db && (draftPreview || scheduledAt) ? (
-        <DraftEditor
+      {/* Unpublished preview (draft / in review / scheduled): DraftPreview owns
+          the status rule + header + article, and links to /studio/[id] where all
+          editing lives now. The public/published path below is untouched. db is
+          always set here — only DB posts have these states. */}
+      {db && previewBanner ? (
+        <DraftPreview
           id={db.id}
           title={post.frontmatter.title}
           summary={post.frontmatter.summary}
-          body={db.body}
           heroImage={db.heroImage}
           bodyNode={<PostArticle segments={rendered?.segments ?? []} />}
           dateLabel={formatDate(post.frontmatter.publishedAt)}
-          banner={
-            draftPreview
-              ? { kind: 'draft' }
-              : { kind: 'scheduled', label: formatDateTime(scheduledAt as string) }
-          }
+          banner={previewBanner}
           author={author}
         />
       ) : (
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12 lg:items-start">
           <div className="min-w-0 max-w-3xl">
       {/* PostHeader instead of a copy of its markup: the byline link has to be
-          identical here and in DraftEditor's view mode, and this path had drifted
+          identical here and in DraftPreview, and this path had drifted
           into a byte-for-byte duplicate of the component it documents. */}
       <PostHeader
         dateLabel={formatDate(post.frontmatter.publishedAt)}

@@ -2,7 +2,7 @@ import type { RenderedSegment } from '@/lib/blog-embeds';
 import { BlogEmbed } from './embeds/BlogEmbed';
 
 // Renders a post body's interleaved sanitised-HTML runs + live embeds, in order.
-// Used by both the public /blog/[slug] path and DraftEditor's preview (rendered
+// Used by both the public /blog/[slug] path and DraftPreview (rendered
 // on the server, passed as a node into the client editor) so embeds appear
 // wherever the article does. Sits inside the `prose` <article>; each HTML run is
 // a sibling <div> (matching the pre-embed single-div structure) and each embed

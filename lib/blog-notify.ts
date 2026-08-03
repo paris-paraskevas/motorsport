@@ -129,7 +129,8 @@ export async function notifyAdminsDraftReady(post: { id: string; title: string }
     paragraphs: [
       'A new blog post draft is waiting in the review queue. Approve it (optionally with a future publish time) to schedule it live.',
     ],
-    cta: { label: 'Review the draft', href: `${SITE_URL}/blog?review=1` },
+    // Straight to the post in the studio, where the approve/reject controls live.
+    cta: { label: 'Review the draft', href: `${SITE_URL}/studio/${post.id}` },
   });
   await sendEmail({ subject: `[Blog] Draft ready: ${post.title}`, text, html });
 
@@ -139,7 +140,7 @@ export async function notifyAdminsDraftReady(post: { id: string; title: string }
   const payload: PushPayload = {
     title: 'Draft ready to review',
     body: post.title,
-    url: '/blog?review=1',
+    url: `/studio/${post.id}`,
     tag: `paddock-blog-draft-${post.id}`,
   };
   // One history row per admin, even with several push subscriptions.

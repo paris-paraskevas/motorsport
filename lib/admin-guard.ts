@@ -1,7 +1,7 @@
 import 'server-only';
-import { currentUser } from '@clerk/nextjs/server';
+import { currentUser, type User } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
-import { isAdmin } from '@/lib/threads';
+import { isAdmin, isWriter } from '@/lib/threads';
 
 // Admin gate for a Server Component / layout: calls notFound() (→ 404) unless the
 // current Clerk user is an admin. Same role check as isAdmin, but it resolves the
@@ -15,4 +15,14 @@ import { isAdmin } from '@/lib/threads';
 // may not import. Keeping the Clerk dependency here keeps threads.ts client-safe.
 export async function requireAdmin(): Promise<void> {
   if (!isAdmin(await currentUser())) notFound();
+}
+
+/** Writer gate (writer OR admin — isWriter's contract) for the /studio surface.
+ *  404s everyone else, INCLUDING anonymous visitors, so the route's existence
+ *  leaks nothing. Returns the user: studio pages need the id to scope queries
+ *  (a writer sees only their own posts) and the role for admin-only controls. */
+export async function requireWriter(): Promise<User> {
+  const user = await currentUser();
+  if (!user || !isWriter(user)) notFound();
+  return user;
 }
