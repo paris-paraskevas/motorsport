@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.258.0 — 2026-08-04
+
+### Added
+- **Original bios for the complete MotoGP grid (22 riders)** — `content/series/motogp/bios.json`, the second series through the solo two-source pipeline. Source pair: Wikipedia article (intro, plus targeted full-extract slices where leads were thin — Morbidelli, Di Giannantonio, Bezzecchi, Rins, Bastianini) + the official Pulselive standings API (`api.motogp.pulselive.com`), which corroborated **every team + race number against drivers.json (22/22 match)**; motogp.com rider pages 404 on our slug scheme, so Pulselive is the canonical corroborator for bike series. Style-gate: 0 em dashes, 0 AI-tells; keys ≡ `slugify(name)` including `toprak-razgatl-oglu` (dotless ı). Deliberately excluded: future contract moves (Martín/Ogura/Mir/Quartararo/Acosta/Rins all have announced 2027 seats — unsettled, would stale the prose) and Wikipedia's Bastianini number-origin anecdote (cites 33; his verified number is 23). Sitemap grows to 44 bio-gated driver URLs; the resolve-guard covers them automatically.
+
 ## 0.257.0 — 2026-08-04
 
 ### Added

@@ -1,0 +1,225 @@
+{
+  "_comment": "Original, fact-checked rider bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats. Preferred over the Wikipedia-intro fallback. key = slugify(rider name) — note toprak-razgatl-oglu (the dotless ı strips to a hyphen). Full 2026 grid (22) authored 2026-08-04, solo two-source-per-rider: Wikipedia article (intro or targeted full-extract slices) + the official Pulselive standings API (api.motogp.pulselive.com — corroborates every team + race number; motogp.com rider pages 404 on our slugs). Future contract moves excluded (unsettled); the Bastianini number-origin anecdote excluded (conflicts with his verified #23). British English, no em dashes, no AI-tell phrases. sources[] not rendered.",
+  "drivers": {
+    "marco-bezzecchi": {
+      "paragraphs": [
+        "Marco Bezzecchi won the Italian Moto3 championship in 2015 and worked his way up the Grand Prix ladder to Moto2, where he joined the newly formed Sky Racing Team VR46 in 2020 alongside Luca Marini and helped win the teams' championship in their first season together.",
+        "Now in the premier class, the Italian rides for the factory Aprilia Racing team under the number 72."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marco_Bezzecchi",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "jorge-martin": {
+      "paragraphs": [
+        "Jorge Martín won the Red Bull Rookies Cup in 2014 and the Moto3 world title in 2018 with Gresini, then reached MotoGP with Pramac in 2021 and won the Styrian Grand Prix in his rookie season.",
+        "Runner-up to Francesco Bagnaia in 2023, he went one better in 2024: the MotoGP World Championship, the first ever won by an independent-team rider in the MotoGP era, still with Pramac. Nicknamed Martinator, he rides for Aprilia Racing under the number 89."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jorge_Mart%C3%ADn_(motorcyclist)",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "francesco-bagnaia": {
+      "paragraphs": [
+        "Francesco Bagnaia, Pecco to the paddock, won the 2018 Moto2 title and became the first rider from Valentino Rossi's VR46 Academy to take a premier-class crown, winning back-to-back MotoGP World Championships in 2022 and 2023.",
+        "His 2022 title was Ducati's first riders' championship in 15 years and the first for an Italian since Rossi in 2009. He rides for the factory Ducati Lenovo Team under the number 63."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Francesco_Bagnaia",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "marc-marquez": {
+      "paragraphs": [
+        "Marc Márquez won the 125cc title in 2010, Moto2 in 2012, and the premier-class championship at his first attempt in 2013, the first rookie to do it since Kenny Roberts in 1978 and the youngest ever. Nine world titles now stand against his name, seven of them in the premier class.",
+        "His 2014 defence opened with ten straight wins, and four more crowns followed from 2016 to 2019. After eleven seasons with the factory Honda team and a rebuilding year at Gresini, he joined Ducati's factory squad and took his seventh MotoGP title in 2025. Widely regarded among the greatest ever to race a motorcycle, he carries the number 93."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marc_M%C3%A1rquez",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "raul-fernandez": {
+      "paragraphs": [
+        "Raúl Fernández won the FIM CEV Moto3 Junior World Championship in 2018 and announced himself in 2021 with a record eight rookie-season Moto2 wins, taking a mark that had belonged to Marc Márquez.",
+        "The Spaniard, whose younger brother Adrián also races, rides for the SuperFile Trackhouse MotoGP Team under the number 25."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ra%C3%BAl_Fern%C3%A1ndez_(motorcyclist)",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "ai-ogura": {
+      "paragraphs": [
+        "Ai Ogura came through the Asia Talent Cup, the first of its graduates to reach MotoGP, and won the 2024 Moto2 World Championship, the first world title for a Japanese rider in fifteen years.",
+        "He took his maiden MotoGP victory at the 2026 Dutch Grand Prix and rides for the SuperFile Trackhouse MotoGP Team under the number 79."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ai_Ogura",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "brad-binder": {
+      "paragraphs": [
+        "Brad Binder became the first South African in 35 years to win a Grand Prix, at Jerez in 2016, on his way to that season's Moto3 world title, then finished runner-up in Moto2 in 2019 with Ajo.",
+        "In his first premier-class season he won the 2020 Czech Grand Prix: the first MotoGP victory for a South African, the first for KTM, and the first by any rookie since Marc Márquez. He has been with Red Bull KTM Factory Racing ever since, racing under the number 33."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Brad_Binder",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "pedro-acosta": {
+      "paragraphs": [
+        "Pedro Acosta won the second Grand Prix he ever started, from pit lane, and took the 2021 Moto3 World Championship in that same rookie season, the first debutant champion since 1990 and the second-youngest in history. The Moto2 title followed in 2023.",
+        "A Red Bull Rookies Cup champion in 2020, the Spaniard rides in MotoGP for Red Bull KTM Factory Racing under the number 37."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pedro_Acosta",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "franco-morbidelli": {
+      "paragraphs": [
+        "Franco Morbidelli's family sold their home in Rome and moved to Tavullia so he could race, a move that made him the first official member of what became Valentino Rossi's VR46 Academy. It paid off in titles: the European Superstock 600 crown in 2013 and the Moto2 World Championship in 2017.",
+        "The son of a former racer, he rides in MotoGP for the Pertamina Enduro VR46 Racing Team, back inside the academy family, under the number 21."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Franco_Morbidelli",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "fabio-di-giannantonio": {
+      "paragraphs": [
+        "Fabio Di Giannantonio won the Italian PreMoto3 championship in 2012 and finished runner-up in the Red Bull Rookies Cup, then began his Grand Prix career at Valencia in 2015, standing in for an injured rider at Gresini. A first podium followed at Mugello a year later.",
+        "The Roman has ridden in MotoGP for the Pertamina Enduro VR46 Racing Team since 2025, under the number 49."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fabio_Di_Giannantonio",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "fermin-aldeguer": {
+      "paragraphs": [
+        "Fermín Aldeguer became the second-youngest rider ever to win a premier-class Grand Prix when he took the 2025 Indonesian Grand Prix at 20, a mark bettered only by Marc Márquez.",
+        "Winning before turning 21 put the Spaniard in company only Márquez, Dani Pedrosa and Jorge Lorenzo had kept in the MotoGP era. He rides for BK8 Gresini Racing under the number 54."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ferm%C3%ADn_Aldeguer",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "alex-marquez": {
+      "paragraphs": [
+        "Álex Márquez won the 2014 Moto3 and 2019 Moto2 world titles, then made his MotoGP debut in 2020 at the factory Honda team alongside his brother Marc, after Jorge Lorenzo's unexpected retirement opened the seat.",
+        "A 2023 move to Gresini rebuilt his career: a maiden win at Jerez in 2025, further victories in Catalonia and Malaysia, and the championship runner-up spot, which made the Márquezes the first siblings in Grand Prix history to finish first and second in the same class. He races under the number 73."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C3%81lex_M%C3%A1rquez",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "luca-marini": {
+      "paragraphs": [
+        "Luca Marini finished runner-up in the 2020 Moto2 World Championship and spent his early MotoGP seasons with the family operation, the VR46 team of his half-brother Valentino Rossi.",
+        "Since 2024 he has ridden for Honda HRC Castrol, carrying the number 10."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Luca_Marini",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "joan-mir": {
+      "paragraphs": [
+        "Joan Mir won the 2017 Moto3 title and, three years later, the 2020 MotoGP World Championship with Suzuki: the marque's first premier crown in twenty years, the first for any rider outside Honda or Yamaha since 2007, and the first by a Moto3 champion.",
+        "The Mallorcan, the fourth Spaniard to win the premier class, rides for Honda HRC Castrol under the number 36."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Joan_Mir",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "johann-zarco": {
+      "paragraphs": [
+        "Johann Zarco won back-to-back Moto2 World Championships in 2015 and 2016, the first of them with a record points haul, and arrived in the premier class as 2017's rookie of the year and top independent rider with Tech3.",
+        "With Grand Prix victories across the classes, a premier-class win among them, he stands among the most successful French riders in the sport's history. He rides for LCR Honda under the number 5."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Johann_Zarco",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "diogo-moreira": {
+      "paragraphs": [
+        "Diogo Moreira became the first Brazilian world champion in any class of Grand Prix motorcycle racing when he took the 2025 Moto2 title.",
+        "MotoGP graduation followed immediately: the Brazilian rides his rookie premier-class season for LCR Honda, under the number 11."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Diogo_Moreira",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "toprak-razgatl-oglu": {
+      "paragraphs": [
+        "Toprak Razgatlıoğlu ended Jonathan Rea's six-year reign to win the 2021 Superbike World Championship for Yamaha, then delivered BMW's first two world titles in 2024 and 2025, leaving as the winningest rider either marque has had in the series.",
+        "The first Turkish Superbike World Champion, famous for celebrating on the front wheel, he crossed to MotoGP with Prima Pramac Yamaha in 2026 as the first rider from Turkey to race in the premier class. He carries the number 7."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Toprak_Razgatl%C4%B1o%C4%9Flu",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "jack-miller": {
+      "paragraphs": [
+        "Jack Miller finished runner-up in the 2014 Moto3 World Championship and took his first MotoGP win at the 2016 Dutch TT on a satellite Honda.",
+        "Back-to-back victories at Jerez and Le Mans in 2021 and another in Japan in 2022 came on Ducati machinery. The Australian, Thriller to the paddock, rides for Prima Pramac Yamaha under the number 43."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jack_Miller_(motorcyclist)",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "fabio-quartararo": {
+      "paragraphs": [
+        "Fabio Quartararo collected six Spanish junior titles, including successive CEV Moto3 crowns in 2013 and 2014, and arrived in MotoGP as 2019's rookie of the year with Petronas Yamaha.",
+        "Promoted to the factory Yamaha team in 2021 to fill Valentino Rossi's seat, El Diablo won the World Championship in his first season there, the first premier-class title in French history. He rides for Monster Energy Yamaha under the number 20."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Fabio_Quartararo",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "alex-rins": {
+      "paragraphs": [
+        "Álex Rins nearly won the 2013 Moto3 title, taking six wins and finishing twelve points behind Maverick Viñales, and reached MotoGP with Suzuki in 2017.",
+        "His first premier-class win came at the 2019 Grand Prix of the Americas in a duel with Valentino Rossi, and his second at Silverstone by 0.013 seconds over Marc Márquez. The Barcelona-born rider is now at Monster Energy Yamaha, racing under the number 42."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C3%81lex_Rins",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "maverick-vinales": {
+      "paragraphs": [
+        "Maverick Viñales won the 2013 Moto3 World Championship and spent five seasons as a factory Yamaha rider in MotoGP before the partnership ended abruptly, terminated by mutual consent midway through 2021.",
+        "Three seasons with Aprilia followed. The Spaniard now rides for Red Bull KTM Tech3 under the number 12."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Maverick_Vi%C3%B1ales",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    },
+    "enea-bastianini": {
+      "paragraphs": [
+        "Enea Bastianini, La Bestia, won the 2020 Moto2 World Championship and reached MotoGP the following year on a two-year-old satellite Ducati, standing on the podium at Misano in his rookie season.",
+        "His wins include passing both factory Ducatis to take Le Mans in 2022, in a season that also brought victory at Austin. Born in Rimini, he rides for Red Bull KTM Tech3 under the number 23."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Enea_Bastianini",
+        "https://api.motogp.pulselive.com/motogp/v1/results/standings?seasonUuid=e88b4e43-2209-47aa-8e83-0e0b1cedde6e&categoryUuid=e8c110ad-64aa-4e8e-8a86-f2f152f6a942"
+      ]
+    }
+  }
+}
