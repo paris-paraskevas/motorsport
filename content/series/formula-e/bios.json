@@ -1,0 +1,205 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats (settled milestones kept, e.g. de Vries's 2026 Le Mans win; season tallies excluded). Preferred over the Wikipedia-intro fallback. key = slugify(driver name). Full 2025-26 grid (20) authored 2026-08-04, solo two-source-per-driver: Wikipedia article + the 2025-26 Formula E World Championship entry table (numbers + teams — all 20 match drivers.json). Ages avoided where a mid-season birthday makes them ambiguous (Martí). British English, no em dashes, no AI-tell phrases. sources[] not rendered.",
+  "drivers": {
+    "mitch-evans": {
+      "paragraphs": [
+        "Mitch Evans won the GP3 Series in 2012 and is believed to have become the youngest winner of an international Grand Prix when he took the New Zealand Grand Prix at 16. A Jaguar driver since 2016, he opened his Formula E account at Rome in 2019.",
+        "No driver has won more Formula E races. The New Zealander races for Jaguar TCS Racing under the number 9."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mitch_Evans",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "antonio-felix-da-costa": {
+      "paragraphs": [
+        "António Félix da Costa won the 2019-20 Formula E championship with Techeetah and twice won the Macau Formula 3 Grand Prix, in 2012 and 2016, after a Red Bull junior season in which he took four of the year's final five races.",
+        "He doubles in endurance racing, where he won the 2022 LMP2 world trophy with Jota and now drives for Alpine. In Formula E the Portuguese races for Jaguar TCS Racing under the number 13."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ant%C3%B3nio_F%C3%A9lix_da_Costa",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "nico-muller": {
+      "paragraphs": [
+        "Nico Müller came up through Swiss karting and Formula Renault, winning at Spa in his first single-seater season.",
+        "The Swiss driver races for the Porsche Formula E Team under the number 51."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nico_M%C3%BCller",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "pascal-wehrlein": {
+      "paragraphs": [
+        "Pascal Wehrlein became the youngest DTM champion in history at 20, in 2015, and raced two Formula 1 seasons for Manor and Sauber, scoring Manor's only point of 2016.",
+        "He won the 2023-24 Formula E World Championship with Porsche, where he still races under the number 94. He was born in Sigmaringen to a German father and a Mauritian mother."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pascal_Wehrlein",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "nyck-de-vries": {
+      "paragraphs": [
+        "Nyck de Vries won karting's senior World Championship twice, the Formula 2 title in 2019, and the 2020-21 Formula E World Championship with Mercedes.",
+        "An 11-race Formula 1 stint followed, and in 2026 he won the 24 Hours of Le Mans with Toyota. The Dutchman races in Formula E for Mahindra under the number 21."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nyck_de_Vries",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "edoardo-mortara": {
+      "paragraphs": [
+        "Edoardo Mortara is Mr Macau: ten wins on the Guia circuit across Formula 3 and GT racing, a record no driver or rider has matched. He won the Formula 3 Euroseries and finished second and then third across the 2021 and 2022 Formula E seasons.",
+        "Born in Geneva and holding Swiss, Italian and French nationality, he races for Mahindra under the number 48."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Edoardo_Mortara",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "oliver-rowland": {
+      "paragraphs": [
+        "Oliver Rowland won the 2024-25 Formula E World Championship with Nissan.",
+        "A former Williams Formula 1 young driver who has also raced in the World Endurance Championship, the Briton mentors and manages Red Bull's Arvid Lindblad, and carries the champion's number 1 for Nissan."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Oliver_Rowland",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "norman-nato": {
+      "paragraphs": [
+        "Norman Nato has won three World Endurance Championship races outright, two in LMP1 with Rebellion and one in Hypercar with Cadillac, and won the 2021 Berlin ePrix for Venturi.",
+        "A Formula Renault 3.5 winner at Monaco in his junior days, the Frenchman races in Formula E for Nissan under the number 23."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Norman_Nato",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "joel-eriksson": {
+      "paragraphs": [
+        "Joel Eriksson finished runner-up to Lando Norris in the 2017 European Formula 3 Championship, won a DTM race in 2018, and has four race wins in the Nürburgring Langstrecken-Serie.",
+        "The Swede races in Formula E for Envision Racing under the number 14."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Joel_Eriksson_(racing_driver)",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "sebastien-buemi": {
+      "paragraphs": [
+        "Sébastien Buemi has won the 24 Hours of Le Mans four times and a joint-record four World Endurance Championship titles, all with Toyota, alongside a Formula E career that brought the 2015-16 crown and joint-second place on the series' all-time wins list.",
+        "A Toro Rosso Formula 1 driver from 2009 to 2011, the Swiss veteran races for Envision under the number 16."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/S%C3%A9bastien_Buemi",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "jake-dennis": {
+      "paragraphs": [
+        "Jake Dennis won karting's junior World Championship in 2010 and the 2022-23 Formula E World Championship with Andretti.",
+        "A BMW factory driver who has also served as Red Bull's Formula 1 test driver since 2018, the Briton races under the number 27."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jake_Dennis",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "felipe-drugovich": {
+      "paragraphs": [
+        "Felipe Drugovich won the 2022 Formula 2 championship and the 2018 Euroformula Open title, then spent three years as Aston Martin's Formula 1 reserve.",
+        "The Brazilian races in Formula E for Andretti under the number 28."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Felipe_Drugovich",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "jean-eric-vergne": {
+      "paragraphs": [
+        "Jean-Éric Vergne holds a record two Formula E titles and was the first driver to win them back-to-back, in 2017-18 and 2018-19 with Techeetah.",
+        "A Toro Rosso Formula 1 driver for three seasons and a Ferrari test driver after, JEV also races for Peugeot in the World Endurance Championship. In Formula E he drives for Citroën under the number 25."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jean-%C3%89ric_Vergne",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "nick-cassidy": {
+      "paragraphs": [
+        "Nick Cassidy won the 2017 Super GT and 2019 Super Formula titles in Japan, and has twice finished runner-up in the Formula E World Championship.",
+        "The New Zealander, who also races Peugeot's Hypercar in the World Endurance Championship, drives for Citroën in Formula E under the number 37."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nick_Cassidy",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "pepe-marti": {
+      "paragraphs": [
+        "Pepe Martí won races in the Spanish and UAE Formula 4 championships, took three FIA Formula 3 wins with Campos, and left Formula 2 midway through 2025, four wins to his name, to race in Formula E.",
+        "A Red Bull junior from 2023 to 2025, the Spaniard drives for Cupra Kiro under the number 3."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pepe_Mart%C3%AD",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "dan-ticktum": {
+      "paragraphs": [
+        "Dan Ticktum won the Macau Grand Prix twice, in 2017 and 2018, and finished runner-up in the 2018 European Formula 3 Championship, rebuilding a career that had begun with a two-year ban for deliberately hitting a rival under safety car conditions.",
+        "His maiden Formula E win came at the 2025 Jakarta ePrix. The Londoner races for Cupra Kiro under the number 33."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dan_Ticktum",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "maximilian-gunther": {
+      "paragraphs": [
+        "Maximilian Günther took his first Formula E win at the 2020 Santiago ePrix and has driven for four other teams across the series, from Dragon to Maserati.",
+        "The German-Austrian, racing under the German flag, drives for DS Penske under the number 7."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Maximilian_G%C3%BCnther",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "taylor-barnard": {
+      "paragraphs": [
+        "Taylor Barnard became the youngest driver ever to start an ePrix when he was called up at Monaco as a stand-in, and turned the chance into a full seat, becoming Formula E's youngest point scorer, polesitter and podium finisher.",
+        "Twice a runner-up to Kimi Antonelli on the junior ladder and a Monaco Formula 2 sprint winner, the Briton races for DS Penske under the number 77."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Taylor_Barnard",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "lucas-di-grassi": {
+      "paragraphs": [
+        "Lucas di Grassi won the 2016-17 Formula E title with Abt, one chapter of a career that has included a Formula 1 season with Virgin, a World Endurance runner-up year with Audi, a GP2 runner-up campaign and a Macau Grand Prix win.",
+        "The São Paulo-born veteran races for Lola Yamaha ABT under the number 11."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lucas_di_Grassi",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    },
+    "zane-maloney": {
+      "paragraphs": [
+        "Zane Maloney is the first Barbadian to win races in both FIA Formula 3 and Formula 2, won the 2019 British Formula 4 title, and finished runner-up in the 2022 Formula 3 Championship.",
+        "A former Red Bull junior who served as a Formula 1 reserve for both Red Bull and Sauber, he races for Lola Yamaha ABT under the number 22."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Zane_Maloney",
+        "https://en.wikipedia.org/wiki/2025%E2%80%9326_Formula_E_World_Championship"
+      ]
+    }
+  }
+}

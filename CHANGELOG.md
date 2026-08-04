@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.260.0 — 2026-08-04
+
+### Added
+- **Original bios for the complete Formula E grid (20 drivers)** — `content/series/formula-e/bios.json`, fourth series through the solo pipeline. Sources: Wikipedia articles + the 2025-26 Formula E World Championship entry table (**all 20 numbers + teams match drivers.json**, incl. Maloney #22 confirmed from the raw row after the regex missed multi-format cells). Cross-corroboration inside the wave: Buemi's article sources Evans's all-time-wins record and da Costa's joint-second; Rowland's #1 was already double-sourced from the F1 wave (Lindblad's article names him 2024-25 champion). Settled milestones kept (de Vries won the 2026 Le Mans); Martí's age at his F2 exit avoided (mid-season birthday makes it ambiguous). Style-gate: 0 em dashes, 0 AI-tells; 20/20 keys ≡ `slugify(name)`. Sitemap: 89 bio-gated driver URLs.
+
 ## 0.259.0 — 2026-08-04
 
 ### Added
