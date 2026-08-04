@@ -15,5 +15,11 @@ export async function GET() {
     ready: vapidConfigured && kvConfigured,
     vapidConfigured,
     kvConfigured,
+    // The VAPID PUBLIC key is public by design (every subscriber's browser
+    // holds a copy) — serving it here lets the client subscribe without the
+    // key being inlined at build time, which is the exact landmine that made
+    // Workers builds ship push compiled out (sessions 22-26). The private key
+    // never leaves the server.
+    publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || null,
   });
 }

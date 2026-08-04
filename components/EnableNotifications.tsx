@@ -30,10 +30,13 @@ export function EnableNotifications() {
     (async () => {
       const avail = getPushAvailability();
       if (avail === 'unsupported') return setStatus('unsupported');
-      if (avail === 'no-vapid') return setStatus('no-vapid');
 
       const server = await getServerPushStatus();
       if (cancelled) return;
+      // Server truth, not the build-time inlined var: a worker with the VAPID
+      // runtime secrets is configured even if the client bundle was built
+      // without NEXT_PUBLIC_VAPID_PUBLIC_KEY (the key arrives at subscribe time).
+      if (server && !server.vapidConfigured) return setStatus('no-vapid');
       if (!server || !server.ready) {
         setStatus('server-not-ready');
         setMessage(
