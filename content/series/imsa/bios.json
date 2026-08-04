@@ -1,0 +1,55 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. MARQUEE SELECTION, not the full 98-name roster (operator-approved criterion, 2026-08-04). Crew-based series — bios end with car/team. NOTE: di Resta and Delétraz appear on both the WEC and IMSA rosters; findDriverBySlug resolves alphabetically-first, so imsa wins and their bios live HERE. Jensen's and di Resta's wiki leads describe Peugeot WEC programmes — dual-programme drivers; the IMSA seat claim comes from curated drivers.json. British English, no em dashes, no AI-tells. sources[] not rendered.",
+  "drivers": {
+    "ricky-taylor": {
+      "paragraphs": [
+        "Ricky Taylor won the IMSA SportsCar Championship in 2017, sharing the car with his brother Jordan, and again in 2020 with Hélio Castroneves, collecting Daytona, Sebring and Petit Le Mans wins along the way.",
+        "The American races the No. 10 Cadillac for Wayne Taylor Racing, his father's team."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ricky_Taylor",
+        "https://en.wikipedia.org/wiki/IMSA_SportsCar_Championship"
+      ]
+    },
+    "renger-van-der-zande": {
+      "paragraphs": [
+        "Renger van der Zande, son of a Dutch rallycross champion, won his first major sportscar title in IMSA's PC class in 2016.",
+        "The Dutchman races the No. 93 Acura for Meyer Shank Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Renger_van_der_Zande",
+        "https://en.wikipedia.org/wiki/IMSA_SportsCar_Championship"
+      ]
+    },
+    "louis-deletraz": {
+      "paragraphs": [
+        "Louis Delétraz is a record four-time European Le Mans Series champion and won the LMP2 Pro-Am class at the 2025 24 Hours of Le Mans. His father Jean-Denis raced in Formula 1 and won his class at Le Mans before him.",
+        "The Swiss driver races the No. 40 Cadillac for Wayne Taylor Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Louis_Del%C3%A9traz",
+        "https://en.wikipedia.org/wiki/IMSA_SportsCar_Championship"
+      ]
+    },
+    "mikkel-jensen": {
+      "paragraphs": [
+        "Mikkel Jensen made his name as a factory endurance driver, first for BMW and then for Peugeot in the World Endurance Championship.",
+        "The Dane races for United Autosports in IMSA's LMP2 class."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mikkel_Jensen_(racing_driver)",
+        "https://en.wikipedia.org/wiki/IMSA_SportsCar_Championship"
+      ]
+    },
+    "paul-di-resta": {
+      "paragraphs": [
+        "Paul di Resta won the Formula 3 Euro Series and the DTM title before three Formula 1 seasons with Force India, plus a one-race return as a Williams substitute in 2017.",
+        "The Scot, long a broadcast voice on Formula 1 coverage, races for United Autosports in IMSA's LMP2 class."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Paul_di_Resta",
+        "https://en.wikipedia.org/wiki/IMSA_SportsCar_Championship"
+      ]
+    }
+  }
+}

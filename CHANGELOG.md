@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.262.0 — 2026-08-04
+
+### Added
+- **Endurance marquee bios (16)** — the sixth and final wave of the day, and the first CURATED one: not full rosters (WEC 105 / IMSA 98 / GTWC 99 names) but the operator-approved criterion (reigning champions, overall Le Mans winners on current grids, ex-F1 household names). WEC 8 (Hartley, Hirakawa, Kobayashi, Conway, Kubica, Magnussen, Fuoco, Bourdais) · IMSA 5 (R. Taylor, van der Zande, Delétraz, Jensen, di Resta) · GT-World 1 (Valentino Rossi) · **ADAC 24h 2 (L. Vanthoor, Marciello)** — the last two live in `adac-ravenol-24h/bios.json` because `findDriverBySlug` scans series alphabetically and the ADAC roster carries them first; a bio in gt-world/wec for them would never render (recorded in the file comments). Cross-series duplicates already covered (Buemi, de Vries, Cassidy, Nato, da Costa → formula-e). Castroneves dropped (not on the curated IMSA roster). Dual-programme seat notes: Jensen and di Resta's wiki leads describe Peugeot WEC drives; their IMSA seats come from curated drivers.json.
+- **Resolve-guard test made linear** (`lib/sitemap-data.test.ts`): one `loadAllDrivers()` scan + set membership instead of `findDriverBySlug` per advertised slug — the per-slug version re-read every series file per lookup and starved the suite once the advertised set passed ~100 URLs. Also captured: the "vitest flake" shape from session 26 reproduced as a fork-worker start timeout under machine load (a dev server was running) — every real test passed (1097/1098 with the starved worker; the affected files re-run green in isolation).
+- Sitemap: **126 bio-gated driver URLs**.
+
 ## 0.261.0 — 2026-08-04
 
 ### Added
