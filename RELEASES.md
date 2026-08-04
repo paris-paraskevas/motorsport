@@ -2,7 +2,7 @@ What's new in Paddock Tracker. Newest first.
 
 ## 0.257.0 — 2026-08-04
 
-**Behind the scenes.** Driver pages that carry an original biography are now advertised to search engines. More biographies are on the way, a few at a time.
+**Every Formula 1 driver now has a real biography.** All 22 driver pages carry an original career biography written and fact-checked for Paddock, replacing the borrowed encyclopedia intro. These pages are now discoverable by search engines too. Other championships will follow, a few drivers at a time.
 
 ## 0.256.0 — 2026-08-04
 
