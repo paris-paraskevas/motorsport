@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.257.0 — 2026-08-04
+
+**Behind the scenes.** Driver pages that carry an original biography are now advertised to search engines. More biographies are on the way, a few at a time.
+
 ## 0.256.0 — 2026-08-04
 
 **A proper About page.** The About page used to be a leftover technical readout. It now actually answers the questions it should: what Paddock is, where the data comes from, how corrections work, and where to go next. The technical readout moved to the admin console where it belongs.

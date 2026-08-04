@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.257.0 — 2026-08-04
+
+### Added
+- **Bio-gated driver URLs in the sitemap.** `lib/sitemap-data.ts` now advertises `/drivers/<slug>` for exactly the union of `bios.json` keys across series (the same anti-"scaled content" gate the information hub uses): a driver page joins search discovery only once it carries an original fact-checked bio, never as the thin Wikipedia-intro + season-form shell. +2 URLs today (Hamilton, Alonso — the 0.244-era pilot pair); the ceiling is ~650 as bios are authored in small waves. `/teams/*` stays out until team pages carry an equivalent depth mechanism.
+- Two sitemap tests replace the stale pin: the old test excluded `/drivers/*` with a "they 404 today" comment that stopped being true when drivers.json coverage completed (all three spot-checked routes serve 200 on prod). New invariants: advertised driver URLs ≡ bios.json keys (holds as bios land, no count pinned), and every advertised slug must resolve via `findDriverBySlug` — the FE-doubleheader "advertised 404" lesson (audit 3-6) as a live guard against typo'd bio keys.
+
 ## 0.256.0 — 2026-08-04
 
 ### Changed

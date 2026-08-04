@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { buildSitemapEntries } from './sitemap-data';
 import { TRACKS_TAB_SLUGS } from './tabs';
-import { loadSeries } from './series';
+import { loadSeries, loadAllSeriesMeta } from './series';
+import { loadDriverBios } from './series-content';
+import { findDriverBySlug } from './people';
 import { groupByWeekend } from './group';
 import { weekendLabel } from './weekend';
 import { circuitLayoutFor } from './circuit-layout';
@@ -73,13 +75,39 @@ describe('buildSitemapEntries', () => {
     }
   });
 
-  it('omits the top-level /drivers/* and /teams/* profile routes (they 404 today)', async () => {
+  it('advertises exactly the bio-backed /drivers/* pages, and no /teams/* (thin-page gate)', async () => {
+    // The gate: a /drivers/<slug> URL is advertised IFF a bios.json across any
+    // series carries that key. Derived from the same files the sitemap reads,
+    // so this holds as bios are authored without pinning a count. /teams/*
+    // stays out until team pages carry an equivalent depth mechanism. (The
+    // pre-0.257 version of this test pinned both trees OUT with a "they 404
+    // today" comment — stale; both resolve on prod since the drivers.json era.)
     const urls = await buildSitemapEntries();
-    // Target the actual top-level profile routes, not any URL containing the
-    // substring — the information hub legitimately has /information/teams/* and
-    // /information/drivers/* pages, which are a different, real route tree.
-    expect(urls.some((u) => u.url.startsWith(`${SITE_URL}/drivers/`))).toBe(false);
+    const advertised = urls
+      .filter((u) => u.url.startsWith(`${SITE_URL}/drivers/`))
+      .map((u) => u.url)
+      .sort();
+    const bioSlugs = new Set<string>();
+    for (const meta of await loadAllSeriesMeta()) {
+      for (const key of Object.keys(await loadDriverBios(meta.slug))) bioSlugs.add(key);
+    }
+    expect(advertised).toEqual([...bioSlugs].sort().map((s) => `${SITE_URL}/drivers/${s}`));
+    expect(bioSlugs.size).toBeGreaterThanOrEqual(2); // hamilton + alonso seeded the sidecar
     expect(urls.some((u) => u.url.startsWith(`${SITE_URL}/teams/`))).toBe(false);
+  });
+
+  it('every advertised /drivers/* slug resolves to a curated driver (no 404s advertised)', async () => {
+    // The FE doubleheader lesson (audit 3-6) applied to driver pages: a bios.json
+    // key that matches no curated driver would advertise a 404 — this catches a
+    // typo'd or stale bio key the moment it lands.
+    const urls = await buildSitemapEntries();
+    const slugs = urls
+      .filter((u) => u.url.startsWith(`${SITE_URL}/drivers/`))
+      .map((u) => u.url.split('/').pop()!);
+    for (const slug of slugs) {
+      const driver = await findDriverBySlug(slug);
+      expect(driver, `/drivers/${slug} is advertised but resolves to no curated driver`).toBeTruthy();
+    }
   });
 
   it('every URL starts with SITE_URL', async () => {

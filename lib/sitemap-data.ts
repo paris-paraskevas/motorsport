@@ -6,6 +6,7 @@ import { SITE_URL } from './site';
 import { INFO_TOPICS, aboutGuideForSeries } from './information/topics';
 import { getIndexedInfoEntries, isTopicIndexable } from './information/registry';
 import { listAuthors } from './authors';
+import { loadDriverBios } from './series-content';
 import { publishedPosts } from './blog';
 import { loadAllPosts } from './posts';
 
@@ -138,12 +139,27 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     .sort()
     .map((slug) => ({ url: `${SITE_URL}/blog/${slug}` }));
 
+  // Driver profiles — GATED on an authored bio (content/series/<slug>/bios.json).
+  // ~650 driver routes exist, but a bare page (Wikipedia intro + live season
+  // form) is thin, so only pages carrying an original fact-checked bio are
+  // advertised (the same anti-"scaled content" control as the information hub).
+  // The bios key IS the /drivers/<slug> param; that route namespace is global,
+  // so keys dedupe across series. loadDriverBios is fail-soft (absent file → {}).
+  // /teams/* stays out until team pages carry an equivalent depth mechanism.
+  const bioMaps = await Promise.all(sortedMeta.map((m) => loadDriverBios(m.slug)));
+  const bioSlugs = new Set<string>();
+  for (const bios of bioMaps) for (const key of Object.keys(bios)) bioSlugs.add(key);
+  const driverUrls: MetadataRoute.Sitemap = [...bioSlugs]
+    .sort()
+    .map((slug) => ({ url: `${SITE_URL}/drivers/${slug}` }));
+
   return [
     ...staticUrls,
     ...seriesUrls,
     ...weekendChunks.flat(),
     ...infoUrls,
     ...authorUrls,
+    ...driverUrls,
     ...blogUrls,
   ];
 }
