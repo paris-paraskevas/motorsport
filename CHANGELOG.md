@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.257.0 — 2026-08-04
+
+### Added
+- **Original bios for the complete F1 grid (22 drivers).** `content/series/f1/bios.json` grows from the 2 pilot entries (Hamilton/Alonso, #604) to all 22. Authored solo, two sources per driver (Wikipedia article intro + formula1.com driver page, fetched raw; every dated/numbered/superlative claim present in both or dropped), after the 40-agent workflow attempt died on session limits with zero output. All 20 f1.com team+number pairs matched `drivers.json` exactly — including Verstappen's surprising-but-real **#3** for 2026 (f1.com masthead confirms; the expected 33 was wrong). Style-gated by script: 0 em dashes, 0 AI-tell words, 2 paragraphs each, evergreen facts only (2026 in-season results excluded; settled records like Antonelli's youngest-ever pole kept).
+- **Bio-gated driver URLs in the sitemap.** `lib/sitemap-data.ts` now advertises `/drivers/<slug>` for exactly the union of `bios.json` keys across series (the same anti-"scaled content" gate the information hub uses): a driver page joins search discovery only once it carries an original fact-checked bio, never as the thin Wikipedia-intro + season-form shell. +22 URLs with this release; the ceiling is ~650 as other series' bios land in small waves. `/teams/*` stays out until team pages carry an equivalent depth mechanism.
+- Two sitemap tests replace the stale pin: the old test excluded `/drivers/*` with a "they 404 today" comment that stopped being true when drivers.json coverage completed (all three spot-checked routes serve 200 on prod). New invariants: advertised driver URLs ≡ bios.json keys (holds as bios land, no count pinned), and every advertised slug must resolve via `findDriverBySlug` — the FE-doubleheader "advertised 404" lesson (audit 3-6) as a live guard against typo'd bio keys.
+
 ## 0.256.0 — 2026-08-04
 
 ### Changed

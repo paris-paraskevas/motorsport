@@ -1,5 +1,5 @@
 {
-  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats (the page renders live 'Season so far' separately, and volatile figures would go stale on the ISR page). Preferred over the Wikipedia-intro fallback; drivers without an entry keep the Wikipedia bio. key = slugify(driver name). PILOT: 2 samples (plumbing-first); scale to the rest of the grid + other series later. British English, no em dashes, no AI-tell phrases (house style). sources[] = the primary references checked against; not rendered.",
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats (the page renders live 'Season so far' separately, and volatile figures would go stale on the ISR page). Preferred over the Wikipedia-intro fallback; drivers without an entry keep the Wikipedia bio. key = slugify(driver name). F1 grid complete (22 drivers) as of 2026-08-04, authored solo two-source-per-driver (Wikipedia intro + formula1.com driver page; car numbers additionally cross-checked against drivers.json); other series follow in waves. British English, no em dashes, no AI-tell phrases (house style). sources[] = the primary references checked against; not rendered.",
   "drivers": {
     "lewis-hamilton": {
       "paragraphs": [
@@ -19,6 +19,206 @@
       "sources": [
         "https://en.wikipedia.org/wiki/Fernando_Alonso",
         "https://www.formula1.com/en/drivers/fernando-alonso"
+      ]
+    },
+    "max-verstappen": {
+      "paragraphs": [
+        "Max Verstappen became Formula 1's youngest-ever starter with Toro Rosso in 2015, aged 17, and its youngest-ever winner a year later, taking the Spanish Grand Prix on his first day as a Red Bull driver at 18.",
+        "The son of former Formula 1 driver Jos Verstappen, he won four consecutive World Championships with Red Bull from 2021 to 2024: the first snatched from Lewis Hamilton on the last lap of the season, the second after overturning the largest points deficit in the sport's history, the fourth sealed by an acclaimed wet-weather drive in São Paulo that made him the first champion in a third-placed car for 41 years. The first Dutch World Champion, he races for Red Bull Racing under the number 3."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Max_Verstappen",
+        "https://www.formula1.com/en/drivers/max-verstappen"
+      ]
+    },
+    "lando-norris": {
+      "paragraphs": [
+        "Lando Norris won the senior karting World Championship in 2014 and the FIA Formula 3 European title in 2017, then finished runner-up to George Russell in Formula 2 before McLaren promoted him to its race team in 2019.",
+        "The breakthrough came in stages: a first podium in 2020, a first pole in 2021, a maiden win at Miami in 2024, and then the 2025 World Championship, clinched in a three-way fight with Max Verstappen and his own team-mate Oscar Piastri, with a home British Grand Prix victory along the way. The reigning champion carries the number 1 for McLaren."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lando_Norris",
+        "https://www.formula1.com/en/drivers/lando-norris"
+      ]
+    },
+    "charles-leclerc": {
+      "paragraphs": [
+        "Charles Leclerc won GP3 and Formula 2 titles back-to-back in 2016 and 2017, the latter as a rookie, and entered Formula 1 with Sauber in 2018 as a Ferrari Academy graduate. Within a year he was a Ferrari driver, taking pole in Bahrain as the second-youngest polesitter in the sport's history, winning at Spa, and then ending Ferrari's nine-year home drought at Monza, which earned him the nickname il Predestinato.",
+        "Born and raised in Monte Carlo, he finished runner-up in the 2022 World Championship, and in 2024 became the first Monégasque driver in 93 years to win his home Grand Prix. He drives for Ferrari under the number 16, partnered since 2025 by Lewis Hamilton."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Charles_Leclerc",
+        "https://www.formula1.com/en/drivers/charles-leclerc"
+      ]
+    },
+    "george-russell": {
+      "paragraphs": [
+        "George Russell won the GP3 Series and the Formula 2 Championship in successive rookie seasons, joined Williams in 2019, and announced himself by very nearly winning the 2020 Sakhir Grand Prix as Lewis Hamilton's one-race substitute at Mercedes, denied by a pit-stop error and a late puncture.",
+        "Promoted to a full Mercedes seat in 2022, he took his first pole in Hungary and his first win in São Paulo in the same season. Raised in King's Lynn and a Mercedes junior since 2017, he races under the number 63, partnered by Kimi Antonelli."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/George_Russell_(racing_driver)",
+        "https://www.formula1.com/en/drivers/george-russell"
+      ]
+    },
+    "oscar-piastri": {
+      "paragraphs": [
+        "Oscar Piastri arrived in Formula 1 with a junior record nobody has matched: Formula Renault, Formula 3 and Formula 2 titles in three successive seasons, the last as a rookie. A contract dispute pulled him from Alpine's academy to McLaren, where he made his debut in 2023 alongside Lando Norris.",
+        "A first podium came in his rookie year in Japan, and his maiden win in Hungary in 2024 made him the fifth Australian to win a Grand Prix. By 2025 the Melburnian was fighting his own team-mate and Max Verstappen for the World Championship, finishing third. He races for McLaren under the number 81."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Oscar_Piastri",
+        "https://www.formula1.com/en/drivers/oscar-piastri"
+      ]
+    },
+    "carlos-sainz": {
+      "paragraphs": [
+        "Carlos Sainz, son of the double World Rally Champion of the same name, won the Formula Renault 3.5 title in 2014 and made his Formula 1 debut for Toro Rosso in 2015 alongside Max Verstappen. His path wound through Renault and McLaren before Ferrari signed him in 2021.",
+        "At Ferrari he became a Grand Prix winner, taking his first pole and victory at the 2022 British Grand Prix and adding wins in Singapore, Australia and Mexico City. When Lewis Hamilton's arrival displaced him, the Spaniard joined Williams alongside Alexander Albon, and races under the number 55."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Carlos_Sainz_Jr.",
+        "https://www.formula1.com/en/drivers/carlos-sainz"
+      ]
+    },
+    "kimi-antonelli": {
+      "paragraphs": [
+        "Kimi Antonelli climbed the junior ladder faster than anyone of his generation: back-to-back European karting titles, the Italian and ADAC Formula 4 championships in 2022, both Formula Regional crowns, and race wins in Formula 2. Mercedes, who had backed him since 2019, handed him Lewis Hamilton's seat for 2025, and at 18 he became the third-youngest starter in Formula 1 history.",
+        "A podium in Canada came in his rookie season, along with the youngest fastest lap the sport has recorded, and the youngest-ever pole position followed. The Bolognese, son of a sportscar racer, drives for Mercedes alongside George Russell under the number 12."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kimi_Antonelli",
+        "https://www.formula1.com/en/drivers/kimi-antonelli"
+      ]
+    },
+    "lance-stroll": {
+      "paragraphs": [
+        "Lance Stroll won the Italian Formula 4, Toyota Racing Series and European Formula 3 titles in three straight years, and was a Williams Formula 1 driver at 18, standing on the Baku podium in his rookie season as the second-youngest podium finisher the sport had seen.",
+        "In 2019 he moved to the team his father Lawrence had bought, took pole in Turkey in 2020, and has been an Aston Martin fixture since the marque returned to the grid in 2021. The Montrealer races under the number 18."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lance_Stroll",
+        "https://www.formula1.com/en/drivers/lance-stroll"
+      ]
+    },
+    "alexander-albon": {
+      "paragraphs": [
+        "Alexander Albon fought Charles Leclerc for the 2016 GP3 title, reached Formula 1 with Toro Rosso in 2019, and was promoted to Red Bull just twelve races into his rookie season. In 2020 he became the first Thai driver to stand on a Formula 1 podium.",
+        "Dropped by Red Bull after two seasons, he rebuilt his career through a year of reserve duty and DTM racing, then took the Williams seat George Russell vacated in 2022 and has held it ever since. He races under the number 23, partnered since 2025 by Carlos Sainz."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_Albon",
+        "https://www.formula1.com/en/drivers/alexander-albon"
+      ]
+    },
+    "isack-hadjar": {
+      "paragraphs": [
+        "Isack Hadjar finished runner-up to Gabriel Bortoleto in the 2024 Formula 2 Championship, a campaign that earned him the nickname le Petit Prost in the French press. His Formula 1 debut for Racing Bulls in Melbourne lasted less than a lap, a crash on the formation lap, and he answered it with a rookie season strong enough to include a podium at Zandvoort.",
+        "A Red Bull junior since 2022, the Parisian was promoted to the senior team for 2026 to partner Max Verstappen, and races under the number 6."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Isack_Hadjar",
+        "https://www.formula1.com/en/drivers/isack-hadjar"
+      ]
+    },
+    "liam-lawson": {
+      "paragraphs": [
+        "Liam Lawson won New Zealand's Toyota Racing Series in 2019, finished runner-up in both the DTM and Japan's Super Formula, and spent three seasons as Red Bull's Formula 1 reserve. His chance came mid-2023, substituting for the injured Daniel Ricciardo, and he scored his first points in Singapore during that five-race stint.",
+        "Red Bull promoted him to the senior team for 2025, replacing Sergio Pérez alongside Max Verstappen, then demoted him after just two rounds. Back at Racing Bulls, the New Zealander races under the number 30."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Liam_Lawson",
+        "https://www.formula1.com/en/drivers/liam-lawson"
+      ]
+    },
+    "arvid-lindblad": {
+      "paragraphs": [
+        "Arvid Lindblad became the youngest race-winner in Formula 2 history in 2025, having already won the Formula Regional Oceania title and the Macau Formula 4 race on his way up. A Red Bull junior since 2021, he was handed a Racing Bulls seat for 2026 while still 18.",
+        "Born in Virginia Water to a Swedish father and a British Indian mother, and a protégé of Formula E World Champion Oliver Rowland, he races under a British flag and carries the number 41."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Arvid_Lindblad",
+        "https://www.formula1.com/en/drivers/arvid-lindblad"
+      ]
+    },
+    "nico-hulkenberg": {
+      "paragraphs": [
+        "Nico Hülkenberg won the A1GP title for Germany, the Formula 3 Euro Series and a rookie-season GP2 crown before Williams gave him his Formula 1 debut in 2010, where he took a shock pole position in Brazil. A career of midfield seats followed: Force India, Sauber, Renault, reserve years with super-sub call-ups, and an outright win at the 24 Hours of Le Mans with Porsche in 2015 along the way.",
+        "The wait defined him: 239 races, the longest run in Formula 1 history, before a first podium finally came at Silverstone in 2025 with Sauber. When the team became Audi in 2026 he stayed, racing under the number 27 alongside Gabriel Bortoleto."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nico_Hülkenberg",
+        "https://www.formula1.com/en/drivers/nico-hulkenberg"
+      ]
+    },
+    "gabriel-bortoleto": {
+      "paragraphs": [
+        "Gabriel Bortoleto won the Formula 3 and Formula 2 championships back-to-back in 2023 and 2024, the latter as a rookie, and along the way became the first driver to win a Formula 2 feature race from last on the grid, at Monza.",
+        "A protégé of Fernando Alonso, the Brazilian joined Sauber for 2025 just ahead of its transformation into Audi, and scored points through his rookie season. He races for Audi under the number 5, alongside Nico Hülkenberg."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Gabriel_Bortoleto",
+        "https://www.formula1.com/en/drivers/gabriel-bortoleto"
+      ]
+    },
+    "esteban-ocon": {
+      "paragraphs": [
+        "Esteban Ocon beat Max Verstappen to the 2014 European Formula 3 title, won GP3 the year after, and reached Formula 1 with Manor midway through 2016. Force India, a Mercedes reserve year and Renault followed before his career-defining afternoon: victory at the 2021 Hungarian Grand Prix for Alpine.",
+        "Raised in Normandy, he became the first team-mate to outscore Fernando Alonso over a season since Jenson Button, added a Monaco podium in 2023, and moved to Haas in 2025, where he partners Oliver Bearman under the number 31."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Esteban_Ocon",
+        "https://www.formula1.com/en/drivers/esteban-ocon"
+      ]
+    },
+    "oliver-bearman": {
+      "paragraphs": [
+        "Oliver Bearman won the Italian and ADAC Formula 4 championships in the same season, and made one of the sport's great stand-in debuts: called up by Ferrari to substitute for Carlos Sainz in Saudi Arabia in 2024, he became the youngest driver ever to race for the Scuderia, at 18.",
+        "Two further substitute outings for Haas that year turned into a full-time seat: he joined the American team in 2025 alongside Esteban Ocon, and races under the number 87."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Oliver_Bearman",
+        "https://www.formula1.com/en/drivers/oliver-bearman"
+      ]
+    },
+    "pierre-gasly": {
+      "paragraphs": [
+        "Pierre Gasly won the 2016 GP2 title and reached Formula 1 with Toro Rosso, then endured one of its harshest arcs: promoted to Red Bull for 2019, demoted back at mid-season, and standing on the Brazilian podium with the junior team within months.",
+        "Victory at the 2020 Italian Grand Prix for AlphaTauri completed the redemption, and a move to Alpine in 2023 brought him to a French team. The Norman races under the number 10, alongside Franco Colapinto."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pierre_Gasly",
+        "https://www.formula1.com/en/drivers/pierre-gasly"
+      ]
+    },
+    "franco-colapinto": {
+      "paragraphs": [
+        "Franco Colapinto ended a 23-year wait for Argentina: when Williams called him up at Monza in 2024 to replace Logan Sargeant, he became the country's first Formula 1 driver since 2001, and scored points in Baku and Austin before the season was out.",
+        "A move to Alpine as reserve followed, and the team promoted him to the race seat during 2025. He races for Alpine under the number 43, alongside Pierre Gasly."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Franco_Colapinto",
+        "https://www.formula1.com/en/drivers/franco-colapinto"
+      ]
+    },
+    "sergio-perez": {
+      "paragraphs": [
+        "Sergio Pérez spent a decade turning midfield machinery into podiums for Sauber, McLaren and Force India before the breakthrough: victory at the 2020 Sakhir Grand Prix after running last at the end of the opening lap.",
+        "Red Bull signed him on the strength of it, and with them he finished runner-up in the 2023 World Championship. In 2026 Checo joined Cadillac, the grid's newest team, alongside Valtteri Bottas, racing under the number 11."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sergio_Pérez",
+        "https://www.formula1.com/en/drivers/sergio-perez"
+      ]
+    },
+    "valtteri-bottas": {
+      "paragraphs": [
+        "Valtteri Bottas won the GP3 Series in 2011, spent two years as a Williams test driver and four more racing for them, then was Mercedes' choice to fill Nico Rosberg's vacated champion's seat in 2017. He repaid them with victory in Russia in his first season and back-to-back runner-up finishes in the World Championship in 2019 and 2020.",
+        "The Finn, who studied automotive engineering and completed military service before racing full-time, joined Cadillac for the team's first Formula 1 season and races under the number 77."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Valtteri_Bottas",
+        "https://www.formula1.com/en/drivers/valtteri-bottas"
       ]
     }
   }
