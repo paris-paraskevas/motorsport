@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.256.0 — 2026-08-04
+
+### Changed
+- **`/about` is a real About page, 15 months late.** The route had shipped unchanged since 2026-05-13 as a debug surface: it printed every series' raw ICS URL, stale flags and per-render ISO timestamps to the public, and its prose was false on both counts ("Personal-use PWA", "fetched at build with 6-hour revalidation" — pre-DB-mode claims). Rewritten as editorial prose in the house masthead style (`app/(app)/about/page.tsx`): what Paddock is (the 15 championships enumerated), the honest current data flow (official calendar feeds + hand-curated corrections that always win; results/standings parsed on a rolling schedule into our own DB and served as last-verified snapshots; Open-Meteo weather by venue-local date; public news feeds), accuracy/corrections policy, and explore links (`/information`, `/changelog`, `/blog`, `/imprint`). Every claim verified against the code before writing (`lib/series.ts`, `lib/source-snapshot.ts`, `lib/weather.ts`, `lib/news.ts`). The page is now fully static (`○`) — the `loadAllSeries()` fetch and `revalidate = 21600` are gone with the table.
+- **The per-series feed-status table moved to `/admin/tools`**, where its audience lives: a `TelemetryPanel` listing each series' ICS URL with a live/fallback verdict (`stale` = live fetch failed or no feed configured → bundled `fallback.ics` served) and an n/15 live meta count. `force-dynamic` (already was), so the check runs fresh per view. Dropped the per-row "fetched at" timestamp the old page showed — `Series.fetchedAt` is just render time, meaningless on a fresh-per-view page.
+- Drive-by, flagged: the `/admin/tools` "Blog queue → /blog" link pointed at the public listing since the studio split (0.249.0); now "Studio → /studio".
+
 ## 0.255.2 — 2026-08-04
 
 ### Changed
