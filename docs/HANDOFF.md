@@ -6,6 +6,32 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
+## ⚡ Next session pickup — 2026-08-04 (LATEST, session 26 part 2 — merge train ×5, DNS de-Verceled, VAPID regenerated after the [SENSITIVE] discovery) — `main` = 0.255.1 AND prod runs it
+
+Continuation of the session-26 marathon (2026-08-03 evening → 08-04). **PRs #656-#661 merged, 0.252.2 → 0.255.1, prod verified per merge.** The operator worked their 12-item ops list in parallel; every named order ("do the dns", "DO", "fix the landing images", "sync all full", "prune the rest", "regenerate vapid") executed.
+
+### ✅ Shipped
+- **0.253.0 #657 — the Plex type system** (see the session-26 block's evening extension) · **0.253.1 #658 — the post-Cloudflare perf baseline row** (PSI: mobile 71/desktop 78, CLS 0 both, TBT collapsed; field source = Cloudflare Web Analytics RUM, already collecting) · **0.254.0 #659 — the landing LCP fix** (7 hero JPEGs 4,112→1,673 KiB WebP; slideshow mounts ONLY active+outgoing slide → first paint fetches ONE ~190 KiB image; `fetchPriority="high"` on slide 0's img+preload; est. mobile LCP 15.3 s → ~2.5-3 s — **re-measure via PSI ≥24 h after 08-03 and append the delta row**) · **0.255.0 #660 — DO sharded tagCache** (`doShardedTagCache({baseShardSize:4, regionalCache:true})` + `NEXT_TAG_CACHE_DO_SHARDED` binding + v2 sqlite migration in all four wrangler configs; revalidatePath finally does something; **live proof = the next real publish**, ~5 s refresh expected) · **0.255.1 #661 — VAPID decoupled from build-time inlining** (`/api/push/status` serves the PUBLIC key; `subscribeToPush()` fetches at subscribe time; `getPushAvailability()` capability-only; no worker ever needs a VAPID build var again).
+- **DNS de-Verceled** (operator-approved, executed via the DNS token): the 6 Vercel-IP A records → one proxied `192.0.2.1` placeholder per name (wildcard/apex/www), duplicates + the `_domainconnect` Vercel CNAME deleted. Every host verified after: apex/www/paris/testing 200, dev 307 (its auth redirect), Clerk API healthy. Zone facts: Resend DKIM/SPF are properly DNS-only; there are NO separate Clerk records — clerk.* rides the proxied wildcard and works.
+- **Secrets audited ×4 workers**: prod has all 23 (incl. Resend + analytics — the "wire GA4/GSC/Bing env" chore was already done, nobody recorded it). Dev workers deliberately run a 10-key preview set (`sync-worker-secrets.mts` guardrail: previews must not email/push/touch analytics) — **synced fresh to all three**. Paris therefore cannot send mail: the operator's 08-03 click-through verified UI flows, not email delivery.
+- **Branch prune**: 380 → 34 (208 ancestry-merged + 139 squash-verified via merged-PR head names force-deleted). Kept: main, testing-paris/panagiotis, a live worktree ref, and 29 never-PR'd experiment branches (commits exist nowhere else — operator's word per branch to kill).
+
+### 🔴 THE [SENSITIVE] VAPID DISCOVERY (root cause of "no notifications firing")
+The prod worker's three VAPID secrets held the literal string **`[SENSITIVE]`** — at some point they were set by copy-pasting from a REDACTED transcript/log. Consequences: every server push failed at signing (silently — the notify cron "worked"), the phone's Enable threw `atob… not correctly encoded` the moment 0.255.1 served the stored "key" to the client, and the 6 existing subscriptions were cryptographically dead all along (no valid private key existed anywhere). **Operator approved regeneration**: fresh keypair (`web-push generateVAPIDKeys`, shape-checked) → `.env.production.local` (gitignored; backup in the session scratchpad) → `wrangler secret bulk` on prod → verified `/api/push/status` serves `ready=true, len 87, clean base64url`. Old device rows prune on failed sends (410 path) or via the "Your devices → Remove" button. **Landmine for every future secret: NEVER set a secret from a transcript/log — the harness redacts values as `[SENSITIVE]` and the placeholder gets stored.** (HANDOFF session-24/25 landmine 6 is obsolete: the key is self-serving now.)
+
+### ⚠ LANDMINES (new)
+1. **Secrets set from redacted logs store the literal `[SENSITIVE]`** — see above. Shape-check every secret at write time (the VAPID regen now does).
+2. **The auto-mode permission classifier blocks DNS mutations, credential rotations and self-merges of un-previewed visual changes** even with a conversational go-ahead — it wants named, specific consent (or interactive prompt approval / a settings allow-rule). Plan the day's irreversible steps around one operator-present window.
+3. **`wrangler secret list` is the fast secrets audit** (names only) — it caught both the preview-set gap and, indirectly, the VAPID rot. `.env.production.local` holds only the 10 preview keys + now the VAPID trio; the other prod secrets live nowhere locally.
+
+### 🩹 Owed (operator) — carried
+Phone push re-enable + TEST (the proof of the regen) · GSC "Validate fix" click (all 45 noindex URLs verified serving `index,follow`) · the two `/studio` drafts — **approving one doubles as the tagCache live test** (page should refresh in ~5 s) · panagiotis Workers Builds config (one less var needed now) · key rotations (deferred "not now"; the Supabase service-role key sat in a transcript) · optional: Resend key into the env file → "sync paris with resend"; words on the 29 experiment branches.
+
+### 🔧 State at wrap
+`main` = **0.255.1** (d3f8f0f), prod runs it, zero open PRs, tree clean except the operator's uncommitted IDEAS edits. testing-paris sits on the pre-merge tagcache tip (replace on next use). Next queued build work, operator's order: `/about` rewrite (still the public debug page) · `/play` revamp groundwork (GA4-grounded product question, their Inbox entry) · content expansion toward 1500+ pages · AI section headings (phase 2) · Turbopack migration · champions depth (two-source ultracode only). Plus the landing-LCP delta row after 24 h field settle.
+
+---
+
 ## ⚡ Next session pickup — 2026-08-03 evening (LATEST, session 26 — the studio, imports, /write-for-us + contributor, post-ready, calendars verified) — `main` = 0.252.1 AND prod runs it
 
 Single-day session, **7 PRs #649–#655 (0.249.0 → 0.252.1), all merged, prod verified after each deploy.** The paris worker (`testing-paris` branch) was the signed-in review surface throughout — force-push the stack there, operator clicks through, then the merge train runs (#650 lesson below).
