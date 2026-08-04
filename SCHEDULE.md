@@ -1327,6 +1327,26 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Mon 2026-08-03 → Wed 2026-08-05 (session 25 — calendar rebuild, then the learn hub, both on `testing`)
+
+No plan was written at the start: the operator opened with "let's work on the calendar page" and the scope grew from there. Recorded here as outcomes.
+
+- → done: **`/calendar` rebuilt on the `/app` design system** (5 commits, `91abab3` → `4a0e1a5`). Tested grid helpers first (`groupIntoEvents`, `seriesCode`, time-mode helpers, 11 → 21 tests), then the control deck, the Weekends agenda, weekend-weighted month columns, event chips, the month footing, and the hero-scale up-next band. Two defects fixed on the way: day cells were `role="button"` with nested `<Link>`s (42 tab stops), and the session-type filter silently hid every unclassified session whenever a named kind was deselected.
+- → done: **month as the default view + exact state restore on Back** (`75092d5`, `32be179`). `?view=` / `?d=` in the URL because Back restores a history entry, not a preference; localStorage keeps the view for a fresh visit, the anchor deliberately does not persist.
+- → done: **learn hub (`/information`) on the design system** (`3628422`). Section heads 14 → 24-30px, panels where there were none, the 30 HISTORY/RULES links from 50×15px to ≥32px pills, answers cardified across all 5 `EntryRow` call sites.
+- → done: **three self-inflicted defects caught by measuring rather than looking.** The month-grid fills I shipped in `a3d8783` were invisible (1.04-1.11:1) **and inverted** — adjacent months rendered lighter than the month in view; fixed in `bcd528a`. Every view toggle flashed the Suspense skeleton because `router.replace` is a real navigation; fixed in `32be179`. And `&amp;` in a JSX attribute rendered literally.
+- → done: **Commons licence research for the learn-page imagery** — 97 free-licensed, HEAD-checked candidates across the 10 topics, but thin for MotoGP/Teams/Drivers/rally-action and not automatable (search offered a Lego store for NASCAR). Scratchpad only; nothing written to the repo.
+- → **not done, awaiting the operator:** learn-page imagery source (recommendation: hybrid — photos where a strong free candidate exists, owned generated art for the abstract topics) and the series-colour palette collision (ADAC 24h and NLS share `#fbbf24`; 11 of 105 pairs confusable).
+- → deliberately refused: series/team logos on the learn page. Killed 2026-07-12 — trademarks, no non-infringing source.
+
+Two review claims from the operator's colleague did not survive checking: the nav does **not** say "KALENDAR" (zero hits in the codebase, live DOM reads `Calendar`), and the contrast failure is in the **borders** (1.42:1), not the text (all pairs clear AA) — so the recommended "brighter off-white" would have flattened the hierarchy for no gain.
+
+Won't-touch honoured: `main` and prod untouched throughout; session 24's motorsport.com licensing decision left open, no images added anywhere; the timezone bucketing semantics in `lib/calendar-grid.ts` (the part of the calendar that was already correct) left alone; no version bump, per the testing-branch convention.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
