@@ -2,12 +2,15 @@ const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '';
 
 export type PushAvailability = 'unsupported' | 'no-vapid' | 'available';
 
+/** Browser capability ONLY — 'no-vapid' is no longer decided here. The key
+ *  comes from the server at subscribe time (getVapidKey), so a build without
+ *  the inlined NEXT_PUBLIC var can still subscribe; UIs derive their
+ *  server-not-configured state from getServerPushStatus().vapidConfigured. */
 export function getPushAvailability(): PushAvailability {
   if (typeof window === 'undefined') return 'unsupported';
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
     return 'unsupported';
   }
-  if (!VAPID_PUBLIC_KEY) return 'no-vapid';
   return 'available';
 }
 
@@ -15,6 +18,17 @@ export interface ServerPushStatus {
   ready: boolean;
   vapidConfigured: boolean;
   kvConfigured: boolean;
+  /** The VAPID public key (public by design), or null when unconfigured. */
+  publicKey?: string | null;
+}
+
+// The subscribe key: the build-time inlined var when present (zero fetches),
+// else the server's copy via /api/push/status — cached for the page's life.
+let vapidKeyPromise: Promise<string | null> | null = null;
+function getVapidKey(): Promise<string | null> {
+  if (VAPID_PUBLIC_KEY) return Promise.resolve(VAPID_PUBLIC_KEY);
+  vapidKeyPromise ??= getServerPushStatus().then(s => s?.publicKey ?? null);
+  return vapidKeyPromise;
 }
 
 export async function getServerPushStatus(): Promise<ServerPushStatus | null> {
@@ -63,10 +77,12 @@ export async function subscribeToPush(): Promise<void> {
   if (permission !== 'granted') {
     throw new Error(permission === 'denied' ? 'denied' : 'dismissed');
   }
+  const vapidKey = await getVapidKey();
+  if (!vapidKey) throw new Error('no-vapid');
   const reg = await navigator.serviceWorker.ready;
   const subscription = await reg.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
+    applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
   });
   const res = await fetch('/api/push/subscribe', {
     method: 'POST',

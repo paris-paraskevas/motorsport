@@ -94,11 +94,9 @@ export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
     const avail = getPushAvailability();
     if (avail !== 'available') {
       setNotifState('unavailable');
-      setNotifMsg(
-        avail === 'no-vapid'
-          ? 'Push not configured on this device build.'
-          : 'This browser doesn\'t support web push.',
-      );
+      // Capability-only since 0.255.1: the VAPID key arrives from the server at
+      // subscribe time, so 'no-vapid' is no longer a client-detectable state.
+      setNotifMsg("This browser doesn't support web push.");
       return;
     }
 

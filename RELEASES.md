@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.255.1 — 2026-08-04
+
+**Turning on notifications works again.** A configuration gap left new devices unable to subscribe; existing subscriptions were never affected.
+
 ## 0.255.0 — 2026-08-03
 
 **Published posts and profile edits appear immediately.** Approving a post or editing an author page now refreshes the affected pages within seconds, instead of waiting out a cache window.
