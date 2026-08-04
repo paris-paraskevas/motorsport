@@ -1331,6 +1331,20 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+### Tue 2026-08-04 (session 26 part 2 — the ops-list day: merges, DNS, VAPID truth)
+
+Operator drove their 12-item ops list; every named order executed. Full record in HANDOFF (2026-08-04 block).
+
+- → done: merge train #656-#661 (0.252.2 → 0.255.1, prod verified per merge): plex system · perf baseline row · landing LCP fix (4.1 MB → one ~190 KiB first-paint image) · DO sharded tagCache (revalidatePath un-broken) · VAPID served from the API (build-var landmine dead).
+- → done: DNS fully de-Verceled (operator-approved; every host verified after) · secrets audited ×4 workers + preview set re-synced ×3 · branches 380 → 34 · GSC noindex list analyzed (all 45 already fixed by 0.247.0 — operator owes one Validate-fix click) · PSI baseline captured + field source decided (CF Web Analytics RUM).
+- → done: **the [SENSITIVE] discovery** — prod's VAPID secrets were the literal redaction placeholder; pushes never worked and the 6 subscriptions were already dead. Operator approved regeneration; fresh keypair live and verified (`/api/push/status` ready=true, clean 87-char key). Landmine recorded: never set secrets from redacted logs.
+- → pending operator: phone push TEST · GSC click · the two /studio drafts (doubles as the tagCache live test) · panagiotis build config · deferred rotations.
+- → next build queue (their order): /about rewrite · /play revamp groundwork · content expansion · AI headings phase 2 · Turbopack · landing-LCP delta row after field settle.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+---
+
 ### Mon 2026-08-03 (session 26 — blog editor rebuild + article imports)
 
 Operator's order: **1. blog editor section replan/rebuild** (drafts/new-post authoring must leave the `/blog` listing for a dedicated page; visual options BEFORE build) · **2. item 13 article imports** (`post.original_url`, off-site canonical, provenance on the post; migration — operator names the SQL) · then 14 (become-an-author + `contributor` role) · 17 (format button) · 20 (13 series calendars unverified) · 25 (dev-loop speed) · 26 (prod perf re-baseline).

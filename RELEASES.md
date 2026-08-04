@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.255.2 — 2026-08-04
+
+**Behind the scenes.** Internal notes updated. No change to the site.
+
 ## 0.255.1 — 2026-08-04
 
 **Turning on notifications works again.** A configuration gap left new devices unable to subscribe; existing subscriptions were never affected.
