@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.258.0 — 2026-08-04
+
+**Every MotoGP rider now has a real biography too.** All 22 rider pages carry an original, fact-checked career biography, from Márquez's nine titles to Moreira's history-making Moto2 crown. Like the Formula 1 set, these pages are now discoverable by search engines.
+
 ## 0.257.0 — 2026-08-04
 
 **Every Formula 1 driver now has a real biography.** All 22 driver pages carry an original career biography written and fact-checked for Paddock, replacing the borrowed encyclopedia intro. These pages are now discoverable by search engines too. Other championships will follow, a few drivers at a time.
