@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.259.0 — 2026-08-04
+
+**IndyCar joins the biography set.** All 25 full-time IndyCar drivers now have an original, fact-checked career biography on their page, from Dixon's six championships to Grosjean's escape from the Bahrain fire and the rookies arriving for 2026.
+
 ## 0.258.0 — 2026-08-04
 
 **Every MotoGP rider now has a real biography too.** All 22 rider pages carry an original, fact-checked career biography, from Márquez's nine titles to Moreira's history-making Moto2 crown. Like the Formula 1 set, these pages are now discoverable by search engines.

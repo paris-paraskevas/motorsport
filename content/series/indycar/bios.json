@@ -1,0 +1,255 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY — no live-season stats (settled 2026 milestones like Rosenqvist's Indy 500 win and Kirkwood's inaugural Arlington win are kept; season tallies are not). Preferred over the Wikipedia-intro fallback. key = slugify(driver name). Full 2026 grid (25) authored 2026-08-04, solo two-source-per-driver: Wikipedia article (intro + targeted full-extract slices) + the 2026 IndyCar Series entry table for car numbers + indycar.com/Standings for grid presence — every team + number matches drivers.json. Engine makes stated only where the source states them (VeeKay/Grosjean/Hauger/Simpson/Palou say 'car'). British English, no em dashes, no AI-tell phrases. sources[] not rendered.",
+  "drivers": {
+    "josef-newgarden": {
+      "paragraphs": [
+        "Josef Newgarden won the 2011 Indy Lights title and became a Team Penske champion twice over, taking the IndyCar Series crown in 2017 and again in 2019. As a junior he was the first American to win the Formula Ford Festival, racing for Team USA in England.",
+        "He won the Indianapolis 500 back-to-back in 2023 and 2024, the first driver since Helio Castroneves to go two in a row, and added the 2024 Daytona 24 Hours, becoming only the sixteenth driver to win both. He races the No. 2 Chevrolet for Team Penske."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Josef_Newgarden",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "scott-mclaughlin": {
+      "paragraphs": [
+        "Scott McLaughlin arrived in IndyCar as a three-time Supercars champion, having won Australia's premier series in 2018, 2019 and 2020 after starting out as its youngest-ever race winner.",
+        "He crossed the Pacific with Team Penske, the outfit he had taken a record sixteen poles for in a single Supercars season, and races the No. 3 Chevrolet. Born in New Zealand, he now holds American citizenship too."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Scott_McLaughlin_(racing_driver)",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "david-malukas": {
+      "paragraphs": [
+        "David Malukas served a four-team apprenticeship in his first IndyCar seasons: Dale Coyne, Meyer Shank, then A. J. Foyt.",
+        "It earned him one of the biggest seats in the paddock: the American races the No. 12 Chevrolet for Team Penske."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/David_Malukas",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "kyffin-simpson": {
+      "paragraphs": [
+        "Kyffin Simpson won the 2023 European Le Mans Series championship with Algarve Pro Racing before committing to American open-wheel racing.",
+        "The Caymanian races the No. 8 car for Chip Ganassi Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kyffin_Simpson",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "scott-dixon": {
+      "paragraphs": [
+        "Sir Scott Dixon has won the IndyCar Series championship six times, in 2003, 2008, 2013, 2015, 2018 and 2020, the first of them in his debut season with Chip Ganassi Racing, along with the 2008 Indianapolis 500.",
+        "A winner in only his third CART start and a three-time victor of the Daytona 24 Hours, the New Zealander has raced Ganassi's No. 9 car for more than two decades."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Scott_Dixon",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "alex-palou": {
+      "paragraphs": [
+        "Álex Palou won four IndyCar championships in five seasons, in 2021, 2023, 2024 and 2025, plus the 2025 Indianapolis 500, making him the youngest four-time champion in the series' history and the first Spaniard to win either prize.",
+        "One of only three drivers to win on their Chip Ganassi Racing debut, he opened his IndyCar account at a statistical rate bettered only by Mario Andretti and A. J. Foyt, and spent 2022 and 2023 doubling as a McLaren Formula 1 reserve. He races the No. 10 Ganassi car."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_Palou",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "will-power": {
+      "paragraphs": [
+        "Will Power has taken more pole positions than anyone in IndyCar history, and sits fourth on the all-time wins list: champion in 2014 and 2022, winner of the 2018 Indianapolis 500.",
+        "The Australian, an American citizen too, races the No. 26 Honda for Andretti Global."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Will_Power",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "kyle-kirkwood": {
+      "paragraphs": [
+        "Kyle Kirkwood is the inaugural winner of the Grand Prix of Arlington, the first name on one of IndyCar's newest trophies.",
+        "The American races the No. 27 Honda for Andretti Global."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kyle_Kirkwood",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "marcus-ericsson": {
+      "paragraphs": [
+        "Marcus Ericsson won the 2022 Indianapolis 500 with Chip Ganassi Racing, the peak of a second career begun after five Formula 1 seasons.",
+        "The Swede, who won the All-Japan Formula 3 title in his debut year there and Britain's Formula BMW crown before that, races for Andretti Global in the No. 28 car."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marcus_Ericsson",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "pato-o-ward": {
+      "paragraphs": [
+        "Pato O'Ward won the 2018 Indy Lights championship and has twice finished runner-up at the Indianapolis 500.",
+        "A McLaren development signing who has served as the team's Formula 1 reserve, the Mexican races the No. 5 Chevrolet for Arrow McLaren."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Pato_O%27Ward",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "nolan-siegel": {
+      "paragraphs": [
+        "Nolan Siegel won the LMP2 class of the 24 Hours of Le Mans at his first attempt, in 2024 with United Autosports, while still a teenager.",
+        "The American races the No. 6 Chevrolet for Arrow McLaren."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nolan_Siegel",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "christian-lundgaard": {
+      "paragraphs": [
+        "Christian Lundgaard swept the Spanish and SMP Formula 4 titles in his first single-seater season and reached IndyCar through the Alpine academy, taking Rookie of the Year in 2022.",
+        "At Toronto in 2023 he became the first Dane ever to win an IndyCar race. He drives the No. 7 Chevrolet for Arrow McLaren."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Christian_Lundgaard",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "graham-rahal": {
+      "paragraphs": [
+        "Graham Rahal became the youngest podium finisher in Champ Car history in only his third start, at 18.",
+        "He races the No. 15 Honda for Rahal Letterman Lanigan, the team part-owned by his father Bobby, winner of the 1986 Indianapolis 500."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Graham_Rahal",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "louis-foster": {
+      "paragraphs": [
+        "Louis Foster won the 2022 Indy Pro 2000 and 2024 Indy NXT championships on his way up the American ladder, after cutting his teeth in British junior single-seaters.",
+        "The Briton races the No. 45 Honda for Rahal Letterman Lanigan."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Louis_Foster",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "mick-schumacher": {
+      "paragraphs": [
+        "Mick Schumacher, son of seven-time Formula 1 champion Michael, won the European Formula 3 title in 2018 and the Formula 2 championship in 2020, both with Prema, then raced two Formula 1 seasons for Haas.",
+        "After two years in the World Endurance Championship he crossed to IndyCar, and races the No. 47 Honda for Rahal Letterman Lanigan."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mick_Schumacher",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "caio-collet": {
+      "paragraphs": [
+        "Caio Collet won the French Formula 4 title in 2018 and finished runner-up in the Formula Renault Eurocup two years later, then rebuilt his path in America: third in Indy NXT in 2024, runner-up in 2025.",
+        "The São Paulo-born Brazilian, who has also raced in Formula E for Nissan, drives the No. 4 car for A. J. Foyt Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Caio_Collet",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "santino-ferrucci": {
+      "paragraphs": [
+        "Santino Ferrucci announced himself at his first Indianapolis 500, carving from 23rd on the grid to seventh at the flag and taking the race's Rookie of the Year honours.",
+        "The American came up through Formula 2 and has raced in NASCAR's Xfinity Series besides. He drives the No. 14 Chevrolet for A. J. Foyt Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Santino_Ferrucci",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "alexander-rossi": {
+      "paragraphs": [
+        "Alexander Rossi won the Indianapolis 500 as a rookie in 2016, months after a five-race Formula 1 career with Manor came to an end.",
+        "A four-time GP2 race winner in Europe and a Daytona 24 Hours winner in 2021, the Californian races the No. 20 Chevrolet for Ed Carpenter Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alexander_Rossi",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "christian-rasmussen": {
+      "paragraphs": [
+        "Christian Rasmussen won the U.S. F2000 title with nine victories in a season, six of them in a row to open the year, and took the 2023 Indy NXT championship with five wins.",
+        "The Copenhagen-born Dane races the No. 21 Chevrolet for Ed Carpenter Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Christian_Rasmussen_(racing_driver)",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "felix-rosenqvist": {
+      "paragraphs": [
+        "Felix Rosenqvist won the 2026 Indianapolis 500, seven seasons after arriving in IndyCar as 2019's Rookie of the Year.",
+        "The Swede races the No. 60 Honda for Meyer Shank Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Felix_Rosenqvist",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "marcus-armstrong": {
+      "paragraphs": [
+        "Marcus Armstrong won the 2017 Italian Formula 4 title as a Ferrari Academy prospect and finished runner-up in the 2019 FIA Formula 3 Championship to his own team-mate.",
+        "After three Formula 2 seasons he switched to IndyCar and took Rookie of the Year in 2023 with Chip Ganassi. The New Zealander races the No. 66 Honda for Meyer Shank Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Marcus_Armstrong",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "rinus-veekay": {
+      "paragraphs": [
+        "Rinus VeeKay, born Rinus van Kalmthout, arrived in IndyCar in 2020 and spent five seasons with Ed Carpenter Racing before a year at Dale Coyne.",
+        "The Dutchman races the No. 76 car for Juncos Hollinger Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Rinus_VeeKay",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "sting-ray-robb": {
+      "paragraphs": [
+        "Sting Ray Robb bet on himself in 2023, stepping straight up to IndyCar with Dale Coyne rather than staying for another Indy NXT season.",
+        "The American races the No. 77 car for Juncos Hollinger Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sting_Ray_Robb",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "romain-grosjean": {
+      "paragraphs": [
+        "Romain Grosjean won the 2007 Formula 3 Euro Series and the 2011 GP2 title, and built his Formula 1 name at Lotus with a string of podium finishes alongside Kimi Räikkönen.",
+        "His final Formula 1 race ended in the Bahrain fireball of 2020, his car splitting and burning after piercing a barrier; he escaped with second-degree burns, credited the halo with saving his life, and started over in America months later, taking a pole and a podium in his first IndyCar season with Dale Coyne. The Franco-Swiss driver is back with Coyne, racing the No. 18 car."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Romain_Grosjean",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    },
+    "dennis-hauger": {
+      "paragraphs": [
+        "Dennis Hauger won the Italian Formula 4 title in 2019 and the FIA Formula 3 championship in 2021 as a Red Bull junior, then raced three seasons in Formula 2.",
+        "America delivered immediately: the 2025 Indy NXT title with Andretti, then a step up to IndyCar, where the Norwegian races the No. 19 car for Dale Coyne."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Dennis_Hauger",
+        "https://en.wikipedia.org/wiki/2026_IndyCar_Series"
+      ]
+    }
+  }
+}
