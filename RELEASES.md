@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.261.0 — 2026-08-04
+
+**World Superbike riders get their biographies.** 21 of the 22 full-time WSBK riders now carry an original, fact-checked career biography, from Bautista's double title to the Lowes twins racing each other. One rookie is skipped until reliable sources exist for him, which is the honest choice.
+
 ## 0.260.0 — 2026-08-04
 
 **Formula E completes today's biography sweep.** All 20 Formula E drivers now carry an original, fact-checked career biography, from Vergne's record two titles to Barnard's youngest-ever records. That makes four full grids in one day: Formula 1, MotoGP, IndyCar and Formula E, 89 driver pages with real writing on them.

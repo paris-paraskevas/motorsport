@@ -1,0 +1,215 @@
+{
+  "_comment": "Original, fact-checked rider bios (RULE #1) for /drivers/<slug>. Evergreen career + identity ONLY. Preferred over the Wikipedia-intro fallback. key = slugify(rider name). 21 of the 22-rider 2026 grid authored 2026-08-04 (Mattia Rato SKIPPED: no Wikipedia article exists and worldsbk.com 404s on the probed URL — no second source, no bio; his page simply stays out of the sitemap until sources exist). Two sources per rider: Wikipedia article + the 2026 Superbike World Championship entry table (all 22 numbers match drivers.json). Several wiki leads lag the 2026 silly season (Baldassarri, Petrucci, Vierge, Dixon, Sofuoğlu, Bridewell) — CURRENT seats come from the entry table + drivers.json; wiki supplies career facts only. Beware wrong-namesake articles: Andrea Locatelli has a 1695 painter at the plain title; Bahattin Sofuoğlu's plain title is his late relative — the rider is at '(motorcyclist, born 2003)'. British English, no em dashes, no AI-tell phrases. sources[] not rendered.",
+  "drivers": {
+    "nicolo-bulega": {
+      "paragraphs": [
+        "Nicolò Bulega was Moto3 Junior World Champion in 2015 and won the 2023 Supersport World Championship with Aruba.it Racing.",
+        "The son of former Grand Prix racer Davide Bulega, he rides for the factory Ducati Superbike team under the number 11."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Nicol%C3%B2_Bulega",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "iker-lecuona": {
+      "paragraphs": [
+        "Iker Lecuona rode two MotoGP seasons for KTM Tech3 before crossing to the Superbike World Championship, where he spent four years on Honda machinery.",
+        "The Spaniard now rides for the factory Ducati team under the number 7."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Iker_Lecuona",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "sam-lowes": {
+      "paragraphs": [
+        "Sam Lowes spent years as a Moto2 front-runner with Marc VDS, then followed the same team ownership into World Superbikes in 2024, on a Ducati Panigale.",
+        "That move put him on the same grid as his identical twin Alex for the first time on an international stage. He rides for the ELF Marc VDS Racing Team under the number 14."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sam_Lowes",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "alex-lowes": {
+      "paragraphs": [
+        "Alex Lowes won the 2013 British Superbike Championship and the Suzuka 8 Hours three years running, from 2016 to 2018, and joined Kawasaki's factory Superbike effort in 2020 as team-mate to Jonathan Rea.",
+        "The identical twin of Sam Lowes, he rides for the Bimota by Kawasaki Racing Team under the number 22."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alex_Lowes",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "axel-bassani": {
+      "paragraphs": [
+        "Axel Bassani won the Superbike World Championship's best-independent-rider trophy in both 2022 and 2023, having taken the FIM Europe Supersport Cup in 2016 and an Italian championship the year before.",
+        "He rides the Bimota KB998 for the Bimota by Kawasaki Racing Team under the number 47."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Axel_Bassani",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "yari-montella": {
+      "paragraphs": [
+        "Yari Montella won the Italian Sport Production 250 title in 2014 and rode for Barni in the Supersport World Championship.",
+        "He steps up to World Superbikes with the same team, riding for Barni Spark under the number 5."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Yari_Montella",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "alvaro-bautista": {
+      "paragraphs": [
+        "Álvaro Bautista won the 125cc World Championship in 2006, spent nine seasons in MotoGP, and then conquered World Superbikes: back-to-back titles in 2022 and 2023 with the factory Ducati team.",
+        "The Spaniard now rides a satellite Ducati for the Barni Spark Racing Team, under the number 19."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/%C3%81lvaro_Bautista",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "lorenzo-baldassarri": {
+      "paragraphs": [
+        "Lorenzo Baldassarri won the Red Bull Rookies Cup in 2011 and finished runner-up in the 2022 Supersport World Championship.",
+        "The Italian rides in World Superbikes for Team Pata GoEleven under the number 34."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lorenzo_Baldassarri",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "miguel-oliveira": {
+      "paragraphs": [
+        "Miguel Oliveira took the first Grand Prix world championship race win by a Portuguese rider, in Moto3 at Mugello in 2015, finished runner-up in the 2018 Moto2 World Championship, and gave KTM's Tech3 team its first MotoGP victories.",
+        "After a final MotoGP season with Pramac Yamaha he crossed to World Superbikes, and rides for BMW Motorrad under the number 88."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Miguel_Oliveira",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "danilo-petrucci": {
+      "paragraphs": [
+        "Danilo Petrucci won two MotoGP races, and when that chapter closed he simply kept racing everything: the Dakar Rally in 2022, an American Superbike season that ended with a podium at the finale, then a return to World Superbikes with Barni.",
+        "The Italian, national Superbike champion back in 2011, rides for the ROKiT BMW Motorrad team under the number 9."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Danilo_Petrucci",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "garrett-gerloff": {
+      "paragraphs": [
+        "Garrett Gerloff won back-to-back MotoAmerica Supersport titles in 2016 and 2017 and has raced in the Superbike World Championship since 2020.",
+        "The American rides for the Kawasaki WorldSBK Team under the number 31."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Garrett_Gerloff",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "andrea-locatelli": {
+      "paragraphs": [
+        "Andrea Locatelli won the 2020 Supersport World Championship and stepped straight up to World Superbikes with Yamaha.",
+        "Born in Alzano Lombardo, he rides for Pata Maxus Yamaha under the number 55."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Andrea_Locatelli_(motorcyclist)",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "xavi-vierge": {
+      "paragraphs": [
+        "Xavi Vierge joined the Superbike World Championship with Honda in 2022 after years in Grand Prix racing's intermediate class.",
+        "The Spaniard now rides for Pata Maxus Yamaha under the number 97."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Xavi_Vierge",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "stefano-manzi": {
+      "paragraphs": [
+        "Stefano Manzi won the 2025 Supersport World Championship with Ten Kate Racing.",
+        "The Rimini-born Italian graduates to World Superbikes with the GYTR GRT Yamaha team, riding under the number 62."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Stefano_Manzi",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "remy-gardner": {
+      "paragraphs": [
+        "Remy Gardner won the 2021 Moto2 World Championship with Red Bull KTM Ajo.",
+        "The son of Wayne Gardner, the 1987 premier-class world champion, he rides in World Superbikes for the GYTR GRT Yamaha team under the number 87."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Remy_Gardner",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "somkiat-chantra": {
+      "paragraphs": [
+        "Somkiat Chantra became the first Thai rider to race in MotoGP, with LCR Honda in 2025, after winning twice in Moto2 for Idemitsu Honda Team Asia.",
+        "The second Asia Talent Cup graduate to reach the premier class, after Ai Ogura, he now rides for Honda HRC in World Superbikes under the number 35."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Somkiat_Chantra",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "jake-dixon": {
+      "paragraphs": [
+        "Jake Dixon finished runner-up in the 2018 British Superbike Championship, having been its youngest-ever showdown qualifier the year before, then spent years as a Moto2 race winner in Grand Prix racing.",
+        "The son of Darren Dixon, TT Formula One champion and double World Sidecar champion, he rides for Honda HRC in World Superbikes under the number 96."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Jake_Dixon",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "bahattin-sofuoglu": {
+      "paragraphs": [
+        "Bahattin Sofuoğlu is a third-generation member of racing's Sofuoğlu family and came up through the Supersport World Championship with Yamaha.",
+        "The Turk steps up to World Superbikes with the Yamaha Motoxracing team, riding under the number 54."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Bahattin_Sofuo%C4%9Flu_(motorcyclist,_born_2003)",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "alberto-surra": {
+      "paragraphs": [
+        "Alberto Surra arrives in the Superbike World Championship with Motocorsa Racing.",
+        "The Italian, born in 2004, rides under the number 67."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Alberto_Surra",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "tarran-mackenzie": {
+      "paragraphs": [
+        "Tarran Mackenzie, Taz to the paddock, won his first Supersport World Championship race in 2023 by gambling on staying out on dry tyres as rain fell, while his rivals pitted for wheel changes.",
+        "He stepped up to World Superbikes the following year and rides for MGM Racing Performance under the number 95."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tarran_Mackenzie",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    },
+    "tommy-bridewell": {
+      "paragraphs": [
+        "Tommy Bridewell won the 2023 British Superbike Championship on a factory-supported Ducati, the reward for a career that once restarted mid-season when he stepped into a vacant seat after his own contract had been abruptly terminated.",
+        "The Wiltshireman crosses to the Superbike World Championship with Superbike Advocates Racing, riding under the number 46."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Tommy_Bridewell",
+        "https://en.wikipedia.org/wiki/2026_Superbike_World_Championship"
+      ]
+    }
+  }
+}

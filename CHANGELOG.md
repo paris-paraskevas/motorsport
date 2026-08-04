@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.261.0 — 2026-08-04
+
+### Added
+- **Original bios for the WSBK grid (21 of 22 riders)** — `content/series/wsbk/bios.json`, fifth series today. **Mattia Rato deliberately skipped**: no Wikipedia article exists and worldsbk.com 404s on the probed URL — no second source means no bio, and the sitemap gate means his page simply stays un-advertised (the partial-coverage case the gate was designed for). Sources: Wikipedia + the 2026 Superbike World Championship entry table (all 22 numbers match drivers.json). This series' traps, recorded in the file comment: wrong-namesake articles (plain "Andrea Locatelli" is a 1695 landscape painter; plain "Bahattin Sofuoğlu" is the rider's late relative — the rider lives at "(motorcyclist, born 2003)"), and six wiki leads lagging 2026 seats (Baldassarri's says MotoE, Vierge's says Honda) — current seats came from the entry table + drivers.json, wiki supplied career facts only. Style-gate: 0 em dashes, 0 AI-tells; 21/21 keys ≡ `slugify(name)`. Sitemap: 110 bio-gated driver URLs.
+
 ## 0.260.0 — 2026-08-04
 
 ### Added
