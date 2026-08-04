@@ -22,20 +22,17 @@ export function WeekView({
   const days = weekDays(anchor, now);
   return (
     <div className="border border-border bg-surface p-2 md:p-3">
-      <div className="grid grid-cols-1 gap-px bg-border-strong/40 md:grid-cols-7">
+      <div className="grid grid-cols-1 gap-px bg-border-strong md:grid-cols-7">
         {days.map(cell => {
           const entries = buckets.get(cell.key) ?? [];
-          const isRaceDay = cell.date.getDay() === 5 || cell.date.getDay() === 6 || cell.date.getDay() === 0;
+          // No weekend tint here either: --surface to --surface-elevated is a
+          // 1.06:1 step, so it added an invisible third state and nothing else.
+          // Every column already carries its own day header, which is what tells
+          // you it's a Saturday.
           return (
             <div
               key={cell.key}
-              className={`p-2 ${
-                cell.isToday
-                  ? 'bg-surface-elevated'
-                  : isRaceDay
-                    ? 'bg-surface-elevated/60'
-                    : 'bg-surface'
-              }`}
+              className={`p-2 ${cell.isToday ? 'bg-surface-elevated' : 'bg-surface'}`}
             >
               <button
                 type="button"

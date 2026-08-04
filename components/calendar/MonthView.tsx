@@ -168,14 +168,15 @@ export function MonthView({
   return (
     <div className="border border-border bg-surface p-2 md:p-3">
       {/* Weekday header — race days are called out, since the columns beneath
-          them are the ones that carry the sport. */}
+          them are the ones that carry the sport. The Friday cell also opens the
+          weekend boundary rule that runs down the grid. */}
       <div className="grid" style={{ gridTemplateColumns: COLUMNS }}>
         {WEEKDAYS.map((d, i) => (
           <div
             key={d}
             className={`px-1.5 pb-1.5 font-mono text-xs uppercase tracking-[0.14em] ${
-              i >= 4 ? 'font-bold text-text-muted' : 'text-text-faint'
-            }`}
+              i >= 4 ? 'font-bold text-text' : 'text-text-faint'
+            } ${i === 4 ? 'border-l border-text-faint/60' : ''}`}
           >
             {d}
           </div>
@@ -186,25 +187,35 @@ export function MonthView({
         ref={gridRef}
         role="grid"
         aria-label="Month grid"
-        className="grid gap-px bg-border-strong/40"
+        // Gap lines show the container through, so this IS the cell divider.
+        // border-strong at full strength rather than 40% — 1.64:1 against the
+        // panel instead of 1.42:1. Still short of the 3:1 WCAG wants of a
+        // meaningful boundary, which is exactly why the weekend edge above gets a
+        // real rule and the cells carry their own date numbers: the hairlines are
+        // grouping, not the thing that identifies a day.
+        className="grid gap-px bg-border-strong"
         style={{ gridTemplateColumns: COLUMNS }}
       >
         {cells.map((cell, index) => {
           const entries = buckets.get(cell.key) ?? [];
           const events = groupIntoEvents(entries, roundOf);
-          const isRaceDay = index % 7 >= 4;
-          // Structure comes from FILLS, not hairlines: --border measures 1.42:1
-          // against the page background, well under the 3:1 WCAG 2.2 asks of a
-          // boundary that carries meaning, and a calendar's cell edge tells you
-          // which day a session belongs to. Weekend columns and today are tinted
-          // so the grid reads without depending on lines nobody can see.
-          const fill = !cell.inMonth
-            ? 'bg-bg/60'
-            : cell.isToday
-              ? 'bg-surface-elevated'
-              : isRaceDay
-                ? 'bg-surface-elevated/60'
-                : 'bg-surface';
+          // TWO fills, not four. The first cut tinted weekend columns, today and
+          // adjacent months separately, and measuring the composited pixels showed
+          // every step was below what an eye resolves — weekend vs weekday 1.107:1,
+          // today 1.061:1, out-of-month 1.039:1 — while out-of-month came out
+          // LIGHTER than in-month, so July and September read as lifted rather than
+          // receded. --bg to --surface-elevated spans just 1.164:1 in total, so no
+          // arrangement of these tokens can carry meaning; they exist to separate a
+          // panel from a page, not 42 cells from each other.
+          //
+          // So the weekend is signalled by things that actually register: the column
+          // width (0.62fr against 1fr), a boundary rule at the Thursday/Friday edge
+          // in --text-faint (4.96:1 on the panel), and a full-strength header. Today
+          // rides on its brand date badge (10.29:1). Adjacent months recede by
+          // dimming their CONTENT while the cell keeps the darkest fill available —
+          // opacity on the cell itself was what inverted them.
+          const fill = cell.inMonth ? (cell.isToday ? 'bg-surface-elevated' : 'bg-surface') : 'bg-bg';
+          const weekendEdge = index % 7 === 4 ? 'border-l border-text-faint/60' : '';
           return (
             <div
               key={cell.key}
@@ -216,10 +227,15 @@ export function MonthView({
                 entries.length ? `, ${entries.length} sessions` : ', nothing scheduled'
               }`}
               onKeyDown={e => onKeyDown(e, index, cell.date)}
-              className={`flex min-h-[92px] flex-col gap-1 p-1.5 align-top transition-colors duration-(--duration-fast) focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand md:min-h-[118px] ${fill} ${
-                cell.inMonth ? '' : 'opacity-60'
-              }`}
+              className={`flex min-h-[92px] flex-col p-1.5 align-top transition-colors duration-(--duration-fast) focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand md:min-h-[118px] ${fill} ${weekendEdge}`}
             >
+              {/* Content wrapper carries the adjacent-month dimming. Putting the
+                  opacity on the CELL faded its background toward the lighter
+                  backdrop, which is how out-of-month ended up brighter than
+                  in-month; dimming only what's inside keeps the fill honest. */}
+              <div
+                className={`flex flex-1 flex-col gap-1 ${cell.inMonth ? '' : 'opacity-45'}`}
+              >
               <div className="flex items-baseline justify-between gap-1">
                 {/* Day numbers were 12px --text-muted tucked in a corner. Today
                     was a 1px ring. Both now read at a glance. */}
@@ -273,6 +289,7 @@ export function MonthView({
                     +{events.length - 3}
                   </span>
                 )}
+              </div>
               </div>
             </div>
           );
