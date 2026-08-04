@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { ArrowUpRight, ChevronLeft, ChevronRight, MapPin, SlidersHorizontal } from 'lucide-react';
 import { seriesInk } from '@/lib/site';
 import { seriesCode, sessionTimeLabel } from '@/lib/calendar-grid';
 import type { CalendarEntry, CalendarViewMode, TimeMode } from './types';
@@ -129,7 +129,7 @@ export function CalendarToolbar({
       {next && (
         <section
           aria-label="Next session"
-          className="relative -mx-4 mb-5 border-t border-b-2 border-border-strong bg-surface px-4 py-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8"
+          className="relative -mx-4 mb-5 border-t border-b-2 border-border-strong bg-surface px-4 py-6 md:-mx-6 md:px-6 md:py-8 lg:-mx-8 lg:px-8"
         >
           {/* Series-coloured rail — identity before any text is read. A raw hex
               on a fill is the sanctioned use (lib/site.ts); text goes through
@@ -139,47 +139,74 @@ export function CalendarToolbar({
             className="absolute inset-x-0 top-0 h-[3px]"
             style={{ backgroundColor: next.color }}
           />
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="inline-flex items-center bg-brand-fill px-2 py-1 font-mono text-[10px] leading-none font-bold uppercase tracking-[0.2em] text-tint-contrast">
+
+          {/* Two tiers, like the /app chyron: a small meta line, then the session
+              at display scale with the countdown as its counterweight. The band
+              is the page's hero — it answers the question people open a calendar
+              for — so it gets hero type rather than the toolbar-sized row it
+              started as. */}
+          <div className="mb-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="inline-flex items-center bg-brand-fill px-2.5 py-1.5 font-mono text-[11px] leading-none font-bold uppercase tracking-[0.2em] text-tint-contrast">
               Up next
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span
                 aria-hidden="true"
-                className="h-2 w-2 shrink-0 rounded-full"
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: next.color }}
               />
               <span
-                className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em]"
+                className="font-mono text-xs font-semibold uppercase tracking-[0.14em] md:text-sm"
                 style={{ color: seriesInk(next.color) }}
               >
                 {next.seriesName}
               </span>
             </span>
-            <Link
-              href={nextHref ?? `/series/${next.seriesSlug}`}
-              className="inline-flex min-w-0 basis-full items-center gap-1.5 text-text transition-colors duration-(--duration-fast) hover:text-brand md:flex-1 md:basis-auto"
-            >
-              <span className="min-w-0 truncate text-base font-semibold tracking-tight md:text-lg">
-                {next.session.title}
-              </span>
-              <ArrowUpRight size={13} aria-hidden="true" className="shrink-0 opacity-60" />
-            </Link>
-            <span className="font-mono text-xs uppercase tracking-[0.12em] text-text-muted tnum">
-              {next.session.dateOnly
-                ? 'Date set · time TBC'
-                : `${new Intl.DateTimeFormat('en-GB', {
-                    weekday: 'short',
-                    day: 'numeric',
-                    month: 'short',
-                    ...(utc ? { timeZone: 'UTC' } : {}),
-                  }).format(next.session.start)} ${sessionTimeLabel(next.session, utc)} ${tz}`}
-            </span>
-            {!next.session.dateOnly && (
-              <span className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-brand">
-                <Countdown to={next.session.start} initialNow={now} />
+            {next.session.location && (
+              <span className="inline-flex min-w-0 items-center gap-1 font-mono text-xs uppercase tracking-[0.12em] text-text-faint">
+                <MapPin size={12} aria-hidden="true" className="shrink-0" />
+                <span className="truncate">{next.session.location.split(',')[0].trim()}</span>
               </span>
             )}
+          </div>
+
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+            <Link
+              href={nextHref ?? `/series/${next.seriesSlug}`}
+              // basis-full on a phone: sharing the row with the date + countdown
+              // left the title about 150px, which broke "MotoGP - FP1" across two
+              // lines. Full width below sm, side-by-side above it.
+              className="group inline-flex min-w-0 basis-full items-start gap-2 text-text transition-colors duration-(--duration-fast) hover:text-brand sm:flex-1 sm:basis-auto"
+            >
+              {/* Wraps rather than truncates — the band has the vertical room now,
+                  and clamping "IMSA - Michelin GT Challenge at VIR" to one line
+                  loses the part that identifies it. Bounded at two lines. */}
+              <span className="min-w-0 font-display text-[clamp(1.5rem,4vw,2.75rem)] font-extrabold uppercase leading-[0.95] tracking-wide text-balance line-clamp-2">
+                {next.session.title}
+              </span>
+              <ArrowUpRight
+                size={18}
+                aria-hidden="true"
+                className="mt-1 shrink-0 opacity-50 transition-opacity duration-(--duration-fast) group-hover:opacity-90"
+              />
+            </Link>
+            <div className="flex shrink-0 flex-col items-start gap-0.5 md:items-end">
+              <span className="font-mono text-sm uppercase tracking-[0.12em] text-text-muted tnum md:text-base">
+                {next.session.dateOnly
+                  ? 'Date set · time TBC'
+                  : `${new Intl.DateTimeFormat('en-GB', {
+                      weekday: 'short',
+                      day: 'numeric',
+                      month: 'short',
+                      ...(utc ? { timeZone: 'UTC' } : {}),
+                    }).format(next.session.start)} ${sessionTimeLabel(next.session, utc)} ${tz}`}
+              </span>
+              {!next.session.dateOnly && (
+                <span className="font-mono text-[clamp(1.375rem,3vw,2.25rem)] font-bold leading-none tracking-tight text-brand">
+                  <Countdown to={next.session.start} initialNow={now} />
+                </span>
+              )}
+            </div>
           </div>
         </section>
       )}
