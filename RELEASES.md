@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.260.0 — 2026-08-04
+
+**Formula E completes today's biography sweep.** All 20 Formula E drivers now carry an original, fact-checked career biography, from Vergne's record two titles to Barnard's youngest-ever records. That makes four full grids in one day: Formula 1, MotoGP, IndyCar and Formula E, 89 driver pages with real writing on them.
+
 ## 0.259.0 — 2026-08-04
 
 **IndyCar joins the biography set.** All 25 full-time IndyCar drivers now have an original, fact-checked career biography on their page, from Dixon's six championships to Grosjean's escape from the Bahrain fire and the rookies arriving for 2026.
