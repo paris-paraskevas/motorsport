@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { useNow } from '@/lib/use-now';
 import {
@@ -29,6 +29,7 @@ import { WeekendsView } from './WeekendsView';
 
 // Parse a /calendar?m=YYYY-MM deep-link into the anchor's ms (local-midnight,
 // the 1st of that month) — or null (follow `now`) when absent or malformed.
+// Month precision, kept because the header's Calendar menu links this shape.
 function parseMonthParam(m: string | null): number | null {
   const match = m ? /^(\d{4})-(\d{2})$/.exec(m) : null;
   if (match) {
@@ -36,6 +37,29 @@ function parseMonthParam(m: string | null): number | null {
     if (month >= 1 && month <= 12) return new Date(Number(match[1]), month - 1, 1).getTime();
   }
   return null;
+}
+
+// ?d=YYYY-MM-DD — day precision, which the week and day views need and ?m= can't
+// express. Written by the component; ?m= stays a read-only inbound form.
+function parseDayParam(d: string | null): number | null {
+  const match = d ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(d) : null;
+  if (!match) return null;
+  const [y, mo, da] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  const dt = new Date(y, mo - 1, da);
+  // Round-trip check rejects 2026-02-31 and friends, which Date happily rolls.
+  return dt.getMonth() === mo - 1 && dt.getDate() === da ? dt.getTime() : null;
+}
+
+function formatDayParam(ms: number): string {
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+const VIEW_MODES: CalendarViewMode[] = ['month', 'week', 'day', 'weekends'];
+
+function parseView(v: string | null): CalendarViewMode | null {
+  return v && (VIEW_MODES as string[]).includes(v) ? (v as CalendarViewMode) : null;
 }
 
 const PREFS_KEY = 'paddock:calendar-filters';
@@ -66,24 +90,50 @@ export function CalendarView(props: CalendarViewProps) {
 function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewProps) {
   const { followed, hydrated } = useFollowedSeries();
   const { now, clock } = useNow(serverNow);
-  // Weekends is the default: an agenda answers "what's on this weekend?", which
-  // is what people open a motorsport calendar for. The month grid is the
-  // overview, one click away.
-  const [view, setView] = useState<CalendarViewMode>('weekends');
+  /* ── View + anchor live in the URL ────────────────────────────────────────
+     The back button has to land you exactly where you left, so the state it
+     restores must be part of the history entry — localStorage alone cannot do
+     it, because Back does not tell you WHICH state to come back to. Every view
+     or anchor change therefore rewrites ?view= and ?d= with router.replace:
+     `replace` updates the CURRENT entry rather than pushing a new one, so
+     toggling views doesn't fill history with junk, and the entry you leave
+     behind when you click into a weekend already carries the right URL.
+
+     localStorage still holds the chosen VIEW, so opening /calendar fresh (from
+     the nav, a bookmark, a new tab) resumes the view you last picked. The anchor
+     is deliberately NOT persisted — restoring "week of 17 August" three days
+     later is disorienting, and a fresh visit should start at today.
+
+     Precedence: URL > localStorage > month. */
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const viewParam = params.get('view');
+  const dayParam = params.get('d');
+  const monthParam = params.get('m');
+
+  // Month is the default view (operator, 2026-08-04). The grid is what people
+  // expect a calendar to open as; the agenda is one click away on the switcher.
+  const [view, setView] = useState<CalendarViewMode>(() => parseView(viewParam) ?? 'month');
   // null = follow `now`; otherwise the ms of a chosen local-midnight day (same
-  // shape the in-page month <select> uses). The header's Calendar menu
-  // deep-links to /calendar?m=YYYY-MM; reading it via useSearchParams (not a
-  // one-time window read) re-seeds the anchor on EVERY navigation — clicking a
-  // month while already on /calendar used to be a no-op because the old lazy
-  // initializer never re-ran on a query-only soft nav.
-  const monthParam = useSearchParams().get('m');
-  const [anchorMs, setAnchorMs] = useState<number | null>(() => parseMonthParam(monthParam));
-  // Re-seed when ?m= changes. Adjusting state during render (React's documented
-  // pattern, as in HeaderNavMenu) — not an effect, so no cascading-render lint.
-  const [lastMonthParam, setLastMonthParam] = useState(monthParam);
-  if (monthParam !== lastMonthParam) {
-    setLastMonthParam(monthParam);
-    setAnchorMs(parseMonthParam(monthParam));
+  // shape the in-page month <select> uses).
+  const [anchorMs, setAnchorMs] = useState<number | null>(
+    () => parseDayParam(dayParam) ?? parseMonthParam(monthParam),
+  );
+  // Re-seed when the params change, which covers the back/forward buttons and
+  // the header menu's ?m= deep-link alike. Adjusting state during render
+  // (React's documented pattern, as in HeaderNavMenu) — not an effect, so no
+  // cascading-render lint. Reading via useSearchParams rather than a one-time
+  // window read is what makes a query-only soft nav work: clicking a month while
+  // already on /calendar used to be a no-op because the lazy initializer never
+  // re-ran.
+  const paramKey = `${viewParam}|${dayParam}|${monthParam}`;
+  const [lastParamKey, setLastParamKey] = useState(paramKey);
+  if (paramKey !== lastParamKey) {
+    setLastParamKey(paramKey);
+    const v = parseView(viewParam);
+    if (v) setView(v);
+    setAnchorMs(parseDayParam(dayParam) ?? parseMonthParam(monthParam));
   }
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [types, setTypes] = useState<Set<SessionKind>>(() => new Set(SESSION_KINDS));
@@ -97,7 +147,12 @@ function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewP
     try {
       const raw = localStorage.getItem(PREFS_KEY);
       if (raw) {
-        const p = JSON.parse(raw) as { types?: unknown; series?: unknown; timeMode?: unknown };
+        const p = JSON.parse(raw) as {
+          types?: unknown;
+          series?: unknown;
+          timeMode?: unknown;
+          view?: unknown;
+        };
         if (Array.isArray(p.types)) {
           // eslint-disable-next-line react-hooks/set-state-in-effect -- persisted-filter adoption after mount is the hydration-safe pattern
           setTypes(new Set(p.types.filter((t): t is SessionKind => SESSION_KINDS.includes(t as SessionKind))));
@@ -106,23 +161,46 @@ function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewP
           Array.isArray(p.series) ? new Set(p.series.filter((s): s is string => typeof s === 'string')) : null,
         );
         if (p.timeMode === 'utc' || p.timeMode === 'local') setTimeMode(p.timeMode);
+        // Only when the URL didn't ask for a view — an explicit ?view= (a shared
+        // link, or the entry the back button restored) must outrank the device's
+        // last choice, or Back would silently land on the wrong view.
+        const stored = parseView(typeof p.view === 'string' ? p.view : null);
+        if (stored && !parseView(viewParam)) setView(stored);
       }
     } catch {
       /* ignore corrupt prefs */
     }
     setFiltersHydrated(true);
+    // viewParam is read to decide precedence, not to trigger re-runs: this effect
+    // is the one-shot mount adoption, and re-running it on every query change
+    // would re-apply the stored view over a live one.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (!filtersHydrated) return;
     try {
       localStorage.setItem(
         PREFS_KEY,
-        JSON.stringify({ types: [...types], series: seriesSel ? [...seriesSel] : null, timeMode }),
+        JSON.stringify({ types: [...types], series: seriesSel ? [...seriesSel] : null, timeMode, view }),
       );
     } catch {
       /* quota / disabled */
     }
-  }, [types, seriesSel, timeMode, filtersHydrated]);
+  }, [types, seriesSel, timeMode, view, filtersHydrated]);
+
+  // State → URL. Runs only after the stored prefs have been adopted, so the
+  // first write already carries the resumed view instead of stamping the default
+  // over it. `scroll: false` matters: without it every view toggle (and the
+  // back-restore) yanks the page to the top.
+  const currentQs = params.toString();
+  useEffect(() => {
+    if (!filtersHydrated) return;
+    const sp = new URLSearchParams();
+    sp.set('view', view);
+    if (anchorMs != null) sp.set('d', formatDayParam(anchorMs));
+    const next = sp.toString();
+    if (next !== currentQs) router.replace(`${pathname}?${next}`, { scroll: false });
+  }, [view, anchorMs, filtersHydrated, currentQs, pathname, router]);
 
   // Gate on BOTH prefs (no other-series flash) AND the synced clock (so day
   // bucketing uses the device timezone, never the server's — no SSR mismatch).
@@ -351,20 +429,28 @@ function MonthFooting({
   );
 }
 
-// Mirrors the deck + a month grid's rough height to avoid layout shift while
-// prefs + the clock resolve on the client.
+// Mirrors the deck + the month grid — the default view — to avoid layout shift
+// while prefs + the clock resolve on the client. Band height matches the real
+// up-next band (~162px on a laptop), and the grid is the same 6×7 with the same
+// weekend-weighted columns, so nothing jumps when the content swaps in.
 function CalendarSkeleton() {
   return (
     <div aria-hidden="true" className="animate-pulse motion-reduce:animate-none">
-      <div className="-mx-4 mb-5 h-20 border-t border-b-2 border-border-strong bg-surface md:-mx-6 lg:-mx-8" />
-      <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="-mx-4 mb-5 h-[162px] border-t border-b-2 border-border-strong bg-surface md:-mx-6 lg:-mx-8" />
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="h-10 w-56 bg-surface" />
-        <div className="h-8 w-72 bg-surface" />
+        <div className="h-8 w-80 bg-surface" />
       </div>
-      <div className="flex flex-col gap-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-44 border border-border bg-surface/60" />
-        ))}
+      <div className="mb-3 h-6 w-full bg-surface/60" />
+      <div className="border border-border bg-surface p-2 md:p-3">
+        <div
+          className="grid gap-px bg-border-strong"
+          style={{ gridTemplateColumns: 'repeat(4, minmax(0, 0.62fr)) repeat(3, minmax(0, 1fr))' }}
+        >
+          {Array.from({ length: 42 }).map((_, i) => (
+            <div key={i} className="min-h-[92px] bg-surface md:min-h-[118px]" />
+          ))}
+        </div>
       </div>
     </div>
   );

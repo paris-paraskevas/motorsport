@@ -7,11 +7,13 @@ import { seriesInk } from '@/lib/site';
 import { seriesCode, sessionTimeLabel } from '@/lib/calendar-grid';
 import type { CalendarEntry, CalendarViewMode, TimeMode } from './types';
 
+// Month / Week / Day are zoom levels of the same grid and read in that order;
+// Weekends is a different mode, so it sits last rather than in the middle.
 const VIEWS: { mode: CalendarViewMode; label: string }[] = [
-  { mode: 'weekends', label: 'Weekends' },
   { mode: 'month', label: 'Month' },
   { mode: 'week', label: 'Week' },
   { mode: 'day', label: 'Day' },
+  { mode: 'weekends', label: 'Weekends' },
 ];
 
 const TIME_MODES: { mode: TimeMode; label: string }[] = [
