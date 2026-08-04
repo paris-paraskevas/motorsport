@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import { useNow } from '@/lib/use-now';
 import {
@@ -94,10 +94,11 @@ function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewP
      The back button has to land you exactly where you left, so the state it
      restores must be part of the history entry — localStorage alone cannot do
      it, because Back does not tell you WHICH state to come back to. Every view
-     or anchor change therefore rewrites ?view= and ?d= with router.replace:
-     `replace` updates the CURRENT entry rather than pushing a new one, so
-     toggling views doesn't fill history with junk, and the entry you leave
-     behind when you click into a weekend already carries the right URL.
+     or anchor change therefore rewrites ?view= and ?d= in place (see the sync
+     effect below for why that's native replaceState and not router.replace).
+     Replacing rather than pushing means toggling views doesn't fill history with
+     junk, while the entry you leave behind when you click into a weekend already
+     carries the right URL.
 
      localStorage still holds the chosen VIEW, so opening /calendar fresh (from
      the nav, a bookmark, a new tab) resumes the view you last picked. The anchor
@@ -105,8 +106,6 @@ function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewP
      later is disorienting, and a fresh visit should start at today.
 
      Precedence: URL > localStorage > month. */
-  const router = useRouter();
-  const pathname = usePathname();
   const params = useSearchParams();
   const viewParam = params.get('view');
   const dayParam = params.get('d');
@@ -188,10 +187,20 @@ function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewP
     }
   }, [types, seriesSel, timeMode, view, filtersHydrated]);
 
-  // State → URL. Runs only after the stored prefs have been adopted, so the
-  // first write already carries the resumed view instead of stamping the default
-  // over it. `scroll: false` matters: without it every view toggle (and the
-  // back-restore) yanks the page to the top.
+  // State → URL, via the NATIVE history API rather than router.replace.
+  //
+  // router.replace performs a real soft navigation: the client router caches per
+  // full URL, so a new query string is a cache miss, which re-fetches the RSC
+  // payload and drops this subtree to its Suspense fallback — a skeleton flash on
+  // every single view toggle. window.history.replaceState updates the entry with
+  // no navigation at all, and Next documents it as integrating with the router and
+  // syncing useSearchParams (node_modules/next/dist/docs/01-app/02-guides/
+  // single-page-applications.md, "Shallow routing on the client").
+  //
+  // Back still works: the entry we leave behind carries the updated URL, and a
+  // real popstate is a router navigation that re-seeds from the params above.
+  // Runs only after stored prefs are adopted, so the first write carries the
+  // resumed view instead of stamping the default over it.
   const currentQs = params.toString();
   useEffect(() => {
     if (!filtersHydrated) return;
@@ -199,8 +208,8 @@ function CalendarInner({ items, weekends, roundByKey, serverNow }: CalendarViewP
     sp.set('view', view);
     if (anchorMs != null) sp.set('d', formatDayParam(anchorMs));
     const next = sp.toString();
-    if (next !== currentQs) router.replace(`${pathname}?${next}`, { scroll: false });
-  }, [view, anchorMs, filtersHydrated, currentQs, pathname, router]);
+    if (next !== currentQs) window.history.replaceState(null, '', `?${next}`);
+  }, [view, anchorMs, filtersHydrated, currentQs]);
 
   // Gate on BOTH prefs (no other-series flash) AND the synced clock (so day
   // bucketing uses the device timezone, never the server's — no SSR mismatch).
