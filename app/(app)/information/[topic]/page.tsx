@@ -5,7 +5,7 @@ import { ArrowRight, ChevronLeft, MapPinned } from 'lucide-react';
 import { INFO_TOPICS, getTopic } from '@/lib/information/topics';
 import { getTopicEntries, isTopicIndexable } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
-import { EntryRow } from '@/components/information/InfoUi';
+import { EntryRow, SectionHead, PillLink } from '@/components/information/InfoUi';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -75,13 +75,14 @@ export default async function TopicPage({
         ])}
       />
 
-      <Link
-        href="/information"
-        className="inline-flex items-center gap-1 text-xs font-medium text-text-faint hover:text-text-muted transition-colors duration-(--duration-fast) mb-6"
-      >
-        <ChevronLeft size={14} />
-        All topics
-      </Link>
+      {/* Was a 70×16px text link — under the 24×24 WCAG 2.2 SC 2.5.8 minimum, and
+          the only way back up the hierarchy on a phone. */}
+      <div className="mb-6">
+        <PillLink href="/information">
+          <ChevronLeft size={13} aria-hidden="true" />
+          All topics
+        </PillLink>
+      </div>
 
       <header className="mb-8 border-b border-border pb-5">
         <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-tight text-text">
@@ -104,11 +105,11 @@ export default async function TopicPage({
             />
           </Link>
           {entries.filter((e) => e.kind !== 'track').length > 0 && (
-            <section className="mb-10">
-              <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-                Guides &amp; tracks by country
-              </h2>
-              <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
+            <section className="mb-8 border border-border bg-surface p-4 md:p-5">
+              {/* Plain "&" — entities are not decoded inside a JSX attribute, so
+                  &amp; here would render as literal "&amp;" on the page. */}
+              <SectionHead title="Guides & tracks by country" />
+              <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
                 {entries
                   .filter((e) => e.kind !== 'track')
                   .sort(
@@ -133,8 +134,11 @@ export default async function TopicPage({
       ) : (
         <>
           {verified.length > 0 && (
-            <section className="mb-10">
-              <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
+            /* Was a bare grid with no heading and no panel — the only h2 on a
+               non-tracks topic page came from the footer. */
+            <section className="mb-8 border border-border bg-surface p-4 md:p-5">
+              <SectionHead title="Answers" sub={`${verified.length} verified`} />
+              <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
                 {verified.map((e) => (
                   <EntryRow
                     key={entryHref(e)}
@@ -148,12 +152,10 @@ export default async function TopicPage({
           )}
 
           {drafts.length > 0 && (
-            <section className="mb-10">
-              <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-                Drafts
-              </h2>
+            <section className="mb-8 border border-border bg-surface p-4 md:p-5">
+              <SectionHead title="Drafts" sub={`${drafts.length} awaiting review`} />
               <DraftNotice label="These entries are drafted from web research and awaiting an editor’s fact-check. They are not shown in search or submitted to Google yet." />
-              <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
                 {drafts.map((e) => (
                   <EntryRow
                     key={entryHref(e)}
@@ -198,10 +200,13 @@ function TrackDirectory({
       <DraftNotice label="This tracks directory is drafted from web research and awaiting a fact-check, so it is not indexed by search engines yet. Coordinates are verified against our circuit data where a match exists." />
       {countries.map((country) => (
         <section key={country} className="mb-8">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-tint mb-2">
+          {/* A group label rather than a section head, so it stays compact and
+              mono — but 11px was too small for the element that organises 140
+              country groups. */}
+          <h2 className="mb-2 border-b border-border pb-1.5 font-mono text-sm font-semibold uppercase tracking-[0.16em] text-tint">
             {country}
           </h2>
-          <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
             {byCountry.get(country)!.map((e) => (
               <EntryRow
                 key={entryHref(e)}
