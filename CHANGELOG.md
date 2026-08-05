@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.263.0 — 2026-08-05
+
+### Added
+- **AI section headings for the studio (item 17 phase 2; vendor: Gemini via the existing seam, operator pick).** New `POST /api/blog/headings` (author-gated, mirrors `/api/blog/format`): the model sees a NUMBERED DIGEST of paragraph openings + existing `##` sections (never the task of rewriting anything) and returns `{before, heading}` pairs; `lib/post-ready` does the insertion — **insert-only by construction** (`paragraphStarts` anchors only prose-paragraph starts outside fences/lists/quotes/tables/embeds; never before ¶1; ≤8; `sanitizeHeading` strips markdown/terminal punctuation and REJECTS em/en dashes per house style) — then a byte-identity guard re-derives the input from the output and 500s the whole proposal on any mismatch. Model call reuses `lib/assistant/model.ts` (`askModel`, free-tier Gemini, 12s timeout, never throws; `GOOGLE_GENERATIVE_AI_API_KEY` already on prod + all previews). Editor rail gains "Propose sections (AI)" → a review card (each `## heading` + the paragraph it lands before) → Apply (replaces the body as UNSAVED changes, Save = accept) / Discard; Apply refuses if the draft changed since the proposal (`from` pin). 11 new unit tests over the pure half (anchoring, sanitising, insert-only invariant, reply parsing incl. fenced-JSON tolerance).
+
 ## 0.262.0 — 2026-08-04
 
 ### Added
