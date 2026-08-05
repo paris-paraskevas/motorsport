@@ -22,7 +22,7 @@ export default async function AdminToolsPage() {
       <div className="grid gap-2 sm:grid-cols-2">
         <ToolLink href="/settings/assistant" icon={Sparkles} label="Assistant insights" desc="What people ask the Race Engineer" />
         <ToolLink href="/studio" icon={Newspaper} label="Studio" desc="Write, review, schedule posts" />
-        <ToolLink href="/threads" icon={MessageSquare} label="Threads moderation" desc="Approve community threads" />
+        <ToolLink href="/social/threads" icon={MessageSquare} label="Threads moderation" desc="Approve community threads" />
         <ToolLink href="/feedback" icon={MessageSquare} label="Feedback board" desc="What users report" />
         <ToolLink href="/contribute" icon={Upload} label="Feeder intake" desc="Public series-data submit form" />
       </div>

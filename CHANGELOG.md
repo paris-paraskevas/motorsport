@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.267.0 — 2026-08-05
+
+### Changed
+- **The community hub: /play and the /threads list fold into /social** (the session-27 GA4-grounded decision, "Embed + consolidate"). Recon first, and it changed the build: the direction's other halves ALREADY existed — bets are placed on race-weekend pages (`MarketBetCard`; `/play` was only a hub of pointers) and the /app home already has the "Your bets & credits" tile — so the consolidation was the whole remaining job. `/social` now carries the old `/play` body verbatim as its Predictions section (balance + open markets + your bets, `PlayMarkets` unchanged, same Suspense/after() name-backfill flow) above the leagues/friends/threads/blog rows; the threads LIST moved to `/social/threads` (`git mv`, one self-link updated); `/threads/:id` detail pages stay put (deep links survive). 301s: `/play` → `/social`, `/threads` → `/social/threads`. Deleted: `app/(app)/play/page.tsx` (content relocated). Reference sweep across 11 files: AppShell nav (News panel loses the Threads item; Social panel = Leagues/Friends/Threads, `/play` active-state dropped), Footer, HomeContent (bets tile CTAs → /social), HomeLauncher chip, search-index, blog page, landing PredictionGame, admin tools, and the betting-notify cron's push deep-links. Local note: `/social/threads` 500s on THIS dev box because `.env.local` points at the stopped local Supabase — identical-code behaviour to the old `/threads` here; prod unaffected.
+
 ## 0.266.0 — 2026-08-05
 
 ### Added

@@ -84,6 +84,11 @@ const nextConfig: NextConfig = {
       { source: "/play/leagues", destination: "/social/leagues", permanent: true },
       { source: "/play/leagues/join/:token", destination: "/social/leagues/join/:token", permanent: true },
       { source: "/play/leagues/:id", destination: "/social/leagues/:id", permanent: true },
+      // Session-27 consolidation: /play folded into the /social hub (its body is
+      // the Predictions section there) and the threads LIST moved under it.
+      // /threads/:id detail pages stay where they are — deep links must survive.
+      { source: "/play", destination: "/social", permanent: true },
+      { source: "/threads", destination: "/social/threads", permanent: true },
     ];
   },
   async headers() {

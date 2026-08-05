@@ -112,7 +112,7 @@ export async function GET(req: Request) {
           payload: {
             title: `🏁 ${seriesName(slug)} — predictions close tomorrow`,
             body: 'Bets lock ~1h before qualifying. Get your picks in.',
-            url: '/play',
+            url: '/social',
             tag: `paddock-bet-lock-${dedupId}`,
             color: seriesColor(slug),
             data: { seriesSlug: slug },
@@ -150,7 +150,7 @@ export async function GET(req: Request) {
           payload: {
             title: `✅ ${seriesName(slug)} R${round} — results are in`,
             body: 'See how your predictions did.',
-            url: '/play',
+            url: '/social',
             tag: `paddock-bet-settled-${dedupId}`,
             color: seriesColor(slug),
             data: { seriesSlug: slug },

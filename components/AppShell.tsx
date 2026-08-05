@@ -169,14 +169,13 @@ export function AppShell({
             <HeaderNavMenu
               label="News"
               href="/news"
-              active={isActive('/news') || isActive('/blog') || isActive('/threads')}
+              active={isActive('/news') || isActive('/blog')}
               dataHeatmapId="nav:news"
               panelLabel="News & community"
             >
               <MenuLinkList
                 items={[
                   { href: '/blog', label: 'Blog', desc: 'Analysis & recaps' },
-                  { href: '/threads', label: 'Threads', desc: 'Fan discussion' },
                 ]}
               />
             </HeaderNavMenu>
@@ -201,20 +200,21 @@ export function AppShell({
               />
             </HeaderNavMenu>
 
-            {/* Social folded play + friends + leagues (0.84.0); gated on betting env. */}
+            {/* Social = the community hub (session-27 consolidation): predictions
+                live ON /social (the old /play body), threads under it. */}
             {bettingEnabled && (
               <HeaderNavMenu
                 label="Social"
                 href="/social"
-                active={isActive('/social') || isActive('/play')}
+                active={isActive('/social')}
                 dataHeatmapId="nav:social"
                 panelLabel="Social"
               >
                 <MenuLinkList
                   items={[
-                    { href: '/play', label: 'Play solo', desc: 'Back the grid' },
                     { href: '/social/leagues', label: 'Leagues', desc: 'Play with friends' },
                     { href: '/social/friends', label: 'Friends', desc: 'Requests & invites' },
+                    { href: '/social/threads', label: 'Threads', desc: 'Fan discussion' },
                   ]}
                 />
               </HeaderNavMenu>
