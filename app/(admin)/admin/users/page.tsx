@@ -4,6 +4,7 @@ import { Users } from 'lucide-react';
 import { requireAdmin } from '@/lib/admin-guard';
 import { AdminPageHeader, KpiTile, Sparkline, TelemetryPanel, Unavailable } from '@/components/admin/AdminUI';
 import { AuthorRequestActions } from '@/components/admin/AuthorRequestActions';
+import { DonorToggle } from '@/components/admin/DonorToggle';
 import { listAuthorRequests, type AuthorRequest } from '@/lib/author-requests';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,8 @@ interface UserRow {
   id: string;
   name: string;
   role: string | null;
+  /** Supporter flag (publicMetadata.donor) — unlocks the studio's AI tools. */
+  donor: boolean;
   at: number;
 }
 
@@ -34,6 +37,7 @@ async function loadUserStats(): Promise<{ count: number; recent: UserRow[] } | n
         u.emailAddresses[0]?.emailAddress ||
         u.id,
       role: typeof u.publicMetadata?.role === 'string' ? u.publicMetadata.role : null,
+      donor: u.publicMetadata?.donor === true,
       at: u.createdAt,
     }));
     return { count, recent };
@@ -133,8 +137,11 @@ export default async function AdminUsersPage() {
                         </span>
                       ) : null}
                     </span>
-                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
-                      {new Date(u.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    <span className="flex shrink-0 items-baseline gap-2">
+                      <DonorToggle userId={u.id} donor={u.donor} />
+                      <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                        {new Date(u.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
                     </span>
                   </li>
                 ))}

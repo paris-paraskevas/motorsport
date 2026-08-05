@@ -50,6 +50,14 @@ export function canAuthor(user: { publicMetadata?: { role?: unknown } } | null |
   return role === 'contributor' || role === 'writer' || role === 'admin';
 }
 
+/** Supporter flag (Clerk `publicMetadata.donor`), set by an admin on
+ *  /admin/users when a donation arrives (Buy Me a Coffee has no webhook wired,
+ *  so matching donor → account is manual). Gates the studio's AI tools;
+ *  admins bypass the gate at the call sites, not here. */
+export function hasDonated(user: { publicMetadata?: { donor?: unknown } } | null | undefined): boolean {
+  return user?.publicMetadata?.donor === true;
+}
+
 function toThread(r: Record<string, unknown>, name: string | null): Thread {
   return {
     id: r.id as string,

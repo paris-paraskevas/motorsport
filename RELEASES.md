@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.264.0 — 2026-08-05
+
+**AI writing tools are now a supporter perk.** The studio's AI section suggestions unlock for authors who have supported Paddock with a donation; the button explains how. Everything else in the studio stays free.
+
 ## 0.263.0 — 2026-08-05
 
 **The studio can now propose section headings.** One click suggests where a draft naturally breaks into sections and offers the headings for review; nothing changes until the author applies and saves, and the original prose is guaranteed to survive untouched, byte for byte.
