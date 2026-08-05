@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.267.0 — 2026-08-05
+
+**Social is now one place.** Predictions, your bets and balance, leagues, friends and the fan threads all live on the Social page, instead of being spread across three sections. Old links redirect, and bets are still placed right on each race weekend's page.
+
 ## 0.266.0 — 2026-08-05
 
 **Every MotoGP champion page now tells the full story.** All 77 premier-class title seasons back to 1949 carry the champion's points, wins and title rival, each figure verified against two independent sources including the sport's official archive. Agostini's 1975, Schwantz's 1993, Surtees' unbeaten runs: the numbers are all there.

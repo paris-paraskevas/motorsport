@@ -31,7 +31,7 @@ export interface SearchDoc {
   keywords?: string;
 }
 
-// Top-level public pages. Personal / gated surfaces (/social, /settings, /play)
+// Top-level public pages. Personal / gated surfaces (/social, /settings)
 // are deliberately absent — search only indexes public content.
 const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
   { url: '/app', title: 'Home', subtitle: 'Your dashboard' },
@@ -39,7 +39,7 @@ const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
   { url: '/news', title: 'News', subtitle: 'Latest across the grid' },
   { url: '/blog', title: 'Blog', subtitle: 'Analysis & recaps' },
   { url: '/information', title: 'Information', subtitle: 'Answers, guides & records' },
-  { url: '/threads', title: 'Threads', subtitle: 'Fan discussion' },
+  { url: '/social/threads', title: 'Threads', subtitle: 'Fan discussion' },
   { url: '/series', title: 'All series', subtitle: 'Browse every championship' },
   { url: '/f1/compare', title: 'F1 head-to-head', subtitle: 'Compare two drivers' },
   { url: '/about', title: 'About Paddock', subtitle: 'What this is' },

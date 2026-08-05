@@ -54,7 +54,7 @@ export default async function ThreadsPage({
       {seriesFilter && (
         <p className="font-mono text-xs uppercase tracking-[0.12em] text-text-muted">
           Filtered to <span className="text-text">{filterName}</span> ·{' '}
-          <Link href="/threads" className="text-brand underline underline-offset-2">
+          <Link href="/social/threads" className="text-brand underline underline-offset-2">
             Show all
           </Link>
         </p>

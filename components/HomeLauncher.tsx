@@ -126,7 +126,7 @@ export function HomeLauncher({ series }: { series: LauncherSeries[] }) {
         <FileText size={13} aria-hidden /> Blog
       </Link>
 
-      <Link href="/threads" data-heatmap-id="home:launcher:threads" className={chip}>
+      <Link href="/social/threads" data-heatmap-id="home:launcher:threads" className={chip}>
         <MessagesSquare size={13} aria-hidden /> Threads
       </Link>
 

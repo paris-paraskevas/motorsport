@@ -104,7 +104,7 @@ export default async function BlogIndexPage() {
       </header>
 
       <Link
-        href="/threads"
+        href="/social/threads"
         className="mb-8 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface/40 px-5 py-4 transition-colors duration-(--duration-fast) hover:border-brand/50"
       >
         <div>

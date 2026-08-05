@@ -83,7 +83,7 @@ export function PredictionGame() {
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Link
-            href="/play"
+            href="/social"
             className="rounded-full bg-brand-fill px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"
           >
             Play free&ensp;→

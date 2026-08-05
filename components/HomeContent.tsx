@@ -1704,7 +1704,7 @@ export function HomeContent({
                   ))}
                 </div>
                 <Link
-                  href="/threads"
+                  href="/social/threads"
                   className="group mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                 >
                   All threads
@@ -1733,7 +1733,7 @@ export function HomeContent({
               </div>
             ) : !bets.signedIn ? (
               <p className="border-y border-border py-4 text-sm text-text-faint">
-                <Link href="/play" className="text-text-muted underline underline-offset-2 hover:text-text">
+                <Link href="/social" className="text-text-muted underline underline-offset-2 hover:text-text">
                   Sign in to play
                 </Link>{' '}
                 — free credits, predict each race, climb the table.
@@ -1790,10 +1790,10 @@ export function HomeContent({
                     )}
                   </span>
                   <Link
-                    href="/play"
+                    href="/social"
                     className="group inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
                   >
-                    {bets.nextMarket ? 'Place a bet' : 'Open Play'}
+                    {bets.nextMarket ? 'Place a bet' : 'Open Social'}
                     <ArrowUpRight size={13} aria-hidden="true" />
                   </Link>
                 </div>
