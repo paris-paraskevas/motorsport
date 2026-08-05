@@ -66,7 +66,20 @@ function RailFact({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: boolean }) {
+const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
+
+export function StudioEditor({
+  post,
+  admin,
+  aiTools,
+}: {
+  post: StudioEditorPost;
+  admin: boolean;
+  /** Supporter gate: AI tools render disabled without it (admins pass; everyone
+   *  else needs the donor flag an admin sets on /admin/users). The API enforces
+   *  the same rule server-side — this is display, not security. */
+  aiTools: boolean;
+}) {
   const router = useRouter();
   const [title, setTitle] = useState(post.title);
   const [summary, setSummary] = useState(post.summary);
@@ -182,6 +195,7 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
   // lands HERE as a reviewable proposal — Apply replaces the editor body as
   // unsaved changes (same contract as Auto-link), Save is the accept step.
   async function proposeHeadings() {
+    if (!aiTools) return;
     setBusy(true);
     setError(null);
     setHeadingNote(null);
@@ -305,12 +319,26 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
           {linkNote && <p className="mt-1.5 text-xs leading-snug text-text-muted">{linkNote}</p>}
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !aiTools}
             onClick={proposeHeadings}
             className="mt-1.5 w-full rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
           >
             Propose sections (AI)
           </button>
+          {!aiTools && (
+            <p className="mt-1.5 text-xs leading-snug text-text-faint">
+              AI tools are a supporter perk:{' '}
+              <a
+                href={COFFEE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted underline underline-offset-2 transition-colors duration-(--duration-fast) hover:text-text"
+              >
+                buy me a coffee
+              </a>{' '}
+              and they unlock on your account.
+            </p>
+          )}
           {headingNote && <p className="mt-1.5 text-xs leading-snug text-text-muted">{headingNote}</p>}
           {headingReview && (
             <div className="mt-2 space-y-2 rounded border border-border bg-surface p-2.5">

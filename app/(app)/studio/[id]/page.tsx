@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { isAdmin } from '@/lib/threads';
+import { hasDonated, isAdmin } from '@/lib/threads';
 import { requireAuthor } from '@/lib/admin-guard';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getPostById } from '@/lib/blog';
@@ -76,6 +76,7 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
           publishAt: post.publishAt,
         }}
         admin={admin}
+        aiTools={admin || hasDonated(user)}
       />
     </>
   );

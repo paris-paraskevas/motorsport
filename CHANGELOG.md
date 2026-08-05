@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.264.0 — 2026-08-05
+
+### Added
+- **AI tools are a supporter perk (operator rule).** New `hasDonated()` (`lib/threads.ts`, Clerk `publicMetadata.donor === true`); `POST /api/blog/headings` now returns **402** for non-admin authors without the flag; the studio button renders disabled with a buy-me-a-coffee link when locked (display only — the API is the enforcement). Admins bypass. The flag is granted BY HAND: `/admin/users` sign-up rows gain a `DonorToggle` (`PATCH /api/admin/users/[id]`, admin-only 404-shape, `updateUserMetadata` KEY-MERGE so `role` survives — the 0.251.0 lesson). Buy Me a Coffee has no webhook wired, so donation → account matching is manual; a BMC webhook is the obvious phase 2 if volume ever warrants it.
+
 ## 0.263.0 — 2026-08-05
 
 ### Added

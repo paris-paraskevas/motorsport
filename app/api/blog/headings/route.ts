@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
-import { canAuthor } from '@/lib/threads';
+import { canAuthor, hasDonated, isAdmin } from '@/lib/threads';
 import { askModel, isAssistantConfigured } from '@/lib/assistant/model';
 import { BODY_MAX } from '@/lib/blog';
 import {
@@ -35,8 +35,18 @@ const SYSTEM = [
 ].join('\n');
 
 export async function POST(req: Request) {
-  if (!canAuthor(await currentUser())) {
+  const user = await currentUser();
+  if (!canAuthor(user)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  }
+  // Supporter gate (operator rule 2026-08-05): AI tools are a donor perk.
+  // Admins bypass; everyone else needs publicMetadata.donor, granted by hand
+  // on /admin/users. 402 is deliberate — payment required, literally.
+  if (!isAdmin(user) && !hasDonated(user)) {
+    return NextResponse.json(
+      { error: 'AI tools are a supporter perk: the coffee button in the header unlocks them' },
+      { status: 402 },
+    );
   }
   let payload: { body?: unknown; title?: unknown };
   try {
