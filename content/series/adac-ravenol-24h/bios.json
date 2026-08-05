@@ -1,0 +1,25 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. MARQUEE SELECTION (operator-approved criterion, 2026-08-04). These two live HERE because findDriverBySlug scans series alphabetically and adac-ravenol-24h is the FIRST roster carrying them — their /drivers pages resolve to this series, so only this file's bios render for them. (This is a bios file, unrelated to the champions-enrichment ban on this series.) British English, no em dashes, no AI-tells. sources[] not rendered.",
+  "drivers": {
+    "laurens-vanthoor": {
+      "paragraphs": [
+        "Laurens Vanthoor won the 2024 World Endurance Championship Hypercar title alongside Kévin Estre and André Lotterer, as a Porsche factory driver.",
+        "The elder brother of BMW factory driver Dries Vanthoor, the Belgian enters the Nürburgring 24 Hours with Lionspeed GP."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Laurens_Vanthoor",
+        "https://en.wikipedia.org/wiki/24_Hours_of_N%C3%BCrburgring"
+      ]
+    },
+    "raffaele-marciello": {
+      "paragraphs": [
+        "Raffaele Marciello won the 2013 European Formula 3 championship as a Ferrari Academy prospect and served as Sauber's Formula 1 reserve, then rebuilt himself into one of GT racing's leading works drivers, first for Mercedes-AMG and now for BMW, winning the Spa 24 Hours in 2022.",
+        "Lello races the Nürburgring 24 Hours with ROWE Racing."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Raffaele_Marciello",
+        "https://en.wikipedia.org/wiki/24_Hours_of_N%C3%BCrburgring"
+      ]
+    }
+  }
+}

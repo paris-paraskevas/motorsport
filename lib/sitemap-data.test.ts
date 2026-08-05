@@ -3,7 +3,7 @@ import { buildSitemapEntries } from './sitemap-data';
 import { TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
 import { loadDriverBios } from './series-content';
-import { findDriverBySlug } from './people';
+import { loadAllDrivers } from './people';
 import { groupByWeekend } from './group';
 import { weekendLabel } from './weekend';
 import { circuitLayoutFor } from './circuit-layout';
@@ -99,14 +99,17 @@ describe('buildSitemapEntries', () => {
   it('every advertised /drivers/* slug resolves to a curated driver (no 404s advertised)', async () => {
     // The FE doubleheader lesson (audit 3-6) applied to driver pages: a bios.json
     // key that matches no curated driver would advertise a 404 — this catches a
-    // typo'd or stale bio key the moment it lands.
+    // typo'd or stale bio key the moment it lands. One loadAllDrivers scan + set
+    // membership, NOT findDriverBySlug per slug — the per-slug version re-read
+    // every series file per lookup and pushed the suite past its timeout once the
+    // advertised set grew past ~100 (session 27).
     const urls = await buildSitemapEntries();
     const slugs = urls
       .filter((u) => u.url.startsWith(`${SITE_URL}/drivers/`))
       .map((u) => u.url.split('/').pop()!);
+    const curated = new Set((await loadAllDrivers()).map((d) => d.slug));
     for (const slug of slugs) {
-      const driver = await findDriverBySlug(slug);
-      expect(driver, `/drivers/${slug} is advertised but resolves to no curated driver`).toBeTruthy();
+      expect(curated.has(slug), `/drivers/${slug} is advertised but resolves to no curated driver`).toBe(true);
     }
   });
 

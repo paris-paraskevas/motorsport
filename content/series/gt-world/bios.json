@@ -1,0 +1,15 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. MARQUEE SELECTION (operator-approved criterion, 2026-08-04). NOTE: Marciello and the Vanthoors resolve to adac-ravenol-24h (alphabetically-first roster), so their bios live there, not here. Jake Dennis resolves to formula-e. British English, no em dashes, no AI-tells. sources[] not rendered.",
+  "drivers": {
+    "valentino-rossi": {
+      "paragraphs": [
+        "Valentino Rossi won nine Grand Prix motorcycle world championships, seven of them in the premier class, and remains the only road racer with more than 400 Grand Prix starts. The Doctor holds the premier-class records for wins, 89, and podiums, 199, across a career that bridged the two-stroke and MotoGP eras.",
+        "Retired from bikes, he turned to car racing and competes in GT World Challenge Europe for Team WRT, in the No. 46 BMW."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Valentino_Rossi",
+        "https://en.wikipedia.org/wiki/GT_World_Challenge_Europe"
+      ]
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "_comment": "Original, fact-checked driver bios (RULE #1) for /drivers/<slug>. MARQUEE SELECTION, not the full 105-name roster: reigning champions, overall Le Mans winners on the current grid, ex-F1 household names (criterion operator-approved 2026-08-04). Crew-based series — bios end with the car/team, not a race number. Cross-series duplicates (Buemi, de Vries, Cassidy, Nato, da Costa) live in formula-e/bios.json, which resolves first alphabetically. Two sources per driver: Wikipedia article + curated drivers.json for current entry. British English, no em dashes, no AI-tells. sources[] not rendered.",
+  "drivers": {
+    "brendon-hartley": {
+      "paragraphs": [
+        "Brendon Hartley has won a joint-record four World Endurance Championship titles, shared with Sébastien Buemi, and the 24 Hours of Le Mans three times, in 2017, 2020 and 2022.",
+        "A Toro Rosso Formula 1 driver in 2017 and 2018, the New Zealander shares Toyota's No. 8 Hypercar."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Brendon_Hartley",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "ryo-hirakawa": {
+      "paragraphs": [
+        "Ryo Hirakawa won the 24 Hours of Le Mans in his debut World Endurance season, in 2022, and took the championship that year and the next alongside Sébastien Buemi and Brendon Hartley. He was Japan's Super GT champion in 2017 and has served as a Formula 1 reserve driver.",
+        "The Japanese driver shares Toyota's No. 8 Hypercar."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Ryo_Hirakawa",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "kamui-kobayashi": {
+      "paragraphs": [
+        "Kamui Kobayashi raced five Formula 1 seasons, then built a second career that grew larger than the first: two World Endurance titles, the 24 Hours of Le Mans in 2021 and 2026, two Daytona 24 Hours wins, and, since 2022, the team principal's chair at Toyota's WEC operation while still driving for it.",
+        "He shares Toyota's No. 7 Hypercar with Mike Conway."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kamui_Kobayashi",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "mike-conway": {
+      "paragraphs": [
+        "Mike Conway won IndyCar races between 2009 and 2014 and tested for Honda in Formula 1 before endurance racing claimed him: two World Endurance Championship titles and the 24 Hours of Le Mans in 2021 and 2026, all with Toyota.",
+        "The Briton shares Toyota's No. 7 Hypercar with Kamui Kobayashi."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mike_Conway",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "robert-kubica": {
+      "paragraphs": [
+        "Robert Kubica won the 2008 Canadian Grand Prix for BMW Sauber, the team's only Formula 1 victory, and remains the only Pole to have raced in Formula 1. A 2011 rally crash left him with a partially amputated forearm; he returned to Formula 1 eight years later regardless, then reinvented himself in endurance racing.",
+        "He won the 2023 World Endurance LMP2 title with WRT and the 24 Hours of Le Mans outright in 2025 with AF Corse, whose No. 83 Ferrari he races."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Robert_Kubica",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "kevin-magnussen": {
+      "paragraphs": [
+        "Kevin Magnussen finished second on his Formula 1 debut in Australia, the highest-finishing debutant since Jacques Villeneuve, and raced nine Formula 1 seasons in all. He is the son of Jan Magnussen, four times a Le Mans class winner.",
+        "K-Mag won the Formula Renault 3.5 title in 2013 on his way up, and now races as a BMW factory driver in WRT's No. 15 Hypercar."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Kevin_Magnussen",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "antonio-fuoco": {
+      "paragraphs": [
+        "Antonio Fuoco won the 24 Hours of Le Mans in 2024 alongside Miguel Molina and Nicklas Nielsen, in Ferrari's 499P.",
+        "A Ferrari Academy graduate who doubles as a development driver for the Scuderia's Formula 1 team, the Italian races for Ferrari AF Corse in the No. 50 Hypercar."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Antonio_Fuoco",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    },
+    "sebastien-bourdais": {
+      "paragraphs": [
+        "Sébastien Bourdais won four consecutive Champ Car titles from 2004 to 2007 and 37 American open-wheel races, one of the most successful records in that discipline's history, plus 27 Formula 1 starts for Toro Rosso.",
+        "In endurance racing he finished runner-up three times at his home race, the 24 Hours of Le Mans, with Peugeot, and won its GTE-Pro class with Ford in 2016. He races Cadillac's No. 38 Hypercar for Team Jota."
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/S%C3%A9bastien_Bourdais",
+        "https://en.wikipedia.org/wiki/FIA_World_Endurance_Championship"
+      ]
+    }
+  }
+}

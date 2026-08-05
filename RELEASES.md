@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.262.0 — 2026-08-04
+
+**The endurance greats get their biographies.** Sixteen marquee endurance names now carry original, fact-checked biographies: Le Mans winners like Kobayashi, Kubica and Fuoco, champions like Hartley and Vanthoor, and Valentino Rossi's second racing life in GT cars. That completes today's set: 126 driver pages with real writing on them, across every championship Paddock covers.
+
 ## 0.261.0 — 2026-08-04
 
 **World Superbike riders get their biographies.** 21 of the 22 full-time WSBK riders now carry an original, fact-checked career biography, from Bautista's double title to the Lowes twins racing each other. One rookie is skipped until reliable sources exist for him, which is the honest choice.
