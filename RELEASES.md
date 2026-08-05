@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.263.0 — 2026-08-05
+
+**The studio can now propose section headings.** One click suggests where a draft naturally breaks into sections and offers the headings for review; nothing changes until the author applies and saves, and the original prose is guaranteed to survive untouched, byte for byte.
+
 ## 0.262.0 — 2026-08-04
 
 **The endurance greats get their biographies.** Sixteen marquee endurance names now carry original, fact-checked biographies: Le Mans winners like Kobayashi, Kubica and Fuoco, champions like Hartley and Vanthoor, and Valentino Rossi's second racing life in GT cars. That completes today's set: 126 driver pages with real writing on them, across every championship Paddock covers.

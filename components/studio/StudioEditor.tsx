@@ -78,6 +78,14 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [linkNote, setLinkNote] = useState<string | null>(null);
+  // AI heading proposal under review. `from` pins the body it was computed
+  // against, so Apply can refuse if the draft changed underneath it.
+  const [headingReview, setHeadingReview] = useState<{
+    from: string;
+    body: string;
+    inserted: { heading: string; excerpt: string }[];
+  } | null>(null);
+  const [headingNote, setHeadingNote] = useState<string | null>(null);
 
   // Live post-readiness over the CURRENT (possibly unsaved) fields — the
   // checklist reflects what Save would persist, not what the server has.
@@ -169,6 +177,50 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
     }
   }
 
+  // AI section headings (item 17 phase 2): the model proposes {before, heading}
+  // pairs, the server inserts them behind a byte-identity guard, and the result
+  // lands HERE as a reviewable proposal — Apply replaces the editor body as
+  // unsaved changes (same contract as Auto-link), Save is the accept step.
+  async function proposeHeadings() {
+    setBusy(true);
+    setError(null);
+    setHeadingNote(null);
+    setHeadingReview(null);
+    const from = body;
+    try {
+      const res = await fetch('/api/blog/headings', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ body: from, title }),
+      });
+      const d = (await res.json().catch(() => ({}))) as {
+        body?: string;
+        inserted?: { heading: string; excerpt: string }[];
+        error?: string;
+      };
+      if (!res.ok || typeof d.body !== 'string' || !Array.isArray(d.inserted)) {
+        setError(d.error ?? `Failed (${res.status}).`);
+        return;
+      }
+      if (d.inserted.length === 0) {
+        setHeadingNote('No sections proposed: the model reads the piece as fine without more.');
+        return;
+      }
+      setHeadingReview({ from, body: d.body, inserted: d.inserted });
+    } catch {
+      setError('Network error. Try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function applyHeadings() {
+    if (!headingReview || headingReview.from !== body) return;
+    setBody(headingReview.body);
+    setHeadingReview(null);
+    setHeadingNote('Sections inserted. Review the draft, then save.');
+  }
+
   const meta = STATUS_META[post.status];
   const decide = admin && (post.status === 'draft' || post.status === 'in_review');
 
@@ -251,6 +303,52 @@ export function StudioEditor({ post, admin }: { post: StudioEditorPost; admin: b
             Auto-link names
           </button>
           {linkNote && <p className="mt-1.5 text-xs leading-snug text-text-muted">{linkNote}</p>}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={proposeHeadings}
+            className="mt-1.5 w-full rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40"
+          >
+            Propose sections (AI)
+          </button>
+          {headingNote && <p className="mt-1.5 text-xs leading-snug text-text-muted">{headingNote}</p>}
+          {headingReview && (
+            <div className="mt-2 space-y-2 rounded border border-border bg-surface p-2.5">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+                Proposed sections
+              </p>
+              <ul className="space-y-1.5">
+                {headingReview.inserted.map(h => (
+                  <li key={h.heading} className="text-xs leading-snug">
+                    <span className="block font-semibold text-text">## {h.heading}</span>
+                    <span className="block text-text-faint">before “{h.excerpt.slice(0, 60)}…”</span>
+                  </li>
+                ))}
+              </ul>
+              {headingReview.from !== body ? (
+                <p className="text-xs leading-snug text-amber-700 dark:text-amber-300">
+                  The draft changed since this proposal. Propose again.
+                </p>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={applyHeadings}
+                    className="flex-1 rounded bg-brand-fill px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+                  >
+                    Apply
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHeadingReview(null)}
+                    className="flex-1 rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                  >
+                    Discard
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         <Field label="Cover image URL">
