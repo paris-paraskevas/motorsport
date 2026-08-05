@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.265.0 — 2026-08-05
+
+### Changed
+- **Dev runs on Turbopack; the production build stays on webpack** (task 5, operator-approved dev-only scope). One line: `"dev": "next dev --webpack"` → `"next dev"` (Turbopack is Next 16's default). Measured on this machine, cold first-hit, back to back: `/about` **17.9s → 6.6s**, `/` **11.4s → 5.0s** (compile-bound routes ~3×); `/series/f1` 24.1s → 19.3s and driver pages ~parity because those are bounded by their upstream data fetches, not the bundler. Boot 542ms, warm hits ~200ms, zero warnings. **Risk isolation:** serwist is `disable`d in dev (the config's own line), and the build keeps `--webpack`, so the service worker, Sentry's build plugin and the OpenNext adapter never see Turbopack output — the May blocker (`80f8ed7`) applied to the build path, which is untouched. Known watch-item, recorded here because Turbopack exposes NO `watchOptions.ignored` equivalent (checked `node_modules/next/dist/docs`): the 0.251.1 `.open-next` dev-watcher fix is webpack-only, so a local `npm run deploy` under a RUNNING Turbopack dev may re-trigger the watch-loop that fix killed — stop dev before deploying locally until Turbopack grows an ignore option. Also learnt: Next 16 enforces ONE dev server per project directory (a second `next dev` refuses to boot and names the PID). The full build migration (serwist-turbopack + OpenNext compatibility) stays parked until those integrations age.
+
 ## 0.264.0 — 2026-08-05
 
 ### Added

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.265.0 — 2026-08-05
+
+**Behind the scenes.** Development tooling got roughly three times faster. No change to the site.
+
 ## 0.264.0 — 2026-08-05
 
 **AI writing tools are now a supporter perk.** The studio's AI section suggestions unlock for authors who have supported Paddock with a donation; the button explains how. Everything else in the studio stays free.
