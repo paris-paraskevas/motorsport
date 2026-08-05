@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.266.0 — 2026-08-05
+
+### Added
+- **MotoGP champions depth, 67 seasons (1949-2015), two-source-per-row — the redemption of the session-24/25 failure.** Every row verified against TWO independent sources before writing: **the official motogp.com archive** (`api.motogp.pulselive.com` historical standings — reaches ALL 78 seasons; the premier class keeps ONE category uuid across the 500cc→MotoGP eras) × **Wikipedia season articles** (rendered HTML via cheerio — wikitext table formats are era-chaotic; the standings render as NESTED tables, pick the first clean `Rider`+`Pts` table whose second row starts "1"; the three-way champion-name check kills any wrong-class pick, the exact failure mode that rejected 13 rows last time). Row ships only when curated name ≈ official P1 ≈ wiki P1 AND official points appear in the wiki Pts cell (handles the dropped-scores era's "counted (gross)" duals). **67/67 verified.** The old 1975 poison is settled: the official archive says Agostini **84** (the rider-article 70 was net). Wins: official `race_wins` (2010+) else the wiki position-matrix 1-count or explicit Wins column; runner-up names take Wikipedia's rendering when surnames agree (Pulselive strips accents). Three adjudications recorded: 2009 ships without `wins` (sources split 5 vs 6); 1989's "conflict" was a parser artifact over a legitimate **210.5 half-point** total (kept); 1949's runner-up points genuinely differ (28 official vs 29 wiki) → that FIELD withheld, the surname-verified name kept. Pipeline: `scratchpad/motogp-champions-depth.mjs` pattern, reusable for the remaining 10 series (F1 done; NLS + ADAC 24h excluded permanently).
+
 ## 0.265.0 — 2026-08-05
 
 ### Changed
