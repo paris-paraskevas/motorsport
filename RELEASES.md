@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.268.0 — 2026-08-06
+
+**The broken offline page is gone.** It promised more than it delivered, so with no connection the app now behaves like any other site instead of showing a half-working shell. Notifications and fast repeat loads are unaffected.
+
 ## 0.267.1 — 2026-08-05
 
 **Behind the scenes.** Pages no longer embed internal data-source addresses in their payload. Nothing visible changes.

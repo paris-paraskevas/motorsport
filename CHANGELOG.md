@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.268.0 — 2026-08-06
+
+### Removed
+- **The offline PWA fallback, entirely** (operator: "offline is and has always been a piece of shit, remove it completely"). Gone: the `/offline` route (`app/offline/{page,layout}.tsx`), its precache entry + manifest-derived revision hash, and the `fallbacks` document-navigation block in `app/sw.ts`. The service worker keeps its two real jobs — precaching for fast repeat loads and web push (handlers untouched) — and an offline navigation now fails like the browser default instead of serving a half-broken branded page. This also shrinks the serwist surface ahead of the Turbopack build migration. The IDEAS "verify the offline fallback actually works" item dies with it.
+
 ## 0.267.1 — 2026-08-05
 
 ### Fixed

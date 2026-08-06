@@ -11,23 +11,12 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
-// Offline fallback — precache the branded /offline page and serve it whenever
-// a document navigation can't be satisfied (defaultCache's NetworkFirst page
-// strategies fail with no cached copy). The revision is derived from the
-// injected build manifest: stable across SW restarts within one build, changes
-// exactly when a new build ships — so the cached HTML always references the
-// current hashed chunks instead of purged ones.
-const OFFLINE_FALLBACK_URL = '/offline';
-const manifest = self.__SW_MANIFEST ?? [];
-const offlineRevision = (() => {
-  const s = JSON.stringify(manifest);
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(h, 31) + s.charCodeAt(i)) | 0;
-  return (h >>> 0).toString(36);
-})();
-
+// No offline fallback, deliberately (operator call, 2026-08-06: it never worked
+// well and got removed outright). The SW's jobs are precaching for fast repeat
+// loads and web push; a navigation with no network simply fails like the
+// browser default.
 const serwist = new Serwist({
-  precacheEntries: [...manifest, { url: OFFLINE_FALLBACK_URL, revision: offlineRevision }],
+  precacheEntries: self.__SW_MANIFEST ?? [],
   // Let a new SW install + precache in the BACKGROUND and activate on the NEXT
   // launch, rather than skip-waiting into the current open. Every deploy makes
   // all ~218 precache entries new; skipWaiting activated that busy SW mid-open,
@@ -38,16 +27,6 @@ const serwist = new Serwist({
   clientsClaim: false,
   navigationPreload: true,
   runtimeCaching: defaultCache,
-  fallbacks: {
-    entries: [
-      {
-        url: OFFLINE_FALLBACK_URL,
-        matcher({ request }) {
-          return request.destination === 'document';
-        },
-      },
-    ],
-  },
 });
 
 serwist.addEventListeners();
