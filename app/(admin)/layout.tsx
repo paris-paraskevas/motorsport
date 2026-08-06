@@ -1,3 +1,4 @@
+import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { FONT_CLASSES } from '@/lib/fonts';
@@ -55,6 +56,7 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
         <body className="min-h-screen bg-bg text-text">
           <ThemeScript />
           {children}
+          <SerwistRegister />
         </body>
       </html>
     </ClerkProvider>
