@@ -15,12 +15,14 @@ export const CATEGORIES: CategoryDef[] = [
   { id: 'stock', label: 'Stock Cars' },
 ];
 
-export interface GroupedSeries {
+export interface GroupedSeries<T extends Pick<SeriesMeta, 'category'> = SeriesMeta> {
   category: CategoryDef;
-  series: SeriesMeta[];
+  series: T[];
 }
 
-export function groupSeriesByCategory(seriesList: SeriesMeta[]): GroupedSeries[] {
+export function groupSeriesByCategory<T extends Pick<SeriesMeta, 'category'>>(
+  seriesList: T[],
+): GroupedSeries<T>[] {
   return CATEGORIES.map(category => ({
     category,
     series: seriesList.filter(s => s.category === category.id),

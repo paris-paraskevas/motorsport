@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.267.1 — 2026-08-05
+
+**Behind the scenes.** Pages no longer embed internal data-source addresses in their payload. Nothing visible changes.
+
 ## 0.267.0 — 2026-08-05
 
 **Social is now one place.** Predictions, your bets and balance, leagues, friends and the fan threads all live on the Social page, instead of being spread across three sections. Old links redirect, and bets are still placed right on each race weekend's page.

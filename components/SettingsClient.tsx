@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Lock } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
-import type { SeriesMeta } from '@/lib/types';
+import type { NavSeriesMeta } from '@/lib/types';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 
 // One row per series: colour dot + name + a follow checkbox. The checkbox is
@@ -15,7 +15,7 @@ function SeriesList({
   toggle,
   emptyLabel,
 }: {
-  series: SeriesMeta[];
+  series: NavSeriesMeta[];
   isFollowing: (slug: string) => boolean;
   toggle: (slug: string) => void;
   emptyLabel: string;
@@ -46,7 +46,7 @@ function SeriesList({
   );
 }
 
-export function SettingsClient({ seriesList }: { seriesList: SeriesMeta[] }) {
+export function SettingsClient({ seriesList }: { seriesList: NavSeriesMeta[] }) {
   const { isSignedIn } = useAuth();
   const { followed, hydrated, setFollowed } = useFollowedSeries();
 

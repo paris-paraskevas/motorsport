@@ -13,7 +13,14 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountSeriesPage() {
-  const seriesList = await loadAllSeriesMeta();
+  // NavSeriesMeta pick — SettingsClient is a client component; see the warning
+  // on SeriesMeta (full meta would serialize icsUrl into the page payload).
+  const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color, category }) => ({
+    slug,
+    name,
+    color,
+    category,
+  }));
   return (
     <div className={PAGE_READ}>
       <Link
