@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.267.1 — 2026-08-05
+
+### Fixed
+- **The machine-readable half of the ICS-URL leak: every (app) page's RSC flight payload shipped all 14 real feed URLs to every visitor.** The 0.256.0 /about rewrite removed the human-readable table, but `app/(app)/layout.tsx` passed FULL `SeriesMeta[]` (icsUrl, official URLs, season internals) into `AppShell` — a client component — so React serialized the lot into every page's HTML (probed on prod: 15 `icsUrl` occurrences per page). Fix: new `NavSeriesMeta = Pick<SeriesMeta, 'slug' | 'name' | 'color' | 'category'>` (the four fields the chrome actually reads, verified by field-usage scan of AppShell/OnboardingWizard/SettingsClient), the layout + `/settings/series` map the pick at the boundary, `groupSeriesByCategory`/`GroupedSeries` genericized over `Pick<SeriesMeta,'category'>` so both full-meta (server) and pick (client) callers type-check, and a warning comment sits ON `SeriesMeta` itself so the next server→client pass reaches for the pick. Verified on the built app: `icsUrl` occurrences on /about, /app, /calendar = **0** (was 15), nav mega-menu still renders every series.
+
 ## 0.267.0 — 2026-08-05
 
 ### Changed

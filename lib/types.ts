@@ -13,6 +13,10 @@ export interface SeriesMeta {
   icsUrl: string;
   season: number;
   category: SeriesCategory;
+  // ⚠ Passing FULL SeriesMeta across a client-component boundary RSC-serializes
+  // every field (icsUrl included) into the page's flight payload — the
+  // machine-readable half of the leak the 0.256.0 /about cleanup removed.
+  // Server → client series lists must cross as NavSeriesMeta (below).
   wikipediaPage?: string;
   championsPage?: string;
   seasonPage?: string;
@@ -33,6 +37,11 @@ export interface SeriesMeta {
    *  Drives a slimmer tab set: Calendar + About + Champions only. */
   singleEvent?: boolean;
 }
+
+/** The nav-safe subset of SeriesMeta for CLIENT components (AppShell,
+ *  OnboardingWizard, SettingsClient). Everything the chrome needs, none of the
+ *  internals — see the warning on SeriesMeta. */
+export type NavSeriesMeta = Pick<SeriesMeta, 'slug' | 'name' | 'color' | 'category'>;
 
 export interface DriverStanding {
   position: number;

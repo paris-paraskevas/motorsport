@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Bell, Check, ChevronRight } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
-import type { SeriesMeta } from '@/lib/types';
+import type { NavSeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory } from '@/lib/categories';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 import {
@@ -20,7 +20,7 @@ type Step = 'series' | 'notifications' | 'done';
 // so it never loops.
 const ONBOARDED_LS = 'paddock:onboarded';
 
-export function OnboardingWizard({ seriesList }: { seriesList: SeriesMeta[] }) {
+export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }) {
   const { isLoaded, isSignedIn } = useAuth();
   const { setFollowed } = useFollowedSeries();
   const [open, setOpen] = useState(false);

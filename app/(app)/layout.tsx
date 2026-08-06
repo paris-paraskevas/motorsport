@@ -62,7 +62,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const seriesList = await loadAllSeriesMeta();
+  // NavSeriesMeta pick: AppShell is a client component, so this list rides the
+  // RSC flight payload of EVERY (app) page — full SeriesMeta would ship icsUrl
+  // and friends to every visitor (the machine-readable half of the old /about
+  // leak). The chrome needs exactly these four fields.
+  const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color, category }) => ({
+    slug,
+    name,
+    color,
+    category,
+  }));
 
   return (
     <ClerkProvider

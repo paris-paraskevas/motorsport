@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { SeriesMeta } from '@/lib/types';
+import { NavSeriesMeta } from '@/lib/types';
 import { groupSeriesByCategory, type GroupedSeries } from '@/lib/categories';
 import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
@@ -27,7 +27,7 @@ export function AppShell({
   bettingEnabled,
 }: {
   children: React.ReactNode;
-  seriesList: SeriesMeta[];
+  seriesList: NavSeriesMeta[];
   // Server-resolved (isBettingConfigured) — gates the Social nav entry so the
   // betting/social surface only appears once the Supabase env is provisioned.
   bettingEnabled: boolean;
@@ -281,7 +281,7 @@ function MenuLinkList({ items }: { items: { href: string; label: string; desc: s
 // Category-grouped series grid (reuses groupSeriesByCategory — the same grouping
 // the /series hub and onboarding use). Leads with the F1 Telemetry & Analysis
 // hub (0.114.1) — the one cross-round destination that isn't a series tab.
-function SeriesMegaMenu({ groups }: { groups: GroupedSeries[] }) {
+function SeriesMegaMenu({ groups }: { groups: GroupedSeries<NavSeriesMeta>[] }) {
   const allSeries = groups.flatMap(g => g.series);
   // The series list is a SINGLE column with the detail pane immediately to its
   // right, so the pointer path from a series to its pages crosses no OTHER
