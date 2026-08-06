@@ -169,6 +169,29 @@ First snapshot since the Vercel → Cloudflare migration (07-26/27). **Field sou
 
 Context for trend readers: this row is NOT comparable to Vercel-era rows for TTFB/route-level RES (different platform, different field source, R2 ISR cache since 0.241.0). Treat 2026-08-03 as the new epoch line.
 
+## 2026-08-06 — the landing-LCP delta row (0.267.1 live; 3 days after the 0.254.0 image bundle)
+
+Operator-run PSI (pagespeed.web.dev, Lighthouse 13.4.1, Moto G Power / slow-4G mobile, captured 10:52 GMT+3). Field data still "No Data" (CrUX threshold — traffic, not tooling; CF RUM keeps collecting).
+
+| Metric | Mobile | Desktop | vs 08-03 |
+|---|---|---|---|
+| **Performance** | **81** | **96** | 71 / 78 |
+| FCP | 1.7 s | 0.5 s | 1.7 / 0.5 |
+| **LCP** | **4.9 s** | **1.3 s** | **15.3 / 3.3** |
+| TBT | 30 ms | 90 ms | 60 / 20 |
+| CLS | 0 | 0 | 0 / 0 |
+| Speed Index | 3.3 s | 1.2 s | 4.9 / 2.0 |
+| Accessibility | 96 | 96 | 96 / 100 |
+| Best Practices / SEO | 96 / 100 | 96 / 100 | unchanged |
+
+**The 0.254.0 bundle worked: mobile LCP 15.3 s → 4.9 s (−68%), desktop 3.3 → 1.3 s** — short of the ~2.5-3 s estimate, and the report says exactly why the tail remains:
+
+1. **The first-slide `opacity-0` fade still gates paint.** The LCP img in the report carries `fetchpriority="high"` AND `class="… opacity-0"` — the "start slide 1 at full opacity" part of the queued bundle didn't make it. Element render delay: 1,750 ms mobile / 5,480 ms desktop (desktop's number is inconsistent with its 1.3 s LCP metric — likely the fade-completion pass; recorded as reported). On mobile the LCP element is now the hero TEXT ("TRACKING 15 SERIES…"), i.e. the image has been demoted — good.
+2. **`lemans.webp` is oversized for its slot**: 188.9 KiB at 1128-1275×853 for ~939×501 (mobile) / 596×318 (desktop) display. Est. savings 112 KiB mobile / 294 KiB desktop (incl. spa.webp 149 KiB → responsive `sizes`/srcset + a notch more compression).
+3. Render-blocking CSS 23 KiB (820 ms on slow-4G mobile), 13 KiB legacy polyfills (`Array.prototype.at` class), 165 KiB unused JS in the shared chunks — all known shapes, smaller than before.
+
+**Next lever bundle (small):** first-slide fade skip + `sizes` on the carousel images. Cosmetics re-flagged: carousel dot touch-targets (a11y 96), two non-composited `width` dot animations, CSP report-only / no COOP (unchanged, by design/backlog).
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |
