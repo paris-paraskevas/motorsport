@@ -1,3 +1,4 @@
+import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -146,6 +147,7 @@ export default async function RootLayout({
               gtag('config', '${GA_MEASUREMENT_ID}');
             `}
           </Script>
+          <SerwistRegister />
         </body>
       </html>
     </ClerkProvider>

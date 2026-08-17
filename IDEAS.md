@@ -6,25 +6,31 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ---
 
-## NEXT SESSION — operator-set priority order (2026-07-27, session 23; items 1-2 shipped — 0.246.0 author pages, 0.252.0 format button)
+## NEXT SESSION — priority order (refreshed 2026-08-06, session 27 close)
 
-1. **Content expansion to 1500+ indexed pages** (from 1119 as of 0.249.0 — blog posts + champion pages joined the sitemap 0.246.1/0.247.0, the three dead MDX posts left it). Candidate generators, in rough order of value per effort: the remaining `/information` editorial answers, per-driver and per-team depth, all-time legends pages (see the older Inbox item), and champions depth across the other 14 series (two-source-per-row ultracode pass ONLY — see the MotoGP failure in HANDOFF; ADAC 24h + NLS never). Every page must clear RULE #1 — thin generated pages would make the indexing problem worse, not better.
-2. **Fix the indexing issues** (GSC, validation Failed 2026-07-25): **46 pages "Excluded by 'noindex' tag"** — the champion-page portion was addressed by 0.247.0 (all 488 made indexable); operator's GSC export still owed to close out the remainder (4 "Page with redirect", 2 robots.txt, 4 "Crawled - currently not indexed", 2 4xx, 1 Soft 404, 1 Not found). Leading hypothesis for any residual noindex: the gray-matter colon-space landmine — parse every editorial answer offline and list the throwers before touching anything. `/social` + `/threads/<id>` are probably intentional noindex and just need the sitemap to stop advertising them.
+1. **Merge the combined offline+Turbopack+wrap PR**, then prod-verify the SW rollover: `/serwist/sw.js` serves 200 on prod, push still works on the phone after the worker updates (next-after-next launch, `skipWaiting:false`), airplane mode now shows the browser default (offline removed by design).
+2. **Landing-LCP finisher (small):** first-slide fade skip + `sizes` on the carousel images — the operator's 2026-08-06 PSI run says these are the whole remaining tail (mobile LCP 4.9 s, target ~2.5-3 s; row + analysis in `docs/perf-baselines.md`).
+3. **Two real bugs from the app-root audit** (below): feed.xml missing all DB posts; error.tsx not reporting to Sentry.
+4. **Content to 1500+**: at **1,240** after the 126-bio day. Levers: remaining bio grids (needs an operator call — NASCAR 36 / DTM 21 / WRC 9 / F2 / F3 full waves, or Wikipedia-fallback stays fine?), all-time legends pages, more `/information` answers. RULE #1, no thin pages, solo waves only.
+5. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (official archive × Wikipedia rendered HTML, three-way name check; see 0.266.0). One-two series per session. ADAC 24h + NLS never.
+6. **Indexing follow-through**: GSC "Validate fix" clicked 2026-08-06, awaiting Google's re-crawl verdict on the 45 noindex URLs.
+
+## Inbox (2026-08-06 — session 27 close)
+
+- **Remote-branch audit**: `git fetch --prune` shows **328 non-core branches on origin** — the session-26 "380 → 34" prune never reached the remote. Audit into merged-safe (delete) vs unique-commits (operator's word per branch); one name collision already bit (feat/champions-depth-motogp).
+- **BMC donor webhook (phase 2 of the 0.264.0 supporter gate)** — auto-flag `publicMetadata.donor` from Buy Me a Coffee webhooks with email matching; manual /admin/users toggling is fine until donations outpace it.
+- **Carousel dot touch-targets** (a11y 96 both PSI runs) + the two non-composited `width` dot animations — cosmetic a11y/perf pair on the landing carousel.
+- **Vitest under load**: fork-worker start timeouts reproduce the old "flake" when a dev server runs alongside — consider pinning `maxWorkers` or documenting "no suite under dev" in CONTRIBUTING.
+- **Doc hygiene ESCALATED**: `docs/HANDOFF.md` is ~480KB; trim to the last 2-3 sessions + archive the rest (the parked item, now genuinely overdue).
 
 ## Inbox (2026-08-03)
 
-- **/play revamp** — operator: the betting surface is barely used; rethink the product (what would make solo-vs-house + leagues worth visiting weekly — surface bets on weekend pages more, simplify credits, or fold Play into /social?), grounded in GA4 route data before building; the existing "Betting & social" batch below stays the feature backlog, this is the product-level question.
+- **Session-page adapter extraction.** `[session]/page.tsx` is 985 lines because ~250 of them (`:87-314`) are per-series classification adapters (WEC/IMSA/GTWC class tables, F2/F3, MotoGP/WSBK, the token-scoring race pickers) inlined in the page — promote to `lib/results/session-classification.ts` with tests for `pickRaceForSession`/`pickGtWorldRace` (a wrong pick silently renders the wrong race's result); pure move, no behavior change, page drops to ~650.
 
-## Inbox (2026-08-03 — session 26)
+## Inbox (2026-08-03 — app-root specials audit)
 
-- **Turbopack migration (dev-loop, the real win).** `--webpack` was forced in 80f8ed7 (2026-05-13) because serwist's webpack injection failed under Next 16's Turbopack default, "until @serwist/turbopack is stable" — `@serwist/turbopack` 9.5.12 is now published (we run @serwist/next 9.5.11). Migrating kills the ~20s cold per-route dev compiles, but the config composes withSentryConfig(withSerwist(...)) so it needs its own careful pass + preview-verified PWA. The .open-next watcher fix shipped separately (0.251.1).
-- **AI section headings for the studio's post-ready rail (phase 2 of item 17, operator-approved shape).** Model proposes `##` headings; code enforces the byte-identity guard (original prose must survive verbatim, only heading lines + link syntax may be inserted — auto-discard on failure); author approves a readable diff before apply. Vendor decision (the assistant's Google-AI key vs a Claude key) is part of the build. The deterministic half (checklist + Auto-link) shipped 0.252.0.
-- **tagCache for on-demand revalidation** — `revalidatePath` is a verified silent no-op on prod (dummy tagCache; adapter source quoted in HANDOFF session 26). Bounded damage today (all targets `revalidate=300`; ≤ ~35 min worst-case with the regional cache) but the publish/author-edit paths deserve real invalidation: `doShardedTagCache` (DOs) vs `d1NextTagCache` (new D1) — `open-next.config.ts` + wrangler change, preview-gated, operator names the infra.
-
-## Inbox (2026-07-31)
-
-- **`/about` is still the 2026-05-13 debug page** ("sources list with fetch status") — publicly prints raw per-series ICS URLs, stale flags and ISO fetch timestamps, and its prose is now false ("Personal-use PWA", "fetched at build w/ 6-hour revalidation" — pre-DB-mode). Rewrite as real prose (what Paddock is, honest current data-flow, links to /information + /changelog + contact; RULE #1 the claims) and move the fetch-status table to /admin/tools where its audience lives.
-- **Post-migration perf re-baseline.** Every row in `docs/perf-baselines.md` is Vercel-era (newest field capture 2026-07-09; migration 07-26/27) and the protocol's field source (Vercel Speed Insights) stopped collecting when the dep was dropped — run a fresh PSI lab pass, pick a field replacement (GSC CWV / Cloudflare Web Analytics), append per the file's own protocol; fold in the 2026-07-31 OpenNext lever audit (unconfigured `tagCache` — verify the author-edit revalidations aren't silent no-ops; `images: unoptimized` + the reserved IMAGES binding; `enableCacheInterception` candidate). _[Session-26 status: the tagCache half is VERIFIED — revalidatePath IS a silent no-op, findings + fix proposal in HANDOFF and the entry above; the PSI lab pass is blocked on keyless API quota → operator runs pagespeed.web.dev or provides a key, then the row gets appended; field-source pick + images/enableCacheInterception still open.]_
+- **feed.xml omits every DB-published post** — it reads only legacy MDX (`loadAllPosts` from `lib/posts`), the exact bug the sitemap had until 0.246.1 fixed it *for the sitemap only*; RSS subscribers have seen nothing since the MDX era. Merge both sources like `lib/sitemap-data` does (DB `publishedPosts` + MDX, dedupe by slug, DB wins) — and drop the dead `s-maxage` header / go ISR while in there (`force-dynamic` + `s-maxage` caches nowhere on Workers).
+- **error.tsx doesn't report to Sentry** — `global-error.tsx` calls `Sentry.captureException`; the route-level `error.tsx` only console.errors, and React error boundaries swallow errors before `window.onerror`, so uncaught client render errors in any route plausibly never reach Sentry (verify against @sentry/nextjs App-Router auto-instrumentation first). Its comment also still credits the removed "Vercel Analytics + Speed Insights" with error capture — fossil either way.
 
 ## Inbox (2026-07-24 — session 21)
 

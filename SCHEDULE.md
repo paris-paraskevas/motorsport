@@ -1345,6 +1345,45 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Tue 2026-08-04 (session 27 — /about rewrite, /play GA4 groundwork)
+
+Operator's order: **1. /about rewrite (GO)** · **2. /play GA4-grounded product rethink (GO — data first, visual proposals, no code)** · then 3. content expansion toward 1500+ · 4. AI section headings phase 2 · 5. Turbopack migration (preview-gated) · 6. champions depth ×14 (two-source ultracode only; ADAC 24h + NLS never).
+
+- Early checks at start: `/api/push/status` serves ready=true + clean 87-char key (operator still owes the phone re-enable + TEST) · tagCache live proof = operator's 30-second bio-edit test (chased) · PSI delta row operator-gated (rerun or API key).
+- Won't touch this session: champions enrichment (needs the ultracode nod when reached), key rotations (operator's, keep nudging), prod Supabase writes unless the operator names the action, the operator's uncommitted IDEAS.md edits, DNS, testing-paris (unless asked), any secret set from a transcript (shape-check at write).
+
+Outcomes:
+
+- → done: **T1 /about** — 0.256.0 #663 merged on operator's order, prod-verified (new editorial prose live, zero debug leftovers; `/admin/tools` gains the live feed-status panel + the stale Blog-queue→Studio link fix, flagged in the PR). Found en route, NOT fixed: all 14 real ICS feed URLs still ship SITEWIDE in the RSC flight payload (the layout serializes full SeriesMeta to the nav client components) — the human-readable leak is gone, the machine-readable one needs a NavSeriesMeta field-pick.
+- → done: **T2 /play decision** — GA4 pulled locally (Downloads SA key `paddocktracker-5707cd014ce4.json`, property 538125099): /play 221 views/90d collapsed to 14/28d, /social's leagues (90→4) and friends (28→0) dead, /threads 36/90d; meanwhile /series 38.9% share, /app 17.1%, /blog growing (629 of its 743 views in the last 28d, best engagement 40s/view). Operator picked **Embed + consolidate**: bets move onto race-weekend pages + an /app tile; /play + /social + /threads collapse into one Community hub; build = future sessions. Prod-DB usage counts were classifier-blocked (operator must name the read to sharpen numbers).
+- → 🔴 FAILED, lesson recorded: the F1-bios ultracode workflow (20 research × 2 stages) — **every research agent died on the session limit; ~684k subagent tokens spent, zero bios produced, nothing salvageable**. Operator's correction is durable now: memory `feedback-paddock-workflow-limits` (≤5-item waves, state limit-burn plainly, solo-sequential research default, no big fan-outs ever).
+- → done, ALL MERGED + prod-verified per wave: **T3 content expansion = THE BIOS DAY.** Six solo waves, 126 original two-source bios across 9 series files: F1 22 (#664) · MotoGP 22 (#665) · IndyCar 25 (#666) · FE 20 (#667) · WSBK 21/22 (#668, Rato source-less, skipped honestly) · endurance marquee 16 (#669, curated criterion incl. Valentino Rossi, Kubica, Kobayashi). Sitemap 1,134 → 1,240; versions 0.256.0 → 0.262.0. Per-series corroborators + traps recorded in HANDOFF (wrong-namesake articles, stale 2026 leads, the alphabetical resolver quirk that forces Vanthoor/Marciello into the ADAC file). Bonus capture: the session-26 vitest "flake" reproduced as a load-induced fork-worker start timeout; resolve-guard test made linear.
+- → done (post-midnight): **T4 AI section headings + the supporter gate** — 0.263.0 #670 (Gemini via the existing seam, model proposes / code inserts / byte-identity guard discards on mismatch, review-then-Apply rail, 11 unit tests) + 0.264.0 #671 (operator rule mid-merge: AI tools require the `donor` flag; 402 enforcement, admin bypass, manual granting via the new /admin/users DonorToggle). Both prod-verified; signed-in click-throughs owed by the operator.
+- → done: **T5 Turbopack dev-only** (0.265.0 #672 — measured ~3× cold compiles; build stays webpack, SW/Sentry/OpenNext untouched; no-watch-ignore caveat recorded).
+- → done: **T6 wave 1, MotoGP champions depth** (0.266.0 #673 — 67/67 two-source-verified via the official Pulselive archive × Wikipedia rendered HTML; 1975 settled at 84; three adjudications recorded; pipeline reusable ×10 series).
+- → done: **the /play build** (0.267.0 #674 — recon found bets already place on weekend pages + the /app tile exists, so the consolidation WAS the build: /social hub absorbs /play + threads list, 301s, 11-file sweep) and **the leak fix** (0.267.1 #675 — NavSeriesMeta pick; prod icsUrl 15 → 0 per page).
+- Session total (through 08-05): 0.256.0 → 0.267.1, **12 merges**, all prod-verified.
+
+---
+
+### Wed 2026-08-06 (session 27 close — verifications land, offline dies, Turbopack finishes)
+
+Operator opened with a verification dump + three orders (remove offline, explain DNS-check/branches, finish Turbopack), closed with "enough for today, wrap".
+
+- → done: **verification ledger cleared** — phone push TESTED working (the [SENSITIVE] saga fully closed) · tagCache proven ("really fast") · GSC Validate clicked (awaiting Google) · panagiotis worker configured · /social approved. Still theirs: key rotations, dead `.supabase-pat`, Resend key, studio propose/apply test (planned: real draft from a non-supporter account, covers the 402 check).
+- → done: **the landing-LCP delta row** appended to `docs/perf-baselines.md` from the operator's PSI rerun: mobile **15.3 s → 4.9 s** (perf 71→81), desktop 3.3→1.3 s (78→96). Remaining tail named by the report: the first slide still mounts `opacity-0` (fade-skip never landed) + lemans.webp oversized → the next perf bundle is "fade skip + `sizes`" (queued in IDEAS).
+- → done: **offline fallback removed entirely** (0.268.0, operator order): /offline route + precache entry + sw.ts fallbacks block gone; precache + push untouched.
+- → done: **Turbopack finished** (0.269.0): `--webpack` off the build; `@serwist/next` → `@serwist/turbopack` (SW bundles via esbuild in `app/serwist/[path]/route.ts`, explicit registration via `SerwistRegister` in all three root layouts, `defaultCache` from the new `/worker` export; `esbuild-wasm` added for Linux CI). Verified locally end-to-end **including `opennextjs-cloudflare build` → worker saved**; `/serwist/sw.js` serves 200 + `Service-Worker-Allowed: /` with push handlers + manifest. Deploy-level SW rollover + push = post-merge phone check.
+- → answered: the DNS spot-check item was pre-de-Vercel cruft (killed); the "29 experiment branches" framing is stale — `git fetch --prune` shows **328 non-core branches on origin** (the session-26 prune never reached the remote) → audit queued.
+- → shipped as ONE PR: offline + Turbopack + this wrap (single lineage, no stacked-PR auto-close, no CHANGELOG conflicts); #676 closed in its favour.
+- Session 27 grand total: **0.256.0 → 0.267.1 merged + 0.268.0/0.269.0 ready**, one failed workflow (~684k tokens) converted into a standing memory, 126 bios, 67 champion rows, two product decisions executed.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+---
+
 ### Mon 2026-08-03 (session 26 — blog editor rebuild + article imports)
 
 Operator's order: **1. blog editor section replan/rebuild** (drafts/new-post authoring must leave the `/blog` listing for a dedicated page; visual options BEFORE build) · **2. item 13 article imports** (`post.original_url`, off-site canonical, provenance on the post; migration — operator names the SQL) · then 14 (become-an-author + `contributor` role) · 17 (format button) · 20 (13 series calendars unverified) · 25 (dev-loop speed) · 26 (prod perf re-baseline).

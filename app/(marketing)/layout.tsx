@@ -1,3 +1,4 @@
+import { SerwistRegister } from '@/components/SerwistRegister';
 import type { Metadata, Viewport } from 'next';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
@@ -62,7 +63,8 @@ export default function MarketingLayout({
       <body className="min-h-screen bg-bg text-text">
         <ThemeScript />
         {children}
-      </body>
+        <SerwistRegister />
+        </body>
     </html>
   );
 }

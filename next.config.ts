@@ -1,14 +1,12 @@
 import type { NextConfig } from "next";
-import withSerwistInit from "@serwist/next";
+import { withSerwist } from "@serwist/turbopack";
 import { withSentryConfig } from "@sentry/nextjs";
 
-const withSerwist = withSerwistInit({
-  swSrc: "app/sw.ts",
-  swDest: "public/sw.js",
-  cacheOnNavigation: true,
-  reloadOnOnline: true,
-  disable: process.env.NODE_ENV === "development",
-});
+// Serwist moved from @serwist/next (webpack-only injection; the reason builds
+// were pinned to --webpack since 80f8ed7) to @serwist/turbopack: the SW is
+// bundled + served by app/serwist/[path]/route.ts, registered by
+// components/SerwistRegister.tsx, and this wrapper only adds esbuild to
+// serverExternalPackages. The old swSrc/swDest/flags live on those two files.
 
 // Content-Security-Policy — FIRST PASS, REPORT-ONLY (security audit).
 // Shipped as Content-Security-Policy-Report-Only so it can NEVER break the
