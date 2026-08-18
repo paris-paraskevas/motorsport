@@ -1395,7 +1395,14 @@ Operator delivered the full UI/UX reimagining design handoff (`design_handoff_pa
 - → done: #678 opened for the parked turbopack branch, then **closed as duplicate** — #677 had already merged it (2026-08-17); local main was stale. gh active account switched parisparaskevas-hub → paris-paraskevas en route (it couldn't create PRs on the repo).
 - Won't touch this session: default-theme flip + Newsprint's fate (visual decision with screenshots, later), results parsers / `[session]` logic, content facts, prod Supabase/infra, blog, HANDOFF trim.
 
-Active: _(none captured yet)_
+**Overnight unsupervised run (operator-authorized, same day):** 15 PRs merged, 0.274.0 → 0.286.0 on main.
+
+- → done: **#682 editorial home** (four blocks, widget gallery retired) · **#683 orphan sweep** (16 files) · **#684 NavPanel v2** (panel-2a wide index) · **#685 calendar** (weekend bars, summarising cells, tap chips, `?s=` deep links) · **#686 series hub** (15 rows, broadcasters) · **#689 series landing** (three blocks, SEPANG chip, cancelled band) · **#690 weekend report/preview split** · **#691 driver profile** (every-round table, no chart, Commons-only portraits) · **#692 Learn inverted** (ask field) · **#693 wire** (credited two-column) · **#694 telemetry** (latest leads, compare folded) · **#695 account** (You-follow chips, tz row) · **#696 blog index**.
+- → fixed en route: **#687+#688 the lockfile** — the warm-live-data cron had been red since 08-17 07:16Z (`npm ci`: the turbopack merge dropped the NESTED `@serwist/turbopack/@swc/helpers` lock entry; npm 11 tolerates the hole, npm 10 on the runner refuses; reproduced with `npx npm@10 ci`, fixed by an npm-10 regen whose diff is that single entry). Cron green at 16:32Z + 17:00Z.
+- → BLOCKED (operator decision): **the Cloudflare build pipeline stopped deploying at 14:25Z** (last deploy = 0.274.0/#682) — 13 merges undeployed; builds API not readable with the scoped token; the manual `npm run deploy` was correctly denied under the prod-infra-naming rule. Morning options: check Workers Builds in the dash, or run `npm run deploy` once.
+- → deferred by judgment (panels ready): landing 10a rebuild (your most perf-tuned surface), predictions 10c (/social reshaped by you 4 days ago), session-page 11d restyle (its contract layer shipped in #681), blog POST reading column, sign-out/export rows, the Paper default flip + Newsprint's fate.
+
+Active: _(none captured — operator away overnight)_
 
 ---
 

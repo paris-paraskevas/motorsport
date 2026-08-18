@@ -15,6 +15,14 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 5. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (official archive × Wikipedia rendered HTML, three-way name check; see 0.266.0). One-two series per session. ADAC 24h + NLS never.
 6. **Indexing follow-through**: GSC "Validate fix" clicked 2026-08-06, awaiting Google's re-crawl verdict on the 45 noindex URLs.
 
+## Inbox (2026-08-18 — overnight run close)
+
+- **Cloudflare build pipeline dead since 14:25Z** — prod frozen at 0.274.0 with 0.275→0.286 merged; check Workers Builds in the dashboard (likely a failed build or paused GitHub connection) or run `npm run deploy` once. THE morning item.
+- **Reimagining remainder:** landing 10a (deferred — perf-tuned front door, decide with the panel), predictions 10c (/social fresh operator work), session-page 11d cosmetic restyle (contract already live), blog POST reading column + embedded live classification (10b second half), Account sign-out/export rows.
+- **The Paper default flip + Newsprint's fate** — everything is built token-agnostic; flip is a one-line ThemeScript/layout change + a picker copy pass, decide from screenshots.
+- **Content gaps found:** no "how an F1 race weekend works" answer (13/15 series have one); F1 `rounds.json` carries no sprint markers (session data owns sprint structure).
+- **NavPanel data-nav-row keyboard nav** could extend to Home/End; the panel could remember scroll position — polish, not correctness.
+
 ## Inbox (2026-08-18 — session 28)
 
 - **Delete the four orphaned shell components** (`HeaderNavMenu.tsx`, `HeaderUtils.tsx`, `search/SearchTrigger.tsx`, `search/SearchOverlay.tsx`) once #679 is reviewed — zero imports remain; kept only for the deletion-approval rule.
