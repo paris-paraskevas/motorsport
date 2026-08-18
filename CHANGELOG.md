@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.278.1 — 2026-08-18
+
+### Fixed
+- **The warm-live-data cron has been failing since 2026-08-17 07:16Z** — `npm ci` on the GitHub runner rejects the lockfile ("Missing: @swc/helpers@0.5.23 from lock file"; last green run right before the turbopack merge). `npm install --package-lock-only` re-resolved the tree — the only drift was the lockfile's own stale `version` fields (0.268.0 → 0.278.1) — and a local `npm ci` now exits 0. Live standings/results KV caches stopped refreshing while it was down; the next scheduled run (every 20 min) re-warms them.
+
 ## 0.278.0 — 2026-08-18
 
 ### Changed

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.278.1 — 2026-08-18
+
+**Behind the scenes.** The background job that keeps standings and results fresh had been failing since yesterday morning; it's repaired and refreshing again.
+
 ## 0.278.0 — 2026-08-18
 
 **The series directory now shows all fifteen championships at once.** No more collapsed sections: every series sits under its category with its next round, the dates, and — new — where to watch it. Who's racing this weekend leads the page, and a series between seasons says so plainly instead of hiding.
