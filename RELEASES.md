@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.276.0 — 2026-08-18
+
+**The site menu grew into a full index.** On desktop the browse-and-search panel now lays out the whole site at a glance — the four main destinations, every championship by category, the guides, the circuit map — with the smaller pages on one quiet line at the foot. Same field, same typing-to-filter.
+
 ## 0.275.0 — 2026-08-18
 
 **Behind the scenes.** The code behind the retired home-widget system and the old navigation menus is fully removed. Nothing visible changes.
