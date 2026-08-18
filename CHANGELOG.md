@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.278.2 — 2026-08-18
+
+### Fixed
+- **The real lockfile fix** (0.278.1 didn't take): the lock was missing exactly one entry — `node_modules/@serwist/turbopack/node_modules/@swc/helpers` (0.5.23, the NESTED copy @serwist/turbopack needs) — dropped in the turbopack merge. npm 11 tolerates the hole (which is why local `npm ci` passed), **npm 10 — the GitHub runner and any Node-22 environment — refuses** with "Missing: @swc/helpers@0.5.23". Reproduced with `npx npm@10 ci` in isolation, fixed by an npm-10 lock regeneration whose diff is that single added entry (zero version drift across all 1,416 others), and proven by `npm@10 ci` exit 0 on the result.
+
 ## 0.278.1 — 2026-08-18
 
 ### Fixed
