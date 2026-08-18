@@ -58,6 +58,16 @@ describe('latestRaceFromFlat', () => {
     ).toBeNull();
   });
 
+  it('carries the feed time/gap strings — the home lead reads P2 as the winning margin', () => {
+    const withTimes = race(1, 'R', '2026-06-10T14:00:00Z', [
+      { ...entry(1, 'Winner', 'TA'), time: '1:31:44.702' },
+      { ...entry(2, 'Second', 'TB'), time: '+15.080' },
+      { ...entry(3, 'Third', 'TC'), time: '+18.728' },
+    ]);
+    const result = latestRaceFromFlat([withTimes], NOW);
+    expect(result?.podium.map(p => p.time)).toEqual(['1:31:44.702', '+15.080', '+18.728']);
+  });
+
   it('caps the podium at 3 even when more positions exist', () => {
     const result = latestRaceFromFlat(
       [

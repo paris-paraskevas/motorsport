@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Compass, Palette, SlidersHorizontal, Trophy } from 'lucide-react';
+import { ArrowUpRight, Bell, Compass, Palette, Trophy } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
@@ -47,17 +47,9 @@ export default async function AccountPage() {
           </span>
           <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
         </Link>
-        <Link
-          href="/settings/customize"
-          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
-        >
-          <SlidersHorizontal size={18} className="shrink-0 text-text-muted" />
-          <span className="min-w-0 flex-1">
-            <span className="block text-text text-base font-semibold">Customise home</span>
-            <span className="block text-text-faint text-xs">Reorder, fold or hide your home blocks</span>
-          </span>
-          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
-        </Link>
+        {/* "Customise home" row removed with the editorial-home cutover
+            (2026-08-18) — the four lead blocks are fixed; the widget system +
+            /settings/customize are being retired. */}
         <Link
           href="/settings/notifications"
           className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
