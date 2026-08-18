@@ -42,6 +42,9 @@ const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
   { url: '/social/threads', title: 'Threads', subtitle: 'Fan discussion' },
   { url: '/series', title: 'All series', subtitle: 'Browse every championship' },
   { url: '/f1/compare', title: 'F1 head-to-head', subtitle: 'Compare two drivers' },
+  // Was only reachable from the retired series mega-menu chips — the four-door
+  // shell reaches it by name, so it must be in the index.
+  { url: '/f1/analysis', title: 'F1 Telemetry & Analysis', subtitle: 'Qualifying decoder & race story' },
   { url: '/about', title: 'About Paddock', subtitle: 'What this is' },
   { url: '/changelog', title: 'Changelog', subtitle: "What's new" },
   { url: '/privacy', title: 'Privacy policy', subtitle: 'Legal' },

@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
+import { ContactFooterButton } from '@/components/ContactModal';
+
+const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
 function FooterLink({
   href,
@@ -49,6 +52,17 @@ export function Footer() {
             <FooterLink href="/social/threads" dataHeatmapId="footer:threads">Threads</FooterLink>
             <FooterLink href="/changelog" dataHeatmapId="footer:changelog">Release notes</FooterLink>
             <FooterLink href="/settings" dataHeatmapId="footer:account">Account</FooterLink>
+            {/* Contact + coffee moved here from the header pills (four-door shell). */}
+            <ContactFooterButton />
+            <a
+              href={COFFEE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-heatmap-id="footer:coffee"
+              className="block py-0.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+            >
+              Buy me a coffee
+            </a>
             <ManageCookiesButton />
           </div>
           <div>
