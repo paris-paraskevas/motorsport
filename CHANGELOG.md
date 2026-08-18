@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.280.0 — 2026-08-18
+
+### Changed
+- **The weekend page splits into two layouts** (design handoff §4.7, panels 3a/3b) — the old single layout threaded `isPast` flags through one shape serving two different questions. **Report (finished):** the result LEADS in a 1.5px-ink band — top-10 classification with gaps + points from the same season feeds the results tab renders (`pickRaceForSession` over `loadSnapshotSource` for flat-feed series incl. F1; `fetchClassClassifications` for WEC/IMSA/GT-World with the overall-win class primary and the other classes footnoted to the race page), winner + margin in the masthead; **"How the weekend went"** re-tells the sessions as the story's spine (day groups, deciders bold serif, the race row boxed with its outcome, every row → its session page); **"The venue" rail** carries the circuit map with its f1db credit, circuit guide, where-to-watch, next round and season context; **"What it changed"** renders the championship bars with the race winner's row in accent; highlights and the **car-upgrades technical file sit at the foot as an appendix, not a headline**. **Preview (upcoming):** composition unchanged — hero + schedule-first + weather + watch + lazy bets/news tabs already matched 3b's plan-for-the-weekend intent; the dead `isPast` branches left it.
+- Deliberately deferred from 3a (documented): the Race Control ledger and per-driver pit-stop table (OpenF1, F1-only — the session page's Race Story carries that data today) and the editorial standfirst (we don't auto-author prose).
+
 ## 0.279.0 — 2026-08-18
 
 ### Changed
