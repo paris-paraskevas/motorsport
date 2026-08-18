@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.284.0 — 2026-08-18
+
+**F1 analysis now opens on the latest Grand Prix.** The newest weekend's qualifying breakdown and race story lead the page, the driver head-to-head sits right beside them, and the full season lists below with future rounds clearly marked as waiting for the cars to run.
+
 ## 0.283.0 — 2026-08-18
 
 **The news wire now names its sources on every story** and lays out in two clean columns. If you follow series, choosing between everything and just yours is one visible tap instead of a hidden filter — and the page says plainly what it is: other people's reporting, credited and linked out.
