@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.281.0 — 2026-08-18
+
+### Changed
+- **The driver profile, reimagined** (design handoff §4.9, panel 11a). Serif masthead; **the four numbers that define a season on one line** — championship position + points, wins, best finish, starts — every one derived from the results table below via `driverSeasonForm` (never separately asserted; the handoff's review found headline stats disagreeing with their own table four ways). `DriverSeasonForm` gains `bestFinish`, `starts` and `rounds` (EVERY round ascending with the running points total; extras/sprints included, sorted before their grand prix within a round and labelled "· Sprint" when the feed reuses the GP's name — which also fixes duplicate React keys the old shape produced). The **cumulative-points chart is gone from this page** ("it only ever climbs, so it says nothing a single number does not") — `lib/season-trend` stays for the standings tab, f1/compare and teams.
+
+### Fixed
+- **The OpenF1 headshot fallback is removed** — those images are Formula 1 official media; the CC licence on OpenF1's *data* does not license them (the module's own header + handoff §7). Portraits are now Commons-or-nothing, always rendered with the per-image author + licence + source attribution.
+
 ## 0.280.0 — 2026-08-18
 
 ### Changed

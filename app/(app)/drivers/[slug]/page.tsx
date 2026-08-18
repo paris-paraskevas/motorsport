@@ -2,17 +2,13 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
-import { seriesInk } from '@/lib/site';
 import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
-import { driverSeasonForm, namesMatch, type DriverSeasonForm } from '@/lib/profile-stats';
-import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
-import { LazySeasonTrendChart } from '@/components/LazySeasonTrendChart';
+import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
 import { fetchWikipediaBio, ageFromISO, flagEmoji, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
 import type { NewsItem } from '@/lib/types';
-import { f1HeadshotsByNumber } from '@/lib/openf1/headshots';
 import { loadDriverPortraits, loadDriverBios, type DriverBio } from '@/lib/series-content';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE } from '@/lib/site';
@@ -46,20 +42,6 @@ export async function generateMetadata({
 // Narrow the full-season trend to this one driver so the reused chart draws a
 // single line (mirrors the compare page's trendForTwo). null when the driver
 // never appears in the results feed.
-function trendForDriver(full: SeasonTrendData, name: string): SeasonTrendData | null {
-  const d = full.drivers.find(x => namesMatch(x.name, name));
-  if (!d) return null;
-  return {
-    data: full.data.map(p => ({
-      round: p.round,
-      raceName: p.raceName,
-      [d.name]: p[d.name] ?? 0,
-    })),
-    drivers: [d],
-    totalsByDriver: { [d.name]: full.totalsByDriver[d.name] ?? 0 },
-  };
-}
-
 // Short "About" bio (Wikipedia intro). Attribution mirrors the series About
 // tab's "Source: Wikipedia →" credit; absent bio → no section (fail-soft).
 function AboutSection({ bio }: { bio: WikipediaBio }) {
@@ -195,39 +177,47 @@ function StatBlock({ label, value }: { label: string; value: string }) {
 function SeasonForm({ form }: { form: DriverSeasonForm }) {
   return (
     <>
+      {/* The four numbers that define a season, on one line (§4.9) — derived
+          from the results table below, never separately asserted. */}
       <section className="mb-8 border-y border-border py-4">
-        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-          Season so far
-        </h2>
         <div className="flex gap-10 flex-wrap">
-          <StatBlock label="Position" value={`P${form.position}`} />
-          <StatBlock label="Points" value={String(form.points)} />
+          <StatBlock label="Championship" value={`P${form.position} · ${form.points} pts`} />
           <StatBlock label="Wins" value={String(form.wins)} />
+          <StatBlock label="Best finish" value={form.bestFinish != null ? `P${form.bestFinish}` : '—'} />
+          <StatBlock label="Starts" value={String(form.starts)} />
         </div>
         <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-          of {form.fieldSize} classified this season · from race results
+          of {form.fieldSize} classified this season · every figure from the results below
         </div>
       </section>
 
-      {form.last5.length > 0 && (
+      {form.rounds.length > 0 && (
         <section className="mb-8 border-y border-border py-4">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-            Last {form.last5.length} races
-          </h2>
-          <ul className="divide-y divide-border/60">
-            {form.last5.map(r => (
-              <li key={`${r.round}-${r.raceName}`} className="flex items-baseline gap-3 py-2">
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              Every round this season
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+              finish · points · running total
+            </span>
+          </div>
+          <ul>
+            {form.rounds.map((r, i) => (
+              <li key={`${r.round}-${r.raceName}-${i}`} className="flex items-baseline gap-3 border-b border-border py-1.5">
                 <span className="w-9 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-tint">
                   R{r.round}
                 </span>
-                <span className="flex-1 min-w-0 text-text text-sm font-medium truncate">
+                <span className="flex-1 min-w-0 truncate font-serif text-[15px] font-semibold text-text">
                   {r.raceName}
                 </span>
-                <span className="font-mono text-sm tabular-nums text-text">
-                  P{r.position}
+                <span className={`w-10 shrink-0 text-right font-mono text-sm tabular-nums ${r.position === 1 ? 'font-semibold text-brand' : 'text-text'}`}>
+                  {r.position >= 1 ? `P${r.position}` : '—'}
                 </span>
-                <span className="w-10 text-right font-mono text-sm tabular-nums text-text-muted">
-                  {r.points}
+                <span className="w-10 shrink-0 text-right font-mono text-sm tabular-nums text-text-muted">
+                  {r.points > 0 ? `+${r.points}` : '0'}
+                </span>
+                <span className="w-12 shrink-0 text-right font-mono text-sm font-semibold tabular-nums text-text">
+                  {r.runningTotal}
                 </span>
               </li>
             ))}
@@ -252,32 +242,22 @@ export default async function DriverPage({
   // degrades to the identity-only page. The Wikipedia bio and the series news
   // feed load in parallel with it; each is independently fail-soft (absent
   // section, never an error).
-  const [seasonData, bio, seriesNews] = await Promise.all([
-    (async (): Promise<{ form: DriverSeasonForm | null; trend: SeasonTrendData | null }> => {
+  const [form, bio, seriesNews] = await Promise.all([
+    (async (): Promise<DriverSeasonForm | null> => {
       try {
         const series = await loadSeries(driver.seriesSlug);
         const source = await loadSnapshotSource(series);
-        if (!source) return { form: null, trend: null };
-        const form = driverSeasonForm(source.races, source.extras, driver.name);
-        // Trend chart only where the feed's per-race points are
-        // championship-canonical (`pointsExact` — the same set of series the
-        // Standings tab charts); winners-only / derived-points feeds would
-        // draw a misleading line.
-        const trend = source.pointsExact
-          ? trendForDriver(
-              buildSeasonTrendData(source.races, source.extras ?? []),
-              driver.name,
-            )
-          : null;
-        return { form, trend };
+        if (!source) return null;
+        // Headline stats AND the every-round table derive from this one call
+        // (design handoff §4.9: never separately asserted values).
+        return driverSeasonForm(source.races, source.extras, driver.name);
       } catch {
-        return { form: null, trend: null };
+        return null;
       }
     })(),
     fetchWikipediaBio(driver.name),
     fetchNews(driver.seriesSlug),
   ]);
-  const { form, trend } = seasonData;
   const mentions = filterNewsByMention(seriesNews, newsMentionAliases('driver', driver.name));
 
   // Identity layer (W4): nationality + age from the Wikipedia intro (fail-soft —
@@ -295,11 +275,10 @@ export default async function DriverPage({
   // Curated bio preferred over the Wikipedia intro (fetched above, still used for
   // the header nationality/age + as the About fallback for uncovered drivers).
   const curatedBio = (await loadDriverBios(driver.seriesSlug))[slug] ?? null;
-  let headshotUrl: string | null = portrait?.src ?? null;
-  if (!headshotUrl && driver.seriesSlug === 'f1' && driver.number != null) {
-    const headshots = await f1HeadshotsByNumber();
-    headshotUrl = headshots.get(driver.number) ?? null;
-  }
+  // Commons-or-nothing: the old OpenF1-headshot fallback is gone — those are
+  // F1 official media; the CC licence on OpenF1's DATA does not license the
+  // images (lib/openf1/headshots.ts header + design handoff §7).
+  const headshotUrl: string | null = portrait?.src ?? null;
 
   return (
     <div
@@ -347,9 +326,7 @@ export default async function DriverPage({
                     </a>{' '}
                     · {portrait.license}
                   </>
-                ) : (
-                  'Photo: Formula 1 via OpenF1'
-                )}
+                ) : null}
               </figcaption>
             </figure>
           )}
@@ -371,9 +348,8 @@ export default async function DriverPage({
               </Link>
             </div>
 
-            <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
+            <h1 className="font-serif text-[38px] md:text-[58px] font-medium tracking-[-0.02em] leading-[0.98] text-text">
               {driver.name}
-              <span style={{ color: seriesInk(driver.seriesColor) }}>.</span>
             </h1>
 
             {(nationality || age != null) && (
@@ -408,18 +384,6 @@ export default async function DriverPage({
       </header>
 
       {form && <SeasonForm form={form} />}
-
-      {trend && (
-        <section className="mb-8 border-y border-border py-4">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-            Points trajectory
-          </h2>
-          <LazySeasonTrendChart {...trend} />
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            Cumulative points by round · from race results
-          </div>
-        </section>
-      )}
 
       {driver.seriesSlug === 'f1' && (
         <section className="mb-8 border-y border-border py-4">
