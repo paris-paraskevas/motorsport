@@ -1,26 +1,26 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { NavSeriesMeta } from '@/lib/types';
-import { groupSeriesByCategory, type GroupedSeries } from '@/lib/categories';
 import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
 import { OnboardingWizard } from './OnboardingWizard';
 import { ContactModal } from './ContactModal';
-import { HeaderUtils } from './HeaderUtils';
-import { HeaderNavMenu } from './HeaderNavMenu';
-import { seriesSubPages } from '@/lib/tabs';
+import { NavPanel } from './NavPanel';
+import { NotificationBell } from './NotificationBell';
 import { PushSoundPlayer } from './PushSoundPlayer';
-import { SearchTrigger } from './search/SearchTrigger';
 
-// One nav system since 0.17.0 (operator: "navigation menu and burger bar can
-// go"): a single fixed header on every viewport — wordmark + inline links on
-// lg+ — plus the mobile bottom bar. Since 0.97.0 the lg+ links are hover/focus
-// mega-menus (HeaderNavMenu): Series → category grid, Community → Blog/Threads,
-// Social → Play/Leagues/Friends, Calendar → month jump. Everything lives inside
-// `hidden lg:flex`, so the BottomBar and any < lg viewport are byte-identical to
-// before.
+// The four-door shell (design handoff §2, panel 8b). The global nav is exactly
+// four destinations — Home, Calendar, Learn, Account — as the bottom bar on
+// phones and the wordmark + the one menu-and-search panel (NavPanel) on
+// desktop. Everything else — the series and their whole chain, blog, news,
+// social, tools — is reached by name through that panel. The six hover
+// mega-menus, the ⌘K modal and the header pill row died with this; Contact and
+// the coffee link moved to the footer, sign-in lives behind the Account door.
+// The wordmark is the only always-visible destination and goes HOME (/app),
+// never the marketing landing — which also retires the old installed-PWA
+// standalone detection (its whole job was avoiding a landing flash-trip).
 export function AppShell({
   children,
   seriesList,
@@ -28,35 +28,10 @@ export function AppShell({
 }: {
   children: React.ReactNode;
   seriesList: NavSeriesMeta[];
-  // Server-resolved (isBettingConfigured) — gates the Social nav entry so the
-  // betting/social surface only appears once the Supabase env is provisioned.
+  // Server-resolved (isBettingConfigured) — gates the Social row in the nav
+  // panel so the betting/social surface only appears once Supabase env exists.
   bettingEnabled: boolean;
 }) {
-  const pathname = usePathname();
-  const isActive = (href: string, exact = false) =>
-    exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
-  const groups = groupSeriesByCategory(seriesList);
-
-  // Installed-PWA detection (same condition as StandaloneRedirect). In the
-  // PWA the wordmark must NOT link to the landing: the standalone guard on /
-  // immediately bounces back to /app, so the click was a flash-of-landing
-  // round trip (operator-reported). Browser users keep the landing link.
-  const [standalone, setStandalone] = useState(false);
-  useEffect(() => {
-    const detect = () =>
-      setStandalone(
-        window.matchMedia('(display-mode: standalone)').matches ||
-          (navigator as Navigator & { standalone?: boolean }).standalone === true,
-      );
-    const t = setTimeout(detect, 0);
-    const mq = window.matchMedia('(display-mode: standalone)');
-    mq.addEventListener('change', detect);
-    return () => {
-      clearTimeout(t);
-      mq.removeEventListener('change', detect);
-    };
-  }, []);
-
   // Pointer glow (operator idea): a soft signal-amber halo trails the cursor to
   // highlight where the mouse is. Desktop-mouse only and off under reduced
   // motion; pointer-events:none so it never intercepts a click. Driven by a ref
@@ -110,132 +85,40 @@ export function AppShell({
       >
         Skip to content
       </a>
-      {/* Fixed (not sticky — overflow-x: hidden on body kills sticky) */}
-      <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated/85 backdrop-blur-xl border-b border-border pt-[env(safe-area-inset-top)]">
-        <div className="w-full px-4 md:px-6 lg:px-8 h-14 flex items-center gap-2 lg:gap-6">
-          {/* Wordmark → landing in the browser; → home in the installed PWA
-              (a "/" link there just flashes the landing before the standalone
-              guard bounces back). */}
+      {/* Fixed (not sticky — overflow-x: hidden on body kills sticky). 50px on
+          phones, the spec's 58px on lg+, closed by a hard 1px ink rule. */}
+      <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated border-b border-text pt-[env(safe-area-inset-top)]">
+        <div className="flex h-[50px] w-full items-center gap-3 px-[14px] lg:h-[58px] lg:gap-[22px] lg:px-10">
           <Link
-            href={standalone ? '/app' : '/'}
+            href="/app"
             data-heatmap-id="nav:wordmark"
-            className="font-display text-base font-extrabold uppercase tracking-wide text-text"
+            className="shrink-0 font-serif text-[17px] font-semibold tracking-[-0.01em] text-text lg:text-[22px]"
           >
-            Paddock<span className="text-brand">•</span>Tracker
+            <span className="hidden lg:inline">Paddock Tracker</span>
+            <span className="lg:hidden">Paddock</span>
           </Link>
 
-          {/* Inline nav on lg+ only — below that the bottom bar owns primary nav. */}
-          <nav aria-label="Sections" className="hidden lg:flex items-stretch self-stretch gap-5">
-            <Link
-              href="/app"
-              data-heatmap-id="nav:home"
-              aria-current={isActive('/app', true) ? 'page' : undefined}
-              className={`inline-flex items-center border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
-                isActive('/app', true)
-                  ? 'border-brand text-text'
-                  : 'border-transparent text-text-muted hover:text-text'
-              }`}
-            >
-              Home
-            </Link>
+          <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} />
 
-            {/* Calendar — links to the timeline; hover/focus jumps straight to a month. */}
-            <HeaderNavMenu
-              label="Calendar"
-              href="/calendar"
-              active={isActive('/calendar', true)}
-              dataHeatmapId="nav:calendar"
-              panelLabel="Jump to month"
-              panelClassName="w-64"
-            >
-              <CalendarMonthMenu />
-            </HeaderNavMenu>
-
-            {/* Series — links to the hub; hover/focus opens the category grid. */}
-            <HeaderNavMenu
-              label="Series"
-              href="/series"
-              active={isActive('/series')}
-              dataTour="series"
-              dataHeatmapId="nav:series"
-              panelLabel="Browse series"
-              panelClassName="w-[34rem] max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-4.5rem)] overflow-y-auto"
-            >
-              <SeriesMegaMenu groups={groups} />
-            </HeaderNavMenu>
-
-            {/* News is now a top-level clickable destination (→ /news); Blog +
-                Threads sit on its hover panel (was the menu-only "Community"). */}
-            <HeaderNavMenu
-              label="News"
-              href="/news"
-              active={isActive('/news') || isActive('/blog')}
-              dataHeatmapId="nav:news"
-              panelLabel="News & community"
-            >
-              <MenuLinkList
-                items={[
-                  { href: '/blog', label: 'Blog', desc: 'Analysis & recaps' },
-                ]}
-              />
-            </HeaderNavMenu>
-
-            {/* Information hub — the "questions answered" + reference section. */}
-            <HeaderNavMenu
-              label="Learn"
-              href="/information"
-              active={isActive('/information')}
-              dataHeatmapId="nav:learn"
-              panelLabel="Learn about motorsport"
-            >
-              <MenuLinkList
-                items={[
-                  { href: '/information/series-guides', label: 'Series guides', desc: 'Every championship: history & rules' },
-                  { href: '/information/formula-1', label: 'Formula 1 & Open-Wheel', desc: 'Champions, rules & records' },
-                  { href: '/information/feeder-series', label: 'Feeder Series', desc: 'The junior ladder' },
-                  { href: '/information/tracks', label: 'Tracks & Circuits', desc: 'Venues by country' },
-                  { href: '/information/map', label: 'Circuit Map', desc: 'All 138 venues on one map' },
-                  { href: '/information/general', label: 'Motorsport 101', desc: 'The basics & big debates' },
-                ]}
-              />
-            </HeaderNavMenu>
-
-            {/* Social = the community hub (session-27 consolidation): predictions
-                live ON /social (the old /play body), threads under it. */}
-            {bettingEnabled && (
-              <HeaderNavMenu
-                label="Social"
-                href="/social"
-                active={isActive('/social')}
-                dataHeatmapId="nav:social"
-                panelLabel="Social"
-              >
-                <MenuLinkList
-                  items={[
-                    { href: '/social/leagues', label: 'Leagues', desc: 'Play with friends' },
-                    { href: '/social/friends', label: 'Friends', desc: 'Requests & invites' },
-                    { href: '/social/threads', label: 'Threads', desc: 'Fan discussion' },
-                  ]}
-                />
-              </HeaderNavMenu>
-            )}
-          </nav>
-
-          <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
-            <SearchTrigger />
-            <div data-tour="account"><HeaderUtils /></div>
+          <div className="ml-auto flex shrink-0 items-center gap-3 lg:gap-4">
+            <HeaderDate />
+            <HeaderAccount />
           </div>
         </div>
       </header>
 
-      {/* pt-14 clears the fixed header; bottom padding clears the mobile
-          bottom bar (h-14 + device safe area). */}
-      <main id="main-content" tabIndex={-1} className="min-h-screen flex flex-col pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none">
+      {/* Top padding clears the fixed header; bottom padding clears the mobile
+          bottom bar (device safe area included). */}
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="min-h-screen flex flex-col pt-[50px] lg:pt-[58px] pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0 outline-none"
+      >
         <div className="flex-1">{children}</div>
         <Footer />
       </main>
 
-      <BottomBar bettingEnabled={bettingEnabled} />
+      <BottomBar />
 
       <OnboardingWizard seriesList={seriesList} />
       <ContactModal />
@@ -259,150 +142,47 @@ export function AppShell({
   );
 }
 
-// A simple labelled link list for the Community / Social menus.
-function MenuLinkList({ items }: { items: { href: string; label: string; desc: string }[] }) {
+// Today's date in the header (spec: mono 10px uppercase, desktop only).
+// useSyncExternalStore with a null server snapshot keeps the device clock out
+// of the SSR'd HTML (nothing to mismatch) without a set-state-in-effect.
+const subscribeNever = () => () => {};
+function todayLabel() {
+  return new Date()
+    .toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })
+    .replace(',', '')
+    .toUpperCase();
+}
+function HeaderDate() {
+  const date = useSyncExternalStore(subscribeNever, todayLabel, () => null);
   return (
-    <ul className="flex flex-col">
-      {items.map(it => (
-        <li key={it.href}>
-          <Link
-            href={it.href}
-            className="block rounded-md px-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-          >
-            <div className="text-sm font-semibold text-text">{it.label}</div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">{it.desc}</div>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <span className="hidden font-mono text-[10px] uppercase tracking-[0.16em] text-text-muted lg:block">
+      {date}
+    </span>
   );
 }
 
-// Category-grouped series grid (reuses groupSeriesByCategory — the same grouping
-// the /series hub and onboarding use). Leads with the F1 Telemetry & Analysis
-// hub (0.114.1) — the one cross-round destination that isn't a series tab.
-function SeriesMegaMenu({ groups }: { groups: GroupedSeries<NavSeriesMeta>[] }) {
-  const allSeries = groups.flatMap(g => g.series);
-  // The series list is a SINGLE column with the detail pane immediately to its
-  // right, so the pointer path from a series to its pages crosses no OTHER
-  // series. The earlier two-column layout let a row transited on the way to the
-  // detail hijack the pane (the classic "menu-aim" steal — you couldn't reach
-  // F2's pages without falling onto an endurance row en route); a single column
-  // makes that impossible by geometry, with no hover-intent timing hack.
-  // Defaults to the first series (F1) and follows hover/focus.
-  const [activeSlug, setActiveSlug] = useState<string | undefined>(allSeries[0]?.slug);
-  const active = allSeries.find(s => s.slug === activeSlug) ?? allSeries[0];
-  const subPages = active ? seriesSubPages(active) : [];
+// The Account door on desktop: notification bell (signed-in) + a 26px avatar
+// circle. Signed-out shows the empty circle — /settings carries the sign-in,
+// same as the bottom bar's Account cell has always behaved.
+function HeaderAccount() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   return (
-    <div className="flex flex-col gap-3">
-      {/* Cross-round F1 tools + the guides hub — compact chips so the single
-          series column below stays within the viewport. */}
-      <div className="flex flex-wrap gap-2">
-        {[
-          { href: '/f1/analysis', label: 'F1 Analysis', heatmap: 'nav:f1-analysis' },
-          { href: '/f1/compare', label: 'F1 Head-to-head', heatmap: 'nav:f1-compare' },
-          { href: '/information/series-guides', label: 'Series guides', heatmap: 'nav:series-guides' },
-        ].map(sc => (
-          <Link
-            key={sc.href}
-            href={sc.href}
-            data-heatmap-id={sc.heatmap}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
-          >
-            <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-brand-fill" />
-            {sc.label}
-            <span aria-hidden="true">→</span>
-          </Link>
-        ))}
-      </div>
-      <div className="grid grid-cols-[1fr_12rem] border-t border-border pt-3">
-        {/* Master: single column of category-grouped series. Hover/focus loads a
-            series' pages into the detail pane; click still navigates to the hub. */}
-        <div className="flex flex-col gap-3 pr-3">
-          {groups.map(g => (
-            <div key={g.category.id}>
-              <div className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
-                {g.category.label}
-              </div>
-              <ul className="flex flex-col">
-                {g.series.map(s => (
-                  <li key={s.slug}>
-                    <Link
-                      href={`/series/${s.slug}`}
-                      onMouseEnter={() => setActiveSlug(s.slug)}
-                      onFocus={() => setActiveSlug(s.slug)}
-                      data-heatmap-id={`nav:series:${s.slug}`}
-                      className={`flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-(--duration-fast) hover:bg-surface ${
-                        active?.slug === s.slug ? 'bg-surface' : ''
-                      }`}
-                    >
-                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
-                      <span className="truncate text-[13px] font-medium text-text">{s.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        {/* Detail: the hovered/focused series' pages. */}
-        {active && (
-          <div className="border-l border-border pl-3">
-            <div className="mb-1.5 flex items-center gap-2">
-              <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: active.color }} />
-              <span className="truncate font-display text-sm font-extrabold uppercase tracking-wide text-text">
-                {active.name}
-              </span>
-            </div>
-            <ul className="flex flex-col">
-              {subPages.map(p => (
-                <li key={p.key}>
-                  <Link
-                    href={p.href}
-                    data-heatmap-id={`nav:series:${active.slug}:${p.key}`}
-                    className="block rounded-md px-2 py-1 text-[13px] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
-                  >
-                    {p.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <span className="flex items-center gap-2" data-tour="account">
+      {isLoaded && isSignedIn && <NotificationBell />}
+      <Link
+        href="/settings"
+        aria-label="Account"
+        data-heatmap-id="nav:account"
+        className="hidden lg:block h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full border border-border-strong bg-surface"
+      >
+        {isLoaded && isSignedIn && user?.imageUrl && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={user.imageUrl} alt="" className="h-full w-full object-cover" />
+          </>
         )}
-      </div>
-    </div>
-  );
-}
-
-// Rolling 12-month jump list → /calendar?m=YYYY-MM. CalendarView reads the ?m=
-// param to seed its anchor; the in-page picker stays season-aware.
-function CalendarMonthMenu() {
-  // Computed lazily on first mount — which only happens client-side, when the
-  // menu opens (HeaderNavMenu renders children only while open). So `new Date()`
-  // is the device clock and these months never reach the SSR'd HTML.
-  const [months] = useState<{ key: string; label: string }[]>(() => {
-    const now = new Date();
-    const out: { key: string; label: string }[] = [];
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-      out.push({
-        key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
-        label: d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
-      });
-    }
-    return out;
-  });
-  return (
-    <div className="grid grid-cols-2 gap-1">
-      {months.map(m => (
-        <Link
-          key={m.key}
-          href={`/calendar?m=${m.key}`}
-          className="rounded-md px-3 py-1.5 text-center font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text"
-        >
-          {m.label}
-        </Link>
-      ))}
-    </div>
+      </Link>
+    </span>
   );
 }

@@ -11,6 +11,22 @@ export function openContactModal() {
   window.dispatchEvent(new Event(CONTACT_OPEN_EVENT));
 }
 
+// The footer's Contact entry (the header pill died with the four-door shell).
+// Lives here rather than in Footer.tsx because opening the modal needs a client
+// handler and the footer is a server component.
+export function ContactFooterButton() {
+  return (
+    <button
+      type="button"
+      onClick={openContactModal}
+      data-heatmap-id="footer:contact"
+      className="block w-full py-0.5 text-left text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+    >
+      Contact
+    </button>
+  );
+}
+
 const CATEGORIES = [
   { value: 'general', label: 'General' },
   { value: 'bug', label: 'Bug report' },

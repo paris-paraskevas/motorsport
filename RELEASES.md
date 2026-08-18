@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.271.0 — 2026-08-18
+
+**Navigation, reimagined: four doors and one search.** The site now has exactly four destinations — Home, Calendar, Learn and Account — on every page, and one combined menu-and-search field that opens the whole site as a printed index: every series, the blog, the news wire and more. Type anything — a driver, a team, a race weekend — and it finds it. The hover menus and the separate search window are gone; getting anywhere is now one tap and, at most, one word.
+
 ## 0.270.0 — 2026-08-18
 
 **A sixth theme: Paper.** Warm newsprint, black ink and a deep oxblood accent, now in Settings → Theme. It's the first visible piece of a larger redesign of the whole site that's on its way — for now, it's simply there to try.
