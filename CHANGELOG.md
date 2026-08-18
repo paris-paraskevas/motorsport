@@ -4,10 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.285.0 — 2026-08-18
+
+### Changed
+- **Account leads with what you follow** (design handoff §4.4, panel 11c — light pass). New `FollowedChips` island: the followed series as tint-barred chips + a dashed "Choose series / + Add" chip into `/settings/series`, with the consequence stated honestly ("the calendar and the wire narrow to these · stored on this device" — the home lead is all-series for now, so it isn't claimed). A **Time zone row shows the device's actual zone** ("every time on the site is shown in it" — a wrong one silently breaks the product, so the page surfaces the value). The dead **"Replay the tour" row is removed** — its Tour died with the widget cutover (0.275.0), so the link pointed at nothing.
+- Deferred from 11c (documented): sign-out / export-your-data footer rows — session controls live in the Clerk surface today; wiring bespoke ones is its own decision.
+
 ## 0.284.0 — 2026-08-18
 
 ### Changed
-- **Telemetry & analysis leads with the latest weekend** (design handoff §4.14, panel 11e). The page states **"Formula 1 only"** at the top instead of pretending to be universal; the newest completed round's two tools lead in an ink band — Qualifying Analysis, Race Story — with the season-long **Head-to-head folded in as the third card** (\`/f1/compare\` is no longer an orphaned route); then **every round of the season in one list**, with unrun weekends dimmed and labelled "when the cars run" rather than looking broken, and the cancelled round stated. OpenF1 attribution stays stated once at the foot.
+- **Telemetry & analysis leads with the latest weekend** (design handoff §4.14, panel 11e). The page states **"Formula 1 only"** at the top instead of pretending to be universal; the newest completed round's two tools lead in an ink band — Qualifying Analysis, Race Story — with the season-long **Head-to-head folded in as the third card** (`/f1/compare` is no longer an orphaned route); then **every round of the season in one list**, with unrun weekends dimmed and labelled "when the cars run" rather than looking broken, and the cancelled round stated. OpenF1 attribution stays stated once at the foot.
 
 ## 0.283.0 — 2026-08-18
 
