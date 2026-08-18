@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.278.0 — 2026-08-18
+
+### Changed
+- **The series hub, reimagined** (design handoff §4.5, panel 7a). All fifteen rows visible on desktop under six serif category headings with counts — the accordions are gone ("a directory that opens empty isn't a directory"). Each row answers the expanding fan's two questions: `bar · name · R{n} · next event · dates · broadcaster · →` — the **broadcaster comes from each `meta.json`'s `watch.service`** and surfaces here for the first time outside a weekend page. Current-weekend dates render in the accent; a series with no next round states its real status in italic ("Season complete · London E-Prix — Race 2", "One race a year · single event") instead of vanishing. A **"Racing this weekend" band** of raised cards leads the page. The five per-row sub-page links are stated once under the title instead of seventy-five times. Mobile keeps the six categories as collapsible headers, first expanded. Sub-1 round numbers (groupByWeekend's unnumbered-weekend fallback) render without a fake "R0".
+
 ## 0.277.0 — 2026-08-18
 
 ### Changed
