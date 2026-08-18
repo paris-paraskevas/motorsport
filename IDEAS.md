@@ -15,6 +15,12 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 5. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (official archive × Wikipedia rendered HTML, three-way name check; see 0.266.0). One-two series per session. ADAC 24h + NLS never.
 6. **Indexing follow-through**: GSC "Validate fix" clicked 2026-08-06, awaiting Google's re-crawl verdict on the 45 noindex URLs.
 
+## Inbox (2026-08-18 — session 28)
+
+- **Delete the four orphaned shell components** (`HeaderNavMenu.tsx`, `HeaderUtils.tsx`, `search/SearchTrigger.tsx`, `search/SearchOverlay.tsx`) once #679 is reviewed — zero imports remain; kept only for the deletion-approval rule.
+- **Dev hydration-mismatch warning for stored non-default themes** — ThemeScript's pre-paint attribute correction vs SSR `class="dark"`; pre-existing (fires under carbon), consider `suppressHydrationWarning` on `<html>` in the three root layouts.
+- **Reimagining §9 step 3 next**: the session-tab + classification generators from the series contract, before any results page.
+
 ## Inbox (2026-08-06 — session 27 close)
 
 - **Remote-branch audit**: `git fetch --prune` shows **328 non-core branches on origin** — the session-26 "380 → 34" prune never reached the remote. Audit into merged-safe (delete) vs unique-commits (operator's word per branch); one name collision already bit (feat/champions-depth-motogp).
