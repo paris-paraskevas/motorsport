@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.279.0 — 2026-08-18
+
+**Series pages now lead with the story of the season.** Open any championship and you get the title fight as a chart, the last result and the next round side by side, and the whole season as one list — including rounds that moved (Bahrain's race at Sepang is flagged right in the row) and rounds that were cancelled, stated plainly instead of hidden. Everything else — drivers, champions, rules, history — sits in one reference row at the foot.
+
 ## 0.278.2 — 2026-08-18
 
 **Behind the scenes.** The background-refresh repair is now actually complete.
