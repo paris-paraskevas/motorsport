@@ -1,158 +1,150 @@
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
-import { HomeContent } from '@/components/HomeContent';
-import { HOME_WEEK_MS } from '@/lib/date';
+import { groupByWeekend } from '@/lib/group';
+import { weekendLabel } from '@/lib/weekend';
 import { fetchAggregatedNews } from '@/lib/news';
-import { matchCircuit } from '@/lib/circuits';
-import { fetchWeather, forecastFor, type DailyWeather, type WeatherForecast } from '@/lib/weather';
-import { circuitLayoutFor, type CircuitLayout } from '@/lib/circuit-layout';
-import { buildRoundLookupAcrossSeries } from '@/lib/weekend';
+import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/home-results';
+import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
+import {
+  HomeLead,
+  type HomeLeadChanged,
+  type HomeLeadNextItem,
+  type HomeLeadResult,
+  type HomeLeadWireItem,
+} from '@/components/HomeLead';
 import { PAGE_WIDE } from '@/lib/site';
 
 export const revalidate = 300;
 
+// The editorial home (design handoff §4.1): four fixed server-rendered blocks —
+// the result that just happened, what it changed, what's next, the wire. The
+// eighteen-widget gallery this replaced (HomeContent) is retired: full cutover,
+// operator decision 2026-08-18; the deletion sweep is a follow-up PR. Follows
+// stay device-local for now, so the lead is built from ALL series — identical
+// for every visitor, which is also what keeps this page ISR-cacheable.
+
 export const metadata: Metadata = {
-  title: 'Your paddock — live schedule & news',
+  title: 'Your paddock — what just happened, and what it changed',
   description:
-    'Live motorsport schedule and news across F1, MotoGP, WEC, Formula E, WRC, IndyCar, NASCAR, IMSA, DTM and more — in your local time.',
+    'The latest result, what it changed in the championship, what races next and the motorsport wire — F1, MotoGP, WEC, IndyCar, NASCAR, WRC and more, in your local time.',
   alternates: { canonical: '/app' },
 };
 
-async function weatherForSessions(
-  candidates: Array<{ session: { uid: string; start: Date; location?: string; title: string } }>,
-): Promise<Record<string, DailyWeather>> {
-  // Look up weather for up to the next 12 sessions; circuit forecasts dedupe
-  // by lat/lon so each unique venue costs at most one upstream call.
-  const top = candidates.slice(0, 12);
-  const forecasts = new Map<string, WeatherForecast | null>(); // key: lat,lon
-  const result: Record<string, DailyWeather> = {};
-
-  for (const item of top) {
-    const c = await matchCircuit(item.session.location, item.session.title);
-    if (!c) continue;
-    const key = `${c.lat},${c.lon}`;
-    let forecast = forecasts.get(key);
-    if (forecast === undefined) {
-      forecast = await fetchWeather(c.lat, c.lon);
-      forecasts.set(key, forecast);
-    }
-    if (!forecast) continue;
-    const daily = forecastFor(forecast, item.session.start);
-    if (daily) result[item.session.uid] = daily;
-  }
-  return result;
-}
-
-async function layoutsForSessions(
-  candidates: Array<{ session: { uid: string; location?: string; title: string } }>,
-): Promise<Record<string, CircuitLayout>> {
-  // Resolve each shipped session's circuit to its curated track-layout schematic
-  // (F1 2026 calendar in v1). The client (HomeContent) picks the next followed
-  // round that has one — mirrors weatherByUid (server resolves, client filters).
-  const result: Record<string, CircuitLayout> = {};
-  for (const item of candidates) {
-    const layout = await circuitLayoutFor(item.session.location, item.session.title);
-    if (layout) result[item.session.uid] = layout;
-  }
-  return result;
+function ageLabel(pubDate: Date, now: Date): string {
+  const mins = Math.max(0, Math.round((now.getTime() - pubDate.getTime()) / 60000));
+  if (mins < 90) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 36) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
 }
 
 export default async function Home() {
-  const all = await loadAllSeries();
   const now = new Date();
+  const all = await loadAllSeries();
+  const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
 
-  const flat = all
-    .flatMap(s =>
-      s.sessions.map(session => ({
-        session,
-        color: s.meta.color,
-        seriesName: s.meta.name,
-        seriesSlug: s.meta.slug,
-        watch: s.meta.watch,
-      })),
+  // ── 1. The result that just happened: newest finished race across every
+  // covered series (KV-warmed feeds; fail-soft nulls just drop the band). ──
+  const latest = (
+    await Promise.all(
+      HOME_RESULTS_SLUGS.map(async slug => {
+        const race = await fetchLatestPodium(slug);
+        return race ? { slug, race } : null;
+      }),
     )
-    .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());
+  )
+    .filter((x): x is { slug: string; race: LatestRace } => x !== null)
+    .sort((a, b) => new Date(b.race.date).getTime() - new Date(a.race.date).getTime())[0];
 
-  const upcoming = flat.filter(x => x.session.end >= now);
-
-  // Payload diet (audit 2-2/3-2): the client renders live + this week + one
-  // "next" candidate per series — shipping the entire remaining season
-  // (~hundreds of KB serialized twice) bought nothing but the beyondCount
-  // integer, which the per-series counts below now carry instead.
-  const horizon = now.getTime() + HOME_WEEK_MS;
-  const inWindow = upcoming.filter(x => x.session.start.getTime() <= horizon);
-  const firstBeyondBySeries = new Map<string, (typeof upcoming)[number]>();
-  for (const x of upcoming) {
-    if (x.session.start.getTime() <= horizon) continue;
-    if (!firstBeyondBySeries.has(x.seriesSlug)) {
-      firstBeyondBySeries.set(x.seriesSlug, x);
+  let result: HomeLeadResult | null = null;
+  if (latest) {
+    const meta = metaBySlug.get(latest.slug);
+    const p2 = latest.race.podium.find(p => p.position === 2);
+    if (meta) {
+      result = {
+        seriesSlug: latest.slug,
+        seriesName: meta.name,
+        color: meta.color,
+        raceName: latest.race.raceName,
+        round: latest.race.round,
+        dateIso: latest.race.date,
+        podium: latest.race.podium,
+        // Only a value that reads as a gap is a margin (winner rows carry
+        // total time; some feeds carry status strings instead).
+        margin: p2?.time && p2.time.startsWith('+') ? p2.time : undefined,
+        weekendHref: `/series/${latest.slug}/weekend/${latest.race.round}`,
+      };
     }
   }
-  const homeItems = [...inWindow, ...firstBeyondBySeries.values()].sort(
-    (a, b) => a.session.start.getTime() - b.session.start.getTime(),
-  );
 
-  // Mirrors HomeContent's upcomingItems predicate exactly — counts must
-  // agree with what the client would have computed from the full season.
-  const upcomingCountBySeries: Record<string, number> = {};
-  for (const x of upcoming) {
-    const isUpcoming = x.session.dateOnly
-      ? x.session.end > now
-      : x.session.start > now;
-    if (!isUpcoming) continue;
-    upcomingCountBySeries[x.seriesSlug] =
-      (upcomingCountBySeries[x.seriesSlug] ?? 0) + 1;
+  // ── 2. What it changed: the lead series' championship top-5 + leader gap. ──
+  let changed: HomeLeadChanged | null = null;
+  if (result && isEligibleStandingsSeries(result.seriesSlug)) {
+    const meta = metaBySlug.get(result.seriesSlug);
+    const brief = meta ? await fetchStandingsBrief(result.seriesSlug, meta.season) : null;
+    if (brief && brief.top.length > 0) {
+      changed = {
+        seriesName: result.seriesName,
+        leader: brief.leader,
+        gapToSecond: brief.gapToSecond,
+        top: brief.top,
+        winnerName: result.podium.find(p => p.position === 1)?.name,
+      };
+    }
   }
 
-  const seriesBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
+  // ── 3. What's next: the next three weekends across all series. ──
+  const upcomingWeekends = all
+    .flatMap(s => {
+      try {
+        return groupByWeekend(s.sessions, now, s.rounds)
+          .filter(w => !w.isPast && w.sessions.some(x => x.end >= now))
+          .map(w => ({ s, w, firstStart: w.sessions.reduce((min, x) => (x.start < min ? x.start : min), w.sessions[0].start) }));
+      } catch {
+        return [];
+      }
+    })
+    .sort((a, b) => a.firstStart.getTime() - b.firstStart.getTime())
+    .slice(0, 3);
+
+  const next: HomeLeadNextItem[] = upcomingWeekends.map(({ s, w, firstStart }) => ({
+    seriesSlug: s.meta.slug,
+    seriesName: s.meta.name,
+    color: s.meta.color,
+    title: weekendLabel(w, w.round).title,
+    dateRangeLabel: w.dateRangeLabel,
+    firstStartIso: firstStart > now ? firstStart.toISOString() : null,
+    href: `/series/${s.meta.slug}/weekend/${w.round}`,
+  }));
+
+  // ── 4. The wire: the five newest aggregated headlines, source named. ──
   const rawNews = await fetchAggregatedNews();
-  const news = rawNews.flatMap(item => {
-    const meta = seriesBySlug.get(item.seriesSlug);
-    if (!meta) return [];
-    return [{
-      title: item.title,
-      link: item.link,
-      pubDate: item.pubDate.toISOString(),
-      description: item.description,
-      seriesSlug: item.seriesSlug,
-      seriesName: meta.name,
-      seriesColor: meta.color,
-    }];
-  });
-
-  const weatherByUid = await weatherForSessions(homeItems);
-  const circuitLayoutByUid = await layoutsForSessions(homeItems);
-
-  // Round lookup only for sessions actually shipped to the client.
-  const roundLookup = buildRoundLookupAcrossSeries(all, now);
-  const roundByKey: Record<string, number> = {};
-  for (const x of homeItems) {
-    const key = `${x.seriesSlug}:${x.session.uid}`;
-    const round = roundLookup.get(key);
-    if (round) roundByKey[key] = round;
-  }
-
-  // JUST MISSED data is fetched client-side from /api/just-missed (cacheable
-  // Ajax) — keeping the WEC live-component fetch off this render is what lets
-  // /app stay statically generated / edge-cached. See HomeContent.
-
-  // Minimal series list for the home launcher's Standings/Results pickers.
-  const launcherSeries = all
-    .map(s => ({ slug: s.meta.slug, name: s.meta.name, color: s.meta.color, category: s.meta.category }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const wire: HomeLeadWireItem[] = rawNews
+    .slice()
+    .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+    .slice(0, 5)
+    .flatMap(item => {
+      const meta = metaBySlug.get(item.seriesSlug);
+      if (!meta) return [];
+      let sourceHost = 'source';
+      try {
+        sourceHost = new URL(item.link).hostname.replace(/^www\./, '');
+      } catch {
+        /* keep the fallback label */
+      }
+      return [{
+        title: item.title,
+        link: item.link,
+        sourceHost,
+        ageLabel: ageLabel(item.pubDate, now),
+        seriesName: meta.name,
+        seriesColor: meta.color,
+      }];
+    });
 
   return (
     <div className={PAGE_WIDE}>
-      <HomeContent
-        items={homeItems}
-        news={news}
-        weatherByUid={weatherByUid}
-        circuitLayoutByUid={circuitLayoutByUid}
-        roundByKey={roundByKey}
-        serverNow={now.toISOString()}
-        upcomingCountBySeries={upcomingCountBySeries}
-        series={launcherSeries}
-      />
+      <HomeLead result={result} changed={changed} next={next} wire={wire} />
     </div>
   );
 }

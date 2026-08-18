@@ -34,6 +34,10 @@ export interface PodiumEntry {
   name: string;
   // Team (single-seater) or crew/car number (endurance). Optional.
   detail?: string;
+  // Winner's total time / others' gap string, exactly as the feed carries it
+  // ("+15.080"). Optional — the home lead shows the winning margin from P2's
+  // value only when it reads as a gap.
+  time?: string;
 }
 
 export interface LatestRace {
@@ -90,7 +94,7 @@ export function latestRaceFromFlat(races: RaceResult[], nowMs: number): LatestRa
     .filter(e => e.position >= 1 && e.position <= 3)
     .sort((a, b) => a.position - b.position)
     .slice(0, 3)
-    .map(e => ({ position: e.position, name: e.driverName, detail: e.team || undefined }));
+    .map(e => ({ position: e.position, name: e.driverName, detail: e.team || undefined, time: e.time }));
   if (podium.length === 0) return null;
   return {
     round: latest.round,
@@ -115,6 +119,7 @@ async function fetchWecLatest(nowMs: number): Promise<LatestRace | null> {
       position: e.position,
       name: e.team || e.drivers || `Car #${e.carNumber}`,
       detail: e.drivers || (e.carNumber ? `#${e.carNumber}` : undefined),
+      time: e.position === 1 ? e.elapsedTime : e.gap,
     }));
   if (podium.length === 0) return null;
   return {
@@ -132,7 +137,10 @@ export async function fetchLatestPodium(
   opts: { force?: boolean } = {},
 ): Promise<LatestRace | null> {
   if (!homeResultsSupported(slug)) return null;
-  const key = `paddock:home:podium:${slug}:${new Date().getUTCFullYear()}`;
+  // v2: PodiumEntry gained `time` (the winning-margin source for the home
+  // lead) — new key so stale-shaped cached values age out instead of hiding
+  // the margin until the next warm-cron force.
+  const key = `paddock:home:podium:v2:${slug}:${new Date().getUTCFullYear()}`;
   // The warm cron passes `force` to bypass the read-through and refresh the KV
   // on a timer (so the /api/just-missed request path never hits upstream cold).
   if (!opts.force) {

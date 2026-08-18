@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.274.0 — 2026-08-18
+
+### Changed
+- **The editorial home — the eighteen-widget gallery is gone** (design handoff §4.1, panels 1b/2a; operator decision 2026-08-18: full cutover, no survivors). `app/(app)/app/page.tsx` rewritten around four fixed, server-rendered blocks in the new `components/HomeLead.tsx`: **(1) the result that just happened** — newest finished race across the covered series via `fetchLatestPodium` (KV-warmed), serif headline generated as "X wins the Y" (the mock's editorial prose is illustrative; we don't auto-author prose), tint bar + mono eyebrow, top-3 classification rail, winning margin from P2's gap, "Full weekend report →"; **(2) what it changed** — that series' `fetchStandingsBrief` leader + gap headline and top standings bars with points + deltas-to-leader (the race winner's row carries the accent bar); **(3) what's next** — the next three weekends across all series via `groupByWeekend`, first with the live `NextRaceCountdown`; **(4) the wire** — the five newest aggregated headlines, source hostname + age on every row. No client fetch blocks the page; `revalidate: 300` ISR preserved (follows stay device-local, so the lead is all-series — server-follows is a later initiative).
+- `lib/home-results.ts`: `PodiumEntry` gains `time` (winner total / others' gap, straight from the feeds) — the margin source; KV key bumped to `:v2` so stale-shaped caches age out. Test added pinning the passthrough.
+- `/settings` "Customise home" row removed; the widget engine (`HomeContent`, 2,225 lines), `/settings/customize`, `lib/homeLayout.ts` and `/api/just-missed` are now **orphaned — deletion sweep is the follow-up PR** (approval-gated). The warm-results cron stays: it feeds the lead's podium KV. The home Tour dies with `HomeContent` (it spotlighted the retired widgets); the onboarding wizard is unaffected.
+- Deliberate deviation: the lead column caps at 1180px per the handoff inside the fluid `PAGE_WIDE` (the 2026-07-09 reactive-width decision governs the shell; the cap governs reading measure only).
+
 ## 0.273.0 — 2026-08-18
 
 ### Changed
@@ -11,6 +19,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 - **`NavPanel`** — one control, one panel, both viewports: click/focus opens the printed index (the four doors with mono subtitles, all fifteen series grouped by category with counts + 3px tint bars, Read: Blog/News/Social-gated); typing filters that index in place and runs the full static search index beneath (drivers, teams, weekends…, deduped against printed rows), reusing the `/api/search` fetch-once cache + `searchDocs`. ⌘K / Ctrl-K / `/` still focus the field — the visible hint chrome is gone by design. Escape closes; outside click closes; route change closes via the render-adjustment pattern (`react-hooks/set-state-in-effect` clean). Full-bleed sheet on phones with the bottom bar left visible (per panel 8b); anchored drop on lg+.
 - **`components/BottomBar.tsx`** — four equal cells (was 5–6), spec measurements: 1px `--border` dividers, 2px `--brand` active rule inset 14px, mono 10px labels, icons 20px stroke 1.8/2.2. The `bettingEnabled` prop moved to the panel (Social row) — the bar never changes per section now.
 - `lib/search-index.ts`: `/f1/analysis` added to `STATIC_PAGES` — it was only reachable from the retired mega-menu chips; the four-door IA reaches it by name, so it must be in the index.
+
 ## 0.272.0 — 2026-08-18
 
 ### Changed
