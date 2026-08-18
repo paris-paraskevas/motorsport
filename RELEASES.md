@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.280.0 — 2026-08-18
+
+**Finished race weekends now read like a report.** The result leads the page — podium, gaps and points at the top — followed by how the weekend actually unfolded session by session, the venue with its track map, and what the result changed in the championship. Car upgrades moved to the foot where an appendix belongs. Upcoming weekends keep leading with the schedule and where to watch.
+
 ## 0.279.0 — 2026-08-18
 
 **Series pages now lead with the story of the season.** Open any championship and you get the title fight as a chart, the last result and the next round side by side, and the whole season as one list — including rounds that moved (Bahrain's race at Sepang is flagged right in the row) and rounds that were cancelled, stated plainly instead of hidden. Everything else — drivers, champions, rules, history — sits in one reference row at the foot.
