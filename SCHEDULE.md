@@ -1384,6 +1384,19 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Tue 2026-08-18 (session 28 — the Paper reimagining begins)
+
+Operator delivered the full UI/UX reimagining design handoff (`design_handoff_paddock_ui_reimagining`: 15 surfaces, "Paper" identity, four-door IA, series contract) and said go.
+
+- Plan: **verify the handoff against the repo** → **PR: Paper foundation** (Newsreader font + `paper` theme block + all three registries, opt-in, NOT default) → build/tests + browser-verify + screenshots feeding the later flip decision. Stretch: AppShell four doors.
+- → done: **handoff review** — all 37 referenced paths + every named symbol resolve; the numeric claims are exact (18 widgets/15 hidden, 75 answers, betting constants, licensing comments verbatim); 3 nits (shorthand slugs in the accent table, "75 links" is rhetorical — the mega-menu is master-detail, dormant `grid` market type). Discovered: the handoff's Paper palette is hex-identical to shipped Newsprint; `seriesInk` already implements the 52% tint darkening; `--numeral` already fills the `--ink-strong` role — no new tokens needed.
+- → done: #678 opened for the parked turbopack branch, then **closed as duplicate** — #677 had already merged it (2026-08-17); local main was stale. gh active account switched parisparaskevas-hub → paris-paraskevas en route (it couldn't create PRs on the repo).
+- Won't touch this session: default-theme flip + Newsprint's fate (visual decision with screenshots, later), results parsers / `[session]` logic, content facts, prod Supabase/infra, blog, HANDOFF trim.
+
+Active: _(none captured yet)_
+
+---
+
 ### Mon 2026-08-03 (session 26 — blog editor rebuild + article imports)
 
 Operator's order: **1. blog editor section replan/rebuild** (drafts/new-post authoring must leave the `/blog` listing for a dedicated page; visual options BEFORE build) · **2. item 13 article imports** (`post.original_url`, off-site canonical, provenance on the post; migration — operator names the SQL) · then 14 (become-an-author + `contributor` role) · 17 (format button) · 20 (13 series calendars unverified) · 25 (dev-loop speed) · 26 (prod perf re-baseline).

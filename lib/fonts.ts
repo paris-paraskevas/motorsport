@@ -1,4 +1,4 @@
-import { IBM_Plex_Sans, IBM_Plex_Sans_Condensed, IBM_Plex_Mono } from 'next/font/google';
+import { IBM_Plex_Sans, IBM_Plex_Sans_Condensed, IBM_Plex_Mono, Newsreader } from 'next/font/google';
 
 // The type system (operator board, 2026-08-03 "READING COMFORT"):
 //   PLEX SANS 400 app-wide · PLEX SANS CONDENSED quarantined to names ·
@@ -31,6 +31,20 @@ export const plexMono = IBM_Plex_Mono({
   display: 'swap',
 });
 
+// The Paper editorial serif (design handoff 2026-08: page titles, headlines,
+// row names, body prose on the reimagined surfaces). Variable wght 200-800 +
+// the opsz axis — optical sizing is load-bearing here: the same family sets
+// 66px heroes and 18px body. No Greek upstream (latin/latin-ext/vietnamese
+// only), so Greek names inside serif surfaces fall through per-glyph to Plex
+// Sans via the --font-serif chain in globals.css.
+export const newsreader = Newsreader({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  variable: '--font-newsreader',
+  display: 'swap',
+});
+
 /** The html-level class string every root layout applies: Sans as the base
- *  family class, the other two as CSS variables for the token layer. */
-export const FONT_CLASSES = `${plexSans.variable} ${plexCondensed.variable} ${plexMono.variable}`;
+ *  family class, the others as CSS variables for the token layer. */
+export const FONT_CLASSES = `${plexSans.variable} ${plexCondensed.variable} ${plexMono.variable} ${newsreader.variable}`;

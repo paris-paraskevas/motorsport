@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.270.0 — 2026-08-18
+
+### Added
+- **Paper foundation — the reimagining's first PR** (design handoff `design_handoff_paddock_ui_reimagining`, verified claim-by-claim against the repo this session: every referenced path/symbol resolves; its numeric claims — 18 home widgets/15 hidden, 75 answers, betting constants — are exact). Two pieces:
+  1. **Newsreader** joins `lib/fonts.ts` as the editorial serif: variable wght 200–800 **with the `opsz` axis** (the same family sets 66px heroes and 18px body on the redesigned surfaces), normal + italic, latin/latin-ext. No Greek upstream, so the new `--font-serif` token chain in `globals.css` puts Plex Sans second for per-glyph fallback on Greek names. Dyslexic mode (`html[data-dyslexic='1']`) overrides `--font-serif` to OpenDyslexic like the other three font tokens. All four root layouts inherit via `FONT_CLASSES` — no layout edits.
+  2. The **`paper` theme** — sixth theme, opt-in at `/settings/theme`, **not** the default (the flip + Newsprint's fate are a later, screenshot-driven decision). The handoff's Paper palette is hex-identical to the shipped Newsprint chassis, so the block reuses those WCAG-gated values with the accent moved from brown-amber `#7d5300` to oxblood `#8c1c13` (≈8.9:1 on the paper ground). Registered in all three theme registries: the `globals.css` `:root[data-theme='paper']` block + the light-theme per-element `--tint` re-derivation selector, the `ThemeScript` whitelist (dark-class toggle refactored from a chained inequality to a light-set lookup `L`), and the `ThemePicker` `THEMES` entry (grid `lg:grid-cols-6`→`7`, "Five themes"→"Six"; the `/settings` Theme row copy likewise).
+- Discovered en route, no code needed: `seriesInk()`'s `--series-ink-mix` 52% `color-mix` already implements the handoff's series-tint darkening rule, and the handoff's `--ink-strong` role is the existing `--numeral` token.
+
 ## 0.269.0 — 2026-08-06
 
 ### Changed

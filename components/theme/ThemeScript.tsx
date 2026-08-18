@@ -13,13 +13,14 @@ export const THEME_STORAGE_KEY = 'paddock:theme';
 export const DYSLEXIC_STORAGE_KEY = 'paddock:dyslexic';
 
 const INIT = `(function(){try{
-var K={midnight:1,carbon:1,ember:1,newsprint:1,circuit:1};
+var K={midnight:1,carbon:1,ember:1,newsprint:1,circuit:1,paper:1};
+var L={newsprint:1,circuit:1,paper:1};
 var t=localStorage.getItem('${THEME_STORAGE_KEY}');
 if(t!=='system'&&!K[t])t='midnight';
 var r=t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'midnight':'newsprint'):t;
 var d=document.documentElement;
 d.dataset.theme=r;
-d.classList.toggle('dark',r!=='newsprint'&&r!=='circuit');
+d.classList.toggle('dark',!L[r]);
 if(localStorage.getItem('${DYSLEXIC_STORAGE_KEY}')==='1')d.dataset.dyslexic='1';
 }catch(e){}})();`;
 
