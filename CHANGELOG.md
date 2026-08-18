@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.276.0 — 2026-08-18
+
+### Changed
+- **NavPanel v2 — the panel-2a refinements.** The desktop panel widens to the mock's three-column surface (doors + Read | series in two category columns with the "every series opens with calendar · standings · results · drivers · champions" annotation | Learn links + the circuit-map card); an **Also** foot rule carries Predictions & leagues (gated) · Threads · Write for Paddock · About · Changelog in mono; **Writers** (`/authors`) joins Read; the burger becomes an **X** while open and an "Esc to close" hint sits in the field (lg+). Filtering covers the new sections and the search dedupe set. Recorded judgments: panel 8b (a later turn) supersedes 2a's NOW group, so its duplicative "Latest results"/"This weekend" rows are omitted, and "Settings →" is dropped from the foot — the Account door covers it (the design's own anti-repetition rule).
+
 ## 0.275.0 — 2026-08-18
 
 ### Removed
