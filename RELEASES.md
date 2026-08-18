@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.272.0 — 2026-08-18
+
+**Behind the scenes.** Groundwork for the redesigned results pages: the logic that knows how every championship's race weekend is shaped — sprints, multi-class fields, feature races, rally stages — now lives in one tested place. Nothing visible changes yet.
+
 ## 0.270.0 — 2026-08-18
 
 **A sixth theme: Paper.** Warm newsprint, black ink and a deep oxblood accent, now in Settings → Theme. It's the first visible piece of a larger redesign of the whole site that's on its way — for now, it's simply there to try.

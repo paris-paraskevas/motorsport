@@ -6,36 +6,33 @@ import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
 import { circuitLayoutFor } from '@/lib/circuit-layout';
 import { matchCircuitEntry, venueCandidates } from '@/lib/circuits';
-import type { Weekend } from '@/lib/types';
 import { LocalTime } from '@/components/LocalTime';
 import {
   sessionBySlug,
   sessionSlug,
   weekendFor,
   weekendLabel,
+  weekendSessionNav,
   weekendStartEnd,
 } from '@/lib/weekend';
 import {
   fetchOpenF1WeekendSessions,
   fetchSessionClassification,
   hasResolvedDrivers,
-  type OpenF1Session,
   type SessionClassification,
 } from '@/lib/results/openf1';
-import { fetchWecSeasonResults, WEC_RESULT_CLASSES } from '@/lib/results/wec';
-import { fetchF2SeasonResults } from '@/lib/results/f2';
-import { fetchF3SessionResults } from '@/lib/results/f3';
+import {
+  matchOpenF1Session,
+  isRaceLikeTitle,
+  CLASS_RESULT_SERIES,
+  FORMULA_SESSION_SERIES,
+  fetchClassClassifications,
+  fetchFormulaNonRaceClassification,
+  fetchRoundClassification,
+} from '@/lib/results/session-classification';
 import { fetchMotoGPSessionClassification } from '@/lib/results/motogp';
 import { fetchWsbkSessionClassification } from '@/lib/results/wsbk';
 import { fetchWrcStageClassification } from '@/lib/results/wrc';
-import { fetchImsaSeasonResults } from '@/lib/results/imsa';
-import { IMSA_CLASSES } from '@/lib/standings/imsa';
-import {
-  fetchAllGtWorldSeasonRaces,
-  type GtWorldRaceResult,
-} from '@/lib/results/gt-world';
-import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
-import type { RaceResult, Series } from '@/lib/types';
 import { withSocialMeta } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
@@ -90,228 +87,9 @@ function parseRound(raw: string): number | null {
   return Number.isInteger(n) && n >= 1 ? n : null;
 }
 
-// Match our curated session to its OpenF1 twin: slugified name first, then
-// nearest start time within 3h — names drift ("Sprint Qualifying" vs
-// "Sprint Shootout" eras), start times don't.
-function matchOpenF1Session(
-  candidates: OpenF1Session[],
-  slug: string,
-  start: Date,
-): OpenF1Session | null {
-  const byName = candidates.find(s => sessionSlug(s.session_name) === slug);
-  if (byName) return byName;
-  let best: OpenF1Session | null = null;
-  let bestDelta = 3 * 3600 * 1000;
-  for (const s of candidates) {
-    const delta = Math.abs(new Date(s.date_start).getTime() - start.getTime());
-    if (delta < bestDelta) {
-      bestDelta = delta;
-      best = s;
-    }
-  }
-  return best;
-}
-
-// Race-session classifications for non-F1 series (the per-round results the
-// series' own results tab renders). Real classifications only: WRC comes
-// from the per-rally articles (NOT the chart sub-totals), DTM has no
-// per-race source yet, IMSA/GTWC class shapes are a follow-up.
-// WRC is absent deliberately: rallies have stage itineraries, not a "race"
-// session — its per-rally classification lives on the results tab.
-const RACE_SESSION_SERIES = new Set([
-  'f2', 'f3', 'formula-e', 'indycar', 'motogp', 'wsbk', 'nascar-cup',
-]);
-
-function isRaceLikeTitle(title: string): boolean {
-  const cleaned = title.replace(/^.*?[-–—:]\s*/, '');
-  if (/sprint\s*(qualifying|shootout)/i.test(cleaned)) return false;
-  return /race|sprint|feature/i.test(cleaned);
-}
-
-// Multi-race rounds (Feature/Sprint, R1/Superpole/R2) — pick the candidate
-// whose name shares the most tokens with the session title; tie → first.
-function pickRaceForSession(candidates: RaceResult[], sessionTitle: string): RaceResult | null {
-  if (candidates.length === 0) return null;
-  if (candidates.length === 1) return candidates[0];
-  const tokens = ['sprint', 'feature', 'superpole', 'race 1', 'race 2'];
-  const t = sessionTitle.toLowerCase();
-  let best = candidates[0];
-  let bestScore = -1;
-  for (const c of candidates) {
-    const n = c.raceName.toLowerCase();
-    let score = 0;
-    for (const tok of tokens) {
-      if (t.includes(tok) && n.includes(tok)) score += 2;
-      if (t.includes(tok) !== n.includes(tok)) score -= 1;
-    }
-    if (score > bestScore) {
-      bestScore = score;
-      best = c;
-    }
-  }
-  return best;
-}
-
-// Class-based series whose race sessions render one classification table per
-// class/cup, fed by the same season feeds the Results tab uses (categories
-// parity, operator 2026-06-13: a class with results on the Results tab must
-// show them on the weekend's race-session page too).
-const CLASS_RESULT_SERIES = new Set(['wec', 'imsa', 'gt-world']);
-
-// Sprint rounds carry two races; match "Sprint Race 1/2" session titles to
-// the SRO raceName ("Race 1"/"Race 2") by digit. Endurance rounds have one.
-function pickGtWorldRace(
-  races: GtWorldRaceResult[],
-  sessionTitle: string,
-): GtWorldRaceResult | null {
-  if (races.length === 0) return null;
-  if (races.length === 1) return races[0];
-  const digit = /race\s*(\d)/i.exec(sessionTitle)?.[1];
-  if (digit) {
-    const hit = races.find(r => r.raceName.includes(digit));
-    if (hit) return hit;
-  }
-  return races.find(r => /main/i.test(r.raceName)) ?? races[0];
-}
-
-// No points columns anywhere here: these are timing exports (the same
-// limitation the Results tab documents per series), so isRace stays false
-// and the time column shows total time / gap.
-async function fetchClassClassifications(
-  series: Series,
-  round: number,
-  sessionTitle: string,
-): Promise<{ cls: string; data: SessionClassification }[]> {
-  const slug = series.meta.slug;
-
-  if (slug === 'wec') {
-    const rounds = await fetchWecSeasonResults();
-    const roundResults = rounds.find(r => r.round === round);
-    if (!roundResults) return [];
-    return WEC_RESULT_CLASSES.flatMap(cls => {
-      const entries = roundResults.perClass[cls] ?? [];
-      if (entries.length === 0) return [];
-      return [{
-        cls: cls as string,
-        data: {
-          isQualifying: false,
-          isRace: false,
-          entries: entries.map(e => ({
-            position: e.position,
-            driverName: e.drivers || e.team,
-            driverCode: `#${e.carNumber}`,
-            team: e.drivers ? e.team : e.manufacturer,
-            time: e.elapsedTime,
-            gap: e.gap,
-          })),
-        },
-      }];
-    });
-  }
-
-  if (slug === 'imsa') {
-    const rounds = await fetchImsaSeasonResults();
-    const roundResults = rounds.find(r => r.round === round);
-    if (!roundResults) return [];
-    return IMSA_CLASSES.flatMap(cls => {
-      const entries = roundResults.perClass[cls] ?? [];
-      if (entries.length === 0) return [];
-      return [{
-        cls: cls as string,
-        data: {
-          isQualifying: false,
-          isRace: false,
-          entries: entries.map(e => ({
-            position: e.position,
-            driverName: e.drivers || e.team,
-            driverCode: `#${e.carNumber}`,
-            team: e.vehicle ? `${e.team} · ${e.vehicle}` : e.team,
-            time: e.elapsedTime,
-            gap: e.gap,
-          })),
-        },
-      }];
-    });
-  }
-
-  if (slug === 'gt-world') {
-    const races = (await fetchAllGtWorldSeasonRaces(series.meta.season)).filter(
-      r => r.round === round,
-    );
-    const race = pickGtWorldRace(races, sessionTitle);
-    if (!race) return [];
-    const cupOrder = ['pro', 'gold', 'silver', 'bronze', 'unknown'] as const;
-    return cupOrder.flatMap(cup => {
-      const entries = race.entries.filter(e => e.cup === cup);
-      if (entries.length === 0) return [];
-      return [{
-        cls: entries[0].cupLabel || cup,
-        data: {
-          isQualifying: false,
-          isRace: false,
-          entries: entries.map(e => ({
-            position: e.position,
-            driverName: e.drivers.join(' · '),
-            driverCode: `#${e.carNumber}`,
-            team: e.car ? `${e.team} · ${e.car}` : e.team,
-            time: e.time,
-            gap: e.gap,
-          })),
-        },
-      }];
-    });
-  }
-
-  return [];
-}
-
-// F2/F3 practice and qualifying classifications (their races go through
-// fetchRoundClassification like the other flat-feed series). The FIA junior
-// series carry every session — practice, qualifying, both races — on the same
-// per-round results page; these are the two non-race ones, keyed per round.
-const FORMULA_SESSION_SERIES = new Set(['f2', 'f3']);
-
-async function fetchFormulaNonRaceClassification(
-  slug: string,
-  season: number,
-  round: number,
-  sessionTitle: string,
-): Promise<SessionClassification | null> {
-  const name = sessionTitle.replace(/^.*?[-–—:]\s*/, '');
-  const isQuali = /qualifying|superpole/i.test(name);
-  const isPractice = /practice/i.test(name) || /^fp\s*\d/i.test(name);
-  if (!isQuali && !isPractice) return null;
-  const { qualifying, practice } =
-    slug === 'f3' ? await fetchF3SessionResults(season) : await fetchF2SeasonResults(season);
-  const list = isQuali ? qualifying : practice;
-  return list?.find(r => r.round === round)?.data ?? null;
-}
-
-async function fetchRoundClassification(
-  series: Series,
-  round: number,
-  sessionTitle: string,
-): Promise<SessionClassification | null> {
-  const slug = series.meta.slug;
-  if (!RACE_SESSION_SERIES.has(slug) || !isRaceLikeTitle(sessionTitle)) return null;
-  const source = await loadSnapshotSource(series);
-  if (!source) return null;
-  const pool: RaceResult[] = [...source.races, ...(source.extras ?? [])];
-  const race = pickRaceForSession(pool.filter(r => r.round === round), sessionTitle);
-  if (!race || race.results.length <= 1) return null;
-  return {
-    isQualifying: false,
-    isRace: true,
-    entries: race.results.map(e => ({
-      position: e.position,
-      driverName: e.driverName,
-      driverCode: e.driverCode,
-      team: e.team,
-      time: e.time ?? e.status,
-      points: e.points,
-    })),
-  };
-}
+// The per-series classification adapters + session pickers moved to
+// lib/results/session-classification.ts (the series-contract layer) — this
+// page now only orchestrates: cache policy, the F1/OpenF1 path, and render.
 
 async function resolve(params: Promise<{ slug: string; round: string; session: string }>) {
   const { slug, round: roundRaw, session: sessionParam } = await params;
@@ -348,48 +126,6 @@ export async function generateMetadata(
     description,
     alternates: { canonical: path },
     ...withSocialMeta({ title, description, path }),
-  };
-}
-
-// Compact label for the session rail — fans think in FP1 / QUALI / RACE.
-function shortSessionLabel(title: string): string {
-  const cleaned = title.replace(/^.*?[-–—:]\s*/, '').trim() || title;
-  const m = cleaned.match(/^(?:free\s+)?practice\s*(\d)/i);
-  if (m) return `FP${m[1]}`;
-  if (/^fp\s*(\d)/i.test(cleaned)) return cleaned.toUpperCase().replace(/\s+/g, '');
-  if (/sprint\s+(qualifying|shootout)/i.test(cleaned)) return 'SQ';
-  if (/^sprint/i.test(cleaned)) return 'SPRINT';
-  if (/qualifying|superpole/i.test(cleaned)) return 'QUALI';
-  if (/warm[\s-]?up/i.test(cleaned)) return 'WARM-UP';
-  if (/^race\s*(\d)/i.test(cleaned)) return cleaned.toUpperCase().replace(/\s+/g, ' ');
-  if (/^race/i.test(cleaned)) return 'RACE';
-  return cleaned.toUpperCase().slice(0, 14);
-}
-
-// The weekend's sessions in running order, each with its page href. Slug
-// collisions within a weekend (two identically-titled sessions) resolve to
-// the first occurrence — acceptable; titles are unique in practice.
-function weekendSessionNav(
-  weekend: Weekend,
-  slug: string,
-  round: number,
-  currentUid: string,
-) {
-  const ordered = [...weekend.sessions].sort(
-    (a, b) => a.start.getTime() - b.start.getTime(),
-  );
-  const items = ordered.map(s => ({
-    uid: s.uid,
-    label: shortSessionLabel(s.title),
-    title: s.title,
-    href: `/series/${slug}/weekend/${round}/${sessionSlug(s.title)}`,
-    isCurrent: s.uid === currentUid,
-  }));
-  const idx = items.findIndex(i => i.isCurrent);
-  return {
-    items,
-    prev: idx > 0 ? items[idx - 1] : null,
-    next: idx >= 0 && idx < items.length - 1 ? items[idx + 1] : null,
   };
 }
 

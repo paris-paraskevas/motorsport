@@ -93,3 +93,51 @@ export function weekendStartEnd(weekend: Weekend): { start: Date; end: Date } {
 export function weekendIsLive(weekend: Weekend, now: Date = new Date()): boolean {
   return weekend.sessions.some(s => !s.dateOnly && s.start <= now && now <= s.end);
 }
+
+/** Compact label for the session rail — fans think in FP1 / QUALI / RACE. */
+export function shortSessionLabel(title: string): string {
+  const cleaned = title.replace(/^.*?[-–—:]\s*/, '').trim() || title;
+  const m = cleaned.match(/^(?:free\s+)?practice\s*(\d)/i);
+  if (m) return `FP${m[1]}`;
+  if (/^fp\s*(\d)/i.test(cleaned)) return cleaned.toUpperCase().replace(/\s+/g, '');
+  if (/sprint\s+(qualifying|shootout)/i.test(cleaned)) return 'SQ';
+  if (/^sprint/i.test(cleaned)) return 'SPRINT';
+  if (/qualifying|superpole/i.test(cleaned)) return 'QUALI';
+  if (/warm[\s-]?up/i.test(cleaned)) return 'WARM-UP';
+  if (/^race\s*(\d)/i.test(cleaned)) return cleaned.toUpperCase().replace(/\s+/g, ' ');
+  if (/^race/i.test(cleaned)) return 'RACE';
+  return cleaned.toUpperCase().slice(0, 14);
+}
+
+/**
+ * The weekend's sessions in running order, each with its page href — the
+ * session-tab generator (series contract, rule 1): tabs come from the round's
+ * REAL sessions, strictly chronological (DTM's Q2 runs after Race 1 and must
+ * order that way), labelled in the series' own words. A session that doesn't
+ * exist is simply absent. Slug collisions within a weekend (two
+ * identically-titled sessions) resolve to the first occurrence — acceptable;
+ * titles are unique in practice.
+ */
+export function weekendSessionNav(
+  weekend: Weekend,
+  slug: string,
+  round: number,
+  currentUid: string,
+) {
+  const ordered = [...weekend.sessions].sort(
+    (a, b) => a.start.getTime() - b.start.getTime(),
+  );
+  const items = ordered.map(s => ({
+    uid: s.uid,
+    label: shortSessionLabel(s.title),
+    title: s.title,
+    href: `/series/${slug}/weekend/${round}/${sessionSlug(s.title)}`,
+    isCurrent: s.uid === currentUid,
+  }));
+  const idx = items.findIndex(i => i.isCurrent);
+  return {
+    items,
+    prev: idx > 0 ? items[idx - 1] : null,
+    next: idx >= 0 && idx < items.length - 1 ? items[idx + 1] : null,
+  };
+}
