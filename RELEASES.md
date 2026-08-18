@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.286.0 — 2026-08-18
+
+**The blog index reads like a front page.** Each piece leads with its headline and standfirst under its series colour, and a side rail lets you browse by championship or pitch your own writing.
+
 ## 0.285.0 — 2026-08-18
 
 **Account now opens with what you follow.** Your championships appear as chips right at the top with one tap to change them, and the page shows the exact time zone your times are rendered in — because every schedule on the site depends on it.

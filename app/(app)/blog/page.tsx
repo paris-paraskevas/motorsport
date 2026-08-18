@@ -24,6 +24,10 @@ interface Card {
   summary: string;
   publishedAt: string;
   tags?: string[];
+  /** Series identity for the row's tint bar + the "By series" rail. */
+  seriesSlug?: string;
+  seriesName?: string;
+  seriesColor?: string;
   /** Only set for authors with a public profile — the card byline IS the link to
    *  it, so a writer with no profile row (and every legacy MDX post) shows no
    *  byline here, exactly as before. Name comes from the profile row rather than
@@ -50,6 +54,7 @@ export default async function BlogIndexPage() {
     listAuthors(),
   ]);
   const nameBySlug = new Map(seriesMetas.map(m => [m.slug, m.name] as const));
+  const colorBySlug = new Map(seriesMetas.map(m => [m.slug, m.color] as const));
   const profileByAuthorId = new Map(
     authors.map(a => [a.clerkUserId, { name: a.displayName, slug: a.slug }] as const),
   );
@@ -68,6 +73,9 @@ export default async function BlogIndexPage() {
     summary: p.summary,
     publishedAt: p.publishedAt ?? p.createdAt,
     tags: p.seriesSlug ? [nameBySlug.get(p.seriesSlug) ?? p.seriesSlug] : undefined,
+    seriesSlug: p.seriesSlug ?? undefined,
+    seriesName: p.seriesSlug ? nameBySlug.get(p.seriesSlug) : undefined,
+    seriesColor: p.seriesSlug ? colorBySlug.get(p.seriesSlug) : undefined,
     author: profileByAuthorId.get(p.authorId),
   }));
 
@@ -77,6 +85,16 @@ export default async function BlogIndexPage() {
   const posts = [...bySlug.values()].sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
+
+  // "By series" rail counts (§4.11: no thumbnails — there is no licensed
+  // photography for most rounds; the rail carries the browsing instead).
+  const bySeries = new Map<string, { name: string; color: string; count: number }>();
+  for (const p of posts) {
+    if (!p.seriesSlug || !p.seriesName || !p.seriesColor) continue;
+    const cur = bySeries.get(p.seriesSlug);
+    if (cur) cur.count += 1;
+    else bySeries.set(p.seriesSlug, { name: p.seriesName, color: p.seriesColor, count: 1 });
+  }
 
   return (
     <div className={PAGE_WIDE}>
@@ -119,7 +137,7 @@ export default async function BlogIndexPage() {
       </Link>
 
       {posts.length === 0 ? (
-        <div className="rounded-2xl bg-surface/40 border border-border/60 p-8 text-center">
+        <div className="border border-border bg-surface/40 p-8 text-center">
           <div className="text-text text-base font-medium mb-1">
             Nothing here yet
           </div>
@@ -128,43 +146,76 @@ export default async function BlogIndexPage() {
           </div>
         </div>
       ) : (
-        <ul className="divide-y divide-border/60">
-          {posts.map(post => (
-            <li key={post.slug} className="py-5 first:pt-0 last:pb-0">
-              {/* The meta row sits OUTSIDE the card link: the author link is a
-                  second destination, and an <a> inside an <a> is invalid HTML. */}
-              <div className="flex items-baseline gap-3 mb-1.5 flex-wrap">
-                <time className="text-[11px] uppercase tracking-[0.16em] text-text-faint font-semibold tabular-nums font-mono">
-                  {formatDate(post.publishedAt)}
-                </time>
-                {post.tags?.map(tag => (
-                  <span
-                    key={tag}
-                    className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted bg-surface border border-border rounded-full px-2 py-0.5"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                {post.author && (
-                  <Link
-                    href={`/authors/${post.author.slug}`}
-                    className="text-[11px] uppercase tracking-[0.16em] text-text-muted font-semibold font-mono transition-colors duration-(--duration-fast) hover:text-brand"
-                  >
-                    {post.author.name}
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_240px]">
+          {/* Lead with the piece (§4.11): series bar, mono meta, serif
+              headline, the standfirst — no thumbnails by design. */}
+          <ul className="border-t border-text">
+            {posts.map(post => (
+              <li key={post.slug} className="flex gap-3 border-b border-border py-4">
+                <span
+                  aria-hidden="true"
+                  className="mt-1 h-4 w-[3px] shrink-0"
+                  style={{ backgroundColor: post.seriesColor ?? 'var(--border-strong)' }}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 font-mono text-[10px] uppercase tracking-[0.14em]">
+                    {post.seriesName && <span className="font-semibold text-text-muted">{post.seriesName}</span>}
+                    <time className="tabular-nums text-text-faint">{formatDate(post.publishedAt)}</time>
+                    {post.author && (
+                      <Link
+                        href={`/authors/${post.author.slug}`}
+                        className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+                      >
+                        {post.author.name}
+                      </Link>
+                    )}
+                  </div>
+                  <Link href={`/blog/${post.slug}`} className="group block">
+                    <h2 className="font-serif text-[22px] font-semibold leading-snug text-text group-hover:underline">
+                      {post.title}
+                    </h2>
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-text-muted">
+                      {post.summary}
+                    </p>
                   </Link>
-                )}
-              </div>
-              <Link href={`/blog/${post.slug}`} className="block group">
-                <h2 className="text-text text-xl font-semibold tracking-tight leading-snug group-hover:text-tint transition-colors duration-(--duration-fast)">
-                  {post.title}
-                </h2>
-                <p className="mt-2 text-sm text-text-muted leading-relaxed">
-                  {post.summary}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* The rail: by series + the write-for-us pitch (§4.11). */}
+          <aside>
+            {bySeries.size > 0 && (
+              <>
+                <div className="mb-1 border-b border-text pb-1">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                    By series
+                  </span>
+                </div>
+                {[...bySeries.entries()]
+                  .sort((a, b) => b[1].count - a[1].count)
+                  .map(([slug, x]) => (
+                    <div key={slug} className="flex items-center gap-2.5 border-b border-border py-2">
+                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: x.color }} />
+                      <span className="min-w-0 flex-1 truncate text-sm text-text">{x.name}</span>
+                      <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{x.count}</span>
+                    </div>
+                  ))}
+              </>
+            )}
+            <Link
+              href="/write-for-us"
+              className="mt-4 block border border-border-strong p-3 transition-colors duration-(--duration-fast) hover:border-text"
+            >
+              <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+                Write for Paddock
+              </span>
+              <span className="mt-1 block font-serif text-[15px] font-semibold leading-snug text-text">
+                Pitch a piece — the data is already here
+              </span>
+            </Link>
+          </aside>
+        </div>
       )}
     </div>
   );
