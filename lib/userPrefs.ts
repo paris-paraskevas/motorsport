@@ -1,6 +1,5 @@
 import { kv } from './kv';
 import { classifySession } from './calendar-grid';
-import { reconcileHomeLayout, type HomeLayoutPrefs } from './homeLayout';
 
 const PREFIX = 'paddock:user:';
 
@@ -194,15 +193,4 @@ export async function setUserNotifPrefs(
   };
   await kv.set(`${PREFIX}${userId}:notifPrefs`, next);
   return next;
-}
-
-export async function getUserHomeLayout(userId: string): Promise<HomeLayoutPrefs | null> {
-  if (!isKvConfigured()) return null;
-  const stored = await kv.get<Partial<HomeLayoutPrefs>>(`${PREFIX}${userId}:homeLayout`);
-  return stored ? reconcileHomeLayout(stored) : null;
-}
-
-export async function setUserHomeLayout(userId: string, prefs: HomeLayoutPrefs): Promise<void> {
-  if (!assertKvForWrite()) return;
-  await kv.set(`${PREFIX}${userId}:homeLayout`, reconcileHomeLayout(prefs));
 }

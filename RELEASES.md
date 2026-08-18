@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.275.0 — 2026-08-18
+
+**Behind the scenes.** The code behind the retired home-widget system and the old navigation menus is fully removed. Nothing visible changes.
+
 ## 0.274.0 — 2026-08-18
 
 **A new home page.** Home now answers one question the moment it loads: what just happened, and what did it change. The latest result leads with its podium, the championship picture sits right under it, the next race weekends follow with a live countdown, and the freshest headlines close the page. The old configurable widget wall is retired — everything it showed lives where you'd look for it: watching and weather on each race weekend's page, predictions and leagues on Social.
