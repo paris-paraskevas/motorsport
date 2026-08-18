@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.277.0 — 2026-08-18
+
+**The calendar shows everything, and race weekends read as one thing.** A grand prix weekend is now a single labelled bar spanning its days instead of scattered entries, every session on a day is visible — practice collapses into neat ranges, anything that decides a result stays bold — and the old "+10 more" is gone for good. Filters became one-tap chips: tap a series to see just it, and the address bar keeps your filter so you can share it. "This weekend" now sits pinned at the top.
+
 ## 0.276.0 — 2026-08-18
 
 **The site menu grew into a full index.** On desktop the browse-and-search panel now lays out the whole site at a glance — the four main destinations, every championship by category, the guides, the circuit map — with the smaller pages on one quiet line at the foot. Same field, same typing-to-filter.

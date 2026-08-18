@@ -48,6 +48,16 @@ export default async function CalendarPage() {
   const roundByKey: Record<string, number> = {};
   for (const [k, v] of roundLookup) roundByKey[k] = v;
 
+  // Round display names for the weekend banners, keyed `${slug}:${round}` —
+  // far smaller than a per-session map. Curated rounds.json names only; a
+  // round without one falls back to "Round N" client-side.
+  const roundNames: Record<string, string> = {};
+  for (const s of all) {
+    for (const r of s.rounds?.rounds ?? []) {
+      if (r.name) roundNames[`${s.meta.slug}:${r.round}`] = r.name;
+    }
+  }
+
   return (
     <div className={PAGE_WIDE}>
       <JsonLd
@@ -63,7 +73,7 @@ export default async function CalendarPage() {
         </h1>
       </header>
 
-      <CalendarView items={flat} roundByKey={roundByKey} serverNow={now.toISOString()} />
+      <CalendarView items={flat} roundByKey={roundByKey} roundNames={roundNames} serverNow={now.toISOString()} />
     </div>
   );
 }

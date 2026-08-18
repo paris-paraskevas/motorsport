@@ -1,163 +1,71 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
-import { Accordion } from '@/components/Accordion';
-import type { SessionKind } from '@/lib/calendar-grid';
 
-const TYPES: { kind: SessionKind; label: string }[] = [
-  { kind: 'practice', label: 'Practice' },
-  { kind: 'qualifying', label: 'Qualifying' },
-  { kind: 'race', label: 'Race' },
-];
-
-// One filter option = a checkbox row (single brand accent, not a coloured fill).
-// Series keep a small colour dot for identity, but the control itself is plain.
-function CheckRow({
-  label,
-  checked,
-  onToggle,
-  dotColor,
-  strong,
-}: {
-  label: string;
-  checked: boolean;
-  onToggle: () => void;
-  dotColor?: string;
-  strong?: boolean;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center gap-2.5 py-1.5 text-sm">
-      <input type="checkbox" checked={checked} onChange={onToggle} className="h-4 w-4 shrink-0 accent-brand" />
-      {dotColor && (
-        <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: dotColor }} />
-      )}
-      <span className={`${checked ? 'text-text' : 'text-text-muted'}${strong ? ' font-semibold' : ''}`}>{label}</span>
-    </label>
-  );
-}
-
-// Calendar filters as a modal box (opened from the toolbar's Filters button).
-// DRAFT model: edits stay local and the calendar does NOT change until Save
-// commits them. Reset re-selects everything; Save applies + closes; the X /
-// backdrop cancels (discards the draft). Both accordions carry a "Select all"
-// toggle, so showing just one session type or one series is a single click
-// instead of unticking the rest.
-export function CalendarFilters({
-  initialTypes,
-  initialSeriesSel,
+// Calendar filters as an inline chip row, applied ON TAP (design handoff §4.2:
+// "Today saying 'just F1' costs five actions: open modal → expand accordion →
+// deselect all → select F1 → Save" — the modal, the draft state and the Save
+// button are gone). Two groups:
+//   · ALL SESSIONS / RACES ONLY — a radio pair over the session-type filter.
+//   · Series chips — tap a series while everything is shown to focus JUST it;
+//     tap more to add them; tapping the last selected one returns to all.
+// The first few series show as chips; "+N more" expands the rest in place.
+export function CalendarChips({
+  racesOnly,
+  onRacesOnly,
   series,
-  onApply,
-  onClose,
+  seriesSel,
+  onToggleSeries,
 }: {
-  initialTypes: Set<SessionKind>;
-  initialSeriesSel: Set<string> | null; // null = all present
+  racesOnly: boolean;
+  onRacesOnly: (v: boolean) => void;
   series: { slug: string; color: string }[];
-  onApply: (types: Set<SessionKind>, seriesSel: Set<string> | null) => void;
-  onClose: () => void;
+  seriesSel: Set<string> | null; // null = all
+  onToggleSeries: (slug: string) => void;
 }) {
-  const allSlugs = series.map(s => s.slug);
-  const [draftTypes, setDraftTypes] = useState<Set<SessionKind>>(() => new Set(initialTypes));
-  const [draftSeries, setDraftSeries] = useState<Set<string>>(() => new Set(initialSeriesSel ?? allSlugs));
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? series : series.slice(0, 4);
+  const hidden = series.length - visible.length;
 
-  const toggleType = (k: SessionKind) =>
-    setDraftTypes(cur => {
-      const next = new Set(cur);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
-  const toggleSeries = (slug: string) =>
-    setDraftSeries(cur => {
-      const next = new Set(cur);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
-  const allTypesSelected = draftTypes.size === TYPES.length;
-  const toggleAllTypes = () => setDraftTypes(allTypesSelected ? new Set() : new Set(TYPES.map(t => t.kind)));
-  const allSeriesSelected = allSlugs.length > 0 && draftSeries.size === allSlugs.length;
-  const toggleAllSeries = () => setDraftSeries(allSeriesSelected ? new Set() : new Set(allSlugs));
-
-  const reset = () => {
-    setDraftTypes(new Set(['practice', 'qualifying', 'race']));
-    setDraftSeries(new Set(allSlugs));
-  };
-  const save = () => {
-    // Normalise "everything selected" back to the all-present sentinel (null) so
-    // the filter stays "all" even if the present set later changes.
-    const seriesSel = draftSeries.size === allSlugs.length ? null : new Set(draftSeries);
-    onApply(new Set(draftTypes), seriesSel);
-    onClose();
-  };
+  const chipBase =
+    'inline-flex min-h-9 items-center gap-2 border px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast)';
+  const on = 'border-text bg-surface-elevated text-text';
+  const off = 'border-border-strong text-text-muted hover:text-text';
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 p-4 pt-20"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Calendar filters"
-      onClick={onClose}
-    >
-      <div
-        className="flex max-h-[80vh] w-full max-w-md flex-col border border-border bg-surface-elevated"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <span className="font-display text-sm font-bold uppercase tracking-wide text-text">Filters</span>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-text-muted hover:text-text">
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-4">
-          <Accordion title="Session" titleClassName="font-display uppercase tracking-wide">
-            <div>
-              <CheckRow label="Select all" checked={allTypesSelected} onToggle={toggleAllTypes} strong />
-              <div className="my-1 border-t border-border/60" />
-              {TYPES.map(({ kind, label }) => (
-                <CheckRow key={kind} label={label} checked={draftTypes.has(kind)} onToggle={() => toggleType(kind)} />
-              ))}
-            </div>
-          </Accordion>
-          {series.length > 1 && (
-            <Accordion title="Series" titleClassName="font-display uppercase tracking-wide">
-              <div>
-                <CheckRow label="Select all" checked={allSeriesSelected} onToggle={toggleAllSeries} strong />
-                <div className="my-1 border-t border-border/60" />
-                <div className="grid grid-cols-2 gap-x-4">
-                  {series.map(s => (
-                    <CheckRow
-                      key={s.slug}
-                      label={s.slug.toUpperCase()}
-                      checked={draftSeries.has(s.slug)}
-                      onToggle={() => toggleSeries(s.slug)}
-                      dotColor={s.color}
-                    />
-                  ))}
-                </div>
-              </div>
-            </Accordion>
-          )}
-        </div>
-
-        <div className="flex items-center justify-end gap-2 border-t border-border px-4 py-3">
+    <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Calendar filters">
+      <button type="button" aria-pressed={!racesOnly} onClick={() => onRacesOnly(false)} className={`${chipBase} ${!racesOnly ? on : off}`}>
+        All sessions
+      </button>
+      <button type="button" aria-pressed={racesOnly} onClick={() => onRacesOnly(true)} className={`${chipBase} ${racesOnly ? on : off}`}>
+        Races only
+      </button>
+      <span aria-hidden="true" className="h-5 w-px bg-border-strong" />
+      {visible.map(s => {
+        const active = seriesSel !== null && seriesSel.has(s.slug);
+        return (
           <button
+            key={s.slug}
             type="button"
-            onClick={reset}
-            className="border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors hover:text-text"
+            aria-pressed={active}
+            onClick={() => onToggleSeries(s.slug)}
+            className={`${chipBase} ${active ? on : off}`}
           >
-            Reset
+            <span aria-hidden="true" className="h-[13px] w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
+            {s.slug.replace(/-/g, ' ')}
           </button>
-          <button
-            type="button"
-            onClick={save}
-            className="bg-brand-fill px-4 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
-          >
-            Save
-          </button>
-        </div>
-      </div>
+        );
+      })}
+      {hidden > 0 && (
+        <button type="button" onClick={() => setExpanded(true)} className={`${chipBase} ${off}`}>
+          + {hidden} more
+        </button>
+      )}
+      {expanded && series.length > 4 && (
+        <button type="button" onClick={() => setExpanded(false)} className={`${chipBase} ${off}`}>
+          Fewer
+        </button>
+      )}
     </div>
   );
 }
