@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.272.0 — 2026-08-18
+
+### Changed
+- **The session-contract layer** (reimagining §9 step 3 + the queued session-page-adapter extraction, in one move). The ~250 lines of per-series classification adapters inlined in `app/(app)/series/[slug]/weekend/[round]/[session]/page.tsx` (`:87-314`) moved verbatim to the new **`lib/results/session-classification.ts`**: `matchOpenF1Session`, `isRaceLikeTitle`, `pickRaceForSession`, `pickGtWorldRace`, `fetchClassClassifications` (WEC/IMSA/GT-World per-class), `fetchFormulaNonRaceClassification` (F2/F3), `fetchRoundClassification`, plus the `CLASS_RESULT_SERIES`/`FORMULA_SESSION_SERIES` sets. The session-tab generator (`shortSessionLabel` + `weekendSessionNav`) moved into `lib/weekend.ts` beside the other session helpers. Pure move, zero behavior change; the page drops 985 → 721 lines and now only orchestrates cache policy, the F1/OpenF1 path, and render. Every redesigned results surface builds on this module so the shape is right once, not fifteen times.
+- New **`lib/results/session-classification.test.ts`** (25 tests): `pickRaceForSession` sprint/feature/Superpole disambiguation, `pickGtWorldRace` digit-match + main-race fallback, `isRaceLikeTitle` excluding Sprint Qualifying/Shootout, `shortSessionLabel` cases, and `weekendSessionNav` staying strictly chronological on a shuffled DTM fixture — **Q2 after Race 1** (the contract's rule-1 proof), with slug-built hrefs and prev/next paging across that boundary.
+- Deliberately NOT here (data-layer gaps owned by the results-page redesign PRs): NASCAR stage-points column, Formula E duel brackets, WRC ledger enrichment. NOTED: `lib/results/session-classification.ts` imports `loadSnapshotSource` from `components/weekend/WeekendStandingsSnapshot` — a pre-existing layering smell shared with two app pages; untangling it is a separate move.
+
 ## 0.270.0 — 2026-08-18
 
 ### Added
