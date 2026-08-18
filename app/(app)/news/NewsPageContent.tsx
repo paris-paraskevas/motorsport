@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { seriesInk } from '@/lib/site';
 import { ExternalLink } from 'lucide-react';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 
@@ -86,6 +85,9 @@ export function NewsPageContent({
 }) {
   const now = useNow(serverNow);
   const { followed, hydrated } = useFollowedSeries();
+  // §4.12: "Everything / Yours only" chips — following series no longer
+  // silently narrows the wire; it's a visible, one-tap scope choice.
+  const [scope, setScope] = useState<'all' | 'yours'>('yours');
 
   // Starts at the SSR default ("All" = null); the persisted slug is adopted
   // after mount so the hydration render matches the server HTML.
@@ -106,9 +108,10 @@ export function NewsPageContent({
   // Honour the followed-series filter for signed-in users exactly as the home
   // does — until prefs resolve on the client, render the full feed (this page
   // is not personalized at SSR), then narrow. `followed === null` = follow-all.
+  const hasFollows = hydrated && followed !== null && followed.length > 0;
   const filteredNews =
-    hydrated && followed !== null
-      ? news.filter(n => followed.includes(n.seriesSlug))
+    hasFollows && scope === 'yours'
+      ? news.filter(n => followed!.includes(n.seriesSlug))
       : news;
 
   // Series present in the (followed-filtered) feed, in first-seen order, with
@@ -146,10 +149,30 @@ export function NewsPageContent({
   const rows = deduped.slice(0, visible);
   const hasMore = deduped.length > rows.length;
 
-  const isEmptyFromFilter = hydrated && followed !== null && followed.length === 0;
+  const isEmptyFromFilter = false;
 
   return (
     <>
+      {hasFollows && (
+        <div className="mb-2 flex gap-1.5">
+          {(['all', 'yours'] as const).map(k => (
+            <button
+              key={k}
+              type="button"
+              aria-pressed={scope === k}
+              onClick={() => {
+                setScope(k);
+                setVisible(PAGE_SIZE);
+              }}
+              className={`shrink-0 border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-(--duration-fast) ${
+                scope === k ? 'border-text bg-surface-elevated text-text' : 'border-border text-text-muted hover:text-text'
+              }`}
+            >
+              {k === 'all' ? 'Everything' : 'Yours only'}
+            </button>
+          ))}
+        </div>
+      )}
       {seriesWithNews.length > 1 && (
         <div className="mb-5 -mx-1 px-1 flex flex-wrap gap-1.5">
           <button
@@ -221,52 +244,45 @@ export function NewsPageContent({
         </div>
       ) : (
         <>
-          <div className="border-y border-border divide-y divide-border">
+          {/* §4.12: two columns of rows — serif headline, series · source in
+              mono beneath (the source named on EVERY row: this page is other
+              people's reporting, credited and linked out), age right-aligned. */}
+          <div className="border-t border-text md:columns-2 md:gap-10">
             {rows.map(item => {
               const pubDate = new Date(item.pubDate);
-              const excerpt = item.description
-                ? item.description.length > 140
-                  ? item.description.slice(0, 137).trimEnd() + '…'
-                  : item.description
-                : null;
+              let host = 'source';
+              try {
+                host = new URL(item.link).hostname.replace(/^www\./, '');
+              } catch {
+                /* keep fallback */
+              }
               return (
                 <a
                   key={item.link}
                   href={item.link}
                   target="_blank"
                   rel="nofollow noopener noreferrer"
-                  className="group block py-3.5 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  className="group flex items-baseline gap-3 border-b border-border py-2.5 transition-colors duration-(--duration-fast) hover:bg-surface md:break-inside-avoid"
                 >
-                  <div className="flex items-center gap-2 mb-1 min-w-0">
-                    <time
-                      dateTime={pubDate.toISOString()}
-                      className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
-                    >
-                      {relativeAgo(pubDate, now)}
-                    </time>
-                    <span
-                      className="w-1.5 h-1.5 rounded-full shrink-0"
-                      style={{ backgroundColor: item.seriesColor }}
-                    />
-                    <span
-                      className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold shrink-0"
-                      style={{ color: seriesInk(item.seriesColor) }}
-                    >
-                      {item.seriesName}
+                  <span
+                    aria-hidden="true"
+                    className="relative top-[2px] h-3.5 w-[3px] shrink-0 self-start"
+                    style={{ backgroundColor: item.seriesColor }}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <h2 className="font-serif text-[17px] font-semibold leading-snug text-text group-hover:underline">
+                      {item.title}
+                    </h2>
+                    <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                      {item.seriesName} · {host}
                     </span>
-                    <ExternalLink
-                      size={12}
-                      className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
-                    />
-                  </div>
-                  <h2 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
-                    {item.title}
-                  </h2>
-                  {excerpt && (
-                    <p className="mt-1 text-sm text-text-muted leading-relaxed line-clamp-2">
-                      {excerpt}
-                    </p>
-                  )}
+                  </span>
+                  <time
+                    dateTime={pubDate.toISOString()}
+                    className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint"
+                  >
+                    {relativeAgo(pubDate, now)}
+                  </time>
                 </a>
               );
             })}
@@ -283,16 +299,21 @@ export function NewsPageContent({
             </button>
           )}
 
-          <div className="pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            Source:{' '}
-            <a
-              href="https://www.motorsport.com/"
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-              className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
-            >
-              motorsport.com ↗
-            </a>
+          <div className="flex flex-wrap items-baseline justify-between gap-3 pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+            <span>
+              Other people&apos;s reporting, credited and linked out — aggregated from{' '}
+              <a
+                href="https://www.motorsport.com/"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="text-text-muted hover:text-text underline underline-offset-2 transition-colors duration-(--duration-fast)"
+              >
+                motorsport.com ↗
+              </a>
+            </span>
+            <Link href="/blog" className="text-text-muted hover:text-text">
+              Original writing lives on the blog →
+            </Link>
           </div>
         </>
       )}

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.283.0 — 2026-08-18
+
+**The news wire now names its sources on every story** and lays out in two clean columns. If you follow series, choosing between everything and just yours is one visible tap instead of a hidden filter — and the page says plainly what it is: other people's reporting, credited and linked out.
+
 ## 0.282.0 — 2026-08-18
 
 **Learn now leads with the answers.** Ask a question and matching answers appear as you type; the ten most-asked sit right under it; and every championship has a one-tap "how a race weekend works" explainer. The topic index moved to the foot of the page where browsing belongs.

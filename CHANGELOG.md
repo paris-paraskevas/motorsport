@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.283.0 — 2026-08-18
+
+### Changed
+- **The news wire, restyled and made honest** (design handoff §4.12, panel 11b). Two-column rows on desktop: serif headline, **series · source hostname in mono on EVERY row** ("this page is other people's reporting, credited and linked out"), age right-aligned, 3px series bar. Following series no longer silently narrows the feed — an explicit **Everything / Yours only** chip pair makes the scope a visible one-tap choice (series chips + counts unchanged beneath). The foot states the aggregation plainly and points to the blog for original writing.
+
 ## 0.282.0 — 2026-08-18
 
 ### Changed
