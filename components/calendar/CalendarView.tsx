@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
@@ -14,11 +15,10 @@ import {
   weekLabel,
   dayLabel,
   classifySession,
-  type SessionKind,
 } from '@/lib/calendar-grid';
 import type { CalendarEntry, CalendarViewMode } from './types';
 import { CalendarToolbar } from './CalendarToolbar';
-import { CalendarFilters } from './CalendarFilters';
+import { CalendarChips } from './CalendarFilters';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
@@ -37,6 +37,7 @@ function parseMonthParam(m: string | null): number | null {
 type CalendarViewProps = {
   items: CalendarEntry[];
   roundByKey?: Record<string, number>;
+  roundNames?: Record<string, string>;
   serverNow: string;
 };
 
@@ -56,7 +57,7 @@ export function CalendarView(props: CalendarViewProps) {
   );
 }
 
-function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
+function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarViewProps) {
   const { followed, hydrated } = useFollowedSeries();
   const { now, clock } = useNow(serverNow);
   const [view, setView] = useState<CalendarViewMode>('month');
@@ -66,7 +67,8 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
   // one-time window read) re-seeds the anchor on EVERY navigation — clicking a
   // month while already on /calendar used to be a no-op because the old lazy
   // initializer never re-ran on a query-only soft nav.
-  const monthParam = useSearchParams().get('m');
+  const searchParams = useSearchParams();
+  const monthParam = searchParams.get('m');
   const [anchorMs, setAnchorMs] = useState<number | null>(() => parseMonthParam(monthParam));
   // Re-seed when ?m= changes. Adjusting state during render (React's documented
   // pattern, as in HeaderNavMenu) — not an effect, so no cascading-render lint.
@@ -75,23 +77,33 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
     setLastMonthParam(monthParam);
     setAnchorMs(parseMonthParam(monthParam));
   }
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [types, setTypes] = useState<Set<SessionKind>>(() => new Set(['practice', 'qualifying', 'race']));
-  const [seriesSel, setSeriesSel] = useState<Set<string> | null>(null); // null = all present
+
+  // Filters, applied ON TAP (no modal, no draft, no Save — §4.2). A shared
+  // ?races=1&s=f1,motogp deep-link is written through replaceState so a
+  // filtered calendar is linkable; localStorage keeps the choice per device.
+  const [racesOnly, setRacesOnly] = useState(() => searchParams.get('races') === '1');
+  const [seriesSel, setSeriesSel] = useState<Set<string> | null>(() => {
+    const s = searchParams.get('s');
+    return s ? new Set(s.split(',').filter(Boolean)) : null;
+  });
   const [filtersHydrated, setFiltersHydrated] = useState(false);
 
-  // Persist filters per device (localStorage): load once on mount, then save on
-  // change (gated on the load so defaults don't clobber stored prefs).
+  // Persist filters per device: load once on mount (URL params win when
+  // present), then save on change (gated on the load so defaults don't clobber
+  // stored prefs).
   useEffect(() => {
     try {
-      const raw = localStorage.getItem('paddock:calendar-filters');
-      if (raw) {
-        const p = JSON.parse(raw) as { types?: unknown; series?: unknown };
-        if (Array.isArray(p.types)) {
+      const urlHasFilters =
+        new URLSearchParams(window.location.search).get('races') === '1' ||
+        !!new URLSearchParams(window.location.search).get('s');
+      if (!urlHasFilters) {
+        const raw = localStorage.getItem('paddock:calendar-filters:v2');
+        if (raw) {
+          const p = JSON.parse(raw) as { racesOnly?: unknown; series?: unknown };
           // eslint-disable-next-line react-hooks/set-state-in-effect -- persisted-filter adoption after mount is the hydration-safe pattern
-          setTypes(new Set(p.types.filter((t): t is SessionKind => t === 'practice' || t === 'qualifying' || t === 'race')));
+          setRacesOnly(p.racesOnly === true);
+          setSeriesSel(Array.isArray(p.series) ? new Set(p.series.filter((s): s is string => typeof s === 'string')) : null);
         }
-        setSeriesSel(Array.isArray(p.series) ? new Set(p.series.filter((s): s is string => typeof s === 'string')) : null);
       }
     } catch {
       /* ignore corrupt prefs */
@@ -102,13 +114,24 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
     if (!filtersHydrated) return;
     try {
       localStorage.setItem(
-        'paddock:calendar-filters',
-        JSON.stringify({ types: [...types], series: seriesSel ? [...seriesSel] : null }),
+        'paddock:calendar-filters:v2',
+        JSON.stringify({ racesOnly, series: seriesSel ? [...seriesSel] : null }),
       );
     } catch {
       /* quota / disabled */
     }
-  }, [types, seriesSel, filtersHydrated]);
+    // Mirror into the URL (shareable) without a router navigation.
+    try {
+      const url = new URL(window.location.href);
+      if (racesOnly) url.searchParams.set('races', '1');
+      else url.searchParams.delete('races');
+      if (seriesSel && seriesSel.size > 0) url.searchParams.set('s', [...seriesSel].join(','));
+      else url.searchParams.delete('s');
+      window.history.replaceState(window.history.state, '', url);
+    } catch {
+      /* non-browser */
+    }
+  }, [racesOnly, seriesSel, filtersHydrated]);
 
   // Gate on BOTH prefs (no other-series flash) AND the synced clock (so day
   // bucketing uses the device timezone, never the server's — no SSR mismatch).
@@ -117,22 +140,33 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
   const anchor = anchorMs != null ? new Date(anchorMs) : startOfDay(now);
   const filtered = followed !== null ? items.filter(i => followed.includes(i.seriesSlug)) : items;
 
-  // In-calendar event-type + series filters, on top of the followed set.
-  const present = [...new Map(filtered.map(i => [i.seriesSlug, i.color])).entries()].map(([slug, color]) => ({ slug, color }));
-  const allTypes = types.size >= 3; // default (all three) → also shows 'other' sessions
+  // In-calendar filters, on top of the followed set. Chips lead with the
+  // marquee series so "just F1" really is one tap.
+  const CHIP_ORDER = ['f1', 'motogp', 'wec', 'indycar', 'nascar-cup', 'formula-e', 'wrc', 'wsbk'];
+  const present = [...new Map(filtered.map(i => [i.seriesSlug, i.color])).entries()]
+    .map(([slug, color]) => ({ slug, color }))
+    .sort((a, b) => {
+      const ia = CHIP_ORDER.indexOf(a.slug);
+      const ib = CHIP_ORDER.indexOf(b.slug);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.slug.localeCompare(b.slug);
+    });
   const seriesShown = (slug: string) => seriesSel === null || seriesSel.has(slug);
   const shown = filtered.filter(
-    i => (allTypes || types.has(classifySession(i.session.title))) && seriesShown(i.seriesSlug),
+    i => (!racesOnly || classifySession(i.session.title) === 'race') && seriesShown(i.seriesSlug),
   );
   const buckets = bucketByDay(shown);
 
-  // Filters are edited as a draft inside the modal and committed on Save; the
-  // persistence effect then writes the committed values through.
-  const applyFilters = (t: Set<SessionKind>, s: Set<string> | null) => {
-    setTypes(t);
-    setSeriesSel(s);
+  // Tap semantics: focusing a series from "all" selects JUST it (the "just F1
+  // in one tap" fix); tapping the last selected one returns to all.
+  const toggleSeries = (slug: string) => {
+    setSeriesSel(cur => {
+      if (cur === null) return new Set([slug]);
+      const next = new Set(cur);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next.size === 0 || next.size === present.length ? null : next;
+    });
   };
-  const filterActive = !allTypes || (seriesSel !== null && seriesSel.size !== present.length);
 
   const setAnchor = (d: Date) => setAnchorMs(startOfDay(d).getTime());
   const step = (n: number) => {
@@ -167,6 +201,7 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
 
   return (
     <>
+      <ThisWeekend items={filtered} now={now} roundByKey={roundByKey} roundNames={roundNames} />
       <CalendarToolbar
         view={view}
         onView={setView}
@@ -176,27 +211,97 @@ function CalendarInner({ items, roundByKey, serverNow }: CalendarViewProps) {
         monthOptions={monthOptions}
         currentMonthValue={currentMonthValue}
         onPickMonth={ms => setAnchorMs(ms)}
-        filtersOpen={filtersOpen}
-        onToggleFilters={() => setFiltersOpen(o => !o)}
-        filterActive={filterActive}
       />
-      {filtersOpen && (
-        <CalendarFilters
-          initialTypes={types}
-          initialSeriesSel={seriesSel}
-          series={present}
-          onApply={applyFilters}
-          onClose={() => setFiltersOpen(false)}
-        />
-      )}
+      <CalendarChips
+        racesOnly={racesOnly}
+        onRacesOnly={setRacesOnly}
+        series={present}
+        seriesSel={seriesSel}
+        onToggleSeries={toggleSeries}
+      />
       {view === 'month' && (
-        <MonthView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} onSelectDay={selectDay} />
+        <MonthView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} roundNames={roundNames} onSelectDay={selectDay} />
       )}
       {view === 'week' && (
         <WeekView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} onSelectDay={selectDay} />
       )}
       {view === 'day' && <DayView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} />}
     </>
+  );
+}
+
+// "This weekend" pinned above the grid as raised cards (§4.2): every round
+// with a session in the next four days (or live right now), one card each.
+function ThisWeekend({
+  items,
+  now,
+  roundByKey,
+  roundNames,
+}: {
+  items: CalendarEntry[];
+  now: Date;
+  roundByKey?: Record<string, number>;
+  roundNames?: Record<string, string>;
+}) {
+  const horizon = now.getTime() + 4 * 24 * 3600 * 1000;
+  const groups = new Map<
+    string,
+    { slug: string; name: string; color: string; round: number; first: Date; last: Date }
+  >();
+  for (const e of items) {
+    const start = e.session.start.getTime();
+    const end = e.session.end.getTime();
+    if (end < now.getTime() - 12 * 3600 * 1000 || start > horizon) continue;
+    const round = roundByKey?.[`${e.seriesSlug}:${e.session.uid}`];
+    if (!round) continue;
+    const key = `${e.seriesSlug}:${round}`;
+    const g = groups.get(key);
+    if (!g) {
+      groups.set(key, {
+        slug: e.seriesSlug,
+        name: e.seriesName,
+        color: e.color,
+        round,
+        first: e.session.start,
+        last: e.session.end,
+      });
+    } else {
+      if (e.session.start < g.first) g.first = e.session.start;
+      if (e.session.end > g.last) g.last = e.session.end;
+    }
+  }
+  const cards = [...groups.entries()]
+    .sort((a, b) => a[1].first.getTime() - b[1].first.getTime())
+    .slice(0, 4);
+  if (cards.length === 0) return null;
+  const fmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  return (
+    <section aria-label="This weekend" className="mb-5">
+      <div className="mb-2 flex items-baseline justify-between border-b border-text pb-1">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          This weekend
+        </span>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map(([key, g]) => (
+          <Link
+            key={key}
+            href={`/series/${g.slug}/weekend/${g.round}`}
+            className="flex min-h-11 items-center gap-2.5 border border-border-strong bg-surface-elevated px-3 py-2.5 transition-colors duration-(--duration-fast) hover:border-text"
+          >
+            <span aria-hidden="true" className="h-4 w-[3px] shrink-0" style={{ backgroundColor: g.color }} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-serif text-[15px] font-semibold leading-tight text-text">
+                {roundNames?.[key] ?? `${g.name} · Round ${g.round}`}
+              </span>
+              <span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                {g.name} · {fmt.format(g.first)} – {fmt.format(g.last)}
+              </span>
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 

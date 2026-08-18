@@ -14,9 +14,6 @@ export function CalendarToolbar({
   monthOptions,
   currentMonthValue,
   onPickMonth,
-  filtersOpen,
-  onToggleFilters,
-  filterActive,
 }: {
   view: CalendarViewMode;
   onView: (v: CalendarViewMode) => void;
@@ -26,9 +23,6 @@ export function CalendarToolbar({
   monthOptions: { value: number; label: string }[];
   currentMonthValue: number;
   onPickMonth: (ms: number) => void;
-  filtersOpen: boolean;
-  onToggleFilters: () => void;
-  filterActive: boolean;
 }) {
   return (
     <div className="mb-4">
@@ -71,35 +65,22 @@ export function CalendarToolbar({
         <div className="mt-2 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">{label}</div>
       )}
 
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex">
-          {VIEWS.map(v => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => onView(v)}
-              aria-pressed={view === v}
-              className={`-ml-px border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-                view === v ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
-              }`}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
+      {/* The Filters button + modal died with the chip row (§4.2 — filters
+          apply on tap, inline, right under this toolbar). */}
+      <div className="mt-2 flex">
+        {VIEWS.map(v => (
           <button
+            key={v}
             type="button"
-            onClick={onToggleFilters}
-            aria-expanded={filtersOpen}
-            className={`inline-flex items-center gap-1.5 border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-              filtersOpen ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
+            onClick={() => onView(v)}
+            aria-pressed={view === v}
+            className={`-ml-px border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
+              view === v ? 'border-text bg-text text-bg' : 'border-border text-text-muted hover:text-text'
             }`}
           >
-            Filters
-            {filterActive && <span className="h-1.5 w-1.5 rounded-full bg-brand-fill" aria-label="active" />}
+            {v}
           </button>
-        </div>
+        ))}
       </div>
     </div>
   );

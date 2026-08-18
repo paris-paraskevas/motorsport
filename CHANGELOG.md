@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.277.0 — 2026-08-18
+
+### Changed
+- **The calendar, reimagined** (design handoff §4.2, panel 6a). The month grid stays — the failure was hiding, not shape. Three structural changes: **(1) race weekends render as labelled bars spanning their days** (`MonthView` groups a week's entries by `slug:round`, ≥2 distinct days → one banner per weekend, `grid-column: start / span n`, darkened series fill via `seriesInk`, linking to the weekend page; stacked when series overlap; round names shipped server-side as a compact `roundNames` map keyed `slug:round`); **(2) cells summarise, never truncate** — day number + right-aligned total count, session lines with 3px bar + mono series code + label + local time, practice runs collapsed into ranges ("Practice 1 – 3", "SS2 – SS10" — `collapseRuns`), anything that decides something always shown and bold serif, labels line-clamp at two lines, **"+N more" is gone**; a "Reading it" legend closes the grid; **(3) filters are an inline chip row applied on tap** (`CalendarChips` replaces the modal/draft/Save entirely): ALL SESSIONS / RACES ONLY pair + series chips (marquee order, "+N more" expander) — tapping a series from "all" focuses JUST it, so "just F1" is one tap (was five actions), and the active set mirrors into `?races=1&s=…` via `replaceState` so a filtered calendar is linkable. Filter storage moves to `paddock:calendar-filters:v2` (racesOnly + series); the old three-type checkbox model retires with the modal.
+- **"This weekend" pinned above the grid** as raised cards — every round with a session in the next four days, series bar + round name + date range, linking to the weekend.
+- Mobile month cells keep the colour-dot register (a 7-column grid can't carry text at 390px) plus the day count; Week/Day views are untouched this pass.
+
 ## 0.276.0 — 2026-08-18
 
 ### Changed
