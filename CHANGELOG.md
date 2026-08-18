@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.282.0 — 2026-08-18
+
+### Changed
+- **The Learn hub inverts** (design handoff §4.3, panel 9a) — the ~75 written answers are the product, so they lead and the topic filing-cabinet drops to the foot. New order: (1) serif title + a 44px ink-bordered **"Ask a question" field** (`components/information/AskField.tsx`, new client island) filtering the full answer index in place; (2) **Most asked** — ten verified questions in two columns with one-line summaries; (3) a rail with three numbered **first reads**, the 138-venue **circuit-map card** and the per-series guide links; (4) **"How a race weekend works"** — one chip per championship straight to its weekend-format answer (13 series covered; F1 + ADAC have no such answer yet — content gap, not authored tonight per RULE #1; `wsbk`/`gt-world` slug-token mapping handled); (5) the ten topics at the foot with verified counts.
+
 ## 0.281.0 — 2026-08-18
 
 ### Changed
