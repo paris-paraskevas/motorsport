@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.279.0 — 2026-08-18
+
+### Changed
+- **The series landing, reimagined** (design handoff §4.6, panels 4a/4b). `/series/[slug]` is no longer the calendar tab behind four navigation layers — it's three blocks: **(1) where the title stands** — serif masthead with `{season} · {rounds} rounds · {n} complete`, the next-session countdown, the drivers' championship top rows as bars with deltas (`fetchStandingsBrief`) + "Full table →"; a rail with **Last round** (winner + margin from `fetchLatestPodium` where the feed carries a flat podium, link-out otherwise), **Next round** (+ Preview →) and the calendar-subscribe links; **(2) the whole season as one list** — every round in two columns with Report → / boxed Preview / Scheduled states, **relocated rounds flagged inline** (the Bahrain-at-SEPANG chip from `rescheduleNote`) and **cancelled rounds stated in a band** ("Saudi Arabian Grand Prix — was 17–19 April as round 5, cancelled owing to the Middle East conflict. A replacement is under discussion.") rather than vanishing; **(3) a Reference row** at the foot — the tab pages + guides, stated once, any tab the series doesn't support simply absent. 4b's template-swap rule holds: ADAC renders "One race a year — no championship at all" with Past winners; Formula E renders "Season complete."; series without an eligible standings feed link out instead of faking a table. The `[tab]` routes and `SeriesPageView` are untouched — tabs survive as destinations, demoted from chrome.
+
 ## 0.278.2 — 2026-08-18
 
 ### Fixed
