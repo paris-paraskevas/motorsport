@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.281.0 — 2026-08-18
+
+**Driver pages now show the whole season, not the last five races.** Every round with the finish, the points gained and the running total, under four headline numbers that come straight from that same table. Portraits now appear only where we have a freely licensed photo, always credited to its photographer.
+
 ## 0.280.0 — 2026-08-18
 
 **Finished race weekends now read like a report.** The result leads the page — podium, gaps and points at the top — followed by how the weekend actually unfolded session by session, the venue with its track map, and what the result changed in the championship. Car upgrades moved to the foot where an appendix belongs. Upcoming weekends keep leading with the schedule and where to watch.

@@ -13,7 +13,16 @@ export interface DriverSeasonForm {
   points: number;
   wins: number;
   fieldSize: number;
+  /** Best finishing position across the season, null when never classified. */
+  bestFinish: number | null;
+  /** Race starts (appearances in the results feeds, extras included). */
+  starts: number;
   last5: Array<{ round: number; raceName: string; position: number; points: number }>;
+  /** EVERY round this season, ascending, with the running points total — the
+   *  profile's body table (design handoff §4.9: "All of them"). Derived from
+   *  the same results the headline stats cumulate, so the two can never
+   *  disagree. */
+  rounds: Array<{ round: number; raceName: string; position: number; points: number; runningTotal: number }>;
 }
 
 export interface TeamSeasonForm {
@@ -41,22 +50,45 @@ export function driverSeasonForm(
   const row = snap.drivers.find(d => namesMatch(d.driverName, driverName));
   if (!row) return null;
 
-  const appearances = races
-    .map(r => {
-      const entry = r.results.find(e => namesMatch(e.driverName, driverName));
-      return entry
-        ? { round: r.round, raceName: r.raceName, position: entry.position, points: entry.points }
-        : null;
-    })
-    .filter((x): x is NonNullable<typeof x> => x !== null)
-    .sort((a, b) => b.round - a.round);
+  // Extras (sprints, superpole races…) count toward starts + the running
+  // total but list under their parent round's name where they share a round.
+  const pick = (r: RaceResult, fromExtras: boolean) => {
+    const entry = r.results.find(e => namesMatch(e.driverName, driverName));
+    return entry
+      ? { round: r.round, raceName: r.raceName, position: entry.position, points: entry.points, fromExtras }
+      : null;
+  };
+  const all = [
+    ...races.map(r => pick(r, false)),
+    ...(extras ?? []).map(r => pick(r, true)),
+  ]
+    .filter((x): x is NonNullable<ReturnType<typeof pick>> => x !== null)
+    .sort((a, b) => a.round - b.round || Number(b.fromExtras) - Number(a.fromExtras));
+  // F1's sprint extras reuse the grand prix's raceName — disambiguate the
+  // label when a round carries two same-named rows (WSBK's extras are already
+  // distinctly named, so they pass through untouched).
+  for (const a of all) {
+    if (a.fromExtras && all.some(b => b !== a && b.round === a.round && b.raceName === a.raceName)) {
+      a.raceName = `${a.raceName} · Sprint`;
+    }
+  }
+  let running = 0;
+  const rounds = all.map(a => {
+    running += a.points;
+    return { ...a, runningTotal: running };
+  });
+  const classified = all.filter(a => a.position >= 1);
+  const appearances = [...all].sort((a, b) => b.round - a.round);
 
   return {
     position: row.position,
     points: row.points,
     wins: row.wins ?? 0,
     fieldSize: snap.drivers.length,
+    bestFinish: classified.length > 0 ? Math.min(...classified.map(a => a.position)) : null,
+    starts: all.length,
     last5: appearances.slice(0, 5),
+    rounds,
   };
 }
 
