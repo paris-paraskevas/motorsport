@@ -10,6 +10,7 @@ const THEMES = [
   { key: 'carbon', label: 'Carbon', hint: 'Cool graphite. Night races', bg: '#060a12', surface: '#111721', text: '#f0f4f9', accent: '#ffb400', dark: true },
   { key: 'ember', label: 'Ember', hint: 'Amber instrument. Evening', bg: '#0c0a05', surface: '#1a140a', text: '#f8f1e7', accent: '#ffb400', dark: true },
   { key: 'newsprint', label: 'Newsprint', hint: 'Paper light. Long reads', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#7d5300', dark: false },
+  { key: 'paper', label: 'Paper', hint: 'Editorial. Oxblood ink', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#8c1c13', dark: false },
   { key: 'circuit', label: 'Circuit', hint: 'High contrast. Daylight', bg: '#f4f4f5', surface: '#ffffff', text: '#09090b', accent: '#7d5300', dark: false },
 ] as const;
 
@@ -112,9 +113,9 @@ export function ThemePicker() {
     <section className="border-t border-border py-5 md:py-6">
       <h2 className="text-text text-base font-semibold">Appearance</h2>
       <p className="mt-1 text-text-faint text-xs">
-        Five themes on the same instrument chassis. Stored on this device.
+        Six themes on the same instrument chassis. Stored on this device.
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label="Theme">
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7" role="group" aria-label="Theme">
         {options.map(o => {
           const active = choice === o.key;
           return (

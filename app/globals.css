@@ -2,11 +2,11 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
-/* Tailwind v4 dark variant. Paddock ships 5 themes (July 2026): the root layouts
+/* Tailwind v4 dark variant. Paddock ships 6 themes (Aug 2026): the root layouts
    SSR class="dark" (Midnight default) and ThemeScript sets data-theme + toggles
    .dark pre-paint from localStorage. Dark-family themes (midnight/carbon/ember)
    carry .dark so every dark: utility (incl. prose dark:prose-invert and the
-   shadcn primitives) fires; light themes (newsprint/circuit) drop it. */
+   shadcn primitives) fires; light themes (newsprint/circuit/paper) drop it. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ─────────────────────────────────────────────────────────────
@@ -232,6 +232,32 @@
   --series-ink-mix: 52%;
 }
 
+/* Paper — the reimagining's newsprint register (design handoff 2026-08):
+   same warm-paper chassis as Newsprint (the handoff's palette IS these
+   WCAG-gated values), with the accent moved from brown-amber to oxblood ink.
+   8.9:1 on the paper ground. Slated to become the default once the redesigned
+   surfaces land; until then it ships opt-in via the picker. */
+:root[data-theme='paper'] {
+  color-scheme: light;
+  --bg: #f7f3e8;
+  --surface: #fbf7ec;
+  --surface-elevated: #fffcf2;
+  --border: #d6cebb;
+  --border-strong: #a99c80;
+  --text: #1e1a13;
+  --text-muted: #5b5342;
+  --text-faint: #6f6752;
+  --numeral: #100d08;
+  --brand: #8c1c13;
+  --tint-contrast: #1e1a13;
+  --live: #a80019;
+  --positive: #047857;
+  --negative: #a51818;
+  --live-pill: #a80019;
+  --session-best: #6d28d9;
+  --series-ink-mix: 52%;
+}
+
 /* Light themes re-derive tint-as-ink PER ELEMENT: custom properties resolve
    var() where they are DEFINED, so a :root-level derivation would never see
    the per-series --tint-fill injected inline further down the tree. 52% is
@@ -241,7 +267,9 @@
 :root[data-theme='newsprint'],
 :root[data-theme='newsprint'] *,
 :root[data-theme='circuit'],
-:root[data-theme='circuit'] * {
+:root[data-theme='circuit'] *,
+:root[data-theme='paper'],
+:root[data-theme='paper'] * {
   --tint: color-mix(in srgb, var(--tint-fill) 52%, black);
 }
 
@@ -272,6 +300,9 @@
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-condensed: var(--font-plex-condensed), var(--font-plex-sans), sans-serif;
+  /* Paper editorial serif (Newsreader, lib/fonts.ts). Plex Sans sits second so
+     Greek names fall through per-glyph — Newsreader has no Greek subset. */
+  --font-serif: var(--font-newsreader), var(--font-plex-sans), Georgia, serif;
 
   /* Paddock-native */
   --color-bg: var(--bg);
@@ -354,6 +385,7 @@ html[data-dyslexic='1'] {
   --font-sans: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
   --font-display: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
   --font-condensed: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
+  --font-serif: 'OpenDyslexic', var(--font-plex-sans), sans-serif;
 }
 html[data-dyslexic='1'] body {
   /* BDA guidance: looser leading + a little tracking help most dyslexic readers. */

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.270.0 — 2026-08-18
+
+**A sixth theme: Paper.** Warm newsprint, black ink and a deep oxblood accent, now in Settings → Theme. It's the first visible piece of a larger redesign of the whole site that's on its way — for now, it's simply there to try.
+
 ## 0.269.0 — 2026-08-06
 
 **Behind the scenes.** The build system finished its move to faster tooling. No change to the site; notifications and app installs carry over.
