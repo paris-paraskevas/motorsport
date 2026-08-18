@@ -1,5 +1,8 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.273.0 — 2026-08-18
+
+**Navigation, reimagined: four doors and one search.** The site now has exactly four destinations — Home, Calendar, Learn and Account — on every page, and one combined menu-and-search field that opens the whole site as a printed index: every series, the blog, the news wire and more. Type anything — a driver, a team, a race weekend — and it finds it. The hover menus and the separate search window are gone; getting anywhere is now one tap and, at most, one word.
 ## 0.272.0 — 2026-08-18
 
 **Behind the scenes.** Groundwork for the redesigned results pages: the logic that knows how every championship's race weekend is shaped — sprints, multi-class fields, feature races, rally stages — now lives in one tested place. Nothing visible changes yet.

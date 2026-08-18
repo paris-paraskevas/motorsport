@@ -1,70 +1,53 @@
 'use client';
-import { CalendarDays, CircleUser, Compass, Flag, House, Users } from 'lucide-react';
+import { CalendarDays, CircleUser, Compass, House } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth, useUser } from '@clerk/nextjs';
 
-// Mobile bottom navigation (PR 2a, docs/redesign-2026-06.md): thumb-reach
-// nav for phones and the installed PWA. Every tab is a real destination —
-// Series goes to the /series hub (operator feedback on 0.15.0: a nav tab
-// must not open a menu). Hidden on lg+ where the header's inline nav takes
-// over. Play appears only when betting is provisioned (bettingEnabled).
-export function BottomBar({ bettingEnabled }: { bettingEnabled: boolean }) {
+// The four doors on phones (design handoff §2, panel 8b): Home, Calendar,
+// Learn, Account — four equal cells, hairline dividers, a 2px accent rule
+// across the active cell's top. The bar NEVER changes per section, and nothing
+// else gets a cell: series, blog, news and social are reached by name through
+// the header's menu-and-search panel. Hidden on lg+ where the header carries
+// the same model.
+export function BottomBar() {
   const pathname = usePathname();
-  // Show the signed-in user's profile picture on the Account tab (falls back to
-  // the generic icon when signed-out or no image). Clerk is already mounted by
-  // the (app) layout, so this adds no new SDK cost.
+  // The signed-in user's picture on the Account cell (falls back to the
+  // generic icon when signed-out). Clerk is already mounted by the (app)
+  // layout, so this adds no new SDK cost.
   const { isSignedIn } = useAuth();
   const { user } = useUser();
 
   return (
     <nav
       aria-label="Primary"
-      className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated/90 backdrop-blur-xl border-t border-border pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated border-t border-text pb-[env(safe-area-inset-bottom)]"
     >
-      <div className={`grid ${bettingEnabled ? 'grid-cols-6' : 'grid-cols-5'} h-14 max-w-2xl mx-auto`}>
+      <div className="grid grid-cols-4">
         <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} dataHeatmapId="bottombar:home" />
         <BarLink
           href="/calendar"
-          active={pathname === '/calendar'}
+          active={pathname === '/calendar' || pathname.startsWith('/calendar/')}
           label="Calendar"
           Icon={CalendarDays}
+          divider
           dataHeatmapId="bottombar:calendar"
         />
-        <BarLink
-          href="/series"
-          active={pathname === '/series' || pathname.startsWith('/series/')}
-          label="Series"
-          Icon={Flag}
-          dataTour="series"
-          dataHeatmapId="bottombar:series"
-        />
-        {/* Learn hub (incl. series guides + the circuit map) — the section had no
-            mobile entry before, so /information + /information/map were unreachable
-            on phones. */}
         <BarLink
           href="/information"
           active={pathname === '/information' || pathname.startsWith('/information/')}
           label="Learn"
           Icon={Compass}
+          divider
           dataHeatmapId="bottombar:learn"
         />
-        {/* Play folded into Social (0.84.0): Social is the play/friends/community hub. */}
-        {bettingEnabled && (
-          <BarLink
-            href="/social"
-            active={pathname === '/social' || pathname.startsWith('/social/')}
-            label="Social"
-            Icon={Users}
-            dataHeatmapId="bottombar:social"
-          />
-        )}
         <BarLink
           href="/settings"
-          active={pathname === '/settings'}
+          active={pathname === '/settings' || pathname.startsWith('/settings/')}
           label="Account"
           Icon={CircleUser}
           avatarUrl={isSignedIn ? user?.imageUrl : undefined}
+          divider
           dataTour="account"
           dataHeatmapId="bottombar:account"
         />
@@ -79,6 +62,7 @@ function BarLink({
   label,
   Icon,
   avatarUrl,
+  divider,
   dataTour,
   dataHeatmapId,
 }: {
@@ -87,6 +71,7 @@ function BarLink({
   label: string;
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
   avatarUrl?: string;
+  divider?: boolean;
   dataTour?: string;
   dataHeatmapId?: string;
 }) {
@@ -96,14 +81,14 @@ function BarLink({
       data-tour={dataTour}
       data-heatmap-id={dataHeatmapId}
       aria-current={active ? 'page' : undefined}
-      className={`relative flex flex-col items-center justify-center gap-1 transition-colors duration-(--duration-fast) ${
-        active ? 'text-brand' : 'text-text-faint hover:text-text'
-      }`}
+      className={`relative flex flex-col items-center justify-center gap-[5px] pt-[9px] pb-[11px] transition-colors duration-(--duration-fast) ${
+        divider ? 'border-l border-border' : ''
+      } ${active ? 'text-brand' : 'text-text-faint hover:text-text'}`}
     >
-      {/* Timing-screen active marker — a hard amber rule across the cell top,
-          not a pill or glow. */}
+      {/* The active marker — a hard 2px accent rule across the cell top,
+          inset 14px, not a pill or glow. */}
       {active && (
-        <span aria-hidden="true" className="absolute top-0 inset-x-3 h-0.5 bg-brand-fill" />
+        <span aria-hidden="true" className="absolute top-0 inset-x-[14px] h-[2px] bg-brand" />
       )}
       {avatarUrl ? (
         <>
@@ -111,13 +96,13 @@ function BarLink({
           <img
             src={avatarUrl}
             alt=""
-            className={`h-[22px] w-[22px] rounded-full object-cover ${active ? 'ring-2 ring-brand' : ''}`}
+            className={`h-5 w-5 rounded-full object-cover ${active ? 'ring-2 ring-brand' : ''}`}
           />
         </>
       ) : (
         <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
       )}
-      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em]">
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
         {label}
       </span>
     </Link>
