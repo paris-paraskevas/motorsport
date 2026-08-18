@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.278.2 — 2026-08-18
+
+**Behind the scenes.** The background-refresh repair is now actually complete.
+
 ## 0.278.1 — 2026-08-18
 
 **Behind the scenes.** The background job that keeps standings and results fresh had been failing since yesterday morning; it's repaired and refreshing again.
