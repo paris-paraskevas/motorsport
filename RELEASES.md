@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.282.0 — 2026-08-18
+
+**Learn now leads with the answers.** Ask a question and matching answers appear as you type; the ten most-asked sit right under it; and every championship has a one-tap "how a race weekend works" explainer. The topic index moved to the foot of the page where browsing belongs.
+
 ## 0.281.0 — 2026-08-18
 
 **Driver pages now show the whole season, not the last five races.** Every round with the finish, the points gained and the running total, under four headline numbers that come straight from that same table. Portraits now appear only where we have a freely licensed photo, always credited to its photographer.

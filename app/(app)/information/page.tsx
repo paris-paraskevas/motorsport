@@ -1,11 +1,10 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowRight } from 'lucide-react';
 import { INFO_TOPICS, topicForSeries } from '@/lib/information/topics';
 import { getAllInfoEntries, getIndexedInfoEntries } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
 import { loadAllSeriesMeta } from '@/lib/series';
-import { TopicCard, EntryRow } from '@/components/information/InfoUi';
+import { AskField } from '@/components/information/AskField';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -25,16 +24,30 @@ export const metadata: Metadata = {
   ...withSocialMeta({ title: TITLE, description: DESCRIPTION, path: '/information' }),
 };
 
+// Series slug → the token its weekend-works answer slug carries (where they
+// differ). F1 and ADAC have no weekend-works answer yet (content gap).
+const WEEKEND_WORKS_KEY: Record<string, string> = {
+  wsbk: 'worldsbk',
+  'gt-world': 'gt-world-challenge',
+};
+
+// The three numbered first reads for someone arriving cold (§4.3 rail).
+const FIRST_READS = [
+  { href: '/information/general/types-of-motorsport', label: 'The types of motorsport' },
+  { href: '/information/general', label: 'Motorsport 101 — the basics' },
+  { href: '/information/series-guides', label: 'A guide to every championship' },
+];
+
+// The inverted hub (design handoff §4.3, panel 9a): the ~75 written answers
+// ARE the product, so they lead — ask field, most-asked, the weekend-format
+// band — and the topic filing cabinet drops to the foot.
 export default async function InformationHub() {
   const [all, featured, seriesMeta] = await Promise.all([
     getAllInfoEntries(),
     getIndexedInfoEntries(),
     loadAllSeriesMeta(),
   ]);
-  const seriesByName = [...seriesMeta].sort((a, b) => a.name.localeCompare(b.name));
 
-  // Verified-entry count per topic for the topic-card badges (honest: only
-  // reviewed answers are tallied).
   const verifiedByTopic = new Map<string, number>();
   for (const e of all) {
     if (e.review === 'verified') {
@@ -42,7 +55,19 @@ export default async function InformationHub() {
     }
   }
 
-  const featuredQa = featured.filter((e) => e.kind === 'qa').slice(0, 10);
+  const mostAsked = featured.filter(e => e.kind === 'qa').slice(0, 10);
+  const askIndex = all
+    .filter(e => e.kind === 'qa')
+    .map(e => ({ q: e.question, href: entryHref(e) }));
+
+  const weekendChips = seriesMeta
+    .map(m => {
+      const key = WEEKEND_WORKS_KEY[m.slug] ?? m.slug;
+      const entry = all.find(e => e.slug.includes('weekend-works') && e.slug.includes(key));
+      return entry ? { name: m.name, color: m.color, href: entryHref(entry) } : null;
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className={PAGE_WIDE}>
@@ -52,111 +77,152 @@ export default async function InformationHub() {
           { name: 'Information', url: `${SITE_URL}/information` },
         ])}
       />
+      <div className="mx-auto max-w-[1180px]">
+        {/* 1 — title + the ask field. */}
+        <header className="mb-8">
+          <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
+            Learn
+          </h1>
+          <p className="mt-2 mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+            {askIndex.length} written answers · sourced · linked into the live data
+          </p>
+          <AskField entries={askIndex} />
+        </header>
 
-      <header className="mb-8 border-b border-border pb-6">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] font-semibold text-tint mb-3">
-          Questions answered
-        </p>
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
-          Motorsport, explained<span className="text-tint">.</span>
-        </h1>
-        <p className="mt-4 text-base text-text-muted leading-relaxed max-w-2xl">
-          Straight, sourced answers to the questions fans actually ask — who won what, how
-          the racing works, where the great circuits are, and who’s coming up next. Every
-          answer links back into the live data across the site.
-        </p>
-      </header>
-
-      <section className="mb-10">
-        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-4">
-          Browse by topic
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {INFO_TOPICS.map((t) => (
-            <TopicCard
-              key={t.id}
-              id={t.id}
-              label={t.label}
-              blurb={t.blurb}
-              count={verifiedByTopic.get(t.id) ?? 0}
-            />
-          ))}
-        </div>
-      </section>
-
-      {featuredQa.length > 0 && (
-        <section className="mb-10">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-2">
-            Popular answers
-          </h2>
-          <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
-            {featuredQa.map((e) => (
-              <EntryRow key={entryHref(e)} href={entryHref(e)} question={e.question} summary={e.summary} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section id="series-guides" className="mb-10 scroll-mt-20">
-        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-1">
-          <Link
-            href="/information/series-guides"
-            className="hover:text-tint transition-colors duration-(--duration-fast)"
-          >
-            Series guides →
-          </Link>
-        </h2>
-        <p className="text-sm text-text-muted mb-4">
-          A guide to every championship we cover — its full history and how the racing works.
-          New to the sport? Start with{' '}
-          <Link
-            href="/information/general/types-of-motorsport"
-            className="text-tint hover:underline underline-offset-2"
-          >
-            the different types of motorsport
-          </Link>
-          .
-        </p>
-        <div className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {seriesByName.map((s) => {
-            const topic = topicForSeries(s.slug);
-            return (
-              <div key={s.slug} className="py-0.5">
-                <div className="font-medium text-text">{s.name}</div>
-                <div className="mt-0.5 flex flex-wrap gap-x-3 font-mono text-[10px] uppercase tracking-[0.12em]">
-                  <Link
-                    href={`/information/${topic}/the-history-of-${s.slug}`}
-                    className="text-text-faint hover:text-tint transition-colors duration-(--duration-fast)"
-                  >
-                    history →
-                  </Link>
-                  <Link
-                    href={`/information/${topic}/${s.slug}-rules-explained`}
-                    className="text-text-faint hover:text-tint transition-colors duration-(--duration-fast)"
-                  >
-                    rules →
-                  </Link>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <div>
+            {/* 2 — most asked. */}
+            {mostAsked.length > 0 && (
+              <section aria-label="Most asked" className="mb-10">
+                <div className="mb-3 border-b border-text pb-1">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                    Most asked
+                  </span>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+                <div className="grid gap-x-10 md:grid-cols-2">
+                  {mostAsked.map(e => (
+                    <Link key={entryHref(e)} href={entryHref(e)} className="group block border-b border-border py-2.5">
+                      <span className="block font-serif text-[17px] font-semibold leading-snug text-text group-hover:underline">
+                        {e.question}
+                      </span>
+                      {e.summary && (
+                        <span className="mt-0.5 line-clamp-1 block text-sm text-text-muted">{e.summary}</span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
-      <section className="border-t border-border pt-6">
-        <Link
-          href="/series"
-          className="group inline-flex items-center gap-2 text-text hover:text-tint transition-colors duration-(--duration-fast)"
-        >
-          <span className="font-display text-lg font-extrabold uppercase tracking-wide">
-            Explore every series
-          </span>
-          <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform duration-(--duration-fast)" />
-        </Link>
-        <p className="mt-1 text-sm text-text-muted">
-          Live standings, results, calendars and champions for 15 championships.
-        </p>
-      </section>
+            {/* 4 — how a race weekend works, one chip per championship: the
+                most useful thing here for a first-time viewer of an
+                unfamiliar series (§4.3). */}
+            {weekendChips.length > 0 && (
+              <section aria-label="How a race weekend works" className="mb-10">
+                <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                    How a race weekend works
+                  </span>
+                  <span className="font-mono text-[10px] tabular-nums text-text-faint">{weekendChips.length}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {weekendChips.map(c => (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      className="inline-flex min-h-11 items-center gap-2 border border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+                    >
+                      <span aria-hidden="true" className="h-[13px] w-[3px] shrink-0" style={{ backgroundColor: c.color }} />
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 5 — the ten topics, at the foot where a filing cabinet belongs. */}
+            <section aria-label="Browse by topic">
+              <div className="mb-3 border-b border-text pb-1">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  Browse by topic
+                </span>
+              </div>
+              <div className="grid gap-x-8 sm:grid-cols-2">
+                {INFO_TOPICS.map(t => (
+                  <Link
+                    key={t.id}
+                    href={`/information/${t.id}`}
+                    className="flex min-h-11 items-baseline justify-between gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-serif text-[16px] font-semibold text-text">{t.label}</span>
+                      <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                        {t.blurb}
+                      </span>
+                    </span>
+                    <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">
+                      {verifiedByTopic.get(t.id) ?? 0}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* 3 — the rail: three numbered first reads + the circuit map. */}
+          <aside>
+            <div className="mb-3 border-b border-text pb-1">
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                New to motorsport?
+              </span>
+            </div>
+            <ol>
+              {FIRST_READS.map((r, i) => (
+                <li key={r.href}>
+                  <Link
+                    href={r.href}
+                    className="flex min-h-11 items-baseline gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                  >
+                    <span className="w-4 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-brand">
+                      {i + 1}
+                    </span>
+                    <span className="font-serif text-[15px] font-semibold leading-snug text-text">{r.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+            <Link
+              href="/information/map"
+              className="mt-4 block border border-border-strong p-3 transition-colors duration-(--duration-fast) hover:border-text"
+            >
+              <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+                Circuit map
+              </span>
+              <span className="mt-1 block font-serif text-[15px] font-semibold leading-snug text-text">
+                All 138 venues on one map
+              </span>
+            </Link>
+            <div className="mt-6 border-t border-border pt-3">
+              <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                Per-series guides
+              </span>
+              <div className="mt-2 grid grid-cols-2 gap-x-3">
+                {[...seriesMeta]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map(s => (
+                    <Link
+                      key={s.slug}
+                      href={`/information/${topicForSeries(s.slug)}/the-history-of-${s.slug}`}
+                      className="truncate py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-text-faint hover:text-text"
+                    >
+                      {s.name}
+                    </Link>
+                  ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
     </div>
   );
 }
