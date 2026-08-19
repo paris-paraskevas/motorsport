@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.289.0 — 2026-08-19
+
+### Changed
+- **NavPanel v3 — panel 2a exact** (operator order, 2026-08-19, image #32). The left column returns to the mock's shape: **NOW** (Home · Calendar · Latest results · This weekend — plain serif rows, door rows carry the active state, pointer rows never claim `aria-current`) and **READ** (Blog · News wire · Writers). The foot regains its right-aligned **Settings →**. Panel widens to `min(1200px, 100vw−3rem)`. The Learn/Account doors this displaces live in the header's DoorLinks (0.287.0), so the anti-repetition rule holds.
+- `docs/next-session.md` updated: prod unfrozen at 0.288.0, pipeline healed.
+
 ## 0.288.0 — 2026-08-19
 
 ### Fixed

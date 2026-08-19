@@ -2,7 +2,7 @@
 
 ## State
 - main = **0.287.0** (Paper default + full-width + header doors, this PR). Sessions 28 shipped #679–#697: theme foundation, four-door shell, NavPanel v2 (wide), editorial home, orphan sweep, calendar (bars/chips), series hub (7a), series landing (4a), weekend report/preview split, driver profile, Learn, wire, telemetry, account, blog index, lockfile fix (nested `@serwist/turbopack/@swc/helpers` — npm10 ci green).
-- **PROD FROZEN at 0.274.0.** Cloudflare Workers Builds stopped after 14:25Z 18 Aug (exactly at the #683 push; lockfile exonerated — CF deployed 5× with the broken lock). Root cause is dashboard-side (failed builds / build minutes / paused Git connection): **Workers & Pages → motorsport → Builds**. Manual fallback the operator must run or name: `npm run deploy` (auto-mode classifier denies the agent, twice). Warm-live-data cron is GREEN.
+- **Prod UNFROZEN at 0.288.0 (2026-08-19 08:10Z).** Root cause was the Cloudflare Worker crossing the hard 10 MiB gzip script limit at 0.275.0; fixed by the 0.288.0 diet (dead MDX toolchain + server Sentry out — operator-approved). Margin is thin (~200 KiB, worker at 10,042/10,240) — the durable fix is moving the content bundle to static assets (~650 KiB, zero loss). Warm-live-data cron GREEN; every merge now auto-deploys again (~6 min).
 - Design source: `C:\Users\ppara\Downloads\Reimagining (1)\design_handoff_paddock_ui_reimagining\` — README + `Home Dashboard.dc.html` (serve: `python -m http.server 8777` in that dir; screenshot panels via Playwright `[id="3a"]` etc.).
 
 ## Operator's ordered list (2026-08-19 notes, images = the mocks; execute in order, one PR each, merge immediately)

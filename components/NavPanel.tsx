@@ -7,29 +7,36 @@ import { groupSeriesByCategory } from '@/lib/categories';
 import type { SearchDoc, SearchType } from '@/lib/search-index';
 import { searchDocs } from '@/lib/search-match';
 
-// The one nav control (design handoff §2, panels 2a/8b): a single always-visible
+// The one nav control (design handoff §2, panel 2a): a single always-visible
 // menu-and-search field in the header. Click or focus opens the panel printing
-// the whole site as one index — the four doors, all fifteen series grouped by
-// category, Read, Learn, and the "Also" foot rule — and typing filters that
-// same index in place, with full-site search results (drivers, teams,
+// the whole site as one index — NOW and READ on the left, all fifteen series
+// grouped by category, Learn, and the "Also" foot rule — and typing filters
+// that same index in place, with full-site search results (drivers, teams,
 // weekends…) beneath. One surface, one code path, both viewports. ⌘K / Ctrl-K
 // / "/" still focus the field; the visible shortcut-hint chrome is gone by
 // design ("not every user is on a Mac") — the mock's own ESC affordance stays.
 //
-// Panel 2a's NOW group (Latest results / This weekend) and its foot "Settings →"
-// are deliberately absent: panel 8b (later turn) replaced NOW with THE FOUR
-// DOORS, and the design's own anti-repetition rule kills rows that duplicate a
-// door (Home covers latest results; Calendar covers this weekend; Account
-// covers settings).
+// v3 (operator, 2026-08-19): panel 2a EXACT. The left column is NOW — plain
+// serif links, no subtitles — plus READ; the foot regains its right-aligned
+// "Settings →". The Learn/Account doors this replaces live in the header's
+// DoorLinks now, so the anti-repetition rule holds.
 
 // Module-level cache so re-opening never re-fetches the static index.
 let INDEX_CACHE: SearchDoc[] | null = null;
 
-const DOORS = [
-  { href: '/app', label: 'Home', sub: 'What just happened' },
-  { href: '/calendar', label: 'Calendar', sub: 'When everything is on' },
-  { href: '/information', label: 'Learn', sub: 'What it all means' },
-  { href: '/settings', label: 'Account', sub: 'What you follow' },
+// door: the row IS that route (gets the active state); the other NOW rows are
+// pointers into a region of the same page and must never claim aria-current.
+const NOW_LINKS = [
+  { href: '/app', label: 'Home', door: true },
+  { href: '/calendar', label: 'Calendar', door: true },
+  { href: '/app', label: 'Latest results', door: false },
+  { href: '/calendar', label: 'This weekend', door: false },
+];
+
+const READ_LINKS = [
+  { href: '/blog', label: 'Blog' },
+  { href: '/news', label: 'News wire' },
+  { href: '/authors', label: 'Writers' },
 ];
 
 const LEARN_LINKS = [
@@ -179,7 +186,7 @@ export function NavPanel({
   const q = query.trim().toLowerCase();
   const hit = (label: string, sub = '') =>
     !q || label.toLowerCase().includes(q) || sub.toLowerCase().includes(q);
-  const doorHits = DOORS.filter(d => hit(d.label, d.sub));
+  const nowHits = NOW_LINKS.filter(d => hit(d.label));
   const seriesGroups = groups
     .map(g => ({
       category: g.category,
@@ -188,18 +195,14 @@ export function NavPanel({
         : g.series,
     }))
     .filter(g => g.series.length > 0);
-  const readRows = [
-    { href: '/blog', label: 'Blog', sub: 'Analysis & recaps' },
-    { href: '/news', label: 'News', sub: 'The wire' },
-    { href: '/authors', label: 'Writers', sub: 'Who writes here' },
-  ].filter(r => hit(r.label, r.sub));
+  const readRows = READ_LINKS.filter(r => hit(r.label));
   const learnHits = LEARN_LINKS.filter(l => hit(l.label));
   const alsoHits = ALSO_LINKS.filter(l => (l.gated ? bettingEnabled : true) && hit(l.label));
 
   // Full-site search beneath the printed index, deduped against rows already
   // showing above (the index has 'page' docs for the doors themselves).
   const printedUrls = new Set<string>([
-    ...doorHits.map(d => d.href),
+    ...nowHits.map(d => d.href),
     ...seriesGroups.flatMap(g => g.series.map(s => `/series/${s.slug}`)),
     ...readRows.map(r => r.href),
     ...learnHits.map(l => l.href),
@@ -211,32 +214,32 @@ export function NavPanel({
   );
   const nothing =
     q.length > 0 &&
-    doorHits.length + readRows.length + learnHits.length + alsoHits.length + found.length === 0 &&
+    nowHits.length + readRows.length + learnHits.length + alsoHits.length + found.length === 0 &&
     seriesGroups.length === 0;
 
-  const doorsSection = doorHits.length > 0 && (
-    <section aria-label="The four doors">
-      <PanelRule label="The four doors" />
-      {doorHits.map(d => {
-        const active = pathname === d.href || pathname.startsWith(`${d.href}/`);
-        return (
-          <Link
-            key={d.href}
-            href={d.href}
-            data-nav-row
-            data-heatmap-id={`nav:panel:door:${d.label.toLowerCase()}`}
-            aria-current={active ? 'page' : undefined}
-            className="block min-h-11 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-          >
-            <span className={`block font-serif text-[19px] font-semibold leading-tight ${active ? 'text-brand' : 'text-text'}`}>
+  // NOW: plain serif rows on desktop; the mock's bordered chips on phones.
+  const nowSection = nowHits.length > 0 && (
+    <section aria-label="Now">
+      <PanelRule label="Now" />
+      <div className="mt-2 flex flex-wrap gap-2 lg:mt-0 lg:block">
+        {nowHits.map(d => {
+          const active = d.door && (pathname === d.href || pathname.startsWith(`${d.href}/`));
+          return (
+            <Link
+              key={d.label}
+              href={d.href}
+              data-nav-row
+              data-heatmap-id={`nav:panel:now:${d.label.toLowerCase().replace(/\s+/g, '-')}`}
+              aria-current={active ? 'page' : undefined}
+              className={`flex min-h-11 items-center border border-border-strong px-3 font-serif text-[17px] font-semibold leading-tight transition-colors duration-(--duration-fast) hover:bg-surface lg:border-0 lg:border-b lg:border-border lg:px-0 lg:py-2 lg:text-[19px] ${
+                active ? 'text-brand' : 'text-text'
+              }`}
+            >
               {d.label}
-            </span>
-            <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
-              {d.sub}
-            </span>
-          </Link>
-        );
-      })}
+            </Link>
+          );
+        })}
+      </div>
     </section>
   );
 
@@ -248,11 +251,10 @@ export function NavPanel({
           key={r.href}
           href={r.href}
           data-nav-row
-          data-heatmap-id={`nav:panel:${r.label.toLowerCase()}`}
-          className="flex min-h-11 items-center justify-between gap-3 border-b border-border py-1.5 transition-colors duration-(--duration-fast) hover:bg-surface"
+          data-heatmap-id={`nav:panel:${r.label.toLowerCase().replace(/\s+/g, '-')}`}
+          className="flex min-h-11 items-center border-b border-border py-1.5 font-serif text-[16px] font-semibold text-text transition-colors duration-(--duration-fast) hover:bg-surface"
         >
-          <span className="font-serif text-[16px] font-semibold text-text">{r.label}</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">{r.sub}</span>
+          {r.label}
         </Link>
       ))}
     </section>
@@ -332,6 +334,14 @@ export function NavPanel({
           {l.label}
         </Link>
       ))}
+      <Link
+        href="/settings"
+        data-nav-row
+        data-heatmap-id="nav:panel:settings"
+        className="ml-auto font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+      >
+        Settings →
+      </Link>
     </div>
   );
 
@@ -396,11 +406,13 @@ export function NavPanel({
 
       {/* The panel: full-bleed sheet on phones (the bottom bar stays visible,
           per panel 8b), a wide three-column surface on lg+ (panel 2a: the
-          entire site, one surface). */}
+          entire site, one surface). On lg it is viewport-centred and fixed —
+          at min(1200px, 100vw-3rem) it cannot stay anchored to the control's
+          left edge without overflowing the right edge of the screen. */}
       {open && (
         <div
           id="nav-panel"
-          className="fixed inset-x-0 top-[calc(50px+env(safe-area-inset-top))] bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 overflow-y-auto border-t border-text bg-bg px-[14px] pb-6 lg:absolute lg:inset-x-auto lg:left-0 lg:top-[calc(100%+11px)] lg:bottom-auto lg:w-[min(880px,calc(100vw-5rem))] lg:max-h-[calc(100vh-90px)] lg:rounded-[4px] lg:border lg:bg-surface-elevated lg:px-5 lg:pb-4"
+          className="fixed inset-x-0 top-[calc(50px+env(safe-area-inset-top))] bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 overflow-y-auto border-t border-text bg-bg px-[14px] pb-6 lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:top-[calc(69px+env(safe-area-inset-top))] lg:bottom-auto lg:w-[min(1200px,calc(100vw-3rem))] lg:max-h-[calc(100vh-90px)] lg:rounded-[4px] lg:border lg:bg-surface-elevated lg:px-5 lg:pb-4"
         >
           {nothing ? (
             <div className="px-1 py-10 text-center">
@@ -409,9 +421,9 @@ export function NavPanel({
             </div>
           ) : (
             <>
-              <div className="lg:grid lg:grid-cols-[190px_minmax(0,1fr)_200px] lg:gap-7">
+              <div className="lg:grid lg:grid-cols-[190px_minmax(0,1fr)_220px] lg:gap-7">
                 <div>
-                  {doorsSection}
+                  {nowSection}
                   {readSection}
                 </div>
                 <div>{seriesSection}</div>
