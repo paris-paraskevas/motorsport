@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.289.0 — 2026-08-19
+
+**The navigation panel now opens with what's happening now.** Home, the calendar, the latest results and this weekend lead the index, with the reading destinations right under them and settings one tap away at the foot.
+
 ## 0.288.0 — 2026-08-19
 
 **Deploys are flowing again.** A stack of the last two days' improvements had been held back by an infrastructure size limit; we traced it, removed two pieces of dead weight, and everything ships from here. Nothing you can see or use has changed.
