@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.298.0 — 2026-08-19
+
+### Changed
+- **The copy/layout closing pass across six surfaces** (reimagining job ⑨, the last of the operator's ordered list):
+  - **The wire** (`/news`): serif masthead "The wire" + the honest standfirst; the foot now states the mechanics plainly — "Ten per series, deduped across cross-posts, newest first".
+  - **Learn** (`/information`): "Motorsport, explained", the label becomes "{n} answers, all sourced" (live count, not the mock's hardcoded 75), the ask-field placeholder teaches with the mock's two examples ("what is DRS", "how do WEC points work"), and the topic rows carry their `/route →` labels.
+  - **Account** (`/settings`): the 11c foot rows land — **Export your data** (through `/contact`; there is no self-serve export pipeline and the row doesn't pretend otherwise — the mock's "contact modal" is a plain contact link) and **Sign out** (Clerk `SignOutButton`, signed-in only). "Customise home" stays dead per the cutover decision.
+  - **Telemetry** (`/f1/analysis`): the three cards say what they answer — "How pole was taken", "How the race was won", "Compare two drivers" — with the tool names demoted to the mono sub-line; the every-round list flows in two columns on desktop.
+  - **Blog post** (`/blog/[slug]`, panel #19): serif 44px headline in a 760px serif reading column, mono eyebrow (series · date · read-time at ~220 wpm), the byline as a bordered band with "{series} coverage →" at its right (the post model carries no round, so the mock's "Weekend report →" becomes the series link — documented), and blockquotes restyled as editorial pull quotes (top/bottom rules, 24px serif). DraftPreview's header path is untouched (the new props are optional).
+  - **Series hub** (`/series`, #10): the **"One layout, fifteen sports"** contract matrix at the foot — the handoff README §3 table verbatim (series / a-round-is / sessions-in-order), serif names + mono grammar, horizontally scrollable on phones.
+- Deferred, documented: the blog's **embedded live classification** — `lib/blog-embeds` supports `chart` and `standings` only; a `classification` embed (session picking, multi-class, caching on a force-dynamic route) is its own design, queued in IDEAS.
+- Verification note: wire/Learn/analysis/hub browser-verified on dev (all markers + fresh-load screenshots; the browser pane's below-fold captures glitched, DOM metrics verified the matrix instead); blog post + account rows are compile-verified — both need the prod DB / a session to render, flagged for the deploy sentry + operator eyeball.
+
 ## 0.297.0 — 2026-08-19
 
 ### Changed

@@ -81,10 +81,10 @@ export default async function InformationHub() {
         {/* 1 — title + the ask field. */}
         <header className="mb-8">
           <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
-            Learn
+            Motorsport, explained
           </h1>
           <p className="mt-2 mb-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
-            {askIndex.length} written answers · sourced · linked into the live data
+            {askIndex.length} answers, all sourced · linked into the live data
           </p>
           <AskField entries={askIndex} />
         </header>
@@ -157,7 +157,7 @@ export default async function InformationHub() {
                     <span className="min-w-0">
                       <span className="block truncate font-serif text-[16px] font-semibold text-text">{t.label}</span>
                       <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
-                        {t.blurb}
+                        /{t.id} →
                       </span>
                     </span>
                     <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">

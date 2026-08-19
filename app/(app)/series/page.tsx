@@ -241,7 +241,62 @@ export default async function SeriesHubPage() {
             </Accordion>
           ))}
         </div>
+
+        {/* The series-contract matrix (handoff §3 / panel 12a, job ⑨/#10):
+            one layout, fifteen sports — the F1 weekend is the exception, not
+            the template. Data verbatim from the README's contract table. */}
+        <section aria-label="One layout, fifteen sports" className="mt-12">
+          <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 border-b border-text pb-1">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              One layout, fifteen sports
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+              The F1 weekend is the exception, not the template
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="py-1.5 pr-4 text-left font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">Series</th>
+                  <th className="py-1.5 pr-4 text-left font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">A round is</th>
+                  <th className="py-1.5 text-left font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">Sessions, in order</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CONTRACT_MATRIX.map(row => (
+                  <tr key={row[0]} className="border-b border-border">
+                    <td className="py-2 pr-4 font-serif text-[15px] font-semibold text-text">{row[0]}</td>
+                    <td className="py-2 pr-4 font-mono text-[10px] uppercase tracking-[0.1em] text-text-muted">{row[1]}</td>
+                    <td className="py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-text-muted">{row[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   );
 }
+
+// Handoff README §3, first three columns verbatim — the contract every results
+// surface is built against. Static by design: it documents the sports' shapes,
+// not this season's data.
+const CONTRACT_MATRIX: Array<[string, string, string]> = [
+  ['Formula 1', 'one weekend', 'FP1 · FP2 · FP3 · Q · Race'],
+  ['Formula 2', 'one weekend', 'Practice · Q · Sprint · Feature'],
+  ['Formula 3', 'one weekend', 'Practice · Q · Sprint · Feature'],
+  ['Formula E', 'one or two E-Prix', 'FP1 · FP2 · Q duels · Race'],
+  ['IndyCar', 'one race, sometimes two', 'Practice · Q · Warm-up · Race'],
+  ['MotoGP', 'one weekend', 'FP1 · Practice · FP2 · Q1 · Q2 · Sprint · Race'],
+  ['WorldSBK', 'one round, three races', 'FP · Superpole · Race 1 · Superpole Race · Race 2'],
+  ['FIA WEC', 'one race, 6h–24h', 'FP1 · FP2 · FP3 · Hyperpole · Race'],
+  ['IMSA', 'one race, 100min–24h', 'Practice · Q · Race'],
+  ['GT World Challenge', 'one or two races', 'Bronze Test · FP · Pre-Q · Q · Race'],
+  ['DTM', 'one weekend, two races', 'FP1 · FP2 · Q1 · Race 1 · Q2 · Race 2'],
+  ['NLS Nürburgring', 'one long race', 'Qualifying · Race'],
+  ['ADAC Ravenol 24h', 'one event a year', 'Qualifying · Top Qualifying · Race'],
+  ['WRC', 'one rally, 3–4 days', 'Shakedown · SS1–SS20 · Power Stage'],
+  ['NASCAR Cup', 'one race', 'Practice · Q · Race'],
+];

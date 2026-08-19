@@ -15,6 +15,12 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 5. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (official archive × Wikipedia rendered HTML, three-way name check; see 0.266.0). One-two series per session. ADAC 24h + NLS never.
 6. **Indexing follow-through**: GSC "Validate fix" clicked 2026-08-06, awaiting Google's re-crawl verdict on the 45 noindex URLs.
 
+## Inbox (2026-08-19 — session 29)
+
+- **Blog `[[classification …]]` embed** (panel #19's "embedded live classification", deferred from 0.298.0): `lib/blog-embeds` supports `chart`/`standings` only; a classification embed needs session picking (which race of a round), multi-class handling and a caching stance on the force-dynamic post route. Design first, then wire into `components/blog/embeds/BlogEmbed.tsx`.
+- **Landing-orphan deletion sweep awaiting approval**: TickerBar, Hero, MarqueeEvent, SeriesMarquee, StatsBand, FeatureBlocks, PredictionGame, DisciplinesGrid, PerksCta, LandingMenu, BigCountdown, clean-title (0.295.0) + WeekendHero (0.294.0) — zero imports each; per the deletion rule, one approval PR.
+- **GSC follow-through**: with 0.294.0–0.296.0 every flagged route true-404s on prod — click Validate fix on "Soft 404" and re-validate "Excluded by noindex" in Search Console; the 4xx/5xx groups clear on their own.
+
 ## Inbox (2026-08-18 — overnight run close)
 
 - **Cloudflare build pipeline dead since 14:25Z** — prod frozen at 0.274.0 with 0.275→0.286 merged; check Workers Builds in the dashboard (likely a failed build or paused GitHub connection) or run `npm run deploy` once. THE morning item.

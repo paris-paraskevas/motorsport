@@ -107,10 +107,10 @@ export default async function F1AnalysisPage() {
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
               <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
-                Qualifying Analysis
+                How pole was taken
               </span>
               <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
-                Pole laps side by side →
+                Qualifying Analysis →
               </span>
             </Link>
             <Link
@@ -118,10 +118,10 @@ export default async function F1AnalysisPage() {
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
               <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
-                Race Story
+                How the race was won
               </span>
               <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
-                Strategy, stints &amp; moments →
+                Race Story →
               </span>
             </Link>
             <Link
@@ -129,10 +129,10 @@ export default async function F1AnalysisPage() {
               className="group border border-border-strong bg-bg p-3 transition-colors duration-(--duration-fast) hover:border-text"
             >
               <span className="block font-serif text-[17px] font-semibold leading-tight text-text">
-                Head-to-head
+                Compare two drivers
               </span>
               <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
-                Any two drivers, all season →
+                Head-to-head, all season →
               </span>
             </Link>
           </div>
@@ -148,13 +148,14 @@ export default async function F1AnalysisPage() {
           </span>
           <span className="font-mono text-[10px] tabular-nums text-text-faint">{allRounds.length}</span>
         </div>
+        <div className="lg:columns-2 lg:gap-10">
         {allRounds.map(r => {
           const range = dateRangeLabel(roundDate(r.startDate), roundDate(r.endDate));
           const past = isPastRound(r, today);
           return (
             <div
               key={r.round}
-              className={`flex min-h-11 flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-border py-1.5 ${past ? '' : 'opacity-55'}`}
+              className={`flex min-h-11 flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-border py-1.5 lg:break-inside-avoid ${past ? '' : 'opacity-55'}`}
             >
               <span className="w-7 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
                 R{r.round}
@@ -190,6 +191,7 @@ export default async function F1AnalysisPage() {
             </div>
           );
         })}
+        </div>
       </section>
 
       <footer className="mt-10 border-t border-border pt-6">

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.298.0 — 2026-08-19
+
+**Six surfaces got their finishing pass.** The news wire introduces itself honestly, Learn opens with "Motorsport, explained" and teaches you what to ask, your account page gains sign-out and a data-export request, the F1 analysis cards say what they answer, blog posts read like a proper article column with pull quotes, and the series directory closes with a table showing how differently all fifteen championships are shaped — and why the site treats each on its own terms.
+
 ## 0.297.0 — 2026-08-19
 
 **Predictions now opens on what you can bet on right now.** The next round's five markets lead the page with exactly when they lock, your open calls sit beneath with your settled history one tap away, and your private league ranks on win rate — so a latecomer can still top the table. The house rules stand in plain type: free credits, no money in, none out.

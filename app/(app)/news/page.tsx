@@ -69,16 +69,15 @@ export default async function NewsPage() {
           { name: 'News', url: `${SITE_URL}/news` },
         ])}
       />
-      <header className="mb-6 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
-        <div>
-          <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
-            News<span className="text-brand">.</span>
-          </h1>
-          <p className="mt-2 text-sm text-text-muted">
-            Latest stories across the grid — filter by series.
-          </p>
-        </div>
+      {/* §4.12 / job ⑨: serif masthead + the page's honest standfirst. */}
+      <header className="mb-6">
+        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+          The wire
+        </h1>
+        <p className="mt-2 max-w-[52ch] font-serif text-[16px] leading-snug text-text-muted">
+          Other people&rsquo;s reporting, credited and linked out — the latest
+          stories across the grid, filterable by series.
+        </p>
       </header>
 
       <NewsPageContent news={news} serverNow={now.toISOString()} />
