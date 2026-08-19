@@ -6,11 +6,11 @@ import { THEME_STORAGE_KEY } from '@/components/theme/ThemeScript';
 // Palette metadata for the picker previews only — the live values are the
 // :root[data-theme=…] token blocks in globals.css (WCAG-gated there).
 const THEMES = [
-  { key: 'midnight', label: 'Midnight', hint: 'Classic dark. The default', bg: '#121215', surface: '#1b1b21', text: '#e4e4e8', accent: '#ffb400', dark: true },
+  { key: 'midnight', label: 'Midnight', hint: 'Classic dark. Night races', bg: '#121215', surface: '#1b1b21', text: '#e4e4e8', accent: '#ffb400', dark: true },
   { key: 'carbon', label: 'Carbon', hint: 'Cool graphite. Night races', bg: '#060a12', surface: '#111721', text: '#f0f4f9', accent: '#ffb400', dark: true },
   { key: 'ember', label: 'Ember', hint: 'Amber instrument. Evening', bg: '#0c0a05', surface: '#1a140a', text: '#f8f1e7', accent: '#ffb400', dark: true },
   { key: 'newsprint', label: 'Newsprint', hint: 'Paper light. Long reads', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#7d5300', dark: false },
-  { key: 'paper', label: 'Paper', hint: 'Editorial. Oxblood ink', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#8c1c13', dark: false },
+  { key: 'paper', label: 'Paper', hint: 'Editorial. The default', bg: '#f7f3e8', surface: '#fbf7ec', text: '#1e1a13', accent: '#8c1c13', dark: false },
   { key: 'circuit', label: 'Circuit', hint: 'High contrast. Daylight', bg: '#f4f4f5', surface: '#ffffff', text: '#09090b', accent: '#7d5300', dark: false },
 ] as const;
 
@@ -22,12 +22,12 @@ type ThemeChoice = ThemeKey | 'system';
 const CHANGE_EVENT = 'paddock:theme-change';
 
 function systemResolved(): ThemeKey {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'newsprint';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'paper';
 }
 
 function applyTheme(choice: ThemeChoice) {
   const resolved = choice === 'system' ? systemResolved() : choice;
-  const def = THEMES.find(t => t.key === resolved) ?? THEMES[0];
+  const def = THEMES.find(t => t.key === resolved) ?? THEMES.find(t => t.key === 'paper')!;
   const el = document.documentElement;
   el.dataset.theme = def.key;
   el.classList.toggle('dark', def.dark);
@@ -38,7 +38,7 @@ function applyTheme(choice: ThemeChoice) {
 function readChoice(): ThemeChoice {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === 'system' || THEMES.some(t => t.key === stored)) return stored as ThemeChoice;
-  return 'midnight';
+  return 'paper';
 }
 
 function subscribe(onStoreChange: () => void) {
@@ -82,7 +82,7 @@ function SystemSwatch() {
 export function ThemePicker() {
   // localStorage IS the store; the server snapshot renders the default until
   // hydration, then the real choice takes over (no setState-in-effect).
-  const choice = useSyncExternalStore<ThemeChoice>(subscribe, readChoice, () => 'midnight');
+  const choice = useSyncExternalStore<ThemeChoice>(subscribe, readChoice, () => 'paper');
 
   // External-system sync only (no state): OS appearance flips re-resolve a
   // live 'system' choice; a change made in another tab re-skins this one.

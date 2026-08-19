@@ -124,7 +124,7 @@ export default async function SeriesPage({
           { name: meta.name, url: `${SITE_URL}/series/${slug}` },
         ])}
       />
-      <div className="mx-auto max-w-[1180px]">
+      <div>
         {/* ── Where the title stands: name, season state, the next-session clock. ── */}
         <header className="mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
           <div className="min-w-0">

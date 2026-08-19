@@ -87,7 +87,7 @@ export function HomeLead({
   const leaderPoints = changed?.top[0]?.points ?? 0;
 
   return (
-    <div className="mx-auto max-w-[1180px]">
+    <div>
       {/* ── 1. The result that just happened ─────────────────────────────── */}
       {result && winner && (
         <section
