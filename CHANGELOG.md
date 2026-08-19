@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.300.0 — 2026-08-19
+
+### Docs
+- **Round 2 queued.** The operator's 19 annotated screenshots (evening pass over the reimagined prod) distilled into ten ordered jobs in `docs/next-session.md`: the `/contact` 404 (live bug — the 0.298.0 export-data row points at it), the pre-Paper amber CTA sweep, the settings-trio Paper restyle, header doors (Account → Series) + hover-anchored NavPanel, the home two-up lead, calendar fit + Today placement, weekend-preview layout v2 (big circuit map in the main column, news pulled up), series-page deep links (distinct pages + `/calendar?s=` filter), the Threads restyle, and the mechanic-widget restyle. No code in this release.
+
 ## 0.299.0 — 2026-08-19
 
 ### Docs

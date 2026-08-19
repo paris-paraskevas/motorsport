@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.300.0 — 2026-08-19
+
+**Housekeeping.** The next round of polish is planned and queued — nothing user-facing changed yet.
+
 ## 0.299.0 — 2026-08-19
 
 **Housekeeping.** Internal session notes and planning documents — nothing user-facing changed.
