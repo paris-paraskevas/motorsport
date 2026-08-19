@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.301.0 — 2026-08-19
+
+**The contact page is real now.** Asking for a data export from your account page landed on a dead link — contact only existed as a small pop-up. It now has a proper page of its own, same form, and the pop-up still works from the footer.
+
 ## 0.300.0 — 2026-08-19
 
 **Housekeeping.** The next round of polish is planned and queued — nothing user-facing changed yet.
