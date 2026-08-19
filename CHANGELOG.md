@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.305.0 — 2026-08-19
+
+### Changed
+- **Home's championship read and next-weekends list share one band** (round-2 ⑤, operator's arrows). "What it changed" (headline + standings bars) takes the left column, "What's next" (the next three weekends, countdown on the first) sits in a 380px right rail — the wire moves up with everything above it. Either half missing (no eligible standings / season over) leaves the other at full width. Next-weekend rows wrap instead of clipping at the narrower rail width.
+
 ## 0.304.0 — 2026-08-19
 
 ### Changed

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.305.0 — 2026-08-19
+
+**Home fits more of the story on one screen.** The championship picture and the next race weekends now sit side by side, so the news wire is one glance closer.
+
 ## 0.304.0 — 2026-08-19
 
 **The menu now opens on hover and drops from where you'd expect.** Hovering the menu button opens the full site index right under it, and the header's quick links now read Calendar · Learn · Series — your account lives behind the avatar and inside the menu.
