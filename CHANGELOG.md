@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.308.0 — 2026-08-19
+
+### Changed
+- **Series-page routing sharpened** (round-2 ⑧). The tab rail's **Calendar** entry now leads to `/calendar?s={slug}` — THE calendar, filtered to that championship (the 0.290.0 deep link) — instead of the bare series landing, which has been the season list, not a calendar, since 0.279.0. The **Learn-about grid cells gain a visible link affordance** (a mono `→` on every blurb, tinting on hover): the operator's screenshot circled Champions and Drivers as "should lead to separate distinct pages" — they already did (`/series/[slug]/champions`, `/series/[slug]/drivers`, live-probed 200 across six representative series incl. ADAC/NLS/WRC), the cells just read as static boxes.
+
 ## 0.307.0 — 2026-08-19
 
 ### Changed

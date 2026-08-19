@@ -295,7 +295,7 @@ function SeriesLearnMore({
               {l.label}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-              {l.blurb}
+              {l.blurb} <span aria-hidden="true" className="text-text-muted transition-colors duration-(--duration-fast) group-hover:text-tint">→</span>
             </span>
           </Link>
         ))}

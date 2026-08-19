@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.308.0 — 2026-08-19
+
+**Series pages point where you expect.** The Calendar tab on every championship now opens the full calendar already filtered to that series, and the learn-about tiles show they're links.
+
 ## 0.307.0 — 2026-08-19
 
 **Race-weekend previews put the circuit front and centre.** On big screens the track map now sits large beside the timetable instead of tucked small in the sidebar, and the latest news for that championship appears right on the page.
