@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.292.0 — 2026-08-19
+
+### Changed
+- **The 404 page joins the Paper reimagining** (operator flag from the GSC session: "404 page needs redoing"). `app/(app)/not-found.tsx` drops the pre-Paper language (rounded-3xl card, red/blue radial gradients, lucide icon pills) for the editorial register: ink rule + mono `OFF-TRACK EXCURSION` eyebrow, 136px serif `404`, oxblood `PAGE NOT FOUND`, the same standfirst copy in serif, a solid-ink `SEE WHAT IS ON NOW` + bordered `CALENDAR` pair, and a faint foot line pointing at the header's browse-and-search field as the recovery path. `PAGE_READ` column, `force-static` unchanged, heatmap ids on both CTAs. Browser-verified on dev, desktop + mobile (app shell + bottom bar stay visible on both).
+
 ## 0.291.0 — 2026-08-19
 
 ### Fixed
