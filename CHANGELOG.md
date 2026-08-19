@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.297.0 — 2026-08-19
+
+### Changed
+- **Predictions leads with the window you must not miss** (design handoff §4.13, panel 10c — reimagining job ⑧; restyle of the operator-fresh /social, not a rewrite). Serif **Predictions** masthead with the standfirst ("Call the race before the grid does. Virtual credits only — nothing to buy, nothing to cash out.") and the **balance in 36px mono** at its right with the allowance stated beneath (+{PER_WEEKEND_CREDITS} per race weekend). `PlayMarkets` rebuilt: **Open now · {round name}** panel with the soonest-locking round's **market cards** (serif label + blurb from `MARKET_TYPE_META`, each straight to that weekend's bets tab) and an honest **Locks {local time}** line from `locksAt`; other rounds compressed to an "Also open" line; **Your open calls** as serif rows with stakes, the settled ledger behind a `<details>`; **Your league** rail ranked on **win rate** (first league via `getUserLeagues` + `getLeaderboard`), "You" bolded; **House rules** in plain type at the foot, every number from `lib/betting/constants.ts`.
+- Deliberately NOT rendered from the mock: "table resets on the 1st" — league wins/placed are all-time in `league_member`; never claim a reset the system doesn't do.
+- Verification note: signed-out state browser-verified on dev; the signed-in body is compile- and type-verified but needs a signed-in eyeball on prod (bets/league data require an account; credentials are never entered by the agent).
+
 ## 0.296.0 — 2026-08-19
 
 ### Changed
