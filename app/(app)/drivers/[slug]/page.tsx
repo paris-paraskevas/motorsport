@@ -1,15 +1,19 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { ExternalLink } from 'lucide-react';
 import { findDriverBySlug } from '@/lib/people';
 import { loadSeries } from '@/lib/series';
+import { groupByWeekend } from '@/lib/group';
+import { weekendLabel } from '@/lib/weekend';
 import { loadSnapshotSource } from '@/components/weekend/WeekendStandingsSnapshot';
 import { driverSeasonForm, type DriverSeasonForm } from '@/lib/profile-stats';
 import { fetchWikipediaBio, ageFromISO, flagEmoji, type WikipediaBio } from '@/lib/wikipedia-bio';
 import { fetchNews, filterNewsByMention, newsMentionAliases } from '@/lib/news';
-import type { NewsItem } from '@/lib/types';
+import type { NewsItem, Series } from '@/lib/types';
 import { loadDriverPortraits, loadDriverBios, type DriverBio } from '@/lib/series-content';
+import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 import { withSocialMeta } from '@/lib/seo';
 import { PAGE_WIDE } from '@/lib/site';
 
@@ -41,9 +45,6 @@ export async function generateMetadata({
   };
 }
 
-// Narrow the full-season trend to this one driver so the reused chart draws a
-// single line (mirrors the compare page's trendForTwo). null when the driver
-// never appears in the results feed.
 // Short "About" bio (Wikipedia intro). Attribution mirrors the series About
 // tab's "Source: Wikipedia →" credit; absent bio → no section (fail-soft).
 function AboutSection({ bio }: { bio: WikipediaBio }) {
@@ -98,57 +99,42 @@ function CuratedAboutSection({ bio }: { bio: DriverBio }) {
 }
 
 // Latest series-feed stories mentioning this name — same wire-row language as
-// the series News tab. Dates are absolute (the page is ISR-cached, so a
-// relative "3h ago" would go stale).
-function NewsMentionsSection({ items }: { items: NewsItem[] }) {
+// the series News tab, condensed for the rail (§4.9/#13). Dates are absolute
+// (the page is ISR-cached, so a relative "3h ago" would go stale).
+function NewsMentionsRail({ items }: { items: NewsItem[] }) {
   return (
-    <section className="mb-8 border-y border-border py-4">
-      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
+    <div className="mt-6 border-t border-border pt-3">
+      <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
         In the news
-      </h2>
+      </span>
       <div className="divide-y divide-border/60">
-        {items.map(item => {
-          const excerpt = item.description
-            ? item.description.length > 140
-              ? item.description.slice(0, 137).trimEnd() + '…'
-              : item.description
-            : null;
-          return (
-            <a
-              key={item.link}
-              href={item.link}
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-              className="group block py-3.5 px-2 -mx-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-            >
-              <div className="flex items-center gap-2 mb-1 min-w-0">
-                <time
-                  dateTime={item.pubDate.toISOString()}
-                  className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint tnum shrink-0"
-                >
-                  {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                </time>
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint shrink-0">
-                  · motorsport.com
-                </span>
-                <ExternalLink
-                  size={12}
-                  className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
-                />
-              </div>
-              <h3 className="text-[15px] md:text-base font-semibold leading-snug tracking-tight text-text">
-                {item.title}
-              </h3>
-              {excerpt && (
-                <p className="mt-1 text-sm text-text-muted leading-relaxed line-clamp-2">
-                  {excerpt}
-                </p>
-              )}
-            </a>
-          );
-        })}
+        {items.map(item => (
+          <a
+            key={item.link}
+            href={item.link}
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="group block py-3 transition-colors duration-(--duration-fast) hover:bg-surface"
+          >
+            <div className="mb-1 flex items-center gap-2">
+              <time
+                dateTime={item.pubDate.toISOString()}
+                className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint tnum"
+              >
+                {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+              </time>
+              <ExternalLink
+                size={11}
+                className="ml-auto shrink-0 text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)"
+              />
+            </div>
+            <h3 className="text-sm font-semibold leading-snug tracking-tight text-text">
+              {item.title}
+            </h3>
+          </a>
+        ))}
       </div>
-      <div className="pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+      <div className="pt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
         Source:{' '}
         <a
           href="https://www.motorsport.com/"
@@ -159,7 +145,7 @@ function NewsMentionsSection({ items }: { items: NewsItem[] }) {
           motorsport.com ↗
         </a>
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -176,68 +162,100 @@ function StatBlock({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SeasonForm({ form }: { form: DriverSeasonForm }) {
+// The five numbers that define a season, on one line (§4.9 + #13's podiums) —
+// derived from the results table below, never separately asserted.
+function SeasonStats({ form }: { form: DriverSeasonForm }) {
   return (
-    <>
-      {/* The four numbers that define a season, on one line (§4.9) — derived
-          from the results table below, never separately asserted. */}
-      <section className="mb-8 border-y border-border py-4">
-        <div className="flex gap-10 flex-wrap">
-          <StatBlock label="Championship" value={`P${form.position} · ${form.points} pts`} />
-          <StatBlock label="Wins" value={String(form.wins)} />
-          <StatBlock label="Best finish" value={form.bestFinish != null ? `P${form.bestFinish}` : '—'} />
-          <StatBlock label="Starts" value={String(form.starts)} />
-        </div>
-        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-          of {form.fieldSize} classified this season · every figure from the results below
-        </div>
-      </section>
-
-      {form.rounds.length > 0 && (
-        <section className="mb-8 border-y border-border py-4">
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-              Every round this season
-            </h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-              finish · points · running total
-            </span>
-          </div>
-          <ul>
-            {form.rounds.map((r, i) => (
-              <li key={`${r.round}-${r.raceName}-${i}`} className="flex items-baseline gap-3 border-b border-border py-1.5">
-                <span className="w-9 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-tint">
-                  R{r.round}
-                </span>
-                <span className="flex-1 min-w-0 truncate font-serif text-[15px] font-semibold text-text">
-                  {r.raceName}
-                </span>
-                <span className={`w-10 shrink-0 text-right font-mono text-sm tabular-nums ${r.position === 1 ? 'font-semibold text-brand' : 'text-text'}`}>
-                  {r.position >= 1 ? `P${r.position}` : '—'}
-                </span>
-                <span className="w-10 shrink-0 text-right font-mono text-sm tabular-nums text-text-muted">
-                  {r.points > 0 ? `+${r.points}` : '0'}
-                </span>
-                <span className="w-12 shrink-0 text-right font-mono text-sm font-semibold tabular-nums text-text">
-                  {r.runningTotal}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </>
+    <section className="mb-8 border-y border-border py-4">
+      <div className="flex gap-10 flex-wrap">
+        <StatBlock label="Championship" value={`P${form.position} · ${form.points} pts`} />
+        <StatBlock label="Wins" value={String(form.wins)} />
+        <StatBlock label="Podiums" value={String(form.podiums)} />
+        <StatBlock label="Best finish" value={form.bestFinish != null ? `P${form.bestFinish}` : '—'} />
+        <StatBlock label="Starts" value={String(form.starts)} />
+      </div>
+      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+        of {form.fieldSize} classified this season · every figure from the results below
+      </div>
+    </section>
   );
 }
 
-export default async function DriverPage({
-  params,
+// EVERY round of the season, ascending, with the venue as a sub-line (#13:
+// "add venue sub-line from RaceResult.circuit").
+function EveryRound({ rounds }: { rounds: DriverSeasonForm['rounds'] }) {
+  return (
+    <section className="mb-8 border-y border-border py-4">
+      <div className="mb-3 flex items-baseline justify-between">
+        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          Every round this season
+        </h2>
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
+          finish · points · running total
+        </span>
+      </div>
+      <ul>
+        {rounds.map((r, i) => (
+          <li key={`${r.round}-${r.raceName}-${i}`} className="flex items-baseline gap-3 border-b border-border py-1.5">
+            <span className="w-9 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-tint">
+              R{r.round}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-serif text-[15px] font-semibold text-text">
+                {r.raceName}
+              </span>
+              {r.circuit && (
+                <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                  {r.circuit}
+                </span>
+              )}
+            </span>
+            <span className={`w-10 shrink-0 text-right font-mono text-sm tabular-nums ${r.position === 1 ? 'font-semibold text-brand' : 'text-text'}`}>
+              {r.position >= 1 ? `P${r.position}` : '—'}
+            </span>
+            <span className="w-10 shrink-0 text-right font-mono text-sm tabular-nums text-text-muted">
+              {r.points > 0 ? `+${r.points}` : '0'}
+            </span>
+            <span className="w-12 shrink-0 text-right font-mono text-sm font-semibold tabular-nums text-text">
+              {r.runningTotal}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+// Whole-page placeholder while the body's network trio (results form,
+// Wikipedia bio, news mentions) resolves — replaces this segment's deleted
+// loading.tsx, whose early flush locked dead driver URLs into streamed 200
+// soft-404s (the 0.291.0 fold-in, final part).
+function DriverSkeleton() {
+  return (
+    <div aria-busy="true" className={PAGE_WIDE}>
+      <div className="mb-8 space-y-4">
+        <div className="h-3 w-48 animate-pulse bg-surface/70" />
+        <div className="h-9 w-56 animate-pulse bg-surface md:h-11 md:w-80" />
+        <div className="h-4 w-36 animate-pulse bg-surface/70" />
+      </div>
+      <div className="space-y-2">
+        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+          <div key={i} className="h-10 animate-pulse border-y border-border bg-surface/40" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function DriverBody({
+  slug,
+  driver,
 }: {
-  params: Promise<{ slug: string }>;
+  slug: string;
+  driver: NonNullable<Awaited<ReturnType<typeof findDriverBySlug>>>;
 }) {
-  const { slug } = await params;
-  const driver = await findDriverBySlug(slug);
-  if (!driver) notFound();
+  // One series load feeds both the season form and the rail's Next out block.
+  const series: Series | null = await loadSeries(driver.seriesSlug).catch(() => null);
 
   // Season form from the series' results feeds — the same cumulation the
   // weekend snapshots use. Null (no feed / no points / name unmatched)
@@ -247,7 +265,7 @@ export default async function DriverPage({
   const [form, bio, seriesNews] = await Promise.all([
     (async (): Promise<DriverSeasonForm | null> => {
       try {
-        const series = await loadSeries(driver.seriesSlug);
+        if (!series) return null;
         const source = await loadSnapshotSource(series);
         if (!source) return null;
         // Headline stats AND the every-round table derive from this one call
@@ -270,8 +288,7 @@ export default async function DriverPage({
 
   // Portrait: prefer a curated free-licensed Commons portrait (rendered with
   // attribution) over the F1-only OpenF1 headshot (F1 official media, not
-  // CC-licensed). The curated sidecar can cover any series; the OpenF1 fallback
-  // stays F1-only. Both fail-soft — no portrait → the header renders exactly as
+  // CC-licensed). Both fail-soft — no portrait → the header renders exactly as
   // before (no image).
   const portrait = (await loadDriverPortraits(driver.seriesSlug))[slug] ?? null;
   // Curated bio preferred over the Wikipedia intro (fetched above, still used for
@@ -281,6 +298,27 @@ export default async function DriverPage({
   // F1 official media; the CC licence on OpenF1's DATA does not license the
   // images (lib/openf1/headshots.ts header + design handoff §7).
   const headshotUrl: string | null = portrait?.src ?? null;
+
+  // Next out (#13): the series' next weekend + a countdown to its first timed
+  // session. Local ICS grouping — no network.
+  const now = new Date();
+  const nextW = (() => {
+    if (!series) return null;
+    try {
+      return (
+        groupByWeekend(series.sessions, now, series.rounds).find(
+          w => !w.isPast && w.sessions.some(x => x.end >= now),
+        ) ?? null
+      );
+    } catch {
+      return null;
+    }
+  })();
+  const nextSession = nextW
+    ? [...nextW.sessions]
+        .filter(s => !s.dateOnly && s.start > now)
+        .sort((a, b) => a.start.getTime() - b.start.getTime())[0]
+    : undefined;
 
   return (
     <div
@@ -301,9 +339,9 @@ export default async function DriverPage({
         <div className="flex items-start gap-5 md:gap-6">
           {headshotUrl && (
             <figure className="shrink-0">
-              {/* Plain <img>, not next/image: OpenF1 headshots are remote F1-CDN
-                  hosts and next.config deliberately configures no
-                  images.remotePatterns, so next/image would throw. */}
+              {/* Plain <img>, not next/image: remote hosts and next.config
+                  deliberately configures no images.remotePatterns, so
+                  next/image would throw. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={headshotUrl}
@@ -385,56 +423,106 @@ export default async function DriverPage({
         </div>
       </header>
 
-      {form && <SeasonForm form={form} />}
+      {form && <SeasonStats form={form} />}
 
-      {driver.seriesSlug === 'f1' && (
-        <section className="mb-8 border-y border-border py-4">
-          <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-            Head-to-head
-          </h2>
-          <Link
-            href={`/f1/compare?a=${slug}`}
-            className="group inline-flex items-center gap-3"
-          >
-            <span className="text-text text-xl font-semibold group-hover:text-tint transition-colors duration-(--duration-fast)">
-              Compare {driver.name} with another driver
+      {/* Two columns (#13): the season's rounds + the prose left, the living
+          rail — next out, mentions, the comparison and the team — right. */}
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0">
+          {form && form.rounds.length > 0 && <EveryRound rounds={form.rounds} />}
+          {curatedBio ? (
+            <CuratedAboutSection bio={curatedBio} />
+          ) : (
+            bio && <AboutSection bio={bio} />
+          )}
+        </div>
+
+        <aside>
+          <div className="border-b border-text pb-1">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              Next out
             </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
-              →
+          </div>
+          {nextW ? (
+            <div className="mt-2">
+              <p className="font-serif text-[17px] font-semibold leading-tight text-text">
+                {nextW.roundName ?? weekendLabel(nextW, nextW.round).title}
+              </p>
+              <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                Round {nextW.round} · {nextW.dateRangeLabel}
+              </p>
+              {nextSession && (
+                <div className="mt-2">
+                  <NextRaceCountdown
+                    target={nextSession.start.toISOString()}
+                    label={nextSession.title.replace(/^.*?[-–—:]\s*/, '').trim() || nextSession.title}
+                    color={driver.seriesColor}
+                  />
+                </div>
+              )}
+              <Link
+                href={`/series/${driver.seriesSlug}/weekend/${nextW.round}`}
+                className="mt-1 inline-block font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+              >
+                Preview →
+              </Link>
+            </div>
+          ) : (
+            <p className="mt-2 font-serif text-[15px] italic text-text-muted">Season complete.</p>
+          )}
+
+          {mentions.length > 0 && <NewsMentionsRail items={mentions.slice(0, 3)} />}
+
+          {driver.seriesSlug === 'f1' && (
+            <div className="mt-6 border-t border-border pt-3">
+              <Link
+                href={`/f1/compare?a=${slug}`}
+                data-heatmap-id="driver:compare"
+                className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+              >
+                Compare with a team-mate →
+              </Link>
+            </div>
+          )}
+
+          <div className="mt-6 border-t border-border pt-3">
+            <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              Team
             </span>
-          </Link>
-        </section>
-      )}
-
-      {curatedBio ? (
-        <CuratedAboutSection bio={curatedBio} />
-      ) : (
-        bio && <AboutSection bio={bio} />
-      )}
-
-      {mentions.length > 0 && <NewsMentionsSection items={mentions} />}
-
-      <section className="border-y border-border py-4">
-        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-          Team
-        </h2>
-        <Link
-          href={`/teams/${driver.teamSlug}`}
-          className="group inline-flex items-center gap-3"
-          style={
-            driver.teamColor
-              ? { borderLeft: `3px solid ${driver.teamColor}`, paddingLeft: '0.75rem' }
-              : undefined
-          }
-        >
-          <span className="text-text text-xl font-semibold group-hover:text-tint transition-colors duration-(--duration-fast)">
-            {driver.team}
-          </span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint group-hover:text-text-muted transition-colors duration-(--duration-fast)">
-            View team →
-          </span>
-        </Link>
-      </section>
+            <Link
+              href={`/teams/${driver.teamSlug}`}
+              className="group mt-1 inline-block"
+              style={
+                driver.teamColor
+                  ? { borderLeft: `3px solid ${driver.teamColor}`, paddingLeft: '0.75rem' }
+                  : undefined
+              }
+            >
+              <span className="font-serif text-[17px] font-semibold text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
+                {driver.team}
+              </span>
+              <span className="ml-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-text-faint transition-colors duration-(--duration-fast) group-hover:text-text-muted">
+                Team page →
+              </span>
+            </Link>
+          </div>
+        </aside>
+      </div>
     </div>
+  );
+}
+
+export default async function DriverPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const driver = await findDriverBySlug(slug);
+  if (!driver) notFound();
+  return (
+    <Suspense fallback={<DriverSkeleton />}>
+      <DriverBody slug={slug} driver={driver} />
+    </Suspense>
   );
 }
