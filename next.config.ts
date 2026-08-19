@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import { withSerwist } from "@serwist/turbopack";
-import { withSentryConfig } from "@sentry/nextjs";
 
 // Serwist moved from @serwist/next (webpack-only injection; the reason builds
 // were pinned to --webpack since 80f8ed7) to @serwist/turbopack: the SW is
@@ -57,6 +56,11 @@ const nextConfig: NextConfig = {
   // so serve unoptimized (one component uses next/image). A Cloudflare Images
   // custom loader can be added later if optimization is wanted.
   images: { unoptimized: true },
+  // The `webpack` block below is dev-only (`next dev --webpack`); builds run
+  // Turbopack. Next 16 hard-errors on a webpack config with no turbopack one
+  // (the Sentry wrapper used to mask this) — an explicit empty turbopack
+  // config states the coexistence is intentional.
+  turbopack: {},
   webpack(config, { dev }) {
     if (dev) {
       // Next's built-in dev-watch ignore list is ONLY node_modules/.git/.next
@@ -120,16 +124,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Sentry wraps the fully-composed config (Serwist included) so its build plugin
-// sees the final webpack config. tunnelRoute is intentionally NOT set — the SDK
-// posts directly to the Sentry ingest host, already allowed by the CSP's broad
-// `connect-src https:`, so there's no proxy route to exclude from proxy.ts.
-// Source-map upload runs only when SENTRY_AUTH_TOKEN is present (CI/operator);
-// without it the build still succeeds, just with minified prod stack traces.
-export default withSentryConfig(withSerwist(nextConfig), {
-  org: "paddocktracker",
-  project: "javascript-nextjs",
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  widenClientFileUpload: true,
-  silent: !process.env.CI,
-});
+// Sentry's build wrapper (and the server SDK) came off in 0.288.0
+// (operator-approved worker-size diet): the server runtime alone was ~1.4 MB
+// of a bundle Cloudflare rejects above 10 MiB gzipped — every deploy since
+// 0.275.0 failed on exactly that. Browser errors still report via
+// instrumentation-client.ts (the client SDK ships in the browser bundle, not
+// the worker).
+export default withSerwist(nextConfig);

@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.288.0 — 2026-08-19
+
+### Fixed
+- **Prod deploys unblocked — the worker goes on a diet.** Root cause of the 13-release freeze (0.275.0–0.287.0): the Cloudflare Worker script crossed the platform's hard **10 MiB gzipped** upload limit (0.274.0 passed at ~10.23 MiB; the orphan sweep landed at 10.36; 0.287.0 hit 10.84 — every `wrangler deploy` since 14:25Z 18 Aug was rejected with code 10027; the lockfile, GitHub connection and build minutes were all investigated and exonerated). Two cuts, both operator-approved:
+  - **`next-mdx-remote` and the dead file-`.mdx` blog branch are gone.** Every live post renders through the DB markdown pipeline (`renderPostBody` — remark/rehype + `[[shortcode]]` embeds), which is untouched; the MDX compiler toolchain served only `content/posts/` — empty and test-pinned since #373 — and its externals were failing to copy in every build anyway ("ERROR Failed to copy" in the logs), so the branch was broken at runtime on top of being unused. The legacy fallback now renders file posts through the same markdown pipeline. `components/mdx/mdx-components.tsx` deleted with it.
+  - **Server-side Sentry is off** (operator: "sentry can go") — `instrumentation.ts` is a no-op, the `withSentryConfig` build wrapper is unwrapped, `sentry.server/edge.config.ts` deleted. Browser error capture via `instrumentation-client.ts` is untouched. Its server runtime was ~1.4 MB of worker bundle.
+  - Removing Sentry's wrapper exposed our dev-only `webpack` watch-ignore block to Next 16's Turbopack strictness — an explicit empty `turbopack: {}` in `next.config.ts` states the coexistence is intentional.
+  - `BlogShare` no longer fetches the story image before sharing — that fetch belonged to the dynamic-OG machinery which **stays** (operator kept social cards); the share sheet was already fail-soft.
+- Result, measured with `wrangler deploy --dry-run`: **10,042 KiB gzipped — under the limit by 198 KiB.** Thin margin, stated plainly: the durable next step is moving the 1.5 MB content bundle (shipped twice in the JS) to static assets, ~650 KiB more headroom with zero loss — queued in IDEAS.
+
 ## 0.287.0 — 2026-08-19
 
 ### Changed
