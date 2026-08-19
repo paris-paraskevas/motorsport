@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { seriesInk } from '@/lib/site';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { ArrowUpRight, Tv } from 'lucide-react';
 import { loadSeries } from '@/lib/series';
@@ -20,6 +20,7 @@ import {
   fetchSessionClassification,
   hasResolvedDrivers,
   type SessionClassification,
+  type SessionClassificationEntry,
 } from '@/lib/results/openf1';
 import {
   matchOpenF1Session,
@@ -62,6 +63,7 @@ import { OvertakesBoard } from '@/components/f1/OvertakesBoard';
 import { buildPracticeAnalysis, type PracticeAnalysis as PracticeData } from '@/lib/openf1/practice';
 import { PracticeAnalysis } from '@/components/f1/PracticeAnalysis';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
+import { SessionClassChips } from '@/components/weekend/SessionClassChips';
 import { PAGE_WIDE, SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
@@ -131,29 +133,37 @@ export async function generateMetadata(
   };
 }
 
-function SessionRail({ items }: { items: ReturnType<typeof weekendSessionNav>['items'] }) {
+// Panel 11d: the weekend's sessions as boxed chips, chronological, the current
+// one lit — the row reads as a weekend rather than a menu. A session that does
+// not exist is absent, and for F1 the row says so ("No sprint at this round")
+// rather than leaving the absence ambiguous.
+function SessionChips({ items, noSprint }: {
+  items: ReturnType<typeof weekendSessionNav>['items'];
+  noSprint: boolean;
+}) {
   return (
-    <nav aria-label="Weekend sessions" className="mb-6 border-y border-border">
-      {/* Wrap rather than horizontal-scroll: rallies have ~18 stage sessions,
-          and the old `overflow-x-auto scrollbar-none` hid SS11+ off-screen with
-          no scrollbar affordance. Few-session weekends (F1 etc.) still sit on
-          one line; many-session weekends wrap to a full, visible stage index. */}
-      <div className="flex flex-wrap gap-x-5 gap-y-1 py-1">
+    <nav aria-label="Weekend sessions" className="mb-6">
+      <div className="flex flex-wrap items-center gap-2">
         {items.map(item => (
           <Link
             key={item.uid}
             href={item.href}
             aria-current={item.isCurrent ? 'page' : undefined}
             title={item.title}
-            className={`shrink-0 inline-flex items-center h-10 border-b-2 px-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
+            className={`inline-flex min-h-[38px] items-center border px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] whitespace-nowrap transition-colors duration-(--duration-fast) ${
               item.isCurrent
-                ? 'border-tint text-text'
-                : 'border-transparent text-text-muted hover:text-text'
+                ? 'border-text bg-surface-elevated text-text'
+                : 'border-border-strong text-text-muted hover:text-text'
             }`}
           >
             {item.label}
           </Link>
         ))}
+        {noSprint && (
+          <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+            No sprint at this round
+          </span>
+        )}
       </div>
     </nav>
   );
@@ -193,111 +203,249 @@ function SessionPager({
   );
 }
 
-function ClassificationTable({
-  data,
-  heading = 'Classification',
-  showHeading = true,
-}: {
-  data: SessionClassification;
-  // Multi-class series render one table per class ("Hypercar", "LMGT3").
-  heading?: string;
-  // The single-classification case sits inside a CollapsibleSection whose
-  // summary already reads "Classification"; suppress the inner heading there
-  // to avoid duplicating it. Multi-class tables keep their per-class headings.
-  showHeading?: boolean;
-}) {
-  // Interval (gap to the car ahead) renders only where the feed actually
-  // carries it — F1 rows via OpenF1's gap_to_leader (see deriveIntervals in
-  // lib/results/openf1.ts). Other series never set it, so the column simply
-  // doesn't exist for them; rows where it can't be honestly derived (leader,
-  // lapped, DNF) show an em dash.
-  const hasIntervals = data.entries.some(e => e.interval);
-  return (
-    <section className="border-y border-border py-4">
-      {showHeading ? (
-        <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-          {heading}
-        </h2>
-      ) : null}
-      <ul className="divide-y divide-border/60">
-        {data.entries.map(e => (
-          <li
-            key={`${e.position}-${e.driverName}`}
-            className="flex items-baseline gap-3 py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+// Panel 11d: a classification is a table, so it is built like one — a mono
+// column-head row, tabular figures, gap as its own column, and the winner's
+// row lifted rather than decorated. Six rows are the story; the full field
+// sits one tap away behind a native <details>, retirements at the foot with
+// their cause. The interval column is gone by design — Time · Gap · Pts is
+// the whole grammar.
+function ResultTable({ data }: { data: SessionClassification }) {
+  const entries = data.entries;
+  const lead = entries.slice(0, 6);
+  const rest = entries.slice(6);
+  const restClassified = rest.filter(e => !e.status);
+  const restRetired = rest.filter(e => e.status);
+  const hasNo = entries.some(e => e.carNumber);
+  const q = data.isQualifying;
+
+  const teamLine = (e: SessionClassificationEntry) =>
+    e.car ? (e.team ? `${e.car} · ${e.team}` : e.car) : e.team;
+
+  const row = (e: SessionClassificationEntry, raised: boolean) => (
+    <li
+      key={`${e.position}-${e.driverName}`}
+      className={`flex items-baseline gap-3 border-t border-border px-1 py-2.5 ${raised ? 'bg-surface-elevated' : ''}`}
+    >
+      <span
+        className={`w-7 shrink-0 text-right font-mono text-[13px] tabular-nums ${
+          raised ? 'font-bold text-brand' : 'text-text-muted'
+        }`}
+      >
+        {e.position ?? '–'}
+      </span>
+      {hasNo && (
+        <span className="hidden w-8 shrink-0 font-mono text-[11px] tabular-nums text-text-faint sm:block">
+          {e.carNumber ?? ''}
+        </span>
+      )}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <span className="truncate font-serif text-[17px] font-semibold leading-tight text-text">
+            {e.driverName}
+          </span>
+          {e.coDriverName ? (
+            <span className="hidden truncate text-xs text-text-muted md:inline">/ {e.coDriverName}</span>
+          ) : null}
+        </div>
+        <div className="truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted sm:hidden">
+          {teamLine(e)}
+        </div>
+      </div>
+      <span className="hidden w-[24%] shrink-0 truncate font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted sm:block">
+        {teamLine(e)}
+      </span>
+      {q ? (
+        <>
+          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block">
+            {e.q1 ?? ''}
+          </span>
+          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block">
+            {e.q2 ?? ''}
+          </span>
+          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block">
+            {e.q3 ?? ''}
+          </span>
+          <span className="w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:hidden">
+            {e.q3 ?? e.q2 ?? e.q1 ?? ''}
+          </span>
+        </>
+      ) : (
+        <>
+          <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block">
+            {e.time ?? ''}
+          </span>
+          <span
+            className={`hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums sm:block ${
+              e.status ? 'text-brand' : 'text-text-muted'
+            }`}
           >
-            <span className="w-6 text-text-faint text-sm font-mono tabular-nums text-right">
-              {e.position ?? '–'}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-2">
-                <span className="text-text text-sm font-medium truncate">{e.driverName}</span>
-                {e.coDriverName ? (
-                  <span className="hidden sm:inline text-text-muted text-xs font-normal truncate">/ {e.coDriverName}</span>
-                ) : null}
-                {e.driverCode ? (
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-semibold text-text-faint border border-border px-1.5 py-0.5">
-                    {e.driverCode}
-                  </span>
-                ) : null}
-              </div>
-              <div className="text-text-muted text-xs truncate">
-                {e.car ? (e.team ? `${e.car} · ${e.team}` : e.car) : e.team}
-              </div>
-            </div>
-            {data.isQualifying ? (
-              <span className="hidden sm:flex items-baseline gap-3 font-mono text-[11px] tabular-nums text-text-muted">
-                <span className="w-20 text-right">{e.q1 ?? ''}</span>
-                <span className="w-20 text-right">{e.q2 ?? ''}</span>
-                <span className="w-20 text-right text-text">{e.q3 ?? ''}</span>
-              </span>
-            ) : null}
-            {hasIntervals ? (
-              <span className="hidden sm:block w-20 shrink-0 font-mono text-[11px] tabular-nums text-right text-text-muted">
-                {e.interval ?? '—'}
-              </span>
-            ) : null}
-            <span className={`font-mono text-[11px] tabular-nums text-right w-24 truncate ${data.isQualifying ? 'sm:hidden text-text' : 'text-text-muted'}`}>
-              {e.status ?? (e.position === 1 ? e.time : e.gap || e.time) ?? ''}
-            </span>
-            {data.isRace ? (
-              <span className="text-text text-sm font-mono tabular-nums text-right w-10">
-                {e.points ?? 0}
-              </span>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-      {data.isQualifying ? (
-        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint sm:text-right">
-          <span className="hidden sm:inline">Columns: Q1 · Q2 · Q3</span>
-          <span className="sm:hidden">Best qualifying lap shown</span>
-        </div>
-      ) : hasIntervals ? (
-        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint sm:text-right">
-          <span className="hidden sm:inline">Columns: Interval · Gap</span>
-          <span className="sm:hidden">Gap to leader shown</span>
-        </div>
+            {e.status ?? e.gap ?? (e.position === 1 && e.time ? '—' : '')}
+          </span>
+          <span
+            className={`w-24 shrink-0 truncate text-right font-mono text-[11px] tabular-nums sm:hidden ${
+              e.status ? 'text-brand' : 'text-text'
+            }`}
+          >
+            {e.status ?? (e.position === 1 ? e.time : e.gap || e.time) ?? ''}
+          </span>
+        </>
+      )}
+      {data.isRace ? (
+        <span className={`w-9 shrink-0 text-right font-mono text-[12px] tabular-nums ${raised ? 'font-bold text-text' : 'text-text'}`}>
+          {e.points ?? 0}
+        </span>
       ) : null}
+    </li>
+  );
+
+  return (
+    <div>
+      <div className="flex items-baseline gap-3 border-b border-text px-1 pb-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-text-muted">
+        <span className="w-7 shrink-0 text-right">Pos</span>
+        {hasNo && <span className="hidden w-8 shrink-0 sm:block">No</span>}
+        <span className="min-w-0 flex-1">Driver</span>
+        <span className="hidden w-[24%] shrink-0 sm:block">Team</span>
+        {q ? (
+          <>
+            <span className="hidden w-20 shrink-0 text-right sm:block">Q1</span>
+            <span className="hidden w-20 shrink-0 text-right sm:block">Q2</span>
+            <span className="hidden w-20 shrink-0 text-right sm:block">Q3</span>
+            <span className="w-20 shrink-0 text-right sm:hidden">Best</span>
+          </>
+        ) : (
+          <>
+            <span className="hidden w-24 shrink-0 text-right sm:block">Time</span>
+            <span className="hidden w-20 shrink-0 text-right sm:block">Gap</span>
+            <span className="w-24 shrink-0 text-right sm:hidden">Result</span>
+          </>
+        )}
+        {data.isRace && <span className="w-9 shrink-0 text-right">Pts</span>}
+      </div>
+      <ul>{lead.map((e, i) => row(e, i === 0 && e.position === 1))}</ul>
+      {rest.length > 0 && (
+        <details className="group border-t border-border">
+          <summary className="flex cursor-pointer select-none flex-wrap items-baseline gap-x-4 gap-y-1 px-1 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
+            <span>
+              {restClassified.length > 0 ? `${restClassified.length} more classified` : ''}
+              {restClassified.length > 0 && restRetired.length > 0 ? ' · ' : ''}
+              {restRetired.length > 0 ? `${restRetired.length} retired` : ''}
+            </span>
+            <span className="text-brand group-open:hidden">Show all {entries.length} →</span>
+            <span className="hidden text-brand group-open:inline">Show fewer</span>
+          </summary>
+          <ul>
+            {restClassified.map(e => row(e, false))}
+            {restRetired.map(e => row(e, false))}
+          </ul>
+        </details>
+      )}
+    </div>
+  );
+}
+
+// Panel 12c: one block per class, the class named in ink with its meaning
+// spelled out — the first block races for the outright win, every other class
+// has its own winner on the same track. Entrant in serif, the crew in mono
+// beneath it, car number in the No column.
+function ClassBlock({ cls, data, idx }: { cls: string; data: SessionClassification; idx: number }) {
+  const entries = data.entries;
+  const lead = entries.slice(0, 6);
+  const rest = entries.slice(6);
+
+  const row = (e: SessionClassificationEntry, raised: boolean) => (
+    <li
+      key={`${e.position}-${e.driverCode ?? e.team}`}
+      className={`flex items-baseline gap-3 border-t border-border px-1 py-2.5 ${raised ? 'bg-surface-elevated' : ''}`}
+    >
+      <span
+        className={`w-7 shrink-0 text-right font-mono text-[13px] tabular-nums ${
+          raised ? 'font-bold text-brand' : 'text-text-muted'
+        }`}
+      >
+        {e.position ?? '–'}
+      </span>
+      <span className="w-10 shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+        {e.driverCode ?? ''}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-serif text-[17px] font-semibold leading-tight text-text">{e.team}</div>
+        {e.driverName && e.driverName !== e.team ? (
+          <div className="truncate font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">
+            {e.driverName}
+          </div>
+        ) : null}
+      </div>
+      <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block">
+        {e.time ?? ''}
+      </span>
+      <span
+        className={`w-20 shrink-0 text-right font-mono text-[11px] tabular-nums ${
+          e.status ? 'text-brand' : 'text-text-muted'
+        }`}
+      >
+        {e.status ?? e.gap ?? (raised ? '—' : '')}
+      </span>
+    </li>
+  );
+
+  return (
+    <section className="mt-5">
+      <div className="border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]">
+        <span className="text-brand">{cls}</span>
+        <span className="text-text-faint">
+          {' '}· {idx === 0 ? 'Racing for the outright win' : 'Its own winner, same track'}
+        </span>
+      </div>
+      <ul>{lead.map((e, i) => row(e, i === 0))}</ul>
+      {rest.length > 0 && (
+        <details className="group border-t border-border">
+          <summary className="flex cursor-pointer select-none items-baseline gap-4 px-1 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted [&::-webkit-details-marker]:hidden">
+            <span className="text-brand group-open:hidden">All {entries.length} cars →</span>
+            <span className="hidden text-brand group-open:inline">Show fewer</span>
+          </summary>
+          <ul>{rest.map(e => row(e, false))}</ul>
+        </details>
+      )}
     </section>
   );
 }
 
-export default async function SessionPage({
-  params,
+// Table-shaped placeholder while the classification + analysis stream in —
+// the masthead and session chips above it render instantly (they replaced
+// this segment's loading.tsx, whose whole-page skeleton locked every dead
+// session URL to a streamed 200 — the GSC soft-404 batch).
+function BodySkeleton() {
+  return (
+    <div aria-busy="true" className="mt-2">
+      <div className="mb-3 h-4 w-44 animate-pulse bg-surface" />
+      {[0, 1, 2, 3, 4, 5, 6].map(i => (
+        <div key={i} className="h-11 animate-pulse border-t border-border bg-surface/40" />
+      ))}
+    </div>
+  );
+}
+
+async function SessionBody({
+  series,
+  weekend,
+  session,
+  round,
+  slug,
+  isPast,
+  color,
+  sessionName,
+  weekendTitle,
 }: {
-  params: Promise<{ slug: string; round: string; session: string }>;
+  series: Awaited<ReturnType<typeof loadSeries>>;
+  weekend: NonNullable<ReturnType<typeof weekendFor>>;
+  session: NonNullable<ReturnType<typeof sessionBySlug>>;
+  round: number;
+  slug: string;
+  isPast: boolean;
+  color: string;
+  sessionName: string;
+  weekendTitle: string;
 }) {
-  const ctx = await resolve(params);
-  if (!ctx) notFound();
-  const { series, weekend, session, round, slug, sessionParam } = ctx;
-
-  const now = new Date();
-  const isLive = !session.dateOnly && session.start <= now && now <= session.end;
-  const isPast = !isLive && session.end < now;
-  const color = series.meta.color;
-  const { title: weekendTitle } = weekendLabel(weekend, round);
-  const sessionName = session.title.replace(/^.*?[-–—:]\s*/, '').trim() || session.title;
-
   // Classification: F1 has every session via OpenF1; the class-based series
   // (WEC / IMSA / GT World) render per-class tables from their season feeds;
   // the RACE_SESSION_SERIES set reuses flat season-results feeds. Only past
@@ -419,8 +567,6 @@ export default async function SessionPage({
     }
   }
 
-  const nav = weekendSessionNav(weekend, slug, round, session.uid);
-
   // Embedded highlights for this session, where curated (any series). The race
   // session falls back to the round's headline clip.
   const media = await loadMedia(slug);
@@ -431,11 +577,158 @@ export default async function SessionPage({
     isRaceLikeTitle(session.title),
   );
 
-  // Watch link (same series.meta.watch the home UP NEXT card reads) + the
-  // round's circuit schematic where one is curated — resolved exactly like the
-  // weekend page (venue/name via the shared circuit matcher; fs reads, so it
-  // gracefully nulls for circuits without a layout).
+  // The classification foot states the data's provenance where it has one
+  // stated source (F1 = OpenF1) and, for WRC, how the rally actually scores —
+  // the two real points pools lib/results/wrc.ts computes.
+  const sourceLine =
+    slug === 'f1'
+      ? 'Timing data via OpenF1'
+      : slug === 'wrc'
+        ? 'Sunday top seven score 7-6-5-4-3-2-1 · Power Stage top five add 5-4-3-2-1'
+        : null;
+
+  const weekendHref = `/series/${slug}/weekend/${round}`;
+
+  return (
+    <>
+      {sessionVid && <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />}
+
+      {classification ? (
+        <section className="mt-2">
+          {slug === 'wrc' && (
+            <div className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+              Overall, on cumulative time
+            </div>
+          )}
+          <ResultTable data={classification} />
+        </section>
+      ) : classClassifications.length > 0 ? (
+        <section className="mt-2">
+          <SessionClassChips labels={classClassifications.map(c => c.cls)}>
+            {classClassifications.map((c, i) => (
+              <ClassBlock key={c.cls} cls={c.cls} data={c.data} idx={i} />
+            ))}
+          </SessionClassChips>
+          <p className="mt-3 border-t border-text pt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
+            Gaps become laps once a class is lapped · a crew shares one result
+          </p>
+        </section>
+      ) : isPast ? (
+        <section className="border-y border-border py-5 text-center">
+          <p className="text-text-muted text-sm">
+            {slug === 'f1'
+              ? 'Classification not available for this session yet.'
+              : slug === 'wrc'
+                ? 'The full field for this stage isn’t published yet. The rally result and season standings live on the series page.'
+                : isRaceLikeTitle(session.title)
+                  ? 'Classification not available for this race yet — season results live on the series page.'
+                  : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
+          </p>
+          <Link
+            href={`/series/${slug}/results`}
+            className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+          >
+            Season results →
+          </Link>
+        </section>
+      ) : (
+        <section className="border-y border-border py-5 text-center">
+          <p className="text-text-muted text-sm">
+            Classification appears here once the session has run.
+          </p>
+        </section>
+      )}
+
+      <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+        <Link
+          href={weekendHref}
+          data-heatmap-id="session:back-to-weekend"
+          className="font-semibold text-brand transition-colors duration-(--duration-fast) hover:text-text"
+        >
+          Back to the weekend →
+        </Link>
+        {sourceLine && <span className="text-text-faint">{sourceLine}</span>}
+      </div>
+
+      {decoderSummary &&
+        (analysisUnlocked ? (
+          <CollapsibleSection title="Qualifying Analysis" defaultOpen>
+            <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
+          </CollapsibleSection>
+        ) : (
+          <AnalysisGate
+            title="Qualifying Analysis"
+            blurb="Lap-by-lap pole breakdown, sector and corner deltas, and the ghost-lap Replay."
+            seriesColor={color}
+          />
+        ))}
+
+      {raceStory &&
+        (analysisUnlocked ? (
+          <CollapsibleSection title="Race Story" defaultOpen>
+            <RaceStory data={raceStory} seriesColor={color} />
+          </CollapsibleSection>
+        ) : (
+          <AnalysisGate
+            title="Race Story"
+            blurb="The strategy that decided the race — stints, tyre choices, pit windows and the moments that turned it."
+            seriesColor={color}
+          />
+        ))}
+
+      {practice &&
+        (analysisUnlocked ? (
+          <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
+            <PracticeAnalysis data={practice} seriesColor={color} />
+          </CollapsibleSection>
+        ) : (
+          <AnalysisGate
+            title="Practice Analysis"
+            blurb="Fastest laps and long-run race pace from every practice session."
+            seriesColor={color}
+          />
+        ))}
+
+      {speedTrap && (
+        <CollapsibleSection title="Speed Trap" defaultOpen={false}>
+          <SpeedTrapLeaderboard data={speedTrap} seriesColor={color} />
+        </CollapsibleSection>
+      )}
+
+      {pitLeague && (
+        <CollapsibleSection title="Pit-Stop League" defaultOpen={false}>
+          <PitStopLeague data={pitLeague} seriesColor={color} />
+        </CollapsibleSection>
+      )}
+
+      {overtakes && (
+        <CollapsibleSection title="Overtakes of the Race" defaultOpen={false}>
+          <OvertakesBoard data={overtakes} seriesColor={color} />
+        </CollapsibleSection>
+      )}
+    </>
+  );
+}
+
+export default async function SessionPage({
+  params,
+}: {
+  params: Promise<{ slug: string; round: string; session: string }>;
+}) {
+  const ctx = await resolve(params);
+  if (!ctx) notFound();
+  const { series, weekend, session, round, slug, sessionParam } = ctx;
+
+  const now = new Date();
+  const isLive = !session.dateOnly && session.start <= now && now <= session.end;
+  const isPast = !isLive && session.end < now;
+  const color = series.meta.color;
+  const { title: weekendTitle } = weekendLabel(weekend, round);
+  const sessionName = session.title.replace(/^.*?[-–—:]\s*/, '').trim() || session.title;
+
+  const nav = weekendSessionNav(weekend, slug, round, session.uid);
   const watch = series.meta.watch;
+
   // roundMeta first: a curated `venue` overrides name-based circuit resolution
   // (the 2026 Bahrain GP runs at Sepang), and both lookups below depend on it.
   const roundMeta = series.rounds?.rounds?.find(r => r.round === round);
@@ -451,6 +744,13 @@ export default async function SessionPage({
   // the session-level SportsEvent carries a full address, not a name-only Place.
   // fs reads, cheap; gracefully partial when a venue/round isn't curated.
   const circuitMatch = await matchCircuitEntry(...venueCandidateList);
+
+  const venueLabel =
+    roundMeta?.venue ?? circuitMatch?.circuit.name ?? weekend.sessions.find(s => s.location)?.location;
+
+  // Panel 11d: Sprint appears only at a sprint weekend — absent rather than
+  // present-and-empty — and the chips row says so for F1.
+  const noSprint = slug === 'f1' && !weekend.sessions.some(s => /sprint/i.test(s.title));
 
   // Per-session structured data: a breadcrumb (Home > series > weekend >
   // session) plus a session-level SportsEvent whose startDate is the real
@@ -503,53 +803,48 @@ export default async function SessionPage({
         style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
       />
 
-      <section className="mb-8 border-y border-border py-5 md:py-6">
-        <div className="flex items-center gap-2.5 mb-3 flex-wrap font-mono text-[11px] uppercase tracking-[0.18em] font-semibold">
-          <Link
-            href={`/series/${slug}`}
-            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-          >
-            {series.meta.name}
-          </Link>
-          <span className="text-border-strong">·</span>
+      {/* Panel 11d masthead: series-bar breadcrumb, the way back stated at the
+          top right, a serif title that names what the page IS once the session
+          has run ("Race classification"), the instant + venue in mono. */}
+      <section className="mb-6 border-b border-border pb-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+          <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em]">
+            <span aria-hidden="true" className="h-3.5 w-[3px]" style={{ backgroundColor: color }} />
+            <Link
+              href={`/series/${slug}`}
+              className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+            >
+              {series.meta.name}
+            </Link>
+            <span className="text-border-strong">·</span>
+            <span className="tabular-nums text-text-muted">Round {round}</span>
+            {venueLabel && (
+              <>
+                <span className="text-border-strong">·</span>
+                <span className="text-text-muted">{venueLabel}</span>
+              </>
+            )}
+            {isLive && (
+              <>
+                <span className="text-border-strong">·</span>
+                <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
+                  <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
+                  live
+                </span>
+              </>
+            )}
+          </div>
           <Link
             href={`/series/${slug}/weekend/${round}`}
-            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+            data-heatmap-id="session:masthead:weekend"
+            className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
           >
-            {weekendTitle}
-          </Link>
-          <span className="text-border-strong">·</span>
-          <span className="tabular-nums text-tint">Round {round}</span>
-          {isLive && (
-            <>
-              <span className="text-border-strong">·</span>
-              <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.14em] px-2 py-0.5 bg-live/15 text-live-pill">
-                <span className="w-1.5 h-1.5 rounded-full bg-live live-pulse" />
-                live
-              </span>
-            </>
-          )}
-          {/* Quick-links back into the series — from a deep session page,
-              Standings / Results are otherwise a multi-step back-track. */}
-          <span className="text-border-strong">·</span>
-          <Link
-            href={`/series/${slug}/standings`}
-            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-          >
-            Standings
-          </Link>
-          <span className="text-border-strong">·</span>
-          <Link
-            href={`/series/${slug}/results`}
-            className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-          >
-            Results
+            Back to the weekend →
           </Link>
         </div>
 
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-wide leading-[0.95] text-text">
-          {sessionName}
-          <span style={{ color: seriesInk(color) }}>.</span>
+        <h1 className="mt-4 font-serif text-4xl font-semibold leading-none tracking-tight text-text md:text-5xl">
+          {isPast && slug !== 'wrc' ? `${sessionName} classification` : sessionName}
         </h1>
 
         <div className="mt-4 flex items-baseline gap-4 flex-wrap">
@@ -618,104 +913,21 @@ export default async function SessionPage({
         )}
       </section>
 
-      <SessionRail items={nav.items} />
+      <SessionChips items={nav.items} noSprint={noSprint} />
 
-      {sessionVid && (
-        <VideoEmbed id={sessionVid} title={`${sessionName} — ${weekendTitle}`} />
-      )}
-
-      <CollapsibleSection title={slug === 'wrc' ? 'Overall classification' : 'Classification'} defaultOpen>
-        {classification ? (
-          <ClassificationTable data={classification} showHeading={false} />
-        ) : classClassifications.length > 0 ? (
-          <div className="space-y-4">
-            {classClassifications.map(({ cls, data }) => (
-              <ClassificationTable key={cls} data={data} heading={cls} />
-            ))}
-          </div>
-        ) : isPast ? (
-          <section className="border-y border-border py-5 text-center">
-            <p className="text-text-muted text-sm">
-              {slug === 'f1'
-                ? 'Classification not available for this session yet.'
-                : slug === 'wrc'
-                  ? 'The full field for this stage isn’t published yet. The rally result and season standings live on the series page.'
-                  : isRaceLikeTitle(session.title)
-                    ? 'Classification not available for this race yet — season results live on the series page.'
-                    : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
-            </p>
-            <Link
-              href={`/series/${slug}/results`}
-              className="mt-3 inline-block font-mono text-[11px] uppercase tracking-[0.16em] font-semibold text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
-            >
-              Season results →
-            </Link>
-          </section>
-        ) : (
-          <section className="border-y border-border py-5 text-center">
-            <p className="text-text-muted text-sm">
-              Classification appears here once the session has run.
-            </p>
-          </section>
-        )}
-      </CollapsibleSection>
-
-      {decoderSummary &&
-        (analysisUnlocked ? (
-          <CollapsibleSection title="Qualifying Analysis" defaultOpen>
-            <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
-          </CollapsibleSection>
-        ) : (
-          <AnalysisGate
-            title="Qualifying Analysis"
-            blurb="Lap-by-lap pole breakdown, sector and corner deltas, and the ghost-lap Replay."
-            seriesColor={color}
-          />
-        ))}
-
-      {raceStory &&
-        (analysisUnlocked ? (
-          <CollapsibleSection title="Race Story" defaultOpen>
-            <RaceStory data={raceStory} seriesColor={color} />
-          </CollapsibleSection>
-        ) : (
-          <AnalysisGate
-            title="Race Story"
-            blurb="The strategy that decided the race — stints, tyre choices, pit windows and the moments that turned it."
-            seriesColor={color}
-          />
-        ))}
-
-      {practice &&
-        (analysisUnlocked ? (
-          <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
-            <PracticeAnalysis data={practice} seriesColor={color} />
-          </CollapsibleSection>
-        ) : (
-          <AnalysisGate
-            title="Practice Analysis"
-            blurb="Fastest laps and long-run race pace from every practice session."
-            seriesColor={color}
-          />
-        ))}
-
-      {speedTrap && (
-        <CollapsibleSection title="Speed Trap" defaultOpen={false}>
-          <SpeedTrapLeaderboard data={speedTrap} seriesColor={color} />
-        </CollapsibleSection>
-      )}
-
-      {pitLeague && (
-        <CollapsibleSection title="Pit-Stop League" defaultOpen={false}>
-          <PitStopLeague data={pitLeague} seriesColor={color} />
-        </CollapsibleSection>
-      )}
-
-      {overtakes && (
-        <CollapsibleSection title="Overtakes of the Race" defaultOpen={false}>
-          <OvertakesBoard data={overtakes} seriesColor={color} />
-        </CollapsibleSection>
-      )}
+      <Suspense fallback={<BodySkeleton />}>
+        <SessionBody
+          series={series}
+          weekend={weekend}
+          session={session}
+          round={round}
+          slug={slug}
+          isPast={isPast}
+          color={color}
+          sessionName={sessionName}
+          weekendTitle={weekendTitle}
+        />
+      </Suspense>
 
       <SessionPager prev={nav.prev} next={nav.next} />
     </div>

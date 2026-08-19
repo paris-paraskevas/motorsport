@@ -49,6 +49,10 @@ export interface SessionClassificationEntry {
   position: number | null;
   driverName: string;
   driverCode?: string;
+  /** Race number as displayed on the car ("1", "44"). F1 sets it from
+   *  OpenF1's driver_number; the class-based series pack theirs into
+   *  driverCode as "#50" instead (see fetchClassClassifications). */
+  carNumber?: string;
   // Rally crews: the co-driver alongside `driverName`, and the car model
   // (e.g. "Toyota GR Yaris Rally1"). Only WRC sets these; every other series
   // leaves them undefined, so ClassificationTable renders exactly as before.
@@ -244,6 +248,7 @@ export async function fetchSessionClassification(
       position: r.position,
       driverName: driver?.full_name ?? `#${r.driver_number}`,
       driverCode: driver?.name_acronym,
+      carNumber: String(r.driver_number),
       team: driver?.team_name ?? '',
       laps: r.number_of_laps ?? undefined,
       points: r.points,
