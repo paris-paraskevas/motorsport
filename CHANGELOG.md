@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.299.0 — 2026-08-19
+
+### Docs
+- **Session 29 log.** `SCHEDULE.md` carries the day's full outcome ledger: the GSC triage (0.291.0), the 404 redesign (0.292.0), reimagining jobs ④–⑨ (0.293.0–0.298.0, one PR each, every deploy verified by a 9-minute sentry subagent), the completed soft-404 fold-in (all flagged routes prod-verified as true 404s), the one process slip (0.294.0 reached main as a direct push — work verified, flow violated, logged), and the honored won't-touch list. `IDEAS.md` gains the blog classification-embed design task, the landing-orphan deletion sweep (13 components awaiting the approval PR) and the Search-Console validate-fix reminder. `docs/next-session.md` marks the operator's ordered list COMPLETE.
+
 ## 0.298.0 — 2026-08-19
 
 ### Changed

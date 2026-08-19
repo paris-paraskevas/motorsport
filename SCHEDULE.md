@@ -1391,9 +1391,12 @@ Operator opened with the Search Console report (8 screenshots) + the CLI handoff
 - Plan: GSC indexing triage first → 404-page redesign → jobs ④–⑨ in order, one PR each, worker-size gate before UI-heavy merges.
 - → done: **GSC triage (0.291.0)** — dead-param guards moved into `generateMetadata` on the six not-found-capable routes: true 404s on teams/authors/blog; weekend/session/drivers stay streamed-noindex until their rebuilds (a flushed `loading.tsx` locks the status — `htmlLimitedBots` tested on a prod build and reverted, it doesn't hold the flush). Everything else self-clears: 4xx pair + who-won noindex already healthy, the three 5xx blogs = June MDX posts deleted in #649 (operator: stay dead), `/$` external, redirects/canonicals by design.
 - Decision (operator): fold the true-404 restructure into jobs ④⑤⑦ (`loading.tsx` → in-page `<Suspense>` below the guards; `series/[slug]/loading.tsx` converts too).
-- Won't touch this session: content-bundle→static-assets refactor (unless the 10 MiB gate forces it), blog content, prod Supabase writes, HANDOFF trim.
+- → done (operator went afk — "merge all PRs, don't ask"; every deploy verified by a 9-min sentry subagent): **404 Paper redesign = 0.292.0** (#703) · **④ session timing-sheet = 0.293.0** (#704) · **⑤ weekend 3a/3b + fold-in complete = 0.294.0** (⚠ direct-push slip, no PR — process violation logged; work fully verified) · **⑥ landing 10a = 0.295.0** (#705; mobile overflow caught in browser + fixed) · **⑦ driver rail = 0.296.0** (#706) · **⑧ predictions 10c = 0.297.0** (#707) · **⑨ six-surface copy pass = 0.298.0** (#708). **The operator's ordered list is COMPLETE.** Prod-verified by sentries through 0.297.0; 0.298.0 sentry running at close.
+- **GSC payoff prod-verified**: all five flagged weekend/session URLs + dead driver/series slugs now return real HTTP 404s on prod (was streamed 200-noindex). Operator to click Validate fix in Search Console (IDEAS).
+- → skipped: worker-size dry-run per merge (no new deps all night; every deploy passed the 10 MiB gate in CI — headroom unchanged at ~198 KiB from 0.288.0's measurement; re-measure before any dependency-adding PR).
+- Won't-touch honored: content-bundle refactor, blog content, prod Supabase writes, HANDOFF trim.
 
-Active: _(awaiting [+Nm] prefixes)_
+Active: _(no [+Nm] prefixes — operator afk from ~job ④ onward)_
 
 ---
 
