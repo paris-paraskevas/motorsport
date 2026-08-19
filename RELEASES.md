@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.292.0 — 2026-08-19
+
+**Getting lost looks better now.** The "page not found" screen matches the site's new paper-and-ink look, and points you straight back to what's on now, the calendar, or the search field.
+
 ## 0.291.0 — 2026-08-19
 
 **Dead links now say so properly.** Pages that no longer exist — removed posts, out-of-range race weekends, unknown drivers or writers — answer search engines with a real "not found" instead of a look-alike page, so stale entries clear out of search results faster. Nothing changes for readers.

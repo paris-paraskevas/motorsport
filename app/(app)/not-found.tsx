@@ -1,56 +1,54 @@
 import Link from 'next/link';
-import { Home, Calendar } from 'lucide-react';
+import { PAGE_READ } from '@/lib/site';
 
 export const dynamic = 'force-static';
 
+// The (app)-group not-found boundary — it also catches root-level misses, so
+// it renders inside the app shell and the header's browse-and-search field
+// stays available as the recovery path.
 export default function NotFound() {
   return (
-    <div className="max-w-2xl lg:max-w-4xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28">
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-surface/60 p-10 md:p-14">
-        {/* Subtle accent corners */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 opacity-[0.18] pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(circle at 0% 0%, #ff4136 0%, transparent 45%), radial-gradient(circle at 100% 100%, #38bdf8 0%, transparent 45%)',
-          }}
-        />
-        <div className="relative">
-          <div className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold mb-3">
+    <main className={PAGE_READ}>
+      <div className="pt-8 md:pt-16">
+        <div className="border-t border-text pt-2">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
             Off-track excursion
-          </div>
-          <div className="flex items-baseline gap-4 mb-4">
-            <span className="text-text text-6xl md:text-7xl font-bold tnum font-mono tracking-tight">
-              404
-            </span>
-            <span className="text-text-faint text-sm uppercase tracking-[0.16em] font-semibold">
-              Page not found
-            </span>
-          </div>
-          <p className="text-text-muted text-base leading-relaxed max-w-md">
-            The page you tried to reach isn&apos;t on the grid. The link might
-            be stale, or you took the wrong corner.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-2">
-            <Link
-              href="/app"
-              className="inline-flex items-center gap-2 text-sm font-medium text-bg bg-text hover:bg-text-muted rounded-full px-4 py-2 transition-colors duration-(--duration-fast)"
-            >
-              <Home size={14} />
-              Home
-            </Link>
-            <Link
-              href="/calendar"
-              className="inline-flex items-center gap-2 text-sm font-medium text-text bg-surface hover:bg-surface-elevated border border-border rounded-full px-4 py-2 transition-colors duration-(--duration-fast)"
-            >
-              <Calendar size={14} />
-              Calendar
-            </Link>
-          </div>
+          </span>
         </div>
+
+        <h1 className="mt-8 font-serif text-[96px] font-semibold leading-none tracking-tight text-text md:text-[136px]">
+          404
+        </h1>
+        <p className="mt-3 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">
+          Page not found
+        </p>
+
+        <p className="mt-8 max-w-[46ch] font-serif text-[19px] leading-relaxed text-text-muted">
+          The page you tried to reach isn&apos;t on the grid. The link might be
+          stale, or you took the wrong corner.
+        </p>
+
+        <div className="mt-10 flex flex-wrap gap-3">
+          <Link
+            href="/app"
+            data-heatmap-id="404:home"
+            className="flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+          >
+            See what is on now
+          </Link>
+          <Link
+            href="/calendar"
+            data-heatmap-id="404:calendar"
+            className="flex min-h-11 items-center border border-border-strong px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
+          >
+            Calendar
+          </Link>
+        </div>
+
+        <p className="mt-12 border-t border-border pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+          The field in the header browses and searches the whole site
+        </p>
       </div>
-    </div>
+    </main>
   );
 }
