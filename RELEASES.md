@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.291.0 — 2026-08-19
+
+**Dead links now say so properly.** Pages that no longer exist — removed posts, out-of-range race weekends, unknown drivers or writers — answer search engines with a real "not found" instead of a look-alike page, so stale entries clear out of search results faster. Nothing changes for readers.
+
 ## 0.290.0 — 2026-08-19
 
 **The calendar now navigates the way you're looking at it.** Switch to week or day and the top control steps and reads in weeks or days, with a Today button to snap back. A new Season view lays the whole year out as one scrolling timeline — weekend by weekend, double-headers and finales flagged — and you can now subscribe to every championship in a single calendar feed.

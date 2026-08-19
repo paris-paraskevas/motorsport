@@ -57,15 +57,19 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { slug, round: roundRaw } = await params;
   const round = parseRound(roundRaw);
-  if (!round) return { title: 'Weekend not found' };
+  // Unknown rounds must notFound() HERE, not only in the page body: streamed
+  // metadata flushes the 200 shell before the body's notFound() can set the
+  // status, yielding a soft 404 (GSC 2026-08 weekend batch; same class as the
+  // 0.160.0 blog regression).
+  if (!round) notFound();
   let series;
   try {
     series = await loadSeries(slug);
   } catch {
-    return { title: 'Weekend not found' };
+    notFound();
   }
   const weekend = weekendFor(series, round);
-  if (!weekend) return { title: 'Weekend not found' };
+  if (!weekend) notFound();
   const { title: label } = weekendLabel(weekend, round);
   const baseTitle = label === `Round ${round}`
     ? `${series.meta.name} · Round ${round}`

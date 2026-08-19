@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.291.0 — 2026-08-19
+
+### Fixed
+- **Dead-param guards moved into `generateMetadata` across the six not-found-capable dynamic routes** (weekend, session, driver, team, author, blog post). Each returned a placeholder title ("Weekend not found" …) and left the 404 to the page body — but a streamed response locks its status the moment anything flushes, so crawlers logged 200 soft-404s with Next's injected `noindex` meta (the GSC 2026-08 report: four out-of-range weekend URLs under "Soft 404", dead session slugs inside "Excluded by noindex"). The 0.160.0 blog comment documented the class for hidden posts; the guard now throws `notFound()` at the metadata phase everywhere. Routes with no `loading.tsx` (teams, authors, blog) return true 404s from this alone; weekend/session/drivers still stream 200+noindex until their §4 rebuilds swap `loading.tsx` for in-page `<Suspense>` below the guards — `htmlLimitedBots` was tested on a production build and reverted: blocking metadata does not hold the flush (Next docs, loading.md §Status Codes; ancestor boundaries capture children, so `series/[slug]/loading.tsx` converts too).
+- GSC triage of everything else in the report — no code needed: the two "blocked 4xx" pages and the who-won noindex batch were already healed by earlier releases; the three 5xx blog URLs are the June MDX posts deleted in #649, clean 404s now, left dead (operator call); `/$` is an external junk link with no internal emitter; the redirect and canonical-alternate groups work as designed.
+
 ## 0.290.0 — 2026-08-19
 
 ### Changed

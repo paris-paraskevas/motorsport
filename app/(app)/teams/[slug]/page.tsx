@@ -41,7 +41,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const team = await findTeamBySlug(slug);
-  if (!team) return { title: 'Team not found' };
+  // notFound() in metadata, not a fallback title: the streamed shell flushes
+  // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
+  if (!team) notFound();
   const description = `${team.name} — ${team.seriesName} lineup, season form and drivers.`;
   return {
     title: team.name,
