@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.307.0 — 2026-08-19
+
+### Changed
+- **The weekend preview gets its layout v2** (round-2 ⑦, three annotations). On xl screens the **circuit map leaves the rail and renders LARGE beside the schedule** in the main column (the 240px rail map "seems really small" — it filled dead space with dead space); below xl the rail keeps its compact map. **The series wire surfaces on the page**: five headline rows (serif title, mono host · date) stream in below the weather with "All news →" to the full feed — the News tab keeps the complete list. The rail still carries First session · Add to calendar · Going in · venue text · Where to watch.
+
 ## 0.306.0 — 2026-08-19
 
 ### Changed

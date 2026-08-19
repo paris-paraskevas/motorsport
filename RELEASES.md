@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.307.0 — 2026-08-19
+
+**Race-weekend previews put the circuit front and centre.** On big screens the track map now sits large beside the timetable instead of tucked small in the sidebar, and the latest news for that championship appears right on the page.
+
 ## 0.306.0 — 2026-08-19
 
 **The whole month now fits on your screen.** Busy days show their three headline sessions — anything that decides a result always makes the cut — with the rest one tap away, and the Today button sits with the view switcher where your cursor already is.
