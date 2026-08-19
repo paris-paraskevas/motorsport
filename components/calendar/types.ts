@@ -9,4 +9,4 @@ export interface CalendarEntry {
   seriesName: string;
 }
 
-export type CalendarViewMode = 'month' | 'week' | 'day';
+export type CalendarViewMode = 'month' | 'week' | 'day' | 'season';

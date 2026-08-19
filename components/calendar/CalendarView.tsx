@@ -22,6 +22,7 @@ import { CalendarChips } from './CalendarFilters';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
+import { SeasonView } from './SeasonView';
 
 // Parse a /calendar?m=YYYY-MM deep-link into the anchor's ms (local-midnight,
 // the 1st of that month) — or null (follow `now`) when absent or malformed.
@@ -179,7 +180,20 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
     setView('day');
   };
 
-  const label = view === 'month' ? monthLabel(anchor) : view === 'week' ? weekLabel(anchor) : dayLabel(anchor);
+  const label =
+    view === 'month' ? monthLabel(anchor)
+    : view === 'week' ? weekLabel(anchor)
+    : view === 'day' ? dayLabel(anchor)
+    : 'Season';
+
+  // Per-series last known round, for the season view's derived FINALE badge.
+  const maxRoundBySlug: Record<string, number> = {};
+  if (roundByKey) {
+    for (const [k, r] of Object.entries(roundByKey)) {
+      const slug = k.slice(0, k.indexOf(':'));
+      if ((maxRoundBySlug[slug] ?? 0) < r) maxRoundBySlug[slug] = r;
+    }
+  }
 
   // Month-picker options: every month spanned by the season's sessions, always
   // including now's month and the month currently in view (so the <select> value
@@ -208,17 +222,23 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
         label={label}
         onPrev={() => step(-1)}
         onNext={() => step(1)}
+        onToday={() => setAnchorMs(null)}
         monthOptions={monthOptions}
         currentMonthValue={currentMonthValue}
         onPickMonth={ms => setAnchorMs(ms)}
       />
-      <CalendarChips
-        racesOnly={racesOnly}
-        onRacesOnly={setRacesOnly}
-        series={present}
-        seriesSel={seriesSel}
-        onToggleSeries={toggleSeries}
-      />
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <CalendarChips
+          racesOnly={racesOnly}
+          onRacesOnly={setRacesOnly}
+          series={present}
+          seriesSel={seriesSel}
+          onToggleSeries={toggleSeries}
+        />
+        <span className="mb-3 hidden shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint md:inline">
+          Applied as you tap
+        </span>
+      </div>
       {view === 'month' && (
         <MonthView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} roundNames={roundNames} onSelectDay={selectDay} />
       )}
@@ -226,6 +246,25 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
         <WeekView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} onSelectDay={selectDay} />
       )}
       {view === 'day' && <DayView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} />}
+      {view === 'season' && (
+        <SeasonView
+          entries={shown}
+          now={now}
+          roundByKey={roundByKey}
+          roundNames={roundNames}
+          maxRoundBySlug={maxRoundBySlug}
+        />
+      )}
+      {/* One subscribe line for the whole timeline (mocks #23/#25): webcal for
+          calendar apps, the .ics as a plain download. */}
+      <div className="mt-4 flex flex-wrap items-baseline justify-end gap-x-4 border-t border-border pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
+        <a href="webcal://paddock-tracker.com/api/calendar/all.ics" className="text-brand hover:underline">
+          Subscribe to this calendar →
+        </a>
+        <a href="/api/calendar/all.ics" className="text-text-muted hover:text-text">
+          .ics
+        </a>
+      </div>
     </>
   );
 }

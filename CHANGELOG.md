@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.290.0 — 2026-08-19
+
+### Changed
+- **The calendar toolbar follows the view** (operator order, image #9): the big centre control now reads the current month in month view, the week range in week view and the day in day view — a transparent overlay `<select>` keeps native month-jumping from all three — and a **Today** button (mock #23) returns to now. Previously the bar always showed the month regardless of view.
+- **The season timeline lands as a fourth view** (§4.2 / panel 5a, operator images #24–25): the whole season as one scrolling surface — month sections, one block per weekend so Fri–Sun stays whole and co-running series sit together, jump-to-month chips that scroll rather than page, and derived badges: **DOUBLE** (one series, two rounds, one window — Milwaukee), **FINALE** (a series' last known round), per-row date chips when rows inside a window don't share its exact dates. "Behind you" keeps the last two past weekends reachable at the foot. New `components/calendar/SeasonView.tsx`.
+- **Subscribe to the whole timeline**: `/api/calendar/all(.ics)` merges every championship's feed into one VCALENDAR (same event bodies + UIDs as the per-series feeds, spliced VEVENT blocks); the calendar page foots a webcal subscribe + plain .ics link (mocks #23/#25). Filters chips gain the mock's "applied as you tap" note.
+
 ## 0.289.0 — 2026-08-19
 
 ### Changed
