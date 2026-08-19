@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.306.0 — 2026-08-19
+
+**The whole month now fits on your screen.** Busy days show their three headline sessions — anything that decides a result always makes the cut — with the rest one tap away, and the Today button sits with the view switcher where your cursor already is.
+
 ## 0.305.0 — 2026-08-19
 
 **Home fits more of the story on one screen.** The championship picture and the next race weekends now sit side by side, so the news wire is one glance closer.

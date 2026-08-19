@@ -66,10 +66,11 @@ export default async function CalendarPage() {
           { name: 'Calendar', url: `${SITE_URL}/calendar` },
         ])}
       />
-      <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
-        <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
-          Calendar<span className="text-brand">.</span>
+      {/* Compact Paper masthead — the display-caps register is gone, and the
+          saved height is part of round-2 ⑥'s "make the month fit". */}
+      <header className="mb-4">
+        <h1 className="font-serif text-[34px] font-medium leading-none tracking-[-0.02em] text-text md:text-[40px]">
+          Calendar
         </h1>
       </header>
 

@@ -236,6 +236,21 @@ export function MonthView({
               {week.map(cell => {
                 const entries = buckets.get(cell.key) ?? [];
                 const lines = summariseDay(entries, roundByKey);
+                // Cap the cell at three lines so the whole month fits a screen
+                // (round-2 ⑥) — deciders always survive the cap (§4.2 rule),
+                // the rest go behind "+N more", which opens the day view.
+                const MAX_LINES = 3;
+                let visible = lines;
+                if (lines.length > MAX_LINES) {
+                  const deciders = lines.filter(l => l.decides);
+                  if (deciders.length >= MAX_LINES) {
+                    visible = deciders;
+                  } else {
+                    let budget = MAX_LINES - deciders.length;
+                    visible = lines.filter(l => l.decides || budget-- > 0);
+                  }
+                }
+                const hiddenCount = lines.length - visible.length;
                 return (
                   <div
                     key={cell.key}
@@ -248,7 +263,7 @@ export function MonthView({
                         onSelectDay(cell.date);
                       }
                     }}
-                    className={`flex min-h-[84px] cursor-pointer flex-col border-b border-r border-border px-[9px] pt-[7px] pb-[9px] transition-colors duration-(--duration-fast) hover:bg-surface md:min-h-[132px] ${
+                    className={`flex min-h-[72px] cursor-pointer flex-col border-b border-r border-border px-[9px] pt-[6px] pb-[7px] transition-colors duration-(--duration-fast) hover:bg-surface md:min-h-[100px] ${
                       cell.inMonth ? '' : 'opacity-55'
                     } ${cell.isToday ? 'bg-surface-elevated shadow-[inset_0_0_0_2px_var(--brand)]' : ''}`}
                   >
@@ -261,9 +276,10 @@ export function MonthView({
                         <span className="font-mono text-[10px] tabular-nums text-text-faint">{entries.length}</span>
                       )}
                     </div>
-                    {/* md+: summarising lines — everything shown, nothing truncated. */}
+                    {/* md+: summarising lines, capped — deciders always shown,
+                        one line each, the tail behind "+N more". */}
                     <div className="mt-1 hidden min-w-0 flex-col gap-[3px] md:flex">
-                      {lines.map(l => (
+                      {visible.map(l => (
                         <Link
                           key={l.key}
                           href={l.href}
@@ -275,7 +291,7 @@ export function MonthView({
                             {code(l.seriesSlug)}
                           </span>
                           <span
-                            className={`min-w-0 flex-1 font-serif text-[12.5px] leading-[1.3] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden ${
+                            className={`min-w-0 flex-1 truncate font-serif text-[12.5px] leading-[1.3] ${
                               l.decides ? 'font-semibold text-text' : 'text-text-muted'
                             }`}
                           >
@@ -284,6 +300,18 @@ export function MonthView({
                           <span className="shrink-0 font-mono text-[10px] tabular-nums text-text-faint">{l.time}</span>
                         </Link>
                       ))}
+                      {hiddenCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            onSelectDay(cell.date);
+                          }}
+                          className="self-start font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-brand hover:text-text transition-colors duration-(--duration-fast)"
+                        >
+                          +{hiddenCount} more
+                        </button>
+                      )}
                     </div>
                     {/* mobile: colour dots (a 7-column grid can't carry text at 390px). */}
                     <div className="mt-1 flex flex-wrap gap-1 md:hidden">
