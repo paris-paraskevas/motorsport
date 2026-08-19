@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.297.0 — 2026-08-19
+
+**Predictions now opens on what you can bet on right now.** The next round's five markets lead the page with exactly when they lock, your open calls sit beneath with your settled history one tap away, and your private league ranks on win rate — so a latecomer can still top the table. The house rules stand in plain type: free credits, no money in, none out.
+
 ## 0.296.0 — 2026-08-19
 
 **Driver pages now carry the season and the week.** The results table names the venue under every round, the headline adds podiums, and a new side rail shows when the driver is next on track with a live countdown, the latest stories mentioning them, and one-tap paths to their team and a head-to-head comparison.
