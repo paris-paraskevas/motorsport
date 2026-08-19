@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.299.0 — 2026-08-19
+
+**Housekeeping.** Internal session notes and planning documents — nothing user-facing changed.
+
 ## 0.298.0 — 2026-08-19
 
 **Six surfaces got their finishing pass.** The news wire introduces itself honestly, Learn opens with "Motorsport, explained" and teaches you what to ask, your account page gains sign-out and a data-export request, the F1 analysis cards say what they answer, blog posts read like a proper article column with pull quotes, and the series directory closes with a table showing how differently all fifteen championships are shaped — and why the site treats each on its own terms.
