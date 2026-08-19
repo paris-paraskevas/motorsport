@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.290.0 — 2026-08-19
+
+**The calendar now navigates the way you're looking at it.** Switch to week or day and the top control steps and reads in weeks or days, with a Today button to snap back. A new Season view lays the whole year out as one scrolling timeline — weekend by weekend, double-headers and finales flagged — and you can now subscribe to every championship in a single calendar feed.
+
 ## 0.289.0 — 2026-08-19
 
 **The navigation panel now opens with what's happening now.** Home, the calendar, the latest results and this weekend lead the index, with the reading destinations right under them and settings one tap away at the foot.

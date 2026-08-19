@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadSeries } from '@/lib/series';
+import { loadAllSeries, loadSeries } from '@/lib/series';
 import { groupByWeekend } from '@/lib/group';
 import { buildSeriesIcs } from '@/lib/ics-export';
 
@@ -24,6 +24,47 @@ export async function GET(
   // kebab-case before it reaches the fs loader.
   if (!SLUG_RE.test(slug)) {
     return new NextResponse('Not found', { status: 404 });
+  }
+
+  // slug "all": one feed across every championship (the calendar page's
+  // subscribe foot). Each series' feed is built by the same generator, then
+  // its VEVENT blocks are spliced into one VCALENDAR envelope — identical
+  // event bodies + UIDs to the per-series feeds.
+  if (slug === 'all') {
+    const now = new Date();
+    const all = await loadAllSeries();
+    const parts: string[] = [];
+    let envelope: { head: string; tail: string } | null = null;
+    for (const series of all) {
+      const ics = buildSeriesIcs({
+        slug: series.meta.slug,
+        name: series.meta.name,
+        weekends: groupByWeekend(series.sessions, now, series.rounds),
+        now,
+      });
+      const beginIdx = ics.indexOf('BEGIN:VEVENT');
+      if (beginIdx === -1) continue;
+      const endIdx = ics.lastIndexOf('END:VEVENT') + 'END:VEVENT'.length;
+      if (!envelope) {
+        envelope = {
+          head: ics
+            .slice(0, beginIdx)
+            .replace(/X-WR-CALNAME:[^\r\n]*/, 'X-WR-CALNAME:Paddock Tracker — all series'),
+          tail: ics.slice(ics.indexOf('END:VCALENDAR')),
+        };
+      }
+      parts.push(ics.slice(beginIdx, endIdx));
+    }
+    if (!envelope) return new NextResponse('Not found', { status: 404 });
+    const combined = envelope.head + parts.join('\r\n') + '\r\n' + envelope.tail;
+    return new NextResponse(combined, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/calendar; charset=utf-8',
+        'Content-Disposition': 'inline; filename="all.ics"',
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      },
+    });
   }
 
   let series;
