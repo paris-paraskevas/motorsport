@@ -36,7 +36,9 @@ function formatDate(iso: string): string {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const author = await getAuthorBySlug(slug);
-  if (!author) return { title: 'Author', robots: { index: false, follow: false } };
+  // notFound() in metadata, not a noindex fallback: the streamed shell flushes
+  // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
+  if (!author) notFound();
   return {
     title: author.displayName,
     description: metaDescription(author.bio),

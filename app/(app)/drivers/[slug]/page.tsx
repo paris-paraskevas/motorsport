@@ -30,7 +30,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const driver = await findDriverBySlug(slug);
-  if (!driver) return { title: 'Driver not found' };
+  // notFound() in metadata, not a fallback title: the streamed shell flushes
+  // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
+  if (!driver) notFound();
   const description = `${driver.name}, ${driver.team} (${driver.seriesName}) — season form, results, team.`;
   return {
     title: driver.name,

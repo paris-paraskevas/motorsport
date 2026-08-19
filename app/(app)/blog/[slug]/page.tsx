@@ -68,7 +68,9 @@ export async function generateMetadata({
   }
   const post = db && db.status === 'published' ? dbToPost(db) : await loadPost(slug);
   if (!post && db) return { title: 'Draft preview' }; // admin preview metadata stays generic
-  if (!post) return { title: 'Post not found' };
+  // Missing slugs get the same treatment as hidden posts above — notFound()
+  // here, before the shell streams (the 0.160.0 lesson, applied to both paths).
+  if (!post) notFound();
   // Blog posts carry article-specific openGraph fields (publishedTime) that the
   // shared withSocialMeta() helper doesn't model, so build the openGraph block
   // directly here. Re-set siteName + url since the per-page override fully

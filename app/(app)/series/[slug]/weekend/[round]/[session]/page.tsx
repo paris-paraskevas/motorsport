@@ -112,7 +112,9 @@ export async function generateMetadata(
   { params }: { params: Promise<{ slug: string; round: string; session: string }> },
 ): Promise<Metadata> {
   const ctx = await resolve(params);
-  if (!ctx) return { title: 'Session not found' };
+  // notFound() in metadata, not a fallback title: the streamed shell flushes
+  // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
+  if (!ctx) notFound();
   const { title: weekendTitle } = weekendLabel(ctx.weekend, ctx.round);
   const base = `${ctx.series.meta.name} · ${weekendTitle} · ${ctx.session.title.replace(/^.*?-\s*/, '')}`;
   const title = base.length > 60 ? `${base.slice(0, 59)}…` : base;

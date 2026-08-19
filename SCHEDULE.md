@@ -1384,6 +1384,19 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Wed 2026-08-19 (session 29 — GSC triage, then reimagining jobs ④–⑨)
+
+Operator opened with the Search Console report (8 screenshots) + the CLI handoff for jobs ④–⑨ (versions from 0.291.0).
+
+- Plan: GSC indexing triage first → 404-page redesign → jobs ④–⑨ in order, one PR each, worker-size gate before UI-heavy merges.
+- → done: **GSC triage (0.291.0)** — dead-param guards moved into `generateMetadata` on the six not-found-capable routes: true 404s on teams/authors/blog; weekend/session/drivers stay streamed-noindex until their rebuilds (a flushed `loading.tsx` locks the status — `htmlLimitedBots` tested on a prod build and reverted, it doesn't hold the flush). Everything else self-clears: 4xx pair + who-won noindex already healthy, the three 5xx blogs = June MDX posts deleted in #649 (operator: stay dead), `/$` external, redirects/canonicals by design.
+- Decision (operator): fold the true-404 restructure into jobs ④⑤⑦ (`loading.tsx` → in-page `<Suspense>` below the guards; `series/[slug]/loading.tsx` converts too).
+- Won't touch this session: content-bundle→static-assets refactor (unless the 10 MiB gate forces it), blog content, prod Supabase writes, HANDOFF trim.
+
+Active: _(awaiting [+Nm] prefixes)_
+
+---
+
 ### Tue 2026-08-18 (session 28 — the Paper reimagining begins)
 
 Operator delivered the full UI/UX reimagining design handoff (`design_handoff_paddock_ui_reimagining`: 15 surfaces, "Paper" identity, four-door IA, series contract) and said go.
