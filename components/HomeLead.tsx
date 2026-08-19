@@ -154,83 +154,93 @@ export function HomeLead({
         </section>
       )}
 
-      {/* ── 2. What it changed ───────────────────────────────────────────── */}
-      {changed && changed.top.length > 0 && (
-        <section aria-label="What it changed" className="mt-8">
-          <SectionRule label="What it changed" right={`${changed.seriesName} · Drivers' championship`} />
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
-            <div>
-              <h2 className="font-serif text-[22px] font-semibold leading-snug text-text lg:text-[26px]">
-                {changed.gapToSecond != null
-                  ? `${changed.leader.name} leads by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
-                  : `${changed.leader.name} leads the championship`}
-              </h2>
-            </div>
-            <ul>
-              {changed.top.map(row => {
-                const isWinner = changed.winnerName != null && row.name === changed.winnerName;
-                const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
-                return (
-                  <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
-                    <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
-                      {row.position}
-                    </span>
-                    <span className={`w-28 shrink-0 truncate text-sm sm:w-36 ${isWinner ? 'font-semibold text-text' : 'text-text-muted'}`}>
-                      {row.name}
-                    </span>
-                    <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
-                      <span
-                        className={`block h-full ${isWinner ? 'bg-brand' : row.position === 1 ? 'bg-text' : 'bg-border-strong'}`}
-                        style={{ width: `${width}%` }}
-                      />
-                    </span>
-                    <span className="w-10 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-text">
-                      {row.points}
-                    </span>
-                    <span className="hidden w-10 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:block">
-                      {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-      )}
+      {/* ── 2 × 3. What it changed beside what's next (round-2 ⑤): the
+          operator's arrows move the next-weekends list up into the right
+          column, so the championship read and the calendar read share one
+          band. Either half missing → the other takes the full width. ── */}
+      {((changed && changed.top.length > 0) || next.length > 0) && (
+        <div
+          className={`mt-8 grid gap-x-10 gap-y-8 ${
+            changed && changed.top.length > 0 && next.length > 0 ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : ''
+          }`}
+        >
+          {changed && changed.top.length > 0 && (
+            <section aria-label="What it changed" className="min-w-0">
+              <SectionRule label="What it changed" right={`${changed.seriesName} · Drivers' championship`} />
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,300px)_1fr]">
+                <div>
+                  <h2 className="font-serif text-[22px] font-semibold leading-snug text-text lg:text-[26px]">
+                    {changed.gapToSecond != null
+                      ? `${changed.leader.name} leads by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
+                      : `${changed.leader.name} leads the championship`}
+                  </h2>
+                </div>
+                <ul>
+                  {changed.top.map(row => {
+                    const isWinner = changed.winnerName != null && row.name === changed.winnerName;
+                    const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
+                    return (
+                      <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
+                        <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                          {row.position}
+                        </span>
+                        <span className={`w-28 shrink-0 truncate text-sm sm:w-36 ${isWinner ? 'font-semibold text-text' : 'text-text-muted'}`}>
+                          {row.name}
+                        </span>
+                        <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
+                          <span
+                            className={`block h-full ${isWinner ? 'bg-brand' : row.position === 1 ? 'bg-text' : 'bg-border-strong'}`}
+                            style={{ width: `${width}%` }}
+                          />
+                        </span>
+                        <span className="w-10 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-text">
+                          {row.points}
+                        </span>
+                        <span className="hidden w-10 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:block">
+                          {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </section>
+          )}
 
-      {/* ── 3. What's next ───────────────────────────────────────────────── */}
-      {next.length > 0 && (
-        <section aria-label="What's next" className="mt-8">
-          <SectionRule label="What's next" right="All series" />
-          <ul>
-            {next.map((w, i) => (
-              <li key={`${w.seriesSlug}-${w.href}`}>
-                <Link
-                  href={w.href}
-                  className="flex min-h-11 items-center gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
-                >
-                  <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: w.color }} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-serif text-[16px] font-semibold leading-tight text-text">
-                      {w.title}
-                    </span>
-                    <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-                      {w.seriesName}
-                      {w.note ? ` · ${w.note}` : ''}
-                    </span>
-                  </span>
-                  {i === 0 && w.firstStartIso ? (
-                    <NextRaceCountdown target={w.firstStartIso} label={w.dateRangeLabel} color={w.color} />
-                  ) : (
-                    <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
-                      {w.dateRangeLabel}
-                    </span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+          {next.length > 0 && (
+            <section aria-label="What's next" className="min-w-0">
+              <SectionRule label="What's next" right="All series" />
+              <ul>
+                {next.map((w, i) => (
+                  <li key={`${w.seriesSlug}-${w.href}`}>
+                    <Link
+                      href={w.href}
+                      className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    >
+                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: w.color }} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-serif text-[16px] font-semibold leading-tight text-text">
+                          {w.title}
+                        </span>
+                        <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                          {w.seriesName}
+                          {w.note ? ` · ${w.note}` : ''}
+                        </span>
+                      </span>
+                      {i === 0 && w.firstStartIso ? (
+                        <NextRaceCountdown target={w.firstStartIso} label={w.dateRangeLabel} color={w.color} />
+                      ) : (
+                        <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                          {w.dateRangeLabel}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
       )}
 
       {/* ── 4. The wire ──────────────────────────────────────────────────── */}
