@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.304.0 — 2026-08-19
+
+**The menu now opens on hover and drops from where you'd expect.** Hovering the menu button opens the full site index right under it, and the header's quick links now read Calendar · Learn · Series — your account lives behind the avatar and inside the menu.
+
 ## 0.303.0 — 2026-08-19
 
 **Your account pages match the rest of the site now.** Account, Championships and Notifications get the paper-and-ink treatment, and choosing your favourite series reads as one natural sentence instead of a floating button.

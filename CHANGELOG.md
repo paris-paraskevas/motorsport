@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.304.0 — 2026-08-19
+
+### Changed
+- **The header's third door is Series, and the panel hangs from the burger** (round-2 ④). `DoorLinks` swaps Account for **Series** (`/series`; Account stays one tap away via the panel's Settings → and the avatar). The NavPanel opens on **burger hover** (real pointers only — `(hover:hover) and (pointer:fine)`, so touch taps don't double-fire) and on lg it is no longer viewport-centred: it anchors under the control's left edge, its width clamped to the measured space right of the control (`--panel-max`, set on open + resize, written to the element style — no render churn), so `min(1200px, …)` can't overflow the viewport.
+
 ## 0.303.0 — 2026-08-19
 
 ### Changed
