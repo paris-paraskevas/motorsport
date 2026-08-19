@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#121215',
+  themeColor: '#f7f3e8',
   width: 'device-width',
   initialScale: 1,
 };
@@ -82,18 +82,19 @@ export default async function RootLayout({
       signUpFallbackRedirectUrl="/app"
       appearance={{
         variables: {
-          colorBackground: '#1b1b21',
-          colorText: '#e4e4e8',
-          colorPrimary: '#ffb400',
-          colorTextOnPrimaryBackground: '#121215',
-          colorInputBackground: '#222229',
-          colorInputText: '#e4e4e8',
+          colorBackground: '#fffcf2',
+          colorText: '#1e1a13',
+          colorPrimary: '#8c1c13',
+          colorTextOnPrimaryBackground: '#f7f3e8',
+          colorInputBackground: '#fbf7ec',
+          colorInputText: '#1e1a13',
         },
       }}
     >
       <html
         lang="en"
-        className={`dark ${FONT_CLASSES}`}
+        data-theme="paper"
+        className={FONT_CLASSES}
       >
         <body className="min-h-screen bg-bg text-text">
           {/* First child on purpose: parser-blocking pre-paint theme init. */}

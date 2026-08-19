@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.287.0 — 2026-08-19
+
+### Changed
+- **Paper is the default theme for everybody** (operator order, 2026-08-19). All three root layouts SSR `data-theme="paper"` with no dark class; `ThemeScript`/`ThemePicker` fallbacks and the system-light mapping move from midnight/newsprint to paper; Clerk appearance and `themeColor` switch to the paper palette. Stored theme choices are untouched — the pre-paint script still applies them.
+- **No width caps** — the `max-w-[1180px]` containers come off Home, series hub, series landing, weekend report and Learn; every page fills the viewport per device (the fluid `PAGE_WIDE` decision now governs everywhere).
+- **Header door links** — Calendar · Learn · Account as mono links in the desktop header beside the date (`DoorLinks` in `AppShell`); Home stays the wordmark; the panel remains the full index.
+- `docs/next-session.md` — the ordered handoff for the remaining nine mock-fidelity jobs (operator's 2026-08-19 notes) + the prod-pipeline blocker and per-PR ritual.
+
 ## 0.286.0 — 2026-08-18
 
 ### Changed

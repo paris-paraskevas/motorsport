@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.287.0 — 2026-08-19
+
+**Paper is now the site's look for everyone.** The warm newsprint theme becomes the default (your saved theme choice still wins), every page now uses the full width of your screen, and Calendar, Learn and Account sit one click away in the header.
+
 ## 0.286.0 — 2026-08-18
 
 **The blog index reads like a front page.** Each piece leads with its headline and standfirst under its series colour, and a side rail lets you browse by championship or pitch your own writing.

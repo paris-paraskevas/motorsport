@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { NavSeriesMeta } from '@/lib/types';
@@ -100,6 +101,11 @@ export function AppShell({
 
           <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} />
 
+          {/* Desktop door links (operator 2026-08-19): Calendar, Learn and
+              Account one click from the header — Home stays the wordmark, and
+              the panel remains the whole index. */}
+          <DoorLinks />
+
           <div className="ml-auto flex shrink-0 items-center gap-3 lg:gap-4">
             <HeaderDate />
             <HeaderAccount />
@@ -139,6 +145,36 @@ export function AppShell({
         }}
       />
     </>
+  );
+}
+
+// The three non-Home doors as quiet mono links, desktop only.
+function DoorLinks() {
+  const pathname = usePathname();
+  const doors = [
+    { href: '/calendar', label: 'Calendar' },
+    { href: '/information', label: 'Learn' },
+    { href: '/settings', label: 'Account' },
+  ];
+  return (
+    <nav aria-label="Doors" className="hidden items-stretch gap-5 self-stretch lg:flex">
+      {doors.map(d => {
+        const active = pathname === d.href || pathname.startsWith(`${d.href}/`);
+        return (
+          <Link
+            key={d.href}
+            href={d.href}
+            aria-current={active ? 'page' : undefined}
+            data-heatmap-id={`nav:door:${d.label.toLowerCase()}`}
+            className={`inline-flex items-center border-b-2 px-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] transition-colors duration-(--duration-fast) ${
+              active ? 'border-brand text-text' : 'border-transparent text-text-muted hover:text-text'
+            }`}
+          >
+            {d.label}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 

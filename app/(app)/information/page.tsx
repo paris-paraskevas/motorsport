@@ -77,7 +77,7 @@ export default async function InformationHub() {
           { name: 'Information', url: `${SITE_URL}/information` },
         ])}
       />
-      <div className="mx-auto max-w-[1180px]">
+      <div>
         {/* 1 — title + the ask field. */}
         <header className="mb-8">
           <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">

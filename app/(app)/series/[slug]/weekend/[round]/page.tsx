@@ -352,7 +352,7 @@ export default async function WeekendPage({
            weekend re-told as the story's spine; venue facts in the rail;
            upgrades demoted to an appendix at the foot. ── */
         <>
-          <header className="mx-auto mb-6 max-w-[1180px]">
+          <header className="mb-6">
             <div className="flex items-center gap-2.5">
               <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: color }} />
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--tint)' }}>
@@ -373,7 +373,7 @@ export default async function WeekendPage({
             )}
           </header>
 
-          <div className="mx-auto max-w-[1180px]">
+          <div>
             {/* The result that leads. */}
             {(raceEntries.length > 0 || classBlocks.length > 0) && (
               <section aria-label="Classification" className="border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5">
@@ -555,7 +555,7 @@ export default async function WeekendPage({
                     Full standings →
                   </Link>
                 </div>
-                <ul className="max-w-[720px]">
+                <ul>
                   {brief.top.map(row => {
                     const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
                     const isWinner = winner != null && row.name === winner.driverName;

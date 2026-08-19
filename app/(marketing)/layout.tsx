@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#121215',
+  themeColor: '#f7f3e8',
   width: 'device-width',
   initialScale: 1,
 };
@@ -58,7 +58,8 @@ export default function MarketingLayout({
   return (
     <html
       lang="en"
-      className={`dark ${FONT_CLASSES}`}
+      data-theme="paper"
+      className={FONT_CLASSES}
     >
       <body className="min-h-screen bg-bg text-text">
         <ThemeScript />

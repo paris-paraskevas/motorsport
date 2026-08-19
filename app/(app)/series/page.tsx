@@ -144,7 +144,7 @@ export default async function SeriesHubPage() {
 
   return (
     <div className={PAGE_WIDE}>
-      <div className="mx-auto max-w-[1180px]">
+      <div>
         <header className="mb-6">
           <h1 className="font-serif text-[40px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[50px]">
             Series
