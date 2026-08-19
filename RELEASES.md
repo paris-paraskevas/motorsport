@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.295.0 — 2026-08-19
+
+**The front door now shows you the racing, not a brochure.** What's on this weekend and who won last time out sit right in the hero, live. One button opens the site, another installs it as an app, and the sign-up ask has moved to where it belongs: a footnote, because everything is free to browse.
+
 ## 0.294.0 — 2026-08-19
 
 **Race weekends, finished and upcoming, now read as one publication.** A finished weekend leads with the points-scoring positions and one tap opens the full field, retirements included; the side rail adds our own writing about that championship. An upcoming weekend counts down to its first session, adds the whole series to your calendar in one tap, and shows the championship top three going in. Dead links under every series now answer with a genuine "not found".

@@ -1,31 +1,21 @@
 import type { Metadata } from 'next';
-import path from 'path';
+import Link from 'next/link';
+import { Suspense } from 'react';
 import { loadAllSeries } from '@/lib/series';
-import { loadAllDrivers } from '@/lib/people';
 import { groupByWeekend } from '@/lib/group';
-import { buildRoundLookupAcrossSeries, roundFor } from '@/lib/weekend';
-import { loadRounds } from '@/lib/rounds-loader';
-import { fetchAggregatedNews } from '@/lib/news';
-import { matchCircuit } from '@/lib/circuits';
-import { fetchWeather, forecastFor, weatherLabel } from '@/lib/weather';
-import { formatRelative } from '@/lib/date';
+import { weekendLabel, weekendStartEnd } from '@/lib/weekend';
+import { isThisWeekend } from '@/lib/date';
+import { fetchLatestPodium, homeResultsSupported } from '@/lib/home-results';
+import { isBettingConfigured } from '@/lib/betting/client';
 import { JsonLd } from '@/components/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/json-ld';
 import { withSocialMeta } from '@/lib/seo';
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
 import { StandaloneRedirect } from '@/components/landing/StandaloneRedirect';
-import { TickerBar, type TickerSegment } from '@/components/landing/TickerBar';
 import { LandingNav } from '@/components/landing/LandingNav';
-import { Hero, type HeroSession } from '@/components/landing/Hero';
-import { MarqueeEvent, type MarqueeEventData } from '@/components/landing/MarqueeEvent';
-import { SeriesMarquee } from '@/components/landing/SeriesMarquee';
-import { StatsBand } from '@/components/landing/StatsBand';
-import { FeatureBlocks } from '@/components/landing/FeatureBlocks';
-import { PredictionGame } from '@/components/landing/PredictionGame';
-import { DisciplinesGrid } from '@/components/landing/DisciplinesGrid';
-import { PerksCta } from '@/components/landing/PerksCta';
+import { InstallApp } from '@/components/landing/InstallApp';
 import { LandingFooter } from '@/components/landing/LandingFooter';
-import { cleanSessionTitle } from '@/components/landing/clean-title';
+import type { NavSeriesMeta, Weekend } from '@/lib/types';
 
 export const revalidate = 300;
 
@@ -41,140 +31,124 @@ export const metadata: Metadata = {
   }),
 };
 
-const GMT_FMT = new Intl.DateTimeFormat('en-GB', {
-  weekday: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-  timeZone: 'UTC',
-});
+// Panel 10a (design handoff §4.10): the landing shows the product, not a
+// pitch — what is on this weekend and what happened last time out, live in
+// the hero. Three promises follow in the order a new user meets them, and
+// the account ask sits last as a footnote, because the site is free to
+// browse and saying so plainly is more persuasive than a sign-up wall.
 
-type Upcoming = {
-  session: import('@/lib/types').Session;
+type WeekendRow = {
+  slug: string;
   seriesName: string;
-  seriesSlug: string;
-  seriesColor: string;
+  color: string;
+  eventName: string;
+  href: string;
+  start: Date;
+  end: Date;
 };
 
-function pickMarquee(upcoming: Upcoming[]): Upcoming | undefined {
-  return (
-    upcoming.find(x => x.session.significance?.tier === 'marquee' && !x.session.dateOnly) ??
-    upcoming.find(
-      x => !x.session.dateOnly && /\b(race|grand prix|500|24 hours|24h|rally)\b/i.test(x.session.title),
-    ) ??
-    upcoming[0]
-  );
+function rangeLabel(rows: WeekendRow[]): string {
+  if (rows.length === 0) return '';
+  const min = rows.reduce((a, r) => (r.start < a ? r.start : a), rows[0].start);
+  const max = rows.reduce((a, r) => (r.end > a ? r.end : a), rows[0].end);
+  const day = (d: Date) => d.getUTCDate();
+  const mon = new Intl.DateTimeFormat('en-GB', { month: 'short', timeZone: 'UTC' });
+  return mon.format(min) === mon.format(max)
+    ? `${day(min)} – ${day(max)} ${mon.format(max)}`
+    : `${day(min)} ${mon.format(min)} – ${day(max)} ${mon.format(max)}`;
+}
+
+// "Last time out" — the most recent finished round with a real podium, tried
+// newest-first across the covered series. Network (KV-cached results feeds),
+// so it streams behind Suspense inside the hero panel.
+async function LastTimeOut({ candidates }: { candidates: string[] }) {
+  for (const slug of candidates.slice(0, 3)) {
+    const race = await fetchLatestPodium(slug).catch(() => null);
+    const winner = race?.podium?.[0];
+    if (!race || !winner) continue;
+    const surname = winner.name.split(' ').slice(-1)[0];
+    const margin = race.podium[1]?.time?.startsWith('+') ? race.podium[1].time : null;
+    const date = new Date(race.date);
+    const dateLabel = Number.isNaN(date.getTime())
+      ? null
+      : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+    return (
+      <div className="mt-4 border-t border-border pt-3">
+        <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          Last time out
+        </span>
+        <p className="mt-1 font-serif text-[17px] font-semibold leading-tight text-text">
+          {surname} wins — {race.raceName}
+        </p>
+        <p className="mt-0.5 font-mono text-[10px] tabular-nums uppercase tracking-[0.12em] text-text-faint">
+          {margin ? `by ${margin.replace(/^\+/, '')}` : ''}
+          {margin && dateLabel ? ' · ' : ''}
+          {dateLabel ?? ''}
+        </p>
+      </div>
+    );
+  }
+  return null;
 }
 
 export default async function Landing() {
   const all = await loadAllSeries();
-  const drivers = await loadAllDrivers();
   const now = new Date();
 
-  const flat: Upcoming[] = all
-    .flatMap(s =>
-      s.sessions.map(session => ({
-        session,
-        seriesName: s.meta.name,
-        seriesSlug: s.meta.slug,
-        seriesColor: s.meta.color,
-      })),
-    )
-    .sort((a, b) => a.session.start.getTime() - b.session.start.getTime());
+  const navSeries: NavSeriesMeta[] = all.map(s => ({
+    slug: s.meta.slug,
+    name: s.meta.name,
+    color: s.meta.color,
+    category: s.meta.category,
+  }));
 
-  const upcoming = flat.filter(x => x.session.end >= now);
-  const roundLookup = buildRoundLookupAcrossSeries(all, now);
-  const stats = {
-    series: all.length,
-    sessions: flat.length,
-    races: all.reduce((acc, s) => acc + groupByWeekend(s.sessions, now).length, 0),
-    drivers: drivers.length,
-  };
-
-  // ── Ticker: stats / next-up / GMT-timed events / weather / news ──
-  const segments: TickerSegment[] = [];
-  segments.push({
-    body: `Tracking ${stats.series} series · ${stats.races} race weekends in 2026`,
-  });
-  const next = upcoming[0];
-  if (next) {
-    segments.push({
-      dot: next.seriesColor,
-      head: 'Next up',
-      body: `${next.seriesName} — ${cleanSessionTitle(next.seriesName, next.session.title)}`,
-      tail: next.session.dateOnly ? 'time TBC' : formatRelative(next.session.start, now),
-    });
-  }
-  for (const x of upcoming.slice(1, 5)) {
-    segments.push({
-      dot: x.seriesColor,
-      head: x.session.dateOnly ? undefined : `${GMT_FMT.format(x.session.start)} GMT`,
-      body: cleanSessionTitle(x.seriesName, x.session.title),
-      tail: x.session.location,
-    });
-  }
-  // Weather for the next locatable session (forecasts are KV-cached).
-  for (const x of upcoming.slice(0, 4)) {
-    const circuit = await matchCircuit(x.session.location, x.session.title);
-    if (!circuit) continue;
-    const forecast = await fetchWeather(circuit.lat, circuit.lon);
-    const daily = forecast ? forecastFor(forecast, x.session.start) : null;
-    if (!daily) continue;
-    const w = weatherLabel(daily.weatherCode);
-    segments.push({
-      dot: x.seriesColor,
-      head: 'Weather',
-      body: `${Math.round(daily.maxC)}°C ${w.label} — ${x.session.location ?? 'next venue'}`,
-    });
-    break;
-  }
-  const news = await fetchAggregatedNews();
-  const seriesBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
-  for (const item of news.slice(0, 3)) {
-    const meta = seriesBySlug.get(item.seriesSlug);
-    segments.push({ dot: meta?.color, head: 'News', body: item.title });
-  }
-
-  // ── Hero widget ──
-  const heroSessions: HeroSession[] = upcoming.slice(0, 6).map(x => {
-    const round = roundFor(roundLookup, x.seriesSlug, x.session.uid);
-    return {
-      seriesSlug: x.seriesSlug,
-      seriesName: x.seriesName,
-      seriesColor: x.seriesColor,
-      title: x.session.title,
-      start: x.session.start,
-      end: x.session.end,
-      location: x.session.location,
-      dateOnly: x.session.dateOnly,
-      weekendHref: round ? `/series/${x.seriesSlug}/weekend/${round}` : undefined,
-    };
-  });
-
-  // ── Marquee event (significance-flagged first, race-like fallback) ──
-  let marquee: MarqueeEventData | undefined;
-  const pick = pickMarquee(upcoming);
-  if (pick && !pick.session.dateOnly) {
-    const round = roundFor(roundLookup, pick.seriesSlug, pick.session.uid);
-    let eventName = cleanSessionTitle(pick.seriesName, pick.session.title);
-    if (round !== undefined) {
-      const rounds = await loadRounds(path.join(process.cwd(), 'content', 'series', pick.seriesSlug));
-      const entry = rounds?.rounds.find(r => r.round === round);
-      if (entry?.name) eventName = entry.name;
+  // Group every series' season once (local ICS, no network) and derive both
+  // hero facts from it: what runs this weekend, and where the most recent
+  // finished round is (the Last-time-out candidate order).
+  const perSeries = all.map(s => {
+    let weekends: Weekend[];
+    try {
+      weekends = groupByWeekend(s.sessions, now, s.rounds);
+    } catch {
+      weekends = [];
     }
-    marquee = {
-      seriesName: pick.seriesName,
-      seriesColor: pick.seriesColor,
-      eventName,
-      sessionTitle: cleanSessionTitle(pick.seriesName, pick.session.title),
-      start: pick.session.start,
-      location: pick.session.location,
-      weekendHref:
-        round !== undefined ? `/series/${pick.seriesSlug}/weekend/${round}` : undefined,
-    };
-  }
+    return { s, weekends };
+  });
 
-  const seriesList = all.map(s => s.meta);
+  const thisWeekend: WeekendRow[] = [];
+  const upcomingRows: WeekendRow[] = [];
+  for (const { s, weekends } of perSeries) {
+    for (const w of weekends) {
+      if (w.isPast) continue;
+      const { start, end } = weekendStartEnd(w);
+      if (end.getTime() < now.getTime()) continue;
+      const row: WeekendRow = {
+        slug: s.meta.slug,
+        seriesName: s.meta.name,
+        color: s.meta.color,
+        eventName: w.roundName ?? weekendLabel(w, w.round).title,
+        href: `/series/${s.meta.slug}/weekend/${w.round}`,
+        start,
+        end,
+      };
+      if (w.sessions.some(x => isThisWeekend(x.start, now))) thisWeekend.push(row);
+      else upcomingRows.push(row);
+    }
+  }
+  thisWeekend.sort((a, b) => a.start.getTime() - b.start.getTime());
+  upcomingRows.sort((a, b) => a.start.getTime() - b.start.getTime());
+  const rows = thisWeekend.length > 0 ? thisWeekend.slice(0, 4) : upcomingRows.slice(0, 3);
+  const panelLabel = thisWeekend.length > 0 ? 'This weekend' : 'Next on track';
+
+  const lastCandidates = perSeries
+    .map(({ s, weekends }) => {
+      const lw = [...weekends].reverse().find(w => w.isPast);
+      return lw ? { slug: s.meta.slug, end: weekendStartEnd(lw).end } : null;
+    })
+    .filter((c): c is { slug: string; end: Date } => c !== null)
+    .filter(c => homeResultsSupported(c.slug))
+    .sort((a, b) => b.end.getTime() - a.end.getTime())
+    .map(c => c.slug);
 
   return (
     <>
@@ -182,19 +156,121 @@ export default async function Landing() {
       <JsonLd data={organizationLd()} />
       <JsonLd data={websiteLd()} />
 
-      <TickerBar segments={segments} />
-      <LandingNav />
-      <main>
-        <Hero sessions={heroSessions} now={now} />
-        {marquee && <MarqueeEvent event={marquee} />}
-        <SeriesMarquee seriesList={seriesList} />
-        <StatsBand stats={stats} />
-        <FeatureBlocks />
-        <PredictionGame />
-        <DisciplinesGrid seriesList={seriesList} />
-        <PerksCta />
+      <LandingNav seriesList={navSeries} bettingEnabled={isBettingConfigured()} />
+
+      <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 md:px-6">
+        {/* ── The hero: the claim on the left, the product on the right. ── */}
+        {/* Base track is minmax(0,1fr), not auto: an auto track takes the
+            aside's min-content (its nowrap rows) and overflows small phones. */}
+        <section className="grid grid-cols-[minmax(0,1fr)] gap-10 pt-10 md:pt-14 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="min-w-0">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+              Fifteen championships · one place
+            </p>
+            <h1 className="mt-4 max-w-[16ch] font-serif text-[44px] font-medium leading-[1.04] tracking-[-0.02em] text-text md:text-[58px]">
+              Every session, every result, in your own time zone
+            </h1>
+            <p className="mt-6 max-w-[52ch] font-serif text-[19px] leading-relaxed text-text-muted">
+              Formula 1, MotoGP, WEC, IndyCar, NASCAR, WRC and nine more —
+              schedules, standings, results and sourced explainers. Free to
+              browse, no account needed.
+            </p>
+            <div className="mt-8 flex flex-wrap items-start gap-3">
+              <Link
+                href="/app"
+                data-heatmap-id="landing:open-app"
+                className="inline-flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+              >
+                See what is on now
+              </Link>
+              <InstallApp />
+            </div>
+          </div>
+
+          {/* The product, live: what runs this weekend + last time out. */}
+          <aside className="h-fit min-w-0 border-[1.5px] border-text bg-surface-elevated p-4">
+            <div className="flex items-baseline justify-between gap-3 border-b border-text pb-1">
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                {panelLabel}
+              </span>
+              <span className="font-mono text-[10px] tabular-nums uppercase tracking-[0.12em] text-text-faint">
+                {rangeLabel(rows)}
+              </span>
+            </div>
+            {rows.length > 0 ? (
+              <ul>
+                {rows.map(r => (
+                  <li key={`${r.slug}-${r.href}`}>
+                    <Link
+                      href={r.href}
+                      className="flex min-h-11 items-baseline gap-3 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+                    >
+                      <span aria-hidden="true" className="h-3 w-[3px] shrink-0 self-center" style={{ backgroundColor: r.color }} />
+                      <span className="w-[86px] shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-text-muted">
+                        {r.seriesName}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate font-serif text-[16px] font-semibold text-text">
+                        {r.eventName}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="py-3 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
+                Nothing scheduled — the season list lives on the calendar.
+              </p>
+            )}
+            <Suspense fallback={null}>
+              <LastTimeOut candidates={lastCandidates} />
+            </Suspense>
+          </aside>
+        </section>
+
+        {/* ── Three promises, in the order a new user meets them. ── */}
+        <section className="mt-14 grid gap-8 border-t border-border pt-8 md:grid-cols-3 md:gap-10">
+          {[
+            {
+              n: '01',
+              title: 'Follow only what you care about',
+              body: 'Pick your championships once. Hide the rest and the whole site reorganises around yours.',
+            },
+            {
+              n: '02',
+              title: 'Know when it is on, locally',
+              body: 'Every session in your own time zone, with a countdown, weather and where to watch. Subscribe to any calendar.',
+            },
+            {
+              n: '03',
+              title: 'Understand what happened',
+              body: 'Race reports, lap-by-lap ledgers and 75 sourced answers — from what DRS was to how WEC points work.',
+            },
+          ].map(p => (
+            <div key={p.n} className="border-t-2 border-text pt-3">
+              <span className="font-mono text-[10px] font-semibold tabular-nums text-brand">{p.n}</span>
+              <h2 className="mt-1 font-serif text-[22px] font-semibold leading-snug text-text">{p.title}</h2>
+              <p className="mt-2 max-w-[40ch] text-sm leading-relaxed text-text-muted">{p.body}</p>
+            </div>
+          ))}
+        </section>
+
+        {/* ── The account ask, last, as a footnote. ── */}
+        <div className="mt-14 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-text pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
+          <span className="text-text-faint">An account adds</span>
+          <span className="text-text-muted">Followed series</span>
+          <span className="text-text-muted">Pre-session alerts</span>
+          <span className="text-text-muted">Prediction leagues</span>
+          <Link
+            href="/sign-up"
+            data-heatmap-id="landing:create-account"
+            className="ml-auto text-brand transition-colors duration-(--duration-fast) hover:text-text"
+          >
+            Create one, free →
+          </Link>
+        </div>
       </main>
-      <LandingFooter seriesList={seriesList} />
+
+      <LandingFooter seriesList={all.map(s => s.meta)} />
     </>
   );
 }
