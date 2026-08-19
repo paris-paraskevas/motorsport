@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.295.0 — 2026-08-19
+
+### Changed
+- **The landing shows the product, not a pitch** (design handoff §4.10, panel 10a — reimagining job ⑥). `app/(marketing)/page.tsx` rebuilt: oxblood eyebrow ("Fifteen championships · one place"), the serif claim ("Every session, every result, in your own time zone"), a corrected roll-call ("…and **nine** more" — the mock's "ten" miscounted 15 series), solid-ink **See what is on now** → `/app` and a new **Install as an app** button (`components/landing/InstallApp.tsx` — captures `beforeinstallprompt` on Chromium; elsewhere a tap reveals the browser's own install path instead of doing nothing). The hero's right panel is **live product**: *This weekend* rows derived from the same ICS grouping the calendar uses (falls back to *Next on track* on quiet weeks) and *Last time out* — the most recent finished round with a real podium across the covered series, winner + margin + date, streaming behind Suspense. Three numbered promises and the account ask as a footnote ("An account adds … Create one, free →").
+- **The landing header becomes the app's**: serif wordmark + the same `NavPanel` browse-and-search field the shell renders + the signed-state link. The ticker (with its per-request weather/news fan-out), carousel hero, marquee, stats band, feature blocks, prediction teaser, disciplines grid and perks CTA are all gone from the page — the landing now makes zero news/weather calls in the shell.
+- Documented deviations from the mock: no mobile bottom bar on the landing (it is Clerk-bound and the marketing layout is deliberately Clerk-and-consent-free) and the footer stays (the legal links live there). Orphaned by this rebuild, pending the deletion-approval sweep: `TickerBar`, `Hero`, `MarqueeEvent`, `SeriesMarquee`, `StatsBand`, `FeatureBlocks`, `PredictionGame`, `DisciplinesGrid`, `PerksCta`, `LandingMenu`, `BigCountdown`, `clean-title` (plus `WeekendHero` from 0.294.0).
+
 ## 0.294.0 — 2026-08-19
 
 ### Changed

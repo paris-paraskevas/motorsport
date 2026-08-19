@@ -1,60 +1,46 @@
 import Link from 'next/link';
-import { LandingMenu } from './LandingMenu';
+import { NavPanel } from '@/components/NavPanel';
+import type { NavSeriesMeta } from '@/lib/types';
 import { SignedInOnly, SignedOutOnly } from './LandingAuth';
 
-const ANCHORS = [
-  { href: '#inside', label: "What's inside" },
-  { href: '#series', label: 'Series' },
-  { href: '#disciplines', label: 'Disciplines' },
-];
-
-export function LandingNav() {
+// Panel 10a header: the serif wordmark, the one menu-and-search field (the
+// same NavPanel the app shell renders), and the account state — nothing else.
+// The anchor row, the Open-app pill and the burger menu died with the
+// carousel landing.
+export function LandingNav({
+  seriesList,
+  bettingEnabled,
+}: {
+  seriesList: NavSeriesMeta[];
+  bettingEnabled: boolean;
+}) {
   return (
-    <header className="sticky top-9 z-40 border-b border-border bg-bg/85 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl items-center gap-6 px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-xl">
+      <div className="mx-auto flex h-[50px] w-full max-w-[1200px] items-center gap-4 px-4 md:px-6">
         <Link
           href="/"
-          className="font-display text-lg font-extrabold uppercase tracking-wide text-text"
+          className="shrink-0 font-serif text-[19px] font-semibold tracking-tight text-text"
         >
-          Paddock<span className="text-brand">•</span>Tracker
+          Paddock Tracker
         </Link>
-
-        <nav className="hidden items-center gap-6 md:flex" aria-label="Landing sections">
-          {ANCHORS.map(a => (
-            <a
-              key={a.href}
-              href={a.href}
-              className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-            >
-              {a.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="ml-auto flex items-center gap-4">
+        <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} />
+        <div className="ml-auto flex shrink-0 items-center gap-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]">
           <SignedOutOnly>
             <Link
               href="/sign-in"
-              className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text sm:block"
+              className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
             >
               Sign in
             </Link>
           </SignedOutOnly>
           <SignedInOnly>
             <Link
-              href="/settings"
-              className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text sm:block"
+              href="/app"
+              className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
             >
-              Account
+              Open app →
             </Link>
           </SignedInOnly>
-          <Link
-            href="/app"
-            className="rounded-full bg-brand-fill px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-black transition-colors duration-(--duration-fast) hover:bg-brand-deep"
-          >
-            Open app&ensp;→
-          </Link>
-          <LandingMenu />
         </div>
       </div>
     </header>
