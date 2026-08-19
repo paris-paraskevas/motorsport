@@ -28,7 +28,7 @@ export function AccountIdentity() {
         <SignInButton mode="modal">
           <button
             type="button"
-            className="inline-flex items-center gap-2 text-sm font-bold text-black bg-brand-fill hover:bg-brand-deep px-4 py-2 transition-colors duration-(--duration-fast)"
+            className="inline-flex items-center gap-2 bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >
             <LogIn size={14} />
             Sign in

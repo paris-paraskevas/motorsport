@@ -54,7 +54,7 @@ export default async function AddFriendPage({ params }: { params: Promise<{ id: 
           <b>{ownerName}</b> wants to be friends on Paddock — friend leagues, win-rate bragging rights, no cashout.
         </p>
         <div className="flex flex-col gap-2">
-          <Link href={`/sign-up?redirect_url=${back}`} className="rounded bg-brand-fill px-4 py-2 text-center font-semibold text-bg">
+          <Link href={`/sign-up?redirect_url=${back}`} className="bg-text px-4 py-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
             Create an account &amp; add
           </Link>
           <Link

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.302.0 — 2026-08-19
+
+### Changed
+- **The amber CTAs are gone — every action button speaks Paper now** (round-2 ② + ⑩ folded in; operator flagged the bets sign-ins, /write-for-us and the Account sign-in as "old paddock colours"). Full `bg-brand-fill` sweep: **41 button/pill class strings across 27 files** converted to the ink recipe (`bg-text text-bg`, mono uppercase, square corners, `hover:bg-text-muted`) — the five bet-card CTAs, the social sign-in/sign-up pitches, the league/friends panels and flows, the studio composer/editor/actions, thread composer + moderation, the notification bell + both notification wizards, /write-for-us (both states), the Account sign-in, the marketing error page, admin author-request actions and the feedback board. **The "mechanic" (assistant launcher) is job ⑩ done**: the floating amber circle becomes an ink square with the 1.5px border, its send button inked too. Dispositioned as NOT CTAs and left: page-title accent bars, the changelog current-version markers, the dyslexic-toggle state fill, the live chip, the contribute icon tint, and the orphaned landing components (pending deletion). The team-radio progress fill swaps amber for the oxblood accent.
+
 ## 0.301.0 — 2026-08-19
 
 ### Fixed

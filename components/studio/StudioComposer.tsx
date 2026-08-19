@@ -182,7 +182,7 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded bg-brand-fill px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="w-full bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
         >
           {busy ? 'Saving…' : 'Save draft'}
         </button>

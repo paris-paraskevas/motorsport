@@ -40,7 +40,7 @@ export interface StudioEditorPost {
 const FIELD =
   'w-full rounded border border-border bg-bg px-3 py-2 text-sm text-text placeholder:text-text-faint';
 const BTN_PRIMARY =
-  'w-full rounded bg-brand-fill px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90 disabled:opacity-40';
+  'w-full bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
 const BTN_QUIET =
   'w-full rounded border border-border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
 
@@ -362,7 +362,7 @@ export function StudioEditor({
                   <button
                     type="button"
                     onClick={applyHeadings}
-                    className="flex-1 rounded bg-brand-fill px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+                    className="flex-1 bg-text px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
                   >
                     Apply
                   </button>

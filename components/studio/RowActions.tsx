@@ -18,7 +18,7 @@ import {
 // fresh render moves the row between sections.
 
 const BTN_PRIMARY =
-  'rounded bg-brand-fill px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90 disabled:opacity-40';
+  'bg-text px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40';
 const BTN_QUIET =
   'rounded border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text disabled:opacity-40';
 const FIELD_DT = 'rounded border border-border bg-bg px-2 py-1 font-mono text-xs text-text';
