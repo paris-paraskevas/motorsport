@@ -69,17 +69,12 @@ export function CalendarToolbar({
           >
             <ChevronRight size={16} />
           </button>
-          <button
-            type="button"
-            onClick={onToday}
-            className="border-l border-border px-3 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors hover:bg-surface hover:text-text"
-          >
-            Today
-          </button>
         </div>
       )}
 
-      <div className="mt-2 flex">
+      {/* Today sits with the view switcher (round-2 ⑥, operator's arrow) —
+          it left the nav bar's right corner. */}
+      <div className="mt-2 flex items-center">
         {VIEWS.map(v => (
           <button
             key={v}
@@ -93,6 +88,13 @@ export function CalendarToolbar({
             {v}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={onToday}
+          className="ml-3 border border-border-strong px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors hover:border-text hover:text-text"
+        >
+          Today
+        </button>
       </div>
     </div>
   );

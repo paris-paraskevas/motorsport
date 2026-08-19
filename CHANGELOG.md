@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.306.0 — 2026-08-19
+
+### Changed
+- **The month view fits the screen** (round-2 ⑥ — operator: "my screen is massive yet the calendar still doesnt fit"). Day cells cap at **three lines + "+N more"** (which opens that day's view); the §4.2 rule holds under the cap — sessions that decide something always survive it, practice runs go behind the count. Cell min-heights drop (132→100 md, 84→72 base), labels clamp to one line, the page masthead compacts to the serif register (the display-caps "CALENDAR." + bar was both off-language and 40px of the problem). **Today moves from the nav bar's right corner to sit beside the Month/Week/Day/Season switcher** (the operator's arrow). Net on a 1200×800 viewport: all five week rows visible at once.
+
 ## 0.305.0 — 2026-08-19
 
 ### Changed
