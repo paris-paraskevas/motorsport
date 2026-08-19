@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.293.0 — 2026-08-19
+
+**Session results now read like a proper timing sheet.** Position, car number, driver, team, time, gap and points in real columns, the winner's row lifted off the page, and the top six leading with the full field one tap away — retirements listed at the foot with their cause. Endurance races get class-by-class tables with the crew named on every car, and a filter to view one class at a time. F1 weekends without a sprint now say so.
+
 ## 0.292.0 — 2026-08-19
 
 **Getting lost looks better now.** The "page not found" screen matches the site's new paper-and-ink look, and points you straight back to what's on now, the calendar, or the search field.
