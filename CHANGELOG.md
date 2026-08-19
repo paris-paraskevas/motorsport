@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.309.0 — 2026-08-19
+
+### Changed
+- **Threads joins Paper — and the round-2 queue completes** (job ⑨, the last of the operator's 19-screenshot batch). `/social/threads`: serif masthead + standfirst replace the display-caps register, section heads become mono rules, thread rows get serif titles with mono bylines and row hovers. `/threads/[id]`: serif title, mono byline band, serif reading body at 68ch. Dev visual was blocked by the local-DB dependency (`listThreads` has no fail-soft and local Supabase is down — pre-existing; the restyle is markup-only), so the deploy sentry verifies the SSR markers against the prod DB.
+- Noted for the queue (not in the operator's batch): the app-level error boundary ("Something broke", gradient card) is still pre-Paper — logged in IDEAS.
+
 ## 0.308.0 — 2026-08-19
 
 ### Changed

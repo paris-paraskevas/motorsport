@@ -1398,6 +1398,8 @@ Operator opened with the Search Console report (8 screenshots) + the CLI handoff
 
 Active: _(no [+Nm] prefixes — operator afk from ~job ④ onward)_
 
+**Round 2 (evening — operator's 19 annotated screenshots, "start now on these tasks"):** all ten jobs shipped 0.301.0–0.309.0, one PR each, sentry-verified: ① `/contact` 404 fixed (form extracted from the modal, real page) · ② amber CTA sweep, 41 strings/27 files (⑩ mechanic bubble folded in) · ③ settings trio Paper (chip integrated) · ④ Series door + hover-anchored panel · ⑤ home two-up · ⑥ calendar fits one screen + Today by the switcher · ⑦ preview v2 (big map in main, wire on the page) · ⑧ Calendar rail → `/calendar?s=`, learn-cell affordances (routes already existed — probed) · ⑨ Threads Paper (dev visual blocked by local DB; prod sentry). New in IDEAS: app error boundary pre-Paper + `listThreads` fail-soft.
+
 ---
 
 ### Tue 2026-08-18 (session 28 — the Paper reimagining begins)

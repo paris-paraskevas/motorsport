@@ -17,6 +17,8 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ## Inbox (2026-08-19 — session 29)
 
+- **App error boundary is pre-Paper** — "Something broke" gradient card (`app/(app)/error.tsx`?) surfaced during the threads dev check; restyle to the Paper register (the marketing error page's button was inked in 0.302.0 but the app card + its layout weren't). Also: `lib/threads.ts` `listThreads` has no fail-soft — a DB hiccup 500s the whole threads page instead of degrading.
+
 - **Blog `[[classification …]]` embed** (panel #19's "embedded live classification", deferred from 0.298.0): `lib/blog-embeds` supports `chart`/`standings` only; a classification embed needs session picking (which race of a round), multi-class handling and a caching stance on the force-dynamic post route. Design first, then wire into `components/blog/embeds/BlogEmbed.tsx`.
 - **Landing-orphan deletion sweep awaiting approval**: TickerBar, Hero, MarqueeEvent, SeriesMarquee, StatsBand, FeatureBlocks, PredictionGame, DisciplinesGrid, PerksCta, LandingMenu, BigCountdown, clean-title (0.295.0) + WeekendHero (0.294.0) — zero imports each; per the deletion rule, one approval PR.
 - **GSC follow-through**: with 0.294.0–0.296.0 every flagged route true-404s on prod — click Validate fix on "Soft 404" and re-validate "Excluded by noindex" in Search Console; the 4xx/5xx groups clear on their own.
