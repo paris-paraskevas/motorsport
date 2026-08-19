@@ -10,7 +10,7 @@ import { FollowedChips, TimezoneRow } from '@/components/FollowedChips';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { AccountStats } from '@/components/AccountStats';
 import { AccountStaffLinks } from '@/components/AccountStaffLinks';
-import { PAGE_READ } from '@/lib/site';
+import { PAGE_WIDE } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,12 +28,16 @@ export default async function AccountPage() {
   const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color }) => ({ slug, name, color }));
 
   return (
-    <div className={PAGE_READ}>
-      <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
-        <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text">
-          Account<span className="text-brand">.</span>
+    <div className={`${PAGE_WIDE} mx-auto max-w-[880px]`}>
+      {/* Paper masthead (round-2 ③): the display-caps register and its accent
+          bar were the pre-reimagining language. */}
+      <header className="mb-6 border-b border-border pb-5">
+        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+          Account
         </h1>
+        <p className="mt-2 font-serif text-[16px] leading-snug text-text-muted">
+          What you follow, how the site pings you, and your data.
+        </p>
       </header>
 
       <AccountIdentity />

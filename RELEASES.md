@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.303.0 — 2026-08-19
+
+**Your account pages match the rest of the site now.** Account, Championships and Notifications get the paper-and-ink treatment, and choosing your favourite series reads as one natural sentence instead of a floating button.
+
 ## 0.302.0 — 2026-08-19
 
 **Every button now matches the paper-and-ink look.** The old yellow buttons — signing in to predict, applying to write, enabling notifications, the floating helper bubble — all move to the site's ink style. Same actions, one visual language.

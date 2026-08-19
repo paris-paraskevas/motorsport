@@ -19,7 +19,7 @@ export function AccountIdentity() {
     return (
       <div className="border-y border-border py-5 md:py-6 mb-6 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-text text-base font-semibold">You&apos;re browsing as a guest</h2>
+          <h2 className="font-serif text-[19px] font-semibold text-text">You&apos;re browsing as a guest</h2>
           <p className="text-text-faint text-xs mt-1 leading-relaxed">
             Following championships, customising your home and notifications
             are free account features — sign in to unlock them.
@@ -43,7 +43,7 @@ export function AccountIdentity() {
     <div className="border-y border-border py-5 md:py-6 mb-6 flex items-center gap-4">
       <UserButton appearance={{ elements: { avatarBox: 'w-10 h-10' } }} />
       <div className="min-w-0">
-        <h2 className="text-text text-base font-semibold truncate">
+        <h2 className="truncate font-serif text-[19px] font-semibold text-text">
           {user.fullName || user.username || 'Signed in'}
         </h2>
         {email && (
