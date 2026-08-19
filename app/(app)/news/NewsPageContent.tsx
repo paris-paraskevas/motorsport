@@ -301,7 +301,7 @@ export function NewsPageContent({
 
           <div className="flex flex-wrap items-baseline justify-between gap-3 pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
             <span>
-              Other people&apos;s reporting, credited and linked out — aggregated from{' '}
+              Ten per series, deduped across cross-posts, newest first — credited and linked out, aggregated from{' '}
               <a
                 href="https://www.motorsport.com/"
                 target="_blank"

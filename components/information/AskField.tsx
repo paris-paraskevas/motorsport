@@ -18,7 +18,7 @@ export function AskField({ entries }: { entries: Array<{ q: string; href: string
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Ask a question — try “how a MotoGP race weekend works”"
+        placeholder="Ask a question — try “what is DRS” or “how do WEC points work”"
         aria-label="Search the answers"
         className="h-11 w-full border-[1.5px] border-text bg-surface-elevated px-3 font-mono text-[12px] text-text outline-none placeholder:text-text-muted"
       />

@@ -247,6 +247,10 @@ export default async function PostPage({
     : null;
   const recent = await loadRecentPosts(slug);
 
+  // Panel #19 eyebrow: series · date · read time. ~220 wpm on the raw body
+  // (shortcode lines are noise at this precision).
+  const readMins = Math.max(1, Math.round((db?.body ?? post.source ?? '').split(/\s+/).length / 220));
+
   return (
     <div className="max-w-2xl lg:max-w-6xl mx-auto p-4 md:p-6 lg:p-8 pb-16">
       <JsonLd
@@ -301,6 +305,18 @@ export default async function PostPage({
         summary={post.frontmatter.summary}
         author={author}
         originalUrl={db?.originalUrl}
+        eyebrow={[
+          series?.name,
+          formatDate(post.frontmatter.publishedAt),
+          `${readMins} min read`,
+        ]
+          .filter(Boolean)
+          .join(' · ')}
+        seriesLink={
+          series && post.frontmatter.seriesSlug
+            ? { label: `${series.name} coverage →`, href: `/series/${post.frontmatter.seriesSlug}` }
+            : null
+        }
       />
 
       {post.frontmatter.heroImage && (
