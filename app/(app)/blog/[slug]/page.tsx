@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import { currentUser } from '@clerk/nextjs/server';
 import { listPostSlugs, loadPost, loadAllPosts } from '@/lib/posts';
 import { getPostBySlug, publishedPosts, type BlogPost } from '@/lib/blog';
@@ -10,7 +9,6 @@ import { getAuthorByClerkId } from '@/lib/authors';
 import { resolveAuthorIdentity } from '@/lib/author-identity';
 import { isAdmin, canAuthor } from '@/lib/threads';
 import { renderPostBody, type RenderedBody } from '@/lib/blog-embeds';
-import { mdxComponents } from '@/components/mdx/mdx-components';
 import { DraftPreview } from '@/components/blog/DraftPreview';
 import { PostArticle } from '@/components/blog/PostArticle';
 import { POST_ARTICLE_CLASS, PostHeader, PostHero } from '@/components/blog/PostHeader';
@@ -19,7 +17,7 @@ import { articleLd, breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL } from '@/lib/site';
 import type { Post } from '@/lib/types';
 import { loadSeriesMeta } from '@/lib/series';
-import { tocFromMarkdown, type TocItem } from '@/lib/toc';
+import type { TocItem } from '@/lib/toc';
 import { BlogShare } from '@/components/blog/BlogShare';
 import { BlogReactions } from '@/components/blog/BlogReactions';
 
@@ -215,8 +213,9 @@ export default async function PostPage({
       notFound(); // rejected / unpublished-but-not-yours → hidden; slug is taken
     }
   } else {
-    post = await loadPost(slug); // MDX fallback
+    post = await loadPost(slug); // legacy file-post fallback (content/posts is empty, test-pinned)
     if (!post) notFound();
+    rendered = await renderPostBody(post.source ?? '');
   }
   if (!post) notFound();
 
@@ -239,11 +238,7 @@ export default async function PostPage({
   // Table of contents for the sidebar. DB posts carry rendered segments (ids
   // already injected across them, ToC accumulated in document order); MDX posts
   // derive the ToC from their markdown source (mdx-components adds matching ids).
-  const toc: TocItem[] = rendered
-    ? rendered.toc
-    : post.source
-      ? tocFromMarkdown(post.source)
-      : [];
+  const toc: TocItem[] = rendered?.toc ?? [];
 
   const series = post.frontmatter.seriesSlug
     ? await loadSeriesMeta(post.frontmatter.seriesSlug).catch(() => null)
@@ -316,11 +311,7 @@ export default async function PostPage({
       </div>
 
       <article className={POST_ARTICLE_CLASS}>
-        {rendered ? (
-          <PostArticle segments={rendered.segments} />
-        ) : (
-          <MDXRemote source={post.source} components={mdxComponents} />
-        )}
+        <PostArticle segments={rendered?.segments ?? []} />
       </article>
 
       <BlogReactions slug={slug} />

@@ -1,16 +1,7 @@
-import * as Sentry from '@sentry/nextjs';
-
-// Next.js server registration hook — loads the per-runtime Sentry init once at
-// startup (stable since Next 14.0.4; we're on 16).
-export async function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('./sentry.server.config');
-  }
-  if (process.env.NEXT_RUNTIME === 'edge') {
-    await import('./sentry.edge.config');
-  }
-}
-
-// Captures unhandled server-side request errors (App Router). Requires
-// @sentry/nextjs >= 8.28; we're on v10.
-export const onRequestError = Sentry.captureRequestError;
+// Next.js server registration hook. Server-side Sentry was removed in the
+// 0.288.0 worker-size diet (operator-approved): its runtime was ~1.4 MB of a
+// worker bundle that sat over Cloudflare's hard 10 MiB (gzip) script limit and
+// blocked every deploy since 0.275.0. Browser-side Sentry
+// (instrumentation-client.ts) still reports client errors. Reinstate server
+// capture only alongside a bundle-size budget check.
+export async function register() {}

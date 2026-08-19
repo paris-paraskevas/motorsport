@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.288.0 — 2026-08-19
+
+**Deploys are flowing again.** A stack of the last two days' improvements had been held back by an infrastructure size limit; we traced it, removed two pieces of dead weight, and everything ships from here. Nothing you can see or use has changed.
+
 ## 0.287.0 — 2026-08-19
 
 **Paper is now the site's look for everyone.** The warm newsprint theme becomes the default (your saved theme choice still wins), every page now uses the full width of your screen, and Calendar, Learn and Account sit one click away in the header.

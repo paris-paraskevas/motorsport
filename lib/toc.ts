@@ -1,6 +1,6 @@
 // Table-of-contents helpers for blog posts. Shared so the heading slugs stay
 // identical across the three consumers: the DB path (inject ids into the
-// already-rendered HTML), the MDX path (heading components in mdx-components),
+// already-rendered HTML), the legacy file-post path (same renderer since 0.288.0),
 // and the ToC list rendered in the sidebar.
 
 export interface TocItem {
@@ -66,7 +66,7 @@ export function injectHeadingIds(
 }
 
 /** MDX path: pull the ToC straight from the raw markdown source (## / ### lines,
- *  skipping fenced code). Slugs match mdx-components' heading ids and the DB
+ *  skipping fenced code). Slugs match the rendered headings' ids and the DB
  *  path, so the sidebar links resolve to the rendered headings. */
 export function tocFromMarkdown(md: string): TocItem[] {
   const toc: TocItem[] = [];
