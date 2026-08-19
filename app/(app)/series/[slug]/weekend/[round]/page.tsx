@@ -22,7 +22,7 @@ import { WeekendSchedule } from '@/components/weekend/WeekendSchedule';
 import { WeekendTabs } from '@/components/weekend/WeekendTabs';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { BETTABLE_SERIES } from '@/lib/betting/constants';
-import { NEWS_SLUG_MAP } from '@/lib/news';
+import { NEWS_SLUG_MAP, fetchNews } from '@/lib/news';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -141,6 +141,57 @@ async function GoingIn({ slug, season }: { slug: string; season: number }) {
         Full table →
       </Link>
     </div>
+  );
+}
+
+// Round-2 ⑦: the preview surfaces the series wire on the page — five rows in
+// the main column ("bring news here"), with the full feed one link away. The
+// News tab keeps the complete list. Network fetch, so it streams.
+async function PreviewNews({ slug }: { slug: string }) {
+  const items = (await fetchNews(slug).catch(() => [])).slice(0, 5);
+  if (items.length === 0) return null;
+  return (
+    <section aria-label="News" className="mt-8">
+      <div className="mb-1 flex items-baseline justify-between border-b border-text pb-1">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          The wire
+        </span>
+        <Link
+          href={`/series/${slug}/news`}
+          className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand hover:underline"
+        >
+          All news →
+        </Link>
+      </div>
+      <ul>
+        {items.map(item => {
+          let host = 'source';
+          try {
+            host = new URL(item.link).hostname.replace(/^www\./, '');
+          } catch {
+            /* keep fallback */
+          }
+          return (
+            <li key={item.link}>
+              <a
+                href={item.link}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="flex min-h-10 flex-wrap items-baseline gap-x-3 gap-y-0.5 border-b border-border py-2 transition-colors duration-(--duration-fast) hover:bg-surface"
+              >
+                <span className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-snug text-text">
+                  {item.title}
+                </span>
+                <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                  {host} ·{' '}
+                  {item.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
@@ -746,10 +797,39 @@ export default async function WeekendPage({
               <WeekendTabs
                 scheduleSlot={
                   <>
-                    <WeekendSchedule weekend={weekend} color={color} sessionLinkBase={sessionLinkBase} />
+                    {/* Round-2 ⑦: the schedule and a LARGE circuit map share
+                        the main width on big screens (the rail's 240px map
+                        "seems really small" — operator). Below xl the map
+                        stays in the rail. */}
+                    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(300px,400px)]">
+                      <div className="min-w-0">
+                        <WeekendSchedule weekend={weekend} color={color} sessionLinkBase={sessionLinkBase} />
+                      </div>
+                      {circuitLayout && (
+                        <figure className="hidden xl:block">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={circuitLayout.svg}
+                            alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`}
+                            className="h-auto w-full"
+                          />
+                          <figcaption className="mt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                            {circuitMatch?.circuit.name ?? 'Circuit map'} ·{' '}
+                            <a href={circuitLayout.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-text-muted">
+                              {circuitLayout.source} ({circuitLayout.license})
+                            </a>
+                          </figcaption>
+                        </figure>
+                      )}
+                    </div>
                     <Suspense fallback={<div className="h-10 animate-pulse bg-surface/40" />}>
                       <WeekendWeatherStrip weekend={weekend} />
                     </Suspense>
+                    {NEWS_SLUG_MAP[slug] != null && (
+                      <Suspense fallback={null}>
+                        <PreviewNews slug={slug} />
+                      </Suspense>
+                    )}
                   </>
                 }
                 slug={slug}
@@ -824,8 +904,10 @@ export default async function WeekendPage({
                   <div className="border-b border-text pb-1">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">The venue</span>
                   </div>
+                  {/* Below xl only — on big screens the map renders LARGE in
+                      the main column (round-2 ⑦). */}
                   {circuitLayout && (
-                    <div className="mt-2">
+                    <div className="mt-2 xl:hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={circuitLayout.svg} alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`} className="h-auto w-full max-w-[240px]" />
                       <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-text-faint">
