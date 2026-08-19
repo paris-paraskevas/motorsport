@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.294.0 — 2026-08-19
+
+**Race weekends, finished and upcoming, now read as one publication.** A finished weekend leads with the points-scoring positions and one tap opens the full field, retirements included; the side rail adds our own writing about that championship. An upcoming weekend counts down to its first session, adds the whole series to your calendar in one tap, and shows the championship top three going in. Dead links under every series now answer with a genuine "not found".
+
 ## 0.293.0 — 2026-08-19
 
 **Session results now read like a proper timing sheet.** Position, car number, driver, team, time, gap and points in real columns, the winner's row lifted off the page, and the top six leading with the full field one tap away — retirements listed at the foot with their cause. Endurance races get class-by-class tables with the crew named on every car, and a filter to view one class at a time. F1 weekends without a sprint now say so.

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { loadSeries } from '@/lib/series';
 import { groupByWeekend } from '@/lib/group';
@@ -55,6 +56,84 @@ function fmtRange(w: Weekend): string {
   return w.dateRangeLabel;
 }
 
+// The championship table needs the standings feed — a network fetch — so it
+// streams behind Suspense while the locally-derived shell paints at once.
+async function ChampionshipBlock({ slug, season, complete }: { slug: string; season: number; complete: number }) {
+  const brief = isEligibleStandingsSeries(slug)
+    ? await fetchStandingsBrief(slug, season).catch(() => null)
+    : null;
+  const leaderPoints = brief?.top[0]?.points ?? 0;
+  if (!brief || brief.top.length === 0) {
+    return (
+      <>
+        <SectionRule label="Standings" />
+        <p className="text-sm text-text-muted">
+          The championship table lives on its own page for this series.
+        </p>
+        <div className="mt-2">
+          <Link
+            href={`/series/${slug}/standings`}
+            className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+          >
+            Standings →
+          </Link>
+        </div>
+      </>
+    );
+  }
+  return (
+    <>
+      <SectionRule label="Drivers' championship" right={`after ${complete} rounds`} />
+      <ul>
+        {brief.top.map(row => {
+          const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
+          return (
+            <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
+              <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
+                {row.position}
+              </span>
+              <span className="w-32 shrink-0 truncate text-sm text-text sm:w-40">{row.name}</span>
+              <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
+                <span
+                  className={`block h-full ${row.position === 1 ? 'bg-text' : 'bg-border-strong'}`}
+                  style={{ width: `${width}%` }}
+                />
+              </span>
+              <span className="w-10 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-text">
+                {row.points}
+              </span>
+              <span className="hidden w-10 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:block">
+                {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-2">
+        <Link
+          href={`/series/${slug}/standings`}
+          className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
+        >
+          Full table →
+        </Link>
+      </div>
+    </>
+  );
+}
+
+// The last round's winner + margin, from the results feed (network) — streams
+// behind its own tiny Suspense; renders nothing for feeds with no flat podium.
+async function LastPodiumLine({ slug, round }: { slug: string; round: number }) {
+  const podium = homeResultsSupported(slug) ? await fetchLatestPodium(slug).catch(() => null) : null;
+  if (!podium || podium.round !== round || !podium.podium[0]) return null;
+  return (
+    <p className="mt-0.5 font-mono text-[11px] tabular-nums text-text-muted">
+      {podium.podium[0].name.split(' ').slice(-1)[0]}
+      {podium.podium[1]?.time?.startsWith('+') ? ` · ${podium.podium[1].time}` : ''}
+    </p>
+  );
+}
+
 export default async function SeriesPage({
   params,
 }: {
@@ -85,12 +164,11 @@ export default async function SeriesPage({
     ? [...nextW.sessions].filter(s => !s.dateOnly && s.start > now).sort((a, b) => a.start.getTime() - b.start.getTime())[0]
     : undefined;
 
-  // What just happened: the covered series carry a real podium; the rest
-  // link out to their results tab (4b's "no unambiguous flat podium" rule).
-  const podium = homeResultsSupported(slug) ? await fetchLatestPodium(slug) : null;
-  const brief =
-    !meta.singleEvent && isEligibleStandingsSeries(slug) ? await fetchStandingsBrief(slug, meta.season) : null;
-  const leaderPoints = brief?.top[0]?.points ?? 0;
+  // The network fetches (standings brief, latest podium) live in Suspense
+  // islands below — this segment's loading.tsx is gone (its skeleton flushed a
+  // 200 shell that soft-404'd every dead URL under /series/[slug]; the 0.291.0
+  // fold-in), so the shell renders from local ICS data only and the islands
+  // stream in.
 
   const cancelled = series.rounds?.cancelledRounds ?? [];
   const roundMetaByRound = new Map((series.rounds?.rounds ?? []).map(r => [r.round, r]));
@@ -155,44 +233,7 @@ export default async function SeriesPage({
         {/* ── Block 1: the championship + last/next rail. ── */}
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
           <section aria-label="Championship">
-            {brief && brief.top.length > 0 ? (
-              <>
-                <SectionRule label="Drivers' championship" right={`after ${complete} rounds`} />
-                <ul>
-                  {brief.top.map(row => {
-                    const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
-                    return (
-                      <li key={row.position} className="flex items-center gap-3 border-b border-border py-1.5">
-                        <span className="w-4 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint">
-                          {row.position}
-                        </span>
-                        <span className="w-32 shrink-0 truncate text-sm text-text sm:w-40">{row.name}</span>
-                        <span aria-hidden="true" className="h-[6px] min-w-0 flex-1 bg-border">
-                          <span
-                            className={`block h-full ${row.position === 1 ? 'bg-text' : 'bg-border-strong'}`}
-                            style={{ width: `${width}%` }}
-                          />
-                        </span>
-                        <span className="w-10 shrink-0 text-right font-mono text-[12px] font-semibold tabular-nums text-text">
-                          {row.points}
-                        </span>
-                        <span className="hidden w-10 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-faint sm:block">
-                          {row.position === 1 ? '—' : `−${leaderPoints - row.points}`}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <div className="mt-2">
-                  <Link
-                    href={`/series/${slug}/standings`}
-                    className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-                  >
-                    Full table →
-                  </Link>
-                </div>
-              </>
-            ) : meta.singleEvent ? (
+            {meta.singleEvent ? (
               <>
                 <SectionRule label="The event" />
                 <p className="font-serif text-[19px] leading-snug text-text">
@@ -208,20 +249,18 @@ export default async function SeriesPage({
                 </div>
               </>
             ) : (
-              <>
-                <SectionRule label="Standings" />
-                <p className="text-sm text-text-muted">
-                  The championship table lives on its own page for this series.
-                </p>
-                <div className="mt-2">
-                  <Link
-                    href={`/series/${slug}/standings`}
-                    className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
-                  >
-                    Standings →
-                  </Link>
-                </div>
-              </>
+              <Suspense
+                fallback={
+                  <div aria-busy="true">
+                    <SectionRule label="Drivers' championship" />
+                    {[0, 1, 2, 3, 4].map(i => (
+                      <div key={i} className="h-8 animate-pulse border-b border-border bg-surface/40" />
+                    ))}
+                  </div>
+                }
+              >
+                <ChampionshipBlock slug={slug} season={meta.season} complete={complete} />
+              </Suspense>
             )}
           </section>
 
@@ -232,12 +271,9 @@ export default async function SeriesPage({
                 <p className="font-serif text-[19px] font-semibold leading-tight text-text">
                   {lastW.roundName ?? weekendLabel(lastW, lastW.round).title}
                 </p>
-                {podium && podium.round === lastW.round && podium.podium[0] && (
-                  <p className="mt-0.5 font-mono text-[11px] tabular-nums text-text-muted">
-                    {podium.podium[0].name.split(' ').slice(-1)[0]}
-                    {podium.podium[1]?.time?.startsWith('+') ? ` · ${podium.podium[1].time}` : ''}
-                  </p>
-                )}
+                <Suspense fallback={null}>
+                  <LastPodiumLine slug={slug} round={lastW.round} />
+                </Suspense>
                 <Link
                   href={`/series/${slug}/weekend/${lastW.round}`}
                   className="mt-1 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
