@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.296.0 — 2026-08-19
+
+**Driver pages now carry the season and the week.** The results table names the venue under every round, the headline adds podiums, and a new side rail shows when the driver is next on track with a live countdown, the latest stories mentioning them, and one-tap paths to their team and a head-to-head comparison.
+
 ## 0.295.0 — 2026-08-19
 
 **The front door now shows you the racing, not a brochure.** What's on this weekend and who won last time out sit right in the hero, live. One button opens the site, another installs it as an app, and the sign-up ask has moved to where it belongs: a footnote, because everything is free to browse.

@@ -4,6 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.296.0 — 2026-08-19
+
+### Changed
+- **The driver profile gains its rail** (#13 — reimagining job ⑦). Two columns: the every-round table (now with a **venue sub-line** per row — `RaceResult.circuit` threaded through `driverSeasonForm`) and the About prose on the left; on the right **Next out** (the series' next weekend + a live countdown to its first timed session, from the same local ICS grouping the series page uses), **In the news** (the existing mention-filtered wire, condensed to three), **Compare with a team-mate →** (F1) and the **Team page →** block. The stat line adds **Podiums** (top-three count, same single-derivation rule as every other figure — §4.9). One `loadSeries` call now feeds both the form and the rail (it was loaded twice before).
+- **Soft-404 fold-in, final part**: `drivers/[slug]/loading.tsx` deleted — the last skeleton that flushed 200 shells for dead URLs. The page is now guard → `<Suspense>` body (the skeleton lives on as the fallback), so unknown driver slugs return **real 404s** (dev-verified: `/drivers/not-a-real-driver` → 404, valid profiles 200). Every streamed route from the GSC 2026-08 report is now a true 404: weekend, session, series and drivers.
+
 ## 0.295.0 — 2026-08-19
 
 ### Changed

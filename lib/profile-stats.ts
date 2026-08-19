@@ -17,12 +17,15 @@ export interface DriverSeasonForm {
   bestFinish: number | null;
   /** Race starts (appearances in the results feeds, extras included). */
   starts: number;
+  /** Top-three finishes (position 1–3), extras included — same derivation as
+   *  the rounds table, so it can never disagree with it (§4.9 rule). */
+  podiums: number;
   last5: Array<{ round: number; raceName: string; position: number; points: number }>;
   /** EVERY round this season, ascending, with the running points total — the
    *  profile's body table (design handoff §4.9: "All of them"). Derived from
    *  the same results the headline stats cumulate, so the two can never
-   *  disagree. */
-  rounds: Array<{ round: number; raceName: string; position: number; points: number; runningTotal: number }>;
+   *  disagree. `circuit` carries the venue for the row's sub-line. */
+  rounds: Array<{ round: number; raceName: string; circuit: string; position: number; points: number; runningTotal: number }>;
 }
 
 export interface TeamSeasonForm {
@@ -55,7 +58,7 @@ export function driverSeasonForm(
   const pick = (r: RaceResult, fromExtras: boolean) => {
     const entry = r.results.find(e => namesMatch(e.driverName, driverName));
     return entry
-      ? { round: r.round, raceName: r.raceName, position: entry.position, points: entry.points, fromExtras }
+      ? { round: r.round, raceName: r.raceName, circuit: r.circuit, position: entry.position, points: entry.points, fromExtras }
       : null;
   };
   const all = [
@@ -87,6 +90,7 @@ export function driverSeasonForm(
     fieldSize: snap.drivers.length,
     bestFinish: classified.length > 0 ? Math.min(...classified.map(a => a.position)) : null,
     starts: all.length,
+    podiums: classified.filter(a => a.position <= 3).length,
     last5: appearances.slice(0, 5),
     rounds,
   };
