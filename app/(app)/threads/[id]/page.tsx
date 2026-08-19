@@ -45,11 +45,13 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
           {thread.status === 'pending' ? 'Pending review' : 'Rejected'}
         </span>
       )}
-      <h1 className="font-display text-2xl font-extrabold text-text md:text-3xl">{thread.title}</h1>
-      <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+      <h1 className="font-serif text-[30px] font-medium leading-[1.1] tracking-[-0.02em] text-text md:text-[38px]">
+        {thread.title}
+      </h1>
+      <div className="mt-2 border-y border-border py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
         {thread.authorName ?? `Racer ${thread.authorId.slice(-4)}`}
       </div>
-      <p className="mt-4 whitespace-pre-wrap text-[15px] leading-relaxed text-text">{thread.body}</p>
+      <p className="mt-4 max-w-[68ch] whitespace-pre-wrap font-serif text-[17px] leading-relaxed text-text">{thread.body}</p>
     </article>,
   );
 }

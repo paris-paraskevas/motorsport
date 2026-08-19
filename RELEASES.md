@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.309.0 — 2026-08-19
+
+**Threads reads like the rest of the paper now.** The community discussion pages pick up the serif-and-ink treatment — and with that, every page from this round of your feedback is done.
+
 ## 0.308.0 — 2026-08-19
 
 **Series pages point where you expect.** The Calendar tab on every championship now opens the full calendar already filtered to that series, and the learn-about tiles show they're links.

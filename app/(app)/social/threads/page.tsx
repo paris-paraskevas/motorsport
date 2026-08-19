@@ -15,14 +15,17 @@ export const metadata: Metadata = {
   description: 'Community threads — fan discussion across the grid, lightly moderated.',
 };
 
+// Paper masthead (round-2 ⑨) — the display-caps register was pre-reimagining.
 function frame(children: ReactNode) {
   return (
     <div className={PAGE_READ}>
-      <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden="true" className="w-1 shrink-0 bg-brand-fill" />
-        <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
-          Threads<span className="text-brand">.</span>
+      <header className="mb-6 border-b border-border pb-5">
+        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+          Threads
         </h1>
+        <p className="mt-2 max-w-[52ch] font-serif text-[16px] leading-snug text-text-muted">
+          Fan discussion across the grid, lightly moderated — start one or join in.
+        </p>
       </header>
       {children}
     </div>
@@ -72,7 +75,9 @@ export default async function ThreadsPage({
 
       {admin && (
         <section>
-          <h2 className="mb-2 font-display uppercase tracking-wide text-text">Pending review ({pending.length})</h2>
+          <h2 className="mb-2 border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            Pending review · {pending.length}
+          </h2>
           {pending.length === 0 ? (
             <p className="font-mono text-sm text-text-muted">Nothing waiting.</p>
           ) : (
@@ -82,16 +87,23 @@ export default async function ThreadsPage({
       )}
 
       <section>
-        <h2 className="mb-2 font-display uppercase tracking-wide text-text">Latest</h2>
+        <h2 className="mb-2 border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          Latest
+        </h2>
         {approved.length === 0 ? (
           <p className="font-mono text-sm text-text-muted">No threads yet — be the first.</p>
         ) : (
-          <ul className="divide-y divide-border border-y border-border">
+          <ul>
             {approved.map(t => (
-              <li key={t.id} className="py-3">
-                <Link href={`/threads/${t.id}`} className="group block">
-                  <span className="block font-semibold text-text transition-colors group-hover:text-brand">{t.title}</span>
-                  <span className="mt-0.5 block font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+              <li key={t.id}>
+                <Link
+                  href={`/threads/${t.id}`}
+                  className="group block border-b border-border py-3 transition-colors duration-(--duration-fast) hover:bg-surface"
+                >
+                  <span className="block font-serif text-[17px] font-semibold leading-snug text-text transition-colors duration-(--duration-fast) group-hover:text-brand">
+                    {t.title}
+                  </span>
+                  <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
                     {t.authorName ?? `Racer ${t.authorId.slice(-4)}`}
                   </span>
                 </Link>
