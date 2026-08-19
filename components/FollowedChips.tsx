@@ -27,13 +27,22 @@ export function FollowedChips({
           {followed === null ? 'everything' : picked.length}
         </span>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {followed === null ? (
-          <p className="text-sm text-text-muted">
-            Everything — all {series.length} championships. Pick favourites to focus the site.
-          </p>
-        ) : (
-          picked.map(s => (
+      {followed === null ? (
+        // Following everything: one sentence with its action inline — the
+        // dashed chip used to float mid-row, disconnected from the words it
+        // belonged to (round-2 ③, "box looks out of place").
+        <p className="text-sm leading-relaxed text-text-muted">
+          Everything — all {series.length} championships.{' '}
+          <Link
+            href="/settings/series"
+            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+          >
+            Pick favourites →
+          </Link>
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {picked.map(s => (
             <Link
               key={s.slug}
               href="/settings/series"
@@ -42,15 +51,15 @@ export function FollowedChips({
               <span aria-hidden="true" className="h-[13px] w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
               {s.name}
             </Link>
-          ))
-        )}
-        <Link
-          href="/settings/series"
-          className="inline-flex min-h-11 items-center border border-dashed border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
-        >
-          {followed === null ? 'Choose series' : '+ Add'}
-        </Link>
-      </div>
+          ))}
+          <Link
+            href="/settings/series"
+            className="inline-flex min-h-11 items-center border border-dashed border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+          >
+            + Add
+          </Link>
+        </div>
+      )}
       <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
         The calendar and the wire narrow to these · stored on this device
       </p>
