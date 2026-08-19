@@ -101,9 +101,9 @@ export function AppShell({
 
           <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} />
 
-          {/* Desktop door links (operator 2026-08-19): Calendar, Learn and
-              Account one click from the header — Home stays the wordmark, and
-              the panel remains the whole index. */}
+          {/* Desktop door links (operator 2026-08-19, revised round-2 ④):
+              Calendar, Learn and Series one click from the header — Home stays
+              the wordmark, and the panel remains the whole index. */}
           <DoorLinks />
 
           <div className="ml-auto flex shrink-0 items-center gap-3 lg:gap-4">
@@ -148,13 +148,15 @@ export function AppShell({
   );
 }
 
-// The three non-Home doors as quiet mono links, desktop only.
+// The three non-Home doors as quiet mono links, desktop only. Account left
+// the header (round-2 ④, operator: "instead of account have series here") —
+// it stays one tap away via the panel's Settings → and the avatar.
 function DoorLinks() {
   const pathname = usePathname();
   const doors = [
     { href: '/calendar', label: 'Calendar' },
     { href: '/information', label: 'Learn' },
-    { href: '/settings', label: 'Account' },
+    { href: '/series', label: 'Series' },
   ];
   return (
     <nav aria-label="Doors" className="hidden items-stretch gap-5 self-stretch lg:flex">

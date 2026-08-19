@@ -161,6 +161,23 @@ export function NavPanel({
     return () => document.removeEventListener('mousedown', onDown);
   }, [open]);
 
+  // Anchored sizing (round-2 ④): the panel hangs from the control's left edge
+  // — at min(1200px, …) it would overflow the right viewport edge, so the max
+  // width is measured from the control's live position on open + resize.
+  // Written to the element's style, not React state (no render churn).
+  useEffect(() => {
+    if (!open) return;
+    const el = rootRef.current;
+    if (!el) return;
+    const set = () => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--panel-max', `${Math.max(320, window.innerWidth - r.left - 16)}px`);
+    };
+    set();
+    window.addEventListener('resize', set);
+    return () => window.removeEventListener('resize', set);
+  }, [open]);
+
   // Escape closes; arrows walk the rendered rows so the keyboard path from the
   // field into the index is two keys, not a tab-tour of the whole header.
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -364,6 +381,11 @@ export function NavPanel({
             setOpen(o => !o);
             if (!open) inputRef.current?.focus();
           }}
+          onMouseEnter={() => {
+            // Hover opens on real pointers only (round-2 ④) — touch emulates
+            // mouseenter on tap, which would double-fire with onClick.
+            if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) setOpen(true);
+          }}
           className="relative flex h-full w-[13px] shrink-0 flex-col items-start justify-center gap-[3px]"
         >
           {open ? (
@@ -406,13 +428,14 @@ export function NavPanel({
 
       {/* The panel: full-bleed sheet on phones (the bottom bar stays visible,
           per panel 8b), a wide three-column surface on lg+ (panel 2a: the
-          entire site, one surface). On lg it is viewport-centred and fixed —
-          at min(1200px, 100vw-3rem) it cannot stay anchored to the control's
-          left edge without overflowing the right edge of the screen. */}
+          entire site, one surface). On lg it hangs from the control itself
+          (round-2 ④, operator: "have it under the burger bar") — the width
+          clamps to the measured space right of the control (--panel-max, set
+          on open) so min(1200px, …) can't overflow the viewport edge. */}
       {open && (
         <div
           id="nav-panel"
-          className="fixed inset-x-0 top-[calc(50px+env(safe-area-inset-top))] bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 overflow-y-auto border-t border-text bg-bg px-[14px] pb-6 lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:top-[calc(69px+env(safe-area-inset-top))] lg:bottom-auto lg:w-[min(1200px,calc(100vw-3rem))] lg:max-h-[calc(100vh-90px)] lg:rounded-[4px] lg:border lg:bg-surface-elevated lg:px-5 lg:pb-4"
+          className="fixed inset-x-0 top-[calc(50px+env(safe-area-inset-top))] bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 overflow-y-auto border-t border-text bg-bg px-[14px] pb-6 lg:absolute lg:inset-x-auto lg:left-0 lg:top-[calc(100%+10px)] lg:bottom-auto lg:w-[min(1200px,var(--panel-max,calc(100vw-3rem)))] lg:max-h-[calc(100vh-90px)] lg:rounded-[4px] lg:border lg:bg-surface-elevated lg:px-5 lg:pb-4"
         >
           {nothing ? (
             <div className="px-1 py-10 text-center">
