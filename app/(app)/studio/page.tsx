@@ -133,7 +133,7 @@ export default async function StudioPage() {
         </div>
         <Link
           href="/studio/new"
-          className="rounded bg-brand-fill px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+          className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
         >
           + New post
         </Link>

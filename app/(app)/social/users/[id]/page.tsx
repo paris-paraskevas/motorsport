@@ -71,7 +71,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
       {userId == null ? (
         <div className="font-mono text-sm text-text-muted">
           <p className="mb-3">Sign in to add {name} as a friend.</p>
-          <Link href="/sign-in" className="inline-block rounded bg-brand-fill px-4 py-2 font-semibold text-bg">
+          <Link href="/sign-in" className="inline-block bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted">
             Sign in
           </Link>
         </div>

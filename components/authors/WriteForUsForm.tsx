@@ -43,7 +43,7 @@ export function WriteForUsForm() {
         <SignInButton mode="modal">
           <button
             type="button"
-            className="mt-3 rounded bg-brand-fill px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90"
+            className="mt-3 bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >
             Sign in to apply
           </button>
@@ -137,7 +137,7 @@ export function WriteForUsForm() {
       <button
         type="submit"
         disabled={busy}
-        className="rounded bg-brand-fill px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90 disabled:opacity-40"
+        className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
       >
         {busy ? 'Sending…' : 'Send application'}
       </button>

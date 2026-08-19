@@ -39,7 +39,7 @@ export function AuthorRequestActions({ id }: { id: string }) {
         type="button"
         disabled={busy}
         onClick={() => decide('approve')}
-        className="rounded bg-brand-fill px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-opacity hover:opacity-90 disabled:opacity-40"
+        className="bg-text px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
       >
         Approve as contributor
       </button>

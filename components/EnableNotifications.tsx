@@ -163,7 +163,7 @@ export function EnableNotifications() {
                 type="button"
                 onClick={enable}
                 disabled={status === 'working'}
-                className="inline-flex items-center gap-2 text-sm font-medium font-bold text-black bg-brand-fill hover:bg-brand-deep disabled:opacity-50 px-4 py-2 transition-colors"
+                className="inline-flex items-center gap-2 text-sm font-medium font-bold text-bg bg-text hover:bg-text-muted disabled:opacity-50 px-4 py-2 transition-colors"
               >
                 <Bell size={14} />
                 {status === 'working' ? 'Enabling…' : 'Enable notifications'}

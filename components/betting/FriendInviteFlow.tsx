@@ -43,7 +43,7 @@ export function FriendInviteFlow({ ownerId, ownerName }: { ownerId: string; owne
           type="button"
           onClick={() => respond(true)}
           disabled={busy}
-          className="rounded bg-brand-fill px-4 py-2 font-semibold text-bg disabled:opacity-40"
+          className="bg-text px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted disabled:opacity-40"
         >
           Accept
         </button>
