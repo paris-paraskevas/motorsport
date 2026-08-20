@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.321.2 — 2026-08-20
+
+**The landing page stops waiting on slow feeds.** The "Last time out" result in the landing hero now works to a strict time budget, and a results source that cannot answer is remembered briefly instead of being retried on every visit. The page arrives fast even when a feed is cold or down, and the result itself is refreshed in the background more reliably than before.
+
 ## 0.321.1 — 2026-08-20
 
 **Internal housekeeping.** Session records and planning notes brought up to date; nothing user-facing changed.

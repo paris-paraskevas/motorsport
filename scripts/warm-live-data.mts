@@ -38,6 +38,7 @@ import { fetchAllGtWorldSeasonRaces } from '../lib/results/gt-world';
 import { fetchImsaSeasonResults } from '../lib/results/imsa';
 import { fetchWecSeasonResults } from '../lib/results/wec';
 import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
+import { HOME_RESULTS_SLUGS, fetchLatestPodium } from '../lib/home-results';
 
 if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
   console.error('KV_REST_API_URL / KV_REST_API_TOKEN missing — nothing to warm.');
@@ -139,11 +140,34 @@ for (const surface of EXTRA_SURFACES) {
   }
 }
 
+// The landing's Last-time-out block (plus the /app and series-page podium
+// cards) read `paddock:home:podium:v2:*` from KV. The in-worker warm-results
+// cron can only rebuild those entries from already-seeded snapshots; writing
+// them here from a clean IP makes the block reliably present, and pairs with
+// the 0.321.2 negative cache (an empty outcome is sentinel-cached on the
+// Worker so a cold series can never stall renders). `force` bypasses both
+// caches so this always refreshes. Sequential — same politeness rule as
+// EXTRA_SURFACES.
+console.error('=== home podiums (landing "Last time out") ===');
+let podiumOk = 0;
+for (const slug of HOME_RESULTS_SLUGS) {
+  const started = Date.now();
+  try {
+    const race = await fetchLatestPodium(slug, { force: true });
+    if (race) podiumOk++;
+    console.error(
+      `  ${slug.padEnd(18)} ${(race ? 'OK' : 'EMPTY').padEnd(8)} ${race ? race.raceName : ''}  ${Date.now() - started}ms`,
+    );
+  } catch (err) {
+    console.error(`  ${slug.padEnd(18)} ${'ERROR'.padEnd(8)} ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
 const sOk = standings.filter(r => r.status === 'OK' || r.status === 'LOW').length;
 const rOk = results.filter(r => r.status === 'OK' || r.status === 'LOW').length;
 console.error(
   `\nfetched: ${sOk}/${standings.length} standings + ${rOk}/${results.length} results` +
-    ` + ${extraOk}/${EXTRA_SURFACES.length} extra surfaces.`,
+    ` + ${extraOk}/${EXTRA_SURFACES.length} extra surfaces + ${podiumOk}/${HOME_RESULTS_SLUGS.length} home podiums.`,
 );
 
 // PROVE the writes landed. Counting successful FETCHES was the bug: every

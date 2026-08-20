@@ -1,6 +1,24 @@
-import { describe, it, expect } from 'vitest';
-import { latestRaceFromFlat } from './home-results';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+  latestRaceFromFlat,
+  fetchLatestPodium,
+  fetchFirstPodiumWithin,
+  type LatestRace,
+} from './home-results';
+import { readResultsCache, writeResultsCache } from './results-cache';
+import { fetchF1SeasonResults } from './results/f1';
 import type { RaceResult, RaceResultEntry } from './types';
+
+// The negative-cache tests below drive fetchLatestPodium('f1') without any
+// network or KV: the cache layer and the one source they exercise are mocked.
+vi.mock('./results-cache', () => ({
+  readResultsCache: vi.fn(async () => null),
+  writeResultsCache: vi.fn(async () => undefined),
+}));
+vi.mock('./series-content', () => ({
+  loadResultsOverrides: vi.fn(async () => null),
+}));
+vi.mock('./results/f1', () => ({ fetchF1SeasonResults: vi.fn(async () => []) }));
 
 const NOW = Date.UTC(2026, 5, 19); // 2026-06-19
 
@@ -82,5 +100,101 @@ describe('latestRaceFromFlat', () => {
       NOW,
     );
     expect(result?.podium).toHaveLength(3);
+  });
+});
+
+describe('fetchLatestPodium negative cache', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('a cached sentinel short-circuits to null without touching the source', async () => {
+    vi.mocked(readResultsCache).mockResolvedValueOnce('none');
+    const result = await fetchLatestPodium('f1');
+    expect(result).toBeNull();
+    expect(fetchF1SeasonResults).not.toHaveBeenCalled();
+    expect(writeResultsCache).not.toHaveBeenCalled();
+  });
+
+  it('an empty season writes the short-TTL sentinel instead of nothing', async () => {
+    vi.mocked(readResultsCache).mockResolvedValueOnce(null);
+    vi.mocked(fetchF1SeasonResults).mockResolvedValueOnce([]);
+    const result = await fetchLatestPodium('f1');
+    expect(result).toBeNull();
+    expect(writeResultsCache).toHaveBeenCalledWith(expect.stringContaining(':f1:'), 'none', 15 * 60);
+  });
+
+  it('a throwing source writes the sentinel and resolves null', async () => {
+    vi.mocked(readResultsCache).mockResolvedValueOnce(null);
+    vi.mocked(fetchF1SeasonResults).mockRejectedValueOnce(new Error('blocked egress'));
+    const result = await fetchLatestPodium('f1');
+    expect(result).toBeNull();
+    expect(writeResultsCache).toHaveBeenCalledWith(expect.any(String), 'none', 15 * 60);
+  });
+
+  it('force bypasses the cache reads entirely (the warm-path contract)', async () => {
+    vi.mocked(fetchF1SeasonResults).mockResolvedValueOnce([
+      race(1, 'Warmed', '2026-06-10T14:00:00Z', [entry(1, 'W', 'T')]),
+    ]);
+    const result = await fetchLatestPodium('f1', { force: true });
+    expect(readResultsCache).not.toHaveBeenCalled();
+    expect(result?.raceName).toBe('Warmed');
+    expect(writeResultsCache).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ raceName: 'Warmed' }),
+    );
+  });
+});
+
+describe('fetchFirstPodiumWithin', () => {
+  function podiumRace(name: string): LatestRace {
+    return {
+      round: 1,
+      raceName: name,
+      date: '2026-06-14T14:00:00.000Z',
+      podium: [{ position: 1, name: 'Winner' }],
+    };
+  }
+
+  it('returns the first candidate that has a podium and stops there', async () => {
+    const lookup = vi.fn(async (slug: string) => (slug === 'a' ? podiumRace('A') : null));
+    const result = await fetchFirstPodiumWithin(['a', 'b'], 1000, lookup);
+    expect(result?.raceName).toBe('A');
+    expect(lookup).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls through null and empty-podium candidates in order', async () => {
+    const lookup = vi.fn(async (slug: string) => {
+      if (slug === 'a') return null;
+      if (slug === 'b') return { ...podiumRace('B'), podium: [] };
+      return podiumRace('C');
+    });
+    const result = await fetchFirstPodiumWithin(['a', 'b', 'c'], 1000, lookup);
+    expect(result?.raceName).toBe('C');
+    expect(lookup).toHaveBeenCalledTimes(3);
+  });
+
+  it('tries at most three candidates', async () => {
+    const lookup = vi.fn(async () => null);
+    const result = await fetchFirstPodiumWithin(['a', 'b', 'c', 'd'], 1000, lookup);
+    expect(result).toBeNull();
+    expect(lookup).toHaveBeenCalledTimes(3);
+  });
+
+  it('treats a lookup rejection as null and keeps going', async () => {
+    const lookup = vi.fn(async (slug: string) => {
+      if (slug === 'a') throw new Error('boom');
+      return podiumRace('B');
+    });
+    const result = await fetchFirstPodiumWithin(['a', 'b'], 1000, lookup);
+    expect(result?.raceName).toBe('B');
+  });
+
+  it('renders empty once the budget expires — a hung lookup cannot hold the stream', async () => {
+    const lookup = vi.fn(() => new Promise<LatestRace | null>(() => {}));
+    const started = Date.now();
+    const result = await fetchFirstPodiumWithin(['a'], 25, lookup);
+    expect(result).toBeNull();
+    expect(Date.now() - started).toBeLessThan(1000);
   });
 });
