@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.317.0 — 2026-08-20
+## 0.317.1 — 2026-08-20
+
+### Fixed
+- **Trend-chart lines were invisible on Paper** (operator, compare page: "comparing 2 mercedes drivers on paper theme, cant see the trajectory at all"). `components/SeasonTrendChart.tsx`: the broadcast team hexes were tuned for the near-black theme (Mercedes #27f4d2 ≈1.3:1 on paper; Cadillac is literally #ffffff) — `buildLineStyles` now passes every stroke through `seriesInk` (the per-theme `--series-ink-mix`: 100% on dark = byte-identical, 52% on light = legible ink). The legend chips and ranked-rail dots read the same styles, so they follow; the fallback palette inks too. `color-mix(… var(--series-ink-mix), black)` resolves in recharts' SVG stroke attributes (verified computed rgb in-browser). The compare page's team sub-label (`DriverHead`) gets the same treatment. Fixes the chart on /f1/compare, the standings-tab trend, and team pages in one place.
+
+
 
 ### Changed
 - **The driver profile's rounds table gains the title-race column** (operator annotation: "could we add championship position per result?"). `lib/profile-stats.ts`: each round's final row now carries `championshipPosition` — the driver's standing AFTER that round, from `buildStandingsAtRound` over the same results the table and trend chart already derive from, so the last row always reconciles with the headline stat. Sprint rows stay blank (standings are per-round; the position lands on the GP row). `app/(app)/drivers/[slug]/page.tsx`: fourth right-aligned column, header now "finish · points · total · championship", P1 rows in brand.
