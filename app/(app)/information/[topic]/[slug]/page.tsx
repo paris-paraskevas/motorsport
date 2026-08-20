@@ -31,14 +31,21 @@ export async function generateMetadata({
   const entry = await getInfoEntry(topic, slug);
   if (!entry) return { title: 'Not found' };
   const indexed = await isEntryIndexed(entry);
+  // Short frontmatter summaries get SERP context appended — Bing WMT flagged
+  // a dozen of these as under-length (2026-08-20); summaries that already
+  // carry enough pass through untouched.
+  const description =
+    entry.summary.length >= 140
+      ? entry.summary
+      : `${entry.summary} A sourced Paddock Tracker explainer — the short answer up front, the detail underneath, checked against primary records.`;
   return {
     title: entry.question,
-    description: entry.summary,
+    description,
     alternates: { canonical: `/information/${topic}/${slug}` },
     ...(indexed ? {} : { robots: { index: false, follow: true } }),
     ...withSocialMeta({
       title: entry.question,
-      description: entry.summary,
+      description,
       path: `/information/${topic}/${slug}`,
     }),
   };

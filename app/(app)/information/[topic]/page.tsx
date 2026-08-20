@@ -28,7 +28,9 @@ export async function generateMetadata({
   const t = getTopic(topic);
   if (!t) return { title: 'Not found' };
   const title = `${t.label} — Motorsport Answers`;
-  const description = t.blurb;
+  // The blurb alone is UI-length, not SERP-length — Bing WMT flagged these as
+  // too short (2026-08-20); compose it with what the hub actually offers.
+  const description = `${t.blurb} Browse every ${t.label} answer on Paddock Tracker — rules, history, champions and how-it-works explainers, written plainly and checked against primary sources.`;
   const indexable = await isTopicIndexable(topic);
   return {
     title,

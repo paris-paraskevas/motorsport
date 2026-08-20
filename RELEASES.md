@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.319.0 — 2026-08-20
+
+**Better search snippets.** Every series page, driver profile, team page and explainer now describes itself properly to search engines, so results for Paddock pages read like sentences instead of stubs.
+
 ## 0.318.0 — 2026-08-20
 
 **Your profile picture becomes a menu.** Click the avatar for Profile, What's new, Blog, About and Sign out — and the header's bell and the help bubble are now round to match.
