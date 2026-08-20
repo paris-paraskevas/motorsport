@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.322.5 — 2026-08-20
+
+**Easier tapping on phones.** Footer links and the small cross-links at the bottom of series and race-weekend pages now meet the recommended touch-target size, so they are easier to hit on a phone without the layout visibly changing.
+
 ## 0.322.4 — 2026-08-20
 
 **Faster first paint on every page.** The site was asking browsers to download twice as many font files as the first screen actually needs; it now preloads only the essentials, which speeds up how quickly headlines appear, especially on slower phones. A behind-the-scenes fix also removed a chunk of server code that was needlessly shipped to browsers on the calendar.

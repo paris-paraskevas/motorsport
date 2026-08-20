@@ -192,6 +192,25 @@ Operator-run PSI (pagespeed.web.dev, Lighthouse 13.4.1, Moto G Power / slow-4G m
 
 **Next lever bundle (small):** first-slide fade skip + `sizes` on the carousel images. Cosmetics re-flagged: carousel dot touch-targets (a11y 96), two non-composited `width` dot animations, CSP report-only / no COOP (unchanged, by design/backlog).
 
+## 2026-08-20 — the PSI sweep: every major page (operator-run pagespeed.web.dev, Lighthouse 13.4.1; prod = 0.322.3 during capture)
+
+First per-page lab baseline. Mobile = Moto G Power / slow-4G sim. The morning's landing-stream fix (0.321.2) had already landed; the sweep drove four fix packages: **#1 fonts 19→5 preloads + Redis-SDK-out-of-browser (0.322.4)** · **#2 tap targets + gtag/Clerk dispositions (0.322.5)** · **#3 standings chart CLS/defer + info-hub heading order (queued)** · **#4 LCP image pass + Serwist DataCloneError (queued)**. Re-measure the trio root/standings/weekend after #4 merges.
+
+| Page | Perf M/D | LCP M/D | SI M/D | TBT M/D | CLS M/D | Page-specific finding → package |
+|---|---|---|---|---|---|---|
+| `/` | 76 / 94 | 6.3* / 1.2 s | 3.7 / 2.0 | 40 / 60 ms | 0 / 0 | Font over-preloading (19/660 KiB) → #1 SHIPPED |
+| `/app` | 63 / 88 | 9.7* / 1.4 | 7.3 / 2.1 | 170 / 150 | 0 / 0 | Shared 3rd-party shell; footer targets → #2 SHIPPED |
+| `/series/f1` | 59 / 94 | 9.8* / 1.4 | 8.1 / 1.5 | 190 / 50 | 0 / 0 | Shell only |
+| `/series/f1/standings` | 41 / 84 | 10.4* / 1.4 | 7.8 / 2.5 | 650 / 200 | 0.134 / 0.011 | Trend chart mounts unreserved + 96 KiB chunk → #3 |
+| `/series/f1/weekend/12` | 49 / 89 | 8.2* / 1.5 | 6.9 / 2.5 | 650 / 90 | 0.002 / 0.001 | Track-map SVG lazy LCP → #4 |
+| `/series/f1/weekend/11/race` | 65 / 78 | 7.7* / 1.4 | 7.4 / 2.9 | 70 / 270 | 0.006 / 0.019 | force-dynamic TTFB 665 ms → unpark ISR with the AdSense enrichment |
+| `/drivers/kimi-antonelli` | 67 / 91 | 8.5* / 1.5 | 6.9 / 2.1 | 90 / 0 | 0 / 0 | Wikimedia portrait lazy LCP + 171 KiB oversize → #4 |
+| `/calendar` | 64 / 89 | 8.3* / 1.4 | 7.3 / 2.4 | 130 / 110 | 0.036 / 0 | Serwist DataCloneError → #4; contrast + grid targets = operator calls |
+| `/blog/<post>` | 63 / 94 | 8.1* / 1.5 | 7.5 / 1.4 | 150 / 0 | 0 / 0 | Clean; shell only |
+| `/information/formula-1` | 66 / 95 | 8.1* / 1.4 | 4.4 / 1.2 | 210 / 30 | 0 / 0 | Heading order → #3; still pre-Paper register |
+
+*Mobile LCP metrics were inflated sitewide by the font-preload contention (each report's own breakdown summed far lower); 0.322.4 removes the cause. Constant across pages: ~615 KiB unused 3rd-party JS (Clerk-anon NO-GO documented in #745; AdSense kept pending re-approval; gtag already lazyOnload), CSP/COOP report-only by design, desktop Best-Practices 77s = Google's own lidar.js deprecation. Root same-day delta vs pre-0.321.2: mobile 69→76, desktop 88→94, SI 10.8→3.7 / 4.6→2.0, doc stream 7.1 s→1.96 s.
+
 ## Targets
 
 | Metric | Field target (CWV pass) | Lab target (PSI green) |
