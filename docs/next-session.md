@@ -15,8 +15,8 @@ Going forward you also want **images in every post** and **driver-radio embeds**
 
 ## 2. AdSense: wave 2 and four decisions
 
-Wave 1 shipped (F1 champion answers 1996-2025, `content/series/f1/champion-notes.json`, fail-soft so each new wave is data-only). Next:
-- **MotoGP champion notes** — its researcher died on the cap producing nothing; when redone, note it had already caught that season-page table extraction fails arithmetic there (sums 337/241 vs actual 309/245), so that source is unreliable.
+Waves 1 and 2 shipped: **F1 champion answers 1996-2025** (`content/series/f1/champion-notes.json`, 0.324.0) and **MotoGP 2011-2025** (`content/series/motogp/champion-notes.json`, 0.325.0). The sidecar pattern means every further wave is data only, no code. Next:
+- **More waves**: F1 pre-1996 (46 seasons) completes that family; MotoGP pre-2011; then IndyCar, WEC, WSBK and the rest. A complete family is a stronger quality signal than several partial ones, so finishing F1 first is the recommendation.
 - **Your decisions** (all in `IDEAS.md` NOW #1): making Race Story public on completed sessions (the cheapest verdict-mover — hundreds of pages enriched at zero authoring cost, and it needs the SEO-Phase-2b ISR unpark that the sweep independently asked for); the two stub components' copy and whether contentless tabs stay indexed; noindex on the 15 news tabs (the one family enrichment can't fix).
 - Then Request review **once**, when we believe it.
 

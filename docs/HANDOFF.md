@@ -6,7 +6,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-20 (LATEST, session 30 FINAL — 12 merges, PSI swept + all four packages shipped, AdSense enrichment started, blog contract flipped) — `main` = **0.324.0**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-20 (LATEST, session 30 FINAL — 14 merges, PSI swept + all four packages shipped, AdSense enrichment waves 1 and 2, blog contract flipped) — `main` = **0.325.0**, zero open PRs, every merge prod-verified
 
 ### 📌 NEXT SESSION — start here
 1. **The operator's blog approval.** The contract CHANGED mid-session: they asked for drafts, not just fact packs ("i want you to read my previous blogs. then give me a draft"). A finished Zandvoort-farewell preview is waiting in the session-30 scratchpad (`draft-f1-dutch-grand-prix-2026-preview.md`) with hero + inline licence-verified Commons images and four sourced Verstappen quotes. On their yes: move to `drafts/`, convert, `draft-post.mts` → prod DB draft, `publish_at` null. **Time-sensitive: the race is Sunday 23 Aug.** Going forward every post gets images, and they want OpenF1 `team_radio` embeds designed.
@@ -28,6 +28,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 - **0.323.0 #746 — the trend chart splits into eager frame + lazy canvas**, killing the standings CLS 0.134. Frame owns the fixed box, ranked rail, chip legend and all state; only recharts is lazy, IO-gated. Measured 256/256 px at 390 and 320/320 at 1440, and **the hidden Constructors tab mounts its chart on switch** (verified by clicking it).
 - **0.323.1 #747** the two lazy-loaded LCP images: driver portrait eager + `fetchPriority` + Commons 500px bucket (186 → 91 KiB), circuit SVGs get intrinsic 500×500 and the desktop one gets priority.
 - **0.324.0 #748 — AdSense enrichment wave 1**: F1 champion answers 1996-2025 gain the clinch and the season's story (`content/series/f1/champion-notes.json`, 30 seasons), fail-soft so later waves need no code.
+- **0.324.1 #749** session docs. **0.325.0 #750 — enrichment wave 2**: MotoGP 2011-2025 (15 seasons), authored inline after that researcher died on the cap; every clinch two-source verified, all 15 cross-checked against `champions.json`, and a source claiming 2017's margin was 36 was overruled by our reconciled 37.
 
 ### 🔴 Process learnings (durable, session 30)
 1. **Three parallel research subagents died on the operator's session cap** (~16:40 EEST), exactly as `feedback-paddock-workflow-limits` warns. One had written its JSON (recovered, validated, shipped as 0.324.0), one had uncommitted perf work (recovered, gate-fixed, shipped as 0.323.0), one produced nothing. **Lesson: one research agent at a time, and check for recoverable partial output before redoing work.**
