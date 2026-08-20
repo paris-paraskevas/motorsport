@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.320.0 — 2026-08-20
+## 0.321.0 — 2026-08-20
+
+### Added
+- **Constructors' season trend chart** (operator: "chart for constructors standings would be good"). `lib/season-trend.ts` gains `buildConstructorsTrendData` — it walks `buildStandingsAtRound` round by round instead of summing driver lines, so points are attributed PER RACE ENTRY (a mid-season seat swap lands on the team the driver actually scored for) and **the last point equals the constructors table by construction**, satisfying the chart-vs-standings invariant in this file's header rather than hoping for it. `aggregateTeamsTrend` is deliberately not reused: its own docstring rules it out for championship math. Shaped as `SeasonTrendData` with each team in the `drivers` slot and `team` set to the same string, so the existing chart resolves F1 team colours and the 0.317.1 per-theme inking applies. `components/tabs/StandingsTab.tsx`: `TrendSection` takes a `title`, renders nothing on an empty series, and the F1 Constructors tab now leads with the chart above its table (Paper mono-on-ink-rule heading replaces the display-caps one on both trends). Verified on live F1 data: charted totals equal table points for all six charted teams (Mercedes 379, Ferrari 307, McLaren 220, Red Bull 177, RB 66, Alpine 61).
+
+
 
 ### Changed
 - **/about joins Paper** (operator: "about is old style paddock tracker"). `app/(app)/about/page.tsx`: the display-caps `ABOUT.` masthead + oxblood accent bar become a serif "About Paddock" over a rule with a serif standfirst; section heads become mono labels on ink rules and the body copy goes serif. Content untouched — only the register was pre-reimagining.

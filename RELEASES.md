@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.321.0 — 2026-08-20
+
+**The constructors' championship gets its own chart.** The Constructors tab now opens with a season trend showing how each team's points built up round by round, in team colours, above the table.
+
 ## 0.320.0 — 2026-08-20
 
 **About and Account catch up.** The About page now reads like the rest of the site, Account uses the full page width, and what you follow is stated on the Championships row itself instead of a separate block above it. Series pages also link straight to their own filtered calendar.
