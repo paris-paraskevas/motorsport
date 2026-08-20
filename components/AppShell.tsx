@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useAuth, useUser, SignOutButton } from '@clerk/nextjs';
 import { NavSeriesMeta } from '@/lib/types';
 import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
@@ -199,20 +199,47 @@ function HeaderDate() {
   );
 }
 
-// The Account door on desktop: notification bell (signed-in) + a 26px avatar
-// circle. Signed-out shows the empty circle — /settings carries the sign-in,
-// same as the bottom bar's Account cell has always behaved.
+// The Account door on desktop: notification bell (signed-in) + the avatar,
+// which now opens a small account MENU instead of jumping straight to
+// /settings (operator, 2026-08-20, Gantt-app reference: "If i then click
+// Profile i will go to account page. If not i have access to blog, whats new,
+// about, sign out"). Signed-out gets the same menu with Sign in at the top.
 function HeaderAccount() {
   const { isLoaded, isSignedIn } = useAuth();
   const { user } = useUser();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const itemClass =
+    'block w-full px-3 py-2 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text';
+  const close = () => setOpen(false);
+
   return (
-    <span className="flex items-center gap-2" data-tour="account">
+    <span ref={wrapRef} className="relative flex items-center gap-2" data-tour="account">
       {isLoaded && isSignedIn && <NotificationBell />}
-      <Link
-        href="/settings"
-        aria-label="Account"
+      <button
+        type="button"
+        aria-label="Account menu"
+        aria-haspopup="menu"
+        aria-expanded={open}
         data-heatmap-id="nav:account"
-        className="hidden lg:block h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full border border-border-strong bg-surface"
+        onClick={() => setOpen(v => !v)}
+        className="hidden lg:block h-8 w-8 shrink-0 overflow-hidden rounded-full border border-border-strong bg-surface transition-colors duration-(--duration-fast) hover:border-text"
       >
         {isLoaded && isSignedIn && user?.imageUrl && (
           <>
@@ -220,7 +247,54 @@ function HeaderAccount() {
             <img src={user.imageUrl} alt="" className="h-full w-full object-cover" />
           </>
         )}
-      </Link>
+      </button>
+      {open && (
+        <div
+          role="menu"
+          aria-label="Account"
+          className="absolute right-0 top-[calc(100%+10px)] z-50 w-60 border-[1.5px] border-text bg-surface-elevated shadow-lg"
+        >
+          {isSignedIn && user ? (
+            <div className="border-b border-border px-3 py-2.5">
+              <span className="block truncate font-serif text-[15px] font-semibold leading-tight text-text">
+                {user.fullName ?? user.username ?? 'Signed in'}
+              </span>
+              {user.primaryEmailAddress?.emailAddress && (
+                <span className="mt-0.5 block truncate font-mono text-[10px] text-text-faint">
+                  {user.primaryEmailAddress.emailAddress}
+                </span>
+              )}
+            </div>
+          ) : (
+            <Link href="/settings" role="menuitem" onClick={close} className={`${itemClass} border-b border-border text-brand`}>
+              Sign in
+            </Link>
+          )}
+          {isSignedIn && (
+            <Link href="/settings" role="menuitem" onClick={close} className={itemClass}>
+              Profile
+            </Link>
+          )}
+          <Link href="/changelog" role="menuitem" onClick={close} className={itemClass}>
+            What&apos;s new
+          </Link>
+          <Link href="/blog" role="menuitem" onClick={close} className={itemClass}>
+            Blog
+          </Link>
+          <Link href="/about" role="menuitem" onClick={close} className={itemClass}>
+            About
+          </Link>
+          {isSignedIn && (
+            <div className="border-t border-border">
+              <SignOutButton redirectUrl="/">
+                <button type="button" role="menuitem" className={`${itemClass} text-brand hover:text-brand`}>
+                  Sign out
+                </button>
+              </SignOutButton>
+            </div>
+          )}
+        </div>
+      )}
     </span>
   );
 }

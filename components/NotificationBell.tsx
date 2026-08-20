@@ -127,7 +127,7 @@ export function NotificationBell() {
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={panelId}
-        className="inline-flex min-h-11 min-w-11 items-center justify-center bg-text text-bg hover:bg-text-muted p-1.5 transition-colors duration-(--duration-fast)"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-text text-bg hover:bg-text-muted p-1.5 transition-colors duration-(--duration-fast)"
       >
         <Bell size={15} />
       </button>

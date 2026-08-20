@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.318.0 — 2026-08-20
+
+**Your profile picture becomes a menu.** Click the avatar for Profile, What's new, Blog, About and Sign out — and the header's bell and the help bubble are now round to match.
+
 ## 0.317.1 — 2026-08-20
 
 **Charts you can actually read on the paper look.** Points-trajectory lines now draw in deep, legible team inks on the light theme — Mercedes teal and friends are no longer invisible — while the dark themes keep their broadcast colours exactly as they were.
