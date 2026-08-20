@@ -1395,7 +1395,13 @@ Operator at the desk, steering live: feedback-board screenshot ("Calendar Mobile
 - ⚠ Process: the 0.315.0 commit briefly landed on LOCAL main (branch step skipped after #726's merge auto-checkout) — never pushed; captured onto `feat/champions-tabs`, local main pointer-reset to origin/main (`git reset --keep`, zero loss, commit preserved). Same failure mode as the 0.294.0 slip: the fix is `git checkout -b` as the LITERAL first action after every merge, before any edit.
 - Note for the operator: localhost dies briefly during every ship cycle (`next build` clobbers running dev — landmine 9); dev is restarted after each gate and left running at wrap.
 
-Active: _(no `[+Nm]` prefixes captured)_
+- → done (afternoon/evening, operator steering live — 13 releases total, every one prod-verified): **0.311.1** podium names its race · **0.312.0** calendar filter box · **0.313.0** mobile pass (agenda month view; 9-page overflow sweep at 375 all clean) · **0.313.1** Select all/Clear placement · **0.314.0** all five series sub-pages join Paper in one shell rewrite + Standings/Results on the landing · **0.315.0** champions drivers/team tabs, open decades · **0.316.0** drivers page joins the live championship · **0.317.0** championship position per round on driver profiles · **0.317.1** trend-chart strokes inked per theme (Mercedes teal was ~1.3:1 on paper) · **0.318.0** avatar account menu, bell + bubble rounded · **0.319.0** meta descriptions to SERP length at six generators (32 of Bing's 33 flagged URLs measured 174–234 chars; the 33rd is local-dev-only broken) · **0.320.0** /about joins Paper, /account full width + follow state reorganised, series Calendar cell · **0.321.0** constructors' season trend, reconciled to the table by construction.
+- ⚠ Two process notes: the 0.315.0 commit briefly landed on LOCAL main (merge auto-checkout; never pushed, recovered via `git reset --keep` with the commit captured on a branch, zero loss) — branch-first is now the literal first action after every merge. And deploy sentries started dying on Fable-5 usage limits mid-run, so verification moved to background `Bash` curl checks (zero model cost); 0.320.0 and 0.321.0 were confirmed that way.
+- Won't-touch honoured: prod Supabase writes, blog content, the content-bundle refactor, HANDOFF trim.
+
+**Next session (agreed at wrap): two blogs in the operator's voice — F1 summer break, and a Zandvoort Dutch GP preview. Claude supplies FACT PACKS and corrections only; the operator writes. Brief + verification targets in `docs/next-session.md`.**
+
+Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 

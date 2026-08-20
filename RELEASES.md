@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.321.1 — 2026-08-20
+
+**Internal housekeeping.** Session records and planning notes brought up to date; nothing user-facing changed.
+
 ## 0.321.0 — 2026-08-20
 
 **The constructors' championship gets its own chart.** The Constructors tab now opens with a season trend showing how each team's points built up round by round, in team colours, above the table.

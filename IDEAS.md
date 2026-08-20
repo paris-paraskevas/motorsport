@@ -6,47 +6,39 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 
 ---
 
-## NEXT SESSION — priority order (refreshed 2026-08-06, session 27 close)
+## NEXT SESSION — 2026-08-21+ (refreshed 2026-08-20, session 29 close)
 
-1. **Merge the combined offline+Turbopack+wrap PR**, then prod-verify the SW rollover: `/serwist/sw.js` serves 200 on prod, push still works on the phone after the worker updates (next-after-next launch, `skipWaiting:false`), airplane mode now shows the browser default (offline removed by design).
-2. **Landing-LCP finisher (small):** first-slide fade skip + `sizes` on the carousel images — the operator's 2026-08-06 PSI run says these are the whole remaining tail (mobile LCP 4.9 s, target ~2.5-3 s; row + analysis in `docs/perf-baselines.md`).
-3. **Two real bugs from the app-root audit** (below): feed.xml missing all DB posts; error.tsx not reporting to Sentry.
-4. **Content to 1500+**: at **1,240** after the 126-bio day. Levers: remaining bio grids (needs an operator call — NASCAR 36 / DTM 21 / WRC 9 / F2 / F3 full waves, or Wikipedia-fallback stays fine?), all-time legends pages, more `/information` answers. RULE #1, no thin pages, solo waves only.
-5. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (official archive × Wikipedia rendered HTML, three-way name check; see 0.266.0). One-two series per session. ADAC 24h + NLS never.
-6. **Indexing follow-through**: GSC "Validate fix" clicked 2026-08-06, awaiting Google's re-crawl verdict on the 45 noindex URLs.
+**The session's work is TWO BLOGS and the contract is narrow: the operator writes, Claude supplies fact packs and corrections only. Full brief + the verification targets are in `docs/next-session.md`.** Everything below is standing backlog, picked up only if the operator asks.
+
+1. **Blog A fact pack — F1 summer break** (break window, the FIA factory-shutdown article, championship state top-5 both tables, season-in-numbers). RULE #1: verify our own standings against formula1.com before handing anything over.
+2. **Blog B fact pack — Dutch GP / Zandvoort preview** (R12, 21–23 Aug per our data; circuit facts, last year's result, venue-local weather). **Open question that must be resolved first: our calendar renders Zandvoort as a SPRINT weekend — confirm against the official F1 calendar, and if we are wrong it is a `content/series/f1/` correction.**
+3. **Operator-owed, carried:** signed-in eyeball of the avatar menu on prod (0.318.0) · Search Console Validate-fix + noindex re-validate · Bing re-validate on meta descriptions once 0.319.0 recrawls · landing-orphan deletion approval (13 components) · move the two `/feedback` items to DONE.
+4. **`feed.xml` omits every DB-published post** — real, user-facing, small (detail in the 2026-08-03 app-root audit below). Best non-blog candidate if there is spare time.
+5. **Content to 1500+**: at ~1,240. Levers: remaining bio grids (needs an operator call on NASCAR 36 / DTM 21 / WRC 9 / F2 / F3 waves vs Wikipedia fallback), all-time legends pages, more `/information` answers. RULE #1, no thin pages, solo waves only.
+6. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (0.266.0). One or two series per session. ADAC 24h + NLS never.
+
+_Cleared at this triage (shipped or obsolete): the offline+Turbopack merge and the Cloudflare-pipeline freeze (prod has been deploying since 0.288.0 and is now 0.321.0) · the whole reimagining remainder incl. landing 10a, predictions 10c, session 11d and the Account rows (Rounds 1–3 all shipped) · the Paper default flip (0.287.0) · the reimagining §9 step-3 generators (0.293.0) · per-weekend add-to-calendar (shipped on the preview rail) · the landing-carousel LCP finisher and carousel dot touch-targets (the carousel no longer renders — the 0.295.0 rebuild replaced it; re-baseline perf on the NEW landing instead, `docs/perf-baselines.md`)._
 
 ## Inbox (2026-08-20 — session 29 cont.)
 
-- **What's-New modal** (operator's Gantt-app reference, 2026-08-20): the avatar menu's What's new currently links /changelog; the reference shows a version-gated modal (hero card + feature cards + Got it) that opens on first visit after a release. Would surface RELEASES.md entries as cards; needs a seen-version localStorage gate and a card-worthy subset marker in the release format.
+- **What's-New modal** (operator's Gantt-app reference): the avatar menu's What's new links `/changelog`; the reference shows a version-gated modal (hero card + feature cards + "Got it") opening on first visit after a release. Would surface `RELEASES.md` entries as cards; needs a seen-version localStorage gate and a card-worthy marker in the release format.
+- **Results / standings / rounds body rework** — 0.314.0 gave them Paper shells and landing access, deliberately keeping their table bodies. A deeper rework is a fresh ask, not assumed.
+- **F1 `rounds.json` carries no sprint markers** (session data owns sprint structure) — promoted from parked because next session's Zandvoort preview turns on exactly this question.
+- **No "how an F1 race weekend works" answer** — 13 of 15 series have one; content gap.
 
 ## Inbox (2026-08-19 — session 29)
 
-- **App error boundary is pre-Paper** — "Something broke" gradient card (`app/(app)/error.tsx`?) surfaced during the threads dev check; restyle to the Paper register (the marketing error page's button was inked in 0.302.0 but the app card + its layout weren't). Also: `lib/threads.ts` `listThreads` has no fail-soft — a DB hiccup 500s the whole threads page instead of degrading.
-
+- **App error boundary is pre-Paper** — the "Something broke" gradient card (`app/(app)/error.tsx`) surfaced during the threads dev check; restyle to Paper (the marketing error page's button was inked in 0.302.0, the app card and its layout were not). Paired: **`lib/threads.ts` `listThreads` has no fail-soft** — a DB hiccup 500s the whole threads page instead of degrading, which is why `/social/threads` cannot be verified on local dev at all.
 - **Blog `[[classification …]]` embed** (panel #19's "embedded live classification", deferred from 0.298.0): `lib/blog-embeds` supports `chart`/`standings` only; a classification embed needs session picking (which race of a round), multi-class handling and a caching stance on the force-dynamic post route. Design first, then wire into `components/blog/embeds/BlogEmbed.tsx`.
-- **Landing-orphan deletion sweep awaiting approval**: TickerBar, Hero, MarqueeEvent, SeriesMarquee, StatsBand, FeatureBlocks, PredictionGame, DisciplinesGrid, PerksCta, LandingMenu, BigCountdown, clean-title (0.295.0) + WeekendHero (0.294.0) — zero imports each; per the deletion rule, one approval PR.
-- **GSC follow-through**: with 0.294.0–0.296.0 every flagged route true-404s on prod — click Validate fix on "Soft 404" and re-validate "Excluded by noindex" in Search Console; the 4xx/5xx groups clear on their own.
-
-## Inbox (2026-08-18 — overnight run close)
-
-- **Cloudflare build pipeline dead since 14:25Z** — prod frozen at 0.274.0 with 0.275→0.286 merged; check Workers Builds in the dashboard (likely a failed build or paused GitHub connection) or run `npm run deploy` once. THE morning item.
-- **Reimagining remainder:** landing 10a (deferred — perf-tuned front door, decide with the panel), predictions 10c (/social fresh operator work), session-page 11d cosmetic restyle (contract already live), blog POST reading column + embedded live classification (10b second half), Account sign-out/export rows.
-- **The Paper default flip + Newsprint's fate** — everything is built token-agnostic; flip is a one-line ThemeScript/layout change + a picker copy pass, decide from screenshots.
-- **Content gaps found:** no "how an F1 race weekend works" answer (13/15 series have one); F1 `rounds.json` carries no sprint markers (session data owns sprint structure).
-- **NavPanel data-nav-row keyboard nav** could extend to Home/End; the panel could remember scroll position — polish, not correctness.
-
-## Inbox (2026-08-18 — session 28)
-
-- **Delete the four orphaned shell components** (`HeaderNavMenu.tsx`, `HeaderUtils.tsx`, `search/SearchTrigger.tsx`, `search/SearchOverlay.tsx`) once #679 is reviewed — zero imports remain; kept only for the deletion-approval rule.
-- **Dev hydration-mismatch warning for stored non-default themes** — ThemeScript's pre-paint attribute correction vs SSR `class="dark"`; pre-existing (fires under carbon), consider `suppressHydrationWarning` on `<html>` in the three root layouts.
-- **Reimagining §9 step 3 next**: the session-tab + classification generators from the series contract, before any results page.
+- **Landing-orphan deletion sweep awaiting approval**: TickerBar, Hero, MarqueeEvent, SeriesMarquee, StatsBand, FeatureBlocks, PredictionGame, DisciplinesGrid, PerksCta, LandingMenu, BigCountdown, clean-title (0.295.0) + WeekendHero (0.294.0), plus the four older shell orphans (`HeaderNavMenu`, `HeaderUtils`, `search/SearchTrigger`, `search/SearchOverlay`) — zero imports each; per the deletion rule, one approval PR covering all of them.
+- **Dev hydration-mismatch warning for stored non-default themes** — ThemeScript's pre-paint attribute correction vs SSR; pre-existing, consider `suppressHydrationWarning` on `<html>` in the three root layouts.
+- **NavPanel keyboard nav** could extend to Home/End; the panel could remember scroll position — polish, not correctness.
 
 ## Inbox (2026-08-06 — session 27 close)
 
 - **Remote-branch audit**: `git fetch --prune` shows **328 non-core branches on origin** — the session-26 "380 → 34" prune never reached the remote. Audit into merged-safe (delete) vs unique-commits (operator's word per branch); one name collision already bit (feat/champions-depth-motogp).
 - **BMC donor webhook (phase 2 of the 0.264.0 supporter gate)** — auto-flag `publicMetadata.donor` from Buy Me a Coffee webhooks with email matching; manual /admin/users toggling is fine until donations outpace it.
-- **Carousel dot touch-targets** (a11y 96 both PSI runs) + the two non-composited `width` dot animations — cosmetic a11y/perf pair on the landing carousel.
-- **Vitest under load**: fork-worker start timeouts reproduce the old "flake" when a dev server runs alongside — consider pinning `maxWorkers` or documenting "no suite under dev" in CONTRIBUTING.
+- **Vitest under load**: fork-worker start timeouts reproduce the old "flake" when a dev server runs alongside — consider pinning `maxWorkers` or documenting "no suite under dev" in CONTRIBUTING. (Reproduced again 2026-08-20 during the 0.317.1 gate: one red test mid-chain, two clean 1116/1116 reruns after.)
 - **Doc hygiene ESCALATED**: `docs/HANDOFF.md` is ~480KB; trim to the last 2-3 sessions + archive the rest (the parked item, now genuinely overdue).
 
 ## Inbox (2026-08-03)
@@ -56,12 +48,11 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 ## Inbox (2026-08-03 — app-root specials audit)
 
 - **feed.xml omits every DB-published post** — it reads only legacy MDX (`loadAllPosts` from `lib/posts`), the exact bug the sitemap had until 0.246.1 fixed it *for the sitemap only*; RSS subscribers have seen nothing since the MDX era. Merge both sources like `lib/sitemap-data` does (DB `publishedPosts` + MDX, dedupe by slug, DB wins) — and drop the dead `s-maxage` header / go ISR while in there (`force-dynamic` + `s-maxage` caches nowhere on Workers).
-- **error.tsx doesn't report to Sentry** — `global-error.tsx` calls `Sentry.captureException`; the route-level `error.tsx` only console.errors, and React error boundaries swallow errors before `window.onerror`, so uncaught client render errors in any route plausibly never reach Sentry (verify against @sentry/nextjs App-Router auto-instrumentation first). Its comment also still credits the removed "Vercel Analytics + Speed Insights" with error capture — fossil either way.
+- **error.tsx doesn't report to Sentry** — `global-error.tsx` calls `Sentry.captureException`; the route-level `error.tsx` only console.errors, and React error boundaries swallow errors before `window.onerror`, so uncaught client render errors in any route plausibly never reach Sentry (verify against @sentry/nextjs App-Router auto-instrumentation first). Its comment also still credits the removed "Vercel Analytics + Speed Insights" with error capture — fossil either way. **Re-scope before building: the 0.288.0 worker-size diet removed server Sentry, so establish what is actually wired now.**
 
 ## Inbox (2026-07-24 — session 21)
 
 - **F2/F3 official-schedule cross-check.** The Hungary times drift (fixed 0.234.2) came from May's template-projected `sessions.json`; the official sites' "Add Calendar" button is an ECAL sync widget (no raw ICS to ingest), BUT the event pages' RSC payload carries the full timetable → build a fiaformula2/3.com schedule parser as the F2/F3 analogue of the F1 OpenF1 cross-check (#613). Outbound → preview-paired. Remaining projected rounds (Monza onward) need curation as itineraries publish regardless.
-- **Per-weekend "add to calendar" affordance** on our weekend pages (own ICS export or link-out to the official ECAL button) — operator idea, race morning.
 
 ## Inbox (2026-07-23 — session 20)
 
