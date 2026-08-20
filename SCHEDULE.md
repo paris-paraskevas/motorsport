@@ -1388,15 +1388,22 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 Operator's order: the PageSpeed regression is handled FIRST (new landing: mobile 69, LCP 5.7 s, SI 10.8 s), then the two blog fact packs (operator writes, Claude supplies data only), plus an IDEAS.md triage read-out ("content close to perfect", clean it up).
 
-1. PSI: root-caused the ~7 s landing document stream (Last-time-out podium chain; details in the session log). Fix PR: time-budget + negative-cache in `lib/home-results.ts` + `app/(marketing)/page.tsx`. Gates → PR → merge → prod verify → PSI re-run → `docs/perf-baselines.md` row. ESPA plan presented, awaiting approval.
-2. Zandvoort sprint check (gates Blog B) → done: it IS a sprint weekend (5th of 6 in 2026, Zandvoort's first and last). Our calendar is CORRECT, no `content/series/f1/` fix needed.
-3. Blog A fact pack, F1 summer break (scratchpad, per-claim sources, UNVERIFIED list).
-4. Blog B fact pack, Dutch GP preview (scratchpad, venue-local weather via Open-Meteo).
-5. IDEAS triage presented for operator kill/keep calls.
+1. → done: PSI root-caused (the Last-time-out chain held the ISR stream open ~7 s on doomed blocked-egress fan-outs, nulls never cached) and FIXED — sentinel + 2 s budget + clean-IP podium seeding, 0.321.2 #737, Playwright-CLI prod audit passed. PSI re-run owed by the operator → then the perf-baselines row.
+2. → done: Zandvoort IS a sprint weekend (5th of 6, Zandvoort's first and last GP); calendar CORRECT, no content fix.
+3. → done: Blog A fact pack in the scratchpad (break window, F3.1.1 shutdown rule, standings verified === formula1.com, winners tables, Sepang round confirmed).
+4. → done: Blog B fact pack in the scratchpad (official timetable, circuit facts, 2025 grand chelem, tyres, venue-local weather: heavy rain flagged for Sprint Saturday; 2026 DRS-successor zones flagged UNVERIFIED).
+5. → done: IDEAS re-triaged AND applied on the operator's "do what you think is best" (fossils deleted, 11 kills, big rocks parked, NOW = AdSense + image brief + launch + trim).
 
-Won't touch this session: bundle/unused-JS hunt, CSP/COOP headers, browserslist polyfills, warm-cron cadence, landing-orphan deletion (still needs the operator's go), champions/bios waves, HANDOFF trim, any `content/series/` data edits.
+Operator-added mid-session, all shipped (six merges total, 0.321.2 → 0.322.2, each prod-verified):
+- → done: landing-orphan sweep on the operator's go (15 files recomputed from the tree, 0.321.3 #738).
+- → done: home 50/50 What-it-changed / What's-next split + the London ePrix one-driver classification root-caused to the **warm-live-data outage** (down since 08-19 07:22Z on the recurring npm-10 lockfile hole) — lockfile regen shipped 0.321.4 #739; data healed; first post-fix scheduled run green-path.
+- → done: the PADDOCK•TRACKER wordmark restored to both headers + footer (operator priority, 0.322.0 #740, eyes-verified 1440/375).
+- → done: feed.xml finally carries DB posts + goes ISR (0.322.1 #741 — prod serves 19 items, was 0); `listThreads` fail-soft + Paper app error boundary (0.322.2 #742, /social/threads dev-checkable at last).
+- → captured, not built: AdSense "Low value content" recovery (ads.txt verified fine, console stale), the image/positioning brief + Fotis layout reference, blog driver-radio embeds.
 
-Active: _(awaiting [+Nm] prefixes)_
+Won't-touch honored: bundle/unused-JS hunt, CSP/COOP, browserslist polyfills, warm-cron CADENCE (the lockfile fix is not a cadence change), champions/bios waves, HANDOFF trim (pickup block prepended only), `content/series/` data. The landing-orphan deletion moved out of won't-touch on the operator's explicit go.
+
+Active: _(no [+Nm] prefixes captured this session)_
 
 ---
 

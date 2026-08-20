@@ -6,7 +6,41 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-20 (LATEST, session 29 cont. — Round 3 COMPLETE: 13 releases, series sub-pages reborn, mobile fixed, Bing meta swept) — `main` = **0.321.0** on prod, all verified
+## ⚡ Next session pickup — 2026-08-20 (LATEST, session 30 — PSI stall killed, warm-pipeline outage fixed, logo back, fact packs delivered) — `main` = **0.322.2**, six merges, all prod-verified
+
+### 📌 NEXT SESSION — start here
+1. **The operator writes the two blogs** from the fact packs (scratchpad: `factpack-a-f1-summer-break.md`, `factpack-b-dutch-gp-zandvoort.md` — every claim sourced + dated, UNVERIFIED lists at the end). Claude returns **corrections only** (facts, stale numbers, house style). Zandvoort sprint question RESOLVED: it IS a sprint weekend (5th of 6, Zandvoort's first and last GP) — our calendar was right. Weather: re-pull Open-Meteo by venue-local date on writing day (the API line is in pack B; current model: heavy rain Sprint Saturday).
+2. **AdSense "Low value content" recovery** (operator: "i want ads") — IDEAS NOW #1. `ads.txt` serves fine on prod (the console's "Not found" is a stale Aug-5 crawl); the Aug-5 policy verdict predates the bios day + Paper + meta sweep. Work: audit the weakest indexed URL families vs Google's thin-content bar, strengthen/noindex, then ONE Request review.
+3. **THE IMAGE SESSION** (operator: "the biggest job we have ever done") — flood the site with licence-clean imagery; reference the operator likes: Fotis' testing build (big series image card beside the lead story, UP NEXT strip under). Riding along: home image boxes to series/calendar, blog driver-radio embeds (OpenF1 team_radio), and the now-orphaned `content/landing/circuits.json` + `public/landing/circuits/*` (dead weight since the orphan sweep — delete or reuse there).
+4. **PSI re-run owed (operator)** → then append the 0.321.2 delta row to `docs/perf-baselines.md` (expect the ~7 s doc stream gone, mobile LCP toward the ~1.5-2 s FCP line, SI collapsing from 10.8 s).
+
+### ✅ Shipped this session (six merges, 0.321.2 → 0.322.2, each prod-verified)
+- **0.321.2 #737 — the landing PSI stall killed.** Root cause chain: `LastTimeOut` streams behind Suspense → holds the ISR document open → cold podium candidate falls through `withSourceSnapshot`'s db-read-only miss path into a doomed upstream fan-out from BLOCKED worker egress → null result never cached → every render re-paid ~7 s (PSI doc 7.1-7.4 s both form factors, mobile 69). Three legs: 15-min `NO_PODIUM_SENTINEL` negative cache (`force` bypasses), a hard 2 s budget on the block (`fetchFirstPodiumWithin`), and clean-IP podium seeding added to `scripts/warm-live-data.mts`. 9 new tests (suite 1125). Playwright-CLI prod audit ~14 min post-merge: wordmark page fine, Last-time-out present, `/changelog` current.
+- **0.321.3 #738 — landing-orphan sweep** (operator go): 15 zero-import files, recomputed from the tree (stale 17-list had 4 already gone via #683; +CountUp/CircuitSlideshow transitive; WeekendHero's one ref was its own export). 1,487 lines deleted.
+- **0.321.4 #739 — home 50/50 + THE LOCKFILE OUTAGE.** What-it-changed / What's-next became equal halves (operator: what's next is why users come). And **warm-live-data — the site's ONLY data writer — had been failing every run since 08-19 07:22Z** on the recurring npm-10 nested-lockfile hole (`Missing: @swc/helpers@0.5.23`, the #687/#688 disease reintroduced by a session-29 merge). npm-10 regen, single-entry diff, both npm generations verified. **The 11:45Z scheduled run is the first green-path proof** (survived npm ci; check its conclusion). The operator-reported one-driver London ePrix classification was this outage's symptom.
+- **0.322.0 #740 — the PADDOCK•TRACKER wordmark returns** (operator priority: "we have lost our logo"): one condensed-caps + brand-dot treatment at AppShell header, LandingNav and LandingFooter (mobile: PADDOCK). Eyes-verified dev 1440/375.
+- **0.322.1 #741 — feed.xml carries DB posts at last** (the sitemap's 0.246.1 bug, fixed for RSS): DB+MDX merge, DB wins, imports excluded, `force-dynamic`+dead `s-maxage` → `revalidate=300` (`○ 5m`). **Prod now serves 19 items** (was 0 since the MDX era).
+- **0.322.2 #742 — `listThreads` fail-soft + Paper app error boundary.** A DB hiccup renders the threads empty state instead of a 500; `/social/threads` is finally dev-checkable (eyes-verified at HTTP 200, DB down). The last pre-Paper user-reachable surface restyled.
+
+### 🔴 Incident + process notes (durable)
+1. **The lockfile disease is now 2-for-2 after dependency-touching merges** — npm 11 locally tolerates nested-entry holes, the runner's npm 10 refuses, and the only writer dies silently. Detection gap: nothing alerts on the workflow failing (28 h unnoticed). Consider: a CI guard (`npx npm@10 ci --dry-run` in the gate chain after any lockfile change) or pinning runner npm; and a failure alert on the workflow.
+2. **Prod writes require the operator to NAME the action — the auto-mode classifier now enforces it.** It denied both an ad-hoc local `warm-live-data.mts` run against prod (which had already launched in the background and completed: 13/13 standings, 8/8 results, 10/10 extras, 6/6 podiums, write-proof passed — that run is what healed the London classification and all stale data; recorded transparently in 0.321.4's CHANGELOG) and a `gh workflow run` dispatch. Standing conclusion: data refreshes go through the scheduled GitHub pathway; ad-hoc runs only when the operator names them.
+3. **The Playwright MCP server died mid-session** (disconnected with google-drive after a dev-server PID kill). Replacement that works: `npx playwright screenshot --browser=chromium --viewport-size=WxH --wait-for-timeout=N URL out.png` (one-time `npx playwright install chromium`, ~115 MB). Used for every browser verification after the death.
+4. **The stale-list lesson repeats**: the "17 orphans" list was 4 stale + 2 short; the real set came from re-grepping the tree. Recompute deletion sets at execution time, never trust carried counts.
+
+### 🩹 Owed (operator) — carried + new
+- **PSI re-run on `/`** (mobile+desktop) → Claude appends the perf-baselines delta row.
+- Signed-in eyeball of the avatar menu on prod (0.318.0) · **Search Console**: Validate fix on "Soft 404" + re-validate "Excluded by noindex" · **Bing**: re-validate "Meta descriptions too short" (0.319.0) — all three are dashboard clicks only the operator can do.
+- Move the two `/feedback` board items (Calendar Mobile, Formula E screen) to DONE.
+- Key rotations + dead `.supabase-pat` (long-carried).
+- AdSense: after the content audit lands, tick "I confirm" + Request review (one shot).
+
+### 📎 Session artifacts
+Fact packs + all verification screenshots live in the session scratchpad (`factpack-a-f1-summer-break.md`, `factpack-b-dutch-gp-zandvoort.md`, `prod-audit-landing.png`, `dev-home-5050.png`, `wordmark-landing.png`, `wordmark-app-mobile.png`, `threads-failsoft.png`). IDEAS.md was re-triaged end to end (fossils deleted, 11 dated kills, big rocks parked with triggers, NOW = AdSense recovery · image/positioning · v1.0 launch · HANDOFF trim).
+
+---
+
+## ⚡ Next session pickup — 2026-08-20 (session 29 cont. — Round 3 COMPLETE: 13 releases, series sub-pages reborn, mobile fixed, Bing meta swept) — `main` = **0.321.0** on prod, all verified
 
 ### 📌 NEXT SESSION — TWO BLOGS, operator writes, Claude supplies data only
 **The contract (operator, 2026-08-20 wrap): "ill need the information, ill write the blogs, you simply give me data and suggest corrections."** So: NO drafting, NO ghost-writing, NO DB drafts. The deliverable is a **fact pack** per blog, then **corrections** on the operator's draft once they share it. RULE #1 at full force — every figure checked against a primary source, each carrying its URL and retrieval date; anything unverifiable is labelled UNVERIFIED rather than smoothed over.
