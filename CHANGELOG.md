@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.313.0 — 2026-08-20
+## 0.313.1 — 2026-08-20
+
+### Fixed
+- **Select all / Clear sit beside the FILTERS label** (operator annotation on 0.312.0: "move this → move here"). `components/calendar/CalendarFilterBox`: the two actions leave the header's right edge and join the left group next to "FILTERS · all series"; "Applied as you tap" (and the mobile EDIT toggle) keep the right side. Verified at 1400px: label x=45, Select all x=217, Clear x=307, same baseline row.
+
+
 
 ### Changed
 - **The month view becomes an agenda on phones** (feedback board: "Calendar Mobile — chaotic on mobile"). `components/calendar/MonthView.tsx`: below `md` the 7-column grid (whose cells could only show unlabeled colour dots at 390px) is replaced by an agenda list — day headers (`SAT 1 AUG · 15`, today in brand), then each session as a tappable row reusing `summariseDay` (series bar + code, serif title with deciders bold, collapsed practice/stage runs, time right). Days without sessions don't rent space; an empty month says so. The grid, banners and legend are md+ only; the dot row is deleted.
