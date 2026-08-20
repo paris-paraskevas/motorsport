@@ -3,8 +3,9 @@ import { NavPanel } from '@/components/NavPanel';
 import type { NavSeriesMeta } from '@/lib/types';
 import { SignedInOnly, SignedOutOnly } from './LandingAuth';
 
-// Panel 10a header: the serif wordmark, the one menu-and-search field (the
-// same NavPanel the app shell renders), and the account state — nothing else.
+// Panel 10a header: the PADDOCK•TRACKER wordmark, the one menu-and-search
+// field (the same NavPanel the app shell renders), and the account state —
+// nothing else.
 // The anchor row, the Open-app pill and the burger menu died with the
 // carousel landing.
 export function LandingNav({
@@ -19,9 +20,9 @@ export function LandingNav({
       <div className="mx-auto flex h-[50px] w-full max-w-[1200px] items-center gap-4 px-4 md:px-6">
         <Link
           href="/"
-          className="shrink-0 font-serif text-[19px] font-semibold tracking-tight text-text"
+          className="shrink-0 font-condensed text-[17px] font-bold uppercase tracking-[0.06em] text-text"
         >
-          Paddock Tracker
+          Paddock<span className="text-brand">•</span>Tracker
         </Link>
         <NavPanel seriesList={seriesList} bettingEnabled={bettingEnabled} />
         <div className="ml-auto flex shrink-0 items-center gap-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]">

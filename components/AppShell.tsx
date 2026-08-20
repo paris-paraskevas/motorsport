@@ -90,12 +90,17 @@ export function AppShell({
           phones, the spec's 58px on lg+, closed by a hard 1px ink rule. */}
       <header className="fixed top-0 left-0 right-0 z-30 bg-surface-elevated border-b border-text pt-[env(safe-area-inset-top)]">
         <div className="flex h-[50px] w-full items-center gap-3 px-[14px] lg:h-[58px] lg:gap-[22px] lg:px-10">
+          {/* The PADDOCK•TRACKER wordmark (operator, 2026-08-20: "get back our
+              logo") — condensed caps + the brand dot, one treatment shared with
+              LandingNav and LandingFooter. Mobile drops to PADDOCK for width. */}
           <Link
             href="/app"
             data-heatmap-id="nav:wordmark"
-            className="shrink-0 font-serif text-[17px] font-semibold tracking-[-0.01em] text-text lg:text-[22px]"
+            className="shrink-0 font-condensed text-[16px] font-bold uppercase tracking-[0.06em] text-text lg:text-[19px]"
           >
-            <span className="hidden lg:inline">Paddock Tracker</span>
+            <span className="hidden lg:inline">
+              Paddock<span className="text-brand">•</span>Tracker
+            </span>
             <span className="lg:hidden">Paddock</span>
           </Link>
 
