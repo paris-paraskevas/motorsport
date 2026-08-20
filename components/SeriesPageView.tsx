@@ -151,7 +151,7 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
       <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
         <span className="text-text-faint">More {series.meta.name}</span>
         {siblings.map(s => (
-          <Link key={s.key} href={s.href} className="text-brand hover:underline">
+          <Link key={s.key} href={s.href} className="inline-flex min-h-6 items-center text-brand hover:underline">
             {s.label}
           </Link>
         ))}

@@ -20,7 +20,7 @@ export function ContactFooterButton() {
       type="button"
       onClick={openContactModal}
       data-heatmap-id="footer:contact"
-      className="block w-full py-0.5 text-left text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+      className="block w-full py-1 text-left text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
     >
       Contact
     </button>

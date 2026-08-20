@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.322.5 — 2026-08-20
+
+### Fixed
+- **Footer and cross-link-foot tap targets reach the 24 px minimum** (the PSI sweep's only named a11y failure, flagged on every (app)-group page; PR #745, subagent-built). `components/Footer.tsx` FooterLink + coffee link and `components/ContactModal.tsx` ContactFooterButton go `py-0.5` → `py-1`; the mono feet gain `inline-flex min-h-6 items-center` (`components/SeriesPageView.tsx` SEASON OVERVIEW/NEWS siblings; the weekend page's TECHNICAL FILE / NEWS FOR THIS SERIES / NEXT ROUND links). Measured with Playwright before → after: /app footer 18 targets 20.0 → 24.0 px, standings foot 15.0 → 24.0 px, weekend foot 15.0 → 24.0 px; visual delta is +4 px row pitch (looser leading, not a redesign). Expected: Accessibility 96 → 100 across the app group. Lighthouse's "identical links" nit verified FALSE (foot NEWS → /series/f1/news vs footer News → /news, different destinations). NOTED (not done): the weekend sidebar's small inline links pass axe's spacing exception and stay.
+- Two shared-shell levers dispositioned with evidence so they stop being chased: **gtag is already `lazyOnload`** (both loader and init, `app/(app)/layout.tsx`; PR #153's strategy intact — the remaining 164 KiB/~200 ms is inherent to keeping GA), and **Clerk-for-anonymous is a NO-GO as a patch**: `@clerk/nextjs` v7's provider hotloads `ui.browser.js` on every page at init regardless of whether any component mounts (verified in the installed package and the deployed clerk-js 6.29.2 bundles, which have no on-demand fallback — `assertComponentsReady` throws), so the May baseline's "lazy-load UserButton" lever would move ZERO bytes. The real path is a future project, documented in PR #745: replace the five prebuilt-UI surfaces with custom flows, then `prefetchUI: false` (~150-200 KiB saved).
+
+### Internal
+- `docs/perf-baselines.md` gains the 2026-08-20 PSI sweep table: all ten major pages, mobile+desktop, with the per-page findings and the fix-package ledger (the sweep itself was operator-run on pagespeed.web.dev; packages #1/#2 shipped as 0.322.4/0.322.5, #3/#4 follow).
+
 ## 0.322.4 — 2026-08-20
 
 ### Fixed
