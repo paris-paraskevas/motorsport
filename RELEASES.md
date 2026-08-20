@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.314.0 — 2026-08-20
+
+**The series reference pages catch up with the redesign.** Drivers, standings, results, champions and circuits now read like the rest of the paper — each one a proper standalone page with its own masthead and a way back — and the series page itself now links straight to standings and results.
+
 ## 0.313.1 — 2026-08-20
 
 **Tiny calendar polish.** Select all and Clear now sit right beside the Filters label where your eye starts, not across the page.

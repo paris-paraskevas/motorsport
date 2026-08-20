@@ -3,19 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { loadSeries, loadSeriesMeta } from '@/lib/series';
-import { seriesWithThreads } from '@/lib/threads';
-import { resolveTab, labelForTab, describeTab, type TabKey } from '@/lib/tabs';
-import { topicForSeries, aboutGuideForSeries, pointsGuideForSeries, whatsNewGuideForSeries } from '@/lib/information/topics';
-import { publishedPostsForSeries } from '@/lib/blog';
+import { resolveTab, labelForTab, describeTab, seriesSubPages, type TabKey } from '@/lib/tabs';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
 import { withSocialMeta } from '@/lib/seo';
 import { Series } from '@/lib/types';
-import { SeriesTabs } from '@/components/SeriesTabs';
 import { StaleBanner } from '@/components/StaleBanner';
-import { NextRaceCountdown } from '@/components/NextRaceCountdown';
-import { CalendarTab } from '@/components/tabs/CalendarTab';
 import { AboutTab } from '@/components/tabs/AboutTab';
 import { HistoryTab } from '@/components/tabs/HistoryTab';
 import { ChampionsTab } from '@/components/tabs/ChampionsTab';
@@ -26,12 +20,14 @@ import { NewsTab } from '@/components/tabs/NewsTab';
 import { TracksTab } from '@/components/tabs/TracksTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
-// Shared shell for the series page, rendered by BOTH route entries: the bare
-// `/series/[slug]` (the calendar default) and the path-based `/series/[slug]/[tab]`
-// (B11). Path-based tabs are why both routes are now statically ISR-cacheable —
-// the old single `?tab=` page had to be `force-dynamic` (a searchParams read
-// defeats prerendering). The active tab is resolved + validated by each route
-// and passed in; this component never reads searchParams.
+// The series sub-pages' shared Paper shell (Round-3 ⑤–⑦, operator 2026-08-20:
+// "these pages still havent changed. change NOW. its drivers, standings,
+// results, champions and rounds"). Rendered ONLY by `/series/[slug]/[tab]` —
+// the bare `/series/[slug]` is the reimagined landing (its own page.tsx) and
+// the `calendar` tab 301s there, so this shell never renders a calendar. The
+// pre-Paper register (display-caps masthead, Learn-about grid, tab strip) is
+// gone; each sub-page stands alone under a serif masthead with a breadcrumb
+// up and a mono cross-link foot.
 
 /** Canonical URL for a series tab: the calendar tab is the bare-path landing,
  *  every other tab canonicals to its own path segment. */
@@ -61,8 +57,6 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
 
 function renderTab(activeTab: TabKey, series: Series) {
   switch (activeTab) {
-    case 'calendar':
-      return <CalendarTab series={series} />;
     case 'news':
       return <NewsTab series={series} />;
     case 'standings':
@@ -84,31 +78,35 @@ function renderTab(activeTab: TabKey, series: Series) {
   }
 }
 
+/** The sub-page's serif title — the page is about its subject, not the series
+ *  name (that's the breadcrumb). Single-event honours rolls read "Past winners". */
+function tabTitle(tab: TabKey, singleEvent: boolean | undefined, season: number): string {
+  if (tab === 'champions') return singleEvent ? 'Past winners' : 'Champions';
+  if (tab === 'tracks') return `${season} circuits`;
+  if (tab === 'results') return `${season} results`;
+  if (tab === 'drivers') return `The ${season} grid`;
+  return labelForTab(tab);
+}
+
 export async function SeriesPageView({ slug, activeTab }: { slug: string; activeTab: TabKey }) {
-  // Fetch the series and the "which series have threads?" set together — the
-  // latter is fail-soft (empty set on any error / Supabase down), so it can
-  // never slow or break the series page.
-  const [seriesResult, threadSlugs] = await Promise.all([
-    loadSeries(slug).then(
-      s => ({ ok: true as const, series: s }),
-      () => ({ ok: false as const, series: null }),
-    ),
-    seriesWithThreads(),
-  ]);
-  if (!seriesResult.ok) notFound();
-  const series = seriesResult.series;
-  const hasThreads = threadSlugs.has(slug);
+  const series = await loadSeries(slug).catch(() => null);
+  if (!series) notFound();
 
   const color = series.meta.color;
+  const title = tabTitle(activeTab, series.meta.singleEvent, series.meta.season);
 
-  const now = new Date();
-  const nextSession = [...series.sessions]
-    .filter(s => !s.dateOnly && s.start > now)
-    .sort((a, b) => a.start.getTime() - b.start.getTime())[0];
+  // Sibling sub-pages for the foot: every sub-page except this one; the
+  // calendar entry doubles as "Season overview" (the reimagined landing).
+  const siblings = [
+    ...seriesSubPages(series.meta).map(s =>
+      s.key === 'calendar' ? { ...s, label: 'Season overview' } : s,
+    ),
+    { key: 'news' as TabKey, label: 'News', href: `/series/${slug}/news` },
+  ].filter(s => s.key !== activeTab);
 
   return (
     <div
-      className={`relative ${PAGE_WIDE}`}
+      className={PAGE_WIDE}
       style={
         {
           '--tint': color, '--tint-fill': color,
@@ -120,232 +118,45 @@ export async function SeriesPageView({ slug, activeTab }: { slug: string; active
         data={breadcrumbLd([
           { name: 'Home', url: SITE_URL },
           { name: series.meta.name, url: `${SITE_URL}/series/${slug}` },
+          { name: title, url: `${SITE_URL}${seriesTabCanonical(slug, activeTab)}` },
         ])}
       />
-      {/* Hard series-color rule at the very top — the 2.0 accent treatment
-          (flat surfaces; color lives in rules and type, not washes). */}
-      <div
-        className="absolute top-0 left-0 right-0 h-0.5 -z-10"
-        style={{ backgroundColor: color }}
-      />
 
-      {/* Compact header: rule + display name + season, countdown right.
-          Everything above the tab rail fits one phone viewport with room
-          for content (the 9-tile grid this replaces did not). */}
-      <header className="mb-5">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <div className="flex items-stretch gap-3 min-w-0">
-            <span aria-hidden="true" className="w-1 shrink-0 bg-tint-fill" />
-            <div className="min-w-0">
-              <h1 className="font-display text-3xl md:text-4xl font-extrabold uppercase tracking-wide leading-none text-text truncate">
-                {series.meta.name}
-                <span className="text-tint">.</span>
-                <span className="sr-only"> {series.meta.season} season</span>
-              </h1>
-              <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted tnum">
-                {series.meta.season} season
-              </div>
-            </div>
-          </div>
-          {nextSession && (
-            <div className="ml-auto">
-              <NextRaceCountdown
-                target={nextSession.start.toISOString()}
-                label="Next session"
-                color={color}
-              />
-            </div>
-          )}
+      <header className="mb-6 border-b border-border pb-5">
+        <Link
+          href={`/series/${slug}`}
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+        >
+          ← {series.meta.name}
+        </Link>
+        <div className="mt-2 flex items-center gap-3">
+          <span aria-hidden="true" className="h-9 w-[4px] shrink-0" style={{ backgroundColor: color }} />
+          <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text lg:text-[46px]">
+            {title}
+          </h1>
         </div>
+        <p className="mt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+          {series.meta.name} · {series.meta.season} season
+        </p>
         <StaleBanner configured={series.configured} stale={series.stale} />
-        {/* Quick links at the top: series threads (left) + news (right) — the two
-            discussion/update surfaces (operator feedback). News is always live;
-            threads only appear when the series has any. */}
-        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5">
-          {hasThreads && (
-            <Link
-              href={`/threads?series=${slug}`}
-              className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
-            >
-              <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint-fill" />
-              {series.meta.name} threads →
-            </Link>
-          )}
-          <Link
-            href={`/series/${slug}/news`}
-            className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:text-text"
-          >
-            <span aria-hidden="true" className="inline-block h-2 w-2 bg-tint-fill" />
-            News →
-          </Link>
-        </div>
-        {/* F1-only: the Telemetry & Analysis hub (Decoder + Race Story per round)
-            isn't a series tab, so surface it here for mobile + desktop (0.114.1). */}
-        {slug === 'f1' && (
-          <div className="mt-3">
-            <Link
-              href="/f1/analysis"
-              className="inline-flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-1.5 transition-colors hover:bg-surface"
-            >
-              <span aria-hidden="true" className="inline-block h-3.5 w-[3px] shrink-0 bg-tint-fill" />
-              <span className="text-[13px] font-semibold text-text">F1 Telemetry &amp; Analysis</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-                Analysis &amp; Race Story →
-              </span>
-            </Link>
-          </div>
-        )}
       </header>
 
-      {/* Learn-about card: boosted to the top (operator 2026-07-14) as a
-          prominent entry point to the editorial/reference content. */}
-      <SeriesLearnMore slug={slug} name={series.meta.name} singleEvent={series.meta.singleEvent} />
-
-      <SeriesTabs slug={slug} activeTab={activeTab} singleEvent={series.meta.singleEvent} />
-
-      {/* Calendar tab only: subscribe to this series' schedule as a live ICS
-          feed (/api/calendar/[slug]). Plain-language labels (operator feedback
-          2026-07-03 — "Subscribe (webcal) · .ics" read as jargon): the primary
-          webcal: link opens the device's calendar app and keeps itself updated;
-          the https .ics link is the one-off-download fallback for clients (and
-          desktops) that don't register the scheme. */}
-      {activeTab === 'calendar' && (
-        <div className="-mt-2 mb-4 flex justify-end">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-            <a
-              href={`${SITE_URL.replace(/^https?:/, 'webcal:')}/api/calendar/${slug}.ics`}
-              className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-            >
-              Add to your calendar
-            </a>
-            {' · '}
-            <a
-              href={`/api/calendar/${slug}.ics`}
-              className="transition-colors duration-(--duration-fast) hover:text-text-muted"
-            >
-              download file
-            </a>
-          </span>
-        </div>
-      )}
-
-      {/* Stream the tab body: header + rail paint immediately while the
-          upstream fetches (standings/results scrapes) resolve. keyed so
-          switching tabs re-suspends instead of showing the old tab. */}
+      {/* Stream the tab body: the masthead paints immediately while the
+          upstream fetches (standings/results) resolve. Keyed so switching
+          sub-pages re-suspends instead of showing the old one. */}
       <Suspense key={activeTab} fallback={<TabLoading />}>
         {renderTab(activeTab, series)}
       </Suspense>
 
-      {/* Blog posts tagged with this series (its series_slug or a matching tag) —
-          only on the calendar landing, streamed, and self-hiding when empty. */}
-      {activeTab === 'calendar' && (
-        <Suspense fallback={null}>
-          <SeriesBlogPosts slug={slug} />
-        </Suspense>
-      )}
-
-    </div>
-  );
-}
-
-// "Learn about <series>" — the editorial/reference content that moved off the
-// tab rail (IA restructure Phase B). History + Rules now live in /information
-// (the /series/<slug>/{about,history} tab routes stay live until Phase C
-// redirects them); About/Champions/Drivers remain series routes for now.
-function SeriesLearnMore({
-  slug,
-  name,
-  singleEvent,
-}: {
-  slug: string;
-  name: string;
-  singleEvent?: boolean;
-}) {
-  const topic = topicForSeries(slug);
-  const about = aboutGuideForSeries(slug) ?? `/series/${slug}/about`;
-  const pointsHref = pointsGuideForSeries(slug);
-  const whatsNewHref = whatsNewGuideForSeries(slug);
-  const links: Array<{ label: string; href: string; blurb: string }> = [
-    { label: 'About', href: about, blurb: 'Overview' },
-    { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },
-    { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
-    ...(pointsHref ? [{ label: 'Points', href: pointsHref, blurb: 'How scoring works' }] : []),
-    ...(whatsNewHref ? [{ label: 'What’s new', href: whatsNewHref, blurb: '2026 changes' }] : []),
-    { label: singleEvent ? 'Past winners' : 'Champions', href: `/series/${slug}/champions`, blurb: 'Year by year' },
-    { label: 'Drivers', href: `/series/${slug}/drivers`, blurb: 'The grid' },
-  ];
-  // Telemetry-panel card (hairline grid via gap-px over a bg-border layer),
-  // deliberately not a rounded/gradient card — matches Paddock's own aesthetic.
-  return (
-    <section aria-label={`Learn about ${name}`} className="mb-6 border border-border bg-surface-elevated">
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <span aria-hidden="true" className="h-3 w-[3px] shrink-0 bg-tint-fill" />
-        <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-text">
-          Learn about {name}
-        </h2>
-      </div>
-      <div className="grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-5">
-        {links.map(l => (
-          <Link
-            key={l.label}
-            href={l.href}
-            className="group flex flex-col gap-0.5 bg-surface-elevated px-3 py-2.5 transition-colors duration-(--duration-fast) hover:bg-surface"
-          >
-            <span className="text-sm font-semibold text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
-              {l.label}
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-              {l.blurb} <span aria-hidden="true" className="text-text-muted transition-colors duration-(--duration-fast) group-hover:text-tint">→</span>
-            </span>
+      <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-border pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">
+        <span className="text-text-faint">More {series.meta.name}</span>
+        {siblings.map(s => (
+          <Link key={s.key} href={s.href} className="text-brand hover:underline">
+            {s.label}
           </Link>
         ))}
-        {/* Filler cells complete the last row per breakpoint: the hairline-grid
-            trick leaves the bg-border layer exposed where cells run out, which
-            reads as a mud block on the light themes (invisible on dark). One
-            div per potentially-missing cell, shown only where its column count
-            needs it. */}
-        {(() => {
-          const fill = (cols: number) => (links.length % cols === 0 ? 0 : cols - (links.length % cols));
-          const [f2, f3, f5] = [fill(2), fill(3), fill(5)];
-          return Array.from({ length: Math.max(f2, f3, f5) }, (_, i) => (
-            <div
-              key={`fill-${i}`}
-              aria-hidden="true"
-              className={`bg-surface-elevated ${i < f2 ? 'block' : 'hidden'} ${i < f3 ? 'sm:block' : 'sm:hidden'} ${i < f5 ? 'lg:block' : 'lg:hidden'}`}
-            />
-          ));
-        })()}
       </div>
-    </section>
-  );
-}
-
-// Blog posts tagged with this series — surfaces the Paddock blog on the series
-// page (operator: "on series, blogs show up based off tags"). Server-fetched and
-// fail-soft; renders nothing when there are no matching published posts.
-async function SeriesBlogPosts({ slug }: { slug: string }) {
-  const posts = await publishedPostsForSeries(slug, 4).catch(() => []);
-  if (posts.length === 0) return null;
-  return (
-    <section className="mt-8 border-t border-border pt-6">
-      <h2 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">
-        From the Paddock blog
-      </h2>
-      <ul className="space-y-3">
-        {posts.map(p => (
-          <li key={p.id}>
-            <Link href={`/blog/${p.slug}`} className="group block">
-              <span className="block text-sm font-medium leading-snug text-text transition-colors duration-(--duration-fast) group-hover:text-tint">
-                {p.title}
-              </span>
-              <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-text-muted">
-                {p.summary}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
+    </div>
   );
 }
 
