@@ -466,7 +466,7 @@ async function ReportBody({
             {circuitLayout && (
               <div className="mt-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={circuitLayout.svg} alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`} className="h-auto w-full max-w-[240px]" />
+                <img src={circuitLayout.svg} alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`} width={500} height={500} className="h-auto w-full max-w-[240px]" />
                 <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-text-faint">
                   Circuit map ·{' '}
                   <a href={circuitLayout.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-text-muted">
@@ -807,10 +807,19 @@ export default async function WeekendPage({
                       </div>
                       {circuitLayout && (
                         <figure className="hidden xl:block">
+                          {/* The desktop LCP element (PSI 2026-08-20 measured
+                              2.59 s of resource-load DELAY on a 3 KB file, i.e.
+                              pure late discovery). fetchPriority pulls it
+                              forward; the intrinsic 500x500 (every circuit SVG
+                              is square, checked across all 21) gives the box an
+                              aspect ratio before the file lands. */}
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={circuitLayout.svg}
                             alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`}
+                            width={500}
+                            height={500}
+                            fetchPriority="high"
                             className="h-auto w-full"
                           />
                           <figcaption className="mt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
@@ -909,7 +918,7 @@ export default async function WeekendPage({
                   {circuitLayout && (
                     <div className="mt-2 xl:hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={circuitLayout.svg} alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`} className="h-auto w-full max-w-[240px]" />
+                      <img src={circuitLayout.svg} alt={`${circuitMatch?.circuit.name ?? weekendTitleLabel} track layout`} width={500} height={500} className="h-auto w-full max-w-[240px]" />
                       <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.12em] text-text-faint">
                         Circuit map ·{' '}
                         <a href={circuitLayout.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-text-muted">

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.323.1 — 2026-08-20
+
+**Driver photos and circuit maps appear sooner.** Both were waiting until late in the page load before they even started downloading, and driver portraits were arriving at several times the size they are displayed at. They now load right away and at a sensible size, so profile and race-weekend pages feel quicker, especially on mobile.
+
 ## 0.323.0 — 2026-08-20
 
 **Standings pages stop jumping.** The season trend chart now holds its space from the moment the page arrives, so the table below it no longer shifts down when the chart appears, and the chart itself only loads when you actually scroll to it. Explainer hub pages also read better in screen readers.
