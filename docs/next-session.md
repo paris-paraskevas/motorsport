@@ -1,34 +1,41 @@
-# Next session — the operator's drafts, the AdSense audit, the image session
+# Next session — the blog approval, AdSense wave 2, then the image session
 
-Written at the 2026-08-20 session-30 wrap. `main` = 0.322.2, six merges today, all prod-verified. The full session record is `docs/HANDOFF.md` (top block) + `CHANGELOG.md` 0.321.2 → 0.322.2.
+Written at the 2026-08-20 session-30 close. `main` = **0.324.0**, twelve merges today, zero open PRs, every merge prod-verified. Full record: `docs/HANDOFF.md` (top block) + `CHANGELOG.md` 0.321.2 → 0.324.0.
 
-## 1. Blog corrections (the standing contract)
+## 1. The blog draft is waiting on you (time-sensitive)
 
-The operator writes both blogs from the delivered fact packs; Claude returns **corrections only** — factual errors, stale numbers, house-style breaches (no em dashes, no AI phrases, always link out). No drafting, no DB rows.
+The contract changed mid-session: you asked for drafts, not fact packs only. A finished **Zandvoort farewell preview** sits in the session-30 scratchpad as `draft-f1-dutch-grand-prix-2026-preview.md`, written in your voice from the 20 published posts, with:
+- a licence-verified hero (Verstappen at Zandvoort, CC BY 2.0, Danny Tax) and an inline 1975 podium shot (Anefo, CC BY-SA 3.0 NL), both eyeballed;
+- four Verstappen quotes, each sourced and linked ("It's a shame, but… the track's still there", "No one can take that away from us anymore", the "Dankjewel Zandvoort" helmet);
+- standings verbatim from `scripts/weekend-post-context.mts`, everything else fact-packed.
 
-- Fact packs (session-30 scratchpad, every claim sourced + retrieval-dated, UNVERIFIED lists at the end): `factpack-a-f1-summer-break.md` · `factpack-b-dutch-gp-zandvoort.md`.
-- Sprint question resolved: Zandvoort IS a sprint weekend (5th of 6 in 2026, its first and last GP); the calendar was right.
-- Re-pull the weather on writing day (venue-local dates; the exact Open-Meteo call is in pack B). Current model: cool, windy, heavy rain for Sprint Saturday.
-- Two traps already flagged in the packs: do NOT present "two DRS zones" as a 2026 fact (active-aero/Manual Override era — zone config UNVERIFIED), and the FIA shutdown citation is Article F3.1.1 of the restructured 2026 regs (not the old 21.8).
+On your yes: move it to `drafts/`, convert, then `draft-post.mts` inserts it as a **prod DB draft with `publish_at` null** for you to schedule in `/blog`. The race is Sunday 23 August, so this expires fast. Three things I flagged inside for your judgment: the "roughly one hundred thousand" crowd line (colour, not a verified 2026 figure), one voice bet ("which is its own kind of strange"), and an alternate second image if you want two.
 
-## 2. AdSense "Low value content" recovery (IDEAS NOW #1)
+Going forward you also want **images in every post** and **driver-radio embeds** (OpenF1 `team_radio`; player UX + rights stance still to design).
 
-- `ads.txt` serves correctly on prod; the console's "Not found" is a stale Aug-5 crawl. The real gate is the policy verdict, which predates the 126-bio day, the Paper reimagining and the meta-description sweep.
-- Work: audit the weakest indexed URL families against Google's minimum-content / thin-content docs, strengthen or noindex, THEN the operator ticks "I confirm" + Request review — once, when we believe it.
+## 2. AdSense: wave 2 and four decisions
 
-## 3. THE IMAGE SESSION (operator: "the biggest job we have ever done")
+Wave 1 shipped (F1 champion answers 1996-2025, `content/series/f1/champion-notes.json`, fail-soft so each new wave is data-only). Next:
+- **MotoGP champion notes** — its researcher died on the cap producing nothing; when redone, note it had already caught that season-page table extraction fails arithmetic there (sums 337/241 vs actual 309/245), so that source is unreliable.
+- **Your decisions** (all in `IDEAS.md` NOW #1): making Race Story public on completed sessions (the cheapest verdict-mover — hundreds of pages enriched at zero authoring cost, and it needs the SEO-Phase-2b ISR unpark that the sweep independently asked for); the two stub components' copy and whether contentless tabs stay indexed; noindex on the 15 news tabs (the one family enrichment can't fix).
+- Then Request review **once**, when we believe it.
 
-- Evaluate then steadily add licence-clean imagery ("humans understand visually"). Hard constraint: portraits ×14 and team logos were killed on licensing — every image needs a clean source (Commons already works for driver profiles; survey official press pools per series first).
-- Layout reference the operator likes: **Fotis' testing build** — big series image card beside the lead story, UP NEXT strip (session, venue, weather, countdown, watch-live) under the pair.
-- Riding along: home image boxes leading to series/calendar; blog driver-radio embeds (OpenF1 `team_radio`); and the now-orphaned `content/landing/circuits.json` + `public/landing/circuits/*` (dead since the orphan sweep — reuse or delete here).
+## 3. PSI: re-measure the deltas
 
-## 4. Small standing items
+Four packages shipped against the sweep. Re-run `/`, `/series/f1/standings` and a weekend page, paste them, and I'll append the delta row. Expect: standings CLS 0.134 → ~0, mobile LCP down across the board from the font fix, driver/weekend LCP down from the image fix. A free PageSpeed API key would let me script future sweeps instead of you clicking twenty times.
 
-- **PSI re-run owed (operator)** → Claude appends the 0.321.2 delta row to `docs/perf-baselines.md` (expect the 7 s document stream gone, mobile LCP toward ~1.5-2 s, SI collapsing from 10.8 s).
-- Confirm the warm-live-data scheduled runs stay green (first post-fix run was mid-flight at the wrap; the lockfile disease is 2-for-2 after dependency merges — consider an `npx npm@10 ci --dry-run` gate or a failure alert, logged in HANDOFF).
-- HANDOFF trim (~480 KB) remains overdue (IDEAS NOW).
-- Operator dashboard clicks: GSC Validate-fix + noindex re-validate · Bing meta re-validate · avatar-menu signed-in eyeball · the two `/feedback` DONE moves.
+## 4. Three design/behaviour decisions
+
+- **Serwist `cacheOnNavigation`**: the /calendar `DataCloneError` is upstream (`@serwist/turbopack@9.5.12` forwards a `URL` into `postMessage`). Recommend dropping the flag — offline was removed in 0.268.0, so it is vestigial and currently throwing.
+- **Calendar contrast**: mono agenda times under 4.5:1 on Paper; recommend a token nudge.
+- **Month-grid tap targets**: recommend accept as-is.
+
+## 5. Then the big one
+
+**THE IMAGE SESSION** — your words, "the biggest job we have ever done". Licence-clean imagery at scale (Commons works; portraits/logos died on licensing before, so every source gets checked), the Fotis testing-build layout as reference, home refined with image boxes to series/calendar. Information hubs are also the last pre-Paper surface and should be restyled in the same pass.
 
 ## Ritual per PR (unchanged, hard-won)
 
-`git checkout -b <branch> main` as the **literal first action after every merge** → edits → `rm -rf .next/dev` → `npx tsc --noEmit` → `npm run lint` → `npm test` (1125; a lone red under load is the documented flake — rerun, never weaken) → `npm run build` and CHECK the exit → dev browser verify (stop dev before any build; kill by PID via port, never by image name) → trio (`package.json` + `CHANGELOG.md` + `RELEASES.md`) → commit, no Claude attribution → push → PR with what/why/verified → squash-merge → verify prod ~9 min later with a background `Bash` curl (Playwright MCP died 2026-08-20; `npx playwright screenshot` is the working browser check). Prod data writes only through the scheduled GitHub pathway, or when the operator names the action.
+`git checkout -b <branch> main` as the **literal first action after every merge** → edits → `rm -rf .next/dev` (kill dev FIRST — deleting it under a live server 500s the server) → `npx tsc --noEmit` → `npm run lint` (0 errors; 2 known `_encoding` warnings) → `npm test` (1125) → `npm run build` exit-checked → browser-verify on dev (Playwright MCP or `npx playwright screenshot`) → trio (`package.json` + `CHANGELOG.md` + `RELEASES.md`) → commit with no Claude attribution → PR with what/why/verified → squash-merge → prod-verify ~9 min later with a background curl. Kill processes by PID via the port, never by image name. Prod data writes only through the scheduled GitHub pathway, or when you name the action.
+
+**Subagent rule, re-learned the hard way today:** one research agent at a time. Three in parallel hit your session cap; two left recoverable partial work (validated and shipped), one left nothing. Always check for partial output before redoing an interrupted agent's job, and never merge an interrupted branch without re-running the whole gate chain.

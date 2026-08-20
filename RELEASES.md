@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.324.1 — 2026-08-20
+
+**Internal housekeeping.** Session records and planning notes brought up to date; nothing user-facing changed.
+
 ## 0.324.0 — 2026-08-20
 
 **Championship answers now tell you the story, not just the name.** Every Formula 1 season from 1996 to 2025 gains where and when the title was actually clinched, plus what that season is remembered for: Hamilton passing Glock at the last corner in 2008, Schumacher scraping a single point at Suzuka in 2003, the identical qualifying times at Jerez in 1997. Sources are listed on each answer. More series follow.

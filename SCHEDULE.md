@@ -1403,6 +1403,15 @@ Operator-added mid-session, all shipped (six merges total, 0.321.2 → 0.322.2, 
 
 Won't-touch honored: bundle/unused-JS hunt, CSP/COOP, browserslist polyfills, warm-cron CADENCE (the lockfile fix is not a cadence change), champions/bios waves, HANDOFF trim (pickup block prepended only), `content/series/` data. The landing-orphan deletion moved out of won't-touch on the operator's explicit go.
 
+**Session 30 continued (afternoon/evening) — the PSI sweep, the AdSense turn, and the blog contract flipping.** Twelve merges total, 0.321.2 → 0.324.0, zero open PRs at close.
+
+- → done: **PSI sweep across all 10 major page templates** (operator ran pagespeed.web.dev, Claude recorded + diagnosed each). Table appended to `docs/perf-baselines.md`. Four fix packages, all shipped and prod-verified: fonts + Redis-out-of-browser (0.322.4), tap targets + gtag/Clerk dispositions (0.322.5), standings chart frame/canvas split killing CLS 0.134 (0.323.0), LCP images (0.323.1).
+- → done: **AdSense "Low value content" audit** (subagent) → operator chose enrich-not-noindex → **wave 1 shipped**: F1 champion answers 1996-2025 gain the clinch and the season (0.324.0).
+- → done: **the wordmark, the feed, the threads fail-soft, the orphan sweep, the home 50/50 band** — and the discovery that `warm-live-data` had been dead for 28 hours on the recurring lockfile hole (fixed, four consecutive green runs since).
+- → done: **blog contract flipped mid-session** (operator: "give me a draft") → read the 20 published posts for voice, delivered a Zandvoort-farewell preview draft with licence-verified images and sourced quotes. Awaiting approval; not inserted anywhere.
+- → survived: **three subagents died on the session cap at ~16:40**; two had recoverable partial output (validated + shipped), one produced nothing. Model switched to Opus 5 mid-session; everything already merged had been gate-verified by the orchestrator either way, and the close ran a consolidated prod audit per fix.
+- → NOT done, deliberately: MotoGP champion notes (wave 2), the serwist `cacheOnNavigation` decision, calendar contrast token, stub-page copy/indexing, news-tab noindex — all operator calls, all logged in `IDEAS.md` NOW with evidence.
+
 Active: _(no [+Nm] prefixes captured this session)_
 
 ---
