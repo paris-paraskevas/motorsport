@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.322.1 — 2026-08-20
+
+### Fixed
+- **feed.xml finally carries DB-published posts.** `app/feed.xml/route.ts` read only legacy MDX (`loadAllPosts`) — the exact bug the sitemap had until 0.246.1 fixed it for the sitemap alone, so RSS subscribers have seen nothing since the MDX era (and `content/posts` is deliberately empty). Now merges both sources with the same precedence as `lib/sitemap-data.ts` and the /blog page: DB `publishedPosts()` + MDX, dedupe by slug with DB winning, both fail-soft, imported articles (`original_url`) excluded because they canonicalize off-site. Null `published_at` rows (hand-flipped posts; only the publish cron stamps the column) stay in the feed dateless instead of emitting a bogus epoch. Also swapped `force-dynamic` + a dead `s-maxage` header (caches nowhere on the Workers runtime) for `revalidate = 300` — the route now builds `○ 5m` ISR. Verified: local dev serves valid RSS through the fail-soft path (local DB down, MDX empty → clean empty channel); prod check after deploy shows the published posts.
+
 ## 0.322.0 — 2026-08-20
 
 ### Changed

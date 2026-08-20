@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.322.1 — 2026-08-20
+
+**The RSS feed works again.** Subscribers to the site's feed now receive every published blog post; the feed had quietly stopped carrying new writing after the blog moved to its current publishing system.
+
 ## 0.322.0 — 2026-08-20
 
 **The PADDOCK•TRACKER wordmark is back.** The site's logo returns to the header on every page, in the site's accent colour, replacing the plain-text name it had quietly become.
