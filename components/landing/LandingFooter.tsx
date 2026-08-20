@@ -42,7 +42,7 @@ export function LandingFooter({ seriesList }: { seriesList: SeriesMeta[] }) {
     <footer className="bg-bg">
       <div className="mx-auto grid max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
         <div>
-          <p className="font-display text-lg font-extrabold uppercase tracking-wide text-text">
+          <p className="font-condensed text-lg font-bold uppercase tracking-[0.06em] text-text">
             Paddock<span className="text-brand">•</span>Tracker
           </p>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">

@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.322.0 — 2026-08-20
+
+### Changed
+- **The PADDOCK•TRACKER wordmark returns** (operator: "priority is for us to get back our logo because we have lost it atm"). The Paper reimagining had reduced the brand to serif "Paddock Tracker" text in both headers while the real mark survived only in `LandingFooter` and the OG images. One shared treatment now sits at all three call sites — `components/AppShell.tsx` (app header; mobile shows PADDOCK for width), `components/landing/LandingNav.tsx`, `components/landing/LandingFooter.tsx`: `font-condensed font-bold uppercase tracking-[0.06em]` with the separator dot in `text-brand`, so the dot is oxblood on Paper and each dark theme's accent elsewhere. Plex Sans Condensed is the type system's names face (lib/fonts.ts quarantine), which a wordmark is; the footer's old `font-display` alias (plain Sans since the Plex migration) is replaced for consistency.
+
 ## 0.321.4 — 2026-08-20
 
 ### Fixed
