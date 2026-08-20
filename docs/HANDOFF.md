@@ -29,11 +29,11 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 4. **The stale-list lesson repeats**: the "17 orphans" list was 4 stale + 2 short; the real set came from re-grepping the tree. Recompute deletion sets at execution time, never trust carried counts.
 
 ### 🩹 Owed (operator) — carried + new
-- **PSI re-run on `/`** (mobile+desktop) → Claude appends the perf-baselines delta row.
-- Signed-in eyeball of the avatar menu on prod (0.318.0) · **Search Console**: Validate fix on "Soft 404" + re-validate "Excluded by noindex" · **Bing**: re-validate "Meta descriptions too short" (0.319.0) — all three are dashboard clicks only the operator can do.
-- Move the two `/feedback` board items (Calendar Mobile, Formula E screen) to DONE.
+- **Paste the root PSI re-run figures** — the operator re-ran same-day and reports "better on root"; the append-only `docs/perf-baselines.md` row needs the actual numbers (mobile+desktop scores, LCP, SI).
+- CLEARED same-day (operator, 2026-08-20 late): avatar-menu signed-in eyeball ✓ · GSC Validate-fix + noindex re-validate ✓ · Bing meta re-validate ✓ · the two `/feedback` DONE moves ✓.
 - Key rotations + dead `.supabase-pat` (long-carried).
 - AdSense: after the content audit lands, tick "I confirm" + Request review (one shot).
+- Decide the PSI-sweep mechanics: a PageSpeed API key (Claude scripts ~20 runs) or manual pagespeed.web.dev clicks per page (new session logged in IDEAS NOW).
 
 ### 📎 Session artifacts
 Fact packs + all verification screenshots live in the session scratchpad (`factpack-a-f1-summer-break.md`, `factpack-b-dutch-gp-zandvoort.md`, `prod-audit-landing.png`, `dev-home-5050.png`, `wordmark-landing.png`, `wordmark-app-mobile.png`, `threads-failsoft.png`). IDEAS.md was re-triaged end to end (fossils deleted, 11 dated kills, big rocks parked with triggers, NOW = AdSense recovery · image/positioning · v1.0 launch · HANDOFF trim).
