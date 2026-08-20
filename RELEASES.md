@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.325.1 — 2026-08-20
+
+**Internal housekeeping.** Session records brought up to date; nothing user-facing changed.
+
 ## 0.325.0 — 2026-08-20
 
 **MotoGP championship answers get the same treatment.** Every premier-class season from 2011 to 2025 now tells you where and when the title was actually settled and what made that year: Stoner winning at home on his birthday, Bagnaia clawing back ninety-one points, Quartararo coming from fifteenth on the grid at Misano. Sources are listed on each answer.
