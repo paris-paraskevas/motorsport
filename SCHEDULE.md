@@ -1384,6 +1384,22 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Thu 2026-08-20 (session 30 — PSI first, then blog fact packs + IDEAS triage)
+
+Operator's order: the PageSpeed regression is handled FIRST (new landing: mobile 69, LCP 5.7 s, SI 10.8 s), then the two blog fact packs (operator writes, Claude supplies data only), plus an IDEAS.md triage read-out ("content close to perfect", clean it up).
+
+1. PSI: root-caused the ~7 s landing document stream (Last-time-out podium chain; details in the session log). Fix PR: time-budget + negative-cache in `lib/home-results.ts` + `app/(marketing)/page.tsx`. Gates → PR → merge → prod verify → PSI re-run → `docs/perf-baselines.md` row. ESPA plan presented, awaiting approval.
+2. Zandvoort sprint check (gates Blog B) → done: it IS a sprint weekend (5th of 6 in 2026, Zandvoort's first and last). Our calendar is CORRECT, no `content/series/f1/` fix needed.
+3. Blog A fact pack, F1 summer break (scratchpad, per-claim sources, UNVERIFIED list).
+4. Blog B fact pack, Dutch GP preview (scratchpad, venue-local weather via Open-Meteo).
+5. IDEAS triage presented for operator kill/keep calls.
+
+Won't touch this session: bundle/unused-JS hunt, CSP/COOP headers, browserslist polyfills, warm-cron cadence, landing-orphan deletion (still needs the operator's go), champions/bios waves, HANDOFF trim, any `content/series/` data edits.
+
+Active: _(awaiting [+Nm] prefixes)_
+
+---
+
 ### Thu 2026-08-20 (session 29 cont. — feedback board + Round-3 intake)
 
 Operator at the desk, steering live: feedback-board screenshot ("Calendar Mobile — chaotic"; "Formula E is done, that needs to be clear"; freehand "check all screens on mobile") + mid-turn asks (distinct Paper lines; calendar filter box like old Paddock; ink month bar with cut arrow boxes; champion outranks race winner) + 5 annotated screenshots on the old `/series/f1/*` tab pages.

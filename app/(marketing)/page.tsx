@@ -5,7 +5,7 @@ import { loadAllSeries } from '@/lib/series';
 import { groupByWeekend } from '@/lib/group';
 import { weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { isThisWeekend } from '@/lib/date';
-import { fetchLatestPodium, homeResultsSupported } from '@/lib/home-results';
+import { fetchFirstPodiumWithin, homeResultsSupported } from '@/lib/home-results';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { JsonLd } from '@/components/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/json-ld';
@@ -59,36 +59,39 @@ function rangeLabel(rows: WeekendRow[]): string {
 }
 
 // "Last time out" — the most recent finished round with a real podium, tried
-// newest-first across the covered series. Network (KV-cached results feeds),
-// so it streams behind Suspense inside the hero panel.
+// newest-first across the covered series. Network-backed (KV podium cache), so
+// it streams behind Suspense inside the hero panel, hard-capped by a 2 s
+// budget: React holds the ISR document stream open until this resolves, and an
+// uncapped cold lookup meant ~7 s of doomed upstream fetches on every render
+// (the 2026-08-20 PSI stall — the Worker's upstream egress is blocked, so a
+// cold candidate can only burn its timeouts and fail).
+const LAST_TIME_OUT_BUDGET_MS = 2000;
+
 async function LastTimeOut({ candidates }: { candidates: string[] }) {
-  for (const slug of candidates.slice(0, 3)) {
-    const race = await fetchLatestPodium(slug).catch(() => null);
-    const winner = race?.podium?.[0];
-    if (!race || !winner) continue;
-    const surname = winner.name.split(' ').slice(-1)[0];
-    const margin = race.podium[1]?.time?.startsWith('+') ? race.podium[1].time : null;
-    const date = new Date(race.date);
-    const dateLabel = Number.isNaN(date.getTime())
-      ? null
-      : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' });
-    return (
-      <div className="mt-4 border-t border-border pt-3">
-        <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-          Last time out
-        </span>
-        <p className="mt-1 font-serif text-[17px] font-semibold leading-tight text-text">
-          {surname} wins — {race.raceName}
-        </p>
-        <p className="mt-0.5 font-mono text-[10px] tabular-nums uppercase tracking-[0.12em] text-text-faint">
-          {margin ? `by ${margin.replace(/^\+/, '')}` : ''}
-          {margin && dateLabel ? ' · ' : ''}
-          {dateLabel ?? ''}
-        </p>
-      </div>
-    );
-  }
-  return null;
+  const race = await fetchFirstPodiumWithin(candidates, LAST_TIME_OUT_BUDGET_MS);
+  const winner = race?.podium[0];
+  if (!race || !winner) return null;
+  const surname = winner.name.split(' ').slice(-1)[0];
+  const margin = race.podium[1]?.time?.startsWith('+') ? race.podium[1].time : null;
+  const date = new Date(race.date);
+  const dateLabel = Number.isNaN(date.getTime())
+    ? null
+    : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+  return (
+    <div className="mt-4 border-t border-border pt-3">
+      <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        Last time out
+      </span>
+      <p className="mt-1 font-serif text-[17px] font-semibold leading-tight text-text">
+        {surname} wins — {race.raceName}
+      </p>
+      <p className="mt-0.5 font-mono text-[10px] tabular-nums uppercase tracking-[0.12em] text-text-faint">
+        {margin ? `by ${margin.replace(/^\+/, '')}` : ''}
+        {margin && dateLabel ? ' · ' : ''}
+        {dateLabel ?? ''}
+      </p>
+    </div>
+  );
 }
 
 export default async function Landing() {
@@ -102,9 +105,11 @@ export default async function Landing() {
     category: s.meta.category,
   }));
 
-  // Group every series' season once (local ICS, no network) and derive both
-  // hero facts from it: what runs this weekend, and where the most recent
-  // finished round is (the Last-time-out candidate order).
+  // Group every series' season once and derive both hero facts from it: what
+  // runs this weekend, and where the most recent finished round is (the
+  // Last-time-out candidate order). NB loadAllSeries above is NOT local-only:
+  // configured feeds fetch over the network through a 6 h data cache
+  // (lib/ics.ts fetchIcsText), with the bundled fallback ICS on failure.
   const perSeries = all.map(s => {
     let weekends: Weekend[];
     try {

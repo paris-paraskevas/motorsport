@@ -130,8 +130,18 @@ async function fetchWecLatest(nowMs: number): Promise<LatestRace | null> {
   };
 }
 
+/** Stored in place of a podium when a lookup yields nothing (fetch failure or
+ *  no finished race). Short-TTL negative cache: on the Worker the community
+ *  data APIs block datacenter egress, so a cold series' fan-out is seconds of
+ *  doomed, rate-limited fetches — and without this sentinel every ISR render
+ *  re-paid it (the 2026-08-20 landing PSI stall). The warm paths pass `force`,
+ *  which skips the read, so recovery is automatic once a fetch can succeed. */
+const NO_PODIUM_SENTINEL = 'none';
+const NO_PODIUM_TTL_SECONDS = 15 * 60;
+
 /** Latest finished race + podium for a covered series, KV-cached + fail-soft.
- *  Returns null for unsupported series or on any fetch/parse failure. */
+ *  Returns null for unsupported series or on any fetch/parse failure; a null
+ *  outcome is negative-cached for 15 minutes (NO_PODIUM_SENTINEL above). */
 export async function fetchLatestPodium(
   slug: string,
   opts: { force?: boolean } = {},
@@ -144,7 +154,8 @@ export async function fetchLatestPodium(
   // The warm cron passes `force` to bypass the read-through and refresh the KV
   // on a timer (so the /api/just-missed request path never hits upstream cold).
   if (!opts.force) {
-    const cached = await readResultsCache<LatestRace>(key);
+    const cached = await readResultsCache<LatestRace | typeof NO_PODIUM_SENTINEL>(key);
+    if (cached === NO_PODIUM_SENTINEL) return null;
     if (cached) return cached;
   }
   try {
@@ -164,8 +175,42 @@ export async function fetchLatestPodium(
       result = latestRaceFromFlat(races, Date.now());
     }
     if (result) await writeResultsCache(key, result);
+    else await writeResultsCache(key, NO_PODIUM_SENTINEL, NO_PODIUM_TTL_SECONDS);
     return result;
   } catch {
+    await writeResultsCache(key, NO_PODIUM_SENTINEL, NO_PODIUM_TTL_SECONDS);
     return null;
+  }
+}
+
+/** First candidate whose latest race carries a podium, inside a hard time
+ *  budget.
+ *
+ *  The landing's Last-time-out block streams behind Suspense, and React holds
+ *  the ISR document stream open until it resolves — so the whole lookup chain
+ *  races `budgetMs` and the block renders empty past it (its designed no-data
+ *  state). Candidates are tried in order (most recent finished weekend first),
+ *  capped at 3 as the block always was. `lookup` is injectable for tests only.
+ */
+export async function fetchFirstPodiumWithin(
+  candidates: string[],
+  budgetMs: number,
+  lookup: (slug: string) => Promise<LatestRace | null> = fetchLatestPodium,
+): Promise<LatestRace | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const expired = new Promise<null>(resolve => {
+    timer = setTimeout(() => resolve(null), budgetMs);
+  });
+  const first = (async () => {
+    for (const slug of candidates.slice(0, 3)) {
+      const race = await lookup(slug).catch(() => null);
+      if (race && race.podium.length > 0) return race;
+    }
+    return null;
+  })();
+  try {
+    return await Promise.race([first, expired]);
+  } finally {
+    clearTimeout(timer);
   }
 }
