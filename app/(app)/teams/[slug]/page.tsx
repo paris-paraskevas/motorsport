@@ -44,7 +44,8 @@ export async function generateMetadata({
   // notFound() in metadata, not a fallback title: the streamed shell flushes
   // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
   if (!team) notFound();
-  const description = `${team.name} — ${team.seriesName} lineup, season form and drivers.`;
+  // ~190 chars: Bing WMT flagged the old one-liner as too short (2026-08-20).
+  const description = `${team.name} in ${team.seriesName} — the current driver lineup with numbers and codes, championship form and points for every driver, race-by-race results and the latest team news, updated through the season.`;
   return {
     title: team.name,
     description,

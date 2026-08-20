@@ -37,7 +37,8 @@ export async function generateMetadata({
   // notFound() in metadata, not a fallback title: the streamed shell flushes
   // before the body's notFound() can 404 (soft-404 class, weekend/[round]).
   if (!driver) notFound();
-  const description = `${driver.name}, ${driver.team} (${driver.seriesName}) — season form, results, team.`;
+  // ~190 chars: Bing WMT flagged the old one-liner as too short (2026-08-20).
+  const description = `${driver.name} — ${driver.team} in ${driver.seriesName}. Season form and race-by-race results with championship position after every round, points, podiums, the next session countdown and the latest news mentions.`;
   return {
     title: driver.name,
     description,

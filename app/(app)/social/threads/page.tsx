@@ -12,7 +12,8 @@ import { PAGE_READ } from '@/lib/site';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Threads',
-  description: 'Community threads — fan discussion across the grid, lightly moderated.',
+  description:
+    'Community threads on Paddock Tracker — fan discussion across Formula 1, MotoGP, WEC, IndyCar and the rest of the grid. Start a thread or join one; lightly moderated, sign in to post.',
 };
 
 // Paper masthead (round-2 ⑨) — the display-caps register was pre-reimagining.

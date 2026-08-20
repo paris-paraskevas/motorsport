@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.318.0 — 2026-08-20
+## 0.319.0 — 2026-08-20
+
+### Changed
+- **Meta descriptions grow to SERP length across six template families** (Bing Webmaster Tools: 33 pages flagged "too short"; target 150–160). All fixed at the GENERATOR, so sibling pages Bing hasn't scanned yet clear too: `lib/tabs.ts` `describeTab` (all nine series sub-page cases — calendar/news/standings/results/drivers/tracks/about/history/champions rewritten to ~150–200 chars reflecting what the rebuilt pages actually show, e.g. drivers mentions the standings join); driver profiles (`app/(app)/drivers/[slug]`) and team pages (`app/(app)/teams/[slug]`) get composed ~190-char descriptions; `/social/threads` names the grid and how to post; information topic hubs compose the blurb with the hub's offer; information guides append sourced-explainer context only when the frontmatter summary is under 140 chars (longer summaries pass through). Verified against all 33 flagged URLs on dev: 32 render 174–234 chars; `/social/threads` 500s on LOCAL only (the known `listThreads` no-fail-soft with local Supabase down — its description is a static export and ships regardless).
+
+
 
 ### Changed
 - **The avatar opens an account menu** (operator, Gantt-app reference: "If i then click Profile i will go to account page. If not i have access to blog, whats new, about, sign out"). `components/AppShell.tsx` `HeaderAccount`: the 26px avatar-link (straight to /settings) becomes a **32px avatar button** opening a Paper dropdown — signed in: name + email header, **Profile** (/settings), **What's new** (/changelog), **Blog**, **About**, **Sign out** (Clerk `SignOutButton`, redirect /); signed out: **Sign in** leads the same menu. Outside-click + Escape close it. A version-gated What's-New MODAL (the reference's hero-card dialog) is logged in IDEAS — the menu links the changelog for now.
