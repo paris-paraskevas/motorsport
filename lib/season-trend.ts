@@ -205,3 +205,58 @@ export function buildStandingsAtRound(
     throughRound: counted.reduce((m, r) => Math.max(m, r.round), 0),
   };
 }
+
+/**
+ * Constructors' cumulative-points trend, one line per team (operator ask,
+ * 2026-08-20: "chart for constructors standings would be good").
+ *
+ * Built by walking `buildStandingsAtRound` round by round rather than summing
+ * driver lines: that function attributes points PER RACE ENTRY, so a
+ * mid-season seat swap lands on the team the driver actually scored for, and
+ * the final round's values are the same numbers the constructors table shows —
+ * the chart-vs-standings invariant (CHANGELOG header) holds by construction
+ * rather than by luck. `aggregateTeamsTrend` deliberately isn't reused here:
+ * its own docstring rules it out for championship math.
+ *
+ * Shaped as SeasonTrendData so it renders through the existing chart: teams
+ * occupy the `drivers` slot, with `team` set to the same string so the chart's
+ * F1 team-colour map resolves. Empty `data` when no round has team points
+ * (series whose results carry no team strings) — the caller hides the chart.
+ */
+export function buildConstructorsTrendData(
+  races: RaceResult[],
+  extras: RaceResult[] = [],
+): SeasonTrendData {
+  const sorted = [...races].sort((a, b) => a.round - b.round);
+  const rounds = [...new Set(sorted.map(r => r.round))].sort((a, b) => a - b);
+
+  const snapshots = rounds.map(round => ({
+    round,
+    raceName: sorted.find(r => r.round === round)?.raceName ?? `Round ${round}`,
+    standings: buildStandingsAtRound(races, round, extras).constructors,
+  }));
+
+  const names: string[] = [];
+  for (const s of snapshots) {
+    for (const c of s.standings) if (!names.includes(c.name)) names.push(c.name);
+  }
+  if (names.length === 0) return { data: [], drivers: [], totalsByDriver: {} };
+
+  const data: SeasonTrendPoint[] = snapshots.map(s => {
+    const point: SeasonTrendPoint = { round: s.round, raceName: s.raceName };
+    const byName = new Map(s.standings.map(c => [c.name, c.points]));
+    for (const n of names) point[n] = byName.get(n) ?? 0;
+    return point;
+  });
+
+  const last = data[data.length - 1];
+  const totalsByDriver: Record<string, number> = {};
+  for (const n of names) totalsByDriver[n] = Number(last?.[n]) || 0;
+
+  return {
+    data,
+    // `team: n` so the chart resolves each line's team colour by the same key.
+    drivers: names.map(n => ({ name: n, team: n })),
+    totalsByDriver,
+  };
+}

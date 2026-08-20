@@ -41,7 +41,11 @@ import {
   applyDriverOverrides,
   applyConstructorOverrides,
 } from '@/lib/standings/overrides';
-import { buildSeasonTrendData, type SeasonTrendData } from '@/lib/season-trend';
+import {
+  buildSeasonTrendData,
+  buildConstructorsTrendData,
+  type SeasonTrendData,
+} from '@/lib/season-trend';
 import { LazySeasonTrendChart as SeasonTrendChart } from '@/components/LazySeasonTrendChart';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 import { StandingsView } from '@/components/tabs/StandingsView';
@@ -272,12 +276,18 @@ function LinkOutCard({
 // the tables it must reconcile against keeps the chart-vs-standings invariant
 // (CHANGELOG header) visible. Renders below the tables; null trend = no chart
 // (standings still render when the results feed is empty or unavailable).
-function TrendSection({ trend }: { trend: SeasonTrendData | null }) {
-  if (!trend) return null;
+function TrendSection({
+  trend,
+  title = "Drivers' season trend",
+}: {
+  trend: SeasonTrendData | null;
+  title?: string;
+}) {
+  if (!trend || trend.data.length === 0) return null;
   return (
     <section className="border-y border-border py-4">
-      <h2 className="font-display text-sm font-extrabold uppercase tracking-wide text-text mb-3">
-        Drivers&apos; season trend
+      <h2 className="mb-3 border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        {title}
       </h2>
       <SeasonTrendChart
         data={trend.data}
@@ -352,10 +362,11 @@ export async function StandingsTab({ series }: { series: Series }) {
       overrides?.constructors,
     );
     // Sprint points fold into the same x-axis round as the parent race.
-    const trend =
-      races.length > 0
-        ? buildSeasonTrendData(applyResultsOverrides(races, resultsOverrides), sprints)
-        : null;
+    const patchedRaces = races.length > 0 ? applyResultsOverrides(races, resultsOverrides) : [];
+    const trend = races.length > 0 ? buildSeasonTrendData(patchedRaces, sprints) : null;
+    // The constructors' equivalent (operator ask, 2026-08-20) — derived from
+    // buildStandingsAtRound per round, so its last point equals the table.
+    const teamTrend = races.length > 0 ? buildConstructorsTrendData(patchedRaces, sprints) : null;
     const sections = [
       {
         key: 'drivers',
@@ -370,7 +381,12 @@ export async function StandingsTab({ series }: { series: Series }) {
       {
         key: 'constructors',
         label: 'Constructors',
-        content: <ConstructorsTable constructors={constructors} />,
+        content: (
+          <>
+            <TrendSection trend={teamTrend} title="Constructors' season trend" />
+            <ConstructorsTable constructors={constructors} />
+          </>
+        ),
       },
     ];
     return (
