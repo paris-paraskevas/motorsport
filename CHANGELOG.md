@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.325.0 — 2026-08-20
+
+### Added
+- **AdSense enrichment wave 2: MotoGP champion answers, 2011-2025.** `content/series/motogp/champion-notes.json`, 15 seasons of the modern era (where the search demand lives: the Márquez, Rossi, Lorenzo, Stoner, Quartararo, Bagnaia and Martín years), same sidecar shape as wave 1 — so this wave is data only, no code changed.
+  - Authored by the orchestrator rather than a subagent: the MotoGP researcher died on the operator's session cap having produced nothing, and relaunching was ruled out with limits demonstrably tight. Each clinch was verified against two or more primary/high-authority sources (motogp.com, fim-moto.com, Autosport, Motorsport.com, Crash, BBC, MotorcycleNews, MotoMatters), and the notes carry those URLs so every claim is traceable on the page.
+  - **All 15 notes cross-check clean against `champions.json`**: 2024's ten-point margin, 2019's 151-point gap and 420-point record, 2017's thirty-seven, 2015's five, 2013's four, plus the win counts for 2025 (11), 2020 (1, the fewest of any premier-class champion), 2019 (12), 2016 (5), 2014 (13, still the record) and 2011 (10). Style-gated: zero em dashes, zero AI-tell phrases, 66-83 words each.
+  - One source conflict caught and resolved by our own data: a 2017 report gives Márquez's final margin as 36 points where `champions.json` has 298 to 261. The note uses **37**, our reconciled figure, per the pack-beats-source rule.
+  - Round-of-total parentheticals are deliberately omitted for MotoGP (unlike the F1 file): only the rounds-to-spare claims were directly sourced, so the notes assert only what was verified.
+  - Verified on dev: 2025, 2015 and 2011 render the clinch line and note with diacritics intact; **2008, outside the wave, renders exactly as before**.
+
 ## 0.324.1 — 2026-08-20
 
 ### Internal
