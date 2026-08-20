@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.321.3 — 2026-08-20
+
+### Removed
+- **Landing-orphan sweep (operator-approved), 15 files deleted.** The zero-import set was recomputed from today's tree rather than trusting the stale 17-name list: `components/landing/` TickerBar, Hero, MarqueeEvent, SeriesMarquee, StatsBand, FeatureBlocks, PredictionGame, DisciplinesGrid, PerksCta, LandingMenu, BigCountdown, clean-title, plus the two transitive orphans the old list missed (CountUp — only StatsBand imported it; CircuitSlideshow — only Hero), and `components/weekend/WeekendHero.tsx` (sole repo reference was its own export). The four old shell orphans on the list (HeaderNavMenu, HeaderUtils, search/SearchTrigger, search/SearchOverlay) were already deleted by #683. Live landing imports (StandaloneRedirect, LandingNav, InstallApp, LandingFooter, LandingAuth) untouched. NOTED (not done): `content/landing/circuits.json` + `public/landing/circuits/*` are now themselves orphaned (they fed CircuitSlideshow and still ship in the content bundle/deploy) — queued for the upcoming images PR rather than widening this approved deletion.
+
 ## 0.321.2 — 2026-08-20
 
 ### Fixed
