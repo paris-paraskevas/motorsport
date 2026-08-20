@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.311.1 — 2026-08-20
+## 0.312.0 — 2026-08-20
+
+### Changed
+- **The calendar filters become a box** (operator: "I prefer a filters box, like old paddock had. where you can 'select all' or unselect. also can select multiple leaving out multiple series"). `components/calendar/CalendarFilters.tsx` rewritten: `CalendarChips` → `CalendarFilterBox` — a bordered panel with a "FILTERS · all series / N of 15 / no series" rule header, **SELECT ALL / CLEAR** actions, the session-type pair, and **every series visible as a checkbox chip** (the "+N more" truncation is gone; fixed-width tick slot so chips don't shift on toggle). `CalendarView.tsx`: `toggleSeries` switches from tap-to-focus to **checkbox semantics** — unticking from "all" excludes just that series and keeps the rest; empty is a legal transient "none" (Clear → build up); full set collapses back to null/all. Persistence: an empty selection never persists (localStorage + URL both normalise to all — a stored "none" would greet the next visit with a blank calendar).
+
+
 
 ### Fixed
 - **The home podium names its race** (operator annotation on 0.310.0: "right side classification needs to be clear that its about the london gp"). `components/HomeLead.tsx`: in champion mode the h1 is about the title, so the right column's rule now reads "**LONDON EPRIX · CLASSIFICATION**" (`{raceName} · Classification`, truncating) instead of the bare "CLASSIFICATION"; normal mode keeps the bare label — there the h1 already names the race. Also logged Round 3 in `docs/next-session.md` (calendar filter box · mobile pass · the five series-tab rebuild screenshots) + the session ledger in `SCHEDULE.md`.

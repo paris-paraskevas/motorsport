@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.312.0 — 2026-08-20
+
+**Calendar filters live in a proper box now.** Every championship is visible at once as a tickable chip — nothing hidden behind a "more" button — with Select all and Clear shortcuts, so keeping everything except a couple of series is a matter of unticking them. Still applied the instant you tap.
+
 ## 0.311.1 — 2026-08-20
 
 **Small clarity fix on the home page.** When the headline crowns a champion, the podium beside it now says which race it belongs to.
