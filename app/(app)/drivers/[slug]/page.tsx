@@ -191,7 +191,7 @@ function EveryRound({ rounds }: { rounds: DriverSeasonForm['rounds'] }) {
           Every round this season
         </h2>
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-text-faint">
-          finish · points · running total
+          finish · points · total · championship
         </span>
       </div>
       <ul>
@@ -218,6 +218,15 @@ function EveryRound({ rounds }: { rounds: DriverSeasonForm['rounds'] }) {
             </span>
             <span className="w-12 shrink-0 text-right font-mono text-sm font-semibold tabular-nums text-text">
               {r.runningTotal}
+            </span>
+            {/* Title-race position after the round — blank on sprint rows
+                (standings are per-round; the position lands on the GP row). */}
+            <span
+              className={`w-10 shrink-0 text-right font-mono text-sm tabular-nums ${
+                r.championshipPosition === 1 ? 'font-semibold text-brand' : 'text-text-muted'
+              }`}
+            >
+              {r.championshipPosition != null ? `P${r.championshipPosition}` : ''}
             </span>
           </li>
         ))}
