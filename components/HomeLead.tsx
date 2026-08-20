@@ -145,8 +145,10 @@ export function HomeLead({
             </div>
             <div>
               <div className="flex items-baseline justify-between border-b border-text pb-1">
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                  Classification
+                {/* In champion mode the h1 is about the title, so the podium
+                    must name its race itself (operator annotation, 2026-08-20). */}
+                <span className="min-w-0 truncate font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  {championName ? `${result.raceName} · Classification` : 'Classification'}
                 </span>
               </div>
               <ul>

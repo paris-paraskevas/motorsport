@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.311.1 — 2026-08-20
+
+**Small clarity fix on the home page.** When the headline crowns a champion, the podium beside it now says which race it belongs to.
+
 ## 0.311.0 — 2026-08-20
 
 **The lines got darker.** Every divider and rule on the default paper look is now a clear step more visible, and the calendar's month bar draws itself in full ink with the previous/next arrows properly boxed off.

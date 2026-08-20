@@ -1384,6 +1384,18 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Thu 2026-08-20 (session 29 cont. — feedback board + Round-3 intake)
+
+Operator at the desk, steering live: feedback-board screenshot ("Calendar Mobile — chaotic"; "Formula E is done, that needs to be clear"; freehand "check all screens on mobile") + mid-turn asks (distinct Paper lines; calendar filter box like old Paddock; ink month bar with cut arrow boxes; champion outranks race winner) + 5 annotated screenshots on the old `/series/f1/*` tab pages.
+
+- → done: **season-complete clarity = 0.310.0** (#720; home leads SEASON COMPLETE → "Wehrlein is Formula E champion", winner demoted; series masthead + Final drivers' championship + champion callout; the odd NEXT ROUND/Season-complete rail block reworded) · **distinct lines = 0.311.0** (#721; paper `--border` #d6cebb→#c2b493, `--border-strong` →#91825e; calendar nav bar + arrow boxes in ink).
+- Queue written to `docs/next-session.md` Round 3: ③ calendar series-filter box (select all/clear, true multi-select) · ④ mobile pass (calendar agenda <md, weekend-card row, series list, all-screens sweep) · ⑤–⑦ old series tab pages reimagined (champions & drivers → indexed what-is-formula-1-style pages incl. team champions tab; results/standings/rounds folded into the landing or rebuilt; `SeriesPageView` template retires).
+- Mobile audit findings (375×812): calendar = 4 stacked THIS WEEKEND cards ≈450px before a dot-only grid; FE series landing pre-fix buried "Season complete."; home lead band reads fine.
+
+Active: _(no `[+Nm]` prefixes captured)_
+
+---
+
 ### Wed 2026-08-19 (session 29 — GSC triage, then reimagining jobs ④–⑨)
 
 Operator opened with the Search Console report (8 screenshots) + the CLI handoff for jobs ④–⑨ (versions from 0.291.0).
