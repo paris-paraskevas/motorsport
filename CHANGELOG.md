@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.322.2 — 2026-08-20
+
+### Fixed
+- **`listThreads` goes fail-soft** (`lib/threads.ts`): unconfigured or erroring Supabase now returns `[]` (logged via `logSourceError('threads:list')`) instead of throwing — mirroring its in-file sibling `seriesWithThreads`. A DB hiccup renders the threads page's designed empty state rather than 500ing the whole page, and the two API callers (`/api/threads`, the home threads widget) degrade to empty lists instead of erroring. Side effect worth naming: `/social/threads` is finally checkable on local dev (it hard-500'd whenever the local Supabase was down, which is why sessions 26-29 could never browser-verify it). Verified with eyes: dev renders "No threads yet — be the first." at HTTP 200 with the DB down.
+
+### Changed
+- **The app error boundary joins Paper** (`app/(app)/error.tsx`): the pre-Paper gradient card (rounded-3xl, radial red/amber wash, lucide icon pills, and a comment still crediting the removed "Vercel Analytics + Speed Insights" with error capture) becomes the Paper register — mono RED FLAG kicker, serif headline, inked square CTAs on an ink rule. The comment now states the real constraint: route boundaries swallow errors before window.onerror, and server Sentry left in the 0.288.0 diet, so the console line is currently the only report (re-scope tracked in IDEAS).
+
 ## 0.322.1 — 2026-08-20
 
 ### Fixed

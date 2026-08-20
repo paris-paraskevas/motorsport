@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.322.2 — 2026-08-20
+
+**Sturdier community pages.** A temporary database problem now shows the threads page with a friendly empty state instead of an error, and the app's error screen was redesigned to match the rest of the site.
+
 ## 0.322.1 — 2026-08-20
 
 **The RSS feed works again.** Subscribers to the site's feed now receive every published blog post; the feed had quietly stopped carrying new writing after the blog moved to its current publishing system.
