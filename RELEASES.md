@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.324.0 — 2026-08-20
+
+**Championship answers now tell you the story, not just the name.** Every Formula 1 season from 1996 to 2025 gains where and when the title was actually clinched, plus what that season is remembered for: Hamilton passing Glock at the last corner in 2008, Schumacher scraping a single point at Suzuka in 2003, the identical qualifying times at Jerez in 1997. Sources are listed on each answer. More series follow.
+
 ## 0.323.1 — 2026-08-20
 
 **Driver photos and circuit maps appear sooner.** Both were waiting until late in the page load before they even started downloading, and driver portraits were arriving at several times the size they are displayed at. They now load right away and at a sensible size, so profile and race-weekend pages feel quicker, especially on mobile.
