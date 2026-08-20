@@ -1,5 +1,3 @@
-import { kv } from './kv';
-
 export interface DailyWeather {
   date: string; // YYYY-MM-DD
   maxC: number;
@@ -19,6 +17,16 @@ export interface WeatherForecast {
 }
 
 const TTL_SECONDS = 3 * 60 * 60; // 3 hours — Open-Meteo updates roughly hourly
+
+// KV is imported lazily, NOT at module top: this file also exports pure
+// presentational helpers (weatherLabel, forecastFor) that client components
+// like SessionCard bundle, and a static `import { kv }` dragged the whole
+// @upstash/redis SDK (~28 KiB gz) into the browser chunk that /calendar
+// ships and the landing prefetches (0.322.x PSI unused-JS finding). The KV
+// cache is only reachable from fetchWeather, which only runs server-side.
+async function getKv() {
+  return (await import('./kv')).kv;
+}
 
 function isKvConfigured(): boolean {
   return Boolean(
@@ -104,6 +112,7 @@ export async function fetchWeather(
   lon: number,
 ): Promise<WeatherForecast | null> {
   if (isKvConfigured()) {
+    const kv = await getKv();
     const cached = await kv.get<WeatherForecast>(cacheKey(lat, lon));
     // Old cache entries pre-date utcOffsetSeconds or were limited to a 7-day
     // horizon; refresh them so venue-local date math + multi-week race coverage
@@ -119,6 +128,7 @@ export async function fetchWeather(
   const fresh = await fetchOpenMeteo(lat, lon);
   if (!fresh) return null;
   if (isKvConfigured()) {
+    const kv = await getKv();
     await kv.set(cacheKey(lat, lon), fresh, { ex: TTL_SECONDS });
   }
   return fresh;

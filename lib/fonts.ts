@@ -4,7 +4,12 @@ import { IBM_Plex_Sans, IBM_Plex_Sans_Condensed, IBM_Plex_Mono, Newsreader } fro
 //   PLEX SANS 400 app-wide · PLEX SANS CONDENSED quarantined to names ·
 //   PLEX MONO for the data register · ground #121215.
 // Self-hosted at build by next/font (no runtime Google request, GDPR-clean) —
-// shared module so all four root layouts load the exact same instances.
+// shared module so all root layouts load the exact same instances. Per-tree
+// preload trimming is NOT possible here: Turbopack merges this module's font
+// CSS into the same output chunk as the @fontsource/opendyslexic sheets every
+// layout imports, and preloads follow chunk membership — a marketing-only
+// instance set was tried (0.322.x LCP work) and inherited the full preload
+// set anyway. Preload tuning therefore happens globally, on these instances.
 //
 // Sans is the VARIABLE font (the board's own note: variable lets weight tuning
 // like 380-on-dark later without a reload) and carries the GREEK subset — which
@@ -17,11 +22,19 @@ export const plexSans = IBM_Plex_Sans({
   display: 'swap',
 });
 
+// Condensed and Mono are label faces, never the LCP element, so they are not
+// worth head preloads: `preload: false` drops their 12 <link rel=preload>
+// tags (~132 KiB that contended with the serif the hero paints in — the
+// 0.322.x PSI mobile-LCP finding). Every @font-face stays in the CSS
+// regardless (subsets/preload only select preloading, verified against the
+// emitted CSS and next/font docs), so they still load on first use with
+// display:swap + the size-adjusted fallback next/font already generates.
 export const plexCondensed = IBM_Plex_Sans_Condensed({
   subsets: ['latin', 'latin-ext'],
   weight: ['500', '600', '700'],
   variable: '--font-plex-condensed',
   display: 'swap',
+  preload: false,
 });
 
 export const plexMono = IBM_Plex_Mono({
@@ -29,6 +42,7 @@ export const plexMono = IBM_Plex_Mono({
   weight: ['400', '500', '600'],
   variable: '--font-plex-mono',
   display: 'swap',
+  preload: false,
 });
 
 // The Paper editorial serif (design handoff 2026-08: page titles, headlines,
@@ -37,8 +51,12 @@ export const plexMono = IBM_Plex_Mono({
 // 66px heroes and 18px body. No Greek upstream (latin/latin-ext/vietnamese
 // only), so Greek names inside serif surfaces fall through per-glyph to Plex
 // Sans via the --font-serif chain in globals.css.
+// `subsets: ['latin']` (not latin-ext): subsets only choose which files get a
+// head preload — the latin-ext @font-face rules remain in the CSS and fetch
+// on demand for the rare Ł/ř/ș glyph. Preloading them was 178 KiB of head
+// weight on every page for glyphs the first paint almost never contains.
 export const newsreader = Newsreader({
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin'],
   style: ['normal', 'italic'],
   axes: ['opsz'],
   variable: '--font-newsreader',
