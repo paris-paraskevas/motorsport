@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.320.0 — 2026-08-20
+
+**About and Account catch up.** The About page now reads like the rest of the site, Account uses the full page width, and what you follow is stated on the Championships row itself instead of a separate block above it. Series pages also link straight to their own filtered calendar.
+
 ## 0.319.0 — 2026-08-20
 
 **Better search snippets.** Every series page, driver profile, team page and explainer now describes itself properly to search engines, so results for Paddock pages read like sentences instead of stubs.
