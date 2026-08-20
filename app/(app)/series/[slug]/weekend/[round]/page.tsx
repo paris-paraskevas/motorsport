@@ -687,7 +687,7 @@ export default async function WeekendPage({
   const footerItems: React.ReactNode[] = [];
   if (upgrades) {
     footerItems.push(
-      <a key="tech" href="#technical-file" className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)">
+      <a key="tech" href="#technical-file" className="inline-flex min-h-6 items-center text-text-muted hover:text-text transition-colors duration-(--duration-fast)">
         Technical file · {upgrades.teams.length} teams filed
       </a>,
     );
@@ -701,14 +701,14 @@ export default async function WeekendPage({
   }
   if (NEWS_SLUG_MAP[slug] != null) {
     footerItems.push(
-      <Link key="news" href={`/series/${slug}/news`} className="text-text-muted hover:text-text transition-colors duration-(--duration-fast)">
+      <Link key="news" href={`/series/${slug}/news`} className="inline-flex min-h-6 items-center text-text-muted hover:text-text transition-colors duration-(--duration-fast)">
         News for this series →
       </Link>,
     );
   }
   if (nextRound) {
     footerItems.push(
-      <Link key="next" href={`/series/${slug}/weekend/${nextRound.round}`} className="text-brand hover:text-text transition-colors duration-(--duration-fast)">
+      <Link key="next" href={`/series/${slug}/weekend/${nextRound.round}`} className="inline-flex min-h-6 items-center text-brand hover:text-text transition-colors duration-(--duration-fast)">
         Next round: {nextRound.roundName ?? weekendLabel(nextRound, nextRound.round).title} →
       </Link>,
     );

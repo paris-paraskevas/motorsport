@@ -19,7 +19,7 @@ function FooterLink({
     <Link
       href={href}
       data-heatmap-id={dataHeatmapId}
-      className="block py-0.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+      className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
     >
       {children}
     </Link>
@@ -59,7 +59,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               data-heatmap-id="footer:coffee"
-              className="block py-0.5 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
+              className="block py-1 text-text-muted hover:text-text transition-colors duration-(--duration-fast)"
             >
               Buy me a coffee
             </a>
