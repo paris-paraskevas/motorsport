@@ -32,6 +32,19 @@ Leftover noticed en route (queued in IDEAS, not part of the batch): the app erro
 9. ✅ 0.309.0 (dev visual blocked by local-DB — sentry verifies prod markers) — **Threads Paper restyle** — `/social/threads` (+ `/threads/[id]`) to the Paper register (serif masthead, bordered rows, mono meta) — "resembles old site pages".
 10. ✅ folded into 0.302.0 (ink square + border, send button inked) — **Mechanic widget restyle** — the floating yellow bottom-right bubble is "far off the styling of this site now" — restyle to Paper (ink/oxblood, mono label); find its component by the bubble's icon/role.
 
+## Round 3 — 2026-08-20 (feedback board + live messages + 5 annotated screenshots)
+
+**Live queue (operator present, asks explicit):**
+1. ✅ 0.310.0 — **Season-complete clarity** (feedback board "Formula E is done, that needs to be clear" + follow-up "season complete first thing, champion outranks race winner"): home lead band leads SEASON COMPLETE → champion h1 → race winner sub-line; series landing masthead/final-table/champion callout.
+2. ✅ 0.311.0 — **Distinct lines site-wide on Paper** (`--border` #d6cebb→#c2b493, `--border-strong` #a99c80→#91825e) + calendar nav bar ink rules with the arrow boxes cut by ink verticals (operator annotation).
+3. ⬜ **Calendar series-filter box** — "I prefer a filters box, like old paddock had. where you can 'select all' or unselect. also can select multiple leaving out multiple series." Replace the flat chip row with a box/panel: every series listed with its color tick, SELECT ALL / CLEAR, true multi-select (leave several out at once). Keep instant apply.
+4. ⬜ **Mobile pass** (feedback board ×2 + freehand "check all screens on mobile"): calendar month view is dot-only chaos on <md → agenda-style list; THIS WEEKEND cards stack ~450px tall → compact/scroll row; series landing season list cramped; then a page-by-page mobile sweep (fix cheap breakages, ledger the rest).
+
+**The old series tab pages (5 screenshots — `/series/f1/*` still wear the pre-Paper register: display-caps masthead, LEARN ABOUT grid, CALENDAR/STANDINGS/RESULTS/ROUNDS tab strip):**
+5. ⬜ **Champions rebuild** — "needs to be like /information/formula-1/what-is-formula-1: a separate indexed page showing the champions each year and in a separate tab the team champions for all years too." Paper register, indexed metadata, decade sections, drivers + teams tabs.
+6. ⬜ **Drivers rebuild** — same what-is-formula-1 treatment: "an indexed separate page analysing driver by driver and team by team" (not the bare team/driver card grid).
+7. ⬜ **Results / Standings / Rounds(Tracks) rethink** — "these pages need rethinking and adding to the new reimagined series page"; operator sketched Tracks/Standings/Results as cells in the Learn grid, or otherwise make Standings, Results, Champions "more easily accessible" from `/series/[slug]`. Decide per-tab: promote onto the landing, or rebuild as Paper pages; the shared `SeriesPageView` template dies with them.
+
 ## Ritual per PR (hard-won)
 `git checkout -b <branch> main` FIRST (main-edit slip happened once) → edits → `rm -rf .next/dev` (stale dev-types fail next build — landmine 9) → tsc → lint (grep "problems") → vitest (1116; a lone fail alongside a running dev server = the documented flake, rerun clean) → `npm run build` and CHECK exit before anything else → dev + Playwright verify (kill dev BY PORT PID, never image) → trio (package.json + CHANGELOG eng + RELEASES public, next = 0.288.0) → commit (no attribution) → push → `gh pr create` (body: what/why/verified + "operator-authorized run") → `gh pr merge --squash --delete-branch` → poll prod only if the pipeline is fixed.
 Union-resolve trio conflicts; python heredocs for multi-edit scripts (quote-safe via Write to scratchpad); screenshots to scratchpad, never repo root.

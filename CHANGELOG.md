@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.311.0 — 2026-08-20
+## 0.311.1 — 2026-08-20
+
+### Fixed
+- **The home podium names its race** (operator annotation on 0.310.0: "right side classification needs to be clear that its about the london gp"). `components/HomeLead.tsx`: in champion mode the h1 is about the title, so the right column's rule now reads "**LONDON EPRIX · CLASSIFICATION**" (`{raceName} · Classification`, truncating) instead of the bare "CLASSIFICATION"; normal mode keeps the bare label — there the h1 already names the race. Also logged Round 3 in `docs/next-session.md` (calendar filter box · mobile pass · the five series-tab rebuild screenshots) + the session ledger in `SCHEDULE.md`.
+
+
 
 ### Changed
 - **Paper's hairlines darken a full step** (operator: "site wide on paper theme, i want the lines to be more distinct"). `app/globals.css` `:root[data-theme='paper']`: `--border` #d6cebb → **#c2b493**, `--border-strong` #a99c80 → **#91825e** — same warm-sand hue, ~10% less lightness, so every rule/divider/card edge on the default theme actually reads. Newsprint (opt-in) keeps the lighter originals.
