@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.322.4 — 2026-08-20
+
+### Fixed
+- **Font over-preloading halved on every page (the PSI-sweep root-page package; PR #744, subagent-built).** The mobile-LCP anomaly (metric 6.3 s vs its own ~2.3 s breakdown) root-caused to next/font emitting **19 `<link rel="preload" as="font">` totaling 659.9 KiB** on every page — the h1 needs exactly ONE Newsreader file, and on Lighthouse's simulated 1.6 Mbps it contended with 531 KiB of sibling preloads before the `swap` repaint that finalizes LCP. `lib/fonts.ts`: `preload: false` on Plex Condensed + Plex Mono (data-surface faces, never first paint) and Newsreader preload subsets trimmed to latin → **5 preloads / 353 KiB**; every @font-face still emitted, so availability is unchanged (proven against the built CSS incl. latin-ext/italic). Italic-latin is NOT trimmable: next/font has no per-style preload and the font manifest follows CSS-chunk membership (a marketing-only instance was built, disproven, reverted — reasoning in the code).
+- **The Upstash Redis SDK was shipping in browser JS.** `components/SessionCard.tsx` value-imports `weatherLabel` from `lib/weather.ts`, whose top-level `import { kv }` dragged the whole KV client into the calendar route chunk (`3pbmmxk`, ~73% of its 32.5 KiB — flagged "100% unused" on `/` and `/app` because it arrived via the door links' prefetch). `lib/weather.ts` now imports kv lazily inside `fetchWeather`; calendar chunk 128,560 → 34,972 bytes raw with zero KV markers, SDK isolated to an async server-side chunk referenced by no page HTML. No-KV path behavior-probed (16-day forecast, venue offset intact); `cf:build` exit 0.
+- Two disproven levers recorded so they are never chased again: the remaining "unused" chunk on `/` is the door links' **Link prefetch** of /app's Clerk internals (a feature; dropping it trades instant navigation for a lab number — declined), and **browserslist is a no-op for the "13 KiB legacy JavaScript" flag** — that set is Next's own `@next/polyfill-module`, imported unconditionally (`client/app-globals.js`), 1,393 bytes raw; Next 16's default targets (chrome/edge/ff 111, safari 16.4) already stop SWC emitting anything else.
+
+### Internal
+- PSI sweep session docs: the per-page sweep table lives in the session scratchpad; IDEAS gains the sweep-session item + the operator's same-day clears (avatar menu, GSC, Bing, /feedback moves); HANDOFF owed-list updated to match.
+
 ## 0.322.3 — 2026-08-20
 
 ### Internal

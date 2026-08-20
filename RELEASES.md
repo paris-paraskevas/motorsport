@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.322.4 — 2026-08-20
+
+**Faster first paint on every page.** The site was asking browsers to download twice as many font files as the first screen actually needs; it now preloads only the essentials, which speeds up how quickly headlines appear, especially on slower phones. A behind-the-scenes fix also removed a chunk of server code that was needlessly shipped to browsers on the calendar.
+
 ## 0.322.3 — 2026-08-20
 
 **Internal housekeeping.** Session records and planning notes brought up to date; nothing user-facing changed.
