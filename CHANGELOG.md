@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.323.1 — 2026-08-20
+
+### Fixed
+- **The two lazy-loaded LCP images** (PSI sweep package #4; the sweep found the same self-inflicted delay on two unrelated surfaces, so it was one pattern, not two bugs).
+  - `app/(app)/drivers/[slug]/page.tsx`: the curated Commons portrait is the LCP element on BOTH form factors and shipped `loading="lazy"` with no priority — PSI measured 2.6 s (mobile) / 2.1 s (desktop) of pure resource-load DELAY before a 110 ms fetch. Now eager with `fetchPriority="high"`. It also shipped the full-resolution Commons file (723×1023, 182 KiB) into a 176 px slot, so a new module-scope `commonsThumb()` rewrites plain Commons URLs to the resized copy: **186 KiB → 91 KiB measured**. The width is not arbitrary — Wikimedia renders only bucketed widths and answers 352/360/400 with a 400 error page regardless of user agent (probed), so 500 is the smallest bucket that still covers the slot at 2x, and **all 22 shipped portraits were HEAD-checked at it (22/22 → 200)**. Non-Commons hosts, existing `/thumb/` URLs and non-raster files fall through untouched, so an unexpected `src` can never 404.
+  - `app/(app)/series/[slug]/weekend/[round]/page.tsx`: the circuit-layout SVG is the desktop LCP element and had no dimensions and no priority — 2.59 s of load delay on a 3 KiB file, i.e. pure late discovery. All three instances now carry `width={500} height={500}` (every one of the 21 circuit SVGs is square at that size, checked) and the main-column `hidden xl:block` one carries `fetchPriority="high"`.
+  - Browser-verified on dev after the change: portrait natural size 500×707 rendered at 176 with `fetchPriority=high` and no `loading` attribute; both track maps complete with intrinsic 500×500, the main one rendering 400×400 at `fetchPriority=high`.
+  - Caught while landing it: the new explanatory comment initially sat between an `eslint-disable-next-line` and its `<img>`, silently detaching the suppression and raising a fresh `no-img-element` warning. Comment order corrected rather than adding a second suppression.
+
+### Internal
+- Not fixed, deliberately, and now root-caused for the record: the `/calendar` console `DataCloneError` (Best Practices 92) is **not our code**. `@serwist/turbopack@9.5.12` (`dist/index.react.mjs`) wraps `history.pushState` and forwards its third argument into `messageSW({ type: 'CACHE_URLS', payload: { urlsToCache: [url] } })`; Next's App Router sometimes passes a `URL` object, which `postMessage` cannot structured-clone. The fix is an operator decision because it changes PWA behaviour: dropping `cacheOnNavigation` in `components/SerwistRegister.tsx` is the recommendation (offline was deliberately removed in 0.268.0, so navigation caching is both vestigial and currently throwing), otherwise wait for an upstream fix.
+
 ## 0.323.0 — 2026-08-20
 
 ### Changed
