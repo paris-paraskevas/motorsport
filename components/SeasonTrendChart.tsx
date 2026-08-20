@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { SeasonTrendData } from '@/lib/season-trend';
+import { seriesInk } from '@/lib/site';
 
 const COLORS = [
   '#ff4136', // F1 red
@@ -55,7 +56,13 @@ interface LineStyle {
 
 // Team color when we know the team; teammates share it with the second car
 // dashed (broadcast convention). Unknown teams (non-F1 series) keep the
-// rank-indexed palette.
+// rank-indexed palette. Every stroke goes through seriesInk: the broadcast
+// hexes were tuned for the near-black theme (Mercedes teal ~1.3:1 on paper,
+// Cadillac is literally white) — the per-theme ink mix leaves dark themes
+// byte-identical (100%) and pulls light themes to legible ink (52%). The
+// legend chips and ranked-rail dots read the same styles, so they follow.
+// (Operator, 2026-08-20: "cant see the trajectory at all because mercedes
+// colour is invisible on this theme".)
 function buildLineStyles(
   ranked: Array<{ name: string; team?: string }>,
 ): Map<string, LineStyle> {
@@ -66,9 +73,9 @@ function buildLineStyles(
     if (teamColor) {
       const seen = seenPerTeam.get(d.team!) ?? 0;
       seenPerTeam.set(d.team!, seen + 1);
-      styles.set(d.name, { stroke: teamColor, dash: seen > 0 ? '6 4' : undefined });
+      styles.set(d.name, { stroke: seriesInk(teamColor), dash: seen > 0 ? '6 4' : undefined });
     } else {
-      styles.set(d.name, { stroke: pickColor(idx) });
+      styles.set(d.name, { stroke: seriesInk(pickColor(idx)) });
     }
   });
   return styles;

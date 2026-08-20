@@ -112,7 +112,7 @@ function DriverHead({ driver, align }: { driver: DriverDetail; align: 'left' | '
       </Link>
       <div
         className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted"
-        style={driver.teamColor ? { color: driver.teamColor } : undefined}
+        style={driver.teamColor ? { color: seriesInk(driver.teamColor) } : undefined}
       >
         {driver.team}
       </div>
