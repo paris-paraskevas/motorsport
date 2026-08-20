@@ -4,7 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.319.0 — 2026-08-20
+## 0.320.0 — 2026-08-20
+
+### Changed
+- **/about joins Paper** (operator: "about is old style paddock tracker"). `app/(app)/about/page.tsx`: the display-caps `ABOUT.` masthead + oxblood accent bar become a serif "About Paddock" over a rule with a serif standfirst; section heads become mono labels on ink rules and the body copy goes serif. Content untouched — only the register was pre-reimagining.
+- **Account gets full page width and its follow state reorganised** (operator: "/account's width is small" + "this part of /account is dreadful. re organise"). `app/(app)/settings/{page,notifications,series}` drop the `max-w-[880px]` read-column cap for `PAGE_WIDE`. `components/FollowedChips.tsx`: the standalone "You follow" block (its own heading, count, sentence and device footnote — three registers stacked above a row list that already had a Championships row going to the same place) is **replaced by `ChampionshipsRow`** — one row, live sub-line ("Following everything — all 15 championships…" / "Following F1, MotoGP — the calendar and the wire narrow to these"), a mono `everything` / `3 of 15` meta, and the same destination.
+- **The series landing's reference row gains a Calendar cell** (operator annotation) → `/calendar?s={slug}`, "This series only" — the filter-box deep link, so the series' own calendar is one tap from its landing.
+
+
 
 ### Changed
 - **Meta descriptions grow to SERP length across six template families** (Bing Webmaster Tools: 33 pages flagged "too short"; target 150–160). All fixed at the GENERATOR, so sibling pages Bing hasn't scanned yet clear too: `lib/tabs.ts` `describeTab` (all nine series sub-page cases — calendar/news/standings/results/drivers/tracks/about/history/champions rewritten to ~150–200 chars reflecting what the rebuilt pages actually show, e.g. drivers mentions the standings join); driver profiles (`app/(app)/drivers/[slug]`) and team pages (`app/(app)/teams/[slug]`) get composed ~190-char descriptions; `/social/threads` names the grid and how to post; information topic hubs compose the blurb with the hub's offer; information guides append sourced-explainer context only when the frontmatter summary is under 140 chars (longer summaries pass through). Verified against all 33 flagged URLs on dev: 32 render 174–234 chars; `/social/threads` 500s on LOCAL only (the known `listThreads` no-fail-soft with local Supabase down — its description is a static export and ships regardless).

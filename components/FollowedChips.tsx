@@ -2,68 +2,44 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { ArrowUpRight, Trophy } from 'lucide-react';
 import { useFollowedSeries } from '@/lib/useFollowedSeries';
 
-// "You follow" leads the Account page (design handoff §4.11c): the followed
-// series as chips with tint bars, a dashed "+ Add" chip into the editor, and
-// the consequence stated plainly. Device-local follows via useFollowedSeries;
-// null = following everything.
-export function FollowedChips({
+// The Championships row with the live follow state as its sub-line — the
+// standalone "You follow" block above the row list duplicated this row and
+// read as three misaligned registers (operator, 2026-08-20: "dreadful.
+// re organise"). One row now states what you follow AND is the way to change
+// it. Device-local follows via useFollowedSeries; null = following everything.
+export function ChampionshipsRow({
   series,
 }: {
   series: Array<{ slug: string; name: string; color: string }>;
 }) {
   const { followed, hydrated } = useFollowedSeries();
-  if (!hydrated) return <div aria-hidden="true" className="h-24 animate-pulse border-y border-border bg-surface/40" />;
-
   const bySlug = new Map(series.map(s => [s.slug, s]));
-  const picked = followed === null ? [] : followed.map(s => bySlug.get(s)).filter((x): x is NonNullable<typeof x> => !!x);
+  const picked =
+    followed === null ? [] : followed.map(s => bySlug.get(s)).filter((x): x is NonNullable<typeof x> => !!x);
+
+  const sub = !hydrated
+    ? 'Choose the series you follow'
+    : followed === null
+      ? `Following everything — all ${series.length} championships. The calendar and the wire show them all.`
+      : `Following ${picked.map(s => s.name).join(', ')} — the calendar and the wire narrow to these.`;
+  const meta = !hydrated ? '' : followed === null ? 'everything' : `${picked.length} of ${series.length}`;
 
   return (
-    <section aria-label="You follow" className="border-t border-border py-5">
-      <div className="mb-2 flex items-baseline justify-between">
-        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">You follow</h2>
-        <span className="font-mono text-[10px] tabular-nums text-text-faint">
-          {followed === null ? 'everything' : picked.length}
-        </span>
-      </div>
-      {followed === null ? (
-        // Following everything: one sentence with its action inline — the
-        // dashed chip used to float mid-row, disconnected from the words it
-        // belonged to (round-2 ③, "box looks out of place").
-        <p className="text-sm leading-relaxed text-text-muted">
-          Everything — all {series.length} championships.{' '}
-          <Link
-            href="/settings/series"
-            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
-          >
-            Pick favourites →
-          </Link>
-        </p>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          {picked.map(s => (
-            <Link
-              key={s.slug}
-              href="/settings/series"
-              className="inline-flex min-h-11 items-center gap-2 border border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text transition-colors duration-(--duration-fast) hover:border-text"
-            >
-              <span aria-hidden="true" className="h-[13px] w-[3px] shrink-0" style={{ backgroundColor: s.color }} />
-              {s.name}
-            </Link>
-          ))}
-          <Link
-            href="/settings/series"
-            className="inline-flex min-h-11 items-center border border-dashed border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
-          >
-            + Add
-          </Link>
-        </div>
-      )}
-      <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint">
-        The calendar and the wire narrow to these · stored on this device
-      </p>
-    </section>
+    <Link
+      href="/settings/series"
+      className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
+    >
+      <Trophy size={18} className="shrink-0 text-text-muted" />
+      <span className="min-w-0 flex-1">
+        <span className="block text-base font-semibold text-text">Championships</span>
+        <span className="block truncate text-xs text-text-faint">{sub}</span>
+      </span>
+      {meta && <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">{meta}</span>}
+      <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
+    </Link>
   );
 }
 

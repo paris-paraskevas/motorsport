@@ -25,9 +25,11 @@ function A({ href, children }: { href: string; children: React.ReactNode }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="border-t border-border pt-5">
-      <h2 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text-faint">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-text-muted">{children}</div>
+    <section>
+      <h2 className="mb-3 border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        {title}
+      </h2>
+      <div className="space-y-3 font-serif text-[16px] leading-relaxed text-text-muted">{children}</div>
     </section>
   );
 }
@@ -41,22 +43,17 @@ export default function About() {
           { name: 'About', url: `${SITE_URL}/about` },
         ])}
       />
-      <header className="mb-5 flex items-stretch gap-3">
-        <span aria-hidden className="w-1 shrink-0 bg-brand-fill" />
-        <div>
-          <h1 className="font-display text-3xl font-extrabold uppercase leading-none tracking-wide text-text md:text-4xl">
-            About<span className="text-brand">.</span>
-          </h1>
-          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted">
-            Fifteen championships · one place
-          </p>
-        </div>
+      {/* Paper masthead — the display-caps "ABOUT." register was the last
+          pre-reimagining holdout here (operator, 2026-08-20). */}
+      <header className="mb-6 border-b border-border pb-5">
+        <h1 className="font-serif text-[38px] font-medium leading-none tracking-[-0.02em] text-text md:text-[46px]">
+          About Paddock
+        </h1>
+        <p className="mt-2 max-w-[52ch] font-serif text-[17px] leading-snug text-text-muted">
+          Fifteen racing championships in one place: what is on, when it runs where you live, and what happened once
+          it did.
+        </p>
       </header>
-
-      <p className="mb-6 max-w-[64ch] text-base leading-relaxed text-text">
-        Paddock tracks fifteen racing championships in one place: what is on, when it runs where you live, and what
-        happened once it did.
-      </p>
 
       <div className="max-w-[64ch] space-y-6">
         <Section title="What Paddock is">

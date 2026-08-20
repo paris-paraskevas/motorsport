@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, Bell, Download, LogOut, Palette, Trophy } from 'lucide-react';
+import { ArrowUpRight, Bell, Download, LogOut, Palette } from 'lucide-react';
 import { auth } from '@clerk/nextjs/server';
 import { SignOutButton } from '@clerk/nextjs';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getAccountStats } from '@/lib/betting/account';
 import { AccountIdentity } from '@/components/AccountIdentity';
-import { FollowedChips, TimezoneRow } from '@/components/FollowedChips';
+import { ChampionshipsRow, TimezoneRow } from '@/components/FollowedChips';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { AccountStats } from '@/components/AccountStats';
 import { AccountStaffLinks } from '@/components/AccountStaffLinks';
@@ -28,7 +28,9 @@ export default async function AccountPage() {
   const seriesList = (await loadAllSeriesMeta()).map(({ slug, name, color }) => ({ slug, name, color }));
 
   return (
-    <div className={`${PAGE_WIDE} mx-auto max-w-[880px]`}>
+    // Full page width (operator, 2026-08-20: "/account's width is small") —
+    // the 880px read-column cap was out of step with the reimagined surfaces.
+    <div className={PAGE_WIDE}>
       {/* Paper masthead (round-2 ③): the display-caps register and its accent
           bar were the pre-reimagining language. */}
       <header className="mb-6 border-b border-border pb-5">
@@ -42,9 +44,6 @@ export default async function AccountPage() {
 
       <AccountIdentity />
       {stats && <AccountStats stats={stats} />}
-
-      {/* "You follow" leads (design handoff §4.11c). */}
-      <FollowedChips series={seriesList} />
 
       <nav className="border-t border-border">
         <Link
@@ -72,17 +71,9 @@ export default async function AccountPage() {
           </span>
           <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
         </Link>
-        <Link
-          href="/settings/series"
-          className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"
-        >
-          <Trophy size={18} className="shrink-0 text-text-muted" />
-          <span className="min-w-0 flex-1">
-            <span className="block text-text text-base font-semibold">Championships</span>
-            <span className="block text-text-faint text-xs">Choose the series you follow</span>
-          </span>
-          <ArrowUpRight size={16} className="shrink-0 text-text-faint group-hover:text-text-muted" />
-        </Link>
+        {/* Championships carries the live follow state — the standalone
+            "You follow" block it replaces duplicated this row. */}
+        <ChampionshipsRow series={seriesList} />
         <TimezoneRow />
         <AccountStaffLinks />
         {/* The 11c foot rows (job ⑨/#15): your data and your session, stated

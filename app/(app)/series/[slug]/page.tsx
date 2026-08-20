@@ -211,6 +211,11 @@ export default async function SeriesPage({
           { label: 'Results', href: `/series/${slug}/results`, blurb: 'Round by round' },
         ]
       : []),
+    // The calendar, pre-filtered to this series (operator annotation,
+    // 2026-08-20: "a calendar tab here that takes you to /calendar with only
+    // [this series'] sessions showing on filters") — the ?s= deep link the
+    // filter box reads.
+    { label: 'Calendar', href: `/calendar?s=${slug}`, blurb: 'This series only' },
     { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
     ...(pointsGuideForSeries(slug) ? [{ label: 'Points', href: pointsGuideForSeries(slug)!, blurb: 'How scoring works' }] : []),
     { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },

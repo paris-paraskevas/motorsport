@@ -22,7 +22,7 @@ export default async function AccountSeriesPage() {
     category,
   }));
   return (
-    <div className={`${PAGE_WIDE} mx-auto max-w-[880px]`}>
+    <div className={PAGE_WIDE}>
       <Link
         href="/settings"
         className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
