@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.321.4 — 2026-08-20
+
+**What's next gets equal billing.** On the home page, the list of upcoming race weekends now shares the width fifty-fifty with the championship table, so what's coming is as prominent as what just happened. The London ePrix result also shows its full podium again, and the pipeline that keeps results fresh was repaired after a day-long outage.
+
 ## 0.321.3 — 2026-08-20
 
 **Internal housekeeping.** Retired unused code left over from an earlier landing-page design; nothing user-facing changed.
