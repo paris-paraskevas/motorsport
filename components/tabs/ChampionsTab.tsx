@@ -36,6 +36,31 @@ function groupByDecade<T extends { year: number }>(items: T[]): DecadeGroup<T>[]
   return groups;
 }
 
+// A decade as an open Paper section — the operator's champions rebuild wants
+// "the champions each year" SHOWN, not folded behind decade accordions (the
+// old `<details>` register hid everything before 2020 by default).
+function DecadeShell({
+  label,
+  count,
+  children,
+}: {
+  label: string;
+  count: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <div className="mb-1 mt-6 flex items-baseline justify-between border-b border-text pb-1 first:mt-0">
+        <h3 className="font-serif text-[19px] font-semibold leading-none text-text">{label}</h3>
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+          {count} {count === 1 ? 'champion' : 'champions'}
+        </span>
+      </div>
+      <div className="divide-y divide-border">{children}</div>
+    </section>
+  );
+}
+
 // Cumulative-title tally, derived purely from the champions list already on the
 // page — no new data. For a given championship section we count how many titles
 // each champion holds (keyed by the exact display string, so GT World's
@@ -267,18 +292,17 @@ function DriverCell({
   driverSlugs: Set<string>;
 }) {
   const slug = slugify(nameForSlugMatch(name));
-  // Names render in the condensed face (the board's quarantine) — one wrapper
-  // here covers every champions row.
+  // Serif names — the Paper register (Round-3 champions rebuild).
   if (driverSlugs.has(slug)) {
     return (
-      <span className="font-condensed text-[15px] font-semibold">
+      <span className="font-serif text-[16px] font-semibold">
         <Link href={`/drivers/${slug}`} className={LINK_CLASS}>
           {name}
         </Link>
       </span>
     );
   }
-  return <span className="font-condensed text-[15px] font-semibold">{name}</span>;
+  return <span className="font-serif text-[16px] font-semibold">{name}</span>;
 }
 
 function TeamCell({
@@ -329,62 +353,47 @@ function DriversSection({
   const groups = groupByDecade(champions);
   const tally = computeTitleTally(champions, c => c.driver);
   return (
-    <div className="space-y-3">
-      {groups.map((group, idx) => (
-        <details
-          key={group.decade}
-          open={idx === 0}
-          className="group border-y border-border overflow-hidden"
-        >
-          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
-            <span className="text-text text-base font-semibold tracking-tight">
-              {group.label}
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-              {group.rows.length}{' '}
-              {group.rows.length === 1 ? 'champion' : 'champions'}
-            </span>
-          </summary>
-          <div className="divide-y divide-border/40 border-t border-border/60">
-            {group.rows.map((c, i) => (
-              <div key={`${c.year}-${i}`} className="px-4 py-2.5">
-                <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
-                  <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
-                    {c.year}
-                  </div>
-                  <div className="text-text text-sm leading-snug flex items-baseline gap-2">
-                    <DriverCell name={c.driver} driverSlugs={driverSlugs} />
-                    <TitleTallyBadge tally={tally.get(c)} />
-                  </div>
-                  <div className="text-xs text-text-muted leading-snug">
-                    {c.constructor ? (
-                      <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
-                    ) : (
-                      ''
-                    )}
-                  </div>
+    <div>
+      {groups.map(group => (
+        <DecadeShell key={group.decade} label={group.label} count={group.rows.length}>
+          {group.rows.map((c, i) => (
+            <div key={`${c.year}-${i}`} className="py-2.5">
+              <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
+                <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
+                  {c.year}
                 </div>
-                <div className="sm:hidden">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
-                      {c.year}
-                    </span>
-                    <span className="text-text text-sm">
-                      <DriverCell name={c.driver} driverSlugs={driverSlugs} />
-                    </span>
-                    <TitleTallyBadge tally={tally.get(c)} />
-                  </div>
-                  {c.constructor && (
-                    <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
-                    </div>
+                <div className="text-text text-sm leading-snug flex items-baseline gap-2">
+                  <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                  <TitleTallyBadge tally={tally.get(c)} />
+                </div>
+                <div className="text-xs text-text-muted leading-snug">
+                  {c.constructor ? (
+                    <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
+                  ) : (
+                    ''
                   )}
                 </div>
-                <ChampionDepth c={c} />
               </div>
-            ))}
-          </div>
-        </details>
+              <div className="sm:hidden">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
+                    {c.year}
+                  </span>
+                  <span className="text-text text-sm">
+                    <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                  </span>
+                  <TitleTallyBadge tally={tally.get(c)} />
+                </div>
+                {c.constructor && (
+                  <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
+                    <TeamCell name={c.constructor} teamSlugMap={teamSlugMap} />
+                  </div>
+                )}
+              </div>
+              <ChampionDepth c={c} />
+            </div>
+          ))}
+        </DecadeShell>
       ))}
     </div>
   );
@@ -400,38 +409,23 @@ function ConstructorsSection({
   const groups = groupByDecade(champions);
   const tally = computeTitleTally(champions, c => c.team);
   return (
-    <div className="space-y-3">
-      {groups.map((group, idx) => (
-        <details
-          key={group.decade}
-          open={idx === 0}
-          className="group border-y border-border overflow-hidden"
-        >
-          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
-            <span className="text-text text-base font-semibold tracking-tight">
-              {group.label}
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-              {group.rows.length}{' '}
-              {group.rows.length === 1 ? 'champion' : 'champions'}
-            </span>
-          </summary>
-          <div className="divide-y divide-border/40 border-t border-border/60">
-            {group.rows.map((c, i) => (
-              <div key={`${c.year}-${i}`} className="px-4 py-2.5">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
-                    {c.year}
-                  </span>
-                  <span className="text-text text-sm leading-snug">
-                    <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
-                  </span>
-                  <TitleTallyBadge tally={tally.get(c)} />
-                </div>
+    <div>
+      {groups.map(group => (
+        <DecadeShell key={group.decade} label={group.label} count={group.rows.length}>
+          {group.rows.map((c, i) => (
+            <div key={`${c.year}-${i}`} className="py-2.5">
+              <div className="flex items-baseline gap-2">
+                <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
+                  {c.year}
+                </span>
+                <span className="font-serif text-[16px] font-semibold leading-snug text-text">
+                  <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
+                </span>
+                <TitleTallyBadge tally={tally.get(c)} />
               </div>
-            ))}
-          </div>
-        </details>
+            </div>
+          ))}
+        </DecadeShell>
       ))}
     </div>
   );
@@ -449,105 +443,61 @@ function SecondarySection({
   const groups = groupByDecade(champions);
   const tally = computeTitleTally(champions, c => c.driver);
   return (
-    <div className="space-y-3">
-      {groups.map((group, idx) => (
-        <details
-          key={group.decade}
-          open={idx === 0}
-          className="group border-y border-border overflow-hidden"
-        >
-          <summary className="flex items-baseline justify-between px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
-            <span className="text-text text-base font-semibold tracking-tight">
-              {group.label}
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono">
-              {group.rows.length}{' '}
-              {group.rows.length === 1 ? 'champion' : 'champions'}
-            </span>
-          </summary>
-          <div className="divide-y divide-border/40 border-t border-border/60">
-            {group.rows.map((c, i) => (
-              <div key={`${c.year}-${i}`} className="px-4 py-2.5">
-                <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
-                  <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
-                    {c.year}
-                  </div>
-                  <div className="text-text text-sm leading-snug flex items-baseline gap-2">
-                    <DriverCell name={c.driver} driverSlugs={driverSlugs} />
-                    <TitleTallyBadge tally={tally.get(c)} />
-                  </div>
-                  <div className="text-xs text-text-muted leading-snug">
-                    {c.team ? (
-                      <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
-                    ) : (
-                      ''
-                    )}
-                  </div>
+    <div>
+      {groups.map(group => (
+        <DecadeShell key={group.decade} label={group.label} count={group.rows.length}>
+          {group.rows.map((c, i) => (
+            <div key={`${c.year}-${i}`} className="py-2.5">
+              <div className="hidden sm:grid grid-cols-[3.5rem_1fr_minmax(0,1fr)] gap-x-3 items-baseline">
+                <div className="text-text-muted tabular-nums text-sm font-medium tnum font-mono">
+                  {c.year}
                 </div>
-                <div className="sm:hidden">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
-                      {c.year}
-                    </span>
-                    <span className="text-text text-sm">
-                      <DriverCell name={c.driver} driverSlugs={driverSlugs} />
-                    </span>
-                    <TitleTallyBadge tally={tally.get(c)} />
-                  </div>
-                  {c.team && (
-                    <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
-                      <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
-                    </div>
+                <div className="text-text text-sm leading-snug flex items-baseline gap-2">
+                  <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                  <TitleTallyBadge tally={tally.get(c)} />
+                </div>
+                <div className="text-xs text-text-muted leading-snug">
+                  {c.team ? (
+                    <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
+                  ) : (
+                    ''
                   )}
                 </div>
               </div>
-            ))}
-          </div>
-        </details>
+              <div className="sm:hidden">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-text-muted tabular-nums text-sm font-medium tnum font-mono w-12 shrink-0">
+                    {c.year}
+                  </span>
+                  <span className="text-text text-sm">
+                    <DriverCell name={c.driver} driverSlugs={driverSlugs} />
+                  </span>
+                  <TitleTallyBadge tally={tally.get(c)} />
+                </div>
+                {c.team && (
+                  <div className="ml-[3.75rem] mt-0.5 text-[11px] text-text-faint">
+                    <TeamCell name={c.team} teamSlugMap={teamSlugMap} />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </DecadeShell>
       ))}
     </div>
   );
 }
 
-// Top-level championship section as a native collapsible. Mirrors the
-// decade-group `<details>` shell (same border/hover/marker-hidden treatment)
-// but one tier up: the summary carries the uppercase-tracked SectionHeading look
-// instead of a decade label, plus a faint mono champion count matching the
-// decade summaries' count style. Native `<details>` needs no JS, so ChampionsTab
-// stays a server component; the nested decade `<details>` toggle independently.
-function CollapsibleSection({
-  label,
-  count,
-  sparkline,
-  defaultOpen = false,
-  children,
-}: {
-  label: React.ReactNode;
-  count: number;
-  /** Optional titles-over-time sparkline (TitleSparkline), rendered beside
-   *  the champion count on sm+ viewports. */
-  sparkline?: React.ReactNode;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
+// The head line above a championship panel: mono count left, the
+// titles-over-time sparkline right.
+function PanelHead({ count, sparkline }: { count: number; sparkline?: React.ReactNode }) {
   return (
-    <details
-      open={defaultOpen}
-      className="group border-y border-border overflow-hidden"
-    >
-      <summary className="flex items-baseline justify-between gap-3 px-4 py-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-surface transition-colors duration-(--duration-fast)">
-        <h2 className="text-[11px] uppercase tracking-[0.18em] text-text-faint font-semibold">
-          {label}
-        </h2>
-        <span className="flex items-center gap-3 min-w-0">
-          {sparkline}
-          <span className="text-[10px] uppercase tracking-[0.14em] text-text-faint font-semibold font-mono whitespace-nowrap">
-            {count} {count === 1 ? 'champion' : 'champions'}
-          </span>
-        </span>
-      </summary>
-      <div className="pt-3">{children}</div>
-    </details>
+    <div className="mb-4 flex items-center justify-between gap-3">
+      <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-faint">
+        {count} {count === 1 ? 'champion' : 'champions'}
+      </span>
+      {sparkline}
+    </div>
   );
 }
 
@@ -697,63 +647,102 @@ export async function ChampionsTab({ series }: { series: Series }) {
     );
   }
 
+  // The championships as TABS (operator, 2026-08-20: "in a separate tab the
+  // team champions for all years too") — radio-driven, zero JS, so this stays
+  // a server component AND every list ships in the HTML: the hidden panels are
+  // display-hidden, not unmounted, keeping the page a complete indexable
+  // reference. Fixed peer names (cd/ct/cs) because Tailwind variants must be
+  // static strings.
+  const chipLabel =
+    'inline-flex min-h-[38px] cursor-pointer items-center border border-border-strong px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text';
   return (
-    <div className="space-y-4">
-      <CollapsibleSection
-        label={isSingleEvent ? 'Past Winners' : <>Drivers&apos; Championship</>}
-        count={champions.length}
-        sparkline={
-          <TitleSparkline
-            rows={champions}
-            keyOf={c => c.driver}
-            label="Titles over time — each season's champion's cumulative title count"
-          />
-        }
-        defaultOpen
-      >
+    <div>
+      <input type="radio" name="championship" id="champ-drivers" defaultChecked className="peer/cd sr-only" />
+      {hasConstructorChampionship && (
+        <input type="radio" name="championship" id="champ-teams" className="peer/ct sr-only" />
+      )}
+      {hasSecondaryChampionship && (
+        <input type="radio" name="championship" id="champ-secondary" className="peer/cs sr-only" />
+      )}
+
+      <div className="mb-5 flex flex-wrap items-center gap-2">
+        <label
+          htmlFor="champ-drivers"
+          className={`${chipLabel} peer-checked/cd:border-text peer-checked/cd:bg-surface-elevated peer-checked/cd:text-text`}
+        >
+          {isSingleEvent ? 'Past winners' : "Drivers' champions"}
+        </label>
+        {hasConstructorChampionship && (
+          <label
+            htmlFor="champ-teams"
+            className={`${chipLabel} peer-checked/ct:border-text peer-checked/ct:bg-surface-elevated peer-checked/ct:text-text`}
+          >
+            Team champions
+          </label>
+        )}
+        {hasSecondaryChampionship && (
+          <label
+            htmlFor="champ-secondary"
+            className={`${chipLabel} peer-checked/cs:border-text peer-checked/cs:bg-surface-elevated peer-checked/cs:text-text`}
+          >
+            {secondaryLabel}
+          </label>
+        )}
+      </div>
+
+      <div className="hidden peer-checked/cd:block">
+        <PanelHead
+          count={champions.length}
+          sparkline={
+            <TitleSparkline
+              rows={champions}
+              keyOf={c => c.driver}
+              label="Titles over time — each season's champion's cumulative title count"
+            />
+          }
+        />
         <DriversSection
           champions={champions}
           driverSlugs={driverSlugs}
           teamSlugMap={teamSlugMap}
         />
-      </CollapsibleSection>
+      </div>
       {hasConstructorChampionship && (
-        <CollapsibleSection
-          label={<>Constructors&apos; Championship</>}
-          count={constructorChampions.length}
-          sparkline={
-            <TitleSparkline
-              rows={constructorChampions}
-              keyOf={c => c.team}
-              label="Titles over time — each season's champion's cumulative title count"
-            />
-          }
-          defaultOpen
-        >
+        <div className="hidden peer-checked/ct:block">
+          <PanelHead
+            count={constructorChampions.length}
+            sparkline={
+              <TitleSparkline
+                rows={constructorChampions}
+                keyOf={c => c.team}
+                label="Titles over time — each season's champion's cumulative title count"
+              />
+            }
+          />
           <ConstructorsSection
             champions={constructorChampions}
             teamSlugMap={teamSlugMap}
           />
-        </CollapsibleSection>
+        </div>
       )}
       {hasSecondaryChampionship && (
-        <CollapsibleSection
-          label={secondaryLabel}
-          count={secondaryChampions.length}
-          sparkline={
-            <TitleSparkline
-              rows={secondaryChampions}
-              keyOf={c => c.driver}
-              label="Titles over time — each season's champion's cumulative title count"
-            />
-          }
-        >
+        <div className="hidden peer-checked/cs:block">
+          <PanelHead
+            count={secondaryChampions.length}
+            sparkline={
+              <TitleSparkline
+                rows={secondaryChampions}
+                keyOf={c => c.driver}
+                label="Titles over time — each season's champion's cumulative title count"
+              />
+            }
+          />
           <SecondarySection
             champions={secondaryChampions}
             driverSlugs={driverSlugs}
             teamSlugMap={teamSlugMap}
           />
-        </CollapsibleSection>
+        </div>
       )}
       {sourceFooter}
     </div>
