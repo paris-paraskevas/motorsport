@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.313.0 — 2026-08-20
+
+**The calendar finally makes sense on your phone.** The month now reads as a day-by-day agenda — every session named, with the ones that decide something in bold — instead of a grid of anonymous dots. The weekend cards take half the space, the filters tuck away until you need them, and series pages stop cutting off long race names.
+
 ## 0.312.0 — 2026-08-20
 
 **Calendar filters live in a proper box now.** Every championship is visible at once as a tickable chip — nothing hidden behind a "more" button — with Select all and Clear shortcuts, so keeping everything except a couple of series is a matter of unticking them. Still applied the instant you tap.

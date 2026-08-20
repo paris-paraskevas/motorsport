@@ -324,7 +324,9 @@ function ThisWeekend({
           This weekend
         </span>
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      {/* 2-up from the smallest phones: four full-width cards ate ~450px of a
+          375px viewport before the grid even started (feedback board). */}
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {cards.map(([key, g]) => (
           <Link
             key={key}
@@ -336,7 +338,7 @@ function ThisWeekend({
               <span className="block truncate font-serif text-[15px] font-semibold leading-tight text-text">
                 {roundNames?.[key] ?? `${g.name} · Round ${g.round}`}
               </span>
-              <span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+              <span className="block truncate font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
                 {g.name} · {fmt.format(g.first)} – {fmt.format(g.last)}
               </span>
             </span>

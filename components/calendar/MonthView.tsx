@@ -203,15 +203,73 @@ export function MonthView({
   const weeks: DayCell[][] = [];
   for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
 
+  // Below md the month renders as an agenda, not a grid: a 7-column grid can't
+  // carry text at 390px, and the dot row it used to show carried no information
+  // (feedback board 2026-08-20: "chaotic on mobile"). Days without sessions
+  // don't rent space; today always appears as an anchor.
+  const agendaFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const agendaDays = cells.filter(c => c.inMonth && ((buckets.get(c.key)?.length ?? 0) > 0 || c.isToday));
+
   return (
     <div>
-      <div className="grid grid-cols-7 border-b border-text">
+      <div className="md:hidden">
+        {agendaDays.length === 0 ? (
+          <p className="border-y border-border py-6 text-center font-mono text-xs uppercase tracking-[0.12em] text-text-muted">
+            Nothing scheduled this month
+          </p>
+        ) : (
+          agendaDays.map(cell => {
+            const entries = buckets.get(cell.key) ?? [];
+            const lines = summariseDay(entries, roundByKey);
+            return (
+              <section key={cell.key} className="border-b border-border py-2">
+                <div className="flex items-baseline justify-between">
+                  <button
+                    type="button"
+                    onClick={() => onSelectDay(cell.date)}
+                    className={`font-mono text-[10px] font-semibold uppercase tracking-[0.16em] ${
+                      cell.isToday ? 'text-brand' : 'text-text-muted'
+                    }`}
+                  >
+                    {agendaFmt.format(cell.date)}
+                    {cell.isToday ? ' · Today' : ''}
+                  </button>
+                  {entries.length > 0 && (
+                    <span className="font-mono text-[10px] tabular-nums text-text-faint">{entries.length}</span>
+                  )}
+                </div>
+                {lines.map(l => (
+                  <Link key={l.key} href={l.href} className="flex min-h-10 min-w-0 items-center gap-2">
+                    <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: l.color }} />
+                    <span className="w-12 shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-text-faint">
+                      {code(l.seriesSlug)}
+                    </span>
+                    <span
+                      className={`min-w-0 flex-1 truncate font-serif text-[14px] leading-tight ${
+                        l.decides ? 'font-semibold text-text' : 'text-text-muted'
+                      }`}
+                    >
+                      {l.label}
+                    </span>
+                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">{l.time}</span>
+                  </Link>
+                ))}
+                {entries.length === 0 && (
+                  <p className="mt-1 font-serif text-[13px] italic leading-snug text-text-muted">No sessions.</p>
+                )}
+              </section>
+            );
+          })
+        )}
+      </div>
+      <div className="hidden grid-cols-7 border-b border-text md:grid">
         {WEEKDAYS.map(d => (
           <div key={d} className="px-1.5 pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
             {d}
           </div>
         ))}
       </div>
+      <div className="hidden md:block">
       {weeks.map((week, wi) => {
         const banners = bannersForWeek(week, buckets, roundByKey, roundNames);
         return (
@@ -313,18 +371,6 @@ export function MonthView({
                         </button>
                       )}
                     </div>
-                    {/* mobile: colour dots (a 7-column grid can't carry text at 390px). */}
-                    <div className="mt-1 flex flex-wrap gap-1 md:hidden">
-                      {entries.slice(0, 6).map(e => (
-                        <span
-                          key={`${e.seriesSlug}-${e.session.uid}`}
-                          role="img"
-                          aria-label={`${e.seriesSlug}: ${e.session.title}`}
-                          className="h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: e.color }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 );
               })}
@@ -332,6 +378,7 @@ export function MonthView({
           </div>
         );
       })}
+      </div>
       {/* Reading-it legend (mock 6a foot). */}
       <div className="mt-2 hidden flex-wrap items-baseline gap-x-5 gap-y-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint md:flex">
         <span className="font-semibold text-text-muted">Reading it</span>
