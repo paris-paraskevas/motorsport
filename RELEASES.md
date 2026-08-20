@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.315.0 — 2026-08-20
+
+**Champions pages now show everything.** Every champion, every year, all the way back — no more folded-away decades — with drivers' and team titles on their own tabs, dynasty tallies intact.
+
 ## 0.314.0 — 2026-08-20
 
 **The series reference pages catch up with the redesign.** Drivers, standings, results, champions and circuits now read like the rest of the paper — each one a proper standalone page with its own masthead and a way back — and the series page itself now links straight to standings and results.

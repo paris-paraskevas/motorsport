@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.314.0 — 2026-08-20
+## 0.315.0 — 2026-08-20
+
+### Changed
+- **Champions rebuilt: drivers and teams as real tabs, every year visible** (Round-3 ⑤; operator: "a separate indexed page showing the champions each year and in a separate tab the team champions for all years too"). `components/tabs/ChampionsTab.tsx`: the stacked collapsible sections become **radio-driven tabs** — "Drivers' champions" / "Team champions" / the secondary championship where one exists — zero JS (fixed Tailwind peer names cd/ct/cs), so the component stays server-rendered and every list ships in the HTML display-hidden, keeping the page a complete indexable reference. The decade accordions become **open Paper sections** (serif decade heads on ink rules — the old `<details>` hid everything before 2020 by default, the opposite of "showing the champions each year"); champion names go serif; the titles-over-time sparkline moves to a per-panel head. All data logic (curated/Wikipedia sources, slug maps, tally pips, depth lines) untouched.
+
+
 
 ### Changed
 - **The series sub-pages join Paper — all five at once** (Round-3 ⑤–⑦ opener; operator: "these pages still havent changed. change NOW. its drivers, standings, results, champions and rounds"). `components/SeriesPageView.tsx` rewritten: the pre-Paper register (display-caps `FORMULA 1.` masthead, the Learn-about grid, the CALENDAR/STANDINGS/RESULTS/ROUNDS tab strip, threads/news quick links, the F1-analysis chip) is gone. Each sub-page now stands alone: `← {series}` mono breadcrumb → serif masthead named for the SUBJECT ("The 2026 grid", "Champions"/"Past winners", "2026 results", "2026 circuits", "Standings") with the series color bar → mono `{series} · {season} season` line → the tab body → a mono cross-link foot ("More Formula 1: Season overview · Standings · …" via `seriesSubPages`, single-event-aware). Dead code removed with it: the `calendar` tab branches (`CalendarTab` case, ICS row, `SeriesBlogPosts`) could never render here since the bare path became the reimagined landing — the route 301s `calendar` away.
