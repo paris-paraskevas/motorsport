@@ -1,5 +1,6 @@
 import { betDb, isBettingConfigured } from './betting/client';
 import { displayNames } from './betting/friends';
+import { logSourceError } from './fetch-upstream';
 
 // Server-only. Community threads (W7): signed-in users submit top-level posts
 // (title + body) that are public only after an admin approves. RLS-on /
@@ -95,18 +96,28 @@ export async function createThread(
 }
 
 /** Threads in a given status, newest first, author names resolved.
- *  Pass `seriesSlug` to return only threads tagged with that series. */
+ *  Pass `seriesSlug` to return only threads tagged with that series.
+ *  Fail-soft like its sibling seriesWithThreads: an unconfigured or erroring
+ *  Supabase returns [] (logged) instead of throwing — a DB hiccup must render
+ *  the threads page's empty state, never 500 the whole page (this was also
+ *  why /social/threads could not be checked on local dev at all). */
 export async function listThreads(status: ThreadStatus, seriesSlug?: string): Promise<Thread[]> {
-  let q = betDb()
-    .from('thread')
-    .select('id, author_id, title, body, status, series_slug, created_at')
-    .eq('status', status);
-  if (seriesSlug) q = q.eq('series_slug', seriesSlug);
-  const { data, error } = await q.order('created_at', { ascending: false });
-  if (error) throw new Error(`listThreads failed: ${error.message}`);
-  const rows = data ?? [];
-  const names = await displayNames([...new Set(rows.map(r => r.author_id as string))]);
-  return rows.map(r => toThread(r, names.get(r.author_id as string) ?? null));
+  if (!isBettingConfigured()) return [];
+  try {
+    let q = betDb()
+      .from('thread')
+      .select('id, author_id, title, body, status, series_slug, created_at')
+      .eq('status', status);
+    if (seriesSlug) q = q.eq('series_slug', seriesSlug);
+    const { data, error } = await q.order('created_at', { ascending: false });
+    if (error) throw new Error(`listThreads failed: ${error.message}`);
+    const rows = data ?? [];
+    const names = await displayNames([...new Set(rows.map(r => r.author_id as string))]);
+    return rows.map(r => toThread(r, names.get(r.author_id as string) ?? null));
+  } catch (err) {
+    logSourceError('threads:list', err);
+    return [];
+  }
 }
 
 /** Slugs of series that have >=1 APPROVED thread — lets a series page show a
