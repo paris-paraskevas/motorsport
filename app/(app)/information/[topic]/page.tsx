@@ -136,6 +136,12 @@ export default async function TopicPage({
         <>
           {verified.length > 0 && (
             <section className="mb-10">
+              {/* Screen-reader-only section label: the entry titles below are
+                  h3s, and without this h2 the outline skipped h1 → h3
+                  (Lighthouse heading-order). The drafts section already has a
+                  visible h2; this one stays invisible because the design shows
+                  the answers directly under the page title. */}
+              <h2 className="sr-only">Answers</h2>
               <div className="grid gap-x-10 md:grid-cols-2 lg:grid-cols-3">
                 {verified.map((e) => (
                   <EntryRow

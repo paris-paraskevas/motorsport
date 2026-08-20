@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.323.0 — 2026-08-20
+
+**Standings pages stop jumping.** The season trend chart now holds its space from the moment the page arrives, so the table below it no longer shifts down when the chart appears, and the chart itself only loads when you actually scroll to it. Explainer hub pages also read better in screen readers.
+
 ## 0.322.5 — 2026-08-20
 
 **Easier tapping on phones.** Footer links and the small cross-links at the bottom of series and race-weekend pages now meet the recommended touch-target size, so they are easier to hit on a phone without the layout visibly changing.
