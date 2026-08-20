@@ -4,7 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.310.0 — 2026-08-20
+## 0.311.0 — 2026-08-20
+
+### Changed
+- **Paper's hairlines darken a full step** (operator: "site wide on paper theme, i want the lines to be more distinct"). `app/globals.css` `:root[data-theme='paper']`: `--border` #d6cebb → **#c2b493**, `--border-strong` #a99c80 → **#91825e** — same warm-sand hue, ~10% less lightness, so every rule/divider/card edge on the default theme actually reads. Newsprint (opt-in) keeps the lighter originals.
+- **The calendar nav bar rules in ink** (operator annotation on the month bar). `components/calendar/CalendarToolbar.tsx`: the bar's `border-y` and the prev/next arrows' vertical separators go `border-border` → `border-text`, and the chevrons render full-ink — the arrow boxes are now visibly "cut" from the label area.
+
+
 
 ### Changed
 - **A finished season says so — champion first** (feedback board: "formula e is done, that needs to be clear"; operator follow-up: season-complete leads, champion outranks the race winner). Home (`app/(app)/app/page.tsx` + `components/HomeLead.tsx`): the lead band computes `seasonComplete` for the result's series (no weekend left in `groupByWeekend`, non-single-event) and, when set, leads with a brand "SEASON COMPLETE" kicker + "**{champion} is {series} champion**" as the h1, demoting the race winner ("Taylor Barnard wins the London ePrix") to a serif sub-line with the margin folded in; the What-it-changed head swaps "Drivers' championship" → "Final standings" and the headline reads "takes the title by N points" instead of "leads by N points". Series landing (`app/(app)/series/[slug]/page.tsx`): `seasonOver` (= no next weekend, rounds exist, not single-event) puts a brand "Season complete ·" first in the masthead micro-line, retitles the table "Final drivers' championship · season complete", adds a champion callout band ("**Pascal Wehrlein** is the 2026 champion.") above the table, and the rail's odd "NEXT ROUND / Season complete." empty state becomes "SEASON / Complete — all 17 rounds run."
