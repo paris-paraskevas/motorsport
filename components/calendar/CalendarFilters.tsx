@@ -39,11 +39,13 @@ export function CalendarFilterBox({
 
   return (
     <section aria-label="Calendar filters" className="mb-4 border border-border-strong bg-surface px-3 pb-3 pt-2">
+      {/* Select all / Clear sit beside the label, not at the far edge
+          (operator annotation, 2026-08-20: "move this → move here"). */}
       <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-1.5">
-        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-          Filters · {countLabel}
-        </span>
-        <span className="flex items-baseline gap-x-4">
+        <span className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            Filters · {countLabel}
+          </span>
           <button
             type="button"
             onClick={onSelectAll}
@@ -58,6 +60,8 @@ export function CalendarFilterBox({
           >
             Clear
           </button>
+        </span>
+        <span className="flex items-baseline gap-x-4">
           <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint sm:inline">
             Applied as you tap
           </span>
