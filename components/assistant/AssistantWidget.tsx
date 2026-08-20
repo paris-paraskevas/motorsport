@@ -227,7 +227,7 @@ export function AssistantWidget() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open the Race Engineer help chat"
-        className={`${anchor} inline-flex h-14 w-14 lg:h-[4.5rem] lg:w-[4.5rem] items-center justify-center border-[1.5px] border-text bg-text text-bg shadow-lg transition-transform duration-(--duration-fast) hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
+        className={`${anchor} inline-flex h-14 w-14 lg:h-[4.5rem] lg:w-[4.5rem] items-center justify-center rounded-full border-[1.5px] border-text bg-text text-bg shadow-lg transition-transform duration-(--duration-fast) hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-text focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
       >
         <UserCog className="size-6 lg:size-9" aria-hidden />
       </button>

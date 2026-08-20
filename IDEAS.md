@@ -15,6 +15,10 @@ Single source of truth for **open work only**. Completed items are NOT kept here
 5. **Champions depth ×11** (IndyCar, WEC, WSBK, F2, F3, FE, NASCAR, DTM, GT-World, WRC, IMSA) — the proven two-source pipeline (official archive × Wikipedia rendered HTML, three-way name check; see 0.266.0). One-two series per session. ADAC 24h + NLS never.
 6. **Indexing follow-through**: GSC "Validate fix" clicked 2026-08-06, awaiting Google's re-crawl verdict on the 45 noindex URLs.
 
+## Inbox (2026-08-20 — session 29 cont.)
+
+- **What's-New modal** (operator's Gantt-app reference, 2026-08-20): the avatar menu's What's new currently links /changelog; the reference shows a version-gated modal (hero card + feature cards + Got it) that opens on first visit after a release. Would surface RELEASES.md entries as cards; needs a seen-version localStorage gate and a card-worthy subset marker in the release format.
+
 ## Inbox (2026-08-19 — session 29)
 
 - **App error boundary is pre-Paper** — "Something broke" gradient card (`app/(app)/error.tsx`?) surfaced during the threads dev check; restyle to the Paper register (the marketing error page's button was inked in 0.302.0 but the app card + its layout weren't). Also: `lib/threads.ts` `listThreads` has no fail-soft — a DB hiccup 500s the whole threads page instead of degrading.

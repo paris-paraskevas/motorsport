@@ -4,7 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.317.1 — 2026-08-20
+## 0.318.0 — 2026-08-20
+
+### Changed
+- **The avatar opens an account menu** (operator, Gantt-app reference: "If i then click Profile i will go to account page. If not i have access to blog, whats new, about, sign out"). `components/AppShell.tsx` `HeaderAccount`: the 26px avatar-link (straight to /settings) becomes a **32px avatar button** opening a Paper dropdown — signed in: name + email header, **Profile** (/settings), **What's new** (/changelog), **Blog**, **About**, **Sign out** (Clerk `SignOutButton`, redirect /); signed out: **Sign in** leads the same menu. Outside-click + Escape close it. A version-gated What's-New MODAL (the reference's hero-card dialog) is logged in IDEAS — the menu links the changelog for now.
+- **The header bell and the Race Engineer bubble go round** (operator: "we could make these boxes rounded") — `rounded-full` on `NotificationBell`'s trigger and `AssistantWidget`'s FAB; the square ink boxes now sit coherently beside the circular avatar.
+
+
 
 ### Fixed
 - **Trend-chart lines were invisible on Paper** (operator, compare page: "comparing 2 mercedes drivers on paper theme, cant see the trajectory at all"). `components/SeasonTrendChart.tsx`: the broadcast team hexes were tuned for the near-black theme (Mercedes #27f4d2 ≈1.3:1 on paper; Cadillac is literally #ffffff) — `buildLineStyles` now passes every stroke through `seriesInk` (the per-theme `--series-ink-mix`: 100% on dark = byte-identical, 52% on light = legible ink). The legend chips and ranked-rail dots read the same styles, so they follow; the fallback palette inks too. `color-mix(… var(--series-ink-mix), black)` resolves in recharts' SVG stroke attributes (verified computed rgb in-browser). The compare page's team sub-label (`DriverHead`) gets the same treatment. Fixes the chart on /f1/compare, the standings-tab trend, and team pages in one place.
