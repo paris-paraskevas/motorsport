@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.324.1 — 2026-08-20
+
+### Internal
+- **Session 30 close.** `docs/HANDOFF.md` gets the final pickup block: twelve merges (0.321.2 → 0.324.0), the four PSI packages, the 28-hour `warm-live-data` outage and its 2-for-2 lockfile lesson, the two permanently-dispositioned perf levers (gtag already lazy; Clerk-anon a NO-GO as a patch, with the real path documented), and five durable process learnings — three parallel subagents dying on the operator's session cap, an interrupted agent's work being unverified by definition, `rm -rf .next/dev` under a live dev server 500ing it, Wikimedia's bucketed-thumbnail-width restriction, and a comment silently detaching an `eslint-disable-next-line` from its target. `docs/next-session.md` rewritten around the operator's five open threads (the time-sensitive Zandvoort blog approval, AdSense wave 2 plus four decisions, the PSI re-measure, three design decisions, then the image session). `SCHEDULE.md` closes the day; `IDEAS.md` NOW rebuilt so every remaining item carries its evidence and owner. Memory `feedback-paddock-workflow-limits` updated with the reconfirmation and the two new rules it produced (one research agent at a time; always hunt for recoverable partial output, then re-run the whole gate chain).
+
 ## 0.324.0 — 2026-08-20
 
 ### Added

@@ -6,7 +6,45 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-20 (LATEST, session 30 — PSI stall killed, warm-pipeline outage fixed, logo back, fact packs delivered) — `main` = **0.322.2**, six merges, all prod-verified
+## ⚡ Next session pickup — 2026-08-20 (LATEST, session 30 FINAL — 12 merges, PSI swept + all four packages shipped, AdSense enrichment started, blog contract flipped) — `main` = **0.324.0**, zero open PRs, every merge prod-verified
+
+### 📌 NEXT SESSION — start here
+1. **The operator's blog approval.** The contract CHANGED mid-session: they asked for drafts, not just fact packs ("i want you to read my previous blogs. then give me a draft"). A finished Zandvoort-farewell preview is waiting in the session-30 scratchpad (`draft-f1-dutch-grand-prix-2026-preview.md`) with hero + inline licence-verified Commons images and four sourced Verstappen quotes. On their yes: move to `drafts/`, convert, `draft-post.mts` → prod DB draft, `publish_at` null. **Time-sensitive: the race is Sunday 23 Aug.** Going forward every post gets images, and they want OpenF1 `team_radio` embeds designed.
+2. **AdSense wave 2** — MotoGP champion notes (wave 1 shipped for F1 1996-2025 as 0.324.0; the pattern is `content/series/<slug>/champion-notes.json`, fail-soft, no code change needed per wave). Then the four decisions in IDEAS NOW #1: public Race Story on completed sessions (the cheapest verdict-mover, needs the SEO-Phase-2b ISR unpark), the two stub components' copy/indexing, and noindex on the 15 news tabs. Request review ONCE, when we believe it.
+3. **PSI re-measure** root + standings + weekend to capture the four packages' deltas, then append to `docs/perf-baselines.md`.
+4. **Three design/behaviour decisions** waiting (IDEAS NOW #6): the serwist `cacheOnNavigation` drop, the calendar contrast token, month-grid tap targets (recommend accept).
+5. Then **THE IMAGE SESSION** (operator: "the biggest job we have ever done"), with the Fotis testing-build layout as the reference.
+
+### ✅ Shipped this session (12 merges, 0.321.2 → 0.324.0, each prod-verified after deploy)
+- **0.321.2 #737 — the landing's ~7 s document stall.** `LastTimeOut` streams behind Suspense, which holds the ISR document open; a cold podium candidate fell through to a doomed upstream fan-out (worker egress is blocked) and **a null was never cached**, so every render re-paid it. Fix: 15-min negative-cache sentinel + a hard 2 s budget (`fetchFirstPodiumWithin`) + clean-IP podium seeding in the warm job.
+- **0.321.3 #738** landing-orphan sweep (operator go): 15 zero-import files, 1,487 lines. Set recomputed from the tree, not the stale 17-name list.
+- **0.321.4 #739 — home 50/50 band + THE 28-HOUR OUTAGE.** `warm-live-data`, the site's ONLY data writer, had failed every run since 08-19 07:22Z on the npm-10-vs-11 nested-lockfile hole (`Missing: @swc/helpers@0.5.23`) — the #687/#688 disease, reintroduced by a session-29 merge. **Now 2-for-2 after dependency merges: add an `npx npm@10 ci --dry-run` gate and a failure alert.** Four consecutive green runs since.
+- **0.322.0 #740** the PADDOCK•TRACKER wordmark returns (header/nav/footer; condensed caps + brand dot).
+- **0.322.1 #741** feed.xml finally carries DB posts + goes ISR (prod: 19 items, was 0 since the MDX era).
+- **0.322.2 #742** `listThreads` fail-soft + Paper app error boundary (/social/threads dev-checkable at last).
+- **0.322.3 #743** session docs.
+- **0.322.4 #744 — fonts: 19 preloads / 660 KiB → 5 / 353 KiB on every page.** The mobile-LCP anomaly (metric 6.3 s vs its own 2.3 s breakdown) was preload contention, not a missing preload. Same PR: **the Upstash Redis SDK was shipping in browser JS** via `SessionCard` → `lib/weather.ts` top-level `import { kv }` (calendar chunk 128,560 → 34,972 bytes).
+- **0.322.5 #745** tap targets 20 → 24 px sitewide (17 footer rows + the series/weekend feet). Same PR dispositioned two levers permanently: **gtag is already `lazyOnload`** (no regression, cost inherent) and **Clerk-for-anonymous is a NO-GO as a patch** — v7's provider hotloads `ui.browser.js` at init regardless of component mounts, so the May baseline's "lazy-load UserButton" idea moves ZERO bytes; the real path is custom flows + `prefetchUI:false` (~150-200 KiB), a project not a patch.
+- **0.323.0 #746 — the trend chart splits into eager frame + lazy canvas**, killing the standings CLS 0.134. Frame owns the fixed box, ranked rail, chip legend and all state; only recharts is lazy, IO-gated. Measured 256/256 px at 390 and 320/320 at 1440, and **the hidden Constructors tab mounts its chart on switch** (verified by clicking it).
+- **0.323.1 #747** the two lazy-loaded LCP images: driver portrait eager + `fetchPriority` + Commons 500px bucket (186 → 91 KiB), circuit SVGs get intrinsic 500×500 and the desktop one gets priority.
+- **0.324.0 #748 — AdSense enrichment wave 1**: F1 champion answers 1996-2025 gain the clinch and the season's story (`content/series/f1/champion-notes.json`, 30 seasons), fail-soft so later waves need no code.
+
+### 🔴 Process learnings (durable, session 30)
+1. **Three parallel research subagents died on the operator's session cap** (~16:40 EEST), exactly as `feedback-paddock-workflow-limits` warns. One had written its JSON (recovered, validated, shipped as 0.324.0), one had uncommitted perf work (recovered, gate-fixed, shipped as 0.323.0), one produced nothing. **Lesson: one research agent at a time, and check for recoverable partial output before redoing work.**
+2. **A dead agent's work is unverified by definition.** Agent #3's 317-line chart refactor was sound but had a real lint error (`setState` synchronously inside an effect); the orchestrator's gate chain caught it. Never merge an interrupted agent's branch without re-running the full chain.
+3. **`rm -rf .next/dev` under a live dev server 500s the server.** Cost a confusing minute; kill dev first (by PID via the port, never by image name).
+4. **Wikimedia serves only bucketed thumbnail widths** — 352/360/400 return a 400 error page regardless of UA; 500 is the smallest usable bucket. Verified against all 22 shipped portraits before shipping.
+5. **A comment inserted between `eslint-disable-next-line` and its target silently detaches the suppression.** Lint caught it; comment order matters.
+
+### 🩹 Owed (operator)
+- **Approve/edit the Zandvoort blog draft** (time-sensitive).
+- Paste the PSI re-run figures once the four packages settle.
+- The four AdSense decisions + three design decisions listed above.
+- Long-carried: key rotations, dead `.supabase-pat`.
+
+---
+
+## ⚡ Session-30 mid-point pickup (superseded by the block above) — `main` was 0.322.2
 
 ### 📌 NEXT SESSION — start here
 1. **The operator writes the two blogs** from the fact packs (scratchpad: `factpack-a-f1-summer-break.md`, `factpack-b-dutch-gp-zandvoort.md` — every claim sourced + dated, UNVERIFIED lists at the end). Claude returns **corrections only** (facts, stale numbers, house style). Zandvoort sprint question RESOLVED: it IS a sprint weekend (5th of 6, Zandvoort's first and last GP) — our calendar was right. Weather: re-pull Open-Meteo by venue-local date on writing day (the API line is in pack B; current model: heavy rain Sprint Saturday).
