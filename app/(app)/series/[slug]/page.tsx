@@ -203,6 +203,14 @@ export default async function SeriesPage({
       href: `/series/${slug}/champions`,
       blurb: 'Year by year',
     },
+    // Standings + Results join the row (operator, 2026-08-20: make them "more
+    // easily accessible" from the landing); single-event series have neither.
+    ...(!meta.singleEvent
+      ? [
+          { label: 'Standings', href: `/series/${slug}/standings`, blurb: 'The full table' },
+          { label: 'Results', href: `/series/${slug}/results`, blurb: 'Round by round' },
+        ]
+      : []),
     { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
     ...(pointsGuideForSeries(slug) ? [{ label: 'Points', href: pointsGuideForSeries(slug)!, blurb: 'How scoring works' }] : []),
     { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },

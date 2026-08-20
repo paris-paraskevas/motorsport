@@ -4,7 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.313.1 — 2026-08-20
+## 0.314.0 — 2026-08-20
+
+### Changed
+- **The series sub-pages join Paper — all five at once** (Round-3 ⑤–⑦ opener; operator: "these pages still havent changed. change NOW. its drivers, standings, results, champions and rounds"). `components/SeriesPageView.tsx` rewritten: the pre-Paper register (display-caps `FORMULA 1.` masthead, the Learn-about grid, the CALENDAR/STANDINGS/RESULTS/ROUNDS tab strip, threads/news quick links, the F1-analysis chip) is gone. Each sub-page now stands alone: `← {series}` mono breadcrumb → serif masthead named for the SUBJECT ("The 2026 grid", "Champions"/"Past winners", "2026 results", "2026 circuits", "Standings") with the series color bar → mono `{series} · {season} season` line → the tab body → a mono cross-link foot ("More Formula 1: Season overview · Standings · …" via `seriesSubPages`, single-event-aware). Dead code removed with it: the `calendar` tab branches (`CalendarTab` case, ICS row, `SeriesBlogPosts`) could never render here since the bare path became the reimagined landing — the route 301s `calendar` away.
+- **Standings + Results join the landing's reference row** (`app/(app)/series/[slug]/page.tsx`) after Champions, gated off single-event series — the operator's "make Standings, Results, Champions more easily accessible in /series/f1".
+
+
 
 ### Fixed
 - **Select all / Clear sit beside the FILTERS label** (operator annotation on 0.312.0: "move this → move here"). `components/calendar/CalendarFilterBox`: the two actions leave the header's right edge and join the left group next to "FILTERS · all series"; "Applied as you tap" (and the mobile EDIT toggle) keep the right side. Verified at 1400px: label x=45, Select all x=217, Clear x=307, same baseline row.
