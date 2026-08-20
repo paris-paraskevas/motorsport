@@ -18,7 +18,7 @@ import {
 } from '@/lib/calendar-grid';
 import type { CalendarEntry, CalendarViewMode } from './types';
 import { CalendarToolbar } from './CalendarToolbar';
-import { CalendarChips } from './CalendarFilters';
+import { CalendarFilterBox } from './CalendarFilters';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
@@ -103,7 +103,11 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
           const p = JSON.parse(raw) as { racesOnly?: unknown; series?: unknown };
           // eslint-disable-next-line react-hooks/set-state-in-effect -- persisted-filter adoption after mount is the hydration-safe pattern
           setRacesOnly(p.racesOnly === true);
-          setSeriesSel(Array.isArray(p.series) ? new Set(p.series.filter((s): s is string => typeof s === 'string')) : null);
+          // A stored empty list would restore a blank calendar — treat it as all.
+          const stored = Array.isArray(p.series)
+            ? p.series.filter((s): s is string => typeof s === 'string')
+            : [];
+          setSeriesSel(stored.length > 0 ? new Set(stored) : null);
         }
       }
     } catch {
@@ -114,9 +118,11 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
   useEffect(() => {
     if (!filtersHydrated) return;
     try {
+      // An empty selection ("none") is transient — persisting it would greet
+      // the next visit with a blank calendar, so it stores as all.
       localStorage.setItem(
         'paddock:calendar-filters:v2',
-        JSON.stringify({ racesOnly, series: seriesSel ? [...seriesSel] : null }),
+        JSON.stringify({ racesOnly, series: seriesSel && seriesSel.size > 0 ? [...seriesSel] : null }),
       );
     } catch {
       /* quota / disabled */
@@ -157,15 +163,15 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
   );
   const buckets = bucketByDay(shown);
 
-  // Tap semantics: focusing a series from "all" selects JUST it (the "just F1
-  // in one tap" fix); tapping the last selected one returns to all.
+  // Checkbox semantics (operator's filter box, 2026-08-20 — replaces the old
+  // tap-to-focus): unticking a series from "all" EXCLUDES just it and keeps
+  // the rest; an empty set is a legal transient "none" (Clear, then build up).
   const toggleSeries = (slug: string) => {
     setSeriesSel(cur => {
-      if (cur === null) return new Set([slug]);
-      const next = new Set(cur);
+      const next = cur === null ? new Set(present.map(p => p.slug)) : new Set(cur);
       if (next.has(slug)) next.delete(slug);
       else next.add(slug);
-      return next.size === 0 || next.size === present.length ? null : next;
+      return next.size === present.length ? null : next;
     });
   };
 
@@ -227,18 +233,15 @@ function CalendarInner({ items, roundByKey, roundNames, serverNow }: CalendarVie
         currentMonthValue={currentMonthValue}
         onPickMonth={ms => setAnchorMs(ms)}
       />
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <CalendarChips
-          racesOnly={racesOnly}
-          onRacesOnly={setRacesOnly}
-          series={present}
-          seriesSel={seriesSel}
-          onToggleSeries={toggleSeries}
-        />
-        <span className="mb-3 hidden shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint md:inline">
-          Applied as you tap
-        </span>
-      </div>
+      <CalendarFilterBox
+        racesOnly={racesOnly}
+        onRacesOnly={setRacesOnly}
+        series={present}
+        seriesSel={seriesSel}
+        onToggleSeries={toggleSeries}
+        onSelectAll={() => setSeriesSel(null)}
+        onClear={() => setSeriesSel(new Set())}
+      />
       {view === 'month' && (
         <MonthView anchor={anchor} now={now} buckets={buckets} roundByKey={roundByKey} roundNames={roundNames} onSelectDay={selectDay} />
       )}
