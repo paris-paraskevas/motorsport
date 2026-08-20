@@ -1,6 +1,6 @@
 import 'server-only';
 import { loadAllSeriesMeta } from '../series';
-import { loadCuratedChampions } from '../series-content';
+import { loadCuratedChampions, loadChampionNotes, type ChampionNote } from '../series-content';
 import { slugify } from '../slug';
 import { topicForSeries } from './topics';
 import type { InfoEntry, InfoSource } from './types';
@@ -54,6 +54,17 @@ function ordinal(n: number): string {
 // Sources shared by every generated entry for a series: our curated records +
 // the series' own Wikipedia champions page + official site. All from meta.json,
 // so never fabricated.
+/** "www.formula1.com/en/latest/..." → "formula1.com". Falls back to the raw
+ *  string if the URL is unparseable, so a malformed entry can never throw during
+ *  generation. */
+function sourceLabel(url: string): string {
+  try {
+    return new URL(url).host.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
 function seriesSources(meta: SeriesMeta): InfoSource[] {
   const out: InfoSource[] = [{ label: 'Paddock curated championship records' }];
   if (meta.championsPage) {
@@ -71,6 +82,7 @@ function whoWonEntry(
   all: Champion[],
   topic: string,
   featured: boolean,
+  note?: ChampionNote,
 ): InfoEntry {
   const name = seriesNameForYear(meta, champ.year);
   const question = `Who won the ${champ.year} ${name} championship?`;
@@ -118,6 +130,16 @@ function whoWonEntry(
       `The all-time ${name} ${driversTitleWord(meta)} record is **${driverRecord.count}** titles, ${driverRecord.names.length > 1 ? 'shared by' : 'held by'} **${joinNames(driverRecord.names)}**.`,
     );
   }
+  // The authored enrichment, when this season has one: where and when the title
+  // was clinched, plus what the season is remembered for. Everything above is
+  // derived from champions.json and therefore reads the same shape for every
+  // year; this is the part that makes the page about THAT season (the AdSense
+  // low-value-content finding, audit 2026-08-20). Appended last so the factual
+  // answer still comes first for someone who only wants the name.
+  if (note) {
+    lines.push(`**Title clinched:** ${note.clinched}.`);
+    lines.push(note.note);
+  }
 
   return {
     kind: 'qa',
@@ -132,7 +154,14 @@ function whoWonEntry(
       champ.driver,
     ],
     bodyMarkdown: lines.join('\n\n'),
-    sources: seriesSources(meta),
+    // The enrichment's own primary references join the series-level sources, so
+    // every clinch claim on the page is traceable to what it was checked
+    // against (RULE #1). Labelled by host: these are one-off article URLs
+    // rather than a named archive.
+    sources: [
+      ...seriesSources(meta),
+      ...(note?.sources ?? []).map((url) => ({ label: sourceLabel(url), url })),
+    ],
     related: [
       { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
       { label: `${meta.name} history`, href: `/information/${topic}/the-history-of-${meta.slug}` },
@@ -283,6 +312,9 @@ export async function generateInfoEntries(): Promise<InfoEntry[]> {
   for (const meta of metas) {
     const champs = await loadCuratedChampions(meta.slug);
     if (!champs || champs.length === 0) continue;
+    // Authored per-season enrichment, wave by wave: absent file or absent year
+    // leaves that page exactly as it was (fail-soft, same gate as bios.json).
+    const notes = (await loadChampionNotes(meta.slug)) ?? {};
     const topic = topicForSeries(meta.slug, meta.category);
 
     // EVERY champion page is featured, i.e. indexable (operator decision,
@@ -297,7 +329,7 @@ export async function generateInfoEntries(): Promise<InfoEntry[]> {
     // title and title-count context. Every fact traces to a vetted
     // content/series/<slug>/champions.json, which is why they are `verified`.
     for (const c of [...champs].sort((a, b) => b.year - a.year)) {
-      out.push(whoWonEntry(meta, c, champs, topic, true));
+      out.push(whoWonEntry(meta, c, champs, topic, true, notes[String(c.year)]));
     }
     const md = mostDriverTitlesEntry(meta, champs, topic);
     if (md) out.push(md);

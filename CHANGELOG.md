@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.324.0 — 2026-08-20
+
+### Added
+- **AdSense low-value remediation, wave 1: the F1 champion answers stop being a template.** The audit (`adsense-low-value-audit.md`, this session) found the 488 generated "who won the YYYY championship" pages are 38.7% of the sitemap, were flipped indexable on 2026-07-31 (five days before the Aug-5 verdict) and said the same three things every year with the names swapped — the exact shape Google's scaled-content policy targets. Operator direction was **enrich, do not noindex** ("we need this site to grow so more traffic comes in").
+  - New sidecar `content/series/f1/champion-notes.json`: 30 seasons, 2025 back to 1996, each with the one thing champions.json cannot express — **where and when the title was actually clinched** (race, venue, date, rounds remaining) — plus the fact that season is remembered for, at 67-95 words. Loaded by `loadChampionNotes` in `lib/series-content.ts` (same shape and fail-soft gate as `bios.json`), rendered by `whoWonEntry` in `lib/information/generated.ts` as a bolded "Title clinched:" line plus the paragraph, appended AFTER the derived facts so a visitor who only wants the name still gets it first. Each note's primary references join the entry's sources, labelled by host, so every clinch claim is traceable on the page.
+  - **Wave-gated by construction**: absent file or absent year renders the page exactly as before, so the remaining series (and F1 pre-1996) come in later waves without touching code. Verified on dev: 2025 and 1998 render the note, **1985 renders identically to before**.
+  - Verification: 30/30 seasons structurally complete with 2+ sources each, zero em dashes, zero AI-tell phrases; **24 numeric claims cross-checked against `champions.json` with zero discrepancies** (one apparent mismatch was a checker artifact — 2001's "record of 51 wins" is Schumacher's career total equalling Prost, not a season count); **8 of 30 seasons independently re-verified against primary sources (2012, 2008, 2007, 2003, 2021, 2016, 1997, 1996) with zero errors found**. The other 22 rest on the two-plus sources cited per entry, exactly as the 126-bio waves did.
+  - Provenance note: the research ran as a subagent that hit the operator's session cap before writing its review sheet, so the JSON was validated, cross-checked and spot-checked by the orchestrator instead. Its MotoGP counterpart produced nothing and is queued as wave 2 (it had already flagged that season-page table extraction fails arithmetic there, sums 337/241 vs actual 309/245 — treat that source as unreliable when redone).
+
+### Internal
+- Left alone deliberately, with the evidence now recorded for the next AdSense wave: the two indexed stub strings the audit named live in `components/StaleBanner.tsx:11` ("No feed configured — placeholder data only.", which also carries a house-style em dash) and `components/tabs/PlaceholderTab.tsx:9` ("Coming soon."). Both are shared components on multiple surfaces, so the copy is a design call, and the real remediation is keeping contentless tabs out of the index rather than rewording them.
+
 ## 0.323.1 — 2026-08-20
 
 ### Fixed

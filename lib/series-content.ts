@@ -31,6 +31,35 @@ export function loadCuratedChampions(slug: string): Promise<Champion[] | null> {
   );
 }
 
+/** Per-season enrichment for the generated "who won the YYYY championship"
+ *  answers (content/series/<slug>/champion-notes.json), keyed by year-as-string.
+ *
+ *  Why it exists: those pages were built from champions.json alone, so every one
+ *  of the 488 said the same three things with the names swapped — the shape
+ *  Google's AdSense review called low-value content (audit 2026-08-20). Each note
+ *  adds what the data cannot: where and when the title was actually clinched, and
+ *  the one thing that season is remembered for. Same gate as bios.json: absent
+ *  file or absent year → the page renders exactly as before, so a series can be
+ *  enriched a wave at a time. */
+export function loadChampionNotes(slug: string): Promise<ChampionNotesFile | null> {
+  return readJsonIfExists<ChampionNotesFile>(
+    path.join(SERIES_ROOT, slug, 'champion-notes.json'),
+  );
+}
+
+/** One season's enrichment. `clinched` is the where/when clause (race, date,
+ *  rounds remaining); `note` is the authored paragraph; `sources` are the primary
+ *  references each claim was checked against (RULE #1 trail, rendered on the page
+ *  so the answer is traceable). */
+export interface ChampionNote {
+  clinched: string;
+  note: string;
+  sources?: string[];
+}
+
+/** Sidecar shape: year-as-string → note. */
+export type ChampionNotesFile = Record<string, ChampionNote>;
+
 /** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
  *  The rally results feed is winners-only, so the full per-stage field lives
  *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is
