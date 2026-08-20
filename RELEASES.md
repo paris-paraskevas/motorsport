@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.310.0 — 2026-08-20
+
+**A finished championship now says so, loud.** When a season is over — Formula E just wrapped — the home page leads with "Season complete" and crowns the champion above the race result, and the series page opens with the final table and who took the title, instead of quietly implying the season might continue.
+
 ## 0.309.0 — 2026-08-19
 
 **Threads reads like the rest of the paper now.** The community discussion pages pick up the serif-and-ink treatment — and with that, every page from this round of your feedback is done.

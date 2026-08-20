@@ -83,12 +83,28 @@ export default async function Home() {
     const meta = metaBySlug.get(result.seriesSlug);
     const brief = meta ? await fetchStandingsBrief(result.seriesSlug, meta.season) : null;
     if (brief && brief.top.length > 0) {
+      // No weekend left to run in the lead series → the table is final, so the
+      // headline crowns a champion instead of naming a leader (the FE finale
+      // read "leads by 5 points" days after the title was decided).
+      const leadSeries = all.find(s => s.meta.slug === result.seriesSlug);
+      const leadWeekends = (() => {
+        try {
+          return leadSeries && !leadSeries.meta.singleEvent
+            ? groupByWeekend(leadSeries.sessions, now, leadSeries.rounds)
+            : [];
+        } catch {
+          return [];
+        }
+      })();
+      const seasonComplete =
+        leadWeekends.length > 0 && !leadWeekends.some(w => !w.isPast && w.sessions.some(x => x.end >= now));
       changed = {
         seriesName: result.seriesName,
         leader: brief.leader,
         gapToSecond: brief.gapToSecond,
         top: brief.top,
         winnerName: result.podium.find(p => p.position === 1)?.name,
+        seasonComplete,
       };
     }
   }

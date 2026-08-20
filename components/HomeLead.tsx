@@ -31,6 +31,8 @@ export interface HomeLeadChanged {
   top: { position: number; name: string; points: number }[];
   /** The just-run race's winner — their standings row gets the accent bar. */
   winnerName?: string;
+  /** Season over → the leader is the champion; the headline says so. */
+  seasonComplete?: boolean;
 }
 
 export interface HomeLeadNextItem {
@@ -85,6 +87,10 @@ export function HomeLead({
     ? new Date(result.dateIso).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
     : null;
   const leaderPoints = changed?.top[0]?.points ?? 0;
+  // Season over → the title decision outranks the race result: the band leads
+  // with "Season complete" + the champion, and the race winner drops to a
+  // sub-line (operator, 2026-08-20). `changed` is always the result's series.
+  const championName = changed?.seasonComplete ? changed.leader.name : null;
 
   return (
     <div>
@@ -108,12 +114,28 @@ export function HomeLead({
                   Round {result.round} · {raceDate}
                 </span>
               </div>
-              <h1 className="mt-3 font-serif text-[30px] font-semibold leading-[1.1] text-text lg:text-[40px]">
-                {headlineFor(winner.name, result.raceName)}
+              {championName && (
+                <p className="mt-3 font-mono text-[12px] font-bold uppercase tracking-[0.2em] text-brand">
+                  Season complete
+                </p>
+              )}
+              <h1
+                className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif text-[30px] font-semibold leading-[1.1] text-text lg:text-[40px]`}
+              >
+                {championName
+                  ? `${championName} is ${result.seriesName} champion`
+                  : headlineFor(winner.name, result.raceName)}
               </h1>
-              <p className="mt-2 font-mono text-[11px] tabular-nums text-text-muted">
-                {result.margin ? <>Winning margin <span className="text-text">{result.margin}</span></> : winner.detail}
-              </p>
+              {championName ? (
+                <p className="mt-2 font-serif text-[17px] leading-snug text-text-muted">
+                  {headlineFor(winner.name, result.raceName)}
+                  {result.margin ? ` — winning margin ${result.margin}` : ''}.
+                </p>
+              ) : (
+                <p className="mt-2 font-mono text-[11px] tabular-nums text-text-muted">
+                  {result.margin ? <>Winning margin <span className="text-text">{result.margin}</span></> : winner.detail}
+                </p>
+              )}
               <Link
                 href={result.weekendHref}
                 className="mt-4 inline-block font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-brand hover:underline"
@@ -166,13 +188,20 @@ export function HomeLead({
         >
           {changed && changed.top.length > 0 && (
             <section aria-label="What it changed" className="min-w-0">
-              <SectionRule label="What it changed" right={`${changed.seriesName} · Drivers' championship`} />
+              <SectionRule
+                label="What it changed"
+                right={`${changed.seriesName} · ${changed.seasonComplete ? 'Final standings' : "Drivers' championship"}`}
+              />
               <div className="grid gap-6 xl:grid-cols-[minmax(0,300px)_1fr]">
                 <div>
                   <h2 className="font-serif text-[22px] font-semibold leading-snug text-text lg:text-[26px]">
-                    {changed.gapToSecond != null
-                      ? `${changed.leader.name} leads by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
-                      : `${changed.leader.name} leads the championship`}
+                    {changed.seasonComplete
+                      ? changed.gapToSecond != null
+                        ? `${changed.leader.name} takes the title by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
+                        : `${changed.leader.name} is champion`
+                      : changed.gapToSecond != null
+                        ? `${changed.leader.name} leads by ${changed.gapToSecond} ${changed.gapToSecond === 1 ? 'point' : 'points'}`
+                        : `${changed.leader.name} leads the championship`}
                   </h2>
                 </div>
                 <ul>

@@ -58,7 +58,17 @@ function fmtRange(w: Weekend): string {
 
 // The championship table needs the standings feed — a network fetch — so it
 // streams behind Suspense while the locally-derived shell paints at once.
-async function ChampionshipBlock({ slug, season, complete }: { slug: string; season: number; complete: number }) {
+async function ChampionshipBlock({
+  slug,
+  season,
+  complete,
+  seasonOver,
+}: {
+  slug: string;
+  season: number;
+  complete: number;
+  seasonOver: boolean;
+}) {
   const brief = isEligibleStandingsSeries(slug)
     ? await fetchStandingsBrief(slug, season).catch(() => null)
     : null;
@@ -83,7 +93,15 @@ async function ChampionshipBlock({ slug, season, complete }: { slug: string; sea
   }
   return (
     <>
-      <SectionRule label="Drivers' championship" right={`after ${complete} rounds`} />
+      <SectionRule
+        label={seasonOver ? "Final drivers' championship" : "Drivers' championship"}
+        right={seasonOver ? 'season complete' : `after ${complete} rounds`}
+      />
+      {seasonOver && (
+        <p className="mb-3 border-l-[3px] border-brand bg-surface-elevated px-3 py-2 font-serif text-[19px] leading-snug text-text">
+          <span className="font-semibold">{brief.leader.name}</span> is the {season} champion.
+        </p>
+      )}
       <ul>
         {brief.top.map(row => {
           const width = leaderPoints > 0 ? Math.max(2, Math.round((row.points / leaderPoints) * 100)) : 0;
@@ -163,6 +181,9 @@ export default async function SeriesPage({
   const nextSession = nextW
     ? [...nextW.sessions].filter(s => !s.dateOnly && s.start > now).sort((a, b) => a.start.getTime() - b.start.getTime())[0]
     : undefined;
+  // Every round run and none left → the page says "season complete" out loud:
+  // masthead, championship heading, champion callout (feedback board, 2026-08-20).
+  const seasonOver = !nextW && !meta.singleEvent && weekends.length > 0;
 
   // The network fetches (standings brief, latest podium) live in Suspense
   // islands below — this segment's loading.tsx is gone (its skeleton flushed a
@@ -213,8 +234,11 @@ export default async function SeriesPage({
               </h1>
             </div>
             <p className="mt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+              {seasonOver && <span className="text-[11px] text-brand">Season complete · </span>}
               {meta.season} season
-              {weekends.length > 0 && !meta.singleEvent ? ` · ${weekends.length} rounds · ${complete} complete` : ''}
+              {weekends.length > 0 && !meta.singleEvent
+                ? ` · ${weekends.length} rounds${seasonOver ? '' : ` · ${complete} complete`}`
+                : ''}
               {meta.singleEvent ? ' · one race a year' : ''}
             </p>
           </div>
@@ -252,14 +276,14 @@ export default async function SeriesPage({
               <Suspense
                 fallback={
                   <div aria-busy="true">
-                    <SectionRule label="Drivers' championship" />
+                    <SectionRule label={seasonOver ? "Final drivers' championship" : "Drivers' championship"} />
                     {[0, 1, 2, 3, 4].map(i => (
                       <div key={i} className="h-8 animate-pulse border-b border-border bg-surface/40" />
                     ))}
                   </div>
                 }
               >
-                <ChampionshipBlock slug={slug} season={meta.season} complete={complete} />
+                <ChampionshipBlock slug={slug} season={meta.season} complete={complete} seasonOver={seasonOver} />
               </Suspense>
             )}
           </section>
@@ -299,10 +323,12 @@ export default async function SeriesPage({
                 </Link>
               </div>
             )}
-            {!nextW && !meta.singleEvent && (
+            {seasonOver && (
               <div className="mb-5">
-                <SectionRule label="Next round" />
-                <p className="font-serif text-[17px] italic leading-snug text-text-muted">Season complete.</p>
+                <SectionRule label="Season" />
+                <p className="font-serif text-[17px] leading-snug text-text">
+                  Complete — all {weekends.length} rounds run.
+                </p>
               </div>
             )}
             <div className="border-t border-border pt-3">
