@@ -242,8 +242,11 @@
   --bg: #f7f3e8;
   --surface: #fbf7ec;
   --surface-elevated: #fffcf2;
-  --border: #d6cebb;
-  --border-strong: #a99c80;
+  /* Hairlines darkened one full step from Newsprint's #d6cebb/#a99c80 —
+     "site wide on paper theme, i want the lines to be more distinct"
+     (operator, 2026-08-20). Same warm-sand hue, ~10% less lightness. */
+  --border: #c2b493;
+  --border-strong: #91825e;
   --text: #1e1a13;
   --text-muted: #5b5342;
   --text-faint: #6f6752;

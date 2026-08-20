@@ -34,12 +34,15 @@ export function CalendarToolbar({
           to any month stays one native tap from every view. The season view
           is one scrolling surface with its own jump chips — no bar. */}
       {view !== 'season' && (
-        <div className="flex items-stretch border-y border-border">
+        // Ink rules, not hairlines: the bar's lines read "much more distinct
+        // black" and the arrow boxes are cut off by their own vertical rules
+        // (operator annotation, 2026-08-20).
+        <div className="flex items-stretch border-y border-text">
           <button
             type="button"
             onClick={onPrev}
             aria-label={`Previous ${view}`}
-            className="border-r border-border px-3 py-2.5 text-text-muted transition-colors hover:bg-surface hover:text-text"
+            className="border-r border-text px-3 py-2.5 text-text transition-colors hover:bg-surface"
           >
             <ChevronLeft size={16} />
           </button>
@@ -65,7 +68,7 @@ export function CalendarToolbar({
             type="button"
             onClick={onNext}
             aria-label={`Next ${view}`}
-            className="border-l border-border px-3 py-2.5 text-text-muted transition-colors hover:bg-surface hover:text-text"
+            className="border-l border-text px-3 py-2.5 text-text transition-colors hover:bg-surface"
           >
             <ChevronRight size={16} />
           </button>

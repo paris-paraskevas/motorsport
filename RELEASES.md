@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.311.0 — 2026-08-20
+
+**The lines got darker.** Every divider and rule on the default paper look is now a clear step more visible, and the calendar's month bar draws itself in full ink with the previous/next arrows properly boxed off.
+
 ## 0.310.0 — 2026-08-20
 
 **A finished championship now says so, loud.** When a season is over — Formula E just wrapped — the home page leads with "Season complete" and crowns the champion above the race result, and the series page opens with the final table and who took the title, instead of quietly implying the season might continue.
