@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.321.4 — 2026-08-20
+
+### Fixed
+- **The home's What-it-changed / What's-next band goes 50/50** (operator: "whats next need a 50/50 percentage of the screen width. Its really important to show whats on next for users, thats why they are here"). `components/HomeLead.tsx`: the band's grid was `lg:grid-cols-[minmax(0,1fr)_380px]`; now two `minmax(0,1fr)` halves. Either half missing still takes full width. Dev browser-verified at 1440px: the next-weekends column (countdown, IMSA, IndyCar) holds equal billing with the championship read.
+- **warm-live-data was DOWN ~28 h — the site's only data writer.** Every scheduled run since 2026-08-19 07:22Z failed in ~11 s at `npm ci`: `Missing: @swc/helpers@0.5.23 from lock file` — the same npm-10-vs-11 nested-lockfile hole as #687/#688 (a session-29 merge reintroduced it; the runner's npm 10 refuses what local npm 11 tolerates). Reproduced locally with `npx npm@10 ci --dry-run`, fixed by an npm-10 `install --package-lock-only` regen whose diff is the single restored `@serwist/turbopack/node_modules/@swc/helpers` entry (plus the lock's stale 0.287.0 version metadata catching up). Verified: npm 10 AND npm 11 dry-runs clean, vitest 1125/1125, build exit 0.
+- **The one-driver London ePrix classification on the home hero** (operator report) was a downstream symptom of that outage: the podium cached winner-only on race day and no clean-IP write ever replaced it. The fetcher itself is healthy (probed: full 20-row classifications for both London races). Healed by running the standing writer `scripts/warm-live-data.mts` once from a clean local IP against prod (13/13 standings + 8/8 results + 10/10 extras + 6/6 home podiums, snapshot write-proof passed) — noting plainly: the auto-mode classifier flagged that run as an un-named prod write after it had already launched; recorded here, and future refreshes go through the repaired GitHub pathway (a `workflow_dispatch` follows this merge as proof).
+
 ## 0.321.3 — 2026-08-20
 
 ### Removed

@@ -181,11 +181,15 @@ export function HomeLead({
       {/* ── 2 × 3. What it changed beside what's next (round-2 ⑤): the
           operator's arrows move the next-weekends list up into the right
           column, so the championship read and the calendar read share one
-          band. Either half missing → the other takes the full width. ── */}
+          band. EQUAL halves (operator, 2026-08-20): "what's next" is why
+          users come, so it gets the same width as the championship read.
+          Either half missing → the other takes the full width. ── */}
       {((changed && changed.top.length > 0) || next.length > 0) && (
         <div
           className={`mt-8 grid gap-x-10 gap-y-8 ${
-            changed && changed.top.length > 0 && next.length > 0 ? 'lg:grid-cols-[minmax(0,1fr)_380px]' : ''
+            changed && changed.top.length > 0 && next.length > 0
+              ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]'
+              : ''
           }`}
         >
           {changed && changed.top.length > 0 && (
