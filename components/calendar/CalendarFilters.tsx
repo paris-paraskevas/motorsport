@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 // The filters live in one visible box (operator, 2026-08-20: "I prefer a
 // filters box, like old paddock had. where you can 'select all' or unselect.
 // also can select multiple leaving out multiple series"). Every series is a
@@ -31,6 +33,9 @@ export function CalendarFilterBox({
   const activeCount = seriesSel === null ? series.length : seriesSel.size;
   const countLabel =
     activeCount === series.length ? 'all series' : activeCount === 0 ? 'no series' : `${activeCount} of ${series.length}`;
+  // Fifteen chips are ~700px of a phone screen before the agenda starts, so
+  // below md the box collapses to its summary line; md+ keeps it always open.
+  const [openOnMobile, setOpenOnMobile] = useState(false);
 
   return (
     <section aria-label="Calendar filters" className="mb-4 border border-border-strong bg-surface px-3 pb-3 pt-2">
@@ -56,9 +61,17 @@ export function CalendarFilterBox({
           <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-text-faint sm:inline">
             Applied as you tap
           </span>
+          <button
+            type="button"
+            aria-expanded={openOnMobile}
+            onClick={() => setOpenOnMobile(v => !v)}
+            className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted hover:text-text md:hidden"
+          >
+            {openOnMobile ? 'Hide' : 'Edit'}
+          </button>
         </span>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className={`${openOnMobile ? 'flex' : 'hidden'} flex-wrap items-center gap-2 md:flex`}>
         <span role="group" aria-label="Session type" className="contents">
           <button
             type="button"

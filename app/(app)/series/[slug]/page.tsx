@@ -379,8 +379,10 @@ export default async function SeriesPage({
                       </span>
                     )}
                     <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-muted">{fmtRange(w)}</span>
+                    {/* Hidden on phones: the whole row is the tap target, and
+                        the 74px this frees stops race names truncating at 375px. */}
                     <span
-                      className={`w-[74px] shrink-0 text-right font-mono text-[9px] font-semibold uppercase tracking-[0.12em] ${
+                      className={`hidden w-[74px] shrink-0 text-right font-mono text-[9px] font-semibold uppercase tracking-[0.12em] sm:block ${
                         w.isPast ? 'text-brand' : isNext ? 'text-text' : 'text-text-faint'
                       }`}
                     >
