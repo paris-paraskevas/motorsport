@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.322.3 — 2026-08-20
+
+**Internal housekeeping.** Session records and planning notes brought up to date; nothing user-facing changed.
+
 ## 0.322.2 — 2026-08-20
 
 **Sturdier community pages.** A temporary database problem now shows the threads page with a friendly empty state instead of an error, and the app's error screen was redesigned to match the rest of the site.

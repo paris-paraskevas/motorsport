@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.322.3 — 2026-08-20
+
+### Internal
+- **Session 30 wrap.** `docs/HANDOFF.md` gains the session-30 pickup block (six merges 0.321.2→0.322.2; the PSI stall's full causal chain; the 28 h warm-live-data outage — lockfile disease 2-for-2, first post-fix scheduled run SUCCESS at 1m40s; the named-prod-write classifier rule; the Playwright-MCP death and its CLI replacement; the stale-list lesson). `SCHEDULE.md` closes the day with outcomes; `docs/next-session.md` rewritten for what's next: the operator's blog drafts (corrections only), the AdSense low-value-content audit, THE IMAGE SESSION prep, the owed PSI re-run. Fact packs live in the session scratchpad, deliberately outside the repo.
+
 ## 0.322.2 — 2026-08-20
 
 ### Fixed
