@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.317.0 — 2026-08-20
+
+**Driver pages now show the title race, round by round.** Every result row on a driver's profile carries where they stood in the championship after that round — watch a season swing race by race.
+
 ## 0.316.1 — 2026-08-20
 
 **Internal housekeeping.** Work logs brought up to date; nothing user-facing changed.

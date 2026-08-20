@@ -24,8 +24,19 @@ export interface DriverSeasonForm {
   /** EVERY round this season, ascending, with the running points total — the
    *  profile's body table (design handoff §4.9: "All of them"). Derived from
    *  the same results the headline stats cumulate, so the two can never
-   *  disagree. `circuit` carries the venue for the row's sub-line. */
-  rounds: Array<{ round: number; raceName: string; circuit: string; position: number; points: number; runningTotal: number }>;
+   *  disagree. `circuit` carries the venue for the row's sub-line.
+   *  `championshipPosition` is the driver's title-race position AFTER that
+   *  round (buildStandingsAtRound), stamped on each round's final row only —
+   *  standings are per-round, so a sprint row carries none. */
+  rounds: Array<{
+    round: number;
+    raceName: string;
+    circuit: string;
+    position: number;
+    points: number;
+    runningTotal: number;
+    championshipPosition?: number;
+  }>;
 }
 
 export interface TeamSeasonForm {
@@ -75,10 +86,24 @@ export function driverSeasonForm(
       a.raceName = `${a.raceName} · Sprint`;
     }
   }
+  // Championship position after each round — the same snapshot the trend
+  // chart derives from, so the two can never disagree (operator, 2026-08-20:
+  // "could we add championship position per result?").
+  const posAfterRound = new Map<number, number>();
+  for (const rn of new Set(all.map(a => a.round))) {
+    const s = buildStandingsAtRound(races, rn, extras ?? []);
+    const p = s.drivers.find(d => namesMatch(d.driverName, driverName))?.position;
+    if (p != null) posAfterRound.set(rn, p);
+  }
   let running = 0;
-  const rounds = all.map(a => {
+  const rounds = all.map((a, i) => {
     running += a.points;
-    return { ...a, runningTotal: running };
+    const isRoundFinal = i === all.length - 1 || all[i + 1].round !== a.round;
+    return {
+      ...a,
+      runningTotal: running,
+      championshipPosition: isRoundFinal ? posAfterRound.get(a.round) : undefined,
+    };
   });
   const classified = all.filter(a => a.position >= 1);
   const appearances = [...all].sort((a, b) => b.round - a.round);

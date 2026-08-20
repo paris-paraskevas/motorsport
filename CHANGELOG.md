@@ -4,7 +4,12 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 0.316.1 — 2026-08-20
+## 0.317.0 — 2026-08-20
+
+### Changed
+- **The driver profile's rounds table gains the title-race column** (operator annotation: "could we add championship position per result?"). `lib/profile-stats.ts`: each round's final row now carries `championshipPosition` — the driver's standing AFTER that round, from `buildStandingsAtRound` over the same results the table and trend chart already derive from, so the last row always reconciles with the headline stat. Sprint rows stay blank (standings are per-round; the position lands on the GP row). `app/(app)/drivers/[slug]/page.tsx`: fourth right-aligned column, header now "finish · points · total · championship", P1 rows in brand.
+
+
 
 ### Internal
 - Session ledgers: `docs/next-session.md` Round 3 marked complete (⑤–⑦ with the results/standings/rounds scope note), `SCHEDULE.md` afternoon outcomes (0.311.1–0.316.0), the local-main slip on the 0.315.0 commit recorded with its recovery (`git reset --keep`, zero loss) and the rule reinforced: branch is the LITERAL first action after every merge.
