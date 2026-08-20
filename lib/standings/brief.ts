@@ -81,13 +81,16 @@ async function fetchDrivers(slug: string, season: number): Promise<DriverStandin
   }
 }
 
-/** A drivers'-championship brief for one eligible series, or null (ineligible
- *  series, a failed/empty fetch). Derives directly from the same cached fetcher
- *  the Standings tab uses — no separate per-brief snapshot — so the home widget
- *  can't drift out of sync with the tab. Never throws. */
-export async function fetchStandingsBrief(slug: string, season: number): Promise<StandingsBrief | null> {
+/** The FULL drivers' table for an eligible series — the same dispatch,
+ *  overrides and ordering the brief derives from, unsliced. For surfaces that
+ *  join standings onto another dataset (the drivers-page position/points
+ *  join), where a top-10 cut would leave half the grid unannotated. Never
+ *  throws; null for ineligible series and failed/empty fetches. */
+export async function fetchFullDriverStandings(
+  slug: string,
+  season: number,
+): Promise<DriverStanding[] | null> {
   if (!ELIGIBLE.has(slug)) return null;
-
   let drivers: DriverStanding[] | null = null;
   try {
     drivers = await fetchDrivers(slug, season);
@@ -95,16 +98,17 @@ export async function fetchStandingsBrief(slug: string, season: number): Promise
     drivers = null;
   }
   if (!drivers || drivers.length === 0) return null;
-
-  // Apply the SAME curated overrides the Standings tab does, so the home
-  // championship-leader + standings-snapshot widgets can't drift from the tab if
-  // a `standings-overrides.json` is ever added (no-op for every series today).
-  // applyDriverOverrides re-sorts by position; the explicit sort below stays for
-  // the no-override path.
   const overrides = await loadStandingsOverrides(slug).catch(() => null);
-  const patched = applyDriverOverrides(drivers, overrides?.drivers);
+  return [...applyDriverOverrides(drivers, overrides?.drivers)].sort((a, b) => a.position - b.position);
+}
 
-  const sorted = [...patched].sort((a, b) => a.position - b.position);
+/** A drivers'-championship brief for one eligible series, or null (ineligible
+ *  series, a failed/empty fetch). Derives directly from the same cached fetcher
+ *  the Standings tab uses — no separate per-brief snapshot — so the home widget
+ *  can't drift out of sync with the tab. Never throws. */
+export async function fetchStandingsBrief(slug: string, season: number): Promise<StandingsBrief | null> {
+  const sorted = await fetchFullDriverStandings(slug, season);
+  if (!sorted || sorted.length === 0) return null;
   const leader = sorted[0];
   const second = sorted[1];
   return {

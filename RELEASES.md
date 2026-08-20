@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.316.0 — 2026-08-20
+
+**Driver pages now tell you how everyone's doing.** Each series' grid page shows every driver's championship position, points and wins right on their row, with teams ordered by combined points — not just an alphabetical list of names.
+
 ## 0.315.0 — 2026-08-20
 
 **Champions pages now show everything.** Every champion, every year, all the way back — no more folded-away decades — with drivers' and team titles on their own tabs, dynasty tallies intact.
