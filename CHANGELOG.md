@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.0 — 2026-08-21
+
+### Fixed
+- **The sign-in modal was unreadable on the dark themes.** Root cause, measured rather than assumed: of the six `appearance.variables` passed to `ClerkProvider`, Clerk 7 honours only `colorPrimary`, `colorBackground` and `borderRadius`. `colorText`, `colorTextOnPrimaryBackground`, `colorInputBackground` and `colorInputText` were silently ignored — confirmed at runtime, where `--cl-color-background` and `--cl-color-text` were **unset** while the header still computed to `rgb(255,255,255)`. The hard-coded light `colorBackground: '#fffcf2'` then painted the card cream on a dark theme while Clerk kept its own white heading, which is the invisible text.
+  - Fix: pass **only** `colorPrimary`. Clerk 7's default theme follows the CSS `color-scheme` property, and `app/globals.css` already declares it per theme (dark on `:root`, light on newsprint / circuit / paper), so the modal now tracks whichever of the six themes is active with no extra wiring and **no new dependency** (`@clerk/ui` is not installed; a `theme:` import would have added one).
+  - Verified in a browser on both sides: `paper` renders a light card with dark legible text, `carbon` a dark card with light legible text, input and primary button correct in each.
+
+### Changed
+- **The series reference links move into the header band.** `justify-between` between the title and the next-session clock left a wide dead strip; the twelve links now sit in it. Labels only — the card grid's blurbs need two lines each and would force the title and clock apart. Desktop only, and the full card grid is now `lg:hidden` so it remains the mobile carrier rather than repeating the same twelve links twice on one page.
+
+### Notes
+- A hydration warning on `<html data-theme>` shows up when switching themes mid-session. Pre-existing: `layout.tsx` renders `data-theme="paper"` server-side and `ThemeScript` swaps it pre-paint. Not touched here.
+- This build logged four `[upstream] www.fiawec.com fetch failed` dynamic-server messages on `/series/[slug]/[tab]`. **Not caused by these changes** — an earlier build of the same tree (with the blog tab already in) logged zero. fiawec is on the documented list of upstreams that block datacenter egress (`scripts/warm-live-data.mts`), which prod routes through the DB snapshot; a local build calls it directly and it failed this run. Build still exit 0.
+
 ## 0.329.0 — 2026-08-21
 
 ### Fixed

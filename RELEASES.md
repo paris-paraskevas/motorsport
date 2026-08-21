@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.330.0 — 2026-08-21
+
+**Signing in works properly on the dark themes again.** The sign-in box was painting a light card behind light text, leaving the heading and buttons all but invisible; it now follows whichever theme you have chosen. On a series page, the reference links (drivers, standings, results and the rest) have moved up into the empty space beside the title, where they are reachable without scrolling.
+
 ## 0.329.0 — 2026-08-21
 
 **Every series now has its own Blog tab**, listing our writing about that championship and nothing else. The article sidebar no longer tucks its first line behind the header when you scroll, the lead story suggests further reading beside it on wide screens, and there is now a way to support the site from the header or your account menu. News has moved off the race-weekend tabs; it still lives on each series' News tab.

@@ -80,14 +80,21 @@ export default async function RootLayout({
       signUpUrl="/sign-up"
       signInFallbackRedirectUrl="/app"
       signUpFallbackRedirectUrl="/app"
+      // Clerk 7 honours only colorPrimary / colorBackground / borderRadius here;
+      // colorText, colorTextOnPrimaryBackground and colorInput* were silently
+      // ignored (verified: --cl-color-* were unset at runtime while the heading
+      // still computed to white). Worse, the hard-coded light colorBackground
+      // painted the card cream on the dark themes while Clerk kept its own white
+      // heading — that is the unreadable sign-in modal.
+      //
+      // Clerk 7's default theme follows the CSS `color-scheme` property, and
+      // globals.css already declares it per theme (dark on :root, light on
+      // newsprint / circuit / paper). So passing no background lets the modal
+      // track whichever of the six themes is active, for free. Only the brand
+      // accent is asserted.
       appearance={{
         variables: {
-          colorBackground: '#fffcf2',
-          colorText: '#1e1a13',
           colorPrimary: '#8c1c13',
-          colorTextOnPrimaryBackground: '#f7f3e8',
-          colorInputBackground: '#fbf7ec',
-          colorInputText: '#1e1a13',
         },
       }}
     >
