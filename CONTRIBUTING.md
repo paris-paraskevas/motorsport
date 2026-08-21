@@ -121,7 +121,7 @@ Paris is the deploy steward. Never paste secrets in chat or PRs.
 
 ## Conflicts on shared files
 
-`proxy.ts`, `app/layout.tsx`, `lib/types.ts`, `next.config.ts` are touched by both devs.
+`middleware.ts`, `app/layout.tsx`, `lib/types.ts`, `next.config.ts` are touched by both devs.
 1. Rebase: `git fetch && git rebase origin/main`.
 2. Resolve, test locally.
 3. Force-push with `--force-with-lease`.

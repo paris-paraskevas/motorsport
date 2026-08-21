@@ -1,106 +1,85 @@
-# Next session — upload the blog, then evaluate session 30
+# Next session — the dwell-triggered support prompt
 
-Written at the session-30 close (2026-08-20 late, updated 2026-08-21 early). `main` = **0.325.1**, fifteen merges (#737-#751), zero open PRs, clean tree, every release prod-verified. Full detail: `docs/HANDOFF.md` top block + `CHANGELOG.md` 0.321.2 → 0.325.1.
+Written at the close of session 31 (2026-08-21). `main` = **0.330.1**, prod verified serving 0.330.0 at 13:40Z (merge → live in ~6 min). Previous handoff (blog upload + session-30 evaluation) is consumed; the parts of it never done are listed at the bottom.
 
-Two jobs come first: **get the blog live** (it expires this weekend) and **audit what session 30 shipped** (a stranger's checklist is below, so you can verify rather than trust).
-
----
-
-## 1. UPLOAD THE BLOG — runbook
-
-The draft is committed at **`drafts/f1-dutch-grand-prix-2026-preview.md`** (moved out of the scratchpad so it is not lost). It is a Zandvoort-farewell preview in your voice, with a licence-verified hero image, one inline image, and four sourced Verstappen quotes.
-
-**It already parses.** Dry-run on 2026-08-21 (no DB write, no secrets needed):
-
-```
-npx tsx scripts/draft-post.mts drafts/f1-dutch-grand-prix-2026-preview.md --dry
-  slug: f1-dutch-grand-prix-2026-preview · title 84/140 · summary 263/300
-  body 6428/50000 · seriesSlug f1 · publishAt (null — operator sets at approval)
-```
-
-**Read it first** (five minutes). Three things I flagged for your judgment, all easy to delete:
-1. "roughly one hundred thousand people dressed in orange" — colour, not a verified 2026 attendance figure.
-2. "which is its own kind of strange" — a voice bet; cut it if it is not you.
-3. An alternate second image (Andretti's 1978 trophy, Anefo, licence-checked) is available if you want two inline pictures instead of one.
-
-**Then insert it** (you run this — it needs the PROD service-role key, which I never hold; `.env.local` points at LOCAL Supabase, so a default-env run would silently go nowhere):
-
-```
-SUPABASE_URL=<prod> SUPABASE_SERVICE_ROLE_KEY=<prod> BLOG_AUTHOR_ID=<id> \
-  npx tsx scripts/draft-post.mts drafts/f1-dutch-grand-prix-2026-preview.md
-```
-
-Then confirm, per the SOP: a `status='draft'` row exists on PROD, the post does **not** appear on public `/blog`, and you set `publish_at` when you approve it in the `/blog` admin queue. The publish cron takes it live and fires the push.
-
-**Timing, because this one rots.** It is a preview of a race weekend that starts Friday 21 August (FP1 12:30 local, sprint qualifying 16:30) and ends Sunday. Publishing Friday morning still works. If it slips past Saturday, do not publish it as-is: pivot to a sprint-and-qualifying report on Saturday evening or a race report on Sunday, and I can turn either around fast because the fact packs are already built (`factpack-a-f1-summer-break.md`, `factpack-b-dutch-gp-zandvoort.md`, both in the session-30 scratchpad).
-
-**One freshness note already applied:** the weather sentence was rewritten on 21 August after a re-pull. Friday now reads dry in the model, Saturday is the wet day (3.9 mm, 45 km/h gusts) and Sunday the driest. The prose deliberately quotes no millimetres, because the run-to-run swing has been large all week. Re-pull before publishing if you want to tighten it:
-`https://api.open-meteo.com/v1/forecast?latitude=52.3888&longitude=4.5409&daily=weather_code,temperature_2m_max,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&timezone=auto&start_date=2026-08-21&end_date=2026-08-23`
-
-**The contract now**, since it changed mid-session ("i want you to read my previous blogs. then give me a draft"): I draft in your voice, you approve. Fact packs still back every number, house style still applies (no em dashes, no AI tells, always link out), and nothing ever reaches the DB or `content/posts/*.mdx` without your yes. You also asked for images in every post going forward, and for OpenF1 `team_radio` embeds to be designed.
+**Priority for next session: the support prompt.** Everything below is research already done — do not re-derive it.
 
 ---
 
-## 2. EVALUATE SESSION 30 — verify, don't trust
+## 1. Can we do it? Yes. Here is the mechanism
 
-Fifteen merges landed in one session, several written by subagents that then died on your session cap. Here is how to check each claim yourself. Every command is read-only.
+**Detecting dwell.** Not `setTimeout` on mount: a tab left open in the background would "earn" ten minutes without a human present, and the prompt would fire at someone who walked away. Accumulate **engaged time** instead — tick a counter only while `document.visibilityState === 'visible'`, and reset the idle clock on `pointerdown` / `keydown` / `scroll`. `components/HeatmapTracker.tsx` already listens on `visibilitychange`; read it first for the house pattern.
 
-### Quick global check
+**Surviving navigation.** Next's App Router keeps layout-level components mounted across client-side route changes, so a component mounted in `app/(app)/layout.tsx` (beside `CookieConsent` and `LaunchBanner`) keeps counting as the reader moves between pages. A **hard reload** remounts it, so persist the running total in `sessionStorage` — per-tab, cleared when the tab closes, which is the right lifetime for "this visit".
 
-```
-git log --oneline eb4f5e7 -15          # the session's merges, #737-#751
-gh pr list --state merged --limit 15   # each PR body states what was verified
-npx tsc --noEmit && npm run lint && npm test && npm run build
-   # expect: clean · 0 errors + 2 known _encoding warnings · 1125/1125 · exit 0
-curl -s https://paddock-tracker.com/changelog | grep -o "0\.325\.[0-9]" | head -1
-```
+**Not asking twice.** `localStorage`, exactly as `components/LaunchBanner.tsx` does it: a versioned key, read in an effect rather than at SSR so dismissers never see a flash (its comment explains why). Note we **cannot know whether someone donated** — Buy Me a Coffee is external and there is no webhook — so "I already have" must be a self-declared dismissal that persists for a long time.
 
-### Claim-by-claim
-
-| What I claimed | Check it yourself |
-|---|---|
-| Landing stall fixed (0.321.2) | `curl -s -o /dev/null -w "%{time_starttransfer}\n" https://paddock-tracker.com/` — was ~7 s in PSI, expect well under 1 s |
-| Font preloads 19 → 5 (0.322.4) | `curl -s https://paddock-tracker.com/ \| grep -o 'as="font"' \| wc -l` → 5 |
-| Redis SDK out of browser JS (0.322.4) | `grep -rn "import { kv }" lib/weather.ts` → none at top level; the import is inside `fetchWeather` |
-| Tap targets 24 px (0.322.5) | `curl -s https://paddock-tracker.com/app \| grep -o 'py-1 text-text-muted' \| wc -l` → 17 |
-| Standings CLS fixed (0.323.0) | Open `/series/f1/standings` on a phone, watch the table as the chart appears: it must not move. Then click **Constructors** and confirm that chart appears too |
-| LCP images (0.323.1) | `curl -s https://paddock-tracker.com/drivers/kimi-antonelli \| grep -o "thumb/[^\"]*500px"` and check the weekend map has `width="500" height="500" fetchPriority="high"` |
-| feed.xml carries DB posts (0.322.1) | `curl -s https://paddock-tracker.com/feed.xml \| grep -c "<item>"` → 19 |
-| Champion notes live, fail-soft (0.324.0 / 0.325.0) | An enriched year shows "Title clinched": `/information/formula-1/who-won-the-2008-formula-1-championship`. An un-enriched one is untouched: `/information/formula-1/who-won-the-1985-formula-1-championship` |
-| warm-live-data outage fixed (0.321.4) | `gh run list --workflow=warm-live-data.yml --limit 6` → all success |
-
-### Where I would audit hardest (my own risk list, honestly)
-
-1. **The trend-chart refactor (0.323.0) is the largest code change of the session and was started by a subagent that died mid-run.** I re-ran the whole gate chain and caught a real lint error in it, and I measured the reserved box against the mounted canvas at two widths plus the hidden-tab case. But I only clicked through **/series/f1/standings**. The same component also renders on **team pages, `/f1/compare`, and blog chart embeds** — worth eyeballing those three before you trust it everywhere.
-2. **22 of the 30 F1 champion notes were not independently re-verified by me.** I checked 8 seasons against primary sources (2012, 2008, 2007, 2003, 2021, 2016, 1997, 1996) and cross-checked 24 numeric claims against `champions.json` with zero discrepancies; the other 22 rest on the two-plus sources cited inside `content/series/f1/champion-notes.json`, the same standard the 126-bio waves used. All 15 MotoGP notes I wrote and verified myself. If you want a tighter bar, spot-check a handful of the unchecked F1 years.
-3. **`commonsThumb()` has an untested edge**: it always requests the 500 px bucket. Every one of the 22 portraits we ship was HEAD-checked at that width, but a future portrait whose original is narrower than 500 px could 404. Cheap guard if it ever bites: fall back to the original URL.
-4. **`preload: false` on Plex Condensed and Plex Mono** removed 14 preloads. Every face still loads; nobody has watched a data-heavy page (standings, results) on a throttled connection for a flash of fallback text. Worth 30 seconds in DevTools on Slow 4G.
-5. **The blog draft is mine, not yours.** Read it for voice before it ships, which is the point of the approval step.
+**Where it goes.** `app/(app)/layout.tsx`, next to `CookieConsent`. Client component. No ISR interaction, since nothing is server-rendered.
 
 ---
 
-## 3. AdSense: two waves shipped, four decisions waiting
+## 2. Decide this before writing code
 
-Waves 1 and 2 are live: **F1 1996-2025** (`content/series/f1/champion-notes.json`) and **MotoGP 2011-2025** (`content/series/motogp/champion-notes.json`). The sidecar pattern means every further wave is data only, no code.
+**2, 5 and 10 minutes is three asks in one visit.** That is the operator's stated spec and it is recorded as such — but three interruptions in ten minutes is how a goodwill prompt turns into a nag, and the second and third have to be *more* intrusive to earn attention, which is the wrong direction. Two alternatives worth a moment:
 
-- **Wave 3 recommendation: F1 pre-1996 (46 seasons)** — completing one family reads better to a reviewer than half-finishing several. Then MotoGP pre-2011, then the other series.
-- **Your calls** (all in `IDEAS.md` NOW #1, with evidence): making Race Story public on completed sessions (the cheapest remaining win — it enriches hundreds of session pages at zero authoring cost, and needs the SEO-Phase-2b ISR unpark that the PSI sweep independently asked for); the two stub components' copy and whether contentless tabs stay indexed; noindex on the 15 news tabs (the one family enrichment cannot fix).
-- Then Request review **once**, when we believe it. Reviews run weeks apart.
+- **One ask per visit, escalating across visits** — 2 min on a first long visit, then only on a later visit if ignored. Same funnel, a tenth of the annoyance.
+- **One ask per visit, threshold by depth** — fire at 2 min only if they have also read a blog post or opened more than N pages, i.e. ask the engaged, not the merely present.
 
-## 4. Three design/behaviour decisions from the sweep
-
-- **Serwist `cacheOnNavigation`**: the /calendar `DataCloneError` is upstream (`@serwist/turbopack@9.5.12` forwards a `URL` into `postMessage`). Recommend dropping the flag, since offline was removed in 0.268.0 and the feature is both vestigial and currently throwing.
-- **Calendar contrast**: mono agenda times under 4.5:1 on Paper. Recommend a token nudge.
-- **Month-grid tap targets**: recommend accept as-is.
-
-## 5. Then the big one
-
-**THE IMAGE SESSION** — your words, "the biggest job we have ever done". Licence-clean imagery at scale (Commons works; portraits and logos died on licensing before, so every source gets checked), the Fotis testing-build layout as the reference, home refined with image boxes to series and calendar. Information hubs are also the last pre-Paper surface and should be restyled in the same pass. Also owed: the PSI re-measure of `/`, standings and a weekend page so the four packages' deltas land in `docs/perf-baselines.md`.
+Operator's call. If the answer is "do what I said", implement 2/5/10 with a hard per-visit cap so a reload cannot restart the ladder.
 
 ---
 
-## Ritual per PR (unchanged, hard-won)
+## 3. Constraints specific to this repo
 
-`git checkout -b <branch> main` as the **literal first action after every merge** → edits → kill any dev server by PID first, then `rm -rf .next/dev` (deleting it under a live server 500s the server) → `npx tsc --noEmit` → `npm run lint` (0 errors; 2 known `_encoding` warnings) → `npm test` (1125) → `npm run build` exit-checked → browser-verify → trio (`package.json` + `CHANGELOG.md` + `RELEASES.md`) → commit with no Claude attribution → PR with what/why/verified → squash-merge → prod-verify ~9 min later with a background curl. Never kill processes by image name. Prod data writes only through the scheduled GitHub pathway, or when you name the action.
+1. **Worker size is at the ceiling.** `wrangler deploy --dry-run` measured **10176.64 KiB gzipped** against Cloudflare's 10 MiB on 2026-08-21 — **63 KiB of headroom**. Measure before and after; a new dependency for this is out of the question. `npm run deploy:testing` rejects harmlessly if it will not fit.
+2. **Legal copy must be updated in the same PR.** `content/legal/cookies.md` and `content/legal/privacy.md` enumerate what we store, and the site honours GPC and Consent Mode v2 with everything denied by default. New `localStorage` / `sessionStorage` keys are first-party and functional, not tracking — but they must still be listed, or those pages become false. This is not optional polish; it is the promise the pages make.
+3. **Accessibility is a solved problem here — reuse it.** `lib/useFocusTrap.ts` plus `components/ContactModal.tsx` is the working example: Esc to close, backdrop click, focus trapped while open and returned on close, `role="dialog"` + `aria-modal`. "Easily escapable" means all of that, not just a small ✕.
+4. **Motion.** `app/globals.css:438` already guards `.live-pulse` behind `prefers-reduced-motion`. Any entrance animation needs the same guard.
+5. **Do not interrupt live sessions.** A reader on a weekend or session page while a session is running is watching timing. `weekendIsLive()` (`lib/weekend.ts:93`) is exactly the "a session is on track right now" predicate — suppress the prompt while it is true. This is the difference between charming and infuriating.
+6. **Testing a 10-minute threshold by hand is not viable.** Make the thresholds overridable (a query param or a `window.__paddockSupportPromptMs` hook) so the flow can be exercised in seconds, and unit-test the accumulator with an injected clock rather than real timers.
 
-**Subagent rule, re-learned the hard way:** one research agent at a time. Three in parallel hit your cap; two left recoverable partial work (validated and shipped), one left nothing. Always look for partial output before redoing an interrupted agent's job, and never merge an interrupted branch without re-running the entire gate chain.
+---
+
+## 4. Copy and tone
+
+Operator's words: "minimal, heartwarming". It should read like a person, not a fundraising banner — one line about the site being made by one person and free, one line asking, two buttons (support / not now). No guilt, no counters, no "only 2% of readers donate". `SUPPORT_URL` is already in `lib/site.ts:17` and already used by the header button and the account menu, so link it from there rather than adding a second copy.
+
+---
+
+## 5. Acceptance criteria
+
+- Prompt appears only after the configured **engaged** minutes, not wall-clock; a backgrounded tab does not accrue time.
+- Dismissal persists across reloads and later visits; "I already have" persists for a long time.
+- Esc, backdrop click and the dismiss control all close it; focus returns to where it was.
+- Nothing renders while a session is live on the current series.
+- `cookies.md` and `privacy.md` list every new key, in the same PR.
+- Bundle measured before and after, with the numbers in the PR body.
+- Browser-verified with the threshold override, in both a light and a dark theme.
+
+---
+
+## 6. Carried over, not done in session 31
+
+- **The session-30 evaluation never happened.** It was the second item in the session-31 brief and the day went to the blog and eleven rounds of UI review instead. The claim-by-claim table is in git history (`docs/next-session.md` at `5af5094`) if it is still wanted; the three unclicked trend-chart consumers and the 22 unverified F1 champion notes are the substance.
+- **`prod-weekend8.md`** at the repo root is a 424-line Playwright accessibility dump committed by accident. Needs an operator OK to delete.
+- **Two onboarding docs** (`ONBOARDING.md`, `docs/ONBOARDING.md`) cover the same ground and have already drifted — both were separately wrong about `proxy.ts`. Worth collapsing to one.
+- **`NotificationBell.tsx`** is dead code: unmounted in 0.328.0, not deleted.
+- **`PreviewNews`** still renders inside the weekend Schedule content; only the News *tab* was removed.
+- **Fact pack B** (session-30 scratchpad) records Norris' 2025 Dutch GP retirement as a "power-unit failure". It was a broken oil line McLaren took the blame for. Corrected in the published post, still wrong at source.
+- **The published Dutch GP preview** carries the operator's title, which reads "Verstappen's hunt for a first win of 2026" only if the title fix was applied — verify the live title before reusing it as a template.
+
+---
+
+## Handoff prompt for the next session
+
+> Paddock — session 32. Read in order: `CLAUDE.md` · `docs/next-session.md` (this file, written for you) · `CONTRIBUTING.md` (it is the authority on the three-Worker deploy topology, and more current than anything else) · `IDEAS.md` · `SCHEDULE.md` · memory `feedback-paddock-*`. `main` = 0.330.1, prod verified, tree clean.
+>
+> **Priority: the dwell-triggered support prompt.** A reader who stays engaged for a couple of minutes gets a minimal, heartwarming, easily escapable prompt asking whether they would like to support the site, linking `SUPPORT_URL`. Section 1 of `docs/next-session.md` has the mechanism already researched — engaged time rather than wall clock, mounted in `app/(app)/layout.tsx`, `sessionStorage` for the visit total and `localStorage` for "do not ask again", reusing `lib/useFocusTrap.ts` and the `LaunchBanner` dismissal pattern. Do not re-derive it.
+>
+> **Answer section 2 before you write anything**: I asked for prompts at 2, 5 and 10 minutes. That is three interruptions in one visit. Tell me plainly whether you think one ask per visit escalating across visits is better, then do whichever I confirm.
+>
+> **Hard constraints**: the Worker bundle has 63 KiB of headroom against a 10 MiB ceiling, so measure with `wrangler deploy --dry-run` before and after and add no dependency · `content/legal/cookies.md` and `privacy.md` must list every new storage key in the same PR, or those pages become false · suppress the prompt entirely while a session is live (`weekendIsLive()`) · Esc, backdrop and dismiss must all work with focus returned · guard any animation behind `prefers-reduced-motion` · make the thresholds overridable so a 10-minute path can be tested in seconds, and unit-test the accumulator with an injected clock.
+>
+> **Then, only if that is done and merged**: the session-30 evaluation that never happened (section 6), and the four small carried-over items.
+>
+> Usual rules: branch from `main` as the literal first action, full gate chain before any "done" (tsc → lint 0 errors → vitest → `next build`, exit checked), trio on every push, no Claude attribution, browser-verify before claiming it works, and remember a merge to `main` is what deploys prod — about six minutes, with no GitHub Actions run to watch.

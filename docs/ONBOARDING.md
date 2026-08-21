@@ -5,19 +5,19 @@ Welcome, Fotis. This is the short version: enough to run Paddock, understand its
 ## The stack
 - Next.js 16 (App Router, forced onto webpack) + React 19 + TypeScript.
 - Tailwind CSS v4 for styling; all design tokens live in `app/globals.css`.
-- PWA via `@serwist/next`. Auth via Clerk (production). App data in Supabase; expensive fetches cached in Vercel KV.
-- Hosted on Vercel (project `motorsport`). Live at paddock-tracker.com; `main` auto-deploys to prod in about 90 seconds.
+- PWA via `@serwist/next`. Auth via Clerk (production). App data in Supabase; expensive fetches cached in KV (Upstash over REST).
+- Hosted on a **Cloudflare Worker** built with OpenNext. Live at paddock-tracker.com; Workers Builds redeploys on a merge to `main`, live in about 5-7 minutes (measured 2026-08-21). There is no deploy workflow in GitHub Actions.
 
 ## Run it locally
 1. Clone, `npm install`, `npm run dev` (serves http://localhost:3000).
-2. You need the gitignored env files: `.env.local`, `.clerk`, `.supabase-pat` (Paris will share). Note: `.env.local` points at a LOCAL Supabase (127.0.0.1), not prod.
+2. You need the gitignored env files: `.env.local` and `.supabase-pat` (Paris will share). There is no `.clerk` file — Clerk keys live in `.env.local`. Note: `.env.local` points at a LOCAL Supabase (127.0.0.1), not prod.
 3. Gotchas worth knowing early: `next build` clobbers a running `next dev` (shared `.next`, so restart dev after a build), and the dev server can go stale after a branch switch or a new-module import, so restart it for a clean compile before you trust what you see.
 - Useful scripts: `dev`, `build`, `lint`, `test` (vitest), `health` (data-source checks).
 
 ## Environments
 - **Local** (localhost:3000): your machine.
 - **testing.paddock-tracker.com**: a long-lived `testing` branch deployed separately from prod. Push here to try things without touching `main` or prod. This is the shared sandbox.
-- **PR previews**: every pull request gets its own Vercel preview URL (behind the SSO wall; your Vercel access opens them).
+- **PR previews**: there are none. Review locally, or ask Paris to push the branch to the testing Worker (`npm run deploy:testing`).
 - **Prod** (paddock-tracker.com): `main`. Never push to `main` directly.
 
 ## Three route groups (`app/`)
@@ -38,7 +38,7 @@ Welcome, Fotis. This is the short version: enough to run Paddock, understand its
 | `/admin` | Traffic, search, behaviour (click heatmap), users, submissions, tools | GA4 / GSC / Bing, Clerk, Supabase, KV |
 
 ## Where data comes from (the rule)
-Curated files under `content/series/<slug>/*` (meta, rounds, sessions, drivers, champions, media, and more) are the CMS and are preferred. Everything else is a fallback or live layer: `lib/results/*` and `lib/standings/*` (per-series scrapers and parsers), `lib/openf1/*` (F1 live telemetry), ICS calendar feeds, RSS news. Supabase holds the blog, feeder submissions, social/betting, and push data; Vercel KV caches expensive upstream fetches. A renderer prefers the curated override, then falls back to the live source. Content facts get triple-checked against primary sources before they ship (our RULE #1).
+Curated files under `content/series/<slug>/*` (meta, rounds, sessions, drivers, champions, media, and more) are the CMS and are preferred. Everything else is a fallback or live layer: `lib/results/*` and `lib/standings/*` (per-series scrapers and parsers), `lib/openf1/*` (F1 live telemetry), ICS calendar feeds, RSS news. Supabase holds the blog, feeder submissions, social/betting, and push data; KV caches expensive upstream fetches. A renderer prefers the curated override, then falls back to the live source. Content facts get triple-checked against primary sources before they ship (our RULE #1).
 
 ## The design language (your starting lane)
 Paddock is deliberately editorial "2.0": flat, near-black surfaces with no gradient washes; amber (`#ffb400`) as the one accent, living in rules and type more than in fills; a per-series accent color driving each series page; hairline "telemetry-grid" panels with sharp corners (no rounded, gradient, drop-shadow cards); and a display/mono type pairing (Saira Condensed for display, Geist Mono for labels, Geist Sans for body). The north star is distinctive and editorial, never templated or AI-generated. Tokens all live in `app/globals.css`. Build mobile-first and verify every change at 390px and on desktop.
@@ -48,16 +48,16 @@ Paddock is deliberately editorial "2.0": flat, near-black surfaces with no gradi
 - `components/*` React components: `components/weekend/*` is the race-weekend page, `components/tabs/*` the series tabs, `components/admin/*` the admin UI.
 - `lib/*` pure modules; subfolders include `results/`, `standings/`, `openf1/`, `analytics/`, `betting/`, `assistant/`, `information/`. Server-only helpers end in `*-loader.ts` to keep client bundles clean.
 - `content/series/<slug>/*` curated per-series data; also `content/circuits.json`, `content/landing/*`, and `content/posts/*` (legacy blog, do not add new ones).
-- `proxy.ts` is the middleware (auth, redirects, dev/admin gating); `next.config.ts` is the build config.
+- `middleware.ts` is the middleware (auth, redirects, dev/admin gating); `next.config.ts` is the build config.
 
 ## How we ship
-- Branch off the latest `main`, open a PR, review it on the Vercel preview, then squash-merge. Never edit `main` directly.
+- Branch off the latest `main`, open a PR, review it locally (or on the testing Worker), then squash-merge. Never edit `main` directly.
 - Conventional commits (`feat(scope):`, `fix`, `docs`, `chore`); the body explains the why.
 - Every merge to `main` ships to prod, so it must update `CHANGELOG.md` (engineering log), `RELEASES.md` (public notes), and bump the `package.json` version.
 - Browser-verify at 390px and on desktop before calling a change done.
 
 ## Do not touch without asking
-`next.config.ts` (misconfigure it and prod data fetching breaks), `proxy.ts` (auth and routing), Clerk keys and env values, Vercel KV env variable names, the cron auth in `lib/cron-auth.ts` (fails closed by design), and any prod Supabase or infra write. When unsure, branch and ask.
+`next.config.ts` (misconfigure it and prod data fetching breaks), `middleware.ts` (auth and routing — NOT `proxy.ts`: Next 16 prefers that name and warns on every build, but OpenNext needs the Edge runtime and the Cloudflare migration renamed it back. Renaming it breaks the deploy), Clerk keys and env values, the KV env variable names, the cron auth in `lib/cron-auth.ts` (fails closed by design), and any prod Supabase or infra write. When unsure, branch and ask.
 
 ## First files to open for UI/UX work
 - `app/globals.css` (tokens), `components/AppShell.tsx` (global chrome), `components/SeriesPageView.tsx` + `components/tabs/*` (series pages), `components/weekend/*` (the marquee weekend page).

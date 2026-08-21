@@ -8,11 +8,11 @@ Personal motorsport companion. Tracks F1 + MotoGP + WEC + Formula E + 9 other se
 
 ## Stack
 
-- Next.js 16 App Router (middleware lives in `proxy.ts`, not `middleware.ts`)
+- Next.js 16 App Router. Middleware lives in **`middleware.ts`** — NOT `proxy.ts`. Next 16 prefers `proxy.ts` and warns about the deprecated convention on every build; that warning is expected. The Cloudflare migration renamed it back because OpenNext needs the Edge runtime, so renaming it breaks the deploy.
 - React 19, Tailwind v4
-- Clerk auth (Production), Vercel KV (Upstash Redis), `@serwist/next` PWA
+- Clerk auth (Production), KV (Upstash Redis over REST: `KV_REST_API_URL` / `KV_REST_API_TOKEN`), `@serwist/next` PWA
 - `node-ical` for calendar feeds, Open-Meteo for weather, motorsport.com RSS for news
-- Vercel hosting, custom domain `paddock-tracker.com`
+- Hosted on a **Cloudflare Worker** (OpenNext build), custom domain `paddock-tracker.com`
 
 ## Read these first (in order)
 
@@ -24,11 +24,11 @@ Personal motorsport companion. Tracks F1 + MotoGP + WEC + Formula E + 9 other se
 
 ## Code layout
 
-- `app/` — Next.js routes. `proxy.ts` is middleware (Next 16 file name).
+- `app/` — Next.js routes. `middleware.ts` at the repo root is the middleware.
 - `components/` — React components. `components/weekend/*` is the race-weekend page.
 - `lib/` — pure modules. Server-only helpers end in `*-loader.ts` to keep client bundles clean.
-- `content/series/<slug>/` — per-series curated data: `meta.json`, `overview.md`, `drivers.md`, `champions.md`, `significance.json`, `sessions.json` (timed-session overrides), `rounds.json` (canonical FIA round numbers), `fallback.ics`. Edits here are real commits that deploy to production.
-- `content/posts/*.mdx` — blog.
+- `content/series/<slug>/` — per-series curated data: `meta.json`, `overview.md`, `drivers.md`, `champions.json`, `significance.json`, `sessions.json` (timed-session overrides), `rounds.json` (canonical FIA round numbers), `fallback.ics`. Edits here are real commits that deploy to production.
+- `content/posts/*.mdx` — **legacy and empty (0 files). Do NOT add any.** An MDX post auto-publishes the moment it merges, with no approval step; that is how the 2026-07-03 British GP preview went live unsigned (reverted in #373). Blog posts are prod Supabase DB drafts — see the Blog SOP in `CLAUDE.md`.
 - `tests/fixtures/` — ICS + JSON test fixtures.
 
 ## Non-obvious conventions
@@ -56,16 +56,16 @@ Run tests with `npx vitest run`. Typecheck with `npx tsc --noEmit`.
 Pick one off `IDEAS.md` Inbox. Good starters:
 - Curate `sessions.json` for a non-F1 series with date-only events (FE rounds beyond Monaco, MotoGP, IMSA).
 - Curate `rounds.json` for the same series.
-- Write the first MDX blog post.
+- Draft a blog post the sanctioned way: a `.md` in `drafts/`, parsed with `npx tsx scripts/draft-post.mts <file> --dry`, then inserted as a prod DB draft for the operator to approve. Never as MDX.
 - Investigate the residual `00:00` string on `/series/f1/weekend/5`.
 
-Avoid for first contributions: `lib/types.ts`, `proxy.ts`, `next.config.ts` — shared core, conflict-prone.
+Avoid for first contributions: `lib/types.ts`, `middleware.ts`, `next.config.ts` — shared core, conflict-prone.
 
 ## Deploy access
 
 - GitHub: you're a collaborator. Push branches, open PRs, review Paris's PRs.
-- Vercel: Paris is sole steward (Hobby plan). Preview URLs appear in PR comments — that's all you need. Production logs / KV / env-vars: ask Paris.
-- New env var needed: ask Paris, he adds it via Vercel CLI.
+- Cloudflare: Paris is sole steward. There are no per-PR preview URLs; a testing Worker exists (`npm run deploy:testing`). Production logs / KV / env-vars: ask Paris.
+- New env var needed: ask Paris — Worker secrets are pushed with `npm run secrets:sync` (`scripts/sync-worker-secrets.mts`).
 
 ## Asking questions
 

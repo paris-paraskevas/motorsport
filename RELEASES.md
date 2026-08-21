@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.330.2 — 2026-08-21
+
+**Internal housekeeping.** Planning notes for the next session; nothing user-facing changed.
+
+## 0.330.1 — 2026-08-21
+
+**Internal housekeeping.** Contributor documentation corrected; nothing user-facing changed.
+
 ## 0.330.0 — 2026-08-21
 
 **Signing in works properly on the dark themes again.** The sign-in box was painting a light card behind light text, leaving the heading and buttons all but invisible; it now follows whichever theme you have chosen. On a series page, the reference links (drivers, standings, results and the rest) have moved up into the empty space beside the title, where they are reachable without scrolling.
