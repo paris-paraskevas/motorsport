@@ -853,8 +853,14 @@ export default async function WeekendPage({
               {/* First-session countdown card (3b). */}
               {(firstUpcoming ?? firstSession) && (
                 <div className="border-[1.5px] border-text bg-surface-elevated p-4">
+                  {/* "First session" only while nothing has run yet: once FP1
+                      is done the card counts down to the NEXT one, and calling
+                      Sprint Qualifying the "first session" is simply wrong
+                      (operator, 2026-08-21). */}
                   <span className="block border-b border-text pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                    First session
+                    {firstUpcoming && firstSession && firstUpcoming.uid !== firstSession.uid
+                      ? 'Next session'
+                      : 'First session'}
                   </span>
                   {firstUpcoming ? (
                     <>

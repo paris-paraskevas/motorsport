@@ -209,10 +209,14 @@ function SessionPager({
 // sits one tap away behind a native <details>, retirements at the foot with
 // their cause. The interval column is gone by design — Time · Gap · Pts is
 // the whole grammar.
+// Ten rows before "show all", not six (operator, 2026-08-21): a top six cuts
+// the points-paying positions in half on a 22-car grid.
+const LEAD_ROWS = 10;
+
 function ResultTable({ data }: { data: SessionClassification }) {
   const entries = data.entries;
-  const lead = entries.slice(0, 6);
-  const rest = entries.slice(6);
+  const lead = entries.slice(0, LEAD_ROWS);
+  const rest = entries.slice(LEAD_ROWS);
   const restClassified = rest.filter(e => !e.status);
   const restRetired = rest.filter(e => e.status);
   const hasNo = entries.some(e => e.carNumber);
@@ -233,12 +237,15 @@ function ResultTable({ data }: { data: SessionClassification }) {
       >
         {e.position ?? '–'}
       </span>
+      {/* Column rules from here on (operator, 2026-08-21: position and number
+          read as one number without them). Desktop only — on mobile the team
+          stacks under the driver and vertical rules would cut through it. */}
       {hasNo && (
-        <span className="hidden w-8 shrink-0 font-mono text-[11px] tabular-nums text-text-faint sm:block">
+        <span className="hidden w-8 shrink-0 font-mono text-[11px] tabular-nums text-text-faint sm:block sm:border-l sm:border-border sm:pl-3">
           {e.carNumber ?? ''}
         </span>
       )}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 sm:border-l sm:border-border sm:pl-3">
         <div className="flex items-baseline gap-2">
           <span className="truncate font-serif text-[17px] font-semibold leading-tight text-text">
             {e.driverName}
@@ -251,18 +258,18 @@ function ResultTable({ data }: { data: SessionClassification }) {
           {teamLine(e)}
         </div>
       </div>
-      <span className="hidden w-[24%] shrink-0 truncate font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted sm:block">
+      <span className="hidden w-[24%] shrink-0 truncate font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
         {teamLine(e)}
       </span>
       {q ? (
         <>
-          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block">
+          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
             {e.q1 ?? ''}
           </span>
-          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block">
+          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text-muted sm:block sm:border-l sm:border-border sm:pl-3">
             {e.q2 ?? ''}
           </span>
-          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block">
+          <span className="hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
             {e.q3 ?? ''}
           </span>
           <span className="w-20 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:hidden">
@@ -271,11 +278,11 @@ function ResultTable({ data }: { data: SessionClassification }) {
         </>
       ) : (
         <>
-          <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block">
+          <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
             {e.time ?? ''}
           </span>
           <span
-            className={`hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums sm:block ${
+            className={`hidden w-20 shrink-0 text-right font-mono text-[11px] tabular-nums sm:block sm:border-l sm:border-border sm:pl-3 ${
               e.status ? 'text-brand' : 'text-text-muted'
             }`}
           >
@@ -349,8 +356,8 @@ function ResultTable({ data }: { data: SessionClassification }) {
 // beneath it, car number in the No column.
 function ClassBlock({ cls, data, idx }: { cls: string; data: SessionClassification; idx: number }) {
   const entries = data.entries;
-  const lead = entries.slice(0, 6);
-  const rest = entries.slice(6);
+  const lead = entries.slice(0, LEAD_ROWS);
+  const rest = entries.slice(LEAD_ROWS);
 
   const row = (e: SessionClassificationEntry, raised: boolean) => (
     <li
@@ -375,7 +382,7 @@ function ClassBlock({ cls, data, idx }: { cls: string; data: SessionClassificati
           </div>
         ) : null}
       </div>
-      <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block">
+      <span className="hidden w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-text sm:block sm:border-l sm:border-border sm:pl-3">
         {e.time ?? ''}
       </span>
       <span

@@ -6,7 +6,7 @@ import { FONT_CLASSES } from '@/lib/fonts';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { LaunchBanner } from '@/components/LaunchBanner';
-import { AssistantWidget } from '@/components/assistant/AssistantWidget';
+
 import { HeatmapTracker } from '@/components/HeatmapTracker';
 import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -125,7 +125,11 @@ export default async function RootLayout({
               `denied` and GA4 firing nothing for EU/UK visitors. This modal
               flips the signals on user choice and persists to localStorage. */}
           <CookieConsent />
-          <AssistantWidget />
+          {/* AssistantWidget unmounted 2026-08-21 (operator: "until fixed we
+              can remove agent/assistant"). Its own source already described
+              itself as a non-functional "not available yet" chat button. The
+              component is left in the tree, not deleted, so rewiring it is a
+              one-line remount rather than a rebuild. */}
           <HeatmapTracker />
           {/* Deferred to lazyOnload (was afterInteractive): none of these are
               needed for first paint — AdSense isn't even approved yet, and GA4

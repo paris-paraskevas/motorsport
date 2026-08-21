@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { seriesInk } from '@/lib/site';
+import { sessionSlug } from '@/lib/weekend';
 import type { PodiumEntry } from '@/lib/home-results';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 
@@ -279,9 +280,16 @@ export function HomeLead({
                   as a contradiction. The session name carries both states, and
                   uppercasing is avoided because it turns the raw title
                   "F1 - Practice 1" into "F1 - PRACTICE 1". */}
-              <span className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text">
+              {/* The session name links to its own session page, not just the
+                  weekend (operator, 2026-08-21). sessionSlug is the same helper
+                  the weekend page's own session links use, so the URL shape
+                  cannot drift from theirs. */}
+              <Link
+                href={`${liveWeekend.href}/${sessionSlug(liveWeekend.nextSession.name)}`}
+                className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text hover:underline"
+              >
                 {liveWeekend.nextSession.name}
-              </span>
+              </Link>
               <NextRaceCountdown
                 target={liveWeekend.nextSession.startIso}
                 label={timeLabel(liveWeekend.nextSession.startIso)}
@@ -302,7 +310,12 @@ export function HomeLead({
                     key={`${s.name}-${s.startIso}`}
                     className="flex items-baseline justify-between gap-3 border-b border-border py-1.5 last:border-b-0"
                   >
-                    <span className="min-w-0 truncate font-serif text-[15px] text-text-muted">{s.name}</span>
+                    <Link
+                      href={`${liveWeekend.href}/${sessionSlug(s.name)}`}
+                      className="min-w-0 truncate font-serif text-[15px] text-text-muted hover:text-text hover:underline"
+                    >
+                      {s.name}
+                    </Link>
                     <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
                       {timeLabel(s.startIso)}
                     </span>

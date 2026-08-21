@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.328.0 — 2026-08-21
+
+**A tidier header and clearer results.** Blog now sits in the top navigation, and the notification bell has been replaced by a contact button that opens the message form directly. Classifications list ten drivers before you ask for the rest, with lines separating each column so positions and car numbers no longer run together. A weekend's countdown card now says "next session" once the first one has run, and session names on your home page link straight to that session. The assistant button has been taken down until it works properly.
+
 ## 0.327.1 — 2026-08-21
 
 **The lead article reads properly on big screens.** On wide monitors the headline stayed small while its picture grew, leaving most of the panel empty and stretching the summary into very long lines. Both now scale with the window and wrap sensibly.

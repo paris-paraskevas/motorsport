@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.328.0 — 2026-08-21
+
+### Added
+- **Blog joins the header nav** (`components/AppShell.tsx` `DoorLinks`), alongside Calendar, Learn and Series.
+- **A contact button replaces the notification bell** in the header. It opens the `ContactModal` already mounted in the shell via the existing `openContactModal()` event rather than navigating, and uses the repo's `lucide-react` `Mail` icon. The header contact pill "died with the four-door shell" per `ContactModal.tsx:14`; this brings it back. **The push system itself is untouched** and still reachable from Settings — only this entry point moved. `NotificationBell.tsx` is left in the tree, unmounted, not deleted.
+
+### Changed
+- **The avatar is 44px, matching the button beside it.** It was `h-8 w-8` (32px) against the bell's `min-h-11` (44px), which read as an afterthought.
+- **Classifications show ten rows before "show all", not six** (`LEAD_ROWS` in the session page, applied to both `ResultTable` and `ClassBlock`). A top six cuts the points-paying positions in half on a 22-car grid.
+- **Classification columns are separated by rules** — pos | no | driver | team | time | gap. Desktop only (`sm:border-l`): on mobile the team stacks under the driver and a vertical rule would cut through it.
+- **The weekend countdown card says "Next session" once the first has run.** It hard-coded "First session", so with FP1 done it called Sprint Qualifying the first session. Now compares `firstUpcoming.uid` against `firstSession.uid`.
+- **Session names in the home band link to their own session page**, using the same `sessionSlug` helper the weekend page uses so the URL shape cannot drift.
+
+### Removed
+- **The assistant/agent widget is unmounted** from `app/(app)/layout.tsx` (operator: "until fixed we can remove agent/assistant"). Its own source already described it as a non-functional "not available yet" chat button. The component is left in place, so rewiring is a one-line remount.
+
+### Notes
+- **FP1 "classification not available" was investigated and is NOT a bug.** OpenF1 had not yet published `session_result` for session_key 11343 when it was reported; the page is `force-dynamic` and the code deliberately never caches a null (`page.tsx:494-499`), so it self-healed on the next render. Verified after the fact: the API returns the full field and the page renders Antonelli 1:12.949 / Norris +0.121 / Russell +0.125, matching the API exactly. The only thing worth changing is the copy, which reads as broken half an hour after a session ends.
+- Still outstanding from the same review, deliberately not in this commit: a Blog tab on `/series/{slug}` filtered to that series, suggested articles in the lead's remaining space, box depth, and the Buy Me a Coffee support entries (blocked — no URL supplied, and a payment link is not something to invent).
+
 ## 0.327.1 — 2026-08-21
 
 ### Fixed
