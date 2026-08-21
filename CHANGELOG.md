@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.325.2 — 2026-08-21
+
+### Internal
+- **The Dutch GP preview draft moves into the repo and is proven insert-ready.** `drafts/f1-dutch-grand-prix-2026-preview.md` (was parked in the session scratchpad while a subagent owned the tree). Three fixes while moving it:
+  - **A latent insert bug**: the metadata block carried an explanatory `publish_at: left NULL — operator sets it…` line inside a parenthetical. `parseDraftMarkdown` matches `publishAt|publish_at` at line start and takes the first whitespace-delimited token, so the insert would have set `publishAt` to the string "left". The key is now omitted entirely, which is what actually yields the null the Blog SOP wants, with a comment saying so. Proven by `scripts/draft-post.mts --dry` (no DB write): slug ok, title 84/140, summary 263/300, body 6428/50000, series f1, **publishAt (null)**.
+  - **Weather refreshed** for the 2026-08-21 model run (Friday now dry, Saturday the wet day at 3.9 mm and 45 km/h gusts, Sunday driest). The prose still quotes no millimetres deliberately: the run-to-run swing has been large all week.
+  - Style re-gated after the edits: the published body (everything after the comment block) has zero em dashes, zero AI-tell phrases, 20 links, 964 words.
+- **`docs/next-session.md` rewritten as an evaluation-and-upload handoff** (operator: "so next session we can evaluate your work in this session and also make sure we upload a blog"): the blog runbook with the exact insert command and its timing constraint, then a claim-by-claim verification table with read-only commands for each of the session's fifteen merges, then an explicit **"where I would audit hardest" risk list** — the chart refactor's three unclicked consumers, the 22 F1 champion notes I did not personally re-verify, `commonsThumb`'s untested sub-500px edge, the un-eyeballed FOUT risk from dropping two font preloads, and the fact that the blog draft is mine and needs the operator's voice check.
+
 ## 0.325.1 — 2026-08-20
 
 ### Internal
