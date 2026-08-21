@@ -1,5 +1,21 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.330.0 — 2026-08-21
+
+**Signing in works properly on the dark themes again.** The sign-in box was painting a light card behind light text, leaving the heading and buttons all but invisible; it now follows whichever theme you have chosen. On a series page, the reference links (drivers, standings, results and the rest) have moved up into the empty space beside the title, where they are reachable without scrolling.
+
+## 0.329.0 — 2026-08-21
+
+**Every series now has its own Blog tab**, listing our writing about that championship and nothing else. The article sidebar no longer tucks its first line behind the header when you scroll, the lead story suggests further reading beside it on wide screens, and there is now a way to support the site from the header or your account menu. News has moved off the race-weekend tabs; it still lives on each series' News tab.
+
+## 0.328.0 — 2026-08-21
+
+**A tidier header and clearer results.** Blog now sits in the top navigation, and the notification bell has been replaced by a contact button that opens the message form directly. Classifications list ten drivers before you ask for the rest, with lines separating each column so positions and car numbers no longer run together. A weekend's countdown card now says "next session" once the first one has run, and session names on your home page link straight to that session. The assistant button has been taken down until it works properly.
+
+## 0.327.1 — 2026-08-21
+
+**The lead article reads properly on big screens.** On wide monitors the headline stayed small while its picture grew, leaving most of the panel empty and stretching the summary into very long lines. Both now scale with the window and wrap sensibly.
+
 ## 0.327.0 — 2026-08-21
 
 **A live session now says so on your home page.** While a session is actually running, the weekend panel shows a flashing live marker instead of a countdown that has already hit zero. The lead article's cover picture is also bigger and taller.

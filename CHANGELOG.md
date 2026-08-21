@@ -4,6 +4,69 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.0 — 2026-08-21
+
+### Fixed
+- **The sign-in modal was unreadable on the dark themes.** Root cause, measured rather than assumed: of the six `appearance.variables` passed to `ClerkProvider`, Clerk 7 honours only `colorPrimary`, `colorBackground` and `borderRadius`. `colorText`, `colorTextOnPrimaryBackground`, `colorInputBackground` and `colorInputText` were silently ignored — confirmed at runtime, where `--cl-color-background` and `--cl-color-text` were **unset** while the header still computed to `rgb(255,255,255)`. The hard-coded light `colorBackground: '#fffcf2'` then painted the card cream on a dark theme while Clerk kept its own white heading, which is the invisible text.
+  - Fix: pass **only** `colorPrimary`. Clerk 7's default theme follows the CSS `color-scheme` property, and `app/globals.css` already declares it per theme (dark on `:root`, light on newsprint / circuit / paper), so the modal now tracks whichever of the six themes is active with no extra wiring and **no new dependency** (`@clerk/ui` is not installed; a `theme:` import would have added one).
+  - Verified in a browser on both sides: `paper` renders a light card with dark legible text, `carbon` a dark card with light legible text, input and primary button correct in each.
+
+### Changed
+- **The series reference links move into the header band.** `justify-between` between the title and the next-session clock left a wide dead strip; the twelve links now sit in it. Labels only — the card grid's blurbs need two lines each and would force the title and clock apart. Desktop only, and the full card grid is now `lg:hidden` so it remains the mobile carrier rather than repeating the same twelve links twice on one page.
+
+### Notes
+- A hydration warning on `<html data-theme>` shows up when switching themes mid-session. Pre-existing: `layout.tsx` renders `data-theme="paper"` server-side and `ThemeScript` swaps it pre-paint. Not touched here.
+- This build logged four `[upstream] www.fiawec.com fetch failed` dynamic-server messages on `/series/[slug]/[tab]`. **Not caused by these changes** — an earlier build of the same tree (with the blog tab already in) logged zero. fiawec is on the documented list of upstreams that block datacenter egress (`scripts/warm-live-data.mts`), which prod routes through the DB snapshot; a local build calls it directly and it failed this run. Build still exit 0.
+
+## 0.329.0 — 2026-08-21
+
+### Fixed
+- **The blog post sidebar no longer hides its own top under the header.** It stuck at `lg:top-6` (24px) while the header is `fixed` and 58px tall on desktop (`AppShell.tsx:91-92` — fixed, not sticky, because `overflow-x:hidden` on body kills sticky), so "On this page" and its first entry sat behind it. Now clears the header, and the column is height-capped with internal scroll: the section list plus five related posts is taller than a short viewport, and a sticky column taller than the screen strands its own bottom.
+
+### Added
+- **A Blog tab on every series page, filtered to that series.** New `components/tabs/BlogTab.tsx`, registered in `lib/tabs.ts` with its own `describeTab` metadata. Filtered on **both** `seriesSlug` and `tags`, because `lib/blog.ts:33-35` already documents that contract ("A series slug here surfaces the post on that series' page too"). Filters in memory over `publishedPosts()` rather than adding another DB reader — that is the warm path `/blog` and the feed already use, and the table is a couple of dozen rows. Empty state included, since most series have no posts yet.
+  - Registered in `NAV_SUBPAGE_KEYS` **and** added to the base series page's own reference row. Those are two separate navigations: `/series/{slug}/<tab>` builds its "More <series>" row from `seriesSubPages()`, while `/series/{slug}` builds its cards inline. Without both, the tab rendered but nothing linked to it. Verified: `/series/f1`, `/series/f1/standings`, `/series/f1/results` and `/series/motogp` all link through, and `/series/f1/blog` returns 200.
+- **Support entries** — a header button and an account-menu item, both from a single `SUPPORT_URL` in `lib/site.ts` so a payment link can never drift between two surfaces.
+- **Further reading beside the lead cover.** The 8/5 cover leaves room at wide widths; three more posts fill it, `xl` and up only, so narrower columns are not pushed taller than their own picture.
+
+### Changed
+- **The home panels have depth** — the same `shadow-lg` the account menu already uses for a raised panel, rather than a new treatment.
+- **News is off the weekend tabs.** The wire still lives on the series' own News tab; the per-weekend copy added a third tab that mostly repeated it. `showNews={false}` rather than deleting the prop, so `WeekendTabs`' contract survives for whenever it returns.
+
+### Notes
+- The weekend page still renders `PreviewNews` inside its Schedule content — that is a preview block, not the tab, and was left alone. Say if it should go too.
+- `NotificationBell.tsx` is now dead code (unmounted last release, not deleted).
+
+## 0.328.0 — 2026-08-21
+
+### Added
+- **Blog joins the header nav** (`components/AppShell.tsx` `DoorLinks`), alongside Calendar, Learn and Series.
+- **A contact button replaces the notification bell** in the header. It opens the `ContactModal` already mounted in the shell via the existing `openContactModal()` event rather than navigating, and uses the repo's `lucide-react` `Mail` icon. The header contact pill "died with the four-door shell" per `ContactModal.tsx:14`; this brings it back. **The push system itself is untouched** and still reachable from Settings — only this entry point moved. `NotificationBell.tsx` is left in the tree, unmounted, not deleted.
+
+### Changed
+- **The avatar is 44px, matching the button beside it.** It was `h-8 w-8` (32px) against the bell's `min-h-11` (44px), which read as an afterthought.
+- **Classifications show ten rows before "show all", not six** (`LEAD_ROWS` in the session page, applied to both `ResultTable` and `ClassBlock`). A top six cuts the points-paying positions in half on a 22-car grid.
+- **Classification columns are separated by rules** — pos | no | driver | team | time | gap. Desktop only (`sm:border-l`): on mobile the team stacks under the driver and a vertical rule would cut through it.
+- **The weekend countdown card says "Next session" once the first has run.** It hard-coded "First session", so with FP1 done it called Sprint Qualifying the first session. Now compares `firstUpcoming.uid` against `firstSession.uid`.
+- **Session names in the home band link to their own session page**, using the same `sessionSlug` helper the weekend page uses so the URL shape cannot drift.
+
+### Removed
+- **The assistant/agent widget is unmounted** from `app/(app)/layout.tsx` (operator: "until fixed we can remove agent/assistant"). Its own source already described it as a non-functional "not available yet" chat button. The component is left in place, so rewiring is a one-line remount.
+
+### Notes
+- **FP1 "classification not available" was investigated and is NOT a bug.** OpenF1 had not yet published `session_result` for session_key 11343 when it was reported; the page is `force-dynamic` and the code deliberately never caches a null (`page.tsx:494-499`), so it self-healed on the next render. Verified after the fact: the API returns the full field and the page renders Antonelli 1:12.949 / Norris +0.121 / Russell +0.125, matching the API exactly. The only thing worth changing is the copy, which reads as broken half an hour after a session ends.
+- Still outstanding from the same review, deliberately not in this commit: a Blog tab on `/series/{slug}` filtered to that series, suggested articles in the lead's remaining space, box depth, and the Buy Me a Coffee support entries (blocked — no URL supplied, and a payment link is not something to invent).
+
+## 0.327.1 — 2026-08-21
+
+### Fixed
+- **The blog lead's text no longer strands 73% of its box empty on wide screens.** `PAGE_WIDE` is fully fluid with no max width (`lib/site.ts:31`), so the cover's 8/5 ratio drives an ever-taller row while the type stayed at a fixed 40px. Measured on prod at a 2560px viewport: image cell 1142x713, text content only 192px, **521px of dead space**.
+  - The headline and summary are now **fluid** (`clamp(30px,2.7vw,72px)` and `clamp(17px,0.85vw,22px)`) rather than stepped at breakpoints, because a stepped scale leaves the same hole between them on a page with no max width.
+  - Measures are capped in `ch` (`lg:max-w-[20ch]` / `lg:max-w-[56ch]`), which rides the font-size, so the headline gains lines as it grows instead of running to a ~200-character line. The caps start at `lg` so mobile is not needlessly narrowed.
+  - The text column is `flex flex-col` with `lg:justify-center`, so whatever space remains is balanced above and below instead of dumped underneath.
+  - **Measured fill of the text cell after the change:** 79% at 1280, 80% at 1440, 76% at 1920, 72% at 2560 — against 27% before. The image is never letterboxed: it renders at 1.6:1 or taller at every width tested.
+  - Verified empirically by applying candidate values to the live prod DOM and measuring, before writing any code, then confirming Tailwind emitted the arbitrary `clamp()` utilities into the compiled CSS.
+
 ## 0.327.0 — 2026-08-21
 
 ### Added

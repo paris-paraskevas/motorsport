@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { seriesInk } from '@/lib/site';
+import { sessionSlug } from '@/lib/weekend';
 import type { PodiumEntry } from '@/lib/home-results';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
 
@@ -69,6 +70,8 @@ export interface HomeLeadBlog {
   seriesColor?: string | null;
   /** Relative stamp ("28m ago") — a lead story should read as news. */
   ageLabel?: string | null;
+  /** Further reading, shown only where the 8/5 cover leaves room beside it. */
+  suggested?: { slug: string; title: string }[];
 }
 
 /** The weekend running RIGHT NOW. Its presence is what demotes the
@@ -145,7 +148,7 @@ export function HomeLead({
           left, the read right, in the Paper language rather than the testing
           build's dark treatment. ── */}
       {blog && (
-        <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated">
+        <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
           <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
             {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays
                 clickable for a mouse without announcing a duplicate of the
@@ -181,7 +184,12 @@ export function HomeLead({
               )}
             </Link>
 
-            <div className="min-w-0 p-[18px] lg:p-5">
+            {/* Vertically centred from lg up, where the grid is two columns and
+                the image's 8/5 ratio drives the row height. PAGE_WIDE is fully
+                fluid with NO max width (lib/site.ts:31), so at 2560px the image
+                cell is 1142x713 while this content is only ~192px tall — 73% of
+                the box was dead space until the fluid type below. */}
+            <div className="flex min-w-0 flex-col p-[18px] lg:justify-center lg:p-5">
               <div className="flex flex-wrap items-center gap-2.5">
                 <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
                   Lead story
@@ -210,18 +218,50 @@ export function HomeLead({
                   {blog.readMinutes} min read
                 </span>
               </div>
-              <h1 className="mt-3 font-serif text-[30px] font-semibold leading-[1.08] text-text lg:text-[40px]">
+              {/* Fluid type, not breakpoint steps: the page has no max width, so
+                  a stepped scale leaves the same hole between breakpoints. The
+                  ch-based measure rides the font-size, so the headline gains
+                  lines as it grows instead of running to a 200-character line.
+                  Measured fill of the text cell: 79% at 1280, 80% at 1440, 76%
+                  at 1920, 72% at 2560 — against 27% before. */}
+              <h1 className="mt-3 font-serif text-[clamp(30px,2.7vw,72px)] font-semibold leading-[1.06] text-text lg:max-w-[20ch]">
                 <Link href={`/blog/${blog.slug}`} className="decoration-2 underline-offset-4 hover:underline">
                   {blog.title}
                 </Link>
               </h1>
-              <p className="mt-3 line-clamp-3 font-serif text-[17px] leading-snug text-text-muted">{blog.summary}</p>
+              <p className="mt-3 line-clamp-3 font-serif text-[clamp(17px,0.85vw,22px)] leading-snug text-text-muted lg:max-w-[56ch]">
+                {blog.summary}
+              </p>
               <Link
                 href={`/blog/${blog.slug}`}
-                className="mt-5 inline-flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+                className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
               >
                 Read the story →
               </Link>
+
+              {/* Further reading fills the space the 8/5 cover leaves beside it
+                  (operator, 2026-08-21). xl and up only: below that the column
+                  is already full and this would push the band taller than its
+                  own picture. */}
+              {blog.suggested && blog.suggested.length > 0 && (
+                <div className="mt-8 hidden border-t border-border pt-4 xl:block">
+                  <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                    More reading
+                  </span>
+                  <ul className="mt-2">
+                    {blog.suggested.map(s => (
+                      <li key={s.slug}>
+                        <Link
+                          href={`/blog/${s.slug}`}
+                          className="block border-b border-border py-2 font-serif text-[16px] font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
+                        >
+                          {s.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -232,7 +272,7 @@ export function HomeLead({
       {liveWeekend && (
         <section
           aria-label="This weekend"
-          className={`${blog ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5`}
+          className={`${blog ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
         >
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             {/* Deliberately NOT "On now": the band also catches a weekend
@@ -266,9 +306,16 @@ export function HomeLead({
                   as a contradiction. The session name carries both states, and
                   uppercasing is avoided because it turns the raw title
                   "F1 - Practice 1" into "F1 - PRACTICE 1". */}
-              <span className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text">
+              {/* The session name links to its own session page, not just the
+                  weekend (operator, 2026-08-21). sessionSlug is the same helper
+                  the weekend page's own session links use, so the URL shape
+                  cannot drift from theirs. */}
+              <Link
+                href={`${liveWeekend.href}/${sessionSlug(liveWeekend.nextSession.name)}`}
+                className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text hover:underline"
+              >
                 {liveWeekend.nextSession.name}
-              </span>
+              </Link>
               <NextRaceCountdown
                 target={liveWeekend.nextSession.startIso}
                 label={timeLabel(liveWeekend.nextSession.startIso)}
@@ -289,7 +336,12 @@ export function HomeLead({
                     key={`${s.name}-${s.startIso}`}
                     className="flex items-baseline justify-between gap-3 border-b border-border py-1.5 last:border-b-0"
                   >
-                    <span className="min-w-0 truncate font-serif text-[15px] text-text-muted">{s.name}</span>
+                    <Link
+                      href={`${liveWeekend.href}/${sessionSlug(s.name)}`}
+                      className="min-w-0 truncate font-serif text-[15px] text-text-muted hover:text-text hover:underline"
+                    >
+                      {s.name}
+                    </Link>
                     <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
                       {timeLabel(s.startIso)}
                     </span>
@@ -305,7 +357,7 @@ export function HomeLead({
       {result && winner && (
         <section
           aria-label="Latest result"
-          className={`${leadAbove ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5`}
+          className={`${leadAbove ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
         >
           <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
             <div className="min-w-0">

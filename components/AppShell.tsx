@@ -7,9 +7,10 @@ import { NavSeriesMeta } from '@/lib/types';
 import { BottomBar } from './BottomBar';
 import { Footer } from './Footer';
 import { OnboardingWizard } from './OnboardingWizard';
-import { ContactModal } from './ContactModal';
+import { Coffee, Mail } from 'lucide-react';
+import { SUPPORT_URL } from '@/lib/site';
+import { ContactModal, openContactModal } from './ContactModal';
 import { NavPanel } from './NavPanel';
-import { NotificationBell } from './NotificationBell';
 import { PushSoundPlayer } from './PushSoundPlayer';
 
 // The four-door shell (design handoff §2, panel 8b). The global nav is exactly
@@ -162,6 +163,7 @@ function DoorLinks() {
     { href: '/calendar', label: 'Calendar' },
     { href: '/information', label: 'Learn' },
     { href: '/series', label: 'Series' },
+    { href: '/blog', label: 'Blog' },
   ];
   return (
     <nav aria-label="Doors" className="hidden items-stretch gap-5 self-stretch lg:flex">
@@ -236,7 +238,33 @@ function HeaderAccount() {
 
   return (
     <span ref={wrapRef} className="relative flex items-center gap-2" data-tour="account">
-      {isLoaded && isSignedIn && <NotificationBell />}
+      {/* Contact replaces the notification bell (operator, 2026-08-21) and the
+          header pill it once was comes back with it. Opens the modal already
+          mounted below rather than navigating. The push system is untouched and
+          still reachable from Settings — only this entry point moved. */}
+      <button
+        type="button"
+        onClick={openContactModal}
+        aria-label="Contact us"
+        title="Contact us"
+        data-heatmap-id="nav:contact"
+        className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-text text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted lg:inline-flex"
+      >
+        <Mail aria-hidden="true" className="h-[18px] w-[18px]" />
+      </button>
+      {/* Support the site. rel includes noopener for the new tab; the link is
+          single-sourced from lib/site.ts because the account menu links it too. */}
+      <a
+        href={SUPPORT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Support us on Buy Me a Coffee"
+        title="Support us"
+        data-heatmap-id="nav:support"
+        className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border-strong bg-surface text-text transition-colors duration-(--duration-fast) hover:border-text lg:inline-flex"
+      >
+        <Coffee aria-hidden="true" className="h-[18px] w-[18px]" />
+      </a>
       <button
         type="button"
         aria-label="Account menu"
@@ -244,7 +272,9 @@ function HeaderAccount() {
         aria-expanded={open}
         data-heatmap-id="nav:account"
         onClick={() => setOpen(v => !v)}
-        className="hidden lg:block h-8 w-8 shrink-0 overflow-hidden rounded-full border border-border-strong bg-surface transition-colors duration-(--duration-fast) hover:border-text"
+        // h-11 w-11 to match the contact button beside it (operator: the avatar
+        // was 32px against the bell's 44px and read as an afterthought).
+        className="hidden lg:block h-11 w-11 shrink-0 overflow-hidden rounded-full border border-border-strong bg-surface transition-colors duration-(--duration-fast) hover:border-text"
       >
         {isLoaded && isSignedIn && user?.imageUrl && (
           <>
@@ -289,6 +319,18 @@ function HeaderAccount() {
           <Link href="/about" role="menuitem" onClick={close} className={itemClass}>
             About
           </Link>
+          {/* Support the creator — same destination as the header button, from
+              the one constant, so they can never point at different pages. */}
+          <a
+            href={SUPPORT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            role="menuitem"
+            onClick={close}
+            className={`${itemClass} border-t border-border`}
+          >
+            Support the creator ↗
+          </a>
           {isSignedIn && (
             <div className="border-t border-border">
               <SignOutButton redirectUrl="/">

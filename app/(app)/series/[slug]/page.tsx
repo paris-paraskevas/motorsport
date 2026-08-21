@@ -216,6 +216,10 @@ export default async function SeriesPage({
     // [this series'] sessions showing on filters") — the ?s= deep link the
     // filter box reads.
     { label: 'Calendar', href: `/calendar?s=${slug}`, blurb: 'This series only' },
+    // Our own writing about this series (operator, 2026-08-21). The tab pages
+    // reach it through seriesSubPages, but this landing builds its own row, so
+    // without an entry here the series' base page never links to it.
+    { label: 'Blog', href: `/series/${slug}/blog`, blurb: 'Our writing' },
     { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
     ...(pointsGuideForSeries(slug) ? [{ label: 'Points', href: pointsGuideForSeries(slug)!, blurb: 'How scoring works' }] : []),
     { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },
@@ -255,6 +259,27 @@ export default async function SeriesPage({
               {meta.singleEvent ? ' · one race a year' : ''}
             </p>
           </div>
+          {/* The reference links move up into the empty band between the title
+              and the clock (operator, 2026-08-21) — `justify-between` was
+              leaving a wide dead strip there. Labels only: the card grid's
+              blurbs need two lines each and would push the title and the clock
+              apart. Desktop only; below lg the header wraps to stacked blocks
+              and the full card grid still carries these at the page foot. */}
+          <nav
+            aria-label="Series reference"
+            className="hidden min-w-0 flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] lg:flex"
+          >
+            {refs.map(l => (
+              <Link
+                key={l.label}
+                href={l.href}
+                title={l.blurb}
+                className="inline-flex min-h-6 items-center text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           {nextSession && nextW && (
             <div className="text-right">
               <NextRaceCountdown
@@ -434,7 +459,12 @@ export default async function SeriesPage({
         {/* ── Block 3: the reference row — tabs demoted to where a reader goes
             deliberately (§4.6: "tabs are secondary navigation below the content";
             any tab the series does not support is simply absent). ── */}
-        <section aria-label="Reference" className="mt-9">
+        {/* Desktop reads these in the header band now, so the card grid is the
+            MOBILE carrier only — otherwise the same twelve links appear twice on
+            one page. lg:hidden rather than deleted: the blurbs ("The 2026 grid",
+            "Year by year") do real work on a narrow screen where the compact
+            header nav is hidden. */}
+        <section aria-label="Reference" className="mt-9 lg:hidden">
           <SectionRule label="Reference" />
           <div className="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-4 lg:grid-cols-8">
             {refs.map(l => (
