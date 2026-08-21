@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.327.0 — 2026-08-21
+
+**A live session now says so on your home page.** While a session is actually running, the weekend panel shows a flashing live marker instead of a countdown that has already hit zero. The lead article's cover picture is also bigger and taller.
+
 ## 0.326.1 — 2026-08-21
 
 **Internal housekeeping.** Planning notes only; nothing user-facing changed.

@@ -80,7 +80,10 @@ export interface HomeLeadLiveWeekend {
   color: string;
   eventName: string;
   href: string;
-  nextSession: { name: string; startIso: string } | null;
+  /** `endIso` is what lets the countdown flip to a LIVE pill instead of
+   *  vanishing at zero — the flip is decided client-side, see
+   *  NextRaceCountdown's liveUntil. */
+  nextSession: { name: string; startIso: string; endIso: string } | null;
   alsoToday: { name: string; startIso: string }[];
 }
 
@@ -154,19 +157,23 @@ export function HomeLead({
               className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]"
             >
               {blog.heroImage ? (
+                // 8/5 = 1.6:1, operator's call: tall and dominant rather than a
+                // letterbox. width/height carry the SAME ratio so the reserved
+                // box matches the CSS one and nothing shifts before Tailwind
+                // lands; object-cover crops whatever the source actually is.
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={blog.heroImage}
                   alt=""
                   width={1200}
-                  height={630}
+                  height={750}
                   fetchPriority="high"
-                  className="aspect-[1200/630] h-full w-full object-cover"
+                  className="aspect-[8/5] h-full w-full object-cover"
                 />
               ) : (
                 // No cover (7 of 8 published posts have none): a typographic
                 // panel rather than a broken image box.
-                <span className="flex aspect-[1200/630] items-end bg-surface p-4">
+                <span className="flex aspect-[8/5] items-end bg-surface p-4">
                   <span className="font-mono text-[28px] font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-[38px]">
                     {blog.seriesName ?? 'Paddock'}
                   </span>
@@ -254,21 +261,19 @@ export function HomeLead({
 
           {liveWeekend.nextSession && (
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-              {/* The label shouts, the session name does not — uppercasing the
-                  raw title turns "F1 - Practice 1" into "F1 - PRACTICE 1" and
-                  disagrees with the Also-today rows below. */}
-              <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                  Up next
-                </span>
-                <span className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text">
-                  {liveWeekend.nextSession.name}
-                </span>
+              {/* No static "Up next" prefix: once the session starts the
+                  countdown becomes a LIVE pill, and "Up next … Live now" reads
+                  as a contradiction. The session name carries both states, and
+                  uppercasing is avoided because it turns the raw title
+                  "F1 - Practice 1" into "F1 - PRACTICE 1". */}
+              <span className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text">
+                {liveWeekend.nextSession.name}
               </span>
               <NextRaceCountdown
                 target={liveWeekend.nextSession.startIso}
                 label={timeLabel(liveWeekend.nextSession.startIso)}
                 color={liveWeekend.color}
+                liveUntil={liveWeekend.nextSession.endIso}
               />
             </div>
           )}

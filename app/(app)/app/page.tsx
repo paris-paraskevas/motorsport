@@ -82,10 +82,12 @@ export default async function Home() {
     // it can never be a timed "next up" or an "also today" row — both carry a
     // clock time to the client.
     const timed = live.w.sessions.filter(x => !x.dateOnly);
+    // Earliest session that has NOT finished — `end > now`, not `start > now`.
+    // A running session must stay selected, otherwise the band skips straight
+    // past it to the following one and the LIVE pill can never fire while a
+    // session is actually on track.
     const nextUp =
-      timed
-        .filter(x => x.start > now)
-        .sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
+      timed.filter(x => x.end > now).sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
     liveWeekend = {
       seriesSlug: live.s.meta.slug,
       seriesName: live.s.meta.name,
@@ -96,7 +98,15 @@ export default async function Home() {
       // is built for the cramped session rail, and "SQ" is opaque in a hero
       // band. The operator's reference build spells them out ("F1 - Sprint
       // Qualifying"), and the ICS SUMMARY already reads that way.
-      nextSession: nextUp ? { name: nextUp.title, startIso: nextUp.start.toISOString() } : null,
+      nextSession: nextUp
+        ? {
+            name: nextUp.title,
+            startIso: nextUp.start.toISOString(),
+            // The client uses this to flip the countdown into a LIVE pill; the
+            // server never decides liveness, because ISR would bake it stale.
+            endIso: nextUp.end.toISOString(),
+          }
+        : null,
       // Same session day as `nextUp`, by the same day-bucketing every other
       // schedule surface uses (groupByDay; the repo has no per-venue timezone
       // data — circuits.json carries lat/lon only and Open-Meteo resolves the

@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.327.0 — 2026-08-21
+
+### Added
+- **A live session announces itself under the blog lead.** Operator's call: the blog stays the priority and is never displaced by a running session, but the weekend band now says one is on. `components/NextRaceCountdown.tsx` gains an optional `liveUntil`; between `target` and it the countdown becomes a flashing pill instead of vanishing at zero, reusing the session rail's own tokens and animation (`bg-live` / `text-live-pill` / `.live-pulse`, defined at `app/globals.css:431`, which already honours `prefers-reduced-motion`).
+  - **Liveness is decided on the client tick, never on the server.** `/app` is `revalidate = 300`, so a server-baked `isLive` is up to five minutes stale in both directions — the documented "LIVE and past at once" bug on /calendar (`docs/research/code-audit-2026-06.md:528`, `components/SessionCard.tsx:22`).
+- **The lead cover is now 1.6:1 (`aspect-[8/5]`), tall and dominant** instead of the previous 1.9:1 letterbox. Operator's preference. `width`/`height` carry the same ratio so the reserved box matches the CSS one and nothing shifts before Tailwind lands.
+
+### Fixed
+- **The live pill could never have fired.** The band selected its session with `start > now`, which excludes a session that is *running* — so the moment FP1 went green the band skipped ahead to Sprint Qualifying and the countdown simply disappeared. Now `end > now`: the earliest session that has not finished, which keeps a running one selected.
+- **"Up next" no longer contradicts "Live now."** The static prefix is gone; the session name carries both states.
+- Restored the adjacency of `eslint-disable-next-line @next/next/no-img-element` to its `<img>` after a comment was inserted between them, which had silently re-armed the rule.
+
+### Notes
+- Verified against a genuinely running session: FP1 started 10:30 UTC and the band rendered `F1 - Practice 1` with the live pill while Sprint Qualifying stayed below at 17:30.
+- **Cloudflare Worker size, measured.** `wrangler deploy --dry-run` reports **10176.64 KiB gzipped** (10,420,879 bytes) = 9.94 MiB. Cloudflare documents the paid ceiling as "10 MB after compression": read as MiB that leaves **63 KiB of headroom, 0.6%**; read as decimal MB it is 411 KiB *over*. Prod deploying successfully at 0.325.2 is evidence for the MiB reading, but it is inference, not proof. Today's work added no dependencies and cannot account for the bulk. **Settle it with `npm run deploy:testing` before any push to `main`** — a size rejection there is harmless. Treat the bundle as full: the next non-trivial addition needs a diet first.
+- **Still unverified:** the blog cover has never rendered in any browser. No local Supabase (Docker down) and only one published post carries a cover, so the image path is proven only by typecheck.
+
 ## 0.326.1 — 2026-08-21
 
 ### Internal

@@ -32,22 +32,51 @@ export function NextRaceCountdown({
   target,
   label,
   color,
+  liveUntil,
 }: {
   target: string;
   label: string;
   color?: string;
+  /** Session end, ISO. Given it, the countdown becomes a LIVE pill between
+   *  `target` and this instead of vanishing at zero. Liveness is decided HERE,
+   *  on the client tick, never on the server: /app is `revalidate = 300`, so a
+   *  server-baked isLive is up to five minutes stale in both directions — the
+   *  documented /calendar "LIVE and past at once" bug
+   *  (docs/research/code-audit-2026-06.md:528, components/SessionCard.tsx:22). */
+  liveUntil?: string;
 }) {
   const [parts, setParts] = useState<CountdownParts | null>(() =>
     partsBetween(getTargetDate(target), new Date()),
   );
+  const [live, setLive] = useState(false);
 
   useEffect(() => {
     const targetDate = getTargetDate(target);
-    const tick = () => setParts(partsBetween(targetDate, new Date()));
+    const endDate = liveUntil ? new Date(liveUntil) : null;
+    const valid = endDate && !Number.isNaN(endDate.getTime());
+    const tick = () => {
+      const now = new Date();
+      setParts(partsBetween(targetDate, now));
+      setLive(Boolean(valid && now >= targetDate && now <= endDate));
+    };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [target]);
+  }, [target, liveUntil]);
+
+  // Running: the flashing pill, same tokens and animation as the session rail's
+  // badge (components/SessionCard.tsx) so "live" looks identical site-wide.
+  if (live) {
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-live-pill"
+        aria-label={`${label} is live now`}
+      >
+        <span aria-hidden="true" className="live-pulse h-2 w-2 rounded-full bg-live" />
+        Live now
+      </span>
+    );
+  }
 
   if (!parts) return null;
 
