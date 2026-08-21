@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.5 — 2026-08-21
+
+### Internal
+- **Session-31 close: `docs/HANDOFF.md` gains a session-31 block written for an UNSUPERVISED session 32.** The operator will not be present, so the block opens with the rules rather than the history: standing authority to branch, gate, PR, **merge**, then audit the merged work and fix what the audit finds on a further PR, looping until the list is done or blocked.
+  - **Explicit AUTONOMOUS list** (support prompt · the session-30 evaluation that never happened · delete `prod-weekend8.md` · delete dead `NotificationBell.tsx` · collapse the duplicated onboarding docs · fix the misleading "classification not available" copy) and an explicit **FORBIDDEN list** (no prod service-role key, no publishing blog content, no prod data writes, nothing exceeding the Worker's 63 KiB of headroom, no weakening a check to go green, none of the taste calls the operator has not made, no force-push or secret rotation). A clear blocked item is stated as a good outcome; a guess merged to prod is not.
+  - **Ground truth that would otherwise be rediscovered the hard way**: local Supabase is down so every blog-backed surface renders empty locally (the fail-soft path, not a bug) while OpenF1 remains reachable; the auto-mode classifier intermittently blocks outbound calls that read `.supabase-pat`; lint is 0 errors + 2 known `_encoding` warnings and the suite is 1133; and never put backticks inside a shell-quoted `node -e`, which silently corrupted a changelog entry twice today.
+  - Records the six merges of session 31, four durable process learnings (the bundle clearing 10 MiB by 63 KiB settles Cloudflare's "10 MB" as binary; `CLAUDE.md` was materially stale; verify third-party API assumptions against the installed package; measure layout bugs in the live DOM), and what the operator still owes a decision on.
+- `docs/next-session.md`: the handoff prompt rewritten for the unsupervised run, leading with "I will not be here", carrying the merge-then-audit loop, and stating that the audit is not a formality — every review round this session found real defects in work that had already passed the gates.
+
 ## 0.330.4 — 2026-08-21
 
 ### Internal
