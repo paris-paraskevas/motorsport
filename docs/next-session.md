@@ -26,19 +26,37 @@ Operator, 2026-08-21, after the three-ask objection: **two asks, never a third.*
 
 | Action | Effect |
 |---|---|
-| Support | opens `SUPPORT_URL`, never ask again |
-| **"Don't show this again"** — an explicit, clearly-labelled button, not a small ✕ | never ask again |
+| Support | opens `SUPPORT_URL`, silent for the rest of the visit |
+| **"Don't show this again"** — an explicit, clearly-labelled button, not a small ✕ | silent for the rest of the visit (see the scope rule below) |
 | Soft dismiss — Esc, backdrop click, "Not now" | **this visit continues to ask 2** |
 
-**Ask 2 — at 5 minutes of engaged time**, and only if ask 1 was actually shown and soft-dismissed. The copy **says out loud that this is the last time**, e.g. "Last time I'll ask, promise." Every exit from ask 2 — support, dismiss, Esc, backdrop — sets the never-again flag. There is no third ask under any path.
+**Ask 2 — at 5 minutes of engaged time**, and only if ask 1 was actually shown and soft-dismissed. The copy **says out loud that this is the last time**, e.g. "Last time I'll ask, promise." Every exit from ask 2 ends it for the visit. There is no third ask under any path.
 
-Three things to pin down while implementing, because they are easy to get subtly wrong:
+### The scope of "don't show again" — operator, 2026-08-21
 
-- **5 minutes is total engaged time, not five minutes after ask 1.** So the gap between the two asks is about three minutes.
-- **Ask 2 requires ask 1 to have happened.** If someone lands with 5 minutes already banked (a restored tab, a late mount), they get ask 1 first, not the "last time" copy out of nowhere.
-- **"Never again" is permanent**, in `localStorage`, behind a *versioned* key like `LaunchBanner`'s — so a future deliberate campaign can reset it, but nothing accidental can.
+**For a guest, dismissal lasts the visit. Only an account can silence it for good.**
 
-A reload must not restart the ladder: the visit total lives in `sessionStorage` and the never-again flag in `localStorage`, so both survive it.
+| | Where the flag lives | Lifetime |
+|---|---|---|
+| Guest | `sessionStorage` | this visit; asked again next visit |
+| Signed in | Clerk **`unsafeMetadata`** on the user | permanent, every device, no further asks anywhere |
+
+And the prompt **says so**, so a returning guest understands why it is back and what ends it.
+
+**Use Clerk `unsafeMetadata`, not a new table.** It is readable client-side through `useUser()` with no extra request and no server involvement, so **ISR is untouched** — which matters, because `app/(app)/app/page.tsx` notes that follows stay device-local precisely to keep that page cacheable. Clerk metadata is already used in this repo (`app/(admin)/admin/users/`, several `app/api/admin/*` routes), so it is a known pattern rather than a new dependency. The alternative — a column on `app_user` plus an API route — costs a fetch on mount and puts a UI preference in a betting-adjacent mirror table.
+
+**Two things to get right, because this is the line between an incentive and a dark pattern:**
+
+1. **Do not phrase it as a threat.** "We'll keep asking until you sign up" is coercive. State it as fact: an account is where preferences live, and this is one of them. The guest dismissal must genuinely hold for the *whole* visit, including navigation — if it reappears mid-visit the copy becomes a lie and the mechanic backfires.
+2. **We cannot detect a donation.** A guest who donates still gets asked on their next visit, because Buy Me a Coffee is external with no webhook. That is a real wart and the account is also its fix — so the signed-in flag should read as "I've supported / don't ask again", one control covering both.
+
+Three implementation subtleties, easy to get quietly wrong:
+
+- **5 minutes is total engaged time, not five minutes after ask 1.** The gap between asks is about three minutes.
+- **Ask 2 requires ask 1 to have happened.** Someone landing with 5 minutes already banked (restored tab, late mount) gets ask 1, not "last time I'll ask" out of nowhere.
+- **The signed-in flag wants a version marker** in the metadata value (not a bare `true`), so a deliberate future campaign can reset it while nothing accidental can.
+
+A reload must not restart the ladder: the visit total and the guest dismissal both live in `sessionStorage`, so both survive it and both end with the tab.
 
 ---
 
@@ -63,8 +81,11 @@ Operator's words: "minimal, heartwarming". It should read like a person, not a f
 
 - Ask 1 fires at **2 minutes of engaged** time, not wall-clock; a backgrounded tab accrues nothing.
 - Ask 2 fires at **5 minutes of total engaged** time, **only** after ask 1 was shown and soft-dismissed, and its copy states it is the last ask.
-- **No third ask exists on any path.** Every exit from ask 2, and the explicit "Don't show this again" on ask 1, set a permanent versioned flag.
-- A reload restarts neither the ladder nor the clock: visit total in `sessionStorage`, never-again in `localStorage`.
+- **No third ask exists on any path**, in either the guest or the signed-in case.
+- **Guest**: every dismissal is visit-scoped (`sessionStorage`) and the reader is asked again on a later visit. It must not reappear within the same visit, including across navigation.
+- **Signed in**: "don't show again" writes a versioned flag to Clerk `unsafeMetadata` and the prompt never appears again, on any device.
+- The prompt **states** that an account is what makes it permanent, phrased as fact rather than as a threat.
+- A reload restarts neither the ladder nor the clock.
 - Esc, backdrop click and the dismiss control all close it; focus returns to where it was.
 - Nothing renders while a session is live on the current series.
 - `cookies.md` and `privacy.md` list every new key, in the same PR.
@@ -91,7 +112,7 @@ Operator's words: "minimal, heartwarming". It should read like a person, not a f
 >
 > **Priority: the dwell-triggered support prompt.** A reader who stays engaged for a couple of minutes gets a minimal, heartwarming, easily escapable prompt asking whether they would like to support the site, linking `SUPPORT_URL`. Section 1 of `docs/next-session.md` has the mechanism already researched — engaged time rather than wall clock, mounted in `app/(app)/layout.tsx`, `sessionStorage` for the visit total and `localStorage` for "do not ask again", reusing `lib/useFocusTrap.ts` and the `LaunchBanner` dismissal pattern. Do not re-derive it.
 >
-> **The shape is already decided — section 2, do not reopen it.** Two asks, never a third: one at 2 minutes of engaged time carrying an explicit "Don't show this again" button, and — only if that one was soft-dismissed — one at 5 minutes of total engaged time whose copy says out loud that it is the last time. Every exit from the second sets the never-again flag.
+> **The shape is already decided — section 2, do not reopen it.** Two asks, never a third: one at 2 minutes of engaged time carrying an explicit "Don't show this again" button, and — only if that one was soft-dismissed — one at 5 minutes of total engaged time whose copy says out loud that it is the last time. **Scope differs by auth state**: for a guest every dismissal lasts only the visit (`sessionStorage`), and only a signed-in reader can silence it for good, via a versioned flag in Clerk `unsafeMetadata` — which keeps ISR untouched because it reads client-side through `useUser()`. The prompt must say that plainly, as a fact about where preferences live, never as "we'll keep asking until you sign up".
 >
 > **Hard constraints**: the Worker bundle has 63 KiB of headroom against a 10 MiB ceiling, so measure with `wrangler deploy --dry-run` before and after and add no dependency · `content/legal/cookies.md` and `privacy.md` must list every new storage key in the same PR, or those pages become false · suppress the prompt entirely while a session is live (`weekendIsLive()`) · Esc, backdrop and dismiss must all work with focus returned · guard any animation behind `prefers-reduced-motion` · make the thresholds overridable so a 10-minute path can be tested in seconds, and unit-test the accumulator with an injected clock.
 >
