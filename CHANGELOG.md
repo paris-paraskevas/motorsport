@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.327.1 — 2026-08-21
+
+### Fixed
+- **The blog lead's text no longer strands 73% of its box empty on wide screens.** `PAGE_WIDE` is fully fluid with no max width (`lib/site.ts:31`), so the cover's 8/5 ratio drives an ever-taller row while the type stayed at a fixed 40px. Measured on prod at a 2560px viewport: image cell 1142x713, text content only 192px, **521px of dead space**.
+  - The headline and summary are now **fluid** (`clamp(30px,2.7vw,72px)` and `clamp(17px,0.85vw,22px)`) rather than stepped at breakpoints, because a stepped scale leaves the same hole between them on a page with no max width.
+  - Measures are capped in `ch` (`lg:max-w-[20ch]` / `lg:max-w-[56ch]`), which rides the font-size, so the headline gains lines as it grows instead of running to a ~200-character line. The caps start at `lg` so mobile is not needlessly narrowed.
+  - The text column is `flex flex-col` with `lg:justify-center`, so whatever space remains is balanced above and below instead of dumped underneath.
+  - **Measured fill of the text cell after the change:** 79% at 1280, 80% at 1440, 76% at 1920, 72% at 2560 — against 27% before. The image is never letterboxed: it renders at 1.6:1 or taller at every width tested.
+  - Verified empirically by applying candidate values to the live prod DOM and measuring, before writing any code, then confirming Tailwind emitted the arbitrary `clamp()` utilities into the compiled CSS.
+
 ## 0.327.0 — 2026-08-21
 
 ### Added

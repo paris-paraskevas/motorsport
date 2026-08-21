@@ -181,7 +181,12 @@ export function HomeLead({
               )}
             </Link>
 
-            <div className="min-w-0 p-[18px] lg:p-5">
+            {/* Vertically centred from lg up, where the grid is two columns and
+                the image's 8/5 ratio drives the row height. PAGE_WIDE is fully
+                fluid with NO max width (lib/site.ts:31), so at 2560px the image
+                cell is 1142x713 while this content is only ~192px tall — 73% of
+                the box was dead space until the fluid type below. */}
+            <div className="flex min-w-0 flex-col p-[18px] lg:justify-center lg:p-5">
               <div className="flex flex-wrap items-center gap-2.5">
                 <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
                   Lead story
@@ -210,12 +215,20 @@ export function HomeLead({
                   {blog.readMinutes} min read
                 </span>
               </div>
-              <h1 className="mt-3 font-serif text-[30px] font-semibold leading-[1.08] text-text lg:text-[40px]">
+              {/* Fluid type, not breakpoint steps: the page has no max width, so
+                  a stepped scale leaves the same hole between breakpoints. The
+                  ch-based measure rides the font-size, so the headline gains
+                  lines as it grows instead of running to a 200-character line.
+                  Measured fill of the text cell: 79% at 1280, 80% at 1440, 76%
+                  at 1920, 72% at 2560 — against 27% before. */}
+              <h1 className="mt-3 font-serif text-[clamp(30px,2.7vw,72px)] font-semibold leading-[1.06] text-text lg:max-w-[20ch]">
                 <Link href={`/blog/${blog.slug}`} className="decoration-2 underline-offset-4 hover:underline">
                   {blog.title}
                 </Link>
               </h1>
-              <p className="mt-3 line-clamp-3 font-serif text-[17px] leading-snug text-text-muted">{blog.summary}</p>
+              <p className="mt-3 line-clamp-3 font-serif text-[clamp(17px,0.85vw,22px)] leading-snug text-text-muted lg:max-w-[56ch]">
+                {blog.summary}
+              </p>
               <Link
                 href={`/blog/${blog.slug}`}
                 className="mt-5 inline-flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"

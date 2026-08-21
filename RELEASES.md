@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.327.1 — 2026-08-21
+
+**The lead article reads properly on big screens.** On wide monitors the headline stayed small while its picture grew, leaving most of the panel empty and stretching the summary into very long lines. Both now scale with the window and wrap sensibly.
+
 ## 0.327.0 — 2026-08-21
 
 **A live session now says so on your home page.** While a session is actually running, the weekend panel shows a flashing live marker instead of a countdown that has already hit zero. The lead article's cover picture is also bigger and taller.
