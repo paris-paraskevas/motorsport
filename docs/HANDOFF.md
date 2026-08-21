@@ -6,7 +6,69 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-20 (LATEST, session 30 FINAL — 14 merges, PSI swept + all four packages shipped, AdSense enrichment waves 1 and 2, blog contract flipped) — `main` = **0.325.0**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-21 (LATEST, session 31 FINAL — Dutch GP preview published, /app rebuilt around the blog, sign-in fixed, docs de-staled) — `main` = **0.330.4**, zero open PRs, prod verified
+
+### 🚨 SESSION 32 RUNS UNSUPERVISED — read this before anything else
+
+**The operator will not be present.** No approvals will arrive. Do not wait for one, and do not stop work to ask a question that the repo can answer.
+
+**Standing authority granted for session 32, by the operator on 2026-08-21:** for every item on the AUTONOMOUS list below, you may branch, implement, gate, open a PR, **merge it yourself**, then audit your own merged work, and if the audit finds problems, fix them on a further branch, PR and merge that too. Loop until the list is genuinely done or genuinely blocked.
+
+**A merge deploys production.** ~6 minutes, and **no GitHub Actions run exists to watch** — verify with a background curl of `/changelog` until the version flips. Never merge two PRs back to back without confirming the first reached prod.
+
+#### AUTONOMOUS — do these without asking
+
+1. **The dwell-triggered support prompt.** Fully specified in `docs/next-session.md` §1-§4: two asks, auth-scoped dismissal, Clerk `unsafeMetadata`, the copy guardrails. **Do not redesign it** — the operator settled the shape across three rounds.
+2. **The session-30 evaluation that never happened.** The claim-by-claim table is in git history at `docs/next-session.md@5af5094`. Highest value: the three unclicked consumers of the refactored trend chart (team pages, `/f1/compare`, blog chart embeds) and a spot-check of the 22 F1 champion notes never independently re-verified. Fix what is broken; report what is fine.
+3. **Delete `prod-weekend8.md`** — a 424-line Playwright accessibility dump committed to the repo root by accident. Provably junk, recoverable from git history.
+4. **Delete `components/NotificationBell.tsx`** — dead since 0.328.0 unmounted it. Confirm zero importers first (`grep -rn NotificationBell app components lib`).
+5. **Collapse the two onboarding docs** into one. `ONBOARDING.md` and `docs/ONBOARDING.md` cover the same ground and have already drifted — that is how both ended up wrong about `proxy.ts` in different words. Keep one, make the other a one-line redirect, and update every reference to it.
+6. **Fix the copy on the "classification not available" state.** It is accurate but reads as broken thirty minutes after a session, which is exactly what happened on Dutch GP Friday. Say that timing data usually lands a little after a session ends.
+
+#### FORBIDDEN — leave these on a branch with a PR and say so in `HANDOFF.md`
+
+- **Anything requiring the prod Supabase service-role key.** You do not hold it and must not ask for it.
+- **Publishing or scheduling blog content.** The SOP is absolute: DB draft, `publish_at` NULL, operator approves. Drafting is fine; going live is not.
+- **Prod data writes.** Today's `.supabase-pat` writes were operator-named, one post at a time. That authority does not carry over.
+- **Anything the Worker bundle cannot fit.** There were **63 KiB of headroom** at 10176.64 KiB gzipped against 10 MiB. Measure with `wrangler deploy --dry-run` before and after; if a change will not fit, **stop and report** rather than deploying a failure. `npm run deploy:testing` rejects harmlessly.
+- **Weakening any check to go green.** No skips, no loosened asserts, no `as any`, no lint-disables. Quote the failure in the PR and leave it red.
+- **Taste calls the operator has not made**: whether to retheme `/app` dark to match the testing build, whether `PreviewNews` should follow the News tab off the weekend page, box depth beyond `/app`, and the image session.
+- **Force-pushing `main`, deleting remote branches, rotating secrets.**
+
+#### Ground truth you will otherwise waste an hour rediscovering
+
+- **Local Supabase is down** (Docker not running), so `.env.local` points at `127.0.0.1:54321` and **every blog-backed surface renders empty locally** — the `/app` lead band, `/series/*/blog`, `/blog/*`. That is the fail-soft path working, **not a bug**. OpenF1 *is* reachable from a laptop IP, so session pages and classifications do test locally.
+- **The auto-mode classifier may block calls that read `.supabase-pat` and send it outbound.** It blocked twice today and allowed the same shape in between. Do not fight it; report and move on.
+- `npm run lint` → 0 errors and **2 known `_encoding` warnings** in `lib/content-fs.ts`. `npm test` → **1133**. CRLF warnings on commit are normal.
+- **Never put backticks inside a shell-quoted `node -e`.** Bash expands them and silently eats every identifier — it corrupted a changelog entry twice today. Use the editor for prose.
+- `CONTRIBUTING.md` is the most accurate doc in the repo and the authority on the three-Worker topology (`testing.` is Fotis's, `paris.` is the operator's; **previews share prod's Supabase, KV and R2**, so a mutation on a preview writes prod data).
+
+### ✅ Shipped this session (6 merges, 0.325.3 → 0.330.4, prod verified at 0.330.0 and 0.330.4)
+
+- **#753 `0.327.0`** — `/app` leads with the latest blog post and its cover, plus the weekend in progress. Root cause fixed: the lead was "newest race with a podium" with no concept of a weekend being underway, so on Dutch GP Friday the page opened with a Formula E season that had ended five days earlier. Precedence is temporal, never editorial.
+- **#754 `0.330.0`** — eleven review items: fluid `clamp()` type so the lead fills its box (measured fill 27% → 72-80%), live pill on a running session (client-tick only, because ISR bakes `isLive` stale), Blog in the nav, contact button replacing the notification bell, ten-row classifications with column rules, "Next session" instead of "First session", session names linking through, assistant widget unmounted.
+- **#755 `0.330.2`** — doc staleness audit + the support-prompt handoff.
+- **#756 / #757 `0.330.3` / `0.330.4`** — the support prompt's shape settled, then its dismissal scoped to the visit unless signed in.
+- **The Dutch GP preview is live** at `/blog/f1-dutch-grand-prix-2026-preview`, inserted via the Management API (no prod service-role key on this machine), operator-approved and published.
+
+### 🔴 Process learnings (durable, session 31)
+
+- **The Worker bundle cleared 10 MiB by 63 KiB and the deploy succeeded**, which settles Cloudflare's "10 MB" as the *binary* reading. Treat the bundle as full regardless.
+- **`CLAUDE.md` was materially stale** and cost real time: it claimed Vercel and ~90s deploys, `next dev --webpack`, 1125 tests, a `.clerk` file that does not exist, and a Blog SOP step verifying `status='draft'` when the script produces `in_review`. All corrected in 0.330.1. **Both onboarding docs claimed middleware lives in `proxy.ts`** — backwards, and precisely the rename that breaks the deploy.
+- **Verify third-party API assumptions against the installed package, not memory.** The sign-in modal was unreadable because four of the six Clerk `appearance.variables` we passed do not exist in Clerk 7 — proven by reading `--cl-color-*` at runtime and finding them unset while the heading still computed white.
+- **Measure layout bugs in the live DOM before writing CSS.** The lead's dead space was fixed by applying candidate values to prod's DOM and measuring fill at four widths, which is the only way to size it with no local blog data.
+- **Two subagents on genuinely separate files worked.** Both reported honestly, one flagged a spec conflict rather than silently resolving it, and one caught the `dateOnly` landmine unprompted. Reviewing their work still found three defects — read-time divergence, an already-run session listed as upcoming, and opaque `FP1`/`SQ` labels in a hero.
+
+### 🩹 Owed (operator) — carried
+
+- **Decide**: retheme `/app` dark to match the testing build (a whole-page job, not a band), `PreviewNews` on the weekend page, box depth beyond `/app`.
+- **The image session** — still the biggest outstanding job.
+- **PSI re-measure** of `/`, standings and a weekend page, so the four fix packages' deltas land in `docs/perf-baselines.md`.
+- **Fact pack B** (session-30 scratchpad) records Norris' 2025 Dutch GP retirement as a "power-unit failure". It was a broken oil line McLaren took the blame for, lap 65 of 72. Corrected in the published post; wrong at source, and it will re-infect the next post that reads it.
+
+---
+
+## ⚡ Next session pickup — 2026-08-20 (session 30 FINAL — 14 merges, PSI swept + all four packages shipped, AdSense enrichment waves 1 and 2, blog contract flipped) — `main` = **0.325.0**, zero open PRs, every merge prod-verified
 
 ### 📌 NEXT SESSION — start here
 1. **The operator's blog approval.** The contract CHANGED mid-session: they asked for drafts, not just fact packs ("i want you to read my previous blogs. then give me a draft"). A finished Zandvoort-farewell preview is waiting in the session-30 scratchpad (`draft-f1-dutch-grand-prix-2026-preview.md`) with hero + inline licence-verified Commons images and four sourced Verstappen quotes. On their yes: move to `drafts/`, convert, `draft-post.mts` → prod DB draft, `publish_at` null. **Time-sensitive: the race is Sunday 23 Aug.** Going forward every post gets images, and they want OpenF1 `team_radio` embeds designed.
