@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.4 — 2026-08-21
+
+### Internal
+- **The support prompt gains an auth-scoped dismissal, which turns it into a sign-up incentive as well as a donation ask** (operator, 2026-08-21). For a **guest**, every dismissal — including the explicit "Don't show this again" — lasts only the visit (`sessionStorage`), so they are asked again next time. Only a **signed-in** reader can silence it permanently, and the prompt says so.
+  - **Storage decided: Clerk `unsafeMetadata`, not a new table.** It reads client-side via `useUser()` with no extra request and no server involvement, so **ISR stays intact** — which matters because `app/(app)/app/page.tsx` records that follows are kept device-local precisely to keep that page cacheable. Clerk metadata is already used in `app/(admin)/admin/users/` and several `app/api/admin/*` routes, so it is an established pattern here rather than new infrastructure. The alternative (a column on `app_user` plus an API route) costs a fetch on mount and puts a UI preference in a betting-adjacent mirror table.
+  - **Two guardrails recorded, because this is the line between an incentive and a dark pattern.** The copy must state that an account is where preferences live, never "we’ll keep asking until you sign up"; and the guest dismissal must genuinely hold for the whole visit including navigation, or the copy becomes a lie. Also noted: a guest who donates is still asked next visit, because Buy Me a Coffee is external with no webhook — so the signed-in control should read as "I’ve supported / don’t ask again", one flag covering both.
+
 ## 0.330.3 — 2026-08-21
 
 ### Internal
