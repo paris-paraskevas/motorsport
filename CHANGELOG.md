@@ -4,6 +4,11 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.326.1 — 2026-08-21
+
+### Internal
+- **`IDEAS.md` gains a `DREAM — the operator's console` section**: an admin mode controlling what the home page shows globally (which post leads, which series has priority, drag-and-drop / sideline / archive of the bands, slots linking our own or third-party articles), plus a pencil on the Learn pages for editing prose and adding images. Not scheduled. Recorded with the prior art, because three pieces of it have been built before and should be read first: **#495** shipped a "Make your own home" in-place editor that the 2026-08-18 editorial-home cutover appears to have removed, **#386** plus `docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md` already shipped the pencil for blog drafts (`DraftPreview` / `MarkdownEditor` are the working pattern), and **#649** already built the studio as the admin surface. Also records the two obstacles: `/app` is `revalidate = 300` and identical for all visitors on purpose, so operator ordering must come from a server-read config rather than per-user state; and Learn content lives in `content/` markdown behind a per-process memoised registry, so live editing forks into either committing from the UI or moving that content to Supabase.
+
 ## 0.326.0 — 2026-08-21
 
 ### Added
