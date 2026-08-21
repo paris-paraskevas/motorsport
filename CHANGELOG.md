@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.1 — 2026-08-21
+
+### Internal
+- **Staleness audit of the instruction docs.** Every claim below was checked against the repo or a live measurement, not read for plausibility. `CONTRIBUTING.md`, `README.md` and `AGENTS.md` were already accurate; `CONTRIBUTING.md` is in fact the most current doc we have and is now cited as the authority on deployment topology.
+- **`CLAUDE.md`**
+  - "Every push to `main` ships to prod in ~90s" and "Vercel project `motorsport`" → **Cloudflare Worker via OpenNext**, merge-to-live measured at **~6 minutes** today (13:34Z → 13:40Z). Also records that there is **no deploy workflow in GitHub Actions**, so `gh run list` never shows a deploy — a genuine trap when verifying a release.
+  - Preview-verification rule rewritten: it said "verify on a Vercel preview". The real constraint is structural — the Worker runs `DATA_SOURCE=db` and never calls the series upstreams, so `scripts/warm-live-data.mts` is the only writer and a parser change is unproven until it has run. OpenF1 is noted as the exception, since `lib/openf1/client.ts` fetches at request time.
+  - Blog SOP step 3 said verify `status='draft'`. Wrong: `scripts/draft-post.mts:74` calls `submitPost()` immediately, so the row lands as **`in_review`**. `publish_at` NULL is the safety property.
+  - `npm run dev` documented as `next dev --webpack`; the flag no longer exists in `package.json`. Test count 1125 → **1133**. `.clerk` listed as a required present file; **it does not exist** (Clerk keys are in `.env.local`). Added that `.env.local` points at LOCAL Supabase, so prod-data surfaces render empty locally.
+  - Added the **Worker size ceiling** (10176.64 KiB gzipped measured against 10 MiB) as a standing constraint, now that a deploy has confirmed the binary reading.
+- **`ONBOARDING.md` + `docs/ONBOARDING.md`** — both were entirely pre-Cloudflare. Worst offender: *"middleware lives in `proxy.ts`, not `middleware.ts`"*, which is backwards and is exactly the rename that breaks the deploy (CLAUDE.md landmine 2). Four more `proxy.ts` references corrected across three files. Also: Vercel hosting/KV/preview-URL claims, the non-existent `.clerk`, `champions.md` (it is `champions.json`), and `content/posts/*.mdx` described as "blog" with **"write the first MDX blog post" offered as a starter task** — which would violate the Blog SOP, since MDX auto-publishes on merge (the #373 regression) and that directory is empty.
+
 ## 0.330.0 — 2026-08-21
 
 ### Fixed
