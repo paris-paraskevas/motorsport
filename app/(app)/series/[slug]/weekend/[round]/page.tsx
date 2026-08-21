@@ -845,7 +845,12 @@ export default async function WeekendPage({
                 round={round}
                 isPast={isPast}
                 showBets={bettable}
-                showNews={NEWS_SLUG_MAP[slug] != null}
+                // News is off the weekend tabs (operator, 2026-08-21). The wire
+                // still lives on the series' own News tab; a per-weekend copy
+                // added a third tab that mostly repeated it. Passing false
+                // rather than deleting the prop keeps WeekendTabs' contract
+                // intact for whenever it comes back.
+                showNews={false}
               />
             </div>
 

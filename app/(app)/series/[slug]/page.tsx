@@ -216,6 +216,10 @@ export default async function SeriesPage({
     // [this series'] sessions showing on filters") — the ?s= deep link the
     // filter box reads.
     { label: 'Calendar', href: `/calendar?s=${slug}`, blurb: 'This series only' },
+    // Our own writing about this series (operator, 2026-08-21). The tab pages
+    // reach it through seriesSubPages, but this landing builds its own row, so
+    // without an entry here the series' base page never links to it.
+    { label: 'Blog', href: `/series/${slug}/blog`, blurb: 'Our writing' },
     { label: 'Rules', href: `/information/${topic}/${slug}-rules-explained`, blurb: 'How it works' },
     ...(pointsGuideForSeries(slug) ? [{ label: 'Points', href: pointsGuideForSeries(slug)!, blurb: 'How scoring works' }] : []),
     { label: 'History', href: `/information/${topic}/the-history-of-${slug}`, blurb: 'Origins & eras' },

@@ -11,6 +11,11 @@ export const SITE_DESCRIPTION =
 // `${SITE_URL}/${INDEXNOW_KEY}.txt` proves domain ownership to Bing /
 // Yandex / Seznam, so the key being in source is intentional. Regenerating
 // is cheap (mint a new UUIDv4, rename the public file, redeploy).
+// Buy Me a Coffee, operator-supplied 2026-08-21. Single-sourced because two
+// surfaces link it (the header button and the account menu) and a payment link
+// that drifts between them is worse than no link at all.
+export const SUPPORT_URL = 'https://buymeacoffee.com/parisp';
+
 export const INDEXNOW_KEY = '9a3e7f2c-8b4d-4c1a-a5e6-d7f8b9c0e1d2';
 export const INDEXNOW_KEY_LOCATION = `${SITE_URL}/${INDEXNOW_KEY}.txt`;
 

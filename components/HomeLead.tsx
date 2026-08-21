@@ -70,6 +70,8 @@ export interface HomeLeadBlog {
   seriesColor?: string | null;
   /** Relative stamp ("28m ago") — a lead story should read as news. */
   ageLabel?: string | null;
+  /** Further reading, shown only where the 8/5 cover leaves room beside it. */
+  suggested?: { slug: string; title: string }[];
 }
 
 /** The weekend running RIGHT NOW. Its presence is what demotes the
@@ -146,7 +148,7 @@ export function HomeLead({
           left, the read right, in the Paper language rather than the testing
           build's dark treatment. ── */}
       {blog && (
-        <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated">
+        <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
           <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
             {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays
                 clickable for a mouse without announcing a duplicate of the
@@ -232,10 +234,34 @@ export function HomeLead({
               </p>
               <Link
                 href={`/blog/${blog.slug}`}
-                className="mt-5 inline-flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+                className="mt-5 inline-flex min-h-11 items-center self-start bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
               >
                 Read the story →
               </Link>
+
+              {/* Further reading fills the space the 8/5 cover leaves beside it
+                  (operator, 2026-08-21). xl and up only: below that the column
+                  is already full and this would push the band taller than its
+                  own picture. */}
+              {blog.suggested && blog.suggested.length > 0 && (
+                <div className="mt-8 hidden border-t border-border pt-4 xl:block">
+                  <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                    More reading
+                  </span>
+                  <ul className="mt-2">
+                    {blog.suggested.map(s => (
+                      <li key={s.slug}>
+                        <Link
+                          href={`/blog/${s.slug}`}
+                          className="block border-b border-border py-2 font-serif text-[16px] font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
+                        >
+                          {s.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -246,7 +272,7 @@ export function HomeLead({
       {liveWeekend && (
         <section
           aria-label="This weekend"
-          className={`${blog ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5`}
+          className={`${blog ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
         >
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             {/* Deliberately NOT "On now": the band also catches a weekend
@@ -331,7 +357,7 @@ export function HomeLead({
       {result && winner && (
         <section
           aria-label="Latest result"
-          className={`${leadAbove ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5`}
+          className={`${leadAbove ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
         >
           <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
             <div className="min-w-0">

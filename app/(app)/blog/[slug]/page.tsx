@@ -335,7 +335,14 @@ export default async function PostPage({
       <BlogReactions slug={slug} />
           </div>
 
-          <aside className="mt-10 lg:mt-0 lg:sticky lg:top-6 space-y-8">
+          {/* top-6 (24px) parked this UNDER the header, which is `fixed` and
+              58px tall on lg (AppShell.tsx:91-92 — fixed, not sticky, because
+              overflow-x:hidden on body kills sticky), so "On this page" and its
+              first entry were clipped. Clear the header, then cap the height and
+              let it scroll internally: the list plus five related posts is
+              taller than a short viewport, and a sticky column taller than the
+              screen strands its own bottom. */}
+          <aside className="mt-10 space-y-8 lg:sticky lg:top-[calc(58px+1.5rem)] lg:mt-0 lg:max-h-[calc(100vh-58px-3rem)] lg:overflow-y-auto lg:pr-1">
             {toc.length >= 2 && (
               <nav aria-label="On this page" className="hidden lg:block">
                 <h2 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">

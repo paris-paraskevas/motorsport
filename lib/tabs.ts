@@ -1,6 +1,7 @@
 export const TABS = [
   { key: 'calendar',  label: 'Calendar' },
   { key: 'news',      label: 'News' },
+  { key: 'blog',      label: 'Blog' },
   { key: 'standings', label: 'Standings' },
   { key: 'results',   label: 'Results' },
   { key: 'drivers',   label: 'Drivers' },
@@ -60,7 +61,12 @@ export function railTabsFor(singleEvent: boolean | undefined, slug?: string): ty
  *  per series, in reading order. Reuses tabsFor() so the single-event trim and
  *  the F1-only Rounds gate live in ONE place; deliberately excludes the
  *  editorial about/history + news (those live in the Learn block / News link). */
-export const NAV_SUBPAGE_KEYS = ['calendar', 'standings', 'results', 'tracks', 'drivers', 'champions'] as const;
+// 'blog' joined 2026-08-21 (operator: "in /series/{slug} add blog in one of
+// these tabs and filter blogs to whatever series we are on"). It sits here
+// rather than with the excluded news/about/history because it is OUR writing
+// about this series, not a link off-site or a static explainer — without it the
+// tab exists and renders but nothing on the series page links to it.
+export const NAV_SUBPAGE_KEYS = ['calendar', 'standings', 'results', 'tracks', 'drivers', 'champions', 'blog'] as const;
 
 export function seriesSubPages(
   meta: { slug: string; singleEvent?: boolean },
@@ -118,6 +124,11 @@ export function describeTab(
       return {
         title: `${seriesName} news — latest stories and recaps`,
         description: `The latest ${seriesName} news in one wire — race weekend coverage, driver and team stories, technical and regulatory updates, aggregated from motorsport.com and linked straight to the source.`,
+      };
+    case 'blog':
+      return {
+        title: `${seriesName} analysis and race reports from Paddock`,
+        description: `Paddock's own ${seriesName} writing — race weekend previews, reports, lap-by-lap chronologies and analysis, written and fact-checked in house rather than aggregated, newest first.`,
       };
     case 'standings':
       return {

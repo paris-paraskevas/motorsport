@@ -6,7 +6,7 @@ import { weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { fetchAggregatedNews } from '@/lib/news';
 import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/home-results';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
-import { fetchHomeBlogLead } from '@/lib/blog';
+import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
 import {
   HomeLead,
   type HomeLeadBlog,
@@ -247,12 +247,21 @@ export default async function Home() {
     if (lead) {
       const meta = lead.seriesSlug ? metaBySlug.get(lead.seriesSlug) : undefined;
       const stamp = new Date(lead.publishedAtIso);
+      // Further reading beside the cover. A second read of the same table, but
+      // publishedPosts() is the warm path /blog and the feed already use and the
+      // table is a couple of dozen rows; the alternative was duplicating
+      // fetchHomeBlogLead's ordering rules here.
+      const suggested = (await publishedPosts())
+        .filter(p => p.slug !== lead.slug)
+        .slice(0, 3)
+        .map(p => ({ slug: p.slug, title: p.title }));
       blog = {
         ...lead,
         seriesName: meta?.name ?? null,
         seriesColor: meta?.color ?? null,
         // Same relative stamp the wire rows use, so a fresh post reads as news.
         ageLabel: Number.isNaN(stamp.getTime()) ? null : ageLabel(stamp, now),
+        suggested,
       };
     }
   } catch {

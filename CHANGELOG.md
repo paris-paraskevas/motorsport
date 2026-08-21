@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.329.0 — 2026-08-21
+
+### Fixed
+- **The blog post sidebar no longer hides its own top under the header.** It stuck at `lg:top-6` (24px) while the header is `fixed` and 58px tall on desktop (`AppShell.tsx:91-92` — fixed, not sticky, because `overflow-x:hidden` on body kills sticky), so "On this page" and its first entry sat behind it. Now clears the header, and the column is height-capped with internal scroll: the section list plus five related posts is taller than a short viewport, and a sticky column taller than the screen strands its own bottom.
+
+### Added
+- **A Blog tab on every series page, filtered to that series.** New `components/tabs/BlogTab.tsx`, registered in `lib/tabs.ts` with its own `describeTab` metadata. Filtered on **both** `seriesSlug` and `tags`, because `lib/blog.ts:33-35` already documents that contract ("A series slug here surfaces the post on that series' page too"). Filters in memory over `publishedPosts()` rather than adding another DB reader — that is the warm path `/blog` and the feed already use, and the table is a couple of dozen rows. Empty state included, since most series have no posts yet.
+  - Registered in `NAV_SUBPAGE_KEYS` **and** added to the base series page's own reference row. Those are two separate navigations: `/series/{slug}/<tab>` builds its "More <series>" row from `seriesSubPages()`, while `/series/{slug}` builds its cards inline. Without both, the tab rendered but nothing linked to it. Verified: `/series/f1`, `/series/f1/standings`, `/series/f1/results` and `/series/motogp` all link through, and `/series/f1/blog` returns 200.
+- **Support entries** — a header button and an account-menu item, both from a single `SUPPORT_URL` in `lib/site.ts` so a payment link can never drift between two surfaces.
+- **Further reading beside the lead cover.** The 8/5 cover leaves room at wide widths; three more posts fill it, `xl` and up only, so narrower columns are not pushed taller than their own picture.
+
+### Changed
+- **The home panels have depth** — the same `shadow-lg` the account menu already uses for a raised panel, rather than a new treatment.
+- **News is off the weekend tabs.** The wire still lives on the series' own News tab; the per-weekend copy added a third tab that mostly repeated it. `showNews={false}` rather than deleting the prop, so `WeekendTabs`' contract survives for whenever it returns.
+
+### Notes
+- The weekend page still renders `PreviewNews` inside its Schedule content — that is a preview block, not the tab, and was left alone. Say if it should go too.
+- `NotificationBell.tsx` is now dead code (unmounted last release, not deleted).
+
 ## 0.328.0 — 2026-08-21
 
 ### Added

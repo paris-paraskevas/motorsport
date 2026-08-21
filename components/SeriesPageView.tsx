@@ -17,6 +17,7 @@ import { StandingsTab } from '@/components/tabs/StandingsTab';
 import { ResultsTab } from '@/components/tabs/ResultsTab';
 import { DriversTab } from '@/components/tabs/DriversTab';
 import { NewsTab } from '@/components/tabs/NewsTab';
+import { BlogTab } from '@/components/tabs/BlogTab';
 import { TracksTab } from '@/components/tabs/TracksTab';
 import { PlaceholderTab } from '@/components/tabs/PlaceholderTab';
 
@@ -59,6 +60,8 @@ function renderTab(activeTab: TabKey, series: Series) {
   switch (activeTab) {
     case 'news':
       return <NewsTab series={series} />;
+    case 'blog':
+      return <BlogTab series={series} />;
     case 'standings':
       return <StandingsTab series={series} />;
     case 'results':
