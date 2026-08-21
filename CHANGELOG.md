@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.3 — 2026-08-21
+
+### Internal
+- **The support prompt’s shape is settled, and the handoff records it as decided rather than open.** Operator, after the three-ask objection: **two asks, never a third.** The 10-minute prompt is dropped. Ask 1 at 2 minutes of engaged time carries an explicit, clearly-labelled **"Don’t show this again"** button; a *soft* dismiss (Esc, backdrop, "Not now") is what earns ask 2, and that distinction is the design. Ask 2 fires at 5 minutes of **total** engaged time, only if ask 1 was shown and soft-dismissed, and its copy says out loud that it is the last time. Every exit from ask 2 sets a permanent versioned never-again flag.
+  - Three subtleties pinned down because they are easy to get wrong: 5 minutes is total engaged time (so the gap between asks is ~3 min, not 5); ask 2 requires ask 1 to have actually happened, so a restored tab with time already banked gets ask 1 rather than "last time" out of nowhere; and a reload restarts neither the ladder nor the clock.
+  - Acceptance criteria rewritten around the decision, and the handoff prompt now tells the next session the shape is settled and not to reopen it.
+
 ## 0.330.2 — 2026-08-21
 
 ### Internal
