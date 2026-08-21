@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.325.3 — 2026-08-21
+
+**Internal housekeeping.** A race-weekend preview drafted and queued for review; nothing user-facing changed yet.
+
 ## 0.325.2 — 2026-08-21
 
 **Internal housekeeping.** Editorial drafting and session notes; nothing user-facing changed.
