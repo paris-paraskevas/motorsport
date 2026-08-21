@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.330.2 — 2026-08-21
+
+### Internal
+- **`docs/next-session.md` rewritten around a dwell-triggered support prompt**, the operator's priority for session 32: a reader who stays engaged past a couple of minutes gets a minimal, escapable prompt linking `SUPPORT_URL`. Feasibility answered yes, with the mechanism researched up front so the next session does not re-derive it — **engaged** time rather than wall clock (a backgrounded tab must not accrue minutes), mounted in `app/(app)/layout.tsx` beside `CookieConsent` so it survives client-side navigation, `sessionStorage` for the visit total and `localStorage` for "do not ask again" per the `LaunchBanner` pattern, and `lib/useFocusTrap.ts` + `ContactModal` for the escapability.
+  - Records the design objection rather than burying it: the requested 2/5/10-minute ladder is **three interruptions in one visit**, and each has to be more intrusive than the last to land. Two alternatives offered; the operator decides before code.
+  - Constraints captured so they are not discovered late: the Worker's **63 KiB of headroom**, `content/legal/cookies.md` + `privacy.md` needing every new storage key listed in the same PR (the pages promise it), suppressing the prompt while `weekendIsLive()` is true, `prefers-reduced-motion`, and making the thresholds overridable because a 10-minute path cannot be hand-tested. Also notes we **cannot detect a donation** — Buy Me a Coffee is external with no webhook — so "I already have" must be a self-declared, long-lived dismissal.
+  - Carries forward what session 31 did not do, chiefly the **session-30 evaluation**, plus the stray `prod-weekend8.md`, the duplicated onboarding docs, dead `NotificationBell.tsx`, `PreviewNews` still on the weekend page, and the fact-pack error about Norris' 2025 retirement.
+
 ## 0.330.1 — 2026-08-21
 
 ### Internal
