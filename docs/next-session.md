@@ -18,14 +18,27 @@ Written at the close of session 31 (2026-08-21). `main` = **0.330.1**, prod veri
 
 ---
 
-## 2. Decide this before writing code
+## 2. DECIDED — two asks, the second announcing itself as the last
 
-**2, 5 and 10 minutes is three asks in one visit.** That is the operator's stated spec and it is recorded as such — but three interruptions in ten minutes is how a goodwill prompt turns into a nag, and the second and third have to be *more* intrusive to earn attention, which is the wrong direction. Two alternatives worth a moment:
+Operator, 2026-08-21, after the three-ask objection: **two asks, never a third.** The 10-minute prompt is dropped.
 
-- **One ask per visit, escalating across visits** — 2 min on a first long visit, then only on a later visit if ignored. Same funnel, a tenth of the annoyance.
-- **One ask per visit, threshold by depth** — fire at 2 min only if they have also read a blog post or opened more than N pages, i.e. ask the engaged, not the merely present.
+**Ask 1 — at 2 minutes of engaged time.** Three ways out, and the distinction between them is the whole design:
 
-Operator's call. If the answer is "do what I said", implement 2/5/10 with a hard per-visit cap so a reload cannot restart the ladder.
+| Action | Effect |
+|---|---|
+| Support | opens `SUPPORT_URL`, never ask again |
+| **"Don't show this again"** — an explicit, clearly-labelled button, not a small ✕ | never ask again |
+| Soft dismiss — Esc, backdrop click, "Not now" | **this visit continues to ask 2** |
+
+**Ask 2 — at 5 minutes of engaged time**, and only if ask 1 was actually shown and soft-dismissed. The copy **says out loud that this is the last time**, e.g. "Last time I'll ask, promise." Every exit from ask 2 — support, dismiss, Esc, backdrop — sets the never-again flag. There is no third ask under any path.
+
+Three things to pin down while implementing, because they are easy to get subtly wrong:
+
+- **5 minutes is total engaged time, not five minutes after ask 1.** So the gap between the two asks is about three minutes.
+- **Ask 2 requires ask 1 to have happened.** If someone lands with 5 minutes already banked (a restored tab, a late mount), they get ask 1 first, not the "last time" copy out of nowhere.
+- **"Never again" is permanent**, in `localStorage`, behind a *versioned* key like `LaunchBanner`'s — so a future deliberate campaign can reset it, but nothing accidental can.
+
+A reload must not restart the ladder: the visit total lives in `sessionStorage` and the never-again flag in `localStorage`, so both survive it.
 
 ---
 
@@ -48,8 +61,10 @@ Operator's words: "minimal, heartwarming". It should read like a person, not a f
 
 ## 5. Acceptance criteria
 
-- Prompt appears only after the configured **engaged** minutes, not wall-clock; a backgrounded tab does not accrue time.
-- Dismissal persists across reloads and later visits; "I already have" persists for a long time.
+- Ask 1 fires at **2 minutes of engaged** time, not wall-clock; a backgrounded tab accrues nothing.
+- Ask 2 fires at **5 minutes of total engaged** time, **only** after ask 1 was shown and soft-dismissed, and its copy states it is the last ask.
+- **No third ask exists on any path.** Every exit from ask 2, and the explicit "Don't show this again" on ask 1, set a permanent versioned flag.
+- A reload restarts neither the ladder nor the clock: visit total in `sessionStorage`, never-again in `localStorage`.
 - Esc, backdrop click and the dismiss control all close it; focus returns to where it was.
 - Nothing renders while a session is live on the current series.
 - `cookies.md` and `privacy.md` list every new key, in the same PR.
@@ -76,7 +91,7 @@ Operator's words: "minimal, heartwarming". It should read like a person, not a f
 >
 > **Priority: the dwell-triggered support prompt.** A reader who stays engaged for a couple of minutes gets a minimal, heartwarming, easily escapable prompt asking whether they would like to support the site, linking `SUPPORT_URL`. Section 1 of `docs/next-session.md` has the mechanism already researched — engaged time rather than wall clock, mounted in `app/(app)/layout.tsx`, `sessionStorage` for the visit total and `localStorage` for "do not ask again", reusing `lib/useFocusTrap.ts` and the `LaunchBanner` dismissal pattern. Do not re-derive it.
 >
-> **Answer section 2 before you write anything**: I asked for prompts at 2, 5 and 10 minutes. That is three interruptions in one visit. Tell me plainly whether you think one ask per visit escalating across visits is better, then do whichever I confirm.
+> **The shape is already decided — section 2, do not reopen it.** Two asks, never a third: one at 2 minutes of engaged time carrying an explicit "Don't show this again" button, and — only if that one was soft-dismissed — one at 5 minutes of total engaged time whose copy says out loud that it is the last time. Every exit from the second sets the never-again flag.
 >
 > **Hard constraints**: the Worker bundle has 63 KiB of headroom against a 10 MiB ceiling, so measure with `wrangler deploy --dry-run` before and after and add no dependency · `content/legal/cookies.md` and `privacy.md` must list every new storage key in the same PR, or those pages become false · suppress the prompt entirely while a session is live (`weekendIsLive()`) · Esc, backdrop and dismiss must all work with focus returned · guard any animation behind `prefers-reduced-motion` · make the thresholds overridable so a 10-minute path can be tested in seconds, and unit-test the accumulator with an injected clock.
 >
