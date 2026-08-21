@@ -1,5 +1,21 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.327.0 — 2026-08-21
+
+**A live session now says so on your home page.** While a session is actually running, the weekend panel shows a flashing live marker instead of a countdown that has already hit zero. The lead article's cover picture is also bigger and taller.
+
+## 0.326.1 — 2026-08-21
+
+**Internal housekeeping.** Planning notes only; nothing user-facing changed.
+
+## 0.326.0 — 2026-08-21
+
+**Your home page leads with the racing that is actually happening.** The latest article now sits at the top with its cover picture, followed by the weekend in progress: the next session, a countdown to it, and whatever else is still to come that day. Previously the page could open with a championship that had finished the week before while a grand prix was under way, which is now fixed.
+
+## 0.325.3 — 2026-08-21
+
+**Internal housekeeping.** A race-weekend preview drafted and queued for review; nothing user-facing changed yet.
+
 ## 0.325.2 — 2026-08-21
 
 **Internal housekeeping.** Editorial drafting and session notes; nothing user-facing changed.

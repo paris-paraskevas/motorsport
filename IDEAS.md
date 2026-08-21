@@ -40,7 +40,9 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 - **Vitest under load** — fork-worker start timeouts reproduce when a dev server runs alongside (again 2026-08-20 in session 29's gate); pin `maxWorkers` or document "no suite under dev" in CONTRIBUTING.
 - **Legacy lint cleanup** — re-audit `react-hooks/set-state-in-effect` (15 files; real errors vs suppressions — the charter bans silencing); DRY `EnableNotifications`/`OnboardingWizard`; championship-leader all-deselected empty state.
 - **PSI sweep: DONE 2026-08-20** (10 pages, operator-run; table in `docs/perf-baselines.md`; four fix packages shipped as 0.322.4 / 0.322.5 / 0.323.0 / 0.323.1). Left to do: **re-measure root + standings + weekend** to capture the deltas. A free PageSpeed API key would let Claude script future sweeps instead of the operator clicking twenty times.
-- **Operator-owed, carried** (2026-08-20 clears: avatar-menu eyeball ✓, GSC Validate-fix ✓, Bing re-validate ✓, the two `/feedback` DONE moves ✓, orphan-deletion approval ✓ shipped 0.321.3): key rotations + dead `.supabase-pat` · paste the root PSI re-run figures ("better on root" confirmed; the append-only `docs/perf-baselines.md` row needs the numbers).
+- **Operator-owed, carried** (2026-08-20 clears: avatar-menu eyeball ✓, GSC Validate-fix ✓, Bing re-validate ✓, the two `/feedback` DONE moves ✓, orphan-deletion approval ✓ shipped 0.321.3): key rotations (**`.supabase-pat` is NOT dead** — corrected 2026-08-21: it authenticated to the Management API on prod ref `dzelqrtajnauunzmxfic` and served the Dutch GP draft insert; the "dead" note was stale) · paste the root PSI re-run figures ("better on root" confirmed; the append-only `docs/perf-baselines.md` row needs the numbers).
+
+- **Circuit map on the track pages** (operator, 2026-08-21) — an OpenStreetMap view of the circuit from above on each `/tracks/<slug>` page, or failing that a link out to the official circuit-map page. Check `feat/tracks-map` first: it already carries leaflet + react-leaflet and is paused, and a blind conflict resolution on leaflet broke prod once (2026-07-09).
 
 ## AdSense-readiness content (live again — the rejection makes it current)
 
@@ -53,6 +55,26 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 - Unused-JS treemap hunt (~100-130 KiB across three shared chunks on `/`) · render-blocking CSS (23 KiB / 820 ms on slow-4G) · 13 KiB legacy polyfills (browserslist) · CSP enforce + COOP (Best-Practices 96 on both PSI runs). Re-baseline in `docs/perf-baselines.md` after each change.
 
 ---
+
+## DREAM — the operator's console (operator, 2026-08-21)
+
+Not scheduled. Recorded because it is the direction, and because three pieces of it have already been built once.
+
+**The ask, in the operator's words:** be on an "admin" Paddock Tracker that controls what is shown *globally* on the home page — which blog leads, which series has priority — with drag and drop to move the boxes around, sideline and archive them, and slots that can link our own articles, motorsport.com's, or anything else. Then the same idea on the Learn pages: a small pencil visible only to me, to edit the text, add images, or anything else.
+
+**Two halves, and they are not equally hard.**
+
+1. **Home-page composition.** A logged-in editor mode over `/app` where the bands are draggable, hideable and archivable, and each slot can be pinned to a chosen post, a series, or an external link.
+2. **Inline editing on Learn.** A pencil on `/information/<topic>/<slug>` that turns prose into an editable field, accepts images, and saves.
+
+**Prior art in this repo — start by reading these, not from scratch:**
+- **`#495` `feat(home): 'Make your own home' in-place editor button`** — a home in-place editor already existed. It was almost certainly removed in the 2026-08-18 editorial-home cutover ("full cutover, no survivors"), so the first job is `git show` on that PR to see what it did and why it went.
+- **`#386` `feat(blog): in-page draft editing (0.160.0)`** plus `docs/superpowers/specs/2026-07-03-draft-inline-edit-design.md` — **the pencil already exists for blog drafts.** `components/blog/DraftPreview.tsx` and `MarkdownEditor.tsx` are the working pattern; the Learn half is mostly a matter of pointing it at a different content source.
+- **`#649` `feat(blog): the studio`** — the dedicated admin surface already exists, so this does not need a new home.
+
+**The two real obstacles, so nobody rediscovers them the hard way:**
+- **ISR.** `/app` is `revalidate = 300` and deliberately identical for every visitor — `app/(app)/app/page.tsx` says so, and that sameness is what makes it cacheable. Operator-chosen ordering has to come from a config the *server* reads at render (KV or a Supabase row), never from per-user state, or the page stops being cacheable and the landing-stall class of bug returns.
+- **Learn content lives in files, not a database.** `content/` markdown is the source of truth and `/information` **memoises its registry per process**, so an edit needs a deliberate invalidation path (a CLAUDE.md landmine: a content edit currently needs a dev restart to surface). Editing live means either committing to the repo from the UI or moving that content into Supabase. That is the fork in the road and it should be decided before any code.
 
 ## Parked (might do — revisit trigger)
 
