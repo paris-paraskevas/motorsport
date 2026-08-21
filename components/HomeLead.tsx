@@ -55,6 +55,41 @@ export interface HomeLeadWireItem {
   seriesColor: string;
 }
 
+/** The lead blog post. Shape-compatible with lib/blog's HomeBlogLead; the
+ *  series fields are optional because the fetcher returns a slug and only the
+ *  page can resolve it to a name and colour. */
+export interface HomeLeadBlog {
+  slug: string;
+  title: string;
+  summary: string;
+  heroImage: string | null;
+  publishedAtIso: string;
+  readMinutes: number;
+  seriesName?: string | null;
+  seriesColor?: string | null;
+  /** Relative stamp ("28m ago") — a lead story should read as news. */
+  ageLabel?: string | null;
+}
+
+/** The weekend running RIGHT NOW. Its presence is what demotes the
+ *  just-finished result below it: a completed season elsewhere must not
+ *  outrank a race in progress (the 2026-08-21 Formula E/Zandvoort inversion). */
+export interface HomeLeadLiveWeekend {
+  seriesSlug: string;
+  seriesName: string;
+  color: string;
+  eventName: string;
+  href: string;
+  nextSession: { name: string; startIso: string } | null;
+  alsoToday: { name: string; startIso: string }[];
+}
+
+function timeLabel(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
 function SectionRule({ label, right }: { label: string; right?: string }) {
   return (
     <div className="mb-3 flex items-baseline justify-between border-b border-text pb-1">
@@ -72,11 +107,15 @@ function headlineFor(winner: string, raceName: string): string {
 }
 
 export function HomeLead({
+  blog,
+  liveWeekend,
   result,
   changed,
   next,
   wire,
 }: {
+  blog?: HomeLeadBlog | null;
+  liveWeekend?: HomeLeadLiveWeekend | null;
   result: HomeLeadResult | null;
   changed: HomeLeadChanged | null;
   next: HomeLeadNextItem[];
@@ -92,13 +131,176 @@ export function HomeLead({
   // sub-line (operator, 2026-08-20). `changed` is always the result's series.
   const championName = changed?.seasonComplete ? changed.leader.name : null;
 
+  // Anything above the result band pushes it down and takes the page's h1.
+  const leadAbove = Boolean(blog || liveWeekend);
+  const ResultHeading = blog ? 'h2' : 'h1';
+
   return (
     <div>
+      {/* ── 0a. Our own writing, first. The lead story is a Paddock post, not
+          a syndicated headline — the wire already carries those. Cover image
+          left, the read right, in the Paper language rather than the testing
+          build's dark treatment. ── */}
+      {blog && (
+        <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated">
+          <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
+            {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays
+                clickable for a mouse without announcing a duplicate of the
+                headline link beside it. */}
+            <Link
+              href={`/blog/${blog.slug}`}
+              aria-hidden="true"
+              tabIndex={-1}
+              className="block border-b-[1.5px] border-text lg:border-b-0 lg:border-r-[1.5px]"
+            >
+              {blog.heroImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={blog.heroImage}
+                  alt=""
+                  width={1200}
+                  height={630}
+                  fetchPriority="high"
+                  className="aspect-[1200/630] h-full w-full object-cover"
+                />
+              ) : (
+                // No cover (7 of 8 published posts have none): a typographic
+                // panel rather than a broken image box.
+                <span className="flex aspect-[1200/630] items-end bg-surface p-4">
+                  <span className="font-mono text-[28px] font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-[38px]">
+                    {blog.seriesName ?? 'Paddock'}
+                  </span>
+                </span>
+              )}
+            </Link>
+
+            <div className="min-w-0 p-[18px] lg:p-5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
+                  Lead story
+                </span>
+                {blog.ageLabel && (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                    {blog.ageLabel}
+                  </span>
+                )}
+                {blog.seriesName && (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="h-3.5 w-[3px] shrink-0"
+                      style={{ backgroundColor: blog.seriesColor ?? undefined }}
+                    />
+                    <span
+                      className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+                      style={{ color: blog.seriesColor ? seriesInk(blog.seriesColor) : undefined }}
+                    >
+                      {blog.seriesName}
+                    </span>
+                  </>
+                )}
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-text-faint">
+                  {blog.readMinutes} min read
+                </span>
+              </div>
+              <h1 className="mt-3 font-serif text-[30px] font-semibold leading-[1.08] text-text lg:text-[40px]">
+                <Link href={`/blog/${blog.slug}`} className="decoration-2 underline-offset-4 hover:underline">
+                  {blog.title}
+                </Link>
+              </h1>
+              <p className="mt-3 line-clamp-3 font-serif text-[17px] leading-snug text-text-muted">{blog.summary}</p>
+              <Link
+                href={`/blog/${blog.slug}`}
+                className="mt-5 inline-flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
+              >
+                Read the story →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── 0b. The weekend in progress. Sits above the finished-race band so
+          a completed season elsewhere cannot outrank a race running today. ── */}
+      {liveWeekend && (
+        <section
+          aria-label="This weekend"
+          className={`${blog ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5`}
+        >
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            {/* Deliberately NOT "On now": the band also catches a weekend
+                starting inside 24h (page.tsx's DAY_MS lookahead), and on the
+                Friday morning of a race weekend no session has run yet. The
+                countdown on the Up-next row carries the liveness instead. */}
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">This weekend</span>
+            <span
+              aria-hidden="true"
+              className="h-3.5 w-[3px] shrink-0 self-center"
+              style={{ backgroundColor: liveWeekend.color }}
+            />
+            <span
+              className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+              style={{ color: seriesInk(liveWeekend.color) }}
+            >
+              {liveWeekend.seriesName}
+            </span>
+            <Link
+              href={liveWeekend.href}
+              className="min-w-0 font-serif text-[22px] font-semibold leading-tight text-text hover:underline lg:text-[26px]"
+            >
+              {liveWeekend.eventName}
+            </Link>
+          </div>
+
+          {liveWeekend.nextSession && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+              {/* The label shouts, the session name does not — uppercasing the
+                  raw title turns "F1 - Practice 1" into "F1 - PRACTICE 1" and
+                  disagrees with the Also-today rows below. */}
+              <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                  Up next
+                </span>
+                <span className="min-w-0 font-serif text-[17px] font-semibold leading-tight text-text">
+                  {liveWeekend.nextSession.name}
+                </span>
+              </span>
+              <NextRaceCountdown
+                target={liveWeekend.nextSession.startIso}
+                label={timeLabel(liveWeekend.nextSession.startIso)}
+                color={liveWeekend.color}
+              />
+            </div>
+          )}
+
+          {liveWeekend.alsoToday.length > 0 && (
+            <>
+              <span className="mt-4 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                Also today
+              </span>
+              <ul className="mt-1">
+                {liveWeekend.alsoToday.map(s => (
+                  <li
+                    key={`${s.name}-${s.startIso}`}
+                    className="flex items-baseline justify-between gap-3 border-b border-border py-1.5 last:border-b-0"
+                  >
+                    <span className="min-w-0 truncate font-serif text-[15px] text-text-muted">{s.name}</span>
+                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+                      {timeLabel(s.startIso)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </section>
+      )}
+
       {/* ── 1. The result that just happened ─────────────────────────────── */}
       {result && winner && (
         <section
           aria-label="Latest result"
-          className="border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5"
+          className={`${leadAbove ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated p-[18px] lg:p-5`}
         >
           <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
             <div className="min-w-0">
@@ -119,13 +321,17 @@ export function HomeLead({
                   Season complete
                 </p>
               )}
-              <h1
-                className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif text-[30px] font-semibold leading-[1.1] text-text lg:text-[40px]`}
+              {/* Demoted to h2 and a size down when the blog lead is above it,
+                  so the two headlines do not compete for the same rank. */}
+              <ResultHeading
+                className={`${championName ? 'mt-1.5' : 'mt-3'} font-serif font-semibold leading-[1.1] text-text ${
+                  blog ? 'text-[24px] lg:text-[30px]' : 'text-[30px] lg:text-[40px]'
+                }`}
               >
                 {championName
                   ? `${championName} is ${result.seriesName} champion`
                   : headlineFor(winner.name, result.raceName)}
-              </h1>
+              </ResultHeading>
               {championName ? (
                 <p className="mt-2 font-serif text-[17px] leading-snug text-text-muted">
                   {headlineFor(winner.name, result.raceName)}

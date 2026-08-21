@@ -229,6 +229,65 @@ export async function publishedPosts(): Promise<BlogPost[]> {
   }
 }
 
+export type HomeBlogLead = {
+  slug: string;
+  title: string;
+  summary: string;
+  heroImage: string | null;
+  seriesSlug: string | null;
+  publishedAtIso: string;
+  readMinutes: number;
+};
+
+/** Newest published post for the /app lead. Null when nothing is published. */
+export async function fetchHomeBlogLead(): Promise<HomeBlogLead | null> {
+  if (!isBettingConfigured()) return null;
+  try {
+    const { data, error } = await betDb()
+      .from('post')
+      .select(COLS)
+      .eq('status', 'published')
+      // Same nullsFirst:false guard as publishedPosts — a post flipped to
+      // published by hand keeps published_at null and would otherwise win the
+      // DESC sort. created_at breaks ties, so two posts stamped in the same cron
+      // tick (publishDuePosts writes one `iso` for the whole batch) still pick a
+      // stable lead rather than whatever order Postgres returns.
+      .order('published_at', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data) return null;
+
+    // published_at is null on a hand-flipped post (only publishDuePosts stamps
+    // it), so created_at is the fallback stamp; a row with neither, or an
+    // unparseable one, yields no lead rather than an Invalid Date on the page.
+    const stamp = (data.published_at as string | null) ?? (data.created_at as string | null);
+    const when = stamp ? new Date(stamp) : null;
+    if (!when || Number.isNaN(when.getTime())) return null;
+
+    // 220 words/minute, matching the post page's own eyebrow verbatim
+    // (app/(app)/blog/[slug]/page.tsx:252). It must be the same divisor: at 200
+    // the Dutch GP preview reads "10 min" in this card and "9 min" on the post
+    // itself, for the same body. Change one, change both.
+    const words = ((data.body as string | null) ?? '')
+      .trim()
+      .split(/\s+/)
+      .filter(w => w.length > 0).length;
+
+    return {
+      slug: data.slug as string,
+      title: data.title as string,
+      summary: data.summary as string,
+      heroImage: (data.hero_image as string | null) ?? null,
+      seriesSlug: (data.series_slug as string | null) ?? null,
+      publishedAtIso: when.toISOString(),
+      readMinutes: Math.max(1, Math.round(words / 220)),
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** One author's published posts, newest first — the /authors/<slug> page. Posts the
  *  author has hidden from their own profile are excluded here and nowhere else
  *  (they stay live at /blog/<slug> and in the feed). Same fail-soft contract as

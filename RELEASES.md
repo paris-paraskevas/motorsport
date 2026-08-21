@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.326.0 — 2026-08-21
+
+**Your home page leads with the racing that is actually happening.** The latest article now sits at the top with its cover picture, followed by the weekend in progress: the next session, a countdown to it, and whatever else is still to come that day. Previously the page could open with a championship that had finished the week before while a grand prix was under way, which is now fixed.
+
 ## 0.325.3 — 2026-08-21
 
 **Internal housekeeping.** A race-weekend preview drafted and queued for review; nothing user-facing changed yet.

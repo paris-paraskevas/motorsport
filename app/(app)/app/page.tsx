@@ -1,13 +1,17 @@
 import type { Metadata } from 'next';
 import { loadAllSeries } from '@/lib/series';
-import { groupByWeekend } from '@/lib/group';
-import { weekendLabel } from '@/lib/weekend';
+import { groupByDay, groupByWeekend } from '@/lib/group';
+import { DAY_MS } from '@/lib/rounds';
+import { weekendLabel, weekendStartEnd } from '@/lib/weekend';
 import { fetchAggregatedNews } from '@/lib/news';
 import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/home-results';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
+import { fetchHomeBlogLead } from '@/lib/blog';
 import {
   HomeLead,
+  type HomeLeadBlog,
   type HomeLeadChanged,
+  type HomeLeadLiveWeekend,
   type HomeLeadNextItem,
   type HomeLeadResult,
   type HomeLeadWireItem,
@@ -42,6 +46,71 @@ export default async function Home() {
   const now = new Date();
   const all = await loadAllSeries();
   const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
+
+  // ── 0. Happening now: the weekend whose session window straddles `now`. This
+  // outranks the finished-result lead below — on Dutch GP Sunday the page led
+  // with a Formula E finale that ended five days earlier, because "newest race
+  // with a podium" has no concept of a weekend being underway. Live = not past,
+  // AND first session already started or starting inside 24h, AND the last
+  // session not yet over. Precedence is temporal, never editorial: candidates
+  // sort by first start, so a weekend already running beats one about to start,
+  // and no series is ever preferred or suppressed by name.
+  // NOT lib/weekend.ts weekendIsLive(): that is `start <= now <= end` on a
+  // single session, i.e. "a session is running this second". This band must also
+  // catch the Friday morning before FP1 has turned a wheel, hence the DAY_MS
+  // lookahead. Do not "simplify" one into the other — they answer different
+  // questions, and the band would go dark between sessions.
+  const liveCandidates = all
+    .flatMap(s => {
+      try {
+        return groupByWeekend(s.sessions, now, s.rounds)
+          .filter(w => !w.isPast)
+          .flatMap(w => {
+            const { start, end } = weekendStartEnd(w);
+            return start.getTime() <= now.getTime() + DAY_MS && end >= now ? [{ s, w, start }] : [];
+          });
+      } catch {
+        return [];
+      }
+    })
+    .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+  let liveWeekend: HomeLeadLiveWeekend | null = null;
+  const live = liveCandidates[0];
+  if (live) {
+    // A dateOnly session has no real hour (lib/types.ts, Session.dateOnly), so
+    // it can never be a timed "next up" or an "also today" row — both carry a
+    // clock time to the client.
+    const timed = live.w.sessions.filter(x => !x.dateOnly);
+    const nextUp =
+      timed
+        .filter(x => x.start > now)
+        .sort((a, b) => a.start.getTime() - b.start.getTime())[0] ?? null;
+    liveWeekend = {
+      seriesSlug: live.s.meta.slug,
+      seriesName: live.s.meta.name,
+      color: live.s.meta.color,
+      eventName: weekendLabel(live.w, live.w.round).title,
+      href: `/series/${live.s.meta.slug}/weekend/${live.w.round}`,
+      // Full session titles, not shortSessionLabel's FP1/SQ chips: that helper
+      // is built for the cramped session rail, and "SQ" is opaque in a hero
+      // band. The operator's reference build spells them out ("F1 - Sprint
+      // Qualifying"), and the ICS SUMMARY already reads that way.
+      nextSession: nextUp ? { name: nextUp.title, startIso: nextUp.start.toISOString() } : null,
+      // Same session day as `nextUp`, by the same day-bucketing every other
+      // schedule surface uses (groupByDay; the repo has no per-venue timezone
+      // data — circuits.json carries lat/lon only and Open-Meteo resolves the
+      // zone itself at request time).
+      // Still to come only. Without the `start > now` guard a session that has
+      // already run stays listed under "Also today" — once FP1 starts, it would
+      // sit beside Sprint Qualifying reading as though it were upcoming.
+      alsoToday: nextUp
+        ? (groupByDay(timed).find(d => d.sessions.some(x => x.uid === nextUp.uid))?.sessions ?? [])
+            .filter(x => x.uid !== nextUp.uid && x.start > now)
+            .map(x => ({ name: x.title, startIso: x.start.toISOString() }))
+        : [],
+    };
+  }
 
   // ── 1. The result that just happened: newest finished race across every
   // covered series (KV-warmed feeds; fail-soft nulls just drop the band). ──
@@ -158,9 +227,38 @@ export default async function Home() {
       }];
     });
 
+  // ── 5. Our own writing: the newest published post. The fetcher returns a
+  // series SLUG and only the page holds the series metadata, so the name and
+  // colour for the card's chip are resolved here. Fail-soft — a Supabase
+  // outage drops the band, it never blanks the page.
+  let blog: HomeLeadBlog | null = null;
+  try {
+    const lead = await fetchHomeBlogLead();
+    if (lead) {
+      const meta = lead.seriesSlug ? metaBySlug.get(lead.seriesSlug) : undefined;
+      const stamp = new Date(lead.publishedAtIso);
+      blog = {
+        ...lead,
+        seriesName: meta?.name ?? null,
+        seriesColor: meta?.color ?? null,
+        // Same relative stamp the wire rows use, so a fresh post reads as news.
+        ageLabel: Number.isNaN(stamp.getTime()) ? null : ageLabel(stamp, now),
+      };
+    }
+  } catch {
+    /* no blog lead this revalidation */
+  }
+
   return (
     <div className={PAGE_WIDE}>
-      <HomeLead result={result} changed={changed} next={next} wire={wire} />
+      <HomeLead
+        blog={blog}
+        liveWeekend={liveWeekend}
+        result={result}
+        changed={changed}
+        next={next}
+        wire={wire}
+      />
     </div>
   );
 }

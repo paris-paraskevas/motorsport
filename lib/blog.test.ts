@@ -11,6 +11,20 @@ const updateMock = vi.fn();
 const eqMock = vi.fn();
 const inMock = vi.fn();
 
+// The read side (fetchHomeBlogLead) needs its own chain: select → eq → order ×2
+// → limit → maybeSingle. Recorded separately from the update chain so the query
+// shape (the NULL-ordering guard and the tiebreak) is assertable.
+const readChain: { select: unknown[][]; eq: unknown[][]; order: unknown[][]; limit: unknown[][] } = {
+  select: [],
+  eq: [],
+  order: [],
+  limit: [],
+};
+let readResult: { data: Record<string, unknown> | null; error: { message: string } | null } = {
+  data: null,
+  error: null,
+};
+
 vi.mock('./betting/client', () => ({
   isBettingConfigured: () => true,
   betDb: () => ({
@@ -24,18 +38,42 @@ vi.mock('./betting/client', () => ({
           },
         };
       },
+      select: (...args: unknown[]) => {
+        readChain.select.push(args);
+        const chain = {
+          eq: (...a: unknown[]) => {
+            readChain.eq.push(a);
+            return chain;
+          },
+          order: (...a: unknown[]) => {
+            readChain.order.push(a);
+            return chain;
+          },
+          limit: (...a: unknown[]) => {
+            readChain.limit.push(a);
+            return chain;
+          },
+          maybeSingle: () => Promise.resolve(readResult),
+        };
+        return chain;
+      },
     }),
   }),
 }));
 vi.mock('./betting/friends', () => ({ displayNames: vi.fn() }));
 
-import { updatePostContent, normalizeOriginalUrl, TITLE_MAX, BODY_MAX } from './blog';
+import { updatePostContent, normalizeOriginalUrl, fetchHomeBlogLead, TITLE_MAX, BODY_MAX } from './blog';
 
 beforeEach(() => {
   updateMock.mockClear();
   eqMock.mockClear();
   inMock.mockReset();
   inMock.mockResolvedValue({ error: null, count: 1 });
+  readChain.select = [];
+  readChain.eq = [];
+  readChain.order = [];
+  readChain.limit = [];
+  readResult = { data: null, error: null };
 });
 
 describe('updatePostContent', () => {
@@ -147,5 +185,93 @@ describe('normalizeOriginalUrl', () => {
 
   it('caps the length at 2048', () => {
     expect(() => normalizeOriginalUrl(`https://a.example/${'x'.repeat(2048)}`)).toThrow(/2048/);
+  });
+});
+
+// The /app home lead. Fail-soft like the other public readers (publishedPosts et
+// al): an empty blog, a DB error or a corrupt timestamp yields null, never a
+// throw, because the home page renders around it.
+describe('fetchHomeBlogLead', () => {
+  const words = (n: number) => Array.from({ length: n }, (_, i) => `w${i}`).join(' ');
+  const row = (over: Record<string, unknown> = {}) => ({
+    id: 'p1',
+    slug: 'dutch-gp-preview',
+    title: 'Dutch GP preview',
+    summary: 'Zandvoort returns.',
+    body: words(400),
+    series_slug: 'f1',
+    tags: [],
+    status: 'published',
+    author_id: 'user_1',
+    publish_at: null,
+    published_at: '2026-08-20T10:00:00+00:00',
+    hero_image: '/blog/covers/zandvoort.jpg',
+    original_url: null,
+    created_at: '2026-08-19T09:00:00+00:00',
+    ...over,
+  });
+
+  it('returns null when nothing is published', async () => {
+    expect(await fetchHomeBlogLead()).toBeNull();
+  });
+
+  it('returns null on a DB error instead of throwing', async () => {
+    readResult = { data: null, error: { message: 'boom' } };
+    expect(await fetchHomeBlogLead()).toBeNull();
+  });
+
+  // nullsFirst:false because Postgres sorts NULLs FIRST on DESC and a
+  // hand-published post keeps published_at null; created_at breaks ties inside a
+  // single cron batch, which stamps one timestamp across every post it flips.
+  it('queries published only, published_at DESC (nulls last) then created_at DESC, one row', async () => {
+    readResult = { data: row(), error: null };
+    await fetchHomeBlogLead();
+    expect(readChain.eq).toEqual([['status', 'published']]);
+    expect(readChain.order).toEqual([
+      ['published_at', { ascending: false, nullsFirst: false }],
+      ['created_at', { ascending: false }],
+    ]);
+    expect(readChain.limit).toEqual([[1]]);
+  });
+
+  it('maps a row onto the lead shape', async () => {
+    readResult = { data: row(), error: null };
+    expect(await fetchHomeBlogLead()).toEqual({
+      slug: 'dutch-gp-preview',
+      title: 'Dutch GP preview',
+      summary: 'Zandvoort returns.',
+      heroImage: '/blog/covers/zandvoort.jpg',
+      seriesSlug: 'f1',
+      publishedAtIso: '2026-08-20T10:00:00.000Z',
+      readMinutes: 2,
+    });
+  });
+
+  it('maps a missing hero image and series to null', async () => {
+    readResult = { data: row({ hero_image: null, series_slug: null }), error: null };
+    const lead = await fetchHomeBlogLead();
+    expect(lead?.heroImage).toBeNull();
+    expect(lead?.seriesSlug).toBeNull();
+  });
+
+  // Only publishDuePosts stamps published_at, so a post flipped by hand has none.
+  it('falls back to created_at when published_at is null', async () => {
+    readResult = { data: row({ published_at: null }), error: null };
+    expect((await fetchHomeBlogLead())?.publishedAtIso).toBe('2026-08-19T09:00:00.000Z');
+  });
+
+  it('returns null when neither timestamp is usable', async () => {
+    readResult = { data: row({ published_at: null, created_at: 'not-a-date' }), error: null };
+    expect(await fetchHomeBlogLead()).toBeNull();
+  });
+
+  // 220 wpm, rounded, floored at 1 — the same divisor the post page's eyebrow
+  // uses, so one body never reports two different read times. 300 words is the
+  // round-DOWN case (1.36 -> 1); 330 is the round-half-up case (1.5 -> 2).
+  it('derives readMinutes from the word count at 220 wpm, minimum 1', async () => {
+    for (const [count, minutes] of [[0, 1], [1, 1], [220, 1], [300, 1], [330, 2], [440, 2], [660, 3]] as const) {
+      readResult = { data: row({ body: words(count) }), error: null };
+      expect((await fetchHomeBlogLead())?.readMinutes).toBe(minutes);
+    }
   });
 });

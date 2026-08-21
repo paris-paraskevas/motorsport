@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.326.0 — 2026-08-21
+
+### Added
+- **`/app` now leads with our own writing and the weekend that is actually running.** Two new bands above the existing four, in `components/HomeLead.tsx` fed by `app/(app)/app/page.tsx`.
+  - **Lead story.** Cover image left, `Lead story` + age + series + read time, headline, summary, `Read the story`. New `fetchHomeBlogLead()` in `lib/blog.ts` returns the newest published post (published_at DESC with `nullsFirst:false`, created_at as tiebreak, created_at as the stamp fallback), fail-soft to null so a Supabase outage drops the band instead of blanking the page. 8 new vitest cases, suite 1125 → 1133.
+  - **This weekend.** Event name, `Up next` session with a live countdown, and the rest of the day's sessions still to come.
+- **Read time is 220 wpm in both places.** The fetcher first shipped 200, which printed "10 min read" on the card and "9 min read" on the post itself for one body. Matched to `app/(app)/blog/[slug]/page.tsx:252` and the test table rewritten around the real rounding boundaries (300 words rounds down to 1, 330 rounds up to 2).
+
+### Fixed
+- **A finished race elsewhere no longer outranks a race in progress.** `app/(app)/app/page.tsx` picked its lead as "newest race with a podium", with no concept of a weekend being underway, so on Dutch GP Friday the page was led by a Formula E season that ended on 16 August plus ten rows of final Formula E standings, while Zandvoort was a line in "What's next". A weekend whose window straddles now (or opens within 24 h) now takes precedence and the finished-result band moves below it, dropping to `h2` and a size down so the two headlines do not compete. **Precedence is temporal, not editorial — no series is named anywhere in the rule.**
+- **"Also today" listed sessions that had already run.** Without a `start > now` guard, FP1 stayed in the list once it started, reading as though it were still to come.
+- **Session labels read in full.** `shortSessionLabel` renders `FP1` / `SQ` for the cramped session rail; in a hero band "SQ" is opaque, so the band uses the raw ICS titles ("F1 - Sprint Qualifying") as the reference build does. The Up-next row no longer force-uppercases the title, which had turned "F1 - Practice 1" into "F1 - PRACTICE 1" and disagreed with the rows beneath it.
+- `dateOnly` sessions are excluded from both the countdown and the day list, so a TBC session can never render a fake clock time (the pre-0.9.9 phantom-03:00 class of bug).
+
+### Notes
+- `weekendIsLive()` was deliberately **not** reused: it is `start <= now <= end` on a single session, so the band would vanish between sessions and never appear before FP1. The divergence is commented at both sites.
+- Known inherited limitation, not introduced here: `weekendStartEnd` takes the end of the latest-*starting* session rather than the maximum end, so a weekend whose longest session starts early can close its window early.
+- Verified on a dev server: with local Supabase down the blog band is absent and the page renders intact, which is the fail-soft path. The band itself rendered Dutch Grand Prix, `Up next F1 - Practice 1` with a live countdown, and Sprint Qualifying at 17:30. The **cover-image path is not yet browser-verified** — no local DB, and only one published post carries a cover.
+
 ## 0.325.3 — 2026-08-21
 
 ### Internal
