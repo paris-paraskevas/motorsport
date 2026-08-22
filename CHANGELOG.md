@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.6 — 2026-08-23
+
+### Fixed
+- **Auditing queue item 1 on prod found a processor running on every page that the privacy policy did not name: Cloudflare Web Analytics.** The CSP report stream showed `https://static.cloudflareinsights.com/beacon.min.js` loading. It is **injected into the HTML at Cloudflare's edge, not by our code**, which is why no grep of this repo ever found it — the earlier sweep for `cloudflareinsights` returned zero and I took that as "not running". It has been collecting since 0.253.1, where the handoff even recorded it as the field-data source, and it never reached the policy.
+  - Disclosed in `content/legal/privacy.md` (anonymous-visit section and the recipients table) and listed in `content/legal/cookies.md` under a new **"Sets nothing on your device"** heading. Every claim taken from Cloudflare's own documentation and stated as such: **no cookies and no browser storage of any kind**, no query strings logged, and the IP address discarded at the nearest data centre rather than stored. It is named because it is a third-party script, not because it stores anything.
+  - `static.cloudflareinsights.com` added to the CSP's `script-src`. Cloudflare's docs require it, and without it promoting the policy to enforcing would have **broken our own analytics** as its first act.
+- **`fundingchoicesmessages.google.com` is also in the report stream, and is deliberately NOT allow-listed.** It is pulled in by `adsbygoogle.js`, not by us. Our own modal has owned consent since 0.12.6, so Google's competing consent UI loading is arguably something to block rather than permit — but quietly allow-listing it would decide that by accident. Enforcing the policy as it stands **would block it**, and that is now written into queue item 6 as a decision to make deliberately rather than a side effect to discover.
+- `NOTED as queue item 11b`: the same console read showed a Wikimedia portrait and `/circuits/zandvoort.svg` **preloaded and never used** on `/calendar` — wasted bytes on every load of a page whose perf was just worked.
+
 ## 0.334.5 — 2026-08-23
 
 ### Fixed

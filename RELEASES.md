@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.6 — 2026-08-23
+
+**One more thing named in the privacy policy.** Auditing yesterday's work turned up a Cloudflare script running on every page that measures page views and load times, and that the policy had never mentioned. It is now listed, along with what Cloudflare says it does and does not do: it stores nothing at all in your browser, no cookies of any kind, and it throws your IP address away rather than keeping it.
+
 ## 0.334.5 — 2026-08-23
 
 **The calendar no longer throws an error in the background.** Every visit to the calendar was triggering a browser error from the offline-caching hook, left over from a feature the site removed last month. It has been switched off, which costs nothing and clears the error.
