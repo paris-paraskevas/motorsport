@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { Session } from '@/lib/types';
-import type { DailyWeather } from '@/lib/weather';
-import { weatherLabel } from '@/lib/weather';
 import { formatLocalDay, formatRelative } from '@/lib/date';
 import { LocalTime } from '@/components/LocalTime';
 
@@ -10,13 +8,17 @@ export function SessionCard({
   session,
   color,
   round,
-  weather,
   now = new Date(),
 }: {
   session: Session;
   color: string;
   round?: number;
-  weather?: DailyWeather;
+  // NOTE: this card had a `weather?: DailyWeather` prop with ZERO callers,
+  // removed in 0.334.3. It was the last daily-shaped weather surface in the
+  // tree after 0.332.0 made every reading per-session-hour, so it was the wrong
+  // thing for the next person to wire up. If a session card should ever carry
+  // weather, take an `HourlyWeather` for the session's own hour and render it
+  // with components/weekend/HourlyForecastRows.
   // Hydration-safe clock from the client parent (FilteredSessions/useNow).
   // A bare module-render `new Date()` ran at SSR time and, under the page's
   // 5-min ISR, left finished sessions tagged "LIVE" until the next rebuild —
@@ -28,7 +30,6 @@ export function SessionCard({
   const href = round
     ? `/series/${session.seriesSlug}/weekend/${round}`
     : `/series/${session.seriesSlug}`;
-  const w = weather ? weatherLabel(weather.weatherCode) : null;
 
   return (
     <Link
@@ -86,19 +87,6 @@ export function SessionCard({
         </div>
         {session.significance?.note && (
           <div className="text-xs text-brand/70 mt-1">{session.significance.note}</div>
-        )}
-        {weather && w && !isPast && (
-          <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] text-text-muted">
-            <span aria-hidden>{w.emoji}</span>
-            <span className="tabular-nums font-mono">
-              {Math.round(weather.maxC)}°/{Math.round(weather.minC)}°
-            </span>
-            {weather.precipProb >= 30 && (
-              <span className="tabular-nums font-mono text-sky-700 dark:text-sky-300">
-                · {Math.round(weather.precipProb)}% rain
-              </span>
-            )}
-          </div>
         )}
       </div>
 

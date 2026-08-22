@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.3 — 2026-08-23
+
+### Removed
+- **`SessionCard`'s `weather` prop deleted — it had zero callers and was the last daily-shaped weather surface in the tree.** `DayView`, `FilteredSessions` and `SessionList` are the only three consumers of the card and none of them has ever passed it. After 0.332.0 made every weather reading per-session-hour, this was the one place still typed `DailyWeather`, which made it the wrong thing for the next person to wire up: adding weather to a session card through this prop would have reintroduced exactly the day-vs-session bug the operator reported on 2026-08-22.
+  - Deleted the prop, its destructure, the `weatherLabel` call and the 13-line render block, plus the two now-unused imports. **The charter's answer to an option with zero users is delete, not future-proof** — so a comment in its place records what was removed and how to do it correctly if a session card should ever carry weather (take an `HourlyWeather` for the session's own hour, render it with `components/weekend/HourlyForecastRows`).
+  - Browser-verified on the surface that actually renders the card: `/calendar?s=f1` → Day view, **5 cards** rendering with titles, series and date ranges intact, console clean.
+
 ## 0.334.2 — 2026-08-23
 
 ### Fixed
