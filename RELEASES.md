@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.3 — 2026-08-23
+
+**Internal housekeeping.** Dead code removed from the session cards; nothing user-facing changed.
+
 ## 0.334.2 — 2026-08-23
 
 **Internal housekeeping.** Leftover references to our old hosting provider removed, including two places where they were visible to you: the message shown when notification storage is unavailable. Also tightened one security header by dropping a permission for a script the site no longer uses.
