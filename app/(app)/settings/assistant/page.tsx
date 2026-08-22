@@ -101,7 +101,7 @@ export default async function AssistantInsightsPage() {
       </Section>
 
       <p className="mt-6 font-mono text-[11px] leading-relaxed text-text-faint">
-        Retention is bounded by count (a capped recent list + rolling counters), not time — see the privacy policy. Data comes from Vercel KV; empty until questions are asked on prod.
+        Retention is bounded by count (a capped recent list + rolling counters), not time — see the privacy policy. Data comes from the KV store; empty until questions are asked on prod, and the assistant is currently switched off.
       </p>
     </div>
   );

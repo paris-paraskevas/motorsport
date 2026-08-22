@@ -69,7 +69,9 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 - **`SessionCard`'s `weather?: DailyWeather` prop has zero callers** repo-wide (checked `DayView`, `FilteredSessions`, `SessionList`) and is now the only daily-shaped weather surface left after 0.332.0. Delete it, or point it at `HourlyWeather`.
 - **`app/(app)/api/push/history/route.ts` is a reader with no UI** since `NotificationBell` was deleted in 0.332.2. `lib/push-history.ts` is still written by the notify crons, so nothing else is orphaned; removing a public endpoint is the operator's call.
 - **`ChartEmbed` uses `rounded-xl` / `rounded-lg`**, against the standing sharp-corners principle. One class change, but a visual one.
-- **`content/legal/privacy.md` is materially stale** — names Vercel as host and KV store, and credits cookie consent to "Google's Consent Management Platform (Funding Choices)", replaced by the custom modal in 0.12.6. A privacy policy that misnames its processors is a real exposure; needs the operator present.
+- ~~`content/legal/privacy.md` is materially stale~~ — **FIXED 0.334.0**, along with `cookies.md` and `do-not-sell.md`.
+- **"Vercel KV" survives in six code comments** (`lib/f1-cache.ts`, `lib/source-snapshot.ts`, `lib/useFollowedSeries.ts`, `lib/userPrefs.ts`, `lib/weather.ts`, `lib/assistant/log.ts`) after the two human-facing strings were fixed in 0.334.1. Zero behaviour, but it is the same stale-naming defect that put Vercel in the privacy policy and `proxy.ts` in both onboarding docs — a one-word sweep whenever those files are next opened. The comment in `app/(app)/layout.tsx` naming Funding Choices is **correct history** and should stay.
+- **The CSP still allow-lists `va.vercel-scripts.com`** and runs `report-only`. Enforcing it is the real security upgrade the header set is missing (see the interstitial section above).
 
 ## AdSense-readiness content (live again — the rejection makes it current)
 
