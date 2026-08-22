@@ -6,14 +6,16 @@ Full detail in `docs/HANDOFF.md`'s top block and `CHANGELOG.md` 0.331.0 → 0.33
 
 ---
 
-## 1. Four things that need the operator, and only the operator
+## 1. Nothing is waiting on the operator
 
-None of these are blocked on work. They are blocked on you.
+All four items that were blocked at the session close were settled the same day, so this file no longer opens with a to-do list for you:
 
-1. **`/f1/compare`, signed in.** The season-trend chart on that page is the **one remaining unverified consumer** of the 0.323.0 refactor. It sits behind a sign-in gate, so an unsupervised run cannot reach it. Team pages are verified (6 lines, 686 × 320, zero height shift on mount) and blog chart embeds have **no live instance at all** — all 20 published posts were checked. One click closes the whole item.
-2. **The support prompt's "Don't show this again", signed in.** It writes `unsafeMetadata.supportPromptOptOut = 'v1'` through `user.update()`. The call is typed against the installed `@clerk/shared` (where `UpdateUserParams` includes `unsafeMetadata` and **replaces** it wholesale, so the write spreads the existing object), and the visit-scoped flag takes effect first, so a failed write costs only this visit's silence. It has never been exercised against a real Clerk session. Use `?supportPromptMs=3000,7000` to reach it in seconds.
-3. **Does the series reference strip keep its new placement?** It is now two rows of boxed 40 px targets on its own full-width row, because boxed legible targets need about **1,180 px** and the header band you moved them into on 08-21 measures **508**. That is a real trade against your earlier call, and it is a one-line revert in `app/(app)/series/[slug]/page.tsx` if you want the old band back.
-4. **`content/legal/privacy.md` is materially stale**, beyond the support-prompt lines added this session. It still names **Vercel** as host and KV store, and says cookie consent is captured by **"Google's Consent Management Platform (Funding Choices)"** — replaced by the custom modal in 0.12.6. A privacy policy that misnames its processors is a real exposure, and rewriting one is not a call to make unsupervised. Half an hour with you present fixes it.
+- ✅ **`/f1/compare`, signed in** — you verified the chart yourself. That closes **all three** previously-unclicked consumers of the 0.323.0 trend-chart refactor (standings tab, team pages, compare).
+- ✅ **The signed-in support dismissal** — confirmed reading correctly.
+- ✅ **The series reference strip keeps its new placement** ("i like this").
+- ✅ **`content/legal/privacy.md` rewritten** (0.334.0), and with it the discovery that `/do-not-sell` promised GPC support the code never implemented. It does now.
+
+**One thing was recommended against rather than built:** the Cloudflare "your connection is secure" interstitial. That screen is a Managed Challenge, not a trust badge — it costs seconds on every first view against a 0.63 s TTFB, challenges Googlebot and any AdSense reviewer, and reads as a problem rather than a reassurance. `IDEAS.md` carries three sharper routes to the same goal; the best is **enforcing the CSP that currently runs `report-only`**, which is written already and only allow-lists one stale Vercel-era host.
 
 ---
 

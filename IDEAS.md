@@ -46,6 +46,24 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 - **Street View corner tours + layout history on `/tracks/<slug>`** (operator, 2026-08-22) — check which circuits have Street View coverage and offer a corner-by-corner and notable-straight walk (Kemmel, for instance) carrying each corner's or straight's name, why it is called that, and what happened there; plus previous layouts with the reason each one changed (Zandvoort's post-turn-7 rework around the holiday park, the Mulsanne chicanes for safety). Pairs with the circuit-map idea below.
 - **Circuit map on the track pages** (operator, 2026-08-21) — an OpenStreetMap view of the circuit from above on each `/tracks/<slug>` page, or failing that a link out to the official circuit-map page. Check `feat/tracks-map` first: it already carries leaflet + react-leaflet and is paused, and a blind conflict resolution on leaflet broke prod once (2026-07-09).
 
+## A "connection is secure" interstitial — operator ask, 2026-08-22, RECOMMEND AGAINST as asked
+
+**The ask:** the Cloudflare page some sites show on click-through that says your connection is being checked or is secure, "it shows that we are legit".
+
+**What that screen actually is:** a Cloudflare **Managed Challenge / Under Attack Mode** interstitial. It is not a trust badge, it is security *friction* — Cloudflare shows it when it wants to test whether a visitor is a bot. Turning it on for everyone costs:
+
+- **Several seconds on every first page view.** We spent session 30 killing a 7 s document stall and got the landing to a 0.63 s TTFB; this would hand that back and then some, on the one metric Google ranks.
+- **Crawlers get challenged too.** Googlebot and Bingbot hitting an interstitial is an indexing risk, and the AdSense review is still pending — a reviewer meeting a challenge page is the worst possible first impression.
+- **It reads as "this site has a security problem"** to a fair number of people, which is the opposite of the intended signal.
+- It is a **prod infra change** (Cloudflare dashboard, Security → Settings, or a WAF rule), so it needs the operator to name the action regardless.
+
+**What actually signals legitimacy, and what we already have** (measured on prod 2026-08-22): `Strict-Transport-Security` with `includeSubDomains; preload`, a Content Security Policy, `Permissions-Policy` locking camera/mic/geolocation and denying FLoC and Topics, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`. That is a stronger security posture than most sites showing that interstitial.
+
+**Sharper versions of the same goal, if the operator still wants the signal:**
+1. **Move the CSP from `report-only` to enforcing.** It is already written and reporting; enforcing it is the real security upgrade the header set is missing. (Note: the CSP still allow-lists `va.vercel-scripts.com`, a leftover from the Vercel era — remove it in the same pass.)
+2. **Turnstile on the contact and write-for-us forms** — a visible Cloudflare widget exactly where a visitor expects a check, costing nothing on page load. There is a `turnstile-spin` skill in the toolchain for it.
+3. **Say it in words on `/about`**: one honest line about how the site is hosted and secured, which is what a visitor deciding whether to trust it actually reads.
+
 ## Dead code + copy, found by session 32's audits (each one small, each one a wrong thing for the next person to touch)
 
 - **`SessionCard`'s `weather?: DailyWeather` prop has zero callers** repo-wide (checked `DayView`, `FilteredSessions`, `SessionList`) and is now the only daily-shaped weather surface left after 0.332.0. Delete it, or point it at `HourlyWeather`.

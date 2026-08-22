@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.0 — 2026-08-22
+
+**The privacy policy now describes the site that actually exists.** It had drifted badly: it named the old host, the old storage, and a cookie-consent product we stopped using in 2026, including telling you to click an icon that is not there. It now names the real providers, and it discloses two things it should always have mentioned: the anonymous measurement of which parts of a page people use, and the short list of notifications we have sent you.
+
+**And if your browser sends a Global Privacy Control signal, we now honour it for real.** Our "Do Not Sell or Share" page has been promising that for a while, but nothing in the site was actually reading the signal. Analytics and advertising are now held off whenever it is set, on every visit, whatever the cookie modal says, and the modal tells you that is what is happening rather than leaving two switches sitting there doing nothing.
+
 ## 0.333.2 — 2026-08-22
 
 **Internal housekeeping.** Session records and planning notes; nothing user-facing changed.
