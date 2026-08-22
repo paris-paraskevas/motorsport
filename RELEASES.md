@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.4 — 2026-08-23
+
+**Internal housekeeping.** Planning notes reorganised; nothing user-facing changed.
+
 ## 0.334.3 — 2026-08-23
 
 **Internal housekeeping.** Dead code removed from the session cards; nothing user-facing changed.
