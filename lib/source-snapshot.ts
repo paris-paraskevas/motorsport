@@ -12,7 +12,7 @@ import type { RaceResult } from '@/lib/types';
 // uncached) and never throws into the caller — mirrors lib/results-cache.ts.
 //
 // Reads happen on ISR/cached pages (~once per revalidation), so the eu-west-1
-// round-trip is amortised; Vercel KV stays the per-request tier for hot betting
+// round-trip is amortised; KV stays the per-request tier for hot betting
 // reads. `betDb()` is the shared server-side Supabase client (named for betting
 // but used by every server table — threads, and now this).
 //

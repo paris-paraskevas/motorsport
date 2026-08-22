@@ -14,7 +14,7 @@ import { readSnapshot, writeSnapshot, isDbReadOnly } from '@/lib/source-snapshot
  * successful fetch (which overwrites the cached value).
  *
  * TWO TIERS (belt-and-suspenders, no caller changes):
- *   1. Vercel KV — the hot tier, 21-day TTL, per-render read-through.
+ *   1. KV — the hot tier, 21-day TTL, per-render read-through.
  *   2. `source_snapshot` (Postgres via `withSourceSnapshot`'s primitives) — the
  *      durable backstop. KV is evictable + region-scoped and its TTL can lapse
  *      during a long outage; Postgres persists indefinitely. On a fresh success

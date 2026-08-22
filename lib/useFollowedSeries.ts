@@ -19,7 +19,7 @@ function emitChange() {
 /**
  * Auth-aware followed-series state.
  *
- * Signed in → Vercel KV via /api/user/prefs (cross-device sync).
+ * Signed in → KV via /api/user/prefs (cross-device sync).
  * Signed out → browser localStorage as today.
  * On first sign-in: if KV is empty and localStorage has prefs, migrate local → KV.
  */

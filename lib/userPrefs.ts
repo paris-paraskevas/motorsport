@@ -16,7 +16,9 @@ function isKvConfigured(): boolean {
 function assertKvForWrite(): boolean {
   if (isKvConfigured()) return true;
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('Vercel KV is not configured.');
+    throw new Error(
+      'KV is not configured. Set KV_REST_API_URL and KV_REST_API_TOKEN (Upstash Redis) on the Worker.',
+    );
   }
   return false;
 }

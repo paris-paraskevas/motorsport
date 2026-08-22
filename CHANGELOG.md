@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.2 — 2026-08-23
+
+### Fixed
+- **The Cloudflare migration's residue, swept.** `package.json` carries **zero** Vercel packages, and a repo-wide sweep found the name still asserted in nine places. Grouped as one PR because they are one root cause.
+  - **Two user-facing strings, and a correction owed**: `components/EnableNotifications.tsx` and `components/OnboardingWizard.tsx` both told users "Notifications storage (**Vercel KV**) isn't connected yet." 0.334.1's note claimed the human-facing Vercel strings were all fixed — **that was wrong**, these two were missed because the earlier grep was scoped to `content/legal`, `app` and `lib` and never looked at `components`.
+  - **A false claim about error handling**: `app/error.tsx` said "production has Vercel Analytics + Speed Insights catching uncaught errors server-side". Nothing catches them — those packages went with the migration and server-side Sentry was removed in 0.288.0 for worker size. The comment now says what is actually true (browser console and Cloudflare logs, nothing else), and names itself as the claim that was wrong.
+  - **A dead CSP allow-list entry**: `script-src` permitted `https://va.vercel-scripts.com` for a package that is not installed. Removing it **narrows** the policy at zero risk, and the header comment no longer lists Vercel Analytics among the origins the app loads. The CSP stays `report-only` — promoting it to enforcing is a separate change and wants the operator present, because an enforced-but-wrong CSP takes the site down rather than logging.
+  - **A wrong runtime error**: `lib/userPrefs.ts` threw "Vercel KV is not configured." It now names the real variables (`KV_REST_API_URL` / `KV_REST_API_TOKEN`, Upstash Redis) and the Worker, matching the fix made to `lib/push-store.ts` in 0.334.1.
+  - **Five code comments** in `lib/assistant/log.ts`, `lib/f1-cache.ts`, `lib/source-snapshot.ts`, `lib/useFollowedSeries.ts` and `lib/weather.ts`. `grep -rn "Vercel KV" lib app components content` now returns **nothing**. The comment in `app/(app)/layout.tsx` naming Funding Choices is left alone: it is correct *history*, not a stale claim.
+- `NOT a defect, recorded so nobody "fixes" it`: the two `_encoding` warnings in `lib/content-fs.ts`. Those parameters are **load-bearing** — callers pass `'utf-8'` / `'utf8'` (`lib/content.ts`, `lib/betting/allowance.ts`, `lib/information/curated.ts`, `lib/assistant/corpus.ts` and both champions tests), so the shim must accept a second argument. The only way to clear the warnings is relaxing `no-unused-vars` with an `argsIgnorePattern`, which is weakening a check to go green. The documented gate stays **0 errors, 2 known warnings**.
+
 ## 0.334.1 — 2026-08-22
 
 ### Fixed

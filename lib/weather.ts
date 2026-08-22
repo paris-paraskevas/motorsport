@@ -148,7 +148,7 @@ async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast
 }
 
 /**
- * Fetch a 16-day forecast for a venue, caching in Vercel KV for ~3 hours so
+ * Fetch a 16-day forecast for a venue, caching in KV for ~3 hours so
  * repeated requests for the same coordinates don't hammer Open-Meteo. 16 days
  * is Open-Meteo's max horizon and covers race-week + the next weekend's race
  * (F1 R5 Canada race was missing weather under the prior 7-day setting).
