@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.5 — 2026-08-23
+
+**The calendar no longer throws an error in the background.** Every visit to the calendar was triggering a browser error from the offline-caching hook, left over from a feature the site removed last month. It has been switched off, which costs nothing and clears the error.
+
 ## 0.334.4 — 2026-08-23
 
 **Internal housekeeping.** Planning notes reorganised; nothing user-facing changed.
