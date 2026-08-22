@@ -142,7 +142,10 @@ export async function WeekendWeatherStrip({ weekend }: { weekend: Weekend }) {
         ))}
       </div>
       <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-text-faint">
-        Source: Open-Meteo · {circuit.name} · forecast for each session&apos;s start hour
+        {/* One template string, not text-around-an-interpolation: React's SSR
+            ate the space after `{circuit.name}` and shipped "Zandvoort· forecast"
+            to prod. Same trap as the grep-across-a-JSX-interpolation one. */}
+        {`Source: Open-Meteo · ${circuit.name} · forecast for each session's start hour`}
       </div>
     </section>
   );
