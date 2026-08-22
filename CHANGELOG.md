@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.4 — 2026-08-23
+
+### Internal
+- **The defect sweep's audit results, and `docs/next-session.md` rewritten as an ordered one-item-per-PR execution queue** (operator: "list all open items, order them ready to be planned one by one and then executed").
+  - **Audited on prod after 0.334.2 and 0.334.3, all clean**: the CSP as served no longer contains `va.vercel-scripts.com` (`script-src` quoted in full in the PR), the shipped client chunks for `/app`, `/calendar` and `/settings/notifications` contain **zero** occurrences of "Vercel KV", and `/calendar` Day view renders **5 session cards** with no weather remnants and no runtime errors after the dead prop was deleted.
+  - **One console error remains on `/calendar` and it is not ours**: `DataCloneError: Failed to execute 'postMessage' on 'ServiceWorker': URL object could not be cloned`, at 665 ms, re-confirmed on prod. That is the documented `@serwist/turbopack@9.5.12` bug, and it is now **item 1** of the queue rather than a line in a triage list, because it throws on every visit to that page.
+  - The queue is **17 items in three tiers**: three executable immediately with nothing waiting on a decision, eight needing one operator word each (with a recommendation written for every one), and six projects. Each carries what, why, where, and **how prod is audited afterwards**.
+
 ## 0.334.3 — 2026-08-23
 
 ### Removed
