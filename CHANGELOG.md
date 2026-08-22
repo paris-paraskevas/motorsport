@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.331.1 — 2026-08-22
+
+### Fixed
+- **Weekend weather is read per SESSION, not per day** (operator bug, 2026-08-22: "must bring weather based on session time. We don't care if it'll rain on that day"). The band answered the wrong question, and the Dutch GP proved it: the Saturday tile read **98% rain** for the day while the Sprint hour was 94% and Qualifying, four hours later, was **33%**. One number cannot describe both.
+  - `lib/weather.ts` gains an `hourly` block alongside `daily`: `HourlyWeather` rows keyed by **venue-local** `YYYY-MM-DDTHH:mm`, exactly as Open-Meteo returns them under `timezone=auto`. Probed against the live API before writing the call — 384 rows over the same 16-day horizon, ~15 KB of JSON, all six variables present (`temperature_2m`, `precipitation_probability`, `precipitation`, `wind_speed_10m`, `weather_code`).
+  - `venueLocalIsoHour()` rounds to the **nearest** venue-local hour rather than flooring, because a 14:55 start belongs to the 15:00 bucket the session actually runs in. `forecastAtSession()` reads that bucket, and returns null for a `dateOnly` session or one past the horizon.
+  - `components/weekend/WeekendWeatherStrip.tsx` now renders **one tile per session** in chronological order — `SPRINT · SAT 22 AUG · 12:00 · 94% rain` — with a single temperature instead of a day's high/low. A session whose hour is unknown falls back to its day's high/low and is labelled **TBC**, which is the only honest reading when there is no time; a session outside the forecast horizon (any session already past, since Open-Meteo starts at today) is omitted rather than shown against the wrong day.
+  - **The KV cache guard is versioned by shape, not by key**: an entry with no `hourly` array is treated as stale and refetched, the same mechanism that already retired the pre-`utcOffsetSeconds` and 7-day entries. No key rename, no manual purge.
+  - New `lib/weather.test.ts` (7 tests) pins the trap this file lives in: nearest-hour rounding either side of the half hour, a COTA evening race whose UTC date is the *next* day still resolving to its own venue-local day and hour, the day-vs-hour divergence itself (98% for the day, 0% for the hour), and a forecast with no hourly block degrading to the daily path. Suite 1153 → **1160**.
+  - Bundle: 10183.72 → **10184.20 KiB gzipped** (+0.48 KiB), 55.8 KiB inside the ceiling.
+- `NOTED (not done)`: `components/SessionCard.tsx` still declares a `weather?: DailyWeather` prop with **zero callers** repo-wide. Left alone deliberately rather than fixed as a drive-by, but it is now the only daily-shaped weather surface left and would be the wrong thing to wire.
+
 ## 0.331.0 — 2026-08-22
 
 ### Added

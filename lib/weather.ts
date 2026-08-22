@@ -8,12 +8,26 @@ export interface DailyWeather {
   weatherCode: number;
 }
 
+/** One hour of forecast, keyed by VENUE-LOCAL time (`YYYY-MM-DDTHH:mm`) exactly
+ *  as Open-Meteo returns it under `timezone=auto`. This is what a session-time
+ *  reading needs: whether it rains during the race, not whether it rains
+ *  somewhere in that calendar day. */
+export interface HourlyWeather {
+  time: string;
+  tempC: number;
+  precipProb: number;   // 0-100, for that hour
+  precipMm: number;
+  windKph: number;
+  weatherCode: number;
+}
+
 export interface WeatherForecast {
   lat: number;
   lon: number;
   fetchedAt: string;
   utcOffsetSeconds: number;
   daily: DailyWeather[];
+  hourly: HourlyWeather[];
 }
 
 const TTL_SECONDS = 3 * 60 * 60; // 3 hours — Open-Meteo updates roughly hourly
@@ -49,6 +63,14 @@ interface OpenMeteoResponse {
     wind_speed_10m_max?: number[];
     weather_code?: number[];
   };
+  hourly?: {
+    time?: string[];
+    temperature_2m?: number[];
+    precipitation_probability?: number[];
+    precipitation?: number[];
+    wind_speed_10m?: number[];
+    weather_code?: number[];
+  };
 }
 
 async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast | null> {
@@ -56,6 +78,10 @@ async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast
     latitude: String(lat),
     longitude: String(lon),
     daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,weather_code',
+    // Hourly across the same 16-day horizon: 384 rows, ~15 KB of JSON, measured
+    // against the live API on 2026-08-22. A session is an hour of the day, not a
+    // day, so the per-session readings come from here.
+    hourly: 'temperature_2m,precipitation_probability,precipitation,wind_speed_10m,weather_code',
     forecast_days: '16',
     timezone: 'auto',
     wind_speed_unit: 'kmh',
@@ -89,12 +115,32 @@ async function fetchOpenMeteo(lat: number, lon: number): Promise<WeatherForecast
       windKph: d.wind_speed_10m_max![i],
       weatherCode: d.weather_code![i],
     }));
+    // Hourly is additive: a venue whose hourly block is missing or ragged still
+    // yields a usable daily forecast, and the callers fall back to the day.
+    const h = data.hourly;
+    const hourly: HourlyWeather[] =
+      h?.time &&
+      h.temperature_2m &&
+      h.precipitation_probability &&
+      h.precipitation &&
+      h.wind_speed_10m &&
+      h.weather_code
+        ? h.time.map((time, i) => ({
+            time,
+            tempC: h.temperature_2m![i],
+            precipProb: h.precipitation_probability![i],
+            precipMm: h.precipitation![i],
+            windKph: h.wind_speed_10m![i],
+            weatherCode: h.weather_code![i],
+          }))
+        : [];
     return {
       lat,
       lon,
       fetchedAt: new Date().toISOString(),
       utcOffsetSeconds: data.utc_offset_seconds ?? 0,
       daily,
+      hourly,
     };
   } catch {
     return null;
@@ -114,13 +160,16 @@ export async function fetchWeather(
   if (isKvConfigured()) {
     const kv = await getKv();
     const cached = await kv.get<WeatherForecast>(cacheKey(lat, lon));
-    // Old cache entries pre-date utcOffsetSeconds or were limited to a 7-day
-    // horizon; refresh them so venue-local date math + multi-week race coverage
-    // stay healthy.
+    // Old cache entries pre-date utcOffsetSeconds, were limited to a 7-day
+    // horizon, or (before 0.331.1) carried no hourly block at all; refresh them
+    // so venue-local date math, multi-week race coverage and per-session
+    // readings all stay healthy.
     if (
       cached &&
       typeof cached.utcOffsetSeconds === 'number' &&
-      cached.daily.length >= 14
+      cached.daily.length >= 14 &&
+      Array.isArray(cached.hourly) &&
+      cached.hourly.length > 0
     ) {
       return cached;
     }
@@ -152,6 +201,32 @@ export function forecastFor(
 export function venueLocalIsoDate(forecast: WeatherForecast, at: Date): string {
   const shifted = new Date(at.getTime() + forecast.utcOffsetSeconds * 1000);
   return shifted.toISOString().slice(0, 10);
+}
+
+/**
+ * `YYYY-MM-DDTHH:00` for the given instant in venue-local time, rounded to the
+ * NEAREST hour. Rounding rather than flooring because a 14:55 start belongs to
+ * the 15:00 bucket the session is actually run in, and most schedules that are
+ * not on the hour sit just before it.
+ */
+export function venueLocalIsoHour(forecast: WeatherForecast, at: Date): string {
+  const shifted = new Date(at.getTime() + forecast.utcOffsetSeconds * 1000 + 30 * 60 * 1000);
+  return `${shifted.toISOString().slice(0, 13)}:00`;
+}
+
+/**
+ * The forecast for the hour a session runs in — what "will it rain during the
+ * race" actually asks. Returns null for a session with no known hour
+ * (`dateOnly`), or one outside the 16-day horizon; callers fall back to the
+ * day's forecast, which is the only honest answer when there is no time.
+ */
+export function forecastAtSession(
+  forecast: WeatherForecast,
+  session: { start: Date; dateOnly?: boolean },
+): HourlyWeather | null {
+  if (session.dateOnly) return null;
+  const key = venueLocalIsoHour(forecast, session.start);
+  return forecast.hourly.find(h => h.time === key) ?? null;
 }
 
 // WMO weather code → short label. https://open-meteo.com/en/docs#weathervariables
