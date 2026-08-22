@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { Coffee, Heart, X } from 'lucide-react';
 import { useFocusTrap } from '@/lib/useFocusTrap';
@@ -10,6 +11,7 @@ import {
   createEngagedClock,
   dueAsk,
   hasOptedOut,
+  isQuietRoute,
   parseThresholds,
   parseVisit,
   serializeVisit,
@@ -55,6 +57,7 @@ const FOCUS_RING =
  */
 export function SupportPrompt() {
   const { isLoaded, isSignedIn, user } = useUser();
+  const pathname = usePathname();
   const [stage, setStage] = useState<AskStage | null>(null);
   // Entrance flag, flipped a frame after the panel mounts so the closed-state
   // render lands first and the CSS transition plays (CookieConsent's pattern).
@@ -135,6 +138,12 @@ export function SupportPrompt() {
   useEffect(() => {
     const clock = ensureClock();
     if (stage !== null) return;
+    // Nothing can ever be shown again this visit, so stop counting entirely —
+    // an idle tab was otherwise writing sessionStorage once a second, forever,
+    // for no possible effect (measured on prod: the total kept climbing long
+    // after `done` was set). The effect re-runs when `stage` returns to null,
+    // which is the same moment `done` flips, so this is reached.
+    if (visitRef.current.done || optedOut) return;
     const id = window.setInterval(() => {
       visitRef.current = { ...visitRef.current, ms: clock.tick(Date.now()) };
       persist();
@@ -146,6 +155,13 @@ export function SupportPrompt() {
       // The consent modal owns the screen on a first visit; two stacked
       // dialogs is the definition of infuriating.
       if (isConsentPending()) return;
+      // Never over an auth flow or a form somebody is mid-way through.
+      if (isQuietRoute(pathname)) return;
+      // Any other dialog already has the screen and the focus. This one sits at
+      // z-70, ABOVE ContactModal's z-65, so without this it would appear on top
+      // of a half-typed contact message and take the keyboard with it. Every
+      // dialog in the tree renders null when closed, so a hit means one is open.
+      if (document.querySelector('[role="dialog"]')) return;
       // A session is running on this page and the reader is watching timing.
       // `.live-pulse` is the site-wide live marker (app/globals.css: "used on
       // actually-live indicators only") and it is the honest client-side
@@ -158,7 +174,7 @@ export function SupportPrompt() {
       setStage(due);
     }, TICK_MS);
     return () => window.clearInterval(id);
-  }, [stage, isLoaded, optedOut, ensureClock, persist]);
+  }, [stage, isLoaded, optedOut, pathname, ensureClock, persist]);
 
   // Play the entrance a frame after the panel appears; reset when it closes.
   useEffect(() => {
@@ -220,7 +236,7 @@ export function SupportPrompt() {
       aria-modal="true"
       aria-labelledby="support-prompt-title"
       data-state={entered ? 'open' : 'closed'}
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/55 p-3 md:items-center md:p-4"
+      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/55 p-3 motion-safe:transition-opacity motion-safe:duration-200 motion-safe:ease-out data-[state=closed]:motion-safe:opacity-0 data-[state=open]:motion-safe:opacity-100 md:items-center md:p-4"
       onClick={softDismiss}
     >
       <div

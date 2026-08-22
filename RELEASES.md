@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.331.2 — 2026-08-22
+
+**The support note now keeps out of the way properly.** It will not appear while you are signing in, changing your settings, writing a post, or part-way through the contact form, and it will not open on top of another window that is already asking you something. It also stops keeping time once you have dismissed it for good, rather than counting quietly in the background.
+
 ## 0.331.1 — 2026-08-22
 
 **Weekend weather now tells you about each session, not each day.** A single figure for Saturday could not answer the only question that matters, which is whether it rains during the running: at Zandvoort the day read 98% rain while qualifying, four hours after the sprint, sat at 33%. Every session on a weekend page now carries the forecast for the hour it starts, with its start time on the tile. Sessions whose time has not been confirmed yet still show the day's range, marked TBC.

@@ -175,6 +175,31 @@ export function parseThresholds(raw: string | null | undefined): [number, number
   return [first, second];
 }
 
+/**
+ * Route prefixes the prompt must never appear over. Two kinds, and both are the
+ * same mistake: interrupting somebody mid-task.
+ *  - **Auth flows** (`/sign-in`, `/sign-up`) — a donation modal over a sign-in
+ *    form is the worst possible moment, and these live in the `(app)` group, so
+ *    the layout-level prompt reaches them.
+ *  - **Anything with a form in it** (`/studio` while an author drafts a post,
+ *    `/contact` and `/write-for-us` mid-message, `/settings` mid-change). The
+ *    prompt locks body scroll and steals focus, which loses keystrokes.
+ * Engaged time still accrues on these pages; the ask simply lands elsewhere.
+ */
+export const QUIET_ROUTES: readonly string[] = [
+  '/sign-in',
+  '/sign-up',
+  '/studio',
+  '/contact',
+  '/settings',
+  '/write-for-us',
+];
+
+export function isQuietRoute(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  return QUIET_ROUTES.some(r => pathname === r || pathname.startsWith(`${r}/`));
+}
+
 /** True when this account has silenced the prompt for good. Any non-empty
  *  string counts, so bumping OPT_OUT_VALUE does NOT re-prompt existing
  *  opt-outs by accident — resetting them is a deliberate migration, not a
