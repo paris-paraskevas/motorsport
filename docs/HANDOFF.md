@@ -6,7 +6,62 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-21 (LATEST, session 31 FINAL — Dutch GP preview published, /app rebuilt around the blog, sign-in fixed, docs de-staled) — `main` = **0.330.4**, zero open PRs, prod verified
+## ⚡ Next session pickup — 2026-08-22 (LATEST, session 32 FINAL — the unsupervised run: support prompt shipped, weather rebuilt around sessions, nine merges) — `main` = **0.333.1**, zero open PRs, every merge prod-verified
+
+### ✅ Shipped — 9 merges, 0.330.5 → 0.333.1, each one prod-verified before the next was pushed
+
+| Version | PR | What |
+|---|---|---|
+| **0.331.0** | #759 | **The dwell-triggered support prompt.** Two asks, engaged-time accumulator, auth-scoped dismissal via Clerk `unsafeMetadata`, legal copy in the same PR. |
+| **0.331.1** | #760 | **Weather per session, not per day.** Open-Meteo `hourly` added; Zandvoort's Saturday read 98% rain while the Sprint hour was 94% and Qualifying 33%. |
+| **0.331.2** | #761 | **Audit of #759 + #760** — four defects in the prompt, one in the weather footer. |
+| **0.331.3** | #762 | **"ALSO TODAY" was a lie from Friday evening on.** Names the weekday; "today" decided in the browser. |
+| **0.332.0** | #763 | **Forecast across a session's running**, plus a two-hours-either-side window on session pages. Also the "classification not available" copy (item 6). |
+| **0.332.1** | #764 | **Series reference strip: two rows of boxed 40 px targets**, full width. |
+| **0.332.2** | #765 | **Items 3, 4, 5**: `prod-weekend8.md` and `NotificationBell.tsx` deleted, onboarding docs collapsed to one. |
+| **0.333.0** | #766 | **Two Learn answers** (operator-asked): circuits leaving/joining the calendar, and driver pay through the decades. |
+| **0.333.1** | #767 | **Item 2: the session-30 evaluation**, plus `champion-notes-integrity.test.ts` guarding all 45 notes. |
+
+Suite 1133 → **1188**. Bundle 10176.64 → **10186.22 KiB gzipped** (+9.6 KiB across the whole session, **53.8 KiB** of headroom left).
+
+### 🔴 The audit found five real defects in work that had already passed every gate
+
+This is the part worth reading. All five were invisible to tsc, lint, vitest and `next build`.
+
+1. **The support prompt could skip ask 1 entirely.** `setStage` only lands on the next render, so on a busy page the 1 s interval fired again, read the freshly-raised `shown`, and promoted straight to ask 2 — **reproduced live, showing "Last time I'll ask" as the first thing a reader ever saw.** Fixed with a synchronous `stageRef` guard. Caught *before* merge, by browser-verifying rather than trusting the gates.
+2. **It could open over a sign-in form or a half-typed message.** `/sign-in`, `/sign-up`, `/studio`, `/contact`, `/settings`, `/write-for-us` all live in `(app)`, so a layout-level prompt reached every one. And at `z-[70]` it sits *above* `ContactModal`'s `z-[65]`. Now refused per tick on both counts.
+3. **Its timer never stopped.** After a permanent dismissal the interval kept writing `sessionStorage` once a second for the tab's life — **measured on prod, the total climbed 79 s → 92 s after the visit was already over.**
+4. **The weather footer shipped a missing space.** React's SSR ate the whitespace after `{circuit.name}`, so prod served `Circuit Zandvoort· forecast`. Same class as grepping across a JSX interpolation; the line is one template string now.
+5. **The prompt's backdrop snapped in** at full opacity while the panel animated, because its `data-state` attribute had no consumer.
+
+### 🟡 Left blocked or noted, deliberately
+
+- **`/f1/compare`'s trend chart is UNVERIFIED** — it is behind a sign-in gate, so it cannot be exercised signed out. **One operator click-through settles the last of the three unclicked consumers.** Team pages verified (6 lines, 686×320, zero height shift); blog chart embeds have **no live instance at all** (all 20 published posts checked).
+- **The signed-in support opt-out is unverified end to end.** Writing `unsafeMetadata` needs a real Clerk session. The code is typed against the installed package and the visit flag takes effect first, so a failed write costs only this visit's silence.
+- **`content/legal/privacy.md` is materially stale beyond the lines this session touched** — it still names Vercel as host and KV store, and claims consent is captured by "Google's Consent Management Platform (Funding Choices)", which the custom modal replaced in 0.12.6. Not touched: rewriting a privacy policy's processor list is not a call to make unsupervised.
+- **The series strip's placement reverses yesterday's decision.** Boxed, legible targets need ~1,180 px and that header band is 508. One-line revert if the old placement is preferred.
+- `NOTED`: `SessionCard`'s `weather?: DailyWeather` prop has **zero callers**; `app/(app)/api/push/history/route.ts` is now a reader with no UI; `ChartEmbed` uses `rounded-xl` against the sharp-corners principle.
+
+### 🔵 Process learnings (durable, session 32)
+
+1. **Browser verification is not a formality and it is not the gate chain.** Two of the five defects were found by clicking, one by *measuring on prod after the merge*. The operator's prediction that gated work would still be broken was correct, five times.
+2. **A one-second interval plus React state is a race.** Anything an interval reads and writes needs a ref, not state — state is a next-render promise.
+3. **Verify the API shape against the live API, not a search summary.** Open-Meteo's hourly block was probed before the call was written (384 rows, ~15 KB, all six variables). And a search summary put Senna's million-a-race deal at **Williams 1994, $20m**; fetching the source showed **McLaren 1993, $16m over sixteen races**. RULE #1 earned its keep on a featured page.
+4. **A check that fires on correct data is worse than no check.** A win-count guard flagged the 2001 champion note for "51 wins" — Prost's *career* record, correctly cited. Keeping it meant special-casing the prose, so it was dropped and the reasoning recorded.
+5. **Clear a race with a route without a writer.** Verifying `sessionStorage` behaviour was impossible while the old page's interval kept rewriting it; navigating to `/` (marketing, no `SupportPrompt`) first made every test deterministic.
+6. **Deploys ran 6 minutes, nine times out of nine.** Merge → `/changelog` flip, polled by background curl. No GitHub Actions run exists to watch.
+
+### 🩹 Owed (operator) — carried forward
+
+- **Decide**: retheme `/app` dark, `PreviewNews` on the weekend page, box depth beyond `/app`, and whether the series strip keeps its new placement.
+- **Click through**: `/f1/compare` signed in (the chart), and the support prompt's "Don't show this again" signed in (the Clerk write).
+- **The image session** — still the biggest outstanding job. **PSI re-measure** of `/`, standings and a weekend page.
+- **Fact pack B** still records Norris' 2025 Dutch GP retirement as a "power-unit failure"; it was a broken oil line. Wrong at source, and it will re-infect the next post that reads it.
+- Long-carried: key rotations.
+
+---
+
+## ⚡ Session 31 pickup — 2026-08-21 (session 31 FINAL — Dutch GP preview published, /app rebuilt around the blog, sign-in fixed, docs de-staled) — `main` = **0.330.4**, zero open PRs, prod verified
 
 ### 🚨 SESSION 32 RUNS UNSUPERVISED — read this before anything else
 

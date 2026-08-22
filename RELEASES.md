@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.333.2 — 2026-08-22
+
+**Internal housekeeping.** Session records and planning notes; nothing user-facing changed.
+
 ## 0.333.1 — 2026-08-22
 
 **Internal housekeeping.** An audit of earlier work, and a new automated check on the championship notes that appear on the "who won" pages, so the figures in the prose can never drift from the table beside them. Nothing user-facing changed.

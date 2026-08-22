@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.333.2 — 2026-08-22
+
+### Internal
+- **Session-32 close.** `docs/HANDOFF.md` gains a session-32 block: the nine merges, the **five real defects the post-merge audits found in work that had already passed every gate** (the support prompt able to skip ask 1 and open with "Last time I'll ask"; the prompt reaching sign-in, studio and contact forms; its timer never stopping, measured on prod climbing 79 s to 92 s after the visit ended; the weather footer's SSR-eaten space; the backdrop with an unconsumed `data-state`), and what was deliberately left blocked.
+- `docs/next-session.md` rewritten around what is actually left: four items that need the operator and only the operator (`/f1/compare` signed in, the signed-in Clerk opt-out write, whether the series strip keeps its new placement, and the materially stale `privacy.md` processor list), then the shipping queue in order of value.
+- `SCHEDULE.md` gains the day's outcomes. `IDEAS.md` triaged: the Fri/Sat/Sun day page promoted with a note that `forecastWindow()` and `HourlyForecastRows` already exist for it, and a new section collecting the four dead-code and stale-copy findings the audits turned up, each with why it is the wrong thing for the next person to touch.
+
 ## 0.333.1 — 2026-08-22
 
 ### Added
