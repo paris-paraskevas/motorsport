@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.332.0 — 2026-08-22
+
+### Added
+- **The forecast now spans a session rather than describing its first minute** (operator, 2026-08-22: "the forecast can be for the hours that the sessions hold, e.g. race is 1,5 hours so needs 3-5 forecast"). 0.331.1 fixed day-vs-session; this fixes start-hour-vs-running.
+  - `forecastWindow(forecast, from, to)` returns every hourly reading covering a span, snapping the ends **outward** so a 15:00-16:45 race yields 15:00, 16:00 and 17:00, while a session ending exactly on the hour does not over-reach. Selection is a string compare on the fixed-width venue-local keys, so no date arithmetic is involved.
+  - `thinHours(rows, max)` keeps the **first and last** hour and spreads the rest evenly. A 24-hour race would otherwise render a 25-row tile, and truncating to the first four would silently imply the race ends at 04:00.
+  - `components/weekend/HourlyForecastRows.tsx` is the one renderer for an hourly row (time · icon · temperature · rain chance), shared by both surfaces so a reading cannot be formatted two ways on two pages. Weekend tiles cap at 4 rows; the session page at 7.
+- **Session pages carry the weather around their session** (`components/weekend/SessionForecast.tsx`) — two hours before the start to two hours after the end, venue local. Placed exactly where the operator asked: on the page that otherwise says only that a classification has not arrived. Self-suppressing on no circuit match, no forecast, a `dateOnly` session, or anything outside Open-Meteo's 16-day horizon, so a race from last season silently renders nothing rather than a meaningless "forecast". The venue falls back to the weekend's location when a single ICS entry carries none, which is how the rest of that page already resolves it.
+
+### Fixed
+- **The "classification not available" copy read as a fault half an hour after a session** (AUTONOMOUS item 6; it read that way on Dutch GP Friday). It now says timing usually lands shortly after a session ends, for both the F1 and the race-like branches. The WRC and no-practice-feed branches were already accurate and are untouched.
+- 7 new tests (`lib/weather.test.ts`, 14 in the file); suite 1168 → **1175**. Bundle 10184.55 → **10186.22 KiB gzipped** (+1.67 KiB), 53.78 KiB inside the ceiling.
+
 ## 0.331.3 — 2026-08-22
 
 ### Fixed

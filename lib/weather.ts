@@ -229,6 +229,53 @@ export function forecastAtSession(
   return forecast.hourly.find(h => h.time === key) ?? null;
 }
 
+const HOUR_MS = 3_600_000;
+
+/** A venue-local `YYYY-MM-DDTHH:00` key, snapped DOWN or UP to the hour. Window
+ *  ends snap outward so the whole span is covered — a 15:00-16:45 race wants
+ *  15:00 through 17:00, not 15:00 through 16:00. */
+function snappedHourKey(forecast: WeatherForecast, at: Date, mode: 'floor' | 'ceil'): string {
+  const shifted = at.getTime() + forecast.utcOffsetSeconds * 1000;
+  const snapped = (mode === 'floor' ? Math.floor(shifted / HOUR_MS) : Math.ceil(shifted / HOUR_MS)) * HOUR_MS;
+  return `${new Date(snapped).toISOString().slice(0, 13)}:00`;
+}
+
+/**
+ * Every hourly reading covering `from`..`to`, inclusive of the hours either end
+ * sits in. A race is an hour and a half long, so one reading at its start does
+ * not describe it (operator, 2026-08-22) — and on a session page the interesting
+ * window is wider still, a couple of hours either side of the running.
+ *
+ * Keys are fixed-width venue-local ISO, so a string compare is a chronological
+ * compare and no date arithmetic is needed to select the range.
+ */
+export function forecastWindow(
+  forecast: WeatherForecast,
+  from: Date,
+  to: Date,
+): HourlyWeather[] {
+  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return [];
+  const lo = snappedHourKey(forecast, from, 'floor');
+  const hi = snappedHourKey(forecast, to, 'ceil');
+  if (hi < lo) return [];
+  return forecast.hourly.filter(h => h.time >= lo && h.time <= hi);
+}
+
+/**
+ * Reduce a run of hourly rows to at most `max`, keeping the FIRST and LAST and
+ * spreading the rest evenly. A 24-hour endurance race would otherwise render a
+ * 25-row tile; thinning keeps the shape of the day (it still starts at the green
+ * flag and ends at the chequer) instead of truncating to the first few hours and
+ * silently implying the race ends at 04:00.
+ */
+export function thinHours(rows: HourlyWeather[], max: number): HourlyWeather[] {
+  if (max < 2 || rows.length <= max) return rows;
+  const step = (rows.length - 1) / (max - 1);
+  const out: HourlyWeather[] = [];
+  for (let i = 0; i < max; i++) out.push(rows[Math.round(i * step)]);
+  return out;
+}
+
 // WMO weather code → short label. https://open-meteo.com/en/docs#weathervariables
 const WMO_LABELS: Record<number, { label: string; emoji: string }> = {
   0: { label: 'Clear', emoji: '☀️' },

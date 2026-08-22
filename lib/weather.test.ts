@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   forecastAtSession,
   forecastFor,
+  forecastWindow,
+  thinHours,
   venueLocalIsoDate,
   venueLocalIsoHour,
   weatherLabel,
@@ -11,7 +13,7 @@ import {
 /** Zandvoort in August: UTC+2. Hourly rows are venue-local, as Open-Meteo
  *  returns them under timezone=auto (verified against the live API 2026-08-22). */
 function forecast(utcOffsetSeconds = 7200): WeatherForecast {
-  const hours = ['12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+  const hours = ['12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
   return {
     lat: 52.389,
     lon: 4.541,
@@ -77,6 +79,67 @@ describe('forecastAtSession', () => {
     expect(forecastAtSession(f, { start: new Date('2026-08-22T13:00:00Z') })).toBeNull();
     // The daily fallback the callers use is still there.
     expect(forecastFor(f, '2026-08-22')).not.toBeNull();
+  });
+});
+
+describe('forecastWindow', () => {
+  const f = forecast();
+
+  it('covers every hour a session runs in, snapping outward', () => {
+    // A 15:00-16:45 venue-local race: 13:00Z start, 14:45Z end.
+    const rows = forecastWindow(f, new Date('2026-08-22T13:00:00Z'), new Date('2026-08-22T14:45:00Z'));
+    expect(rows.map(r => r.time)).toEqual(['2026-08-22T15:00', '2026-08-22T16:00', '2026-08-22T17:00']);
+  });
+
+  it('does not over-reach when a session ends exactly on the hour', () => {
+    // 15:00-16:00 local wants two readings, not three.
+    const rows = forecastWindow(f, new Date('2026-08-22T13:00:00Z'), new Date('2026-08-22T14:00:00Z'));
+    expect(rows.map(r => r.time)).toEqual(['2026-08-22T15:00', '2026-08-22T16:00']);
+  });
+
+  it('pads either side for the session page window', () => {
+    const start = new Date('2026-08-22T13:00:00Z');
+    const end = new Date('2026-08-22T14:30:00Z');
+    const rows = forecastWindow(
+      f,
+      new Date(start.getTime() - 2 * 3_600_000),
+      new Date(end.getTime() + 2 * 3_600_000),
+    );
+    expect(rows[0].time).toBe('2026-08-22T13:00');
+    expect(rows[rows.length - 1].time).toBe('2026-08-22T19:00');
+  });
+
+  it('returns nothing outside the horizon or for an inverted range', () => {
+    expect(forecastWindow(f, new Date('2026-09-30T10:00:00Z'), new Date('2026-09-30T12:00:00Z'))).toEqual([]);
+    expect(forecastWindow(f, new Date('2026-08-22T15:00:00Z'), new Date('2026-08-22T10:00:00Z'))).toEqual([]);
+    expect(forecastWindow(f, new Date('invalid'), new Date('2026-08-22T12:00:00Z'))).toEqual([]);
+  });
+});
+
+describe('thinHours', () => {
+  const rows = Array.from({ length: 25 }, (_, i) => ({
+    time: `2026-08-22T${String(i).padStart(2, '0')}:00`,
+    tempC: 15,
+    precipProb: 0,
+    precipMm: 0,
+    windKph: 10,
+    weatherCode: 2,
+  }));
+
+  it('leaves a short run alone', () => {
+    expect(thinHours(rows.slice(0, 3), 4)).toHaveLength(3);
+    expect(thinHours(rows.slice(0, 4), 4)).toHaveLength(4);
+  });
+
+  it('keeps the first and last hour of a long run', () => {
+    const out = thinHours(rows, 4);
+    expect(out).toHaveLength(4);
+    expect(out[0].time).toBe(rows[0].time);
+    expect(out[3].time).toBe(rows[24].time);
+  });
+
+  it('spreads the middle evenly rather than truncating', () => {
+    expect(thinHours(rows, 5).map(r => r.time.slice(11, 13))).toEqual(['00', '06', '12', '18', '24']);
   });
 });
 
