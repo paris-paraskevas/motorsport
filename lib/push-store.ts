@@ -24,7 +24,9 @@ export async function saveSubscription(
   label?: string,
 ): Promise<void> {
   if (!isKvConfigured()) {
-    throw new Error('Vercel KV is not configured. Connect KV in the Vercel Storage tab.');
+    throw new Error(
+      'KV is not configured. Set KV_REST_API_URL and KV_REST_API_TOKEN (Upstash Redis) on the Worker.',
+    );
   }
   const id = endpointHash(sub.endpoint);
   const value: StoredSubscription = {

@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.1 — 2026-08-22
+
+### Fixed
+- **Auditing 0.334.0 on prod found `/do-not-sell` in worse shape than the privacy policy had been, and this is the serious version of the defect: it documented a statutory opt-out route that does not exist.** Its "How to opt out" section told California residents to "re-open Google's consent UI at any time via the small 'Consent' / shield icon Google injects on the page" — there is no such icon, because Funding Choices was replaced by our own modal in 0.12.6. A CCPA/CPRA opt-out is a legal right, and the page's instructions for exercising it pointed at a control that has not existed for months.
+  - Rewritten with **three routes, two of them immediate**: turn Advertising off in our modal (which appears on a first visit **everywhere**, not only on EEA/UK/Swiss connections as the page claimed, and defaults to off), **send a GPC signal** (now genuinely honoured as of 0.334.0, and documented here for the first time — the page's own meta description had been claiming it while the body never mentioned it), or email. The old text also named buttons that do not exist ("Manage options"); the real ones are Allow all / Essential only / Customize.
+  - Verified on prod first: the privacy rewrite itself is clean — **zero** occurrences of `Vercel`, `Funding Choices`, `shield icon` or `Google's Consent Management Platform` on the live page, all six expected strings present, and GPC confirmed against the deployed bundle (stored `{analytics:true, advertising:true}` rendering off + disabled, saving `false`, `gtag` sending `denied` across all six signals).
+- **Two remaining human-facing "Vercel KV" strings fixed.** `/settings/assistant` told users "Data comes from Vercel KV" (now the KV store, and it says the assistant is currently switched off); `lib/push-store.ts` threw "Connect KV in the Vercel Storage tab", an instruction that cannot be followed on Cloudflare. Both are read by a person, unlike the six remaining code comments, which are logged in `IDEAS.md` as a one-word sweep.
+
 ## 0.334.0 — 2026-08-22
 
 ### Fixed

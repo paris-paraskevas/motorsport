@@ -1,6 +1,6 @@
 # Do Not Sell or Share My Personal Information
 
-_Last updated: 2026-05-19_
+_Last updated: 2026-08-22_
 
 Under the **California Consumer Privacy Act (CCPA)** and the **California Privacy Rights Act (CPRA)**, California residents have the right to opt out of the "sale" or "sharing" of their personal information.
 
@@ -14,11 +14,13 @@ We use **Google AdSense** to display ads on the Site. Under the CCPA's broad def
 
 ## How to opt out
 
-You can opt out of sharing for advertising in two ways:
+You can opt out of sharing for advertising in three ways, and the first two take effect immediately without contacting us.
 
-1. **Through Google's consent UI.** On EEA/UK/Swiss IPs a banner appears on first visit. From California you can re-open Google's consent UI at any time via the small "Consent" / shield icon Google injects on the page. Choose to reject, or open Manage options and turn off the advertising category. This sets Google Consent Mode to `ad_storage: denied` and `ad_personalization: denied`, suppressing ad cookies and personalised targeting.
+1. **Turn off Advertising in our cookie modal.** The modal appears on your first visit, **everywhere, not only on EEA/UK/Swiss connections**, and the Advertising category is **off by default** until you switch it on. To change it later, use the **Manage cookies** link in the footer of any page, which reopens the same modal. Your choice sets Google Consent Mode to `ad_storage: denied`, `ad_user_data: denied` and `ad_personalization: denied`, which suppresses ad cookies and personalised targeting.
 
-2. **Email request.** Send a request to **pparaskevas.dev@gmail.com** stating that you are a California resident and that you wish to opt out of sharing under the CCPA. We will confirm within 15 days.
+2. **Send a Global Privacy Control signal.** If your browser or a browser extension sends **GPC**, we honour it: advertising and analytics are held off on every visit, whatever the modal is set to, and we cannot store a grant that contradicts it. The modal will tell you the signal is being honoured. This is the fastest route, because it applies to every site that respects it, not just this one.
+
+3. **Email request.** Send a request to **pparaskevas.dev@gmail.com** stating that you are a California resident and that you wish to opt out of sharing under the CCPA. We will confirm within 15 days.
 
 ## Other CCPA / CPRA rights
 
