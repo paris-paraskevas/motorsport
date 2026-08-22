@@ -1384,6 +1384,27 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Sat 2026-08-22 (session 32 — the UNSUPERVISED run: support prompt, then the operator's five)
+
+Brief: no operator present, standing authority to branch → gate → PR → **merge** → prod-verify → **audit**, looping until the AUTONOMOUS list was done or blocked. Five more items arrived mid-session by message.
+
+- → done: **the dwell-triggered support prompt** (0.331.0 #759) to the shape settled across three rounds. Engaged-time accumulator (pure, clock-injected, 20 tests), two asks and never a third, auth-scoped dismissal via Clerk `unsafeMetadata`, suppressed under the consent modal and while `.live-pulse` is on the page, legal copy in the same PR. **A defect was caught by browser-verifying before merge**: the ladder could skip ask 1 and open with "Last time I'll ask" as the first thing a reader ever saw.
+- → done: **weather rebuilt around sessions**, in two passes. 0.331.1 #760 read the forecast at each session's hour instead of the day's (Zandvoort's Saturday said 98% rain while the Sprint hour was 94% and Qualifying 33%); 0.332.0 #763 extended it across a session's whole running and gave session pages a two-hours-either-side window. Open-Meteo's hourly shape was probed against the live API first.
+- → done: **"ALSO TODAY" stopped lying** (0.331.3 #762) — names the weekday, and decides "today" in the browser because `/app` is ISR-cached in a UTC worker.
+- → done: **the series reference strip** (0.332.1 #764) — two rows of boxed 40 px targets, full width. Reverses the 08-21 placement, because 13 legible boxed chips need ~1,180 px and that band is 508.
+- → done: **housekeeping** (0.332.2 #765) — `prod-weekend8.md` and dead `NotificationBell.tsx` deleted, the two onboarding docs collapsed to one with three stale claims corrected.
+- → done: **two Learn answers** (0.333.0 #766) — circuits leaving/joining the F1 calendar, and driver pay through the decades. RULE #1 caught a wrong headline figure mid-draft.
+- → done: **the session-30 evaluation** (0.333.1 #767), plus `champion-notes-integrity.test.ts` guarding all 45 notes. Audit found no errors, so the deliverable is the guard.
+- → done: **the audit loop itself** (0.331.2 #761) — five real defects in already-gated work, three of them in the support prompt.
+- → blocked, deliberately: `/f1/compare`'s chart (sign-in gated), the signed-in support opt-out (needs a real Clerk session), the stale `privacy.md` processor list (not an unsupervised call).
+- → parked as ideas, not built: the Fri/Sat/Sun day page, and Street View corner tours + layout history on the track pages. Both in `IDEAS.md` Inbox.
+
+Won't-touch honoured: no prod service-role key, no blog publishing, no prod data writes, nothing outside the bundle's headroom, no check weakened to go green. Bundle 10176.64 → 10186.22 KiB gzipped, 53.8 KiB spare.
+
+Active: _(operator away; no `[+Nm]` prefixes captured)_
+
+---
+
 ### Thu 2026-08-20 (session 30 — PSI first, then blog fact packs + IDEAS triage)
 
 Operator's order: the PageSpeed regression is handled FIRST (new landing: mobile 69, LCP 5.7 s, SI 10.8 s), then the two blog fact packs (operator writes, Claude supplies data only), plus an IDEAS.md triage read-out ("content close to perfect", clean it up).
