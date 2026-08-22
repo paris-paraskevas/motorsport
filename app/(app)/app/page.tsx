@@ -112,13 +112,18 @@ export default async function Home() {
       // data — circuits.json carries lat/lon only and Open-Meteo resolves the
       // zone itself at request time).
       // Still to come only. Without the `start > now` guard a session that has
-      // already run stays listed under "Also today" — once FP1 starts, it would
-      // sit beside Sprint Qualifying reading as though it were upcoming.
-      alsoToday: nextUp
+      // already run stays listed as upcoming — once FP1 starts, it would sit
+      // beside Sprint Qualifying reading as though it were still to come.
+      //
+      // NOT "also today": this is `nextUp`'s day, and on a Friday evening that
+      // is Saturday. The heading is named by SessionDayNote from `alsoDayIso`,
+      // in the browser, because only the device knows what "today" is.
+      alsoSameDay: nextUp
         ? (groupByDay(timed).find(d => d.sessions.some(x => x.uid === nextUp.uid))?.sessions ?? [])
             .filter(x => x.uid !== nextUp.uid && x.start > now)
             .map(x => ({ name: x.title, startIso: x.start.toISOString() }))
         : [],
+      alsoDayIso: nextUp ? nextUp.start.toISOString().slice(0, 10) : null,
     };
   }
 

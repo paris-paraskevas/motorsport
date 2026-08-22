@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatRelative, isThisWeekend, isWithinNextNDays, formatLocal } from './date';
+import { formatRelative, isThisWeekend, isWithinNextNDays, formatLocal, weekdayOf, dayNoteLabel } from './date';
 
 const NOW = new Date('2026-05-13T12:00:00Z');  // Wed
 const FRI = new Date('2026-05-15T15:00:00Z');
@@ -60,5 +60,37 @@ describe('formatLocal', () => {
   it('formats in Europe/Athens by default', () => {
     // 2026-05-15T15:00:00Z = 18:00 Athens (EEST, UTC+3)
     expect(formatLocal(FRI)).toMatch(/Fri.*18:00/);
+  });
+});
+
+describe('weekdayOf', () => {
+  it('names the weekday of a bare date', () => {
+    expect(weekdayOf('2026-08-21')).toBe('Friday');
+    expect(weekdayOf('2026-08-22')).toBe('Saturday');
+    expect(weekdayOf('2026-08-23')).toBe('Sunday');
+  });
+
+  it('returns empty for junk rather than throwing at a reader', () => {
+    expect(weekdayOf('')).toBe('');
+    expect(weekdayOf('not-a-date')).toBe('');
+  });
+});
+
+describe('dayNoteLabel', () => {
+  it('says "today" only when the day really is the reader’s own date', () => {
+    expect(dayNoteLabel('2026-08-22', '2026-08-22')).toBe('Also today');
+    expect(dayNoteLabel('2026-08-23', '2026-08-22')).toBe('Also Sunday');
+    expect(dayNoteLabel('2026-08-22', '2026-08-23')).toBe('Also Saturday');
+  });
+
+  it('never claims "today" when the reader’s date is unknown', () => {
+    // SSR and the hydration render pass null: the server cannot know, and /app
+    // is ISR-cached for five minutes in a UTC worker, so a baked "today" would
+    // be both stale and in the wrong timezone.
+    expect(dayNoteLabel('2026-08-22', null)).toBe('Also Saturday');
+  });
+
+  it('degrades to a bare "Also" if the day is unusable', () => {
+    expect(dayNoteLabel('nonsense', null)).toBe('Also');
   });
 });

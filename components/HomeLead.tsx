@@ -3,6 +3,7 @@ import { seriesInk } from '@/lib/site';
 import { sessionSlug } from '@/lib/weekend';
 import type { PodiumEntry } from '@/lib/home-results';
 import { NextRaceCountdown } from '@/components/NextRaceCountdown';
+import { SessionDayNote } from '@/components/SessionDayNote';
 
 // The home's editorial lead (design handoff §4.1, panels 1b/2a): four fixed
 // blocks that answer "what just happened, and what did it change" — the
@@ -87,7 +88,13 @@ export interface HomeLeadLiveWeekend {
    *  vanishing at zero — the flip is decided client-side, see
    *  NextRaceCountdown's liveUntil. */
   nextSession: { name: string; startIso: string; endIso: string } | null;
-  alsoToday: { name: string; startIso: string }[];
+  /** Other sessions sharing `nextSession`'s day — which is NOT necessarily
+   *  today, so the heading names the day rather than asserting one. */
+  alsoSameDay: { name: string; startIso: string }[];
+  /** The day those sessions fall on, YYYY-MM-DD, on the same UTC bucketing
+   *  `groupByDay` uses. A bare date, not an instant, so SessionDayNote can name
+   *  its weekday identically on the server and the client. */
+  alsoDayIso: string | null;
 }
 
 function timeLabel(iso: string): string {
@@ -325,13 +332,13 @@ export function HomeLead({
             </div>
           )}
 
-          {liveWeekend.alsoToday.length > 0 && (
+          {liveWeekend.alsoSameDay.length > 0 && liveWeekend.alsoDayIso && (
             <>
               <span className="mt-4 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                Also today
+                <SessionDayNote dayIso={liveWeekend.alsoDayIso} />
               </span>
               <ul className="mt-1">
-                {liveWeekend.alsoToday.map(s => (
+                {liveWeekend.alsoSameDay.map(s => (
                   <li
                     key={`${s.name}-${s.startIso}`}
                     className="flex items-baseline justify-between gap-3 border-b border-border py-1.5 last:border-b-0"

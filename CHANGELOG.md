@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.331.3 — 2026-08-22
+
+### Fixed
+- **"This weekend" said ALSO TODAY whether or not it was today** (operator bug, 2026-08-22: "show day of the week and only show also today if the sessions' dates are the system's date"). The rows under that heading are the siblings of the **next** session, which from Friday evening onwards are Saturday's — so the heading was a lie for most of every race weekend. `HomeLeadLiveWeekend.alsoToday` is renamed `alsoSameDay` because that is what it always was, and a new `alsoDayIso` carries the day itself.
+  - **"Today" is now decided in the browser, never on the server** (`components/SessionDayNote.tsx`, using the `useSyncExternalStore` client probe already proven in `components/LocalTime.tsx`). `/app` is `revalidate = 300` and the Worker runs in UTC, so a server-baked "today" is both up to five minutes stale and in the wrong timezone for most readers — the same mistake as the server-baked live pill fixed in 0.330.0. Before hydration the label is the plain weekday, which is true for everyone; "today" can only appear once the device clock has been read.
+  - `dayNoteLabel()` + `weekdayOf()` live in `lib/date.ts` beside their siblings rather than in a new 28-line module, and take the viewer's date as an argument (null = unknown) so both branches are testable without a DOM. The weekday is derived from a bare `YYYY-MM-DD` at **midday UTC**, which is identical on server and client and clear of every timezone's date boundary, so there is no hydration divergence in the weekday itself — only the today/not-today swap.
+  - 5 new tests in `lib/date.test.ts`; suite 1163 → **1168**.
+
 ## 0.331.2 — 2026-08-22
 
 ### Fixed

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.331.3 — 2026-08-22
+
+**The weekend band names the right day.** The list of other sessions was headed "Also today" even when those sessions were the following day, which it usually was by Friday evening. It now says the day of the week, and only says "today" when the day really is today, read from your own device rather than baked into the page.
+
 ## 0.331.2 — 2026-08-22
 
 **The support note now keeps out of the way properly.** It will not appear while you are signing in, changing your settings, writing a post, or part-way through the contact form, and it will not open on top of another window that is already asking you something. It also stops keeping time once you have dismissed it for good, rather than counting quietly in the background.
