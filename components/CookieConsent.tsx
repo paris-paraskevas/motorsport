@@ -6,7 +6,7 @@ const STORAGE_KEY = 'paddock:consent';
 const TWELVE_MONTHS_MS = 365 * 24 * 60 * 60 * 1000;
 const OPEN_EVENT = 'open-cookie-consent';
 
-type ConsentPrefs = {
+export type ConsentPrefs = {
   analytics: boolean;
   advertising: boolean;
   functional: boolean;
@@ -43,6 +43,43 @@ function loadStored(): StoredConsent | null {
 }
 
 /**
+ * Global Privacy Control: a browser-level "do not sell or share" signal.
+ *
+ * `/do-not-sell` has told visitors we honour it ("including the GPC signal we
+ * honor") and the privacy policy says so too, but nothing in the code read it
+ * until 0.334.0 — a published promise with no implementation behind it. It is
+ * treated as a standing opt-out of analytics and advertising that OVERRIDES a
+ * stored grant, so a visitor who later turns the signal on is covered without
+ * having to revisit the modal.
+ *
+ * Deliberately GPC only, not Do Not Track: GPC is what the two pages promise.
+ * `HeatmapTracker` keeps its own separate DNT check, which predates this.
+ */
+export function gpcOptOut(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+}
+
+/**
+ * The stored choice with the browser signal applied. Necessary and functional
+ * are untouched: GPC speaks to selling and sharing, not to whether the site may
+ * remember your theme.
+ *
+ * Takes the signal as an argument rather than reading it, so the whole matrix is
+ * testable without stubbing globals (`lib/consent-signals.test.ts`). This is the
+ * one choke point — clamping only on save let the toggles render a granted row
+ * under GPC while gtag had it denied.
+ */
+export function applyPrivacySignals(prefs: ConsentPrefs, gpc: boolean): ConsentPrefs {
+  if (!gpc) return prefs;
+  return { ...prefs, analytics: false, advertising: false };
+}
+
+function withSignals(prefs: ConsentPrefs): ConsentPrefs {
+  return applyPrivacySignals(prefs, gpcOptOut());
+}
+
+/**
  * True while the consent modal is (or is about to be) on screen: no stored
  * decision, or one older than twelve months. Exported so other chrome that
  * would stack on top of it (SupportPrompt) can stand down without duplicating
@@ -53,7 +90,10 @@ export function isConsentPending(): boolean {
   return !stored || Date.now() - stored.timestamp > TWELVE_MONTHS_MS;
 }
 
-function applyConsent(prefs: ConsentPrefs) {
+function applyConsent(raw: ConsentPrefs) {
+  // The browser signal wins over whatever is stored, every time this runs —
+  // including the reapply on a later visit, which is what makes GPC retroactive.
+  const prefs = withSignals(raw);
   // Defensive guard: consent-default script in layout.tsx runs beforeInteractive
   // and defines window.gtag via dataLayer.push, so by hydration gtag is on
   // window. Guard against script-blocker extensions that strip gtag entirely.
@@ -104,11 +144,15 @@ export function CookieConsent() {
     // Existing valid decision: reapply to gtag in case scripts started after
     // hydration (e.g. extension-blocked gtag was un-blocked between sessions).
     applyConsent(stored);
-    setPrefs({
-      analytics: stored.analytics,
-      advertising: stored.advertising,
-      functional: stored.functional,
-    });
+    // Show the toggles as they will actually behave, not as they were stored:
+    // under GPC the two opt-out categories read off, because they are off.
+    setPrefs(
+      withSignals({
+        analytics: stored.analytics,
+        advertising: stored.advertising,
+        functional: stored.functional,
+      }),
+    );
   }, []);
 
   // Schedule the open-state flip one frame after view changes to a visible
@@ -136,7 +180,10 @@ export function CookieConsent() {
   }, []);
 
   const decide = useCallback(
-    (next: ConsentPrefs) => {
+    (raw: ConsentPrefs) => {
+      // Clamp before persisting too, so "Allow all" under GPC cannot store a
+      // grant we would then have to keep overriding on every later visit.
+      const next = withSignals(raw);
       setPrefs(next);
       persist(next);
       applyConsent(next);
@@ -187,7 +234,12 @@ export function CookieConsent() {
           />
         ) : (
           <CustomizeLayer
-            prefs={prefs}
+            // Clamped at the RENDER boundary, not just on save: the toggles
+            // read this state directly, and a row left granted in state showed
+            // "Advertising · ALWAYS ON, switch on" under GPC while gtag had it
+            // denied — the UI disagreeing with the behaviour. Passing the
+            // effective value means the panel cannot draw a state GPC forbids.
+            prefs={withSignals(prefs)}
             setPrefs={setPrefs}
             onSave={savePrefs}
             onCancel={cancelCustomize}
@@ -281,6 +333,14 @@ function CustomizeLayer({
         preferences. Everything else is your call. Toggle a category off and we
         won&apos;t load its scripts at all.
       </p>
+      {/* Say it out loud when the browser has already decided: otherwise the
+          two locked-off toggles look broken rather than respected. */}
+      {gpcOptOut() && (
+        <p className="mb-4 border-l-2 border-text pl-3 text-xs leading-relaxed text-text-muted">
+          Your browser is sending a <strong className="font-medium text-text">Global Privacy
+          Control</strong> signal, so analytics and advertising stay off whatever you pick here.
+        </p>
+      )}
       <div className="space-y-2 mb-5">
         <CategoryRow
           title="Necessary"
@@ -292,12 +352,14 @@ function CustomizeLayer({
           title="Analytics"
           description="Pseudonymous measurement of which series and pages people care about."
           checked={prefs.analytics}
+          locked={gpcOptOut()}
           onChange={(v) => setPrefs({ ...prefs, analytics: v })}
         />
         <CategoryRow
           title="Advertising"
           description="Ad delivery and frequency capping. Helps keep Paddock free."
           checked={prefs.advertising}
+          locked={gpcOptOut()}
           onChange={(v) => setPrefs({ ...prefs, advertising: v })}
         />
         <CategoryRow
@@ -341,9 +403,12 @@ function CategoryRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium text-text">{title}</div>
+          {/* A locked row is either always-on (Necessary) or locked OFF by the
+              browser's GPC signal. One badge for both would read "Always on"
+              beside a switch that is off. */}
           {locked && (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider text-text-muted bg-bg border border-border">
-              Always on
+              {checked ? 'Always on' : 'Off — your browser'}
             </span>
           )}
         </div>

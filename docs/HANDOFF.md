@@ -34,13 +34,25 @@ This is the part worth reading. All five were invisible to tsc, lint, vitest and
 4. **The weather footer shipped a missing space.** React's SSR ate the whitespace after `{circuit.name}`, so prod served `Circuit Zandvoort· forecast`. Same class as grepping across a JSX interpolation; the line is one template string now.
 5. **The prompt's backdrop snapped in** at full opacity while the panel animated, because its `data-state` attribute had no consumer.
 
-### 🟡 Left blocked or noted, deliberately
+### ✅ All four blocked items CLOSED by the operator, 2026-08-22 (after the session-close merge)
 
-- **`/f1/compare`'s trend chart is UNVERIFIED** — it is behind a sign-in gate, so it cannot be exercised signed out. **One operator click-through settles the last of the three unclicked consumers.** Team pages verified (6 lines, 686×320, zero height shift); blog chart embeds have **no live instance at all** (all 20 published posts checked).
-- **The signed-in support opt-out is unverified end to end.** Writing `unsafeMetadata` needs a real Clerk session. The code is typed against the installed package and the visit flag takes effect first, so a failed write costs only this visit's silence.
-- **`content/legal/privacy.md` is materially stale beyond the lines this session touched** — it still names Vercel as host and KV store, and claims consent is captured by "Google's Consent Management Platform (Funding Choices)", which the custom modal replaced in 0.12.6. Not touched: rewriting a privacy policy's processor list is not a call to make unsupervised.
-- **The series strip's placement reverses yesterday's decision.** Boxed, legible targets need ~1,180 px and that header band is 508. One-line revert if the old placement is preferred.
-- `NOTED`: `SessionCard`'s `weather?: DailyWeather` prop has **zero callers**; `app/(app)/api/push/history/route.ts` is now a reader with no UI; `ChartEmbed` uses `rounded-xl` against the sharp-corners principle.
+- **`/f1/compare`'s trend chart — VERIFIED by the operator, signed in.** Screenshot shows the Points Trajectory rendering (Albon vs Lindblad, two lines, ranked legend 23 / 5). That closes **all three** previously-unclicked consumers of the 0.323.0 refactor: standings tab (session 30), team pages (this session, 6 lines, 686×320, zero height shift), `/f1/compare` (operator).
+- **The signed-in support dismissal — confirmed by the operator.** The footnote reads correctly when signed in ("Signed in, so that sticks on every device you use").
+- **The series reference strip keeps its new placement — APPROVED** ("i like this"). The two-row boxed strip stands; the 08-21 header-band placement is retired.
+- **`content/legal/privacy.md` — REWRITTEN on the operator's word** (0.334.0, see below).
+
+### 🟢 0.334.0 — the privacy rewrite, and a published promise that had no code behind it
+
+**`content/legal/privacy.md` was materially false in seven places**, all corrected against the repo rather than from memory: Vercel named as host and log processor (it is **Cloudflare**), Vercel KV for push subscriptions and contact records (**Upstash Redis**), consent credited to **"Google's Consent Management Platform (Funding Choices)"** with a "shield icon" that does not exist (it is our own modal writing `paddock:consent` to `localStorage`, reachable from **Manage cookies** in the footer), the transfers and retention tables, and "Vercel's platform-level security". Two genuine **disclosure gaps** were also filled: the anonymous interaction/heatmap capture (consent-gated, DNT-honouring, stored in Supabase) and the signed-in sent-notification list. The in-app assistant clause now says out loud that the assistant **is currently switched off**, which it has been since 0.330.0 unmounted it.
+
+**Then the load-bearing find: `/do-not-sell` told visitors we honour "the GPC signal", and nothing in the code read it.** A published compliance promise with no implementation. Rather than delete the claim, it is now true — `applyPrivacySignals()` in `CookieConsent` forces analytics and advertising off whenever `navigator.globalPrivacyControl` is set, **overriding a stored grant on every visit**, and `HeatmapTracker` stops entirely. Functional and Necessary are untouched, because GPC speaks to selling and sharing, not to remembering a theme.
+
+**And a defect in that very change, caught by screenshotting it:** clamping only on save let the Advertising row render **switch-on with an "ALWAYS ON" badge** under GPC while gtag had it denied — the UI disagreeing with the behaviour, the exact class the operator keeps finding. Fixed by clamping at the **render** boundary, and the locked badge now reads "Off — your browser" instead of "Always on" for a locked-off row. 5 new tests pin the matrix.
+
+### 🟡 Left noted, deliberately
+
+- **The "connection is secure" interstitial is RECOMMENDED AGAINST as asked** (operator, 2026-08-22). That screen is a Cloudflare *Managed Challenge*, not a trust badge: it adds seconds to every first view against a 0.63 s TTFB, challenges Googlebot and any AdSense reviewer, and reads to many people as "this site has a problem". Three sharper routes to the same goal are written up in `IDEAS.md`, the best being **enforcing the CSP that is currently `report-only`**.
+- `NOTED`: the CSP still allow-lists `va.vercel-scripts.com`, a Vercel-era leftover; `SessionCard`'s `weather?: DailyWeather` prop has **zero callers**; `app/(app)/api/push/history/route.ts` is now a reader with no UI; `ChartEmbed` uses `rounded-xl` against the sharp-corners principle.
 
 ### 🔵 Process learnings (durable, session 32)
 

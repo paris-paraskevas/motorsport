@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { gpcOptOut } from '@/components/CookieConsent';
 
 const CONSENT_KEY = 'paddock:consent';
 const MAX_EVENTS = 250; // batch cap (well under sendBeacon's 64 KiB)
@@ -83,6 +84,10 @@ export function HeatmapTracker() {
       /* no window/search — fall through */
     }
     if (typeof navigator !== 'undefined' && navigator.doNotTrack === '1') return;
+    // Global Privacy Control, added 0.334.0: /do-not-sell and the privacy
+    // policy both promise we honour it, and this is analytics, so it stops here
+    // too rather than only clamping the consent state.
+    if (gpcOptOut()) return;
     let analytics = false;
     try {
       analytics = JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}')?.analytics === true;

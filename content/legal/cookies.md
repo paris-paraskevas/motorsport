@@ -34,7 +34,7 @@ Cookies are small text files placed on your device when you visit a website. Sim
 ### Functional
 | Name | Owner | Purpose | Duration |
 |---|---|---|---|
-| Push subscription record (Vercel KV) | Paddock Tracker | Sending race notifications when you've enabled them | Until you disable notifications |
+| Push subscription record (our key-value store, Upstash Redis) | Paddock Tracker | Sending race notifications when you've enabled them | Until you disable notifications |
 
 ### Analytics (only after you grant consent)
 | Name | Owner | Purpose | Duration |
@@ -54,7 +54,9 @@ Clerk uses its own product analytics (Segment, PostHog) and an ad-conversion ide
 ### The consent modal
 On your first visit, Paddock Tracker shows a consent modal with four categories: **Necessary**, **Analytics**, **Advertising**, and **Functional**. Necessary is always on (the site can't work without it). The other three are off by default — nothing non-essential runs until you opt in.
 
-Three options are presented with equal prominence: **Accept all**, **Reject all**, or **Customize** (per-category toggles). Whatever you choose is applied immediately via **Google Consent Mode v2**: the analytics and advertising scripts still load on the page, but they suppress cookies and fall back to cookieless pings unless you have granted consent. Rejecting leaves the site fully usable.
+Three options are presented with equal prominence: **Allow all**, **Essential only**, or **Customize** (per-category toggles). Whatever you choose is applied immediately via **Google Consent Mode v2**: the analytics and advertising scripts still load on the page, but they suppress cookies and fall back to cookieless pings unless you have granted consent. Choosing essential only leaves the site fully usable.
+
+If your browser sends a **Global Privacy Control** signal, the Analytics and Advertising categories are held off regardless of what you pick, and the modal says so rather than letting two switches sit there doing nothing.
 
 ### Changing your mind later
 The **Manage cookies** link in the footer re-opens the consent modal at any time. Your update is applied immediately site-wide. We also re-prompt automatically after 12 months so your decision stays current.
