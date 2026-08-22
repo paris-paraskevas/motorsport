@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.332.2 — 2026-08-22
+
+**Internal housekeeping.** Two dead files removed and the contributor guide reduced to a single, corrected copy; nothing user-facing changed.
+
 ## 0.332.1 — 2026-08-22
 
 **The links across the top of a series page are proper buttons now.** Drivers, standings, results, the calendar and the rest were small text crammed into the space beside the title; they sit in two even rows of boxes under the heading instead, large enough to read and to hit with a thumb.

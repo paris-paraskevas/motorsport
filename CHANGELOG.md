@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.332.2 — 2026-08-22
+
+### Removed
+- **`prod-weekend8.md` deleted** (AUTONOMOUS item 3) — 424 lines of Playwright accessibility-snapshot dump committed to the repo root by accident in #383, and only partly cleaned up by #384. Provably junk (it opens `- generic [active] [ref=e1]:`) and recoverable from git history.
+- **`components/NotificationBell.tsx` deleted** (AUTONOMOUS item 4) — 192 lines, dead since 0.328.0 unmounted it. Zero importers confirmed by grep across `app`, `components` and `lib`; the only other mention was a comment in `lib/useFocusTrap.ts` crediting it as one of the two origins of that hook's pattern, now reworded.
+  - `NOTED (not done)`: `app/(app)/api/push/history/route.ts` is now a **reader with no UI**. `lib/push-history.ts` itself is still live — the notify crons and `lib/blog-notify.ts` write to it — so nothing there is orphaned, but that route's only consumer was the bell. Deleting a public endpoint is a separate call.
+
+### Changed
+- **The two onboarding docs collapse into one** (AUTONOMOUS item 5). `docs/ONBOARDING.md` is now the single copy and `ONBOARDING.md` is a three-line redirect; `README.md` updated to point at it. They had drifted far enough that both were separately wrong about the `middleware.ts` / `proxy.ts` landmine, which is exactly the rename that breaks the deploy — it is now stated once, precisely, in one place.
+  - **Three stale claims corrected while merging, each verified against the repo rather than carried over.** (1) "forced onto webpack" — builds run **Turbopack**; `next.config.ts` imports `@serwist/turbopack`, declares `turbopack: {}`, and its own comment says the `webpack()` block is dev-only. (2) `cp .env.example .env.local` — **there is no `.env.example`** (`ls` confirms), and `CONTRIBUTING.md` says so explicitly. (3) The environments section named two Workers and called `testing` "the shared sandbox"; `CONTRIBUTING.md` is the authority and documents three, one per developer.
+  - **Added the fact neither copy carried and that can cost prod data**: previews share **prod's** Supabase, KV and R2, so an app mutation on a preview writes production data. Also folded in the `DATA_SOURCE=db` consequence (a parser change is only proven once `warm-live-data` has run with it), the local-Supabase-down fail-soft, the Worker size ceiling, and the "no GitHub Actions run to watch" deploy shape.
+
 ## 0.332.1 — 2026-08-22
 
 ### Changed
