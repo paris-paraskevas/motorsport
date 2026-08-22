@@ -42,6 +42,17 @@ function loadStored(): StoredConsent | null {
   }
 }
 
+/**
+ * True while the consent modal is (or is about to be) on screen: no stored
+ * decision, or one older than twelve months. Exported so other chrome that
+ * would stack on top of it (SupportPrompt) can stand down without duplicating
+ * the staleness rule — this is the same expression the first-mount effect uses.
+ */
+export function isConsentPending(): boolean {
+  const stored = loadStored();
+  return !stored || Date.now() - stored.timestamp > TWELVE_MONTHS_MS;
+}
+
 function applyConsent(prefs: ConsentPrefs) {
   // Defensive guard: consent-default script in layout.tsx runs beforeInteractive
   // and defines window.gtag via dataLayer.push, so by hydration gtag is on
@@ -83,7 +94,9 @@ export function CookieConsent() {
   // browser-only state (localStorage), which isn't readable during SSR.
   useEffect(() => {
     const stored = loadStored();
-    if (!stored || Date.now() - stored.timestamp > TWELVE_MONTHS_MS) {
+    // `!stored` is the type guard for the reapply below; isConsentPending()
+    // owns the staleness half of the same question.
+    if (!stored || isConsentPending()) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setView('main');
       return;
