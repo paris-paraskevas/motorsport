@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   createEngagedClock,
   dueAsk,
+  isQuietRoute,
   parseVisit,
   serializeVisit,
   parseThresholds,
@@ -132,6 +133,44 @@ describe('parseThresholds', () => {
     for (const raw of [null, '', '3000', '3000,', 'a,b', '0,5000', '6000,3000', '3000,3000', '1,2,3']) {
       expect(parseThresholds(raw)).toBeNull();
     }
+  });
+});
+
+describe('isQuietRoute', () => {
+  it('silences auth flows and form pages, including their children', () => {
+    for (const p of [
+      '/sign-in',
+      '/sign-in/factor-one',
+      '/sign-up',
+      '/studio',
+      '/studio/abc-123',
+      '/contact',
+      '/settings',
+      '/settings/series',
+      '/write-for-us',
+    ]) {
+      expect(isQuietRoute(p)).toBe(true);
+    }
+  });
+
+  it('leaves reading surfaces alone', () => {
+    for (const p of [
+      '/app',
+      '/blog',
+      '/blog/f1-dutch-grand-prix-2026-preview',
+      '/series/f1/weekend/12',
+      '/calendar',
+      '/information/formula-1',
+      null,
+      undefined,
+    ]) {
+      expect(isQuietRoute(p)).toBe(false);
+    }
+  });
+
+  it('does not match a route that merely starts with the same letters', () => {
+    expect(isQuietRoute('/settings-guide')).toBe(false);
+    expect(isQuietRoute('/contact-us-please')).toBe(false);
   });
 });
 

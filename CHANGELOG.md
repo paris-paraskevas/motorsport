@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.331.2 — 2026-08-22
+
+### Fixed
+- **Post-merge audit of the support prompt: four defects, all of them things the implementation assumed and none of them visible to tsc, lint, vitest or `next build`.**
+  - **It could interrupt an auth flow or a half-filled form.** `/sign-in`, `/sign-up`, `/studio`, `/contact`, `/settings` and `/write-for-us` all live in the `(app)` group, so a layout-level prompt reached every one of them — a donation modal over a sign-in form, or over a post an author is drafting, stealing focus and locking body scroll mid-keystroke. New `QUIET_ROUTES` + `isQuietRoute()` (prefix match that will not fire on `/settings-guide`), checked per tick against `usePathname()`. Engaged time still accrues on those pages; the ask simply lands somewhere else.
+  - **It could stack on top of another open dialog.** At `z-[70]` it sits *above* `ContactModal`'s `z-[65]`, so it would appear over a half-typed contact message and take the keyboard. Now a tick stands down whenever any `[role="dialog"]` is already in the DOM — safe as a general rule because every dialog in the tree renders null when closed.
+  - **The timer never stopped.** Once `done` was set (or a signed-in reader had opted out) the interval kept ticking and writing `sessionStorage` once a second for the life of the tab, with no possible effect. Measured on prod: the stored total climbed from 79 s to 92 s *after* the visit was finished. The ladder effect now returns before creating the interval, reached because `stage` returning to null is the same moment `done` flips.
+  - **The backdrop appeared instantly** while the panel animated in — the `data-state` attribute was on it but nothing consumed it. It now fades with the panel, under `motion-safe:` like everything else.
+  - 3 new tests (23 in the file, suite **1163**). Verified in a browser: 14 s banked on `/settings` with nothing shown, then the ask firing on `/calendar` after a client-side nav (which also proves the banked total and the overridden thresholds survive navigation); and with the contact modal open, the total climbing past the threshold with only "Contact" on screen, the support ask appearing one second after contact closed.
+
 ## 0.331.1 — 2026-08-22
 
 ### Fixed
