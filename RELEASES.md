@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.333.1 — 2026-08-22
+
+**Internal housekeeping.** An audit of earlier work, and a new automated check on the championship notes that appear on the "who won" pages, so the figures in the prose can never drift from the table beside them. Nothing user-facing changed.
+
 ## 0.333.0 — 2026-08-22
 
 **Two new Learn answers.** The first covers which circuits are leaving and joining the F1 calendar: why Zandvoort's 2026 race is its last, where Imola went, what Madrid took over, and the fact that Spa and Barcelona now alternate rather than either of them being dropped. It also explains the strangest change of this season, a Bahrain Grand Prix being run in Malaysia. The second traces how driver pay changed through the decades, from start money and prize shares to Senna being paid a million dollars a race, and is honest about the part nobody can know: no team publishes what it pays its drivers, and their salaries sit outside the budget cap on purpose.
