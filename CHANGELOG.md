@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.5 — 2026-08-23
+
+### Fixed
+- **`/calendar` threw a `DataCloneError` on every visit; it no longer does** (queue item 1). `components/SerwistRegister.tsx` now passes `cacheOnNavigation={false}`.
+  - **The cause, read out of the installed package rather than assumed.** With the flag on, `@serwist/turbopack@9.5.12` monkey-patches `history.pushState` and passes the **third argument straight into `messageSW` → `postMessage`** (`cacheUrls(args[2])` in `dist/index.react.mjs`). Next's App Router sometimes passes a `URL` object there, which is not structured-cloneable, so the browser threw `DataCloneError: Failed to execute 'postMessage' on 'ServiceWorker': URL object could not be cloned` — re-confirmed on prod 2026-08-23 at 665 ms, and the page's Best-Practices-92 finding in the PSI sweep.
+  - **The trap that would have made a "fix" a no-op**: the prop **defaults to `true`** inside the package (`cacheOnNavigation = t3 === void 0 ? true : t3`), so *deleting* the line — which is what "drop `cacheOnNavigation`" literally suggests — leaves the behaviour switched on and changes nothing. It has to be explicitly `false`, and the comment now says so.
+  - **Nothing is lost.** Navigation caching exists only to serve pages offline, and offline was removed deliberately in 0.268.0, so this had been throwing in exchange for a capability the site does not have. The `online` listener it also registered is likewise offline-only. `reloadOnOnline` is a separate flag and stays on.
+  - **Verification is prod-only by design**, and stated as such rather than claimed: `disable={process.env.NODE_ENV === 'development'}` means no service worker registers in dev, so the error cannot exist locally and cannot be seen to go away locally. Dev confirmed only that `/calendar` and `/app` still render 200 with the flag off; the console check runs on prod as the post-merge audit.
+  - Test note: one run showed 1 failure with no reproducible name while a `next build` ran concurrently, then **three consecutive clean 1193/1193 runs**. The documented load-related fork-worker flake. Nothing skipped, loosened or silenced.
+
 ## 0.334.4 — 2026-08-23
 
 ### Internal
