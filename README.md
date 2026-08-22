@@ -4,7 +4,7 @@ Personal motorsport companion — live calendar, weekend pages, news, weather, a
 
 Live at https://paddock-tracker.com.
 
-For contributors: see `CONTRIBUTING.md` and `ONBOARDING.md`. Engineering changelog: `CHANGELOG.md`. Public release notes: `RELEASES.md` (rendered at `/changelog`).
+For contributors: see `CONTRIBUTING.md` and `docs/ONBOARDING.md`. Engineering changelog: `CHANGELOG.md`. Public release notes: `RELEASES.md` (rendered at `/changelog`).
 
 ## IndexNow — push URLs to Bing / Yandex / Seznam
 

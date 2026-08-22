@@ -20,8 +20,9 @@ const FOCUSABLE_SELECTOR = [
  *  - Escape calls `onEscape`;
  *  - on deactivate/unmount: restores focus to whatever held it before opening.
  *
- * Generalises the pattern already proven in SearchOverlay (focus-in + Escape) and
- * NotificationBell (Escape + focus-restore), adding the missing Tab trap.
+ * Generalises the pattern already proven in SearchOverlay (focus-in + Escape),
+ * adding the missing Tab trap. (The other origin was NotificationBell, deleted
+ * in 0.332.2 after 0.328.0 unmounted it.)
  *
  * `active` covers both mounting models: dialogs that unmount on close leave it
  * default `true`; an always-mounted dialog that renders null when closed passes
