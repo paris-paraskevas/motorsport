@@ -52,6 +52,32 @@ export function formatLocal(date: Date, tz: string = 'Europe/Athens'): string {
   }).format(date);
 }
 
+/** Monday…Sunday from a bare YYYY-MM-DD. Read at midday UTC on purpose: the
+ *  input is a calendar date rather than an instant, so this is identical on the
+ *  server and in any browser and cannot disagree across hydration, and midday
+ *  keeps it clear of every timezone's date boundary. */
+export function weekdayOf(dayIso: string): string {
+  const d = new Date(`${dayIso}T12:00:00Z`);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' });
+}
+
+/**
+ * Names the day a group of sessions belongs to, for the "This weekend" band's
+ * sub-heading (components/SessionDayNote.tsx).
+ *
+ * `todayIso` is null wherever the caller cannot honestly know the viewer's date
+ * — during SSR and the hydration render — and the label then falls back to the
+ * weekday, which is true regardless of who is reading or when. The band used to
+ * hard-code "Also today", which was wrong from Friday evening onwards because
+ * the rows are the siblings of the *next* session, not of today's.
+ */
+export function dayNoteLabel(dayIso: string, todayIso: string | null): string {
+  if (todayIso !== null && dayIso === todayIso) return 'Also today';
+  const weekday = weekdayOf(dayIso);
+  return weekday ? `Also ${weekday}` : 'Also';
+}
+
 // Used for date-only ICS entries where we don't know the actual hour.
 // Renders just "Sat 16 May · time TBC" instead of inventing a 03:00.
 export function formatLocalDay(date: Date): string {
