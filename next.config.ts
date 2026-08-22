@@ -21,6 +21,22 @@ import { withSerwist } from "@serwist/turbopack";
 // Next.js injects inline bootstrap scripts and the layout ships inline gtag /
 // consent <Script> blocks; nonce-based tightening is a later step once the
 // report stream confirms what's in use.
+//
+// TWO THINGS THE REPORT STREAM ACTUALLY FOUND (read off prod 2026-08-23, and
+// both must be settled BEFORE this is promoted to enforcing):
+//
+//  1. `static.cloudflareinsights.com` — Cloudflare Web Analytics, injected into
+//     the HTML at the edge rather than by our code, which is why no grep of this
+//     repo finds it. Cloudflare's own docs say a CSP has to allow it. Added
+//     below, because we want it: it is cookieless and it is our traffic data.
+//
+//  2. `fundingchoicesmessages.google.com` — Google Funding Choices, pulled in by
+//     adsbygoogle.js, NOT by us. Deliberately NOT allow-listed. Our own consent
+//     modal has owned consent since 0.12.6, so Google's competing consent UI
+//     loading is arguably something to block rather than permit, and quietly
+//     allow-listing it would decide that by accident. Enforcing the policy as it
+//     stands would block it — that is a decision for whoever promotes the header,
+//     not a side effect (queue item 6 in docs/next-session.md).
 const CSP_REPORT_ONLY = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -30,8 +46,8 @@ const CSP_REPORT_ONLY = [
   "frame-ancestors 'self'",
   "form-action 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com",
   // Scripts: self + inline/eval (Next bootstrap, inline gtag), Clerk, AdSense,
-  // GA/GTM, Vercel scripts, and blob: for worker bootstrapping.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com",
+  // GA/GTM, Cloudflare Web Analytics, and blob: for worker bootstrapping.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://static.cloudflareinsights.com",
   // Web workers (three.js/drei, serwist SW) load from self + blob:.
   "worker-src 'self' blob:",
   "child-src 'self' blob:",

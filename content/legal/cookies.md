@@ -36,6 +36,11 @@ Cookies are small text files placed on your device when you visit a website. Sim
 |---|---|---|---|
 | Push subscription record (our key-value store, Upstash Redis) | Paddock Tracker | Sending race notifications when you've enabled them | Until you disable notifications |
 
+### Sets nothing on your device
+| Name | Owner | Purpose | Duration |
+|---|---|---|---|
+| Cloudflare Web Analytics (`beacon.min.js`) | Cloudflare | Page-view and page-speed measurement. Listed for transparency, **not** because it stores anything: per Cloudflare's documentation it uses no cookies and no browser storage of any kind, logs no query strings, and discards the IP address at the nearest data centre | Nothing stored |
+
 ### Analytics (only after you grant consent)
 | Name | Owner | Purpose | Duration |
 |---|---|---|---|

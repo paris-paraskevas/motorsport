@@ -39,7 +39,11 @@ Reader with **no UI** since `NotificationBell` was deleted in 0.332.2. `lib/push
 `components/blog/embeds/ChartEmbed.tsx:50,65` use `rounded-xl` / `rounded-lg`, against the standing "hairline panels, sharp corners, never rounded cards" principle. **Recommend squaring them.** One class change; held because it is visual.
 
 ### 6. Promote the CSP from `report-only` to enforcing
-Already written, already reporting, and its one stale entry (`va.vercel-scripts.com`) was removed in 0.334.2. **This is the real answer to the "show visitors we are legit" ask** — a genuine security upgrade rather than the Cloudflare challenge interstitial, which is friction, not a badge. Held because an enforced-but-slightly-wrong CSP **takes the site down** instead of logging a warning: it wants you watching, and it wants a look at the report-only violations first.
+Already written, already reporting, its stale `va.vercel-scripts.com` entry removed in 0.334.2, and `static.cloudflareinsights.com` added in 0.334.6 once the report stream showed it loading. **This is the real answer to the "show visitors we are legit" ask** — a genuine security upgrade rather than the Cloudflare challenge interstitial, which is friction, not a badge.
+
+**One decision is baked into this and must be made deliberately.** The report stream shows `fundingchoicesmessages.google.com` loading, pulled in by `adsbygoogle.js` rather than by us. It is **deliberately not allow-listed**, so enforcing the policy as it stands would **block Google's Funding Choices consent UI**. That is arguably correct — our own modal has owned consent since 0.12.6 and a second consent UI from Google is not wanted — but it is a choice, not a side effect. Decide it before flipping the header.
+
+Held otherwise because an enforced-but-slightly-wrong CSP **takes the site down** instead of logging a warning: it wants you watching.
 
 ### 7. `/calendar` contrast on Paper
 Mono `text-text-faint` agenda times fall under 4.5:1 (a11y 93/96 in the sweep). **Recommend a token nudge**, sibling of the 0.311.0 legibility pass. Your palette.
@@ -57,6 +61,9 @@ The one page family enrichment cannot fix, because it is motorsport.com aggregat
 The **cheapest remaining AdSense win**: unique prose already exists on 600-900 session pages and is sign-in-walled. Needs the parked SEO-Phase-2b `force-dynamic` → ISR unpark, which the PSI sweep independently asked for (session-page TTFB 665 ms). Two decisions in one: unlock the perk, and unpark the ISR work.
 
 ---
+
+### 11b. Two useless preloads on `/calendar`
+Found in the same prod console read: a Wikimedia Verstappen portrait and `/circuits/zandvoort.svg` are both **preloaded and then never used** on `/calendar` ("preloaded using link preload but not used within a few seconds"). That is wasted bytes on every calendar load, on a page whose perf was just worked. Likely the weekend-lead preload logic reaching a surface that does not render those images. Small, self-contained, needs no decision — it only sits below the tier-1 items because it wants a look at where the preload hints are emitted.
 
 ## TIER 3 — projects, not items. Each needs a session of its own
 

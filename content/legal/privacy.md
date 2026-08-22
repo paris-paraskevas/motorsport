@@ -29,6 +29,7 @@ We collect only what is necessary to operate the Site and offer the features you
 
 ### When you visit anonymously
 - **Server access logs** managed by our hosting provider (Cloudflare). Includes IP address, user-agent, timestamps, requested URL. Used for operations and abuse prevention. Cloudflare retains these per its own retention policy.
+- **Cloudflare Web Analytics**, a page-view and performance measurement script that Cloudflare injects into pages as they pass through its network. It is **cookieless by design**: Cloudflare's documentation states the script stores nothing in your browser and reads no cookies, `localStorage`, `sessionStorage` or IndexedDB, does not log query strings, and discards your IP address at the nearest Cloudflare data centre rather than storing it. It reports page load timings and aggregate figures such as top pages and countries. Because it sets nothing on your device and identifies nobody, it does not appear in the cookie table, but it is a third-party script and we would rather name it than not.
 - **Cookies and local storage** as detailed in the [Cookie Policy](/cookies). Non-essential cookies (analytics, advertising) are **denied by default** until you grant consent.
 
 ### When you create an account
@@ -83,7 +84,7 @@ We do not sell personal data. We share data with the following service providers
 
 | Recipient | What they receive | Why |
 |---|---|---|
-| **Cloudflare** | Hosting, server logs (IP, user-agent, requested URL), object storage | Hosting and infrastructure; also bot mitigation on Clerk-served pages |
+| **Cloudflare** | Hosting, server logs (IP, user-agent, requested URL), object storage, cookieless page-view and performance measurement | Hosting and infrastructure; Web Analytics; also bot mitigation on Clerk-served pages |
 | **Upstash** | Push subscriptions, contact-form records, cached upstream data | Our key-value store |
 | **Supabase** | Account-linked app data (blog, submissions, predictions), anonymous interaction events | Our application database |
 | **Clerk** | Email, authentication data, IP, user-agent | Authentication |
