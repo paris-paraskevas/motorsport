@@ -15,8 +15,13 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Surface the cause in dev; production has Vercel Analytics + Speed Insights
-    // catching uncaught errors server-side.
+    // Surface the cause in the console. NOTE: nothing else catches it —
+    // `@vercel/*` went with the Cloudflare migration and server-side Sentry was
+    // removed in 0.288.0 for worker size, so a route-level error is visible in
+    // the browser console and in Cloudflare's logs, and nowhere else. This
+    // comment previously claimed Vercel Analytics and Speed Insights were
+    // catching these, which has not been true since those packages were
+    // removed. Re-introducing reporting is tracked in IDEAS.md.
     console.error('[paddock] app error', error);
   }, [error]);
 

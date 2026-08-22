@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.2 — 2026-08-23
+
+**Internal housekeeping.** Leftover references to our old hosting provider removed, including two places where they were visible to you: the message shown when notification storage is unavailable. Also tightened one security header by dropping a permission for a script the site no longer uses.
+
 ## 0.334.1 — 2026-08-22
 
 **The "Do Not Sell or Share" page now tells you how to actually do it.** Its instructions still pointed at a Google consent icon that has not been on the site for months, which meant the steps for exercising a legal right could not be followed. It now gives three routes that work: switch Advertising off in the cookie modal, send a Global Privacy Control signal from your browser, or email. It also makes clear that the modal appears everywhere on a first visit, not just in Europe, and that advertising is off until you turn it on.

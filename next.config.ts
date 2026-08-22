@@ -15,7 +15,7 @@ import { withSerwist } from "@serwist/turbopack";
 // `Content-Security-Policy` header. Until then this is purely diagnostic.
 //
 // Origins reflect what the app actually loads (app/(app)/layout.tsx +
-// components): Clerk (auth SDK + frontend API), Vercel Analytics/Speed-Insights,
+// components): Clerk (auth SDK + frontend API),
 // Google AdSense + GA/GTM, three.js/drei web workers (compiled from blob: URLs),
 // and self. 'unsafe-inline'/'unsafe-eval' are intentionally permitted for now —
 // Next.js injects inline bootstrap scripts and the layout ships inline gtag /
@@ -31,7 +31,7 @@ const CSP_REPORT_ONLY = [
   "form-action 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com",
   // Scripts: self + inline/eval (Next bootstrap, inline gtag), Clerk, AdSense,
   // GA/GTM, Vercel scripts, and blob: for worker bootstrapping.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com",
   // Web workers (three.js/drei, serwist SW) load from self + blob:.
   "worker-src 'self' blob:",
   "child-src 'self' blob:",

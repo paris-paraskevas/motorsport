@@ -43,7 +43,7 @@ export function EnableNotifications() {
           !server
             ? 'Could not reach the server.'
             : !server.kvConfigured
-              ? 'Notifications storage (Vercel KV) isn\'t connected yet.'
+              ? 'Notifications storage isn\'t connected yet.'
               : 'Server isn\'t fully configured for push yet.',
         );
         return;

@@ -1,6 +1,6 @@
 import { kv } from '../kv';
 
-// Best-effort assistant usage logging in Vercel KV — NEVER throws (a logging
+// Best-effort assistant usage logging in KV — NEVER throws (a logging
 // failure must not break an answer). Powers the admin insights page: what people
 // ask, how often, per-user counts, and 👍/👎 feedback so the operator can expand
 // the help corpus to cover the common questions. Retention is bounded by COUNT

@@ -109,7 +109,7 @@ export function OnboardingWizard({ seriesList }: { seriesList: NavSeriesMeta[] }
           !server
             ? 'Could not reach the server. Try again later.'
             : !server.kvConfigured
-              ? 'Notifications storage (Vercel KV) isn\'t connected yet. Skip for now — you can enable later from Settings.'
+              ? 'Notifications storage isn\'t connected yet. Skip for now — you can enable later from Settings.'
               : 'Server isn\'t fully configured for push yet.',
         );
         return;
