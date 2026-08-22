@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.332.0 — 2026-08-22
+
+**The forecast now covers a whole session, hour by hour.** A race lasts an hour and a half, so a single reading at the start never described it: each session on a weekend page now lists the forecast for every hour it runs in. Open a session's own page and you get a wider view still, from two hours before the start to two hours after the end, in the time at the track. And when timing has not arrived yet, the page says so in a way that no longer reads as though something is broken: results usually land shortly after a session ends.
+
 ## 0.331.3 — 2026-08-22
 
 **The weekend band names the right day.** The list of other sessions was headed "Also today" even when those sessions were the following day, which it usually was by Friday evening. It now says the day of the week, and only says "today" when the day really is today, read from your own device rather than baked into the page.

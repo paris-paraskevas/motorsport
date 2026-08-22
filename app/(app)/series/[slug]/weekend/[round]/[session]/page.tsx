@@ -38,6 +38,7 @@ import { withSocialMeta } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd, sportsEventLd } from '@/lib/json-ld';
 import { VideoEmbed } from '@/components/VideoEmbed';
+import { SessionForecast } from '@/components/weekend/SessionForecast';
 import { loadMedia, videoForSession } from '@/lib/media';
 import {
   readResultsCache,
@@ -623,12 +624,16 @@ async function SessionBody({
       ) : isPast ? (
         <section className="border-y border-border py-5 text-center">
           <p className="text-text-muted text-sm">
+            {/* Not "not available": half an hour after a session that reads as
+                broken, which is exactly how it read on Dutch GP Friday. Timing
+                genuinely takes a while to land — the site's data is warmed on a
+                20-minute cycle — so say so rather than implying a fault. */}
             {slug === 'f1'
-              ? 'Classification not available for this session yet.'
+              ? 'Timing for this session usually lands shortly after it ends. Nothing published yet, so it is worth a look back in a little while.'
               : slug === 'wrc'
                 ? 'The full field for this stage isn’t published yet. The rally result and season standings live on the series page.'
                 : isRaceLikeTitle(session.title)
-                  ? 'Classification not available for this race yet — season results live on the series page.'
+                  ? 'Timing for this race usually lands shortly after it ends, so it may only be a matter of minutes. Season results live on the series page.'
                   : 'Practice and qualifying classifications aren’t published for this series — race sessions carry the full result.'}
           </p>
           <Link
@@ -645,6 +650,12 @@ async function SessionBody({
           </p>
         </section>
       )}
+
+      {/* The hours around the running, which is what a reader wants on a session
+          that has not produced timing yet. Self-suppressing: no circuit match, no
+          forecast, or a session outside Open-Meteo's 16-day horizon renders
+          nothing. */}
+      <SessionForecast session={session} weekend={weekend} />
 
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
         <Link
