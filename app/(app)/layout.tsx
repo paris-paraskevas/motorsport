@@ -6,6 +6,7 @@ import { FONT_CLASSES } from '@/lib/fonts';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { LaunchBanner } from '@/components/LaunchBanner';
+import { SupportPrompt } from '@/components/SupportPrompt';
 
 import { HeatmapTracker } from '@/components/HeatmapTracker';
 import { ThemeScript } from '@/components/theme/ThemeScript';
@@ -132,6 +133,10 @@ export default async function RootLayout({
               `denied` and GA4 firing nothing for EU/UK visitors. This modal
               flips the signals on user choice and persists to localStorage. */}
           <CookieConsent />
+          {/* Dwell-triggered support ask. Layout-level on purpose: engaged time
+              keeps accumulating as the reader moves between pages, and the
+              component stands down while the consent modal is up. */}
+          <SupportPrompt />
           {/* AssistantWidget unmounted 2026-08-21 (operator: "until fixed we
               can remove agent/assistant"). Its own source already described
               itself as a non-functional "not available yet" chat button. The

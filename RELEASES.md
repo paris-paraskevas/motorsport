@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.331.0 — 2026-08-22
+
+**A short note asking whether you would like to support the site.** Paddock is a one-person project and it stays free, so once in a while, after you have actually been reading for a couple of minutes, a small card appears asking whether you fancy buying its author a coffee. It is escapable every way you would expect: Escape, clicking outside it, "Not now", or an explicit "Don't show this again". It never appears while a session is running on the page you are on, and it asks at most twice in a visit, with the second one saying plainly that it is the last. Signed in, "Don't show this again" is remembered on every device you use; signed out, it holds for the rest of the visit. The cookie and privacy pages list exactly what gets stored to make that work.
+
 ## 0.330.5 — 2026-08-21
 
 **Internal housekeeping.** Session records and planning notes; nothing user-facing changed.

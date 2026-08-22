@@ -42,6 +42,11 @@ See Clerk's own privacy policy at https://clerk.com/legal/privacy.
 ### When you follow series or save preferences
 - Lists of followed series, theme choice, notification preferences, and similar settings are stored **in your browser's local storage**. They are not transmitted to our servers unless you have notifications enabled.
 
+### When we ask you to support the site
+- Paddock occasionally shows a short note asking whether you would like to support the site. Deciding when to show it needs a rough measure of how long you have been reading, so a counter and the note's own state are kept in your browser's **session storage** (the `paddock:support-prompt` key). Session storage is cleared when you close the tab and none of it reaches our servers.
+- If you are signed in and choose **Don't show this again**, that preference is saved to your account metadata at Clerk so the note stays hidden on every device. Signed out, the choice lasts for the visit only, because there is nowhere else to keep it.
+- We cannot tell whether you have actually donated: payments are handled by Buy Me a Coffee, which does not report back to us.
+
 ### When you enable push notifications
 - Your push subscription endpoint (a URL pointing to your browser's push service) and cryptographic keys are stored in Vercel KV so we can send race notifications. Tied to your account if you are signed in, otherwise to a random identifier. Removed when you disable notifications.
 
@@ -98,6 +103,8 @@ Vercel and Google process data in the United States. Clerk processes data in the
 | Contact-form submissions | 12 months in KV; emails kept per your inbox |
 | Cookie consent record | Held by Google's CMP per Google's retention policy |
 | Local-storage preferences | Until you clear browser storage |
+| Support-note reading counter (`paddock:support-prompt`) | Until you close the tab |
+| Signed-in "don't show the support note again" flag | Until you clear it from your account |
 
 ## 7. Your rights
 

@@ -28,6 +28,8 @@ Cookies are small text files placed on your device when you visit a website. Sim
 | `__client`, `__client_uat`, `__session_*`, `__refresh_*`, `__clerk_db_jwt_*`, `clerk_active_context` | Clerk | Authentication session | Up to 1 year |
 | `paddock:consent` (localStorage) | Paddock Tracker | Your cookie-consent choice | Until you clear it |
 | `paddock:followed-series`, `paddock:theme`, and similar (localStorage) | Paddock Tracker | Your in-app preferences | Until you clear them |
+| `paddock:support-prompt` (sessionStorage) | Paddock Tracker | How long you have been reading this visit, and whether the "support Paddock" note has already been shown or dismissed | Until you close the tab |
+| `supportPromptOptOut` (Clerk account metadata) | Paddock Tracker | Set only if you are signed in and choose "Don't show this again" on the support note, so it stays hidden on every device | Until you clear it from your account |
 
 ### Functional
 | Name | Owner | Purpose | Duration |
