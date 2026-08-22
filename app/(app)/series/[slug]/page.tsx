@@ -259,27 +259,6 @@ export default async function SeriesPage({
               {meta.singleEvent ? ' · one race a year' : ''}
             </p>
           </div>
-          {/* The reference links move up into the empty band between the title
-              and the clock (operator, 2026-08-21) — `justify-between` was
-              leaving a wide dead strip there. Labels only: the card grid's
-              blurbs need two lines each and would push the title and the clock
-              apart. Desktop only; below lg the header wraps to stacked blocks
-              and the full card grid still carries these at the page foot. */}
-          <nav
-            aria-label="Series reference"
-            className="hidden min-w-0 flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] lg:flex"
-          >
-            {refs.map(l => (
-              <Link
-                key={l.label}
-                href={l.href}
-                title={l.blurb}
-                className="inline-flex min-h-6 items-center text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
           {nextSession && nextW && (
             <div className="text-right">
               <NextRaceCountdown
@@ -290,6 +269,35 @@ export default async function SeriesPage({
             </div>
           )}
         </header>
+
+        {/* ── The reference strip: boxed targets, two rows, full width. ──
+            Operator, 2026-08-22: "these can be in two rows, bigger text in
+            boxes so they're clearer and easy to click". Boxes at a legible size
+            cannot fit two rows inside the header band it sat in until now
+            (measured 508 px there, against ~1,180 px of chips), so it gets its
+            own full-width row directly under the masthead instead — the trade
+            for yesterday's "fill the dead strip beside the title" placement.
+            The column count is derived so the strip is ALWAYS exactly two rows
+            whatever a series carries (a single-event series has no Standings or
+            Results). Desktop only, as before: below lg the card grid at the page
+            foot carries the same links with their blurbs. */}
+        <nav
+          aria-label="Series reference"
+          className="mb-6 hidden gap-1.5 lg:grid"
+          style={{ gridTemplateColumns: `repeat(${Math.ceil(refs.length / 2)}, minmax(0, 1fr))` }}
+        >
+          {refs.map(l => (
+            <Link
+              key={l.label}
+              href={l.href}
+              title={l.blurb}
+              className="inline-flex min-h-10 items-center justify-center border border-border px-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted transition-colors duration-(--duration-fast) hover:border-text hover:text-text"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
         <StaleBanner configured={series.configured} stale={series.stale} />
 
         {/* ── Block 1: the championship + last/next rail. ── */}

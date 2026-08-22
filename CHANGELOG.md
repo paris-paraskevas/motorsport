@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.332.1 — 2026-08-22
+
+### Changed
+- **The series reference strip becomes two rows of boxed targets** (operator, 2026-08-22: "these can be in two rows, bigger text in boxes so they're clearer and easy to click"). Was bare 10 px mono text on 24 px-tall targets, wrapping raggedly inside the header band; now 11 px in bordered boxes **40 px tall and evenly sized**, on their own full-width row under the masthead.
+  - **The placement had to change to deliver it.** Those links sat in the dead band between the title and the countdown (operator, 2026-08-21). That band measured **508 px** on the operator's own screenshot, against roughly **1,180 px** of chips once they are boxed and legible — four rows, not two. Full width gives 1,366 px at 1440 and 966 px at the `lg` breakpoint, both of which hold two rows. This is a deliberate trade against yesterday's placement, and it is a one-line revert if the operator prefers the old band.
+  - **The column count is derived** (`Math.ceil(refs.length / 2)`), so the strip is *always* exactly two rows whatever a series carries — 13 links for F1 (7 + 6), 8 for a single-event series with no Standings, Results, Points, Circuits or Analysis (4 + 4). A fixed column count would have produced three rows for one series and one for another.
+  - Verified in a browser at 1440 and at 1024: 2 rows in both, boxes 190 × 40 and 131 × 40, **no label truncated**, no horizontal page overflow. Below `lg` the strip is hidden exactly as before, and the card grid at the page foot still carries the same links with their blurbs.
+
 ## 0.332.0 — 2026-08-22
 
 ### Added

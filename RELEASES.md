@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.332.1 — 2026-08-22
+
+**The links across the top of a series page are proper buttons now.** Drivers, standings, results, the calendar and the rest were small text crammed into the space beside the title; they sit in two even rows of boxes under the heading instead, large enough to read and to hit with a thumb.
+
 ## 0.332.0 — 2026-08-22
 
 **The forecast now covers a whole session, hour by hour.** A race lasts an hour and a half, so a single reading at the start never described it: each session on a weekend page now lists the forecast for every hour it runs in. Open a session's own page and you get a wider view still, from two hours before the start to two hours after the end, in the time at the track. And when timing has not arrived yet, the page says so in a way that no longer reads as though something is broken: results usually land shortly after a session ends.
