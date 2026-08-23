@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.11 — 2026-08-23
+
+### Changed
+- **The three Dutch GP session recaps rewritten after a voice audit against the PUBLISHED preview, and re-fact-checked.** The first versions passed the house rules on paper and still did not sound like the operator.
+  - **The audit was quantitative, not a vibe check.** Profiling the published `f1-dutch-grand-prix-2026-preview` body gave the target: **12,490 chars, ZERO markdown tables, 15 outbound links, 21 internal, ~3.6 sentences and ~533 characters per prose paragraph, opinion stated plainly, a verdict section, a bold "For the books" milestone list, an inline image with an italic caption, and an italic photo credit.** My drafts were 4,352-5,603 chars, **table-led**, with **one** outbound link each and choppier paragraphs. Structurally the wrong thing.
+  - Rewritten to match: **0 tables** (classifications moved into prose), **9 outbound links each** (up from 1), 22-26 internal, 3.0-3.1 sentences per paragraph, 7,129-8,856 chars, verdict and "For the books" sections, an inline Zandvoort image on the Friday post, italic photo credits. Em and en dashes remain at **0**.
+  - **The fact-check found a real gap: the race grid.** The first qualifying draft flagged the grid as unconfirmed. It is now confirmed against an independent full-grid page: **no penalties reordered anybody**, the grid reads exactly as qualifying finished, and **Sergio Pérez starts from the pit lane** after a rule breach whose reason no source states (so it is not asserted).
+  - **Sainz and Alonso's sprint pit-lane starts were a parc fermé breach**, setup changed without the Technical Delegate's approval, not the plain "setup changes" the first draft said. Cross-checked two ways.
+  - **Norris' pole is his second of the season**, which reconciles independently with the published preview's own note that his Hungary pole was the first of 2026 by anyone outside Mercedes.
+  - **A cross-check source was caught being wrong and quarantined**: RacingNews365's qualifying page lists Antonelli as Ferrari and Hamilton as Mercedes. It was used only for the pole time, Russell's gap, Verstappen's position and the grid; every team name comes from formula1.com. Recorded in the draft's own flags so a future editor does not trust that page wholesale.
+  - Fixed a claim of my own that did not survive checking: a sentence had McLaren and Mercedes as "the two teams that have won eight of eleven races between one of them", which is not what the record says. **Mercedes** won eight of eleven and took the first ten poles; the line now says that.
+  - **The earlier one-character loss is explained and gone.** A title stored as "hundredth" against a file reading "hundredths" was a CRLF artifact in the first insert script's field regex, not a pipeline defect. The update path now normalises CRLF to LF explicitly and asserts length equality: local and stored now match exactly on all nine fields (titles 90/69/73, summaries 253/298/294, bodies 8,856/7,129/7,745).
+  - Re-verified not public after the update, this time with **exact slugs**: 0 occurrences in `/blog`, 0 in `feed.xml`, all three direct URLs 404, `status='in_review'`, `publish_at` NULL. A loose grep had briefly matched the published *Hungarian* recaps, which is worth recording because it looked like a leak and was not.
+
 ## 0.334.10 — 2026-08-23
 
 ### Added
