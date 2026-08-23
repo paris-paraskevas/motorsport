@@ -21,10 +21,10 @@ Take these in order. Each is self-contained and each has a settled answer alread
 - **How**: the proven two-source pipeline. RULE #1 on every clinch. Small waves, not a fan-out.
 - **Audit**: an enriched year shows the clinch on `/information/formula-1/who-won-the-1976-formula-1-championship`; an un-enriched one is untouched.
 
-### 3. `docs/HANDOFF.md` trim — overdue since 2026-08-06
-- **What**: keep the last two or three sessions, move the rest to `docs/handoff-archive.md`.
-- **Why**: it is over **500 KB** and no longer readable at session start, which is its only job. It already had to be read in slices this session.
-- **Audit**: none needed on prod (docs only); confirm the archive file contains what left the main one.
+### 3. ~~`docs/HANDOFF.md` trim~~ — DONE 0.334.9
+**532 KB → 36 KB** (3,466 → 247 lines). Sessions 29 and earlier moved verbatim to `docs/handoff-archive.md`; sessions 30-33 stayed.
+
+The trim also **deleted the stale reference tail rather than archiving it**. "Quick context", "Critical landmines" and "Where things live" had rotted into a second, wrong copy of `CLAUDE.md` — naming Vercel as host, `@serwist/next` as the PWA layer, "Vercel KV" as the store, and stating the `middleware.ts` / `proxy.ts` landmine **backwards**, which is the exact rename that breaks the deploy. `CLAUDE.md` and `CONTRIBUTING.md` are the authorities; the file now says so and tells future sessions not to reintroduce copies.
 
 ---
 
