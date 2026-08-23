@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.7 — 2026-08-23
+
+**A correction to the privacy policy, and some tidying.** The policy said the list of notifications we have sent you was kept so the app could show it to you. It cannot: the part of the app that displayed it was removed, so the wording now says what the list really is and that nothing shows it back to you. An unused internal endpoint was removed at the same time, and a chart panel in blog posts now has square corners like everything else.
+
 ## 0.334.6 — 2026-08-23
 
 **One more thing named in the privacy policy.** Auditing yesterday's work turned up a Cloudflare script running on every page that measures page views and load times, and that the policy had never mentioned. It is now listed, along with what Cloudflare says it does and does not do: it stores nothing at all in your browser, no cookies of any kind, and it throws your IP address away rather than keeping it.

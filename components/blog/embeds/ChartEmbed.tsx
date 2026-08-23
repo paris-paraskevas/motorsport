@@ -47,7 +47,7 @@ export async function ChartEmbed({ series: slug }: { series?: string }) {
       return <EmbedNote>This chart couldn’t load.</EmbedNote>;
     case 'ok':
       return (
-        <figure className="rounded-xl border border-border bg-surface/40 p-4">
+        <figure className="border border-border bg-surface/40 p-4">
           <figcaption className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-faint">
             {data.name} · championship trend
           </figcaption>
@@ -62,7 +62,7 @@ export async function ChartEmbed({ series: slug }: { series?: string }) {
 // so it stays server-renderable.
 export function EmbedNote({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-lg border border-border bg-surface/40 px-4 py-3 text-sm text-text-faint">
+    <p className="border border-border bg-surface/40 px-4 py-3 text-sm text-text-faint">
       {children}
     </p>
   );

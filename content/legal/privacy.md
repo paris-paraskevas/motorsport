@@ -50,7 +50,7 @@ See Clerk's own privacy policy at https://clerk.com/legal/privacy.
 
 ### When you enable push notifications
 - Your push subscription endpoint (a URL pointing to your browser's push service) and cryptographic keys are stored in our key-value store (Upstash Redis) so we can send race notifications. Tied to your account if you are signed in, otherwise to a random identifier. Removed when you disable notifications.
-- If you are signed in, we also keep a short list of the notifications actually sent to you, so the app can show you what arrived. It holds the notification's own title, body and link, nothing else.
+- If you are signed in, we also keep a short, capped list of the notifications actually sent to you, as an internal record so delivery can be checked when something looks wrong. It holds the notification's own title, body and link, nothing else, and older entries roll off. It is **not** shown anywhere in the app today: the header notification centre that read it was removed, so nothing displays this list back to you.
 
 ### When you submit the contact form
 - Email address (if you provide one), message body, optional category. Kept for 12 months in our key-value store (Upstash Redis) and delivered to the operator's inbox via Resend.
