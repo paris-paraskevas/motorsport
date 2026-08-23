@@ -31,6 +31,9 @@ FLAGS:
      both wrong. It was used ONLY for the pole time, Russell's gap, Verstappen's position, the
      grid order and the Pérez pit-lane start. Team names come from formula1.com.
   2. Yuki Tsunoda named but not linked (/drivers/yuki-tsunoda 404s).
+  3. TIME-SENSITIVE: the "Race day" section is forward-looking (forecast for the 15:00 start).
+     Once the race has run it reads oddly. If publishing after the chequered flag, either cut
+     that section or change its tense; the rest of the post stands on its own.
 -->
 
 # Norris takes pole as the rain arrives, and gets the last word off Russell

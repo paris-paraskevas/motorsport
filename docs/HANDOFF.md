@@ -6,27 +6,70 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-23 (LATEST — sessions 32-33: the unsupervised run, then the defect sweep) — `main` = **0.334.8**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-23 (LATEST, session 33 FINAL — privacy + GPC, the defect sweep, the queue, three blog drafts) — `main` = **0.334.12**, zero open PRs, every merge prod-verified
 
-**Read `docs/next-session.md` next**: it is the ordered, one-item-per-PR execution queue. This file is the record of what happened; that one is what to do.
+**Read `docs/next-session.md` next.** It is the ordered, one-item-per-PR queue. This file records what happened; that one says what to do.
 
-### ✅ Session 33 — the defect sweep, 8 merges, 0.334.0 → 0.334.8
+### ✅ Shipped — 13 merges, 0.334.0 → 0.334.12
 
 | Version | What |
 |---|---|
-| **0.334.0** | Privacy policy rewritten (false in 7 places) + **GPC honoured**, a published promise with no code behind it |
-| **0.334.1** | `/do-not-sell` documented a **statutory opt-out route that did not exist** (a Google "shield icon" gone since 0.12.6) |
-| **0.334.2** | Cloudflare-migration residue: 9 stale Vercel references, incl. 2 user-facing and a false error-handling claim |
-| **0.334.3** | `SessionCard`'s dead `weather` prop deleted |
-| **0.334.4** | Defect-sweep audit + `next-session.md` rewritten as an ordered queue |
+| **0.334.0** | Privacy policy **false in 7 places**, rewritten. **GPC honoured** for the first time, a published promise with no code behind it |
+| **0.334.1** | `/do-not-sell` documented **a statutory opt-out route that did not exist** |
+| **0.334.2** | Cloudflare-migration residue: 9 stale Vercel references, 2 of them user-facing, 1 a false claim about error handling |
+| **0.334.3** | `SessionCard`'s zero-caller `weather` prop deleted |
+| **0.334.4** | Sweep audited; `next-session.md` rewritten as an ordered queue |
 | **0.334.5** | `/calendar`'s `DataCloneError`, thrown on **every visit** |
-| **0.334.6** | **Cloudflare Web Analytics was undisclosed** — found in the CSP report stream, edge-injected so no grep found it |
+| **0.334.6** | **Cloudflare Web Analytics was undisclosed** — edge-injected, so no grep found it |
 | **0.334.7** | Orphan `/api/push/history` deleted; exposed that push history is **write-only** |
 | **0.334.8** | 14 news tabs `noindex` + out of the sitemap; "Coming soon." was wrong copy on 7 working tabs |
+| **0.334.9** | `HANDOFF.md` **532 KB → 36 KB**, rest archived |
+| **0.334.10** | Three Dutch GP session recaps drafted, queued on prod |
+| **0.334.11** | Recaps rewritten after a voice audit; grid confirmed; a source caught being wrong |
+| **0.334.12** | Results tables restored to the recaps (operator correction) |
 
-Suite **1193**. Two queue items closed by *measurement* with no code changed: calendar contrast (passes AA at 5.07/5.07/6.59 — the note was stale) and the `/calendar` preloads (React 19 auto-preloads a high-`fetchPriority` `<img>`; Next's prefetch hoists it — accept, don't degrade LCP).
+Suite **1193**. Queue items 1, 3, 4, 5, 9, 10 shipped; **7 and 11b closed by measurement with no code changed**.
 
-**This file was 532 KB and unreadable at session start until 0.334.9 split it.** Sessions 29 and earlier now live in `docs/handoff-archive.md`.
+### 🔴 What the audits found that the gates could not
+
+1. **`/do-not-sell` told California residents to exercise a CCPA right by clicking a Google "shield icon" that has not existed since 0.12.6.** A documented legal route that could not be followed. That is the worst defect of the day.
+2. **`/do-not-sell` and the privacy policy both promised we honour the GPC signal, and nothing in the code read it.** Grep for `globalPrivacyControl` returned nothing. Made true rather than deleted.
+3. **Cloudflare Web Analytics runs on every page and was undisclosed.** Found in the CSP report stream, not the repo: Cloudflare injects it at the edge, so `grep -rn cloudflareinsights` returns zero and I had read that as "not running". Collecting since 0.253.1.
+4. **`/calendar` threw `DataCloneError` on every visit.** The recorded fix ("drop `cacheOnNavigation`") **would have been a no-op** — the prop defaults to `true` in the package, so deleting the line changes nothing. It had to be explicitly `false`.
+5. **A defect in my own GPC fix, caught by screenshotting it after the DOM assertions passed**: clamping only on save let the Advertising row render switch-on with an "ALWAYS ON" badge while gtag had it denied.
+
+### 🟡 Three corrections I owe the record
+
+Each was asserted to the operator and each was wrong.
+
+- **"A character was lost inserting the blog title."** It was a CRLF artifact in my own insert script's field regex. The pipeline was fine; local now matches stored exactly on all nine fields.
+- **"Our qualifying and sprint classifications render empty on prod."** Said twice. Both were **probe-before-hydration errors** — I queried the DOM before the Suspense boundary resolved. Both pages render the full sheet and match formula1.com.
+- **"The approved voice uses no tables."** Measured off the published *preview*, which has no results to tabulate, and generalised into a house rule. Operator corrected it: tables are right for session results. The real defect in the first drafts was tables *instead of* prose.
+
+### 📝 Blog drafts waiting in `/blog`
+
+Three Dutch GP session recaps, `status='in_review'`, `publish_at` NULL, covers set, each with a flag block. Verified not public four ways (listing, direct URL 404, feed, and `publish_at`).
+
+- **The qualifying post carries a time-sensitive "Race day" section.** Cut it or change its tense if publishing after the chequered flag.
+- Facts: every classification from formula1.com's own tables; grid confirmed (no reordering, Pérez from the pit lane, reason unstated anywhere so not asserted); Sainz and Alonso's sprint pit-lane starts were a **parc fermé breach**.
+- **RacingNews365's qualifying page is wrong about teams** (Antonelli as Ferrari, Hamilton as Mercedes) and is quarantined in the flags.
+
+### 🔵 Process learnings (durable, session 33)
+
+1. **Probe after hydration, or you will invent defects.** Two false alarms today came from reading the DOM before Suspense resolved. Wait, or assert on the streamed text.
+2. **Check the installed package before trusting a recorded fix.** `cacheOnNavigation` defaults to true; the recommendation as written was a no-op.
+3. **A grep that returns nothing is not proof of absence.** Cloudflare Web Analytics is injected at the edge and exists in no file here.
+4. **Don't generalise a rule from one document type.** "No tables" came from a preview that had no results.
+5. **A check that fires on correct data is worse than no check** — the 2001 champion-note win count, dropped rather than special-cased.
+6. Deploys ran ~6 minutes, 13 for 13.
+
+### 🩹 Owed (operator)
+
+- **Queue item 6, the CSP → enforcing.** One decision is baked in: `fundingchoicesmessages.google.com` is deliberately **not** allow-listed, so enforcing blocks Google's Funding Choices. Arguably right, still your call.
+- **Queue item 4b**: push history is write-only (4 writers, 0 readers). Rebuild the bell, or stop writing.
+- **Queue item 11**: Race Story public on completed sessions, which needs the parked ISR unpark.
+- **AdSense wave 3** (F1 pre-1996 champion notes) is the only tier-1 item left.
+- The image session, and the PSI re-measure.
 
 ---
 

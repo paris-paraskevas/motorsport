@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.13 — 2026-08-23
+
+### Internal
+- **Session-33 close.** `docs/HANDOFF.md` gains a session-33 block: 13 merges, what the audits found that the gate chain could not, and the superseded mid-session block collapsed so there is one record rather than two.
+  - **Three corrections recorded against myself**, because each was asserted to the operator and each was wrong: the "lost character" in a blog title was a **CRLF artifact in my own insert script**, not a pipeline defect; the claim that our qualifying and sprint classifications **render empty on prod was made twice and was a probe-before-hydration error** both times (both pages render the full sheet and match formula1.com); and "the approved voice uses no tables" was a **bad generalisation from a preview**, which has no results to tabulate.
+  - Durable learnings written down: probe after hydration or you will invent defects; check the installed package before trusting a recorded fix (`cacheOnNavigation` defaults to true, so the recorded recommendation was a no-op); a grep returning nothing is not proof of absence (Cloudflare Web Analytics is edge-injected and exists in no file here); and do not generalise a rule from one document type.
+- `docs/next-session.md` re-headed at 0.334.12 with the six shipped items struck through, the two closed-by-measurement items explained, and a new **item 1b: a Dutch GP race recap**, pointing at the three queued drafts as the shape and voice to copy.
+- `SCHEDULE.md` gains the day: the privacy and GPC work, the sweep executed end to end, the three blog drafts and their two rewrites, and what was left for the operator.
+- `IDEAS.md` triaged. Five NOW entries were stale and are now marked: the stub strings, the news tabs, the HANDOFF trim, the `DataCloneError` and the calendar contrast. The blog-contract block carries the **quantitative voice reference** measured off the published preview, and the `error.tsx` Inbox item is re-scoped with the answer it was asking for (nothing catches route-level errors).
+- The qualifying draft gains a flag: its **"Race day" section is forward-looking** and should be cut or re-tensed if the post is published after the race.
+
 ## 0.334.12 — 2026-08-23
 
 ### Changed

@@ -1384,6 +1384,24 @@ Active: _(no `[+Nm]` prefixes captured)_
 
 ---
 
+### Sun 2026-08-23 (session 33 — privacy + GPC, the defect sweep, then race-weekend blogging)
+
+Operator present and directing throughout. Three distinct phases: finish the privacy work, run a full defect sweep to completion, then produce blog drafts for the Dutch GP sessions before the race.
+
+- → done: **the privacy rewrite** (0.334.0). `content/legal/privacy.md` was materially false in seven places. And the load-bearing find: `/do-not-sell` promised we honour the GPC signal while **nothing in the code read it**, so GPC is now honoured for real, overriding a stored grant on every visit.
+- → done: **`/do-not-sell`** (0.334.1) — it documented a CCPA opt-out route via a Google "shield icon" gone since 0.12.6. A legal right whose documented steps could not be followed.
+- → done: **the defect sweep**, listed, ordered, executed and audited (0.334.2 → 0.334.9): Vercel residue, the dead `weather` prop, the `/calendar` `DataCloneError`, undisclosed Cloudflare Web Analytics, the orphan push route, the news-tab noindex, the "Coming soon." copy, and the 532 KB → 36 KB HANDOFF trim.
+- → done: **three Dutch GP session recaps** drafted, queued on prod as `in_review`, then rewritten twice (0.334.10 → 0.334.12): once after a voice audit against the published preview, once after the operator corrected me on results tables.
+- → closed by measurement, no code: calendar contrast (passes AA on all three light themes) and the `/calendar` preloads (React 19 + Next prefetch, accept rather than degrade LCP).
+- → corrected myself three times: the "lost character" was a CRLF artifact in my own script; the "empty classifications" were probe-before-hydration errors, twice; and "no tables" was a bad generalisation from a preview.
+- → left for the operator: CSP → enforcing (blocks Funding Choices, deliberately), push history being write-only, Race Story public, AdSense wave 3.
+
+Won't-touch honoured: no publishing, no prod data writes beyond the operator-named blog drafts, no check weakened, no cron code touched.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ### Sat 2026-08-22 (session 32 — the UNSUPERVISED run: support prompt, then the operator's five)
 
 Brief: no operator present, standing authority to branch → gate → PR → **merge** → prod-verify → **audit**, looping until the AUTONOMOUS list was done or blocked. Five more items arrived mid-session by message.
