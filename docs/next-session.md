@@ -109,3 +109,31 @@ The last pre-Paper surface (`font-display` extrabold caps masthead). Queue with 
 - **Lint is 0 errors + 2 known `_encoding` warnings** in `lib/content-fs.ts`. Those parameters are **load-bearing** (callers pass `'utf-8'`); the only way to clear them is relaxing `no-unused-vars`, which is weakening a check. **Leave them.**
 - **`npm test` is 1193.**
 - **Browser verification is not the gate chain.** Seven real defects survived tsc, lint, 1193 tests and `next build` across sessions 32-33, one of them a defect in a fix I had just written. Click it, and screenshot it — DOM assertions passed on the one the screenshot caught.
+
+---
+
+## Handoff prompt for session 34
+
+> Paddock — session 34. `main` = **0.334.13**, prod verified, tree clean, zero open PRs, suite **1193**. Read in order: `CLAUDE.md` · `docs/HANDOFF.md` top block · **`docs/next-session.md` (this file, the ordered queue — it is what to do)** · `CONTRIBUTING.md` (authority on the three-Worker topology) · `IDEAS.md` · `SCHEDULE.md` · memory `feedback-paddock-*`.
+>
+> **First, before any code: three Dutch GP session recaps are sitting in the `/blog` queue** as `in_review` with `publish_at` NULL. They need me, not you. Ask whether they are approved, and do not touch their rows. If I say publish, I schedule them; the SOP is absolute. **The qualifying post has a forward-looking "Race day" section that must be cut or re-tensed if it ships after the chequered flag** — its own flag block says so.
+>
+> **Then work the queue from the top.** Tier 1 is executable with nothing waiting on me: **item 1b, a Dutch GP race recap** (the three queued drafts are the shape and voice to copy, and item 1b says how), then **item 2, AdSense wave 3 — F1 pre-1996 champion notes**, 46 seasons, data only, no code, guarded by `lib/champion-notes-integrity.test.ts`. Small waves, two sources per clinch, RULE #1 on every one.
+>
+> **Four things need my word before they can move.** Do not decide them for me, and do not stall on them either: write them up and carry on down the list. (a) **Item 6, the CSP from `report-only` to enforcing** — one decision is baked in, because `fundingchoicesmessages.google.com` is deliberately not allow-listed, so enforcing blocks Google's Funding Choices consent UI. Arguably right, still mine. (b) **Item 4b, push history is write-only** — four writers, zero readers since the bell was deleted: rebuild the notification centre or stop writing the records. The `recordSent` calls sit in the notification hot path, so breaking a cron stops notifications for everyone. (c) **Item 11, Race Story public on completed sessions**, which needs the parked SEO-Phase-2b ISR unpark. (d) **Item 8, month-grid tap targets** — the recommendation is accept as-is; one word retires it.
+>
+> **Seven traps that cost me time in session 33. None of them are guessable.**
+>
+> 1. **Probe after hydration, or you will invent defects.** I reported twice that our qualifying and sprint classifications render empty on prod. Both were wrong: I queried the DOM before the Suspense boundary resolved. Wait, or assert on the streamed text. Both pages render the full sheet and match formula1.com.
+> 2. **Read the installed package before trusting a fix recorded in `IDEAS.md`.** The `/calendar` `DataCloneError` note said "drop `cacheOnNavigation`". Deleting the line fixes nothing, because the prop defaults to `true` inside `@serwist/turbopack`. It has to be explicitly `false`.
+> 3. **A grep that returns nothing is not proof of absence.** Cloudflare Web Analytics runs on every page and exists in no file in this repo, because Cloudflare injects it at the edge. I found it in the CSP report stream, and it had been collecting undisclosed since 0.253.1.
+> 4. **Do not generalise a rule from one document type.** I measured "zero markdown tables" off the published *preview* and turned it into a house voice rule; a preview has no results to tabulate. Results tables belong in session recaps, **beside** the prose, not instead of it.
+> 5. **Deleting a route leaves stale generated types.** `.next/types/validator.ts` still imports it and both `tsc` and `next build` fail with `TS2307` until `.next` is cleared. Check the port for a live dev server first, because clearing `.next` under one 500s it.
+> 6. **CRLF will make you chase a phantom.** These files are CRLF; normalise to LF before comparing local lengths against the database, or you will conclude the pipeline dropped a character. It did not.
+> 7. **RacingNews365's qualifying page has wrong team names** (Antonelli as Ferrari, Hamilton as Mercedes). Use formula1.com's results tables for anything structural; that page is fine for a pole time and a grid order and nothing else.
+>
+> **How a blog draft reaches prod, since no service-role key exists on this machine:** Management API SQL over `.supabase-pat` with dollar-quoted values, `status='in_review'` (which is what `draft-post.mts` produces, because it calls `submitPost()` straight after `createDraft()`), `publish_at` NULL. Then verify not-public four ways: absent from `/blog`, direct URL 404, absent from `feed.xml`, and `publish_at` still NULL. **Use exact slugs when you grep for leaks** — a loose pattern matches the published Hungarian recaps and looks like one.
+>
+> Usual rules: branch from `main` as the literal first action after every merge · full gate chain before any "done" (`tsc` → `lint` 0 errors and 2 known `_encoding` warnings → `vitest` 1193 → `next build`, exit checked) · the trio on every push (`CHANGELOG.md`, `RELEASES.md`, `package.json`) · no Claude attribution · browser-verify before claiming anything works, and **screenshot it, because DOM assertions passed on a defect the picture caught** · a merge is the deploy, about six minutes, no Actions run to watch, so poll `/changelog` until the version flips and never stack a second merge before the first is live · measure with `wrangler deploy --dry-run` before adding a dependency, there are about 53 KiB of headroom.
+>
+> End of session: update `docs/HANDOFF.md`, mark the day in `SCHEDULE.md`, triage `IDEAS.md`, and rewrite this file's queue plus a fresh handoff prompt for whoever comes next.

@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.14 — 2026-08-23
+
+### Internal
+- **`docs/next-session.md` gains the session-34 handoff prompt**, in the form the previous two sessions used: state, reading order, the queue in execution order, the four items that need the operator's word, the ritual, and the traps.
+  - It leads with the thing that is **not** the next agent's job: three Dutch GP recaps sit in the `/blog` queue awaiting the operator, and the prompt says to ask rather than touch, plus the one publishing hazard (the qualifying post's forward-looking "Race day" section).
+  - **Seven traps recorded, none of them guessable**, each one something that actually cost time in session 33: probe after hydration or you will invent defects (I reported the same false one twice); read the installed package before trusting a fix written down in `IDEAS.md` (`cacheOnNavigation` defaults to `true`, so the recorded fix was a no-op); a grep returning nothing is not proof of absence (the analytics beacon is edge-injected and in no file here); do not generalise a rule from one document type (the "no tables" mistake); deleting a route leaves stale generated types that fail `tsc` until `.next` is cleared, and checking the port first matters because clearing it under a live dev server 500s the server; CRLF will make you chase a phantom character loss; and RacingNews365's qualifying page has wrong team names.
+  - Records the **blog insert route** end to end, since no prod service-role key exists on this machine: Management API over `.supabase-pat`, dollar-quoted values, `status='in_review'`, `publish_at` NULL, then the four not-public checks — **with exact slugs**, because a loose grep matches the published Hungarian recaps and reads as a leak.
+
 ## 0.334.13 — 2026-08-23
 
 ### Internal
