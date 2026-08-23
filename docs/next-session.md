@@ -32,11 +32,14 @@ Take these in order. Each is self-contained and each has a settled answer alread
 
 These are written up with a recommendation. Say yes or no and they execute immediately.
 
-### 4. `/api/push/history` — delete the endpoint?
-Reader with **no UI** since `NotificationBell` was deleted in 0.332.2. `lib/push-history.ts` is still written by the notify crons, so nothing else is orphaned. **Recommend delete** — it is a public endpoint serving data nothing consumes. Held because removing a public API surface is your call.
+### 4. ~~`/api/push/history`~~ — DONE 0.334.7
+Deleted. It surfaced something bigger, now the item below.
 
-### 5. `ChartEmbed`'s rounded corners
-`components/blog/embeds/ChartEmbed.tsx:50,65` use `rounded-xl` / `rounded-lg`, against the standing "hairline panels, sharp corners, never rounded cards" principle. **Recommend squaring them.** One class change; held because it is visual.
+### 4b. Push history is WRITE-ONLY — rebuild the bell, or stop writing it
+**Four** writers call `recordSent` (`api/cron/notify`, `api/cron/betting-notify`, `lib/blog-notify`, `lib/notify-blog`) and, since `NotificationBell` was deleted in 0.332.2, **zero** readers. Every notification we send writes a per-user record to KV that nothing will ever display. The privacy wording was corrected in 0.334.7 to stop claiming the app shows it back to you, but the underlying choice stands: **rebuild the notification centre, or remove the writes and the module.** Not done unsupervised because the `recordSent` calls sit in the notification hot path, and breaking a cron stops notifications.
+
+### 5. ~~`ChartEmbed`'s rounded corners~~ — DONE 0.334.7
+Squared.
 
 ### 6. Promote the CSP from `report-only` to enforcing
 Already written, already reporting, its stale `va.vercel-scripts.com` entry removed in 0.334.2, and `static.cloudflareinsights.com` added in 0.334.6 once the report stream showed it loading. **This is the real answer to the "show visitors we are legit" ask** — a genuine security upgrade rather than the Cloudflare challenge interstitial, which is friction, not a badge.

@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.7 — 2026-08-23
+
+### Removed
+- **`/api/push/history` deleted** (queue item 4). A public, `force-dynamic`, per-user endpoint with **zero callers** since `NotificationBell` went in 0.332.2. The other six push routes are untouched and live under `app/api/push/` — `status` in particular still serves the VAPID public key, which is the landmine here and was checked before the delete.
+
+### Fixed
+- **Deleting it exposed a false statement in the privacy policy, added yesterday.** It said we keep the sent-notification list "so the app can show you what arrived". The app cannot: **four** writers call `recordSent` (`api/cron/notify`, `api/cron/betting-notify`, `lib/blog-notify`, `lib/notify-blog`) and there have been **zero** readers since the bell was deleted. The wording now describes what the list actually is — an internal, capped delivery record — and says plainly that nothing in the app displays it back to you.
+  - The underlying choice is now **queue item 4b**: rebuild the notification centre, or stop writing the records. Not taken unsupervised, because those `recordSent` calls sit in the notification hot path and breaking a cron stops notifications for everyone.
+- **`ChartEmbed`'s rounded corners squared** (queue item 5) — `rounded-xl` on the figure and `rounded-lg` on the fallback note, both against the standing "hairline panels, sharp corners, never rounded cards" principle.
+
+### Internal
+- Route deletion tripped the documented landmine on the way through: the generated `.next/types/validator.ts` still imported the removed route, so `tsc` and `next build` both failed with `TS2307` until `.next` was cleared. Recorded because it will happen to the next route deletion too.
+
 ## 0.334.6 — 2026-08-23
 
 ### Fixed
