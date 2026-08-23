@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.10 — 2026-08-23
+
+### Added
+- **Three Dutch GP session recaps drafted and queued on PROD as `in_review` with `publish_at` NULL** (operator ask, race day): Friday's sole practice plus Sprint Qualifying, Saturday's Sprint, and Saturday's Qualifying. `drafts/f1-dutch-grand-prix-2026-{friday,sprint,qualifying}-recap.md`.
+  - **Every hard number is from formula1.com's own results tables**, not from a report's prose: the FP1, sprint-qualifying, sprint and qualifying classifications were each fetched as tables and used verbatim. Narrative, incidents, tyre compounds and quotes come from the matching official session reports.
+  - **RULE #1 caught three things.** (1) A secondary source called Russell's Zandvoort sprint pole his "second of the season"; it is his **third** from five sprint weekends (China, Canada, Zandvoort), confirmed against the Chinese and Canadian SQ reports. (2) A source put the title gaps at "50 points, Russell nine further adrift", which does not reconcile with the official standings — the posts use **53 and 56**. (3) A fetched summary said Antonelli finished "fourth ahead of Norris" while the classification has Norris third; the table won.
+  - **The championship table was verified by arithmetic rather than trusted**: every pre-sprint total plus that driver's sprint points equals the published post-sprint total (219+5, 169+2, 160+8, 138+7, 128+6, 109+3, 92+4). That is what licenses the posts to state the standings include the sprint.
+  - **Covers are licence-verified via the Commons API**, not eyeballed: Antonelli's W17 in 2026 Australian practice (Yu Chu Chin, CC BY-SA 4.0, 2042×1361), Russell at Zandvoort 2024 and Norris at Zandvoort 2024 (both Steffen Prößdorf, CC BY-SA 4.0, 3528×1984 and 3240×2160). Each post credits its photographer and links the file page. A portrait Norris candidate (750×1000) was **rejected** for failing the skill's landscape ≥1200×630 spec.
+  - **Every internal link was checked against prod before use** (25, 21 and 31 per post, all unique). Two were found to 404 and are deliberately absent: `/drivers/yuki-tsunoda` and `/tracks/zandvoort`. Tsunoda is named in the prose without a link.
+  - Voice gate run mechanically on all three bodies: **0 em dashes, 0 en dashes, 0 AI-tell phrases**.
+  - Parse verified with `draft-post.mts --dry` on each: titles 107/69/74 of 140, summaries 265/289/274 of 300 (the qualifying summary was trimmed from 308), bodies 5,603/4,352/4,868 of 50,000, `publishAt` null on all three.
+  - **Insert route**: Management API SQL over `.supabase-pat` with dollar-quoted values, because no prod service-role key exists on this machine. `status='in_review'` matches what `draft-post.mts` produces (it calls `submitPost()` straight after `createDraft()`), so the posts appear in the operator's `/blog` queue rather than as invisible private drafts.
+  - **Not-public verified four ways**: absent from the public `/blog` listing, each direct URL returns **404**, and `feed.xml` carries none of them. `publish_at` NULL is the property that keeps the publish cron away from them.
+
 ## 0.334.9 — 2026-08-23
 
 ### Changed
