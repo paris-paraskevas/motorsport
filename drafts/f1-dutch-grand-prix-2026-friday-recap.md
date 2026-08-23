@@ -44,6 +44,22 @@ Formula 1 came back from four weeks off and gave itself sixty minutes to work ou
 
 [Lando Norris](/drivers/lando-norris) ended up second at +0.121, [George Russell](/drivers/george-russell) third at +0.125. Four thousandths of a second between a McLaren and the second Mercedes, which on a Friday means nothing and by Saturday evening meant everything. [Lewis Hamilton](/drivers/lewis-hamilton) was fourth and [Charles Leclerc](/drivers/charles-leclerc) fifth, so [Ferrari](/teams/ferrari) had both cars in the top five before the weekend had properly started, and [Oscar Piastri](/drivers/oscar-piastri) was sixth at +0.659, the first driver more than half a second adrift.
 
+| Pos | Driver | Team | Gap | Laps |
+|---:|---|---|---|---:|
+| 1 | Kimi Antonelli | Mercedes | 1:12.949 | 36 |
+| 2 | Lando Norris | McLaren | +0.121 | 30 |
+| 3 | George Russell | Mercedes | +0.125 | 37 |
+| 4 | Lewis Hamilton | Ferrari | +0.190 | 34 |
+| 5 | Charles Leclerc | Ferrari | +0.289 | 39 |
+| 6 | Oscar Piastri | McLaren | +0.659 | 35 |
+| 7 | Nico Hulkenberg | Audi | +0.835 | 34 |
+| 8 | Pierre Gasly | Alpine | +0.962 | 28 |
+| 9 | Gabriel Bortoleto | Audi | +1.043 | 29 |
+| 10 | Arvid Lindblad | Racing Bulls | +1.336 | 37 |
+| 11 | Max Verstappen | Red Bull | +1.376 | 25 |
+
+Below that: Alonso twelfth, Colapinto thirteenth, Lawson fourteenth on his first run in the car, Bearman fifteenth, Ocon sixteenth, Tsunoda seventeenth, Stroll eighteenth, Albon nineteenth, Bottas twentieth, Perez twenty-first and Sainz twenty-second.
+
 The session had opened wet. The track was declared as such, damp patches were scattered around the lap, and the early runners went out on intermediates before it dried underneath them fast enough that Piastri was on mediums five minutes in. Rain was threatening again by the end. [The Race called it](https://www.the-race.com/formula-1/what-happened-in-only-dutch-gp-f1-2026-practice-session/) exactly what it was: not enough running, in the wrong conditions, before the part that mattered.
 
 Nobody had a worse hour than [Carlos Sainz](/drivers/carlos-sainz). Into the gravel at Turn 13, then wide again at Turn 11, floor damage on the [Williams](/teams/williams), and last of everybody at +3.396. It cost him more than a Friday: the repairs pushed Williams into overnight suspension changes, the changes broke parc fermé, and [Sainz started the sprint from the pit lane](https://www.gpblog.com/en/breaking-news/pit-lane-start-for-sainz-as-williams-breaks-parc-ferme-to-reset-difficult-dutch-gp-weekend) as a result. One excursion, one weekend gone.
@@ -63,6 +79,21 @@ Red Bull arrived rearranged too. [Liam Lawson](/drivers/liam-lawson) was in the 
 ## Then Russell produced a lap out of nowhere
 
 Sprint qualifying is where Friday stopped being preparation. Russell had topped neither segment: Leclerc headed the first, Piastri the second, and Russell was somewhere behind both. With four minutes left Norris went out into clean air and took provisional pole, and then Russell answered with a **1:11.567** and beat it by **0.041s**.
+
+| Pos | Driver | Team | SQ3 |
+|---:|---|---|---|
+| 1 | George Russell | Mercedes | 1:11.567 |
+| 2 | Lando Norris | McLaren | 1:11.608 |
+| 3 | Charles Leclerc | Ferrari | 1:11.622 |
+| 4 | Oscar Piastri | McLaren | 1:11.666 |
+| 5 | Kimi Antonelli | Mercedes | 1:11.794 |
+| 6 | Max Verstappen | Red Bull | 1:12.094 |
+| 7 | Lewis Hamilton | Ferrari | 1:12.191 |
+| 8 | Pierre Gasly | Alpine | 1:12.578 |
+| 9 | Gabriel Bortoleto | Audi | 1:12.583 |
+| 10 | Arvid Lindblad | Racing Bulls | 1:12.737 |
+
+Knocked out in SQ2: Lawson, Tsunoda, Colapinto, Hulkenberg, Ocon, Albon. Out in SQ1: Bearman, Sainz, Stroll, Bottas, Perez and Alonso.
 
 Behind those two, Leclerc was third at +0.055 and Piastri fourth at +0.099. The whole front two rows of the sprint grid inside a tenth of a second. [Motorsport.com described it](https://www.motorsport.com/f1/news/f1-dutch-gp-sprint-qualifying-report/10847946/) as a tight sprint pole and that undersells it: at a circuit with this reputation for processional racing, Zandvoort's only sprint grid was set by four hundredths.
 

@@ -41,6 +41,31 @@ Rain was falling through the closing minutes. Grip was leaving the track rather 
 
 ## A tenth, covering four cars, for the second time in two days
 
+| Pos | Driver | Team | Q1 | Q2 | Q3 |
+|---:|---|---|---|---|---|
+| 1 | Lando Norris | McLaren | 1:12.695 | 1:11.628 | 1:11.163 |
+| 2 | George Russell | Mercedes | 1:12.924 | 1:11.959 | 1:11.265 |
+| 3 | Kimi Antonelli | Mercedes | 1:13.022 | 1:11.915 | 1:11.296 |
+| 4 | Oscar Piastri | McLaren | 1:12.610 | 1:11.641 | 1:11.305 |
+| 5 | Lewis Hamilton | Ferrari | 1:12.673 | 1:11.970 | 1:11.494 |
+| 6 | Charles Leclerc | Ferrari | 1:13.064 | 1:11.910 | 1:11.558 |
+| 7 | Max Verstappen | Red Bull | 1:13.290 | 1:11.874 | 1:11.618 |
+| 8 | Liam Lawson | Red Bull | 1:13.392 | 1:12.301 | 1:11.733 |
+| 9 | Gabriel Bortoleto | Audi | 1:13.142 | 1:12.433 | 1:12.079 |
+| 10 | Arvid Lindblad | Racing Bulls | 1:13.074 | 1:12.525 | 1:12.185 |
+| 11 | Pierre Gasly | Alpine | 1:13.115 | 1:12.616 | |
+| 12 | Yuki Tsunoda | Racing Bulls | 1:13.085 | 1:12.627 | |
+| 13 | Nico Hulkenberg | Audi | 1:13.188 | 1:12.797 | |
+| 14 | Franco Colapinto | Alpine | 1:13.322 | 1:12.800 | |
+| 15 | Esteban Ocon | Haas | 1:13.544 | 1:13.137 | |
+| 16 | Alexander Albon | Williams | 1:13.552 | 1:13.182 | |
+| 17 | Carlos Sainz | Williams | 1:13.574 | | |
+| 18 | Fernando Alonso | Aston Martin | 1:13.650 | | |
+| 19 | Lance Stroll | Aston Martin | 1:13.818 | | |
+| 20 | Oliver Bearman | Haas | 1:13.826 | | |
+| 21 | Valtteri Bottas | Cadillac | 1:14.371 | | |
+| 22 | Sergio Perez | Cadillac | 1:14.600 | | |
+
 [Kimi Antonelli](/drivers/kimi-antonelli) was third at +0.133 and [Oscar Piastri](/drivers/oscar-piastri) fourth at +0.142. So the top four were inside 0.142s, having been [inside 0.099s in sprint qualifying](https://www.the-race.com/formula-1/dutch-gp-f1-sprint-qualifying-2026-russell-pole/) the day before. Two sessions, two days, four cars each time separated by roughly a tenth of a second, at the circuit everyone complains produces nothing.
 
 Piastri's hour is the one worth staring at. He was the fastest man in the first phase on a 1:12.610 and second fastest in the second on a 1:11.641, and he qualified fourth. That is a driver who had the pace for fifty-eight minutes of an hour and did not have it for the two that counted, on a weekend where he has also been out-qualified and out-raced by his team-mate. [McLaren](/teams/mclaren) get the pole; the reigning champion is not the one having the smoother weekend of the two.
