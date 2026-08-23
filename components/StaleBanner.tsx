@@ -8,7 +8,8 @@ export function StaleBanner({
   if (!configured) {
     return (
       <div className="text-text-faint text-xs mb-3">
-        No feed configured — placeholder data only.
+        No live feed is configured for this series, so the schedule below is
+        placeholder data.
       </div>
     );
   }

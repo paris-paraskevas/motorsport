@@ -50,13 +50,20 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const seriesUrls: MetadataRoute.Sitemap = sortedMeta.flatMap((m) => [
     { url: `${SITE_URL}/series/${m.slug}` },
     ...tabsFor(m.singleEvent, m.slug)
-      // history + about moved to /information guides (redirected in proxy.ts) —
+      // history + about moved to /information guides (redirected in middleware) —
       // keep the redirecting URLs out of the sitemap. About only redirects where
       // a guide exists, so gate it on aboutGuideForSeries.
+      //
+      // news is noindex'd (see components/SeriesPageView.tsx — it is
+      // motorsport.com aggregation, the one family enrichment cannot fix), and a
+      // sitemap that submits a noindex URL earns Search Console's "Submitted URL
+      // marked noindex" instead of being merely ignored. So the exclusion has to
+      // live in BOTH places or the two contradict each other.
       .filter(
         (t) =>
           t.key !== 'calendar' &&
           t.key !== 'history' &&
+          t.key !== 'news' &&
           !(t.key === 'about' && aboutGuideForSeries(m.slug)),
       )
       .map((t) => ({ url: `${SITE_URL}/series/${m.slug}/${t.key}` })),

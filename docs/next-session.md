@@ -48,25 +48,33 @@ Already written, already reporting, its stale `va.vercel-scripts.com` entry remo
 
 Held otherwise because an enforced-but-slightly-wrong CSP **takes the site down** instead of logging a warning: it wants you watching.
 
-### 7. `/calendar` contrast on Paper
-Mono `text-text-faint` agenda times fall under 4.5:1 (a11y 93/96 in the sweep). **Recommend a token nudge**, sibling of the 0.311.0 legibility pass. Your palette.
+### 7. ~~`/calendar` contrast on Paper~~ — CLOSED 0.334.8, premise was stale
+**Measured on prod rather than nudged.** `--text-faint` against the page background: **paper 5.07:1** (5.25 against `--surface`), **newsprint 5.07:1**, **circuit 6.59:1**. All pass WCAG AA for normal text. The 0.311.0 legibility pass had already fixed it and the note went stale. **No token change made** — nudging `--text-faint` would have rippled across every surface that uses it, to fix nothing.
+
+What the measurement *did* surface: those elements render at **9 px**. If the a11y complaint is real, it is size, not contrast, and that is a type-scale decision rather than a token one.
 
 ### 8. Month-grid tap targets
 **Recommend ACCEPT as-is** and close the item — density is the point on desktop and the 0.313.0 mobile agenda already solves phones. One word from you retires it.
 
-### 9. The two indexed stub strings
-`components/StaleBanner.tsx:11` ("No feed configured — placeholder data only." — also carries a house-style em dash) and `components/tabs/PlaceholderTab.tsx:9` ("Coming soon."). Both are shared across several surfaces. The copy is a design call; the real fix is **keeping contentless tabs out of the index**, which is the same decision as item 10.
+### 9. ~~The two indexed stub strings~~ — DONE 0.334.8, and the premise was wrong
+`PlaceholderTab` is **not a stub**. It is the live empty state for **seven** real tabs — Standings, Results, Champions, Rounds, About, History and the series landing — rendered whenever a source has nothing for that series. So "Coming soon." was not placeholder text awaiting a feature; it was **wrong copy on a working feature**, promising a launch that already happened. Now "Nothing here yet for this series."
 
-### 10. `noindex` the 15 news tabs
-The one page family enrichment cannot fix, because it is motorsport.com aggregation by design. **Recommend noindex.** Directly relevant to the AdSense verdict.
+`StaleBanner`'s line lost its em dash and says what it means: "No live feed is configured for this series, so the schedule below is placeholder data."
+
+### 10. ~~`noindex` the 15 news tabs~~ — DONE 0.334.8
+**14, not 15** (one series has no news tab). `noindex, follow` via `seriesTabMetadata`, **and removed from the sitemap in the same change** — submitting a noindex URL earns Search Console's "Submitted URL marked noindex" rather than being quietly ignored, so the exclusion had to land in both places or they would contradict each other.
 
 ### 11. Race Story public on completed sessions
 The **cheapest remaining AdSense win**: unique prose already exists on 600-900 session pages and is sign-in-walled. Needs the parked SEO-Phase-2b `force-dynamic` → ISR unpark, which the PSI sweep independently asked for (session-page TTFB 665 ms). Two decisions in one: unlock the perk, and unpark the ISR work.
 
 ---
 
-### 11b. Two useless preloads on `/calendar`
-Found in the same prod console read: a Wikimedia Verstappen portrait and `/circuits/zandvoort.svg` are both **preloaded and then never used** on `/calendar` ("preloaded using link preload but not used within a few seconds"). That is wasted bytes on every calendar load, on a page whose perf was just worked. Likely the weekend-lead preload logic reaching a surface that does not render those images. Small, self-contained, needs no decision — it only sits below the tier-1 items because it wants a look at where the preload hints are emitted.
+### 11b. ~~Two useless preloads on `/calendar`~~ — CLOSED 0.334.8, accept with cause
+Traced rather than patched. **Nothing in this repo emits those preloads**: both images are plain `<img fetchPriority="high">` (`components/HomeLead.tsx`, the weekend page's circuit SVG), and a grep for `rel="preload"` across `app`, `components` and `lib` finds only fonts and the GLTF model.
+
+**CAUSE**: React 19 auto-emits a matching `<link rel="preload" as="image">` for an `<img fetchPriority="high">`, and Next prefetches linked routes — so prefetching `/app` (a nav link on *every* app page) and the weekend routes (calendar cells) hoists *their* preloads into the current document. Proven by loading `/privacy`, which has **zero** weekend links and **zero** `<img>` tags matching, and still carries the cover preload.
+
+**Verdict: accept.** The two `fetchPriority` hints were added deliberately for LCP on the pages where those images *are* the LCP element (0.323.1, 0.330.0). Removing them to silence a console warning on other pages would trade a measured win for a cosmetic one, and the wasted bytes are a single cached download that also warms `/app`.
 
 ## TIER 3 — projects, not items. Each needs a session of its own
 
