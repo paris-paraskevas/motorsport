@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.9 — 2026-08-23
+
+### Changed
+- **`docs/HANDOFF.md` trimmed: 532 KB → 36 KB, 3,466 lines → 247** (queue item 3, overdue since 2026-08-06). Sessions 29 and earlier moved **verbatim** to a new `docs/handoff-archive.md`; sessions 30-33 stayed. The file's only job is to be readable at session start, and it had stopped doing it — this session had to read it in slices.
+  - **The stale reference tail was deleted rather than archived.** "Quick context", "Critical landmines" and "Where things live" had rotted into a second, contradicting copy of `CLAUDE.md`: they named **Vercel** as host and project, `@serwist/next` as the PWA layer, **"Vercel KV"** as the store, `ONBOARDING.md` as the contributor doc (now a redirect) — and stated the landmine as **"middleware in `proxy.ts`"**, which is backwards and is the exact rename that breaks the deploy. That is the third document caught with that inversion, after both onboarding copies. `CLAUDE.md` and `CONTRIBUTING.md` are the authorities; the file now says so explicitly and tells future sessions not to reintroduce local copies.
+  - The top block was refreshed at the same time, because trimming a file and leaving it claiming `main = 0.333.1` with a NOTED list of already-fixed items defeats the point. It now carries the session-33 merge table and points at `docs/next-session.md` as the queue.
+  - The archive opens with a warning that it is a **record, not reference** — every block was true when written and many are not now.
+
 ## 0.334.8 — 2026-08-23
 
 ### Changed
