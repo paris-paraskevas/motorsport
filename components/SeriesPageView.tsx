@@ -49,6 +49,15 @@ export async function seriesTabMetadata(slug: string, rawTab: string | undefined
       title,
       description,
       alternates: { canonical },
+      // The 15 news tabs are noindex'd. They are motorsport.com headline
+      // aggregation by design — the page's own words are a heading and a
+      // source label, and the substance belongs to whoever wrote it. That is
+      // exactly the "no original content" family Google's low-value-content
+      // verdict describes, and it is the one family the enrichment programme
+      // cannot fix by writing more (the audit's own conclusion). `follow` stays
+      // on so the outbound links still carry, and the tab remains fully usable
+      // for readers — this removes it from the index, not from the site.
+      ...(tab === 'news' ? { robots: { index: false, follow: true } } : {}),
       ...withSocialMeta({ title, description, path: canonical }),
     };
   } catch {

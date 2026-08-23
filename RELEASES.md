@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.8 — 2026-08-23
+
+**Clearer empty states, and the news tabs leave search results.** A tab with no data for a series used to say "Coming soon", which was misleading: the feature is already here, it is the data that is missing. It now says so. Each series' News tab is a list of headlines from motorsport.com rather than our own writing, so those pages are no longer submitted to search engines, though they work exactly as before for anyone reading them.
+
 ## 0.334.7 — 2026-08-23
 
 **A correction to the privacy policy, and some tidying.** The policy said the list of notifications we have sent you was kept so the app could show it to you. It cannot: the part of the app that displayed it was removed, so the wording now says what the list really is and that nothing shows it back to you. An unused internal endpoint was removed at the same time, and a chart panel in blog posts now has square corners like everything else.
