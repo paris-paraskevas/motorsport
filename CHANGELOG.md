@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.12 — 2026-08-23
+
+### Changed
+- **Results tables restored to the three Dutch GP session recaps** (operator: "results tables is a good idea for session results"). **My voice audit in 0.334.11 over-corrected, and the inference behind it was faulty**: I read "zero markdown tables" off the published *preview* and generalised it into a house rule, when a preview has no results to tabulate. A session recap's whole payload is the classification, so a table is the right tool for it.
+  - Friday gains the **FP1 top eleven** with gaps and lap counts, plus positions 12-22 in a prose line, and the **sprint qualifying top ten** with SQ3 times plus both knockout groups.
+  - Sprint gains the **full 22-car classification** with gaps and sprint points, Hulkenberg's retirement included as a DNF row.
+  - Qualifying gains the **full 22-car classification with every Q1, Q2 and Q3 time**, which is the reference the grid derives from.
+  - **Everything from the voice pass is kept**: 9 outbound links per post, 22-26 internal, 2.9-3.2 sentences per prose paragraph, opinion, verdict and "For the books" sections, italic photo credits, and **0 em or en dashes**. The tables now sit *beside* the prose rather than replacing it, which was the actual defect in the first drafts.
+  - Tables are deliberately plain text with no inline links: the prose already carries 22-26 internal links, and repeating them per row makes a classification unreadable.
+  - Bodies 10,323 / 8,224 / 9,121 chars. Prod rows updated and re-verified: local matches stored exactly on all nine fields, `status='in_review'`, `publish_at` NULL, all three direct URLs still 404.
+
 ## 0.334.11 — 2026-08-23
 
 ### Changed

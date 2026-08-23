@@ -39,6 +39,31 @@ FLAGS:
 
 He got the launch right, led into Turn 1, and had 1.6s by lap 10. The lead moved around a little after that without ever looking like it was in danger. It is the third time he has turned a sprint pole into a sprint win, and given he took that pole having [topped neither qualifying segment](https://www.the-race.com/formula-1/dutch-gp-f1-sprint-qualifying-2026-russell-pole/) on Friday, the whole weekend so far has been Russell finding speed exactly when the timing screens are live.
 
+| Pos | Driver | Team | Gap | Pts |
+|---:|---|---|---|---:|
+| 1 | George Russell | Mercedes | 30:25.318 | 8 |
+| 2 | Charles Leclerc | Ferrari | +1.360 | 7 |
+| 3 | Lando Norris | McLaren | +5.196 | 6 |
+| 4 | Kimi Antonelli | Mercedes | +5.581 | 5 |
+| 5 | Oscar Piastri | McLaren | +10.185 | 4 |
+| 6 | Max Verstappen | Red Bull | +10.529 | 3 |
+| 7 | Lewis Hamilton | Ferrari | +12.188 | 2 |
+| 8 | Pierre Gasly | Alpine | +42.510 | 1 |
+| 9 | Gabriel Bortoleto | Audi | +44.437 | |
+| 10 | Arvid Lindblad | Racing Bulls | +44.971 | |
+| 11 | Liam Lawson | Red Bull | +47.471 | |
+| 12 | Franco Colapinto | Alpine | +54.466 | |
+| 13 | Yuki Tsunoda | Racing Bulls | +56.483 | |
+| 14 | Esteban Ocon | Haas | +66.098 | |
+| 15 | Oliver Bearman | Haas | +66.588 | |
+| 16 | Alexander Albon | Williams | +74.632 | |
+| 17 | Lance Stroll | Aston Martin | +74.650 | |
+| 18 | Fernando Alonso | Aston Martin | +75.284 | |
+| 19 | Valtteri Bottas | Cadillac | +1 lap | |
+| 20 | Carlos Sainz | Williams | +1 lap | |
+| 21 | Sergio Perez | Cadillac | +3 laps | |
+| DNF | Nico Hulkenberg | Audi | 7 laps, power unit | |
+
 ## Leclerc went and took it
 
 The race behind him was better. [Lando Norris](/drivers/lando-norris) held second for seventeen laps with [Charles Leclerc](/drivers/charles-leclerc) sitting inside a couple of tenths of the McLaren for most of them, close enough to be a nuisance and never quite close enough to do anything. On lap 18 he stopped waiting, put the [Ferrari](/teams/ferrari) down the inside at Turn 1 and made it stick. Friday's sprint qualifying had [put those two within 0.055s of each other](https://www.motorsport.com/f1/news/f1-dutch-gp-sprint-qualifying-report/10847946/), so the pass had been coming since the timing screens went live the day before.
