@@ -1,6 +1,8 @@
 # The execution queue
 
-Rewritten 2026-08-23 as an **ordered, one-item-per-PR backlog**, so work can be picked off the top without re-deciding anything. `main` = **0.334.3**, prod verified, tree clean, zero open PRs.
+Rewritten 2026-08-23 as an **ordered, one-item-per-PR backlog**, so work can be picked off the top without re-deciding anything. `main` = **0.334.12**, prod verified, tree clean, zero open PRs.
+
+**Done since this list was written:** items 1 (`DataCloneError`), 3 (HANDOFF trim), 4 (`/api/push/history`), 5 (ChartEmbed), 9 (stub copy), 10 (news-tab noindex). Items **7 and 11b closed by measurement**, no code changed. Three Dutch GP blog drafts are in the `/blog` queue awaiting approval.
 
 Every item states: **what**, **why it matters**, **where**, and **how prod is audited afterwards**. The ritual is the same for each one: branch → implement → `tsc` / `lint` / `vitest` / `build` → browser-verify → the trio → PR with a real body → squash-merge → poll `/changelog` until the version flips → **audit on prod**.
 
@@ -10,10 +12,11 @@ Every item states: **what**, **why it matters**, **where**, and **how prod is au
 
 Take these in order. Each is self-contained and each has a settled answer already.
 
-### 1. The `/calendar` `DataCloneError`, thrown on every visit
-- **What**: drop `cacheOnNavigation` from `components/SerwistRegister.tsx`.
-- **Why**: `@serwist/turbopack@9.5.12` forwards `history.pushState`'s third argument into `postMessage`, and Next's App Router sometimes passes a `URL`, which is not structured-cloneable. It throws **`DataCloneError: Failed to execute 'postMessage' on 'ServiceWorker'`** on `/calendar` — re-confirmed on prod 2026-08-23, 665 ms after load. It is the page's Best-Practices-92 finding in the PSI sweep. Offline was removed deliberately in 0.268.0, so navigation caching is **vestigial and currently throwing**. `IDEAS.md` recorded this with the recommendation already written; the alternative is waiting for upstream.
-- **Audit**: load `/calendar` on prod and confirm the console is clean, then confirm the service worker still registers (`/serwist/sw.js` → 200).
+### 1. ~~The `/calendar` `DataCloneError`~~ — DONE 0.334.5
+Fixed with `cacheOnNavigation={false}`. **The recorded recommendation would have been a no-op**: the prop defaults to `true` inside `@serwist/turbopack`, so deleting the line leaves the behaviour on. Audited on prod: `/calendar` console clean, `/serwist/sw.js` still 200.
+
+### 1b. A Dutch GP race recap
+The three session recaps are queued; the race itself is the missing fourth. `drafts/f1-dutch-grand-prix-2026-*-recap.md` are the shape and voice to copy (results table beside the prose, nine outbound links, verdict and "For the books" sections, italic photo credit). The classification will be on `/series/f1/weekend/12/race` and on formula1.com; cross-check both, and remember the Zandvoort farewell angle is the story rather than the points.
 
 ### 2. AdSense enrichment wave 3 — F1 pre-1996 champion notes
 - **What**: 46 seasons into `content/series/f1/champion-notes.json`. **Data only, no code.**
