@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.11 — 2026-08-23
+
+**Internal housekeeping.** The three Dutch Grand Prix session write-ups rewritten and re-checked before review; still nothing published.
+
 ## 0.334.10 — 2026-08-23
 
 **Internal housekeeping.** Three Dutch Grand Prix session write-ups drafted for review; nothing is published yet.
