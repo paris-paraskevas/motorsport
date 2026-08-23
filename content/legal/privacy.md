@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated: 2026-08-22_
+_Last updated: 2026-08-23_
 
 This Privacy Policy explains what personal data Paddock Tracker collects, how it is used, who it is shared with, how long it is kept, and the rights you have over it. It applies to https://paddock-tracker.com (the "Site").
 
@@ -50,7 +50,7 @@ See Clerk's own privacy policy at https://clerk.com/legal/privacy.
 
 ### When you enable push notifications
 - Your push subscription endpoint (a URL pointing to your browser's push service) and cryptographic keys are stored in our key-value store (Upstash Redis) so we can send race notifications. Tied to your account if you are signed in, otherwise to a random identifier. Removed when you disable notifications.
-- If you are signed in, we also keep a short, capped list of the notifications actually sent to you, as an internal record so delivery can be checked when something looks wrong. It holds the notification's own title, body and link, nothing else, and older entries roll off. It is **not** shown anywhere in the app today: the header notification centre that read it was removed, so nothing displays this list back to you.
+- We **no longer keep a record of the individual notifications sent to you.** We used to, for a notification centre in the app's header; that feature was removed, nothing displayed the list back to you, and so the recording has been stopped rather than left running. Records written before that change may remain in our key-value store until they are cleared.
 
 ### When you submit the contact form
 - Email address (if you provide one), message body, optional category. Kept for 12 months in our key-value store (Upstash Redis) and delivered to the operator's inbox via Resend.
@@ -107,7 +107,7 @@ Several of the providers above are US-based or operate globally: **Clerk**, **Go
 | Server access logs | Per Cloudflare's own retention |
 | Account data | Until you delete the account |
 | Push subscriptions | Until you disable notifications |
-| Sent-notification list (signed in) | The most recent notifications only, then rolled off |
+| Sent-notification list (signed in) | No longer recorded; pre-existing records remain until cleared |
 | Contact-form submissions | 12 months in our key-value store; emails kept per the operator's inbox |
 | Anonymous interaction events | Aggregate measurement, not tied to you or to any identifier |
 | Cookie consent record | In your browser only, until you clear it; re-asked after 12 months |

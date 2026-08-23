@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { loadAllSeries } from '@/lib/series';
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
-import { recordSent } from '@/lib/push-history';
 import { getUserFollowed, getUserNotifPrefs, isQuietNow, type SessionTypePrefs } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import {
@@ -327,7 +326,6 @@ export async function GET(req: Request) {
     let evicted = 0;
     let skipped = 0;
     let errored = 0;
-    const recorded = new Set<string>();
     for (const { subscription, userId } of subs) {
       if (!userId) {
         skipped++;
@@ -353,21 +351,6 @@ export async function GET(req: Request) {
       const result = await sendPushTo(subscription, payload);
       if (result.ok) {
         sent++;
-        // Record every delivered item to the user's history (the bell shows them
-        // all even when the push itself was coalesced) — once per user per tick.
-        if (!recorded.has(userId)) {
-          recorded.add(userId);
-          for (const item of mine) {
-            await recordSent(userId, {
-              kind: item.kind,
-              title: item.payload.title,
-              body: item.payload.body,
-              url: item.payload.url ?? '/app',
-              ts: Date.now(),
-              seriesSlug: item.session.seriesSlug,
-            });
-          }
-        }
       } else if (result.gone) {
         await deleteSubscription(subscription.endpoint);
         evicted++;
