@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.28 — 2026-08-24
+
+**Internal housekeeping.** Planning notes brought in line with the change above; nothing user-facing changed.
+
 ## 0.334.27 — 2026-08-24
 
 **A big weight off the site.** Some editor-only reporting screens were carrying a very large amount of code that every visitor's request had to load around. Removing them cut roughly 650 KB from what the site ships, which leaves far more room for the features being built next. Nothing readers use changed.
