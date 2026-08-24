@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.24 — 2026-08-24
+
+**Internal groundwork.** Editor tooling for arranging the home page, with a preview before anything goes live. Readers see no change yet.
+
 ## 0.334.23 — 2026-08-24
 
 **Internal housekeeping.** Planning notes only; nothing user-facing changed.

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import Link from 'next/link';
 import { seriesInk } from '@/lib/site';
 import { sessionSlug } from '@/lib/weekend';
@@ -119,6 +120,11 @@ function headlineFor(winner: string, raceName: string): string {
   return `${winner} wins ${article}${raceName}`;
 }
 
+/** The four bands, in the order this component has always rendered them. Used
+ *  when no operator order is supplied, so the default output is unchanged. */
+const DEFAULT_ORDER = ['blog', 'live', 'result', 'wire'] as const;
+export type HomeLeadBandId = (typeof DEFAULT_ORDER)[number];
+
 export function HomeLead({
   blog,
   liveWeekend,
@@ -126,6 +132,7 @@ export function HomeLead({
   changed,
   next,
   wire,
+  order,
 }: {
   blog?: HomeLeadBlog | null;
   liveWeekend?: HomeLeadLiveWeekend | null;
@@ -133,6 +140,10 @@ export function HomeLead({
   changed: HomeLeadChanged | null;
   next: HomeLeadNextItem[];
   wire: HomeLeadWireItem[];
+  /** Operator-composed band order (lib/home-layout.ts). Omitted → the default.
+   *  Note `changed` and `next` are NOT separate bands: they render inside the
+   *  result section's own grid, so the three move together. */
+  order?: readonly HomeLeadBandId[];
 }) {
   const winner = result?.podium.find(p => p.position === 1);
   const raceDate = result
@@ -144,17 +155,39 @@ export function HomeLead({
   // sub-line (operator, 2026-08-20). `changed` is always the result's series.
   const championName = changed?.seasonComplete ? changed.leader.name : null;
 
-  // Anything above the result band pushes it down and takes the page's h1.
-  const leadAbove = Boolean(blog || liveWeekend);
-  const ResultHeading = blog ? 'h2' : 'h1';
+  // Which bands actually have something to render, in the operator's order.
+  // A band with no content is skipped here rather than rendering an empty
+  // section, so "first" below means first VISIBLE band, not first configured.
+  const hasContent: Record<HomeLeadBandId, boolean> = {
+    blog: Boolean(blog),
+    live: Boolean(liveWeekend),
+    // The result BAND is the race section plus the championship/next-up pair
+    // below it, so it counts as present if either half has anything.
+    result: Boolean(
+      (result && winner) || (changed && changed.top.length > 0) || next.length > 0,
+    ),
+    wire: wire.length > 0,
+  };
+  const bands = (order ?? DEFAULT_ORDER).filter(id => hasContent[id]);
 
-  return (
-    <div>
-      {/* ── 0a. Our own writing, first. The lead story is a Paddock post, not
-          a syndicated headline — the wire already carries those. Cover image
-          left, the read right, in the Paper language rather than the testing
-          build's dark treatment. ── */}
-      {blog && (
+  // Exactly one h1, and it belongs to whichever band leads the page — the
+  // result band used to assume that was itself unless a blog band existed, which
+  // stops being true once the order is the operator's. Anything above the result
+  // band also pushes it down (the mt-8), so both derive from position now.
+  const resultIndex = bands.indexOf('result');
+  const leadAbove = resultIndex > 0;
+  const ResultHeading = resultIndex === 0 ? 'h1' : 'h2';
+
+  // Every band except the leading one is pushed down. This used to be hard-coded
+  // per band ("mt-8 if a blog band exists"), which silently breaks the moment the
+  // order is the operator's — the second band would sit flush against the first.
+  const topGap = (id: HomeLeadBandId) => (bands[0] === id ? '' : 'mt-8 ');
+
+  /* ── 0a. Our own writing. The lead story is a Paddock post, not a syndicated
+     headline — the wire already carries those. Cover image left, the read
+     right, in the Paper language rather than the testing build's dark
+     treatment. ── */
+  const blogBand = blog && (
         <section aria-label="Latest from the blog" className="border-[1.5px] border-text bg-surface-elevated shadow-lg">
           <div className="grid lg:grid-cols-[minmax(0,46%)_1fr]">
             {/* Redundant link: aria-hidden + tabIndex -1 so the picture stays
@@ -272,14 +305,15 @@ export function HomeLead({
             </div>
           </div>
         </section>
-      )}
+  );
 
-      {/* ── 0b. The weekend in progress. Sits above the finished-race band so
-          a completed season elsewhere cannot outrank a race running today. ── */}
-      {liveWeekend && (
+  /* ── 0b. The weekend in progress. By default it sits above the finished-race
+     band so a completed season elsewhere cannot outrank a race running today;
+     the operator can override that ordering. ── */
+  const liveBand = liveWeekend && (
         <section
           aria-label="This weekend"
-          className={`${blog ? 'mt-8 ' : ''}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
+          className={`${topGap('live')}border-[1.5px] border-text bg-surface-elevated shadow-lg p-[18px] lg:p-5`}
         >
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             {/* Deliberately NOT "On now": the band also catches a weekend
@@ -358,9 +392,15 @@ export function HomeLead({
             </>
           )}
         </section>
-      )}
+  );
 
-      {/* ── 1. The result that just happened ─────────────────────────────── */}
+  /* ── 1 + 2×3. The result that just happened, and the championship/next-up
+     pair beneath it. These are two SIBLING top-level blocks, not one nested in
+     the other, but they are treated as a single movable band: the pair reads as
+     the consequence of the result above it, and separating them would let the
+     operator strand "what it changed" above the race it changed. ── */
+  const resultBand = (
+    <>
       {result && winner && (
         <section
           aria-label="Latest result"
@@ -547,10 +587,12 @@ export function HomeLead({
           )}
         </div>
       )}
+    </>
+  );
 
-      {/* ── 4. The wire ──────────────────────────────────────────────────── */}
-      {wire.length > 0 && (
-        <section aria-label="The wire" className="mt-8">
+  /* ── 4. The wire ──────────────────────────────────────────────────────── */
+  const wireBand = wire.length > 0 && (
+        <section aria-label="The wire" className={`${topGap('wire')}`}>
           <SectionRule label="The wire" right="Reported elsewhere · linked out" />
           <ul>
             {wire.map(item => (
@@ -576,7 +618,23 @@ export function HomeLead({
             ))}
           </ul>
         </section>
-      )}
+  );
+
+  // Rendered in the operator's order. The nodes are keyed by band id, and the
+  // DOM order IS the visual order — no CSS `order` trickery, because that would
+  // leave the reading and tab order stuck in the old sequence.
+  const byId: Record<HomeLeadBandId, React.ReactNode> = {
+    blog: blogBand,
+    live: liveBand,
+    result: resultBand,
+    wire: wireBand,
+  };
+
+  return (
+    <div>
+      {bands.map(id => (
+        <Fragment key={id}>{byId[id]}</Fragment>
+      ))}
     </div>
   );
 }

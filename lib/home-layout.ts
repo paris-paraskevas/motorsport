@@ -34,9 +34,15 @@ export interface HomeLayout {
 }
 
 /** What the page falls back to: every block, in the order HomeLead renders them,
- *  nothing hidden, nothing pinned. Identical to the pre-layout behaviour. */
+ *  nothing hidden, nothing pinned. Identical to the pre-layout behaviour.
+ *
+ *  `hidden: false` is written explicitly so this is byte-identical to what
+ *  `parseHomeLayout` produces for the same input. The composer decides whether
+ *  the Publish button is live by comparing the draft against what is published,
+ *  and without this the two shapes differ and it offers to publish a layout
+ *  identical to the one already live. */
 export const DEFAULT_HOME_LAYOUT: HomeLayout = {
-  blocks: HOME_BLOCK_IDS.map(id => ({ id })),
+  blocks: HOME_BLOCK_IDS.map(id => ({ id, hidden: false })),
 };
 
 function isBlockId(v: unknown): v is HomeBlockId {
@@ -78,13 +84,40 @@ export function parseHomeLayout(raw: unknown): HomeLayout {
   return { blocks };
 }
 
-/** The post slug the operator pinned as the lead, if any.
- *
- *  `hidden` and block ORDER are parsed and preserved above but not yet consumed:
- *  the page reads only the pin today. Reordering and hiding arrive with the
- *  composer UI that sets them, rather than as capability nothing can reach. */
+/** The post slug the operator pinned as the lead, if any. */
 export function pinnedLeadSlug(layout: HomeLayout): string | null {
   return layout.blocks.find(b => b.id === 'blog')?.pinnedSlug ?? null;
+}
+
+/** Block ids to render, in the operator's order, hidden ones removed.
+ *
+ *  Hiding EVERY block would leave a blank home page, which no layout should be
+ *  able to produce, so an all-hidden layout falls back to the default order.
+ *  Individual blocks still render nothing when they have no data — that is the
+ *  band's own business, not the layout's. */
+export function visibleBlocks(layout: HomeLayout): HomeBlockId[] {
+  const visible = layout.blocks.filter(b => b.hidden !== true).map(b => b.id);
+  return visible.length > 0 ? visible : [...HOME_BLOCK_IDS];
+}
+
+/** Build a layout from URL parameters, for the admin composer's draft preview.
+ *  Unrecognised values are dropped by parseHomeLayout, so a hand-edited URL is
+ *  as safe as a hand-edited row. */
+export function layoutFromParams(params: {
+  order?: string;
+  hidden?: string;
+  lead?: string;
+}): HomeLayout {
+  const hidden = new Set((params.hidden ?? '').split(',').filter(Boolean));
+  const ordered = (params.order ?? '').split(',').filter(Boolean);
+  const ids = ordered.length > 0 ? ordered : [...HOME_BLOCK_IDS];
+  return parseHomeLayout(
+    ids.map(id => ({
+      id,
+      hidden: hidden.has(id),
+      ...(id === 'blog' && params.lead ? { pinnedSlug: params.lead } : {}),
+    })),
+  );
 }
 
 /**
