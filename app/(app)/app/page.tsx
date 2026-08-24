@@ -7,6 +7,7 @@ import { fetchAggregatedNews } from '@/lib/news';
 import { fetchLatestPodium, HOME_RESULTS_SLUGS, type LatestRace } from '@/lib/home-results';
 import { fetchStandingsBrief, isEligibleStandingsSeries } from '@/lib/standings/brief';
 import { fetchHomeBlogLead, publishedPosts } from '@/lib/blog';
+import { loadLiveHomeLayout, pinnedLeadSlug } from '@/lib/home-layout';
 import {
   HomeLead,
   type HomeLeadBlog,
@@ -46,6 +47,12 @@ export default async function Home() {
   const now = new Date();
   const all = await loadAllSeries();
   const metaBySlug = new Map(all.map(s => [s.meta.slug, s.meta]));
+
+  // The operator's composition, if there is one. Fails soft to the automatic
+  // layout on every error path (lib/home-layout.ts), so this read can never take
+  // the page down — and because it is one row read inside the ISR render, the
+  // page stays identical for every visitor and stays cacheable.
+  const layout = await loadLiveHomeLayout();
 
   // ── 0. Happening now: the weekend whose session window straddles `now`. This
   // outranks the finished-result lead below — on Dutch GP Sunday the page led
@@ -248,7 +255,11 @@ export default async function Home() {
   // outage drops the band, it never blanks the page.
   let blog: HomeLeadBlog | null = null;
   try {
-    const lead = await fetchHomeBlogLead();
+    // A pinned post the operator chose, else the newest. If the pin no longer
+    // resolves (unpublished, renamed, deleted) fetchHomeBlogLead returns null
+    // and we fall back to the automatic lead rather than dropping the band.
+    const pinned = pinnedLeadSlug(layout);
+    const lead = (pinned ? await fetchHomeBlogLead(pinned) : null) ?? (await fetchHomeBlogLead());
     if (lead) {
       const meta = lead.seriesSlug ? metaBySlug.get(lead.seriesSlug) : undefined;
       const stamp = new Date(lead.publishedAtIso);

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { clerkClient } from '@clerk/nextjs/server';
-import { BarChart3, Inbox, MousePointerClick, Search, Sparkles, Users } from 'lucide-react';
+import { BarChart3, Inbox, LayoutTemplate, MousePointerClick, Search, Sparkles, Users } from 'lucide-react';
 import { requireAdmin } from '@/lib/admin-guard';
 import { heatmapAdminOverview } from '@/lib/heatmap';
+import { loadLiveHomeLayout, pinnedLeadSlug } from '@/lib/home-layout';
 import { AdminPageHeader, HubCard } from '@/components/admin/AdminUI';
 
 export const dynamic = 'force-dynamic';
@@ -24,16 +25,30 @@ async function accountCount(): Promise<number | null> {
 // Analytics / Search quota — each sub-route fetches its own source on demand.
 export default async function AdminPage() {
   await requireAdmin();
-  const [heat, accounts] = await Promise.all([heatmapAdminOverview(), accountCount()]);
+  const [heat, accounts, layout] = await Promise.all([
+    heatmapAdminOverview(),
+    accountCount(),
+    loadLiveHomeLayout(),
+  ]);
   const totalClicks = heat.reduce((sum, p) => sum + p.total, 0);
 
   const clicksGlance = totalClicks > 0 ? `${totalClicks.toLocaleString()} clicks tracked` : 'Open';
   const accountsGlance = accounts !== null ? `${accounts.toLocaleString()} accounts` : 'Open';
+  const leadGlance = pinnedLeadSlug(layout) ? 'Lead pinned' : 'Automatic';
 
   return (
     <div>
       <AdminPageHeader title="Admin" tagline="Traffic · search · users · behaviour" />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {/* First card on purpose: the only one here that CHANGES the site rather
+            than reporting on it. */}
+        <HubCard
+          href="/admin/home"
+          icon={LayoutTemplate}
+          title="Home page"
+          desc="Choose what leads the home page for everyone."
+          glance={leadGlance}
+        />
         <HubCard
           href="/admin/traffic"
           icon={BarChart3}

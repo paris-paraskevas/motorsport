@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.21 — 2026-08-24
+
+**Internal groundwork.** The first piece of a tool for choosing what leads the home page. Nothing changes for readers yet.
+
 ## 0.334.20 — 2026-08-24
 
 **Telling us whether you liked a post is no longer buried at the bottom.** The thumbs up and thumbs down now sit next to the author's name at the top of the article, where you can see them without scrolling to the end.

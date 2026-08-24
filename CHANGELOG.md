@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.21 — 2026-08-24
+
+### Added
+- **The home composer, ship 1: choose which post leads `/app`.** First step of the approved plan for an operator-composed home page. `/admin/home` lists the published posts and lets the operator pin one as the lead instead of "newest published", or hand the slot back to automatic. Publishing appends a layout revision and revalidates `/app`.
+  - `supabase/migrations/20260824120000_page_layout.sql` — **APPEND-ONLY revisions, not one editable row.** The live layout is the newest row for a `page_key` with `published_at` set; a draft is the newest without; reverting is publishing an older revision's blocks again. A single mutable row was rejected in the migration header: it is smaller right up until a bad layout reaches the front page, at which point there is no undo and no record of what was live. **Not yet applied to prod** — that is an operator-named action.
+  - `lib/home-layout.ts` — the read path, whose entire job is that **a hand-typed JSON blob can never break the site's most-visited page**. Missing column, non-array, empty array, unknown block ids, duplicate ids, a non-string or blank pin: every one falls back to the automatic composition. Unmentioned blocks are appended in their default position, so adding a block later does not invalidate stored layouts. Nothing in the module throws.
+  - `lib/blog.ts` — `fetchHomeBlogLead()` takes an optional pinned slug. Refactored rather than duplicated so the read-time and `published_at`-fallback rules stay in one place (they carry a documented "change one, change both" invariant with the post page).
+  - **A pin that stops resolving falls back silently.** If the pinned post is unpublished, renamed or deleted, the query returns nothing and the page uses the automatic lead rather than dropping the band or leaving a hole.
+  - `app/api/admin/page-layout/route.ts` — admin-only, 404 for everyone else (the no-existence-oracle shape copied from `app/api/admin/users/[id]/route.ts:15`). Normalises the body through the same parser the page uses on read, because rows can also be written by hand in SQL.
+  - `/admin` gains the card as the **first** one on the hub, deliberately: it is the only entry there that changes the site rather than reporting on it.
+
+### Verified
+- **`/app` still builds as `○ (Static)` with a 5m revalidate**, which is the property this whole design exists to protect: the layout is one row read inside the ISR render, so the page stays identical for every visitor and stays cacheable.
+- 13 new tests pin the fail-soft matrix and the pin parsing. Suite **1184 → 1197**. `tsc` exit 0, `lint` 0 errors + the 2 known `_encoding` warnings, `next build` exit 0.
+- Shipping the code **before** the migration is intentional: with no table, every read errors and fail-softs, so prod must be byte-identical after this merge. That is the first check.
+
 ## 0.334.20 — 2026-08-24
 
 ### Changed
