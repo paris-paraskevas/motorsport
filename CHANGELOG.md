@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.33 — 2026-08-24
+
+### Added
+- **`/blog` shows its covers.** Operator, twice: *"/blog is a boring list — it needs the cover images"* and then *"when will this have the cover images"*. `app/(app)/blog/page.tsx` gains `heroImage` on its `Card` shape from both sources (`publishedPosts()` already selected `hero_image` via `COLS`; the MDX branch reads `frontmatter.heroImage`), and a local `PostRow` component renders it.
+  - **The lead is image-BESIDE-headline, not above it.** The first attempt put the cover full width at its native 1200/630, which is ~570 px tall on a desktop column and pushed the headline clean off the first screen. Caught by looking at it. The side-by-side shape also matches what the `/app` lead band already does, so the two surfaces now agree.
+  - **A post with no cover collapses to the text-only row** — no reserved slot, no empty box. That path is load-bearing, not theoretical (see below).
+  - `PostRow` has exactly two call sites (lead and row), which is what earns it a name; it stays in the same file rather than becoming a component nothing else imports.
+- **Retired the `§4.11` "no thumbnails" decision** recorded in two comments on that page. Its premise ("there is no licensed photography for most rounds") had expired: posts carry a curated `hero_image` that the post page and the `/app` lead band already render, so the pictures existed and were simply unused on the one page that lists the writing.
+
+### Fixed
+- **A measurement of my own that was wrong, and the correction matters to the next decision.** I reported "all 24 live posts have a cover" after checking each post URL for `og:image`. That proved the wrong thing: `og:image` on a post comes from the generated card route (`app/(app)/blog/[slug]/opengraph-image.tsx`), which exists for every post regardless of `hero_image`. Measured properly, by counting `<img>` in the rendered listing against prod data: **5 of 24 posts have a cover.** The four Dutch GP posts plus one.
+  - So the listing ships mixed — five rows with pictures, nineteen without — which reads honestly as "recent posts have covers" but is not the finished article. **Filling the other 19 is content work needing licence-clean sources, and belongs to the operator's image session.** Recorded in `IDEAS.md`.
+  - Method note worth keeping: verifying a field by proxy through a *derived* artifact tests the derivation, not the field. Count the thing itself.
+
+### Verified
+- Browser-checked against **prod data** at 1440 and 390 by building with `.env.production.local` and running `next start`, because `.env.local` points at a local Supabase that is down, so `/blog` renders empty under `next dev`. Lead + three rows fit the first screen; mobile stacks with no overflow.
+
 ## 0.334.32 — 2026-08-24
 
 ### Fixed
