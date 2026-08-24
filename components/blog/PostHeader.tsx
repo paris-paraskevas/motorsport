@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 // Shared /blog/[slug] post header: date + tags row, title, byline, summary.
 // Two real consumers (the extraction rule's bar): the public server path in
@@ -83,6 +84,7 @@ export function PostHeader({
   originalUrl,
   eyebrow,
   seriesLink,
+  actions,
 }: {
   dateLabel: string;
   tags?: string[];
@@ -98,6 +100,10 @@ export function PostHeader({
   /** Right side of the byline band — the way back into the live data for the
    *  post's championship. */
   seriesLink?: { label: string; href: string } | null;
+  /** Sits beside the byline, before the series link. Passed in rather than
+   *  imported so this component stays presentational and `DraftPreview`, which
+   *  has no published slug to react to, simply omits it. */
+  actions?: ReactNode;
 }) {
   return (
     <header className="mb-8">
@@ -153,14 +159,17 @@ export function PostHeader({
               )}
             </span>
           </span>
-          {seriesLink && (
-            <Link
-              href={seriesLink.href}
-              className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
-            >
-              {seriesLink.label}
-            </Link>
-          )}
+          <span className="flex items-center gap-3">
+            {actions}
+            {seriesLink && (
+              <Link
+                href={seriesLink.href}
+                className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-brand transition-colors duration-(--duration-fast) hover:text-text"
+              >
+                {seriesLink.label}
+              </Link>
+            )}
+          </span>
         </div>
       )}
       {originalUrl != null && originalUrl !== '' && <Provenance url={originalUrl} />}

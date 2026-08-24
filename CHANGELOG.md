@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.20 — 2026-08-24
+
+### Changed
+- **The like/dislike buttons moved from the foot of a post into the byline band** (operator ask, with a screenshot pointing at the author row). They sat below the article, the photo credit and a horizontal rule, which is past the point most readers reach, so the one piece of feedback we collect was asking at the moment fewest people were still there. They now sit beside the byline, on screen without scrolling.
+  - `BlogReactions` gains a `compact` variant: the same two buttons, smaller, without the "Did you like this?" heading or the rule above them. The heading's job passes to a `role="group"` label plus the existing per-button `aria-label`s, so nothing is lost for a screen reader.
+  - `PostHeader` takes an optional `actions` slot rendered before the series link. Passed in rather than imported, so the component stays presentational and `DraftPreview` — which has no published slug to react to — simply omits it.
+  - The full end-of-post form is **kept in the component** and still exported; only the post page stops rendering it. Nothing else calls it today.
+
 ## 0.334.19 — 2026-08-24
 
 ### Fixed
