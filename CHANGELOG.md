@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.27 — 2026-08-24
+
+### Removed
+- **The admin clean-up, and it bought back 653 KiB of Worker budget.** Step 1 of the approved console plan, on the operator's explicit deletion approval. `/admin/traffic`, `/admin/search` and `/admin/tools` are gone, with `lib/analytics/{ga4,gsc,bing}.ts`, `scripts/verify-analytics.mts`, four dead `AdminUI` exports, and the `@google-analytics/data` (6.8 MB installed) + `@googleapis/searchconsole` dependencies.
+  - **The Worker went from 19.35 KiB of headroom to 672.31 KiB** — 10220.65 → **9567.69 KiB** gzipped, the largest bundle change recorded in `docs/perf-baselines.md`.
+  - **The saving is nearly double the ~352 KiB predicted from chunk analysis.** Measuring the built chunks attributed to those routes missed the transitive `google-gax` / `@grpc` / `google-auth-library` trees that went with them. A chunk measurement is a **floor**, not the answer.
+  - **Why they were so expensive**: both are *server* imports inside *server* components, so they land in the Worker script. `three` (25 MB), `recharts` (8.3 MB) and `leaflet` are all client-side behind `next/dynamic` and never touch it.
+  - **Nothing stopped being collected.** GA4 and Search Console keep working; only Paddock's copy of the charts is gone, and both remain in Google's and Bing's own consoles.
+  - `MiniStat`, `DataBar`, `StatList` and `NotConnected` went with the panels: every one of the 10 `MiniStat` and 6 `StatList` uses was inside them, `DataBar` was used only by `StatList`, and `NotConnected` only by the two deleted pages. `RankPanel`, `KpiTile`, `Sparkline`, `TelemetryPanel`, `Unavailable`, `AdminPageHeader` and `HubCard` all survive.
+
+### Changed
+- **The console hub is a to-do list, not a link menu.** It used to render seven cards and run three queries to print three strings. Each card's glance line is now **a count of work waiting** — applications to decide, drafts awaiting review, submissions to read — so the page answers "what needs me?" before you click. Every count is fail-soft: a Clerk or Supabase blip drops one glance to a neutral label rather than 500ing the console.
+- **The nav is ordered by what you came to do**, not by data source: Overview, Home page, Studio, People, Submissions, Behaviour.
+  - **Studio is an absolute cross-host link, and it has to be.** The console is served from `dev.paddock-tracker.com`, where `middleware.ts:92-98` 404s anything that is not `/admin`, `/api/` or the heatmap frame — a relative `/studio` link from there would have 404'd. Caught before shipping.
+  - `/admin/home` is in the nav at last; it was reachable only from a hub card, a gap left in 0.334.21.
+
+### Noted
+- **Two importers the audit's grep missed**, both caught by `tsc`: `scripts/verify-analytics.mts` (the script that exercised the deleted integrations; not referenced by any npm script) and the stale `.next/types/validator.ts` entries for the deleted routes — the documented landmine, fixed by clearing `.next` after checking no dev server held the port.
+
 ## 0.334.26 — 2026-08-24
 
 ### Internal
