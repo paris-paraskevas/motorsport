@@ -1558,6 +1558,31 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ---
 
+## Week of 2026-08-24
+
+### Mon 2026-08-24 — session 34
+
+Plan at start: ask about the queued Dutch GP recaps (operator's, not mine), then work the queue — item 1b race recap, then AdSense wave 3 — and write up the four decisions without stalling on them. Won't touch: Tier 3 (day page, image session, GEO, v1.0, Street View, hubs restyle).
+
+**11 merges, 0.334.15 → 0.334.25, every one prod-verified before the next.**
+
+- → done: **item 1b, the Dutch GP race recap** (0.334.15). Queued as an `in_review` prod draft; the operator published all four recaps during the session. Six of my own claims failed verification before the insert and were cut, and an automated fetch's "2:44:44.859" winning time was wrong — the raw source reads 2:04:44.859.
+- → done: **item 4b, push history** (0.334.16) — four writers, zero readers; removed with the privacy policy corrected in the same change, and deliberately not claiming the old records are gone.
+- → done: **item 6, the CSP now enforces** (0.334.17). Enforcing it *locally first* found a real breakage report-only never surfaced: AdSense's `sodar2.js` was trusted in `frame-src` but never `script-src`, so shipping the flip alone would have broken ad traffic-quality measurement site-wide during a pending review.
+- → done: **item 11, the F1 analysis surfaces are public** (0.334.18). What settled it: the gate protected nothing — all three API routes already served their payloads anonymously.
+- → done: **the studio autosave** (0.334.19), on the operator's report of losing a post mid-write. Two defects found in my own change before it shipped.
+- → done: **like buttons into the byline band** (0.334.20), **blog SEO** (0.334.22), **the console link in the avatar menu** (0.334.25).
+- → done: **the home composer**, planned under ESPA and approved after one rewrite — ship 1 pin-the-lead (0.334.21), then reorder, hide, drag-and-drop and a live server-rendered preview (0.334.24). Migration applied to prod on the operator naming it.
+- → **not started: AdSense wave 3** (46 F1 champion notes). The only Tier-1 item carried into session 35, displaced by the home-composer work the operator opened mid-session.
+- → measured, both new to `docs/perf-baselines.md`: the **Worker bundle at 19.35 KiB of headroom**, and **48 s / ~4 m 45 s** for a published layout to reach `/app`.
+- → found: **~618 KiB of the bundle is the OpenGraph-card runtime**, not app code. Operator decision logged.
+
+Won't-touch honoured: no Tier-3 project was started.
+
+Active: _(no `[+Nm]` prefixes captured this session)_
+
+---
+
 ## How to use this file
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

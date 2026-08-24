@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.26 — 2026-08-24
+
+### Internal
+- **Session-34 close.** `docs/HANDOFF.md` gains the session block: 11 merges (0.334.15 → 0.334.25), suite 1193 → 1208, and the two findings that constrain what the next session can do.
+  - **The Worker bundle has 19.35 KiB of headroom**, and a breakdown shows **~618 KiB — 6% of the whole budget — is the Satori / `ImageResponse` runtime for OpenGraph cards**, not application code. Static assets are already offloaded to Workers Assets, so pre-generating those cards is the only remaining lever that buys back real room. Logged as an operator decision, because the cards are what make posts shareable.
+  - **Three corrections recorded against myself**: `changed` and `next` are siblings of the result section, not nested inside it (asserted in the approved plan and two PRs, and acting on the wrong version broke a refactor mid-flight); "48 seconds" was reported as the publish latency before a second measurement showed ~4 m 45 s; and the sitemap's zero `lastmod` was nearly reported as a defect when it is a documented decision.
+  - **Five durable process learnings**, led by the one that recurred despite already being written down: write changelog prose in the editor, never through a shell-quoted `node -e`, because bash expands the backticks and silently eats identifiers.
+- `docs/next-session.md` rewritten as a fresh queue — the old one is drained. Tier 1 is now the mobile-calendar revert (with the operator's verbatim "DO NOT CHANGE desktop" constraint), cover images on `/blog`, and the AdSense wave that carried over. The bundle ceiling is the first thing the file says.
+- `SCHEDULE.md` gains the day. `IDEAS.md` triaged: the session-pages item closed with the honest note that the ISR half is still not done, the Dutch GP block updated now that all four recaps are published, and the bundle finding added at the top of the Inbox.
+
 ## 0.334.25 — 2026-08-24
 
 ### Added
