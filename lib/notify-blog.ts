@@ -1,6 +1,5 @@
 import { listSubscriptions, deleteSubscription } from '@/lib/push-store';
 import { sendPushTo, type PushPayload } from '@/lib/push';
-import { recordSent } from '@/lib/push-history';
 import { getUserFollowed, getUserNotifPrefs, isQuietNow } from '@/lib/userPrefs';
 import { markNotified, unmarkNotified, shouldRetryAfterTotalFailure } from '@/lib/notify-ledger';
 import { loadAllSeriesMeta } from '@/lib/series';
@@ -59,10 +58,6 @@ export async function announcePublishedPosts(
     let evicted = 0;
     let skipped = 0;
     let errored = 0;
-    // One history row per user, even with several push subscriptions (multiple
-    // devices/registrations): the push still reaches every device, but the
-    // notification centre must not list the same post twice.
-    const recorded = new Set<string>();
     for (const { subscription, userId } of subs) {
       try {
         if (!userId) {
@@ -93,17 +88,6 @@ export async function announcePublishedPosts(
         const res = await sendPushTo(subscription, silent ? { ...payload, silent: true } : payload);
         if (res.ok) {
           sent++;
-          if (userId && !recorded.has(userId)) {
-            recorded.add(userId);
-            await recordSent(userId, {
-              kind: 'blog-publish',
-              title: payload.title,
-              body: payload.body,
-              url: payload.url ?? '/app',
-              ts: Date.now(),
-              seriesSlug: post.seriesSlug ?? undefined,
-            });
-          }
         } else if (res.gone) {
           await deleteSubscription(subscription.endpoint);
           evicted++;

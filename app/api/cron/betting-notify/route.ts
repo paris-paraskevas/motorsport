@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { listSubscriptions, deleteSubscription, type StoredSubscription } from '@/lib/push-store';
 import { sendPushTo, isPushConfigured, type PushPayload } from '@/lib/push';
-import { recordSent } from '@/lib/push-history';
 import { getUserFollowed, getUserNotifPrefs, isQuietNow } from '@/lib/userPrefs';
 import { authorizeCronRequest, cronAuthFailureResponse } from '@/lib/cron-auth';
 import { wasNotified, markNotified, unmarkNotified, shouldRetryAfterTotalFailure } from '@/lib/notify-ledger';
@@ -200,8 +199,6 @@ export async function GET(req: Request) {
       let evicted = 0;
       let skipped = 0;
       let errored = 0;
-      // One history row per user, even with several push subscriptions.
-      const recorded = new Set<string>();
       for (const { subscription, userId } of subsList) {
         try {
           if (!userId) {
@@ -232,17 +229,6 @@ export async function GET(req: Request) {
           );
           if (result.ok) {
             sent++;
-            if (userId && !recorded.has(userId)) {
-              recorded.add(userId);
-              await recordSent(userId, {
-                kind,
-                title: payload.title,
-                body: payload.body,
-                url: payload.url ?? '/app',
-                ts: Date.now(),
-                seriesSlug: slug,
-              });
-            }
           } else if (result.gone) {
             await deleteSubscription(subscription.endpoint);
             evicted++;

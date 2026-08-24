@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.16 — 2026-08-24
+
+### Removed
+- **Push history stopped being written, because nothing has read it since 0.332.2.** Queue item 4b, decided by the operator ("stop writing it"). Four writers called `recordSent` (`app/api/cron/notify`, `app/api/cron/betting-notify`, `lib/blog-notify`, `lib/notify-blog`) and `listHistory` had **zero callers outside its own test file**, so every notification we sent wrote a per-user KV record that nothing would ever display.
+  - Deleted `lib/push-history.ts` (68 lines) and `lib/push-history.test.ts` (9 tests). Suite **1193 → 1184**, which is exactly the deleted module's tests and no others.
+  - Removed the four call sites **and the per-tick `recorded` dedupe `Set`s in all four**, which existed only to keep one history row per user per tick. Net **-285 lines, +4**.
+  - **Send, evict and error control flow is untouched.** The removed code sat inside the existing `if (result.ok)` success branch and the fan-out never depended on it.
+  - **`lib/blog-notify.ts` needed a real change rather than a pure deletion.** Its `else if (res.gone)` depended on the preceding `if (res.ok)` to narrow `{ok:true} | {ok:false; gone:boolean}`, and that branch existed *only* to hold the history write. Deleting it produced `TS2339: Property 'gone' does not exist on type '{ ok: true; }'`, caught by `tsc` and fixed at the cause: the condition is now an explicit `!res.ok && res.gone`.
+
+### Changed
+- **`content/legal/privacy.md` corrected in the same change**, because it disclosed this collection and would otherwise have been describing something that no longer happens. The "when you enable push notifications" clause now says the recording has stopped, and the retention table row reads "No longer recorded; pre-existing records remain until cleared".
+  - **The wording deliberately does not claim the data is gone.** The existing `paddock:push-history:*` keys are still in Upstash and nothing in this change removes them; purging them is a production write and needs the operator to name it. Claiming deletion we have not performed would repeat the exact defect 0.334.0 and 0.334.1 were fixing.
+
+### Known gap
+- **The notify crons have no route-level tests**, so this is proven by `tsc`, `next build` and control-flow review rather than by execution. Confirming it needs a live cron tick after deploy; it was not run locally because that would fire real notifications to real subscriptions.
+
 ## 0.334.15 — 2026-08-23
 
 ### Added

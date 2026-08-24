@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.16 — 2026-08-24
+
+**We stopped keeping a record of the notifications sent to you.** If you are signed in, Paddock used to log each notification it sent you, for a notification centre in the app header. That feature was removed a while ago and nothing displayed the list back to you, so we have stopped writing it rather than leaving it running. The privacy policy has been updated to match, and it is honest about the fact that records written before this change are still stored until they are cleared.
+
 ## 0.334.15 — 2026-08-23
 
 **Internal housekeeping.** A Dutch Grand Prix race report drafted for review, completing the set of four from that weekend. Nothing is published yet.
