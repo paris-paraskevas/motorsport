@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.23 — 2026-08-24
+
+### Internal
+- **Two operator asks logged in `IDEAS.md`, both promoted to NOW.**
+  - **The mobile calendar is too complex and should go back to the older, simpler version.** Recorded with the constraint verbatim, because the constraint *is* the item: "i am talking ONLY about mobile. desktop is easy. perfect. DO NOT CHANGE desktop calendar." So the first job is archaeology rather than design (find what it was before the 0.313.0 mobile agenda and restore that, not invent a third version), the diff must be provably scoped to the mobile breakpoint, and desktop has to come out byte-identical and be screenshotted before and after to prove it did not move.
+  - **`/blog` is a boring text list and needs the cover images.** Every post already has a `hero_image` that both the post page and the `/app` lead band use. Noted that the listing's card shape is built inline on `app/(app)/blog/page.tsx:22-35` rather than extracted, so that is the moment to pull it out, and that posts without a cover must not leave a hole in the layout.
+- The SEO pass entry is closed with what the audit actually found, rather than deleted.
+- **Process note for the next session:** this entry was first written with a shell-quoted `node -e`, and bash expanded every backtick, silently eating `IDEAS.md`, `/blog`, `hero_image` and `/app` out of the prose. `docs/HANDOFF.md` already warns about exactly this. Write changelog prose with the editor, never through a shell string.
+- The SEO pass entry is closed with what the audit actually found, rather than deleted.
+
 ## 0.334.22 — 2026-08-24
 
 ### Fixed

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.23 — 2026-08-24
+
+**Internal housekeeping.** Planning notes only; nothing user-facing changed.
+
 ## 0.334.22 — 2026-08-24
 
 **Posts should surface better in search.** Each article now points search engines at its own canonical address, and tells them when it was genuinely last edited rather than implying it has never changed since the day it went up. Corrected posts are re-read sooner as a result. Nothing looks different on the page.
