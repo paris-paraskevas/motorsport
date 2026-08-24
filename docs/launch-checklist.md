@@ -24,7 +24,9 @@ The pre-flight gate + launch-day runbook + rollback plan for taking Paddock out 
 - [x] **W3 About/rules ×15** — rules essentials folded into About (shipped 0.31.0).
 - [x] **W4 driver + team profiles** — team points-trajectory chart, F1 portraits 22/22, cross-series slug fix (#401–#405).
 - [x] **Every driver has a biography** across F1, MotoGP, IndyCar, Formula E, WSBK and endurance (0.257.0–0.262.0).
-- [ ] **Smoke every series once** — open each `/series/<slug>`, confirm Overview/Standings/Results/Champions render or degrade honestly (no raw error, no Wikipedia CSS leak). Fast pass: the 4 charted-invariant series first (F1/F2/F3/MotoGP), then the rest. **The single largest open gate**, and nothing since the host change has re-run it.
+- [x] **Smoke every series once — RUN ON PROD 2026-08-24.** All **132** series URLs (15 series × their real tab sets, generated from the app's own `tabsFor()` so the single-event trim and the F1-only Rounds gate cannot drift): **every one HTTP 200**, and none contained an error boundary, `Application error`, a Wikipedia CSS leak (`mw-parser-output` / `infobox-`), `temporarily unavailable`, the retired `Coming soon`, `[object Object]`, a literal `undefined`, or `NaN`.
+  - **Two outliers were checked in a real browser rather than trusted from HTML**, because the record already carries two false "renders empty on prod" reports that were probe-before-hydration errors. `f1/champions` renders in full (76 champions, decade groups back to 1950) — the raw-HTML "no table cells, no list items" signal was a fault in the *detector*, since these pages are div-based. `nls/standings` degrades honestly with *"Nothing here yet for this series."*, the copy 0.334.8 shipped.
+  - Re-run before launch only if a series' data source has changed since; the pass is cheap and scriptable.
 - [ ] **No placeholder-only surfaces on the default home** — Up-next and Just-missed populate for a signed-out visitor.
 
 ### A2 · Correctness invariants
@@ -46,11 +48,13 @@ The pre-flight gate + launch-day runbook + rollback plan for taking Paddock out 
 - [ ] **Fresh sitemap ping** — `npm run indexnow:submit` after the 1.0 deploy so the new banner/OG state is re-crawled.
 - [ ] **OG/Twitter cards** render for `/`, `/app`, a `/series/<slug>` and a `/blog/<slug>`. Note these are generated at request time by the OpenGraph runtime, which is ~618 KiB of the Worker bundle — if that ever gets pre-generated or split out, re-check this gate.
 - [ ] **GSC coverage** — no spike in "excluded / crawl error" since the last check.
+- [ ] **A tab with no data still promises data in its metadata**, which feeds the open AdSense "low value content" case. `/series/nls/standings` renders the honest *"Nothing here yet for this series."* but its `<title>` and description (from `describeTab` in `lib/tabs.ts`) still advertise "the full drivers' and constructors' championship tables with points, wins and gaps, plus a season trend chart". The page is honest; the SERP entry is not. Decide before launch whether an empty tab should carry reduced metadata or `noindex`, the way the news tabs went in 0.334.8.
 
 ### A5 · Performance
 - [x] **PSI sweep done 2026-08-20** — 10 pages, operator-run, table in `docs/perf-baselines.md`; four fix packages shipped from it (0.322.4, 0.322.5, 0.323.0, 0.323.1).
 - [ ] **Re-measure root + standings + weekend** to capture the deltas from those fixes (the one piece of the sweep still owed).
-- [ ] **No console errors** on `/`, `/app`, `/calendar`, a series page and a weekend page, anonymous and signed-in.
+- [ ] **No console errors _other than the one deliberate block_** on `/`, `/app`, `/calendar`, a series page and a weekend page, anonymous and signed-in. **Measured 2026-08-24: every ad-bearing page logs exactly one error**, and it is on purpose — `fundingchoicesmessages.google.com` is blocked by the CSP because our own modal owns consent. `next.config.ts:32-39` says in terms not to "fix" it by allow-listing the origin, so as originally written this gate could never go green. Treat one Funding Choices CSP error as the expected baseline and look for anything *else*.
+- [ ] **Preloaded-but-unused images** — `/series/f1/champions` warns four times that Wikimedia portraits were `link preload`ed and then not used within seconds of load. Warnings, not errors, and not a launch blocker, but it is wasted bandwidth on a page that preloads four ~500 KB images it may not paint. Worth a look with the image session.
 
 ### A6 · Legal / compliance
 - [x] **6 legal pages live** — `/privacy`, `/terms`, `/cookies`, `/accessibility`, `/do-not-sell`, `/imprint`.
