@@ -47,8 +47,6 @@ import {
 } from '@/lib/results-cache';
 import { buildDecoderSummary, type DecoderSummary } from '@/lib/openf1/decoder';
 import { QualifyingDecoder } from '@/components/f1/QualifyingDecoder';
-import { AnalysisGate } from '@/components/f1/AnalysisGate';
-import { auth } from '@clerk/nextjs/server';
 import { buildRaceStory } from '@/lib/openf1/racestory-loader';
 import type { RaceStoryData } from '@/lib/openf1/racestory';
 import { RaceStory } from '@/components/f1/RaceStory';
@@ -67,6 +65,28 @@ import { CollapsibleSection } from '@/components/CollapsibleSection';
 import { SessionClassChips } from '@/components/weekend/SessionClassChips';
 import { PAGE_WIDE, SITE_URL } from '@/lib/site';
 
+// STILL force-dynamic, and the reason is now measured rather than assumed.
+//
+// The account gate that used to justify it is gone (0.334.18 made the F1
+// analysis surfaces public), and Clerk's `auth()` no longer runs here — that
+// removed the FIRST blocker to ISR, but not the last one.
+//
+// What was actually tried, so the next attempt does not repeat it:
+//  - `revalidate = 60` alone            -> route still built as `ƒ` (dynamic).
+//  - `fetchCache = 'default-cache'`     -> still `ƒ`. That option honours an
+//    explicit `cache` option, so at least one fetch in this page's fan-out
+//    passes `no-store` outright, which is what keeps the route dynamic under
+//    Next 15+'s uncached-fetch default.
+//  - `dynamic = 'error'`                -> built as `○`, but that is NOT proof
+//    it prerenders: this route has no `generateStaticParams`, so there were no
+//    params to render and Next never executed the page. A green build there
+//    means nothing was attempted.
+//
+// Making this route cacheable therefore means auditing the OpenF1 / Pulselive /
+// results fan-out fetch by fetch and giving each an explicit cache policy. That
+// is outbound network code, which per CLAUDE.md behaves differently in the
+// deployed runtime than on a laptop, so it wants its own scoped change with a
+// prod check rather than riding along with a gate removal.
 export const dynamic = 'force-dynamic';
 
 // Post-race classifications are immutable, so we KV-persist each session's
@@ -523,15 +543,14 @@ async function SessionBody({
   // KV-cached per session, so a warm render skips the OpenF1 fan-out; the
   // Decoder traces fetch client-side per pair. Resolve this session's OpenF1 key
   // once and reuse it for every board.
-  // Account gate: the F1 telemetry ANALYSIS surfaces (Qualifying Analysis + the
-  // ghost Replay, Race Story, Practice Analysis) are signed-in-only. Resolved
-  // server-side so a locked visitor never receives the analysis payload (a
-  // client <SignedIn> wrap would still ship it in the HTML). Classification and
-  // the stat boards (speed trap / pit league / overtakes) stay public. The page
-  // is already force-dynamic, so auth() adds no caching penalty.
-  const { userId } = await auth();
-  const analysisUnlocked = Boolean(userId);
-
+  // The F1 telemetry ANALYSIS surfaces (Qualifying Analysis + the ghost Replay,
+  // Race Story, Practice Analysis) used to be signed-in-only. They are PUBLIC as
+  // of 0.334.18, on the operator's call, for two reasons: the gate protected
+  // nothing (every payload was already served anonymously by /api/f1/racestory,
+  // /api/f1/decoder and /api/f1/decoder/trace, none of which check auth), and
+  // this is unique prose on 600-900 session pages that search engines could not
+  // see. Removing the gate is also what lets the page be cached at all — see the
+  // `revalidate` note at the top.
   let decoderSummary: DecoderSummary | null = null;
   let raceStory: RaceStoryData | null = null;
   let speedTrap: SpeedTrapData | null = null;
@@ -668,44 +687,23 @@ async function SessionBody({
         {sourceLine && <span className="text-text-faint">{sourceLine}</span>}
       </div>
 
-      {decoderSummary &&
-        (analysisUnlocked ? (
-          <CollapsibleSection title="Qualifying Analysis" defaultOpen>
-            <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
-          </CollapsibleSection>
-        ) : (
-          <AnalysisGate
-            title="Qualifying Analysis"
-            blurb="Lap-by-lap pole breakdown, sector and corner deltas, and the ghost-lap Replay."
-            seriesColor={color}
-          />
-        ))}
+      {decoderSummary && (
+        <CollapsibleSection title="Qualifying Analysis" defaultOpen>
+          <QualifyingDecoder summary={decoderSummary} seriesColor={color} />
+        </CollapsibleSection>
+      )}
 
-      {raceStory &&
-        (analysisUnlocked ? (
-          <CollapsibleSection title="Race Story" defaultOpen>
-            <RaceStory data={raceStory} seriesColor={color} />
-          </CollapsibleSection>
-        ) : (
-          <AnalysisGate
-            title="Race Story"
-            blurb="The strategy that decided the race — stints, tyre choices, pit windows and the moments that turned it."
-            seriesColor={color}
-          />
-        ))}
+      {raceStory && (
+        <CollapsibleSection title="Race Story" defaultOpen>
+          <RaceStory data={raceStory} seriesColor={color} />
+        </CollapsibleSection>
+      )}
 
-      {practice &&
-        (analysisUnlocked ? (
-          <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
-            <PracticeAnalysis data={practice} seriesColor={color} />
-          </CollapsibleSection>
-        ) : (
-          <AnalysisGate
-            title="Practice Analysis"
-            blurb="Fastest laps and long-run race pace from every practice session."
-            seriesColor={color}
-          />
-        ))}
+      {practice && (
+        <CollapsibleSection title="Practice Analysis" defaultOpen={false}>
+          <PracticeAnalysis data={practice} seriesColor={color} />
+        </CollapsibleSection>
+      )}
 
       {speedTrap && (
         <CollapsibleSection title="Speed Trap" defaultOpen={false}>

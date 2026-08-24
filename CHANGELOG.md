@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.18 — 2026-08-24
+
+### Changed
+- **The F1 analysis surfaces are public.** Queue item 11, on the operator's decision. Qualifying Analysis (with the ghost Replay), Race Story and Practice Analysis were signed-in-only on `/series/[slug]/weekend/[round]/[session]`; they now render for everyone. `auth()`, `analysisUnlocked` and the three `AnalysisGate` slots leave the page.
+  - **The gate protected nothing, which is what settled it.** All three payloads were already served anonymously: `/api/f1/racestory`, `/api/f1/decoder` and `/api/f1/decoder/trace` have **zero** auth checks and send `Cache-Control: public, s-maxage=86400`. Verified against prod during the change: `GET /api/f1/racestory?session=11353&series=f1` returned **HTTP 200 and 49,725 bytes to an anonymous caller**. The gate was a sign-up nudge, not a control, and it was hiding unique prose from search engines on 600-900 session pages.
+  - `components/f1/AnalysisGate.tsx` is **kept**, not deleted: `app/(app)/f1/compare/page.tsx` still uses it.
+
+### Known gap — the ISR half of item 11 is NOT done, and here is exactly why
+- Removing `auth()` was necessary for ISR but **not sufficient**, and the page stays `force-dynamic`. Measured, not assumed:
+  - `revalidate = 60` alone → the route still builds as `ƒ`.
+  - `fetchCache = 'default-cache'` → still `ƒ`. That setting honours an explicit `cache` option, so at least one fetch in this page's OpenF1 / Pulselive / results fan-out passes `no-store` outright, which is what pins the route dynamic under Next 15+'s uncached-fetch default.
+  - `dynamic = 'error'` → builds as `○`, **but that is not evidence.** The route has no `generateStaticParams`, so there were no params to prerender and Next never executed the page. A green build there means nothing was attempted; the earlier reading of it as proof was wrong and is corrected here.
+- So the ISR unpark means giving each fetch in that fan-out an explicit cache policy. That is outbound network code, which per `CLAUDE.md` behaves differently in the deployed runtime than on a laptop, so it wants its own scoped change with a prod check rather than riding along with a gate removal. The reasoning is recorded in the page's own header comment so the next attempt does not repeat the dead ends.
+- **The 665 ms session-page TTFB therefore remains open.**
+
+### Added
+- `IDEAS.md` Inbox: **the blog editor loses work and needs autosave** (operator, reported as actual data loss). Logged as a bug rather than a feature, with the shape of the fix and a "promote to NOW" note.
+
 ## 0.334.17 — 2026-08-24
 
 ### Changed
