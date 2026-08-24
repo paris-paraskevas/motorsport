@@ -4,6 +4,15 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.35 — 2026-08-24
+
+### Changed
+- **`/blog` sizes rebalanced, and the mobile row rebuilt.** Two operator notes: *"id make the main (latest) blog and blog image slightly smaller and the rest of the blog images larger, the latest one should be the largest but the main thing people need to see are the images and title and description (cut off so they click)"*, then *"on mobile the blog list is dreadful… only the main blog with the big image looks good on mobile at the moment"*.
+  - **Root cause of the imbalance was mixing units.** The lead image was a percentage (`md:w-[46%]`) while the row thumbnails were fixed (`sm:w-[168px]`), so on the deliberately uncapped `PAGE_WIDE` column the lead grew without limit — at ~2000 px it reached ~900 px against 168 px thumbs, inverting the hierarchy into one giant picture above a list of stamps. Lead is now `md:w-[42%] md:max-w-[520px]`, rows `w-[132px] sm:w-[220px] lg:w-[260px]`, so the lead settles at roughly **2×** a row image at any width.
+  - **Mobile rows are now cards, not squeezed rows.** Below `sm` the picture leads the card (declared first, `sm:order-2` returns it to the right when there is room), because a right-hand thumbnail at 390 px left the headline wrapping to four or five lines beside a stamp. Row images take a shorter `aspect-[21/9]` on mobile against the lead's `1200/630`, which is what keeps the hierarchy legible when both are full-bleed.
+  - **The summary now actually clamps.** On the fluid column a row summary ran to a single ~1600 px line at ultrawide, so `line-clamp-2` never bit and the reader got the whole thing — the opposite of "cut off so they click". The prose measure is capped (`max-w-[95ch]` rows, `max-w-[60ch]` lead) rather than the page, so the fluid layout is untouched.
+  - Verified in the browser at **1920, 1440 and 390** against real prod data (built with `.env.production.local`, served via `next start`, since `.env.local` points at a local Supabase that is down).
+
 ## 0.334.34 — 2026-08-24
 
 ### Internal

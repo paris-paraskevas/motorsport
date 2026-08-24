@@ -69,10 +69,15 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
       >
         {post.title}
       </h2>
+      {/* The measure is capped so the summary actually WRAPS and therefore
+          actually clamps. On the fluid PAGE_WIDE column a row summary ran to a
+          single 1600px line at ultrawide, so the clamp never bit and the reader
+          got the whole thing — the opposite of the "cut it off so they click"
+          intent. Capping the prose, not the page, keeps the fluid layout. */}
       <p
         className={
           'mt-1.5 leading-relaxed text-text-muted ' +
-          (lead ? 'text-[15px] line-clamp-3' : 'line-clamp-2 text-sm')
+          (lead ? 'max-w-[60ch] text-[15px] line-clamp-3' : 'line-clamp-2 max-w-[95ch] text-sm')
         }
       >
         {post.summary}
@@ -88,8 +93,14 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
             the first screen. This is also the shape the /app lead band already
             uses, so the two surfaces agree. Stacks on narrow viewports. */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+          {/* The lead image is capped, not just proportional. A bare percentage
+              kept growing with the fluid PAGE_WIDE column — at ~2000px it hit
+              ~900px while the row thumbnails stayed at their fixed 168px, so the
+              hierarchy inverted into one giant picture above a list of stamps.
+              The cap holds the lead at roughly 2x a row image: still clearly the
+              largest, no longer the whole screen. */}
           {post.heroImage && (
-            <Link href={`/blog/${post.slug}`} className="block md:w-[46%] md:shrink-0">
+            <Link href={`/blog/${post.slug}`} className="block md:w-[42%] md:max-w-[520px] md:shrink-0">
               {/* Plain <img>: next/image is configured unoptimized on this
                   runtime, so it would add markup and buy nothing. The
                   eslint-disable matches PostHero, which renders this same asset
@@ -121,30 +132,39 @@ function PostRow({ post, lead = false }: { post: Card; lead?: boolean }) {
   }
 
   return (
-    <li className="flex gap-3 border-b border-border py-4">
-      <span
-        aria-hidden="true"
-        className="mt-1 h-4 w-[3px] shrink-0"
-        style={{ backgroundColor: post.seriesColor ?? 'var(--border-strong)' }}
-      />
-      <div className="min-w-0 flex-1">
-        {meta}
-        {words}
-      </div>
-      {/* No cover → this element is absent entirely, so the text simply spans the
-          full width. Nothing reserves space for a picture that isn't there. */}
+    <li className="flex flex-col gap-3 border-b border-border py-4 sm:flex-row">
+      {/* On a phone the picture LEADS the card, the same way the main post does.
+          A right-hand thumbnail at this width squeezed the headline into four or
+          five lines beside a stamp, which is the layout the operator called
+          dreadful. Declared first so the mobile column needs no order rule;
+          `sm:order-2` puts it back on the right once there is room.
+          A shorter aspect than the lead's 1200/630 keeps the hierarchy visible
+          on mobile, where both images are otherwise full-bleed and equal.
+          No cover → this element is absent entirely and the text spans the full
+          width; nothing reserves space for a picture that isn't there. */}
       {post.heroImage && (
-        <Link href={`/blog/${post.slug}`} className="shrink-0">
+        <Link href={`/blog/${post.slug}`} className="block sm:order-2 sm:w-[220px] sm:shrink-0 lg:w-[260px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.heroImage}
             alt=""
             width={1200}
             height={630}
-            className="aspect-[1200/630] w-[104px] border border-border bg-surface object-cover sm:w-[168px]"
+            className="aspect-[21/9] w-full border border-border bg-surface object-cover sm:aspect-[1200/630]"
           />
         </Link>
       )}
+      <div className="flex min-w-0 flex-1 gap-3 sm:order-1">
+        <span
+          aria-hidden="true"
+          className="mt-1 h-4 w-[3px] shrink-0"
+          style={{ backgroundColor: post.seriesColor ?? 'var(--border-strong)' }}
+        />
+        <div className="min-w-0 flex-1">
+          {meta}
+          {words}
+        </div>
+      </div>
     </li>
   );
 }
