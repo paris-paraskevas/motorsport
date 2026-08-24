@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.19 — 2026-08-24
+
+### Fixed
+- **The studio lost written work, and now it does not.** Reported by the operator as actual data loss ("blog writing needs autosave, i lost progress"). `StudioEditor` and `StudioComposer` held every field in component state and persisted only on an explicit Save / Publish, so a closed tab, a navigation or a crash discarded everything since the last manual save. `StudioComposer` was the worse of the two: a new post has no row yet, so losing it is a total loss rather than a lost edit.
+  - New `components/studio/useDraftBackup.ts` (operator-approved new file), used by both surfaces: a **debounced localStorage snapshot** while the form is dirty, a **`beforeunload` prompt** on navigate-away, and an **"Unsaved draft found" banner** with Restore / Discard on the next visit. The snapshot is dropped the moment the form goes clean or the server takes the content.
+  - **localStorage only, no server writes, on purpose.** A debounced PATCH would keep rewriting a row that may be sitting in the review queue, so a post could change under the person reading it.
+
+### Two defects found and fixed in this change before it shipped
+- **The hook deleted the snapshot it had just offered.** The mount read and the debounce effect land in the *same* commit, so the debounce effect saw `dirty === false` with recovery state not yet applied, concluded there was nothing to protect, and removed the key. The banner would have worked exactly once and a second reload would have found nothing. The guard now keys off the recovered value itself.
+- **Two lint errors, neither suppressed.** `Cannot access refs during render` (a ref was assigned in the render body to carry the latest values into the debounce) was fixed by depending on the serialised string instead, so the effect closes over a string and there is no ref to touch. `Calling setState synchronously within an effect` (the mount read) was fixed by moving the read to **`useSyncExternalStore`**, which is React's API for exactly this and handles the server having no localStorage rather than mismatching on hydration. The store read is frozen after the first call, because the hook's own writes would otherwise make the banner reappear while the author types.
+
+### Known gap
+- **Not browser-verified.** `/studio` is gated behind `requireAuthor()` and there are no credentials on this machine, so this is proven by `tsc`, `lint`, `vitest` and `next build` only. The suite cannot cover it either: `vitest` runs in the `node` environment with no jsdom or testing-library, so a React hook cannot be exercised without adding dependencies. **It needs the operator to click it**, and the steps are in the PR.
+
 ## 0.334.18 — 2026-08-24
 
 ### Changed
