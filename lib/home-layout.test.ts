@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   parseHomeLayout,
   pinnedLeadSlug,
+  visibleBlocks,
+  layoutFromParams,
   DEFAULT_HOME_LAYOUT,
   HOME_BLOCK_IDS,
   type HomeLayout,
@@ -87,5 +89,51 @@ describe('pinnedLeadSlug', () => {
 
   it('ignores a pin set on a block that is not the lead', () => {
     expect(pinnedLeadSlug(parseHomeLayout([{ id: 'wire', pinnedSlug: 'a-post' }]))).toBeNull();
+  });
+});
+
+describe('visibleBlocks', () => {
+  it('returns the operator order with hidden blocks removed', () => {
+    const l = parseHomeLayout([
+      { id: 'wire' },
+      { id: 'blog', hidden: true },
+      { id: 'result' },
+      { id: 'live' },
+    ]);
+    expect(visibleBlocks(l)).toEqual(['wire', 'result', 'live']);
+  });
+
+  it('falls back to the default order when EVERY block is hidden', () => {
+    // A blank home page is not a layout anyone should be able to publish.
+    const l = parseHomeLayout(HOME_BLOCK_IDS.map(id => ({ id, hidden: true })));
+    expect(visibleBlocks(l)).toEqual([...HOME_BLOCK_IDS]);
+  });
+
+  it('is the default order for the default layout', () => {
+    expect(visibleBlocks(DEFAULT_HOME_LAYOUT)).toEqual([...HOME_BLOCK_IDS]);
+  });
+});
+
+describe('layoutFromParams', () => {
+  it('reads order, hidden and lead out of the URL', () => {
+    const l = layoutFromParams({ order: 'wire,blog,result,live', hidden: 'result', lead: 'a-post' });
+    expect(l.blocks.map(b => b.id)).toEqual(['wire', 'blog', 'result', 'live']);
+    expect(visibleBlocks(l)).toEqual(['wire', 'blog', 'live']);
+    expect(pinnedLeadSlug(l)).toBe('a-post');
+  });
+
+  it('is the default layout when nothing is supplied', () => {
+    expect(layoutFromParams({})).toEqual(DEFAULT_HOME_LAYOUT);
+  });
+
+  it('survives a hand-edited URL: junk ids are dropped, real ones kept', () => {
+    const l = layoutFromParams({ order: 'wire,nonsense,blog' });
+    expect(l.blocks.map(b => b.id).slice(0, 2)).toEqual(['wire', 'blog']);
+    expect([...l.blocks.map(b => b.id)].sort()).toEqual([...HOME_BLOCK_IDS].sort());
+  });
+
+  it('ignores a hidden id that is not a real block', () => {
+    const l = layoutFromParams({ order: 'blog,wire', hidden: 'nonsense' });
+    expect(visibleBlocks(l)).toEqual(['blog', 'wire', 'live', 'result']);
   });
 });

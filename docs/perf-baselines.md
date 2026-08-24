@@ -192,6 +192,29 @@ Operator-run PSI (pagespeed.web.dev, Lighthouse 13.4.1, Moto G Power / slow-4G m
 
 **Next lever bundle (small):** first-slide fade skip + `sizes` on the carousel images. Cosmetics re-flagged: carousel dot touch-targets (a11y 96), two non-composited `width` dot animations, CSP report-only / no COOP (unchanged, by design/backlog).
 
+## 2026-08-24 — Worker bundle ceiling, and how fast a published home layout goes live (0.334.24)
+
+Two numbers this file did not previously carry. Both are operational ceilings rather than page metrics, and both were measured rather than assumed.
+
+**Worker bundle — 19.35 KiB of headroom left.** `wrangler deploy --dry-run`, after the home composer:
+
+| When | Gzipped | Spare against 10 MiB (10240 KiB) |
+|---|---:|---:|
+| 2026-08-21 (0.330.0) | 10176.64 KiB | 63.4 KiB |
+| 2026-08-22 (0.333.1, session-32 close) | 10186.22 KiB | 53.8 KiB |
+| **2026-08-24 (0.334.24)** | **10220.65 KiB** | **19.35 KiB (0.19%)** |
+
+The jump is mostly `@dnd-kit`: it had been a dependency with **zero importers** since the 2026-08-18 orphan sweep deleted the home editor, so it was in `package.json` but never in the bundle. The composer's drag-to-reorder is its first real consumer. Operator decision to ship it with the number recorded (2026-08-24). **Measure before adding anything else** — `npm run deploy:testing` rejects harmlessly.
+
+**Publishing a home layout appears within the ISR window, not the regional-cache window.** The open question was whether `withRegionalCache(..., { mode: "long-lived" })` in `open-next.config.ts:36` — which re-uses an ISR entry up to 30 minutes per region — would swamp `/app`'s 5-minute `revalidate`. It does not. Measured on prod by writing a published revision straight to `page_layout` and polling `/app` for the change:
+
+| Change | Time to appear |
+|---|---:|
+| Pin a different lead post | 48 s |
+| Revert to automatic | ~4 m 45 s |
+
+Both **without** `revalidatePath`, so this is the natural ISR pickup and the honest worst case. The Publish button calls `revalidatePath('/app')` and should therefore be at or under these, but that path is unmeasured — it needs an admin session. The `revalidate = 60` fallback the plan held in reserve is **not needed**.
+
 ## 2026-08-20 — the PSI sweep: every major page (operator-run pagespeed.web.dev, Lighthouse 13.4.1; prod = 0.322.3 during capture)
 
 First per-page lab baseline. Mobile = Moto G Power / slow-4G sim. The morning's landing-stream fix (0.321.2) had already landed; the sweep drove four fix packages: **#1 fonts 19→5 preloads + Redis-SDK-out-of-browser (0.322.4)** · **#2 tap targets + gtag/Clerk dispositions (0.322.5)** · **#3 standings chart CLS/defer + info-hub heading order (queued)** · **#4 LCP image pass + Serwist DataCloneError (queued)**. Re-measure the trio root/standings/weekend after #4 merges.

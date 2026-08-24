@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.24 — 2026-08-24
+
+### Added
+- **The home composer handles the whole home page, with a live preview** (operator: "a preview of home page in the /admin/home page so i can be sure what it looks like before i save", "handle all of home page not just the hero", "in a drag and drop format perhaps"). `/admin/home` is now a two-column tool: the bands on the left, **drag to reorder** (`@dnd-kit`, handle-only so the hide button stays clickable, with the full keyboard path — focus the handle, space, arrows, space), an eye to hide any band, the lead-story picker, and **Publish to everyone**. On the right, the actual home page.
+  - **The preview is a real server render of the real components, not a facsimile.** `lib/home-model.ts` extracts the ~250-line band assembly out of `app/(app)/app/page.tsx`, and both `/app` and the composer now call `buildHomeModel(layout)`. Two copies would have drifted and the preview would have quietly stopped being a preview.
+  - **The draft lives in the URL** (`?order=&hidden=&lead=`) rather than in client state. `/admin` is already `force-dynamic`, so reading `searchParams` there is free — whereas doing the same on `/app` would opt the route out of ISR **for every visitor**. That asymmetry is now written into both files so nobody "simplifies" it later.
+  - `HomeLead` takes an optional `order`. Bands render in DOM order, deliberately **not** via CSS `order`, which would have left reading and tab order stuck in the old sequence.
+  - Hiding every band falls back to the default page rather than publishing a blank home page.
+
+### Fixed
+- **A correction to the record.** The plan and two earlier PR descriptions said `changed` and `next` render *inside* the result section's grid. They do not: the result `<section>` closes at `HomeLead.tsx:479` and the championship/next-up grid is a **sibling** opening at `:488`. They are still treated as one movable band, but now by explicit choice (the pair reads as the consequence of the result above it, and separating them would let the operator strand "what it changed" above the race it changed) rather than by a misreading.
+- **`DEFAULT_HOME_LAYOUT` now matches what `parseHomeLayout` produces**, byte for byte. It omitted `hidden: false` while the parser emits it, so the composer's draft-vs-live comparison saw a difference where there was none and offered to publish a layout identical to the one already live. Caught by a test asserting the two are equal, not by clicking.
+
+### Measured, and both recorded in `docs/perf-baselines.md`
+- **Worker bundle: 10220.65 KiB gzipped, 19.35 KiB under the 10 MiB ceiling** (was 53.8 KiB spare at 0.333.1). `@dnd-kit` had been a dependency with **zero importers** since the orphan sweep, so it was never in the bundle; the composer is its first consumer. Shipped on an explicit operator decision with the number on the table. **Measure before adding anything else.**
+- **A published layout reaches `/app` inside the ISR window, not the 30-minute regional-cache window**: 48 s for one change, ~4 m 45 s for the next, both *without* `revalidatePath`. The plan's `revalidate = 60` fallback is not needed.
+
 ## 0.334.23 — 2026-08-24
 
 ### Internal
