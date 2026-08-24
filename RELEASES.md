@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.18 — 2026-08-24
+
+**Race Story, Qualifying Analysis and Practice Analysis are now free for everyone.** The strategy breakdown of a race, the lap-by-lap pole analysis and the practice pace work used to ask you to sign in. They no longer do: open any completed Formula 1 session and they are simply there. Signing in is still worth it for followed series and notifications, but nothing on a session page is held back any more.
+
 ## 0.334.17 — 2026-08-24
 
 **A real security upgrade: the site's Content Security Policy is now enforced.** Paddock has carried a policy describing exactly which scripts, styles and frames are allowed to load, but until now browsers only logged what broke the rules. From this release they block it. In practice you should notice nothing at all, which is the point: it means a script that has no business running on the page cannot run, even if someone found a way to inject it.
