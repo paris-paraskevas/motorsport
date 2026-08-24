@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.34 — 2026-08-24
+
+### Internal
+- **🔴 Found and recorded: `/`, `/app`, `/calendar` and every series page emit NO `og:image`.** Verified on prod 2026-08-24. Sharing the landing page or the app home produces a link with no picture, while the Worker carries **~618 KiB (6% of the 10240 KiB ceiling)** for the Satori/`ImageResponse` runtime that generates those cards.
+  - **Cause found by comparison rather than guesswork.** Only routes with a **colocated** `opengraph-image.tsx` emit the tag: `/blog/<slug>` → 1, `/series/f1/weekend/12` → 1, while `/`, `/app` and `/calendar` → **0**. `app/opengraph-image.tsx` sits in the **root** segment, but every real page lives inside a route group (`app/(marketing)/page.tsx`, `app/(app)/…`), so no page's own segment carries it. The file itself is healthy — `/opengraph-image` returns `200 image/png` — it is simply referenced by nothing.
+  - `withSocialMeta()` (`lib/seo.ts:18`) was the first suspect and is **not** the cause: it sets `openGraph` without `images`, but `app/(app)/blog/[slug]/page.tsx:77` does exactly the same and still gets its image from the sibling file, with a comment citing the docs' "File-based metadata has the higher priority". So the override theory is disproved by the blog route.
+  - The installed docs (`node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/01-metadata/opengraph-image.md`) only ever say the convention sets an image "for a route segment" and never promise inheritance to descendants, which matches what prod shows.
+  - **Likely fix: place the file in `app/(marketing)/` and `app/(app)/`.** Not attempted here — it wants its own change and its own verification on prod.
+- **`IDEAS.md` gains a session-35 inbox** with eight items, each carrying its evidence: the OG fault above, the **1.0 announcement surface** the operator now requires before the version can be flipped, the composer refinement they asked for, the **19 of 24 blog posts with no cover**, the empty-tab metadata that feeds the AdSense case, `/social/leagues` missing its play-money framing, the unused image preloads on the champions page, and the "deterministic loader called once per test is pure cost" lesson from 0.334.32.
+
 ## 0.334.33 — 2026-08-24
 
 ### Added
