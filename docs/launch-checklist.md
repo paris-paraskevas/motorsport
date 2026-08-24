@@ -78,9 +78,23 @@ The pre-flight gate + launch-day runbook + rollback plan for taking Paddock out 
 
 ---
 
+## §A9 · The 1.0 announcement surface — OPERATOR REQUIREMENT, 2026-08-24
+
+**Verbatim:** *"if we go to version 1, we will need a banner with animations and clear explanation of everything in version 1 and what to expect in later versions."*
+
+This is a **blocking prerequisite**, not launch-day polish. What exists today is `LAUNCH_ANNOUNCEMENT` in `lib/site.ts` + `components/LaunchBanner.tsx`: a single dismissible line reading *"Paddock is out of early access — welcome to 1.0."* with a CTA to `/changelog`. That is not an explanation of anything, and `/changelog` is an audit trail, not a pitch. So:
+
+- [ ] **An animated announcement banner.** Motion must be **CSS, authored, and in the Paper/telemetry idiom** — no generic fade-in-on-scroll, no gradients, no library. A JS animation library is not needed and a client-side one still costs the browser bundle. **`prefers-reduced-motion` must be honoured**, or it undoes the accessibility work of 0.226–0.227.
+- [ ] **A "what 1.0 is" page** — everything the site does now, grouped by capability rather than by release, because a reader does not care that biographies landed in 0.257.0. The 15 named releases from 0.334.30 are the raw material; the page is the edited version of them.
+- [ ] **"What to expect later"** — a stated, honest roadmap. Anything named here becomes a promise, so it takes the operator's sign-off per item; better three things that ship than ten that rot. Nothing on it may depend on per-visitor personalisation of `/app`, which the ISR cache contract rules out.
+- [ ] **The banner's dismissal is keyed by `LAUNCH_ANNOUNCEMENT.id`** — keep `'v1.0'` for this one and bump it for any later announcement, or people who dismissed 1.0 never see the next.
+- [ ] **Decide where the page lives.** `/changelog` already renders releases and would fight it; a new route is cleaner and is a new indexable surface. **Needs the operator's file/route approval before it is built.**
+
+---
+
 ## §B — Launch-day runbook (the flip)
 
-1. **Confirm §A is all green.** Any red box → not launch day yet.
+1. **Confirm §A is all green, §A9 included.** Any red box → not launch day yet. The banner and the "what 1.0 is" page ship and get verified on a real Worker *before* the version bump, so the flip is one small commit rather than a launch and a build at once.
 2. **One commit, on a branch → PR → squash-merge** (never push to `main`):
    - Flip `LAUNCH_ANNOUNCEMENT.active` → `true` in `lib/site.ts` (banner goes live). Keep `id: 'v1.0'` — dismissal is keyed by it.
    - Bump `package.json` `version` → **`1.0.0`**.
