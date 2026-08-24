@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { buildSitemapEntries, blogLastModified } from './sitemap-data';
 import { TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
@@ -11,13 +11,26 @@ import { listPostSlugs } from './posts';
 import { SITE_URL } from './site';
 
 describe('buildSitemapEntries', () => {
+  // ONE call, shared. buildSitemapEntries() takes no arguments and is
+  // deterministic, but it walks the entire content tree, so calling it per test
+  // meant eleven full walks against vitest's 5 s per-test budget. Under load
+  // (the rest of the suite in parallel) each call blew that budget and the file
+  // failed a DIFFERENT subset every run — 4, then 2, then 3 — always with
+  // "Test timed out in 5000ms" and never an assertion. It took 26.8 s for 17
+  // tests while passing in isolation, which is what made it read as flake
+  // rather than as cost. No assertion is changed by this; the hook gets an
+  // explicit budget while every test keeps the default, so a genuine slowdown
+  // inside an assertion still fails the way it should.
+  let urls!: Awaited<ReturnType<typeof buildSitemapEntries>>;
+  beforeAll(async () => {
+    urls = await buildSitemapEntries();
+  }, 120_000);
+
   it('emits the home URL without a trailing slash (matches metadataBase)', async () => {
-    const urls = await buildSitemapEntries();
     expect(urls[0]?.url).toBe(SITE_URL);
   });
 
   it('includes all 15 series index pages', async () => {
-    const urls = await buildSitemapEntries();
     const seriesUrls = urls.filter((u) => /\/series\/[^/]+$/.test(u.url));
     expect(seriesUrls).toHaveLength(15);
   });
@@ -26,7 +39,6 @@ describe('buildSitemapEntries', () => {
     // 24 original rounds - Saudi (cancelled) - Bahrain (cancelled) = 22 until
     // 0.245.2 restored Bahrain as round 16 at Sepang (2-4 Oct) → 23. Stale-guard:
     // if this fails, re-check content/series/f1/rounds.json before touching it.
-    const urls = await buildSitemapEntries();
     const f1Weekends = urls.filter((u) => u.url.includes('/series/f1/weekend/'));
     expect(f1Weekends).toHaveLength(23);
   });
@@ -35,13 +47,11 @@ describe('buildSitemapEntries', () => {
     // Before the 1b-2 fix the sitemap listed 17 FE rounds from rounds.json
     // while the pages only resolved 11 — six advertised URLs 404'd. Both
     // sides now derive from groupByWeekend, so this asserts page reality.
-    const urls = await buildSitemapEntries();
     const feWeekends = urls.filter((u) => u.url.includes('/series/formula-e/weekend/'));
     expect(feWeekends).toHaveLength(17);
   });
 
   it('emits the Tracks tab URL only for coverage-gated series (today: f1)', async () => {
-    const urls = await buildSitemapEntries();
     const trackUrls = urls
       .filter((u) => /\/series\/[^/]+\/tracks$/.test(u.url))
       .map((u) => u.url);
@@ -82,7 +92,6 @@ describe('buildSitemapEntries', () => {
     // stays out until team pages carry an equivalent depth mechanism. (The
     // pre-0.257 version of this test pinned both trees OUT with a "they 404
     // today" comment — stale; both resolve on prod since the drivers.json era.)
-    const urls = await buildSitemapEntries();
     const advertised = urls
       .filter((u) => u.url.startsWith(`${SITE_URL}/drivers/`))
       .map((u) => u.url)
@@ -103,7 +112,6 @@ describe('buildSitemapEntries', () => {
     // membership, NOT findDriverBySlug per slug — the per-slug version re-read
     // every series file per lookup and pushed the suite past its timeout once the
     // advertised set grew past ~100 (session 27).
-    const urls = await buildSitemapEntries();
     const slugs = urls
       .filter((u) => u.url.startsWith(`${SITE_URL}/drivers/`))
       .map((u) => u.url.split('/').pop()!);
@@ -114,14 +122,12 @@ describe('buildSitemapEntries', () => {
   });
 
   it('every URL starts with SITE_URL', async () => {
-    const urls = await buildSitemapEntries();
     for (const u of urls) {
       expect(u.url.startsWith(SITE_URL)).toBe(true);
     }
   });
 
   it('series index URLs are emitted alphabetically by slug', async () => {
-    const urls = await buildSitemapEntries();
     const seriesSlugs = urls
       .filter((u) => /\/series\/[^/]+$/.test(u.url))
       .map((u) => u.url.split('/').pop()!);
@@ -140,10 +146,10 @@ describe('buildSitemapEntries', () => {
   });
 
   it('emits each blog URL once and keeps /blog itself', async () => {
-    const urls = (await buildSitemapEntries()).map((u) => u.url);
-    const blogPosts = urls.filter((u) => u.startsWith(`${SITE_URL}/blog/`));
+    const hrefs = urls.map((u) => u.url);
+    const blogPosts = hrefs.filter((u) => u.startsWith(`${SITE_URL}/blog/`));
     expect(new Set(blogPosts).size).toBe(blogPosts.length);
-    expect(urls).toContain(`${SITE_URL}/blog`);
+    expect(hrefs).toContain(`${SITE_URL}/blog`);
   });
 
   // NARROWED in 0.334.22, deliberately, not to make anything pass. The previous
@@ -157,7 +163,6 @@ describe('buildSitemapEntries', () => {
   // non-blog assertion below is the real guard, and why the mapping itself is
   // covered separately in the unit test underneath.
   it('only blog URLs may carry lastModified; nothing carries changeFrequency or priority', async () => {
-    const urls = await buildSitemapEntries();
     for (const u of urls) {
       if (!u.url.startsWith(`${SITE_URL}/blog/`)) {
         expect(u.lastModified).toBeUndefined();
