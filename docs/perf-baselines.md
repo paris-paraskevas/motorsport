@@ -192,6 +192,22 @@ Operator-run PSI (pagespeed.web.dev, Lighthouse 13.4.1, Moto G Power / slow-4G m
 
 **Next lever bundle (small):** first-slide fade skip + `sizes` on the carousel images. Cosmetics re-flagged: carousel dot touch-targets (a11y 96), two non-composited `width` dot animations, CSP report-only / no COOP (unchanged, by design/backlog).
 
+## 2026-08-24 — the admin clean-up bought back 653 KiB (0.334.27)
+
+Deleting two read-only console pages moved the Worker from **19.35 KiB of headroom to 672.31 KiB** — 35× more room, and the single largest bundle change ever recorded here.
+
+| | Gzipped | Spare against 10240 KiB |
+|---|---:|---:|
+| 0.334.24 (composer shipped) | 10220.65 KiB | 19.35 KiB |
+| **0.334.27 (clean-up)** | **9567.69 KiB** | **672.31 KiB** |
+| **Saved** | **652.96 KiB** | |
+
+Removed: `/admin/traffic`, `/admin/search`, `/admin/tools`, `lib/analytics/{ga4,gsc,bing}.ts`, `scripts/verify-analytics.mts`, four dead `AdminUI` exports, and the `@google-analytics/data` + `@googleapis/searchconsole` dependencies.
+
+**The saving is nearly double the 352 KiB estimated from chunk analysis**, because measuring the built chunks only counted what was attributed to those two routes — it missed the transitive `google-gax` / `@grpc` / `google-auth-library` trees that went with them. Worth remembering the next time a chunk measurement is used to size a removal: **it is a floor, not the answer.**
+
+Why it was so expensive in the first place: both packages are **server** imports inside **server** components, so they land in the Worker script. Contrast `three` (25 MB installed), `recharts` (8.3 MB) and `leaflet` — all client-side behind `next/dynamic`, none of which touch the Worker at all.
+
 ## 2026-08-24 — Worker bundle ceiling, and how fast a published home layout goes live (0.334.24)
 
 Two numbers this file did not previously carry. Both are operational ceilings rather than page metrics, and both were measured rather than assumed.

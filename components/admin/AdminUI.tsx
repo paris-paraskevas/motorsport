@@ -1,17 +1,20 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import type { Ga4Traffic } from '@/lib/analytics/ga4';
-import type { GscSearch } from '@/lib/analytics/gsc';
-import type { BingSearch } from '@/lib/analytics/bing';
 import type { SeriesSubmission } from '@/lib/feeder';
 import type { HeatmapPathPanel, ElementRank } from '@/lib/heatmap';
 
 // Server-rendered UI kit for the /admin console. All server-safe (no hooks, no
 // client state) so every admin route can compose these directly. The telemetry
-// aesthetic — amber accents, mono/display type, hairline borders, per-row data
-// bars and inline-SVG sparklines — lives here so the seven routes read as one
-// instrument panel, not a templated card wall. Client interactivity (the heatmap
-// overlay, the nav rail) lives in its own 'use client' components.
+// aesthetic — amber accents, mono/display type, hairline borders and inline-SVG
+// sparklines — lives here so the console reads as one instrument panel, not a
+// templated card wall. Client interactivity (the heatmap overlay, the nav rail,
+// the home composer) lives in its own 'use client' components.
+//
+// The GA4 / Search Console / Bing panels were removed in 0.334.27 along with the
+// two pages that rendered them: read-only reporting that duplicated Google's own
+// console and cost ~352 KiB gzipped of a 10 MiB Worker budget that had 19 KiB
+// left. MiniStat, DataBar, StatList and NotConnected went with them — every use
+// of all four was inside those panels.
 
 type IconType = React.ComponentType<{ size?: number; className?: string }>;
 
@@ -34,7 +37,7 @@ export function AdminPageHeader({ title, tagline }: { title: string; tagline: st
 
 // Bordered, titled panel — the general section container (a mono uppercase title,
 // optional right-aligned meta, hairline divider). `flush` drops the body padding
-// so a divide-y list sits edge-to-edge under the header (the StatList chrome).
+// so a divide-y list sits edge-to-edge under the header.
 export function TelemetryPanel({
   title,
   meta,
@@ -135,139 +138,10 @@ export function Sparkline({
   );
 }
 
-// A single headline metric (Users / Clicks / CTR …). `text` overrides the numeric
-// formatting for non-count values (CTR, position).
-export function MiniStat({ label, value, text }: { label: string; value?: number; text?: string }) {
-  return (
-    <div className="min-w-0 rounded-lg border border-border bg-surface-elevated p-3">
-      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
-      <div className="mt-1 truncate font-display text-xl sm:text-2xl font-extrabold tabular-nums text-text">
-        {text ?? (value ?? 0).toLocaleString()}
-      </div>
-    </div>
-  );
-}
-
-// A thin per-row proportion bar (value relative to a list max) — the telemetry
-// readout touch on ranked lists. Decorative (aria-hidden); a floor keeps a tiny
-// nonzero value visible. Uses tokens only (border track, amber fill).
-export function DataBar({ value, max, className }: { value: number; max: number; className?: string }) {
-  const pct = max > 0 ? Math.max(2, Math.min(100, (value / max) * 100)) : 0;
-  return (
-    <div aria-hidden className={`h-0.5 w-full overflow-hidden rounded-full bg-border/60 ${className ?? ''}`}>
-      <div className="h-full rounded-full bg-brand-fill/70" style={{ width: `${pct}%` }} />
-    </div>
-  );
-}
-
-// A labelled top-N list (top pages / queries / countries), capped at 8, with a
-// per-row relative data bar scaled to the list max.
-export function StatList({ title, rows }: { title: string; rows: { label: string; value: number }[] }) {
-  const shown = rows.slice(0, 8);
-  const max = shown.reduce((m, r) => Math.max(m, r.value), 0);
-  return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface-elevated">
-      <div className="border-b border-border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">
-        {title}
-      </div>
-      {shown.length === 0 ? (
-        <p className="px-4 py-3 font-mono text-[11px] text-text-faint">No data</p>
-      ) : (
-        <ul className="divide-y divide-border">
-          {shown.map((r, i) => (
-            <li key={`${r.label}-${i}`} className="px-4 py-2">
-              <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="truncate text-text">{r.label || '—'}</span>
-                <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
-                  {r.value.toLocaleString()}
-                </span>
-              </div>
-              <DataBar value={r.value} max={max} className="mt-1.5" />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-export function NotConnected({ what, env }: { what: string; env: string }) {
-  return (
-    <div className="rounded-xl border border-dashed border-border bg-surface/40 px-4 py-5">
-      <p className="text-sm text-text-muted">
-        {what} isn&apos;t connected yet. Add <span className="font-mono text-xs text-text">{env}</span> to light up this
-        panel.
-      </p>
-    </div>
-  );
-}
-
 export function Unavailable({ note }: { note: string }) {
   return <p className="font-mono text-sm text-text-faint">{note}</p>;
 }
 
-// GA4 traffic: headline totals + top pages / countries (last 30 days).
-export function TrafficPanel({ data }: { data: Ga4Traffic }) {
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <MiniStat label="Users" value={data.users} />
-        <MiniStat label="Sessions" value={data.sessions} />
-        <MiniStat label="Page views" value={data.pageViews} />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.path, value: p.views }))} />
-        <StatList title="Top countries" rows={data.topCountries.map(c => ({ label: c.country, value: c.users }))} />
-      </div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Last 30 days · Google Analytics 4</p>
-    </div>
-  );
-}
-
-// GSC search: clicks / impressions / CTR / position + top queries + pages (28 days).
-export function SearchPanel({ data }: { data: GscSearch }) {
-  return (
-    <div className="space-y-4">
-      {/* 2x2, not 1x4: the search route sits GSC + Bing side by side (lg:grid-cols-2),
-          so four KPI tiles share a half-width column, and 4-across crammed the
-          numbers into an overflow. 2x2 keeps each tile wide enough for 6-7 digits. */}
-      <div className="grid grid-cols-2 gap-3">
-        <MiniStat label="Clicks" value={data.clicks} />
-        <MiniStat label="Impressions" value={data.impressions} />
-        <MiniStat label="CTR" text={`${(data.ctr * 100).toFixed(1)}%`} />
-        <MiniStat label="Avg position" text={data.position.toFixed(1)} />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <StatList title="Top queries" rows={data.topQueries.map(q => ({ label: q.query, value: q.clicks }))} />
-        <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.page, value: p.clicks }))} />
-      </div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Last 28 days · Search Console</p>
-    </div>
-  );
-}
-
-// Bing search: clicks / impressions / CTR + top queries + pages. Bing clicks are
-// sparse, so the lists rank by impressions (where the signal is).
-export function BingPanel({ data }: { data: BingSearch }) {
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <MiniStat label="Clicks" value={data.clicks} />
-        <MiniStat label="Impressions" value={data.impressions} />
-        <MiniStat label="CTR" text={`${(data.ctr * 100).toFixed(1)}%`} />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <StatList title="Top queries" rows={data.topQueries.map(q => ({ label: q.query, value: q.impressions }))} />
-        <StatList title="Top pages" rows={data.topPages.map(p => ({ label: p.page, value: p.impressions }))} />
-      </div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-text-faint">Bing Webmaster Tools · ranked by impressions</p>
-    </div>
-  );
-}
-
-// A feeder-series submission row in the admin review list. File downloads go
-// through the admin-gated /api/admin/submissions/[id] route (the base64 blob is
-// never inlined into this page); links open the submitter's data source.
 export function SubmissionRow({ s }: { s: SeriesSubmission }) {
   return (
     <li className="px-4 py-3 text-sm">
