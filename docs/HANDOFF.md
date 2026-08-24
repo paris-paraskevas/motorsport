@@ -6,7 +6,59 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-23 (LATEST, session 33 FINAL — privacy + GPC, the defect sweep, the queue, three blog drafts) — `main` = **0.334.12**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-24 (LATEST, session 34 FINAL — the queue drained, then the home composer) — `main` = **0.334.25**, zero open PRs, every merge prod-verified
+
+**Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
+
+### ✅ Shipped — 11 merges, 0.334.15 → 0.334.25
+
+| Version | What |
+|---|---|
+| **0.334.15** | Dutch GP **race recap** drafted and queued; the operator published all four recaps |
+| **0.334.16** | Push history **stopped being written** (4 writers, 0 readers); privacy policy corrected with it |
+| **0.334.17** | **CSP now ENFORCES**, Funding Choices deliberately blocked |
+| **0.334.18** | F1 **analysis surfaces public** (Race Story, Qualifying, Practice) |
+| **0.334.19** | **Studio autosave** — the editor no longer loses written work |
+| **0.334.20** | Like buttons moved into the byline band |
+| **0.334.21** | Home composer **ship 1** — pin the lead post |
+| **0.334.22** | Blog SEO: self-canonical, real `lastmod`, real `dateModified` |
+| **0.334.23** | Two operator asks logged (mobile calendar, blog covers) |
+| **0.334.24** | Home composer — **reorder, hide, live preview, drag and drop** |
+| **0.334.25** | The **Console** link in the avatar menu |
+
+Suite 1193 → **1208**.
+
+### 🔴 The two findings that change what the next session can do
+
+1. **The Worker bundle has 19.35 KiB of headroom.** 10220.65 KiB gzipped against 10240 KiB, down from 53.8 KiB. `@dnd-kit` had **zero importers** since the orphan sweep, so it was in `package.json` but never in the bundle; the composer's drag-to-reorder is its first consumer. Shipped on an explicit operator decision with the number on the table. **Measure before adding anything.**
+   - **And the biggest lever is not application code.** A bundle breakdown (`wrangler deploy --outdir … --dry-run`) shows `resvg.wasm` **531 KiB**, `Geist-Regular.ttf.bin` **59 KiB** and `yoga.wasm` **28.5 KiB** gzipped — **~618 KiB, 6% of the whole budget** — which is the **Satori/`ImageResponse` runtime for OpenGraph cards**, used by five routes (`app/opengraph-image.tsx`, the blog / weekend / session cards, and `blog/[slug]/story-image`). Static assets are already offloaded to Workers Assets (`wrangler.jsonc:98`), so that lever is spent. Pre-generating those cards is the one change that would buy back real room. **Operator decision — the cards are what make posts shareable.**
+2. **A published home layout appears inside the ISR window, not the 30-minute regional-cache window.** Measured on prod: **48 s** for one change, **~4 m 45 s** for the next, both *without* `revalidatePath`. The `revalidate = 60` fallback held in reserve by the plan is **not needed**. Both numbers are in `docs/perf-baselines.md`.
+
+### 🟡 Corrections I owe the record
+
+- **`changed` and `next` are NOT nested inside the result section's grid.** I asserted this in the approved plan and in two PR descriptions. The result `<section>` closes at `HomeLead.tsx:479`; the championship/next-up grid is a **sibling** opening at `:488`. Acting on the wrong version broke the refactor mid-flight. They are still one movable band, now by choice.
+- **"48 seconds" was reported as the publish latency before the second measurement existed.** The revert took ~4 m 45 s. The honest reading is "bounded by the 5-minute ISR window, with regional-cache variance".
+- **The sitemap's zero `lastmod` was very nearly reported as a defect.** It is a deliberate, documented decision (`lib/sitemap-data.ts:13-19`). Only blog posts got one, because only they have a verifiable change stamp.
+
+### 🔵 Process learnings (durable, session 34)
+
+1. **Write changelog prose in the editor, never through a shell-quoted `node -e`.** Bash expanded the backticks and silently ate four identifiers out of a finished entry. This file already warned about it; I did it anyway.
+2. **Read the structure before a multi-boundary refactor.** Four "identical" `)}` lines are not interchangeable; the one I matched belonged to a sibling block.
+3. **A vacuous test is not coverage.** The sitemap's "no entry carries lastModified" assertion passed because Supabase is unconfigured under vitest, so no blog entry ever got one. It would never have caught a regression.
+4. **A test caught a UX bug no click would have**: `DEFAULT_HOME_LAYOUT` omitted `hidden: false` while the parser emits it, so the composer offered to publish a layout identical to the one already live.
+5. **A dependency with zero importers costs nothing until it has one.** `@dnd-kit` sat in `package.json` for weeks outside the bundle.
+
+### 🩹 Owed (operator)
+
+- **Click the composer**: `/admin/home` — drag, hide, preview, Publish. Never browser-verified; `/admin` needs a session this machine has not got.
+- **The four autosave checks** in PR #788, same reason.
+- **Month-grid tap targets** (queue item 8) — one word retires it.
+- **The OG-image bundle decision** above.
+- Two `page_layout` revisions are stamped `measurement:session-34`; live state is automatic (no pin). Say the word and I clear them.
+
+---
+
+## ⚡ Session 33 — 2026-08-23 (privacy + GPC, the defect sweep, the queue, three blog drafts) — `main` = **0.334.12**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered, one-item-per-PR queue. This file records what happened; that one says what to do.
 

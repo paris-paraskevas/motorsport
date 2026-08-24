@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.26 — 2026-08-24
+
+**Internal housekeeping.** Session records and planning notes; nothing user-facing changed.
+
 ## 0.334.25 — 2026-08-24
 
 **Internal housekeeping.** An editor shortcut in the account menu, visible only to site admins. Nothing changes for readers.
