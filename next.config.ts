@@ -7,12 +7,12 @@ import { withSerwist } from "@serwist/turbopack";
 // components/SerwistRegister.tsx, and this wrapper only adds esbuild to
 // serverExternalPackages. The old swSrc/swDest/flags live on those two files.
 
-// Content-Security-Policy — FIRST PASS, REPORT-ONLY (security audit).
-// Shipped as Content-Security-Policy-Report-Only so it can NEVER break the
-// site: browsers evaluate it and log violations to the console but enforce
-// nothing. The intent is to observe real violations in the field, tighten the
-// directives until clean, and only THEN promote to the enforcing
-// `Content-Security-Policy` header. Until then this is purely diagnostic.
+// Content-Security-Policy — ENFORCING since 0.334.17 (operator decision,
+// 2026-08-24). It rode as Content-Security-Policy-Report-Only from the
+// 2026-06-11 security audit until the report stream came back clean, which is
+// the promotion this header was always waiting for. Enforcing means a wrong
+// directive BREAKS the page rather than logging: anything added below is a
+// production change and wants watching, not a drive-by.
 //
 // Origins reflect what the app actually loads (app/(app)/layout.tsx +
 // components): Clerk (auth SDK + frontend API),
@@ -22,8 +22,7 @@ import { withSerwist } from "@serwist/turbopack";
 // consent <Script> blocks; nonce-based tightening is a later step once the
 // report stream confirms what's in use.
 //
-// TWO THINGS THE REPORT STREAM ACTUALLY FOUND (read off prod 2026-08-23, and
-// both must be settled BEFORE this is promoted to enforcing):
+// TWO THINGS THE REPORT STREAM FOUND (read off prod 2026-08-23), both now settled:
 //
 //  1. `static.cloudflareinsights.com` — Cloudflare Web Analytics, injected into
 //     the HTML at the edge rather than by our code, which is why no grep of this
@@ -31,13 +30,14 @@ import { withSerwist } from "@serwist/turbopack";
 //     below, because we want it: it is cookieless and it is our traffic data.
 //
 //  2. `fundingchoicesmessages.google.com` — Google Funding Choices, pulled in by
-//     adsbygoogle.js, NOT by us. Deliberately NOT allow-listed. Our own consent
-//     modal has owned consent since 0.12.6, so Google's competing consent UI
-//     loading is arguably something to block rather than permit, and quietly
-//     allow-listing it would decide that by accident. Enforcing the policy as it
-//     stands would block it — that is a decision for whoever promotes the header,
-//     not a side effect (queue item 6 in docs/next-session.md).
-const CSP_REPORT_ONLY = [
+//     adsbygoogle.js, NOT by us. DELIBERATELY NOT ALLOW-LISTED, and now that the
+//     header enforces, it is genuinely blocked. That is the decision, made on
+//     purpose rather than inherited: our own consent modal has owned consent
+//     since 0.12.6, and a second competing consent UI from Google is not wanted.
+//     Do NOT "fix" a Funding Choices console error by adding the origin here —
+//     that silently reverses an operator decision. If Google's consent UI is ever
+//     wanted, that is a product call first and a CSP edit second.
+const CSP = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
@@ -47,7 +47,15 @@ const CSP_REPORT_ONLY = [
   "form-action 'self' https://*.clerk.accounts.dev https://clerk.paddock-tracker.com",
   // Scripts: self + inline/eval (Next bootstrap, inline gtag), Clerk, AdSense,
   // GA/GTM, Cloudflare Web Analytics, and blob: for worker bootstrapping.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://static.cloudflareinsights.com",
+  //
+  // `*.adtrafficquality.google` is REQUIRED and was found by enforcing the policy
+  // locally before shipping it: AdSense's show_ads_impl loads
+  // `ep2.adtrafficquality.google/sodar/sodar2.js`, Google's invalid-traffic
+  // detection. The origin was already trusted in `frame-src` but never in
+  // `script-src`, so report-only never surfaced it and enforcing blocked the
+  // script outright. Wildcarded rather than pinned to ep2 because Google rotates
+  // the endpoint number, and a rotation would break ad serving again.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.clerk.accounts.dev https://clerk.paddock-tracker.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googletagmanager.com https://*.google-analytics.com https://www.google.com https://static.cloudflareinsights.com https://*.adtrafficquality.google",
   // Web workers (three.js/drei, serwist SW) load from self + blob:.
   "worker-src 'self' blob:",
   "child-src 'self' blob:",
@@ -128,11 +136,11 @@ const nextConfig: NextConfig = {
             value:
               "camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=()",
           },
-          // Report-only first pass — observe violations before enforcing. See
-          // the CSP_REPORT_ONLY note above for the promote-to-enforcing plan.
+          // ENFORCING. A wrong directive here takes pages down rather than
+          // logging a warning — see the CSP note above before editing it.
           {
-            key: "Content-Security-Policy-Report-Only",
-            value: CSP_REPORT_ONLY,
+            key: "Content-Security-Policy",
+            value: CSP,
           },
         ],
       },

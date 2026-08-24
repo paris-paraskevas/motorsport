@@ -61,7 +61,7 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 **What actually signals legitimacy, and what we already have** (measured on prod 2026-08-22): `Strict-Transport-Security` with `includeSubDomains; preload`, a Content Security Policy, `Permissions-Policy` locking camera/mic/geolocation and denying FLoC and Topics, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`. That is a stronger security posture than most sites showing that interstitial.
 
 **Sharper versions of the same goal, if the operator still wants the signal:**
-1. **Move the CSP from `report-only` to enforcing.** It is already written and reporting; enforcing it is the real security upgrade the header set is missing. (Note: the CSP still allow-lists `va.vercel-scripts.com`, a leftover from the Vercel era — remove it in the same pass.)
+1. ~~**Move the CSP from `report-only` to enforcing.**~~ **DONE 0.334.17.** The stale `va.vercel-scripts.com` entry went in 0.334.2, `static.cloudflareinsights.com` was added in 0.334.6, and the operator took the baked-in decision on 2026-08-24: `fundingchoicesmessages.google.com` stays **off** the allow-list, so Google's Funding Choices consent UI is now genuinely blocked. Our own modal has owned consent since 0.12.6.
 2. **Turnstile on the contact and write-for-us forms** — a visible Cloudflare widget exactly where a visitor expects a check, costing nothing on page load. There is a `turnstile-spin` skill in the toolchain for it.
 3. **Say it in words on `/about`**: one honest line about how the site is hosted and secured, which is what a visitor deciding whether to trust it actually reads.
 
@@ -78,7 +78,7 @@ All four shipped or resolved on 2026-08-23: the `SessionCard` weather prop delet
 - **`ChartEmbed` uses `rounded-xl` / `rounded-lg`**, against the standing sharp-corners principle. One class change, but a visual one.
 - ~~`content/legal/privacy.md` is materially stale~~ — **FIXED 0.334.0**, along with `cookies.md` and `do-not-sell.md`.
 - **"Vercel KV" survives in six code comments** (`lib/f1-cache.ts`, `lib/source-snapshot.ts`, `lib/useFollowedSeries.ts`, `lib/userPrefs.ts`, `lib/weather.ts`, `lib/assistant/log.ts`) after the two human-facing strings were fixed in 0.334.1. Zero behaviour, but it is the same stale-naming defect that put Vercel in the privacy policy and `proxy.ts` in both onboarding docs — a one-word sweep whenever those files are next opened. The comment in `app/(app)/layout.tsx` naming Funding Choices is **correct history** and should stay.
-- **The CSP still allow-lists `va.vercel-scripts.com`** and runs `report-only`. Enforcing it is the real security upgrade the header set is missing (see the interstitial section above).
+- ~~**The CSP still allow-lists `va.vercel-scripts.com`** and runs `report-only`.~~ Both resolved: the dead entry went in 0.334.2, and the header **enforces** as of 0.334.17.
 
 ## AdSense-readiness content (live again — the rejection makes it current)
 

@@ -1,5 +1,11 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.17 — 2026-08-24
+
+**A real security upgrade: the site's Content Security Policy is now enforced.** Paddock has carried a policy describing exactly which scripts, styles and frames are allowed to load, but until now browsers only logged what broke the rules. From this release they block it. In practice you should notice nothing at all, which is the point: it means a script that has no business running on the page cannot run, even if someone found a way to inject it.
+
+One deliberate consequence: Google's own cookie-consent pop-up is blocked along with it. Paddock has had its own consent modal since early on, reachable any time from **Manage cookies** in the footer, and one consent choice is better than two competing ones.
+
 ## 0.334.16 — 2026-08-24
 
 **We stopped keeping a record of the notifications sent to you.** If you are signed in, Paddock used to log each notification it sent you, for a notification centre in the app header. That feature was removed a while ago and nothing displayed the list back to you, so we have stopped writing it rather than leaving it running. The privacy policy has been updated to match, and it is honest about the fact that records written before this change are still stored until they are cleared.
