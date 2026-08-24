@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.29 — 2026-08-24
+
+### Internal
+- **Session-34 handoff, pointed at the operator's two priorities for session 35: the admin page, and R2.**
+- **The R2 question is answered in the docs rather than left as an investigation**, because the answer is a hard platform limit and a session should not burn on rediscovering it. **R2 holds data, not code.** Cloudflare Workers refuse to compile WebAssembly fetched at runtime — `WebAssembly.instantiate()` accepts only a pre-compiled module from a static import the bundler resolves at deploy, and anything else raises **"Wasm code generation disallowed by embedder"**. So the ~560 KiB of `resvg.wasm` + `yoga.wasm` **cannot** move to R2, and neither can JavaScript.
+  - **The real candidate is `content/`**: 1.9 MB raw, read at runtime by `loadAllSeries` and the `/information` loaders and therefore traced into the Worker. `content/information/tracks.json` alone is **306.5 KB**. The queue says **measure before migrating** — JSON gzips hard, so the raw figure overstates the saving — and weighs it against `content/` being the operator's curated CMS, where an edit is a reviewable commit that ships to prod.
+  - If more room is ever wanted after that, the ~618 KiB OpenGraph-card runtime can only be reclaimed by splitting it into its own Worker behind a service binding, or by pre-generating the cards. Not urgent at 672 KiB of headroom.
+- **`docs/next-session.md` rewritten** with the admin page as Tier 1 — led by "click what is already there", since nothing in the console has ever been browser-verified — then the ladder, then the carried items (mobile calendar, blog covers, AdSense wave 3).
+- `SCHEDULE.md` corrected to 14 merges and gains the day's two unplanned outcomes: the console clean-up, and the evidence-backed rejection of adopting the Guardian's `facia-tool` (a Scala/Play service needing CAPI, Ophan, pan-domain auth, AWS and Janus credentials — a Worker cannot host a JVM).
+
 ## 0.334.28 — 2026-08-24
 
 ### Internal

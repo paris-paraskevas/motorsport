@@ -1564,7 +1564,7 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 Plan at start: ask about the queued Dutch GP recaps (operator's, not mine), then work the queue — item 1b race recap, then AdSense wave 3 — and write up the four decisions without stalling on them. Won't touch: Tier 3 (day page, image session, GEO, v1.0, Street View, hubs restyle).
 
-**11 merges, 0.334.15 → 0.334.25, every one prod-verified before the next.**
+**14 merges, 0.334.15 → 0.334.29, every one prod-verified before the next.**
 
 - → done: **item 1b, the Dutch GP race recap** (0.334.15). Queued as an `in_review` prod draft; the operator published all four recaps during the session. Six of my own claims failed verification before the insert and were cut, and an automated fetch's "2:44:44.859" winning time was wrong — the raw source reads 2:04:44.859.
 - → done: **item 4b, push history** (0.334.16) — four writers, zero readers; removed with the privacy policy corrected in the same change, and deliberately not claiming the old records are gone.
@@ -1576,6 +1576,9 @@ Plan at start: ask about the queued Dutch GP recaps (operator's, not mine), then
 - → **not started: AdSense wave 3** (46 F1 champion notes). The only Tier-1 item carried into session 35, displaced by the home-composer work the operator opened mid-session.
 - → measured, both new to `docs/perf-baselines.md`: the **Worker bundle at 19.35 KiB of headroom**, and **48 s / ~4 m 45 s** for a published layout to reach `/app`.
 - → found: **~618 KiB of the bundle is the OpenGraph-card runtime**, not app code. Operator decision logged.
+- → done, unplanned and the biggest win of the day: **the admin console clean-up** (0.334.27). Deleting two read-only pages that duplicated Google's own console freed **653 KiB** — headroom 19.35 KiB → **672.31 KiB**. Nearly double the ~352 KiB predicted, because a chunk measurement misses transitive trees. The hub was rebuilt as a to-do list (each card's glance is now a count of work waiting) and the nav reordered by what you came to do.
+- → evaluated and rejected with evidence: **adopting the Guardian's `facia-tool`** rather than building our own composer. It is a Scala/Play service needing Docker, SBT, CAPI, Ophan, pan-domain auth, AWS SNS/SQS/S3 and Janus credentials; a Cloudflare Worker cannot host a JVM. Took its ideas instead.
+- → answered: **R2 cannot hold WASM or JavaScript** — Workers refuse to compile Wasm fetched at runtime. R2 holds data; `content/` is the real candidate. Written up at the top of `docs/next-session.md` so session 35 does not rediscover it.
 
 Won't-touch honoured: no Tier-3 project was started.
 

@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.29 — 2026-08-24
+
+**Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.
+
 ## 0.334.28 — 2026-08-24
 
 **Internal housekeeping.** Planning notes brought in line with the change above; nothing user-facing changed.
