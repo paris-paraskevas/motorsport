@@ -317,6 +317,7 @@ export default async function PostPage({
             ? { label: `${series.name} coverage →`, href: `/series/${post.frontmatter.seriesSlug}` }
             : null
         }
+        actions={<BlogReactions slug={slug} compact />}
       />
 
       {post.frontmatter.heroImage && (
@@ -332,7 +333,6 @@ export default async function PostPage({
         <PostArticle segments={rendered?.segments ?? []} />
       </article>
 
-      <BlogReactions slug={slug} />
           </div>
 
           {/* top-6 (24px) parked this UNDER the header, which is `fixed` and

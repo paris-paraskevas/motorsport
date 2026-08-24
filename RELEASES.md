@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.20 — 2026-08-24
+
+**Telling us whether you liked a post is no longer buried at the bottom.** The thumbs up and thumbs down now sit next to the author's name at the top of the article, where you can see them without scrolling to the end.
+
 ## 0.334.19 — 2026-08-24
 
 **Writing a post no longer risks losing it.** The editor used to keep your work in the page until you pressed Save, so a closed tab or a crash took everything with it. It now keeps a private backup in your own browser as you type, warns you if you try to leave with unsaved changes, and offers to restore the draft next time you open it. Nothing is sent anywhere: the backup stays on your device until you save.
