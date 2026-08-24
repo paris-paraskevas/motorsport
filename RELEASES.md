@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.34 — 2026-08-24
+
+**Internal housekeeping.** Notes on what was found while checking the site over, including a fault in how pages are previewed when shared. Nothing user-facing changed yet.
+
 ## 0.334.33 — 2026-08-24
 
 **The blog list has its pictures.** The newest piece now leads with its photograph beside the headline, and every story that has a cover shows it in the list. Older posts that were written before we started adding covers still read as they did.
