@@ -239,23 +239,27 @@ export type HomeBlogLead = {
   readMinutes: number;
 };
 
-/** Newest published post for the /app lead. Null when nothing is published. */
-export async function fetchHomeBlogLead(): Promise<HomeBlogLead | null> {
+/** Newest published post for the /app lead, or a SPECIFIC published post when
+ *  the operator has pinned one in the home layout (lib/home-layout.ts).
+ *
+ *  A pinned slug that no longer resolves — unpublished, renamed, deleted —
+ *  returns null exactly like an empty table does, and the caller falls back to
+ *  the automatic lead. A pin must never leave a hole on the home page. */
+export async function fetchHomeBlogLead(pinnedSlug?: string | null): Promise<HomeBlogLead | null> {
   if (!isBettingConfigured()) return null;
   try {
-    const { data, error } = await betDb()
-      .from('post')
-      .select(COLS)
-      .eq('status', 'published')
-      // Same nullsFirst:false guard as publishedPosts — a post flipped to
-      // published by hand keeps published_at null and would otherwise win the
-      // DESC sort. created_at breaks ties, so two posts stamped in the same cron
-      // tick (publishDuePosts writes one `iso` for the whole batch) still pick a
-      // stable lead rather than whatever order Postgres returns.
-      .order('published_at', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    let q = betDb().from('post').select(COLS).eq('status', 'published');
+    q = pinnedSlug
+      ? q.eq('slug', pinnedSlug)
+      : // Same nullsFirst:false guard as publishedPosts — a post flipped to
+        // published by hand keeps published_at null and would otherwise win the
+        // DESC sort. created_at breaks ties, so two posts stamped in the same cron
+        // tick (publishDuePosts writes one `iso` for the whole batch) still pick a
+        // stable lead rather than whatever order Postgres returns.
+        q
+          .order('published_at', { ascending: false, nullsFirst: false })
+          .order('created_at', { ascending: false });
+    const { data, error } = await q.limit(1).maybeSingle();
     if (error || !data) return null;
 
     // published_at is null on a hand-flipped post (only publishDuePosts stamps
