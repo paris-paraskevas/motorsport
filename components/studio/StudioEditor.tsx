@@ -13,6 +13,7 @@ import {
   postAction,
   type PostAction,
 } from './studio-shared';
+import { useDraftBackup, fmtRecoveredAt } from './useDraftBackup';
 
 // The studio's full-page editor for one post (/studio/[id]) — the single editing
 // surface (the old /blog/[slug] pencil-edit routed here). Editable fields match
@@ -119,6 +120,23 @@ export function StudioEditor({
     body !== post.body ||
     hero.trim() !== (post.heroImage ?? '');
 
+  // Crash/close protection. Only the four fields Save actually persists are
+  // backed up, so restoring cannot resurrect a stale schedule time.
+  const { recovered, discard, clear } = useDraftBackup(
+    post.id,
+    { title, summary, body, hero },
+    dirty,
+  );
+
+  function restoreDraft() {
+    if (!recovered) return;
+    setTitle(recovered.values.title);
+    setSummary(recovered.values.summary);
+    setBody(recovered.values.body);
+    setHero(recovered.values.hero);
+    discard();
+  }
+
   async function save(e?: FormEvent) {
     e?.preventDefault();
     setBusy(true);
@@ -134,6 +152,7 @@ export function StudioEditor({
         setError(d.error ?? `Failed (${res.status}).`);
         return;
       }
+      clear(); // the server now holds this; drop the local recovery copy
       router.refresh(); // fresh post props arrive; `dirty` settles false
     } catch {
       setError('Network error. Try again.');
@@ -241,6 +260,24 @@ export function StudioEditor({
   return (
     <form onSubmit={save} className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-10 lg:items-start">
       <div className="min-w-0 space-y-4">
+        {recovered && (
+          <div className="border border-amber-600/60 bg-amber-50/60 px-4 py-3 dark:bg-amber-950/20">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+              Unsaved draft found
+            </p>
+            <p className="mt-1 text-sm text-text-muted">
+              This browser has changes from {fmtRecoveredAt(recovered.ts)} that were never saved.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <button type="button" onClick={restoreDraft} className={BTN_PRIMARY}>
+                Restore them
+              </button>
+              <button type="button" onClick={discard} className={BTN_QUIET}>
+                Discard
+              </button>
+            </div>
+          </div>
+        )}
         <Field label="Title">
           <input
             className={`${FIELD} text-lg font-semibold`}

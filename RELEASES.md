@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.19 — 2026-08-24
+
+**Writing a post no longer risks losing it.** The editor used to keep your work in the page until you pressed Save, so a closed tab or a crash took everything with it. It now keeps a private backup in your own browser as you type, warns you if you try to leave with unsaved changes, and offers to restore the draft next time you open it. Nothing is sent anywhere: the backup stays on your device until you save.
+
 ## 0.334.18 — 2026-08-24
 
 **Race Story, Qualifying Analysis and Practice Analysis are now free for everyone.** The strategy breakdown of a race, the lap-by-lap pole analysis and the practice pace work used to ask you to sign in. They no longer do: open any completed Formula 1 session and they are simply there. Signing in is still worth it for followed series and notifications, but nothing on a session page is held back any more.

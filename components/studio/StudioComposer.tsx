@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { MarkdownEditor } from '@/components/blog/MarkdownEditor';
+import { useDraftBackup, fmtRecoveredAt } from './useDraftBackup';
 
 // Full-page create form on /studio/new — the successor to the cramped inline
 // composer that used to sit on the public /blog page. POSTs to /api/blog
@@ -37,6 +38,30 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
   const [originalUrl, setOriginalUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Crash/close protection. A new post has no row yet, so a lost composer is a
+  // total loss rather than a lost edit — this is the surface that most needs it.
+  // "Dirty" here just means anything has been typed, since there is no server
+  // copy to diff against.
+  const fields = { title, slug, summary, body, seriesSlug, tags, heroImage, originalUrl };
+  const started = Boolean(title || summary || body || heroImage || originalUrl || tags);
+  const { recovered, discard, clear } = useDraftBackup('new', fields, started);
+
+  function restoreDraft() {
+    if (!recovered) return;
+    const v = recovered.values;
+    setTitle(v.title);
+    setSlug(v.slug);
+    // The restored slug is authoritative; do not let the title handler stomp it.
+    setSlugEdited(true);
+    setSummary(v.summary);
+    setBody(v.body);
+    setSeriesSlug(v.seriesSlug);
+    setTags(v.tags);
+    setHeroImage(v.heroImage);
+    setOriginalUrl(v.originalUrl);
+    discard();
+  }
 
   const onTitle = (v: string) => {
     setTitle(v);
@@ -76,6 +101,7 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
         setError(d.error ?? `Failed (${res.status})`);
         return;
       }
+      clear(); // the draft row exists now; drop the local recovery copy
       router.push(`/studio/${d.id}`);
     } catch {
       setError('Network error. Try again.');
@@ -87,6 +113,32 @@ export function StudioComposer({ series }: { series: { slug: string; name: strin
   return (
     <form onSubmit={submit} className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-10 lg:items-start">
       <div className="min-w-0 space-y-4">
+        {recovered && (
+          <div className="border border-amber-600/60 bg-amber-50/60 px-4 py-3 dark:bg-amber-950/20">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+              Unsaved draft found
+            </p>
+            <p className="mt-1 text-sm text-text-muted">
+              This browser has a post from {fmtRecoveredAt(recovered.ts)} that was never created.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={restoreDraft}
+                className="rounded border border-border-strong bg-surface px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-text"
+              >
+                Restore it
+              </button>
+              <button
+                type="button"
+                onClick={discard}
+                className="rounded border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted"
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        )}
         <Field label="Title">
           <input
             className={`${FIELD} text-lg font-semibold`}
