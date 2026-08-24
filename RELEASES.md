@@ -1,5 +1,13 @@
 What's new in Paddock Tracker. Newest first.
 
+# Release 15 · The finishing pass
+
+Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
+
+## 0.334.30 — 2026-08-24
+
+**This page reads as releases now.** Every update since launch has been grouped into fifteen named releases, each with a short account of what it was for, so you can see what actually changed without scrolling past seven hundred version numbers. Nothing was removed: every single update is still here, one click down.
+
 ## 0.334.29 — 2026-08-24
 
 **Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.
@@ -348,6 +356,10 @@ One deliberate consequence: Google's own cookie-consent pop-up is blocked along 
 
 **A finished championship now says so, loud.** When a season is over — Formula E just wrapped — the home page leads with "Season complete" and crowns the champion above the race result, and the series page opens with the final table and who took the title, instead of quietly implying the season might continue.
 
+# Release 14 · Paper
+
+The sixth theme became the site. Navigation was reduced to four doors and one search, and every surface was recut so the whole thing reads as one publication.
+
 ## 0.309.0 — 2026-08-19
 
 **Threads reads like the rest of the paper now.** The community discussion pages pick up the serif-and-ink treatment — and with that, every page from this round of your feedback is done.
@@ -510,6 +522,10 @@ One deliberate consequence: Google's own cookie-consent pop-up is blocked along 
 ## 0.270.0 — 2026-08-18
 
 **A sixth theme: Paper.** Warm newsprint, black ink and a deep oxblood accent, now in Settings → Theme. It's the first visible piece of a larger redesign of the whole site that's on its way — for now, it's simply there to try.
+
+# Release 13 · Themes, and a new address
+
+Five themes to choose from, and a move to new hosting that made standings consistent and pages land in a fraction of the time. Writers got a studio of their own, and every driver across six championships got a real biography.
 
 ## 0.269.0 — 2026-08-06
 
@@ -760,6 +776,10 @@ One deliberate consequence: Google's own cookie-consent pop-up is blocked along 
 ## 0.231.0 — 2026-07-23
 
 **Share posts to Instagram Stories.** On a phone, the Share button on a blog post now passes the post's branded card image to your share sheet, so Instagram and other apps can take it straight to a Story. The usual link sharing is unchanged.
+
+# Release 12 · Read it anywhere
+
+A long pass over how the site reads and travels: keyboard and screen-reader work throughout, sharing that looks right wherever it lands, charts and standings inside posts, and champion history taken back to 1950.
 
 ## 0.230.12 — 2026-07-22
 
@@ -1120,6 +1140,10 @@ One deliberate consequence: Google's own cookie-consent pop-up is blocked along 
 
 **The welcome tour works properly on phones.** The quick intro tour now shows its tips in a tidy panel that sits clear of whatever it's pointing at — never covering it — with a cleaner, rounded look.
 
+# Release 11 · The reference library
+
+The part of the site you read rather than check. Plain-English guides for all fifteen series, every circuit covered in depth, and a world map to find them on.
+
 ## 0.208.0 — 2026-07-12
 
 **Two new endurance explainers.** New Learn guides — "What are LMH and LMDh?" and "What do the GT driver ratings mean?" — now explain the Hypercar rulebooks and the Pro/Gold/Silver/Bronze driver categories, and the WEC and GT World Challenge pages link to them wherever those terms come up.
@@ -1347,6 +1371,10 @@ One deliberate consequence: Google's own cookie-consent pop-up is blocked along 
 ## 0.178.0 — 2026-07-07
 
 **Motorsport, explained.** A new Information section answers the questions fans actually ask — who won every championship, how the racing works, the great circuits, and the rising stars of the feeder series — with clear, sourced answers that link straight into our live data. Find it under "Answers" in the menu. Each series' written history now stands as a proper article too, linked from the new section. More answers are on the way as we review and expand the collection.
+
+# Release 10 · Search, news and the assistant
+
+Search reached every corner of the site, with filters. A news page pulled the wire together, results pages became readable, and the Race Engineer started answering questions.
 
 ## 0.177.0 — 2026-07-07
 
@@ -1616,6 +1644,10 @@ Internal: repository housekeeping — no visible changes.
 ## 0.136.0 — 2026-07-01
 
 **Spot the dynasties at a glance on the Champions tab.** Repeat champions now carry a small title count — like "×7" next to Lewis Hamilton or "×4" next to Max Verstappen — with a tiny bar that fills in as their titles add up year by year. It works across the Drivers', Constructors', and Endurance Cup lists, so multi-time winners and title streaks jump out while you scan. One-off champions stay clean, and the by-decade grouping is unchanged.
+# Release 9 · Telemetry and the onboard lap
+
+Formula 1 telemetry arrived: three leaderboards, a qualifying decoder, and an onboard replay rebuilt from real GPS traces, so the corners are the corners.
+
 ## 0.135.1 — 2026-07-01
 
 **The home news filter now remembers your choice.** When you filter the Paddock wire to a single series, that choice sticks across page reloads instead of resetting to "All" every time.
@@ -1801,6 +1833,10 @@ Internal: documentation and build housekeeping. No changes to the app itself.
 ## 0.110.0 — 2026-06-28
 
 **F1 telemetry is here.** Every Formula 1 qualifying page now has a **Qualifying Decoder** — compare any two drivers' fastest laps side by side: a ghost-car replay on the circuit, the speed and time-gain trace that shows exactly where the lap was won, a track "dominance" map, and sector-by-sector deltas. And every race page gets a **Race Story** — the tyre-strategy grid plus a timeline of the key moments: flags, safety cars, penalties, pit stops and team radio. It covers F1 from the 2023 season on. Data comes from OpenF1, an unofficial community source — not affiliated with Formula 1.
+
+# Release 8 · Make the home yours
+
+The home page became a board you arrange. A dozen widgets, each with its own settings, dragged into whatever order suits you.
 
 ## 0.109.0 — 2026-06-27
 
@@ -2034,6 +2070,10 @@ Internal: documentation and build housekeeping. No changes to the app itself.
 
 **Home, your way — now in Account.** Customising your home screen has moved into Account, with a live preview as you reorder, fold or hide blocks. Two long-standing annoyances are gone: your changes no longer snap back after you make them, and the page no longer flashes its default layout before showing yours. "Just missed" now starts folded — tap its heading on the home screen to open it.
 
+# Release 7 · Predictions and the paddock
+
+The prediction game, built end to end: markets that open and settle themselves, fairer odds, friend leagues and invite links. Threads opened beside it, so there was somewhere to argue about all of it.
+
 ## 0.72.3 — 2026-06-24
 
 **Snappier Play & leagues.** Upcoming markets and your league standings are now cached for a short window, so opening Play, a weekend's bets, or your leagues page is noticeably quicker — your bets and odds stay exactly as fresh as before.
@@ -2225,6 +2265,10 @@ Internal: documentation and build housekeeping. No changes to the app itself.
 ## 0.42.0 — 2026-06-22
 
 *Internal: groundwork for an upcoming credits & predictions game — not yet live.*
+
+# Release 6 · Every session, every result
+
+Every session on every weekend got its own page, results were redesigned around a proper timing sheet, and Account became a real place. The blog published its first post, and endurance results landed in time for Le Mans.
 
 ## 0.41.1 — 2026-06-22
 
@@ -2455,6 +2499,10 @@ Internal: documentation and build housekeeping. No changes to the app itself.
 
 **Every series has its story now.** The History tab — previously only written for Formula 1 — is now authored for all 15 championships: MotoGP's 1949 origins, IndyCar's great split and reunification, Group B and Group C, the DTM's collapses and revivals, NASCAR's 1979 Daytona brawl, the Nordschleife's half-century of club racing, and more. Each essay is fully sourced, with the references listed at the end.
 
+# Release 5 · Broadcast
+
+The first redesign. A new front door, a home page that reads like a broadcast, and the whole app dressed in the landing page colours.
+
 ## 0.19.2 — 2026-06-11
 
 **The landing page is reachable from the app again.** Tapping "Landing" in the footer of the installed app now actually takes you there — opening the app still drops you straight into your dashboard, as it should.
@@ -2534,6 +2582,10 @@ Internal: documentation and build housekeeping. No changes to the app itself.
 **Dark mode now sticks.** A long-standing bug silently reset dark-mode users to light on every reload. Found and fixed at the root.
 
 This is the first step of a larger redesign — the new racing-poster look debuts on the landing page, and the rest of the app follows in upcoming releases.
+
+# Release 4 · Fifteen series, live
+
+Live standings and full race classifications reached every remaining championship, so all fifteen series carried the same depth rather than Formula 1 alone. Dark and light themes landed in the same stretch.
 
 ## 0.12.15 — 2026-05-22
 
@@ -2727,6 +2779,10 @@ A data-quality note: this data comes from the public Wikipedia season page, whic
 Open `/series/f2?tab=standings`, `/series/f3?tab=results`, `/series/formula-e?tab=standings`, `/series/nascar-cup?tab=results`, `/series/wsbk?tab=results` — they should all populate without clicking out. All data refreshes hourly, with manual-override slots wired (so we can correct DSQs and penalties without a code deploy).
 
 **This is batch 1 of the 0.11.x scraper sweep.** Remaining series (WRC, GTWCE, IMSA, WEC, MotoGP, DTM, NLS, IndyCar race-by-race) follow in subsequent 0.11.x releases.
+
+# Release 3 · Records, consent and discovery
+
+The record books arrived: champions, drivers and teams each got a page of their own. Alongside them came the legal and consent groundwork, and the work that lets search engines find any of it. The site also took its full name, Paddock Tracker.
 
 ## 0.10.44 — 2026-05-20
 
@@ -3044,6 +3100,10 @@ Cross-device visual refresh — Paddock Tracker 1.0.
 - **Sharper numbers everywhere they matter.** Session times, weather temperatures, lap counts, points, version strings — all set in a monospaced font with fixed-width digits. Easier to scan, harder to misread.
 - **Tighter cards, calmer chrome.** Refreshed surfaces across the home page, calendar, weekend pages, series tabs, driver and team pages, and the changelog. Nothing about how the site works has changed.
 
+# Release 2 · The calendar tells the truth
+
+Every round of every series got its own page, and the session times behind them were curated by hand across fourteen championships. The worst bug of the early days went with it: feeds that publish only a date were showing races at three in the morning.
+
 ## 0.9.19 — 2026-05-17
 
 Internal: drafted the database schema that will eventually back the calendar / results / standings data. No visible change yet — this is groundwork for the proper data layer that lands over the next few weeks.
@@ -3100,6 +3160,10 @@ F1's two cancelled 2026 rounds (Bahrain and Saudi Arabia, cancelled due to the M
 ## 0.9.0–0.9.7 — 2026-05-16
 
 Race-weekend pages launched. Every round on every series gets its own page: hero with countdown / live / past badge, multi-day weather, schedule grouped by day, standings snapshot, and news filtered to the weekend window. Plus the underlying calendar correctness fixes — phantom 3 am session times eliminated, canonical FIA round numbers wired up (Canada was showing as "Round 3" when it's actually Round 5).
+
+# Release 1 · First light
+
+Paddock went live on its own domain, with the app shell, a calendar covering every series, sign-in and race-day notifications already in place. That is where the public story starts.
 
 ## 0.8.0 — 2026-05-15
 

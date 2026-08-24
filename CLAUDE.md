@@ -48,6 +48,13 @@ You are a capable, autonomous engineer on a two-person team. I set goals and con
 2. `RELEASES.md` — public, rendered at `/changelog`: user-facing prose ONLY (no file paths, no library names, no SHAs); 1–3 sentences per bullet; internal-only changes get one acknowledging line.
 3. `package.json` version bump (patch/minor/major). `/changelog` shows this as "currently running" — skipping it lies to users.
 
+**The version scheme (operator decision, 2026-08-24). A MINOR is a named release; a PATCH is one push inside it.** Every push still bumps the patch and still writes its `RELEASES.md` entry, so "currently running" stays exact to the deploy — that part does not change. What changed is that `RELEASES.md` is now **two levels**: `# <token> · <Name>` opens a release and carries its story in prose, and the `## <version> — <date>` entries beneath it are the audit trail. `/changelog` renders the release and folds its pushes behind a disclosure.
+
+- **A new release** means one new `# ` header with a 1–3 sentence story; after that, keep adding `## ` entries under it. **Never author the date range or the version span into the prose** — both are derived from the contained entries (`deriveSpan` in `app/(app)/changelog/releases.ts`), precisely so a header cannot drift from its own contents.
+- **Opening the next release is the operator's call** — ask rather than starting one, because "is this batch a release" is a product question. Until then patches accumulate under the current header.
+- The first 707 pushes were retro-grouped into 15 named releases with their **real** version spans left intact. History was deliberately NOT renumbered: those versions are in git, in `CHANGELOG.md` and in the running-version contract, so relabelling them would falsify the record.
+- An entry above the top `# ` header still renders, under **Unreleased**. That is a fail-soft, not a feature: seeing it on `/changelog` means a header is missing.
+
 ## Blog publishing SOP — drafts only; operator approves + schedules
 `content/posts/*.mdx` **auto-publishes on merge** (the 2026-07-03 British GP preview went live unsigned that way; reverted in #373) — so use MDX only when I explicitly ask. Every post is a DB draft on **PROD** Supabase:
 1. Create via `scripts/draft-post.mts` with PROD `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + `BLOG_AUTHOR_ID` (or a Management-API SQL insert via `.supabase-pat`, browser UA). ⚠ `.env.local` points at LOCAL Supabase (127.0.0.1) — a draft created with default env never reaches prod.
