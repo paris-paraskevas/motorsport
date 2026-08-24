@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.15 — 2026-08-23
+
+### Added
+- **A Dutch Grand Prix race recap, drafted and queued on prod** as `f1-dutch-grand-prix-2026-race-recap` (`status='in_review'`, `publish_at` NULL, id `274b5734-2727-4148-b36b-47ba7024e740`). Fourth and last of the Zandvoort set, in the shape the three session recaps established: full 22-car classification beside the prose, 8 outbound links, 27 internal, a verdict, a bold "For the books" list and an italic photo credit. Body 9,764 chars, title 81/140, summary 296/300, zero em or en dashes.
+  - **Hard numbers read from raw HTML, not from a summariser, and that mattered.** An automated fetch rendered the winning time as `2:44:44.859`; the raw formula1.com page reads `2:4:44.859` and our own race page reads `2:04:44.859`, which is the figure consistent with Antonelli's `2:04:56.395` at `+11.536`. A 2:44 race time is also outside the two-hour rule. The post uses 2:04:44.859.
+  - **Championship totals verified by arithmetic** against the post-sprint numbers rather than copied: 224+18=242, 168+15=183, 171+12=183, 134+25=159, 145+10=155, 112+0=112, 96+8=104. All seven close, and our standings page matches.
+  - **Six claims failed my own check and were cut or corrected before the insert**, recorded in the draft's flag block so they are not reintroduced: "43 points from the last two rounds" (it is 56, so the sentence now says he won the last two Grands Prix); "McLaren lost ground in the standings" (they matched Mercedes exactly, 33 each); "four races since Piastri's last podium" (unverified); "a second Bearman power unit failure in a weekend" (it was Hulkenberg's in the sprint and Bearman's in the race); "Verstappen's first home-race retirement since the circuit returned" (found only in an aggregated search summary); and "five years back on the calendar" (2021 to 2026 is six).
+  - **Two sources disagree on the lap Norris retook the lead** (formula1.com says 52, Wikipedia says 54) while agreeing on the sequence, so the post describes the sequence and asserts no lap number. Wikipedia's drive-through-penalty claim is dropped in favour of the official race note, and its single-sourced attendance figure is left out.
+  - **All 35 links HTTP-checked against prod before the insert**, 200 on every one. `/drivers/yuki-tsunoda` 404s, so Tsunoda is named in the table and not linked, same as the sprint recap.
+  - Cover is a CC BY-SA 4.0 Wikimedia Commons photograph of Norris' McLaren at Zandvoort (Steffen Prößdorf, 3528x1984), downloaded and looked at before use rather than trusted from its filename.
+  - Verified not public four ways with the **exact** slug, because a loose pattern matches the published Hungarian recaps: direct URL 404, absent from `/blog`, absent from `feed.xml`, `publish_at` and `published_at` both NULL. The three queued session recaps were read to confirm the author id and left untouched.
+
 ## 0.334.14 — 2026-08-23
 
 ### Internal
