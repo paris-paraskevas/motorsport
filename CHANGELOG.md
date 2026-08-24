@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.17 — 2026-08-24
+
+### Changed
+- **The Content Security Policy now ENFORCES.** Queue item 6, on the operator's decision. It has ridden as `Content-Security-Policy-Report-Only` since the 2026-06-11 security audit; the header key and the `CSP_REPORT_ONLY` constant are now `Content-Security-Policy` / `CSP`. This is the security upgrade the header set was missing, and the honest answer to the "show visitors we are legit" ask that the Cloudflare challenge interstitial was not.
+- **Google Funding Choices stays blocked, deliberately.** `fundingchoicesmessages.google.com` is still not allow-listed, so enforcing genuinely blocks it. Our own consent modal has owned consent since 0.12.6 and a second competing consent UI from Google is not wanted. The config comment now says out loud that "fixing" a Funding Choices console error by adding the origin would silently reverse an operator decision.
+
+### Fixed
+- **`https://*.adtrafficquality.google` added to `script-src`, and enforcing locally BEFORE shipping is the only reason we know.** AdSense's `show_ads_impl` loads `ep2.adtrafficquality.google/sodar/sodar2.js`, Google's invalid-traffic detection. That origin was already trusted in `frame-src` but had **never** been in `script-src`, so the report-only header never surfaced it, and flipping to enforcing blocked the script outright with `The action has been blocked` on every page carrying an ad unit.
+  - Shipping the promotion without this would have broken AdSense traffic-quality measurement site-wide **while an AdSense review is pending**, which is the worst possible timing.
+  - Wildcarded rather than pinned to `ep2` because Google rotates the endpoint number; pinning would reproduce the same outage on the next rotation. `frame-src` keeps its existing `ep2` pin, since nothing in the sweep showed the frame failing.
+  - This is **not** the Funding Choices case: that is a competing consent UI blocked on purpose, this is AdSense's own script on a domain we already trust.
+
+### Verified
+- Built in production mode and browsed locally against the **enforcing** header (`next start`), because report-only by definition cannot tell you what enforcing will break. Swept `/app`, `/calendar`, `/series/f1/weekend/12/race`, `/series/f1/standings`, `/privacy` and `/sign-in`: **one** violation before the fix, **zero** after.
+- `tsc` exit 0 · `lint` exit 0 with the 2 known `_encoding` warnings · `vitest` 1184 passed · `next build` exit 0.
+- **Known limit of a local sweep:** `static.cloudflareinsights.com` is injected at the edge and does not run locally, and Clerk's production keys are domain-locked to `paddock-tracker.com` (the local Clerk 400 is that, not a CSP block). Both are allow-listed; both want a prod console check immediately after deploy.
+
 ## 0.334.16 — 2026-08-24
 
 ### Removed
