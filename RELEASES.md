@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.32 — 2026-08-24
+
+**Internal housekeeping.** A test that checks the site's search-engine sitemap was rebuilding it eleven times over, making the whole test run five times slower than it needed to be and occasionally failing for no real reason. Nothing user-facing changed.
+
 ## 0.334.31 — 2026-08-24
 
 **Internal housekeeping.** The pre-launch checklist for version 1.0 was restored and brought up to date, and every series page was re-checked on the live site as part of it. Nothing user-facing changed.

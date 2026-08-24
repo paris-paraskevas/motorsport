@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.32 — 2026-08-24
+
+### Fixed
+- **`lib/sitemap-data.test.ts` was rebuilding the sitemap eleven times, and it was the whole "vitest under load" flake** (open in `IDEAS.md` since session 29, blamed on a co-running dev server). Root cause, from reading the failures instead of re-running them: **every failure was `Error: Test timed out in 5000ms`, never an assertion.** `buildSitemapEntries()` takes no arguments, is deterministic, and walks the entire content tree — and 11 of the file's 17 tests each called it afresh, against vitest's 5 s per-test budget. Under load each call blew the budget and the file failed a **different subset every run** (4, then 2, then 3), which is precisely what made it read as flake rather than as cost. It took **26.8 s** for 17 tests while passing in isolation.
+  - **Fix: one `beforeAll` call, shared.** Not a single assertion changed, and no timeout was raised to make a failure disappear — the hook gets an explicit budget while every test keeps the default 5 s, so a genuine slowdown inside an assertion still fails the way it should.
+  - **File 26.8 s → 3.64 s. Whole suite ~39–46 s → 7.5–11 s**, green on three consecutive runs where three of the previous four were red. 1208 tests, unchanged.
+  - Worth keeping in mind generally: a deterministic, argument-free loader called once per test is pure cost, and it buys no coverage — one call proves the same thing.
+
 ## 0.334.31 — 2026-08-24
 
 ### Fixed
