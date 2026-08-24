@@ -53,12 +53,19 @@ Suite 1193 → **1206** (1208 at its peak, less the 2 tests in the deleted `bing
 4. **A test caught a UX bug no click would have**: `DEFAULT_HOME_LAYOUT` omitted `hidden: false` while the parser emits it, so the composer offered to publish a layout identical to the one already live.
 5. **A dependency with zero importers costs nothing until it has one.** `@dnd-kit` sat in `package.json` for weeks outside the bundle.
 
+### 🎯 Session 35 is operator-set: the admin page, and R2
+
+**On R2 — settled, do not re-derive it.** R2 holds **data, not code**. Cloudflare Workers refuse to compile Wasm fetched at runtime ("Wasm code generation disallowed by embedder"), so the ~560 KiB of `resvg.wasm` + `yoga.wasm` **cannot** move there, and neither can JavaScript — a Worker script must be self-contained. The genuine candidate is **`content/`** (1.9 MB raw; `content/information/tracks.json` alone is 306.5 KB), read at runtime by `loadAllSeries` and the `/information` loaders and traced into the Worker. **Measure before migrating** — JSON gzips hard and the raw figure overstates it — and weigh it against `content/` being the operator's curated CMS, where an edit is a reviewable commit. Full write-up at the top of `docs/next-session.md`.
+
+**On the admin page — click what exists before building more.** Nothing in the console has ever been browser-verified.
+
 ### 🩹 Owed (operator)
 
 - **Click the composer**: `/admin/home` — drag, hide, preview, Publish. Never browser-verified; `/admin` needs a session this machine has not got.
+- **Click the Studio link from the dev host.** It is an absolute cross-host link because `middleware.ts:92-98` 404s relative paths there — that one nearly shipped broken.
 - **The four autosave checks** in PR #788, same reason.
-- **Month-grid tap targets** (queue item 8) — one word retires it.
-- **The OG-image bundle decision** above.
+- **Month-grid tap targets** — one word retires it.
+- **The OG-image decision**: ~618 KiB, and the only ways to reclaim it are a separate Worker behind a service binding or pre-generating the cards. Not urgent at 672 KiB of headroom.
 - Two `page_layout` revisions are stamped `measurement:session-34`; live state is automatic (no pin). Say the word and I clear them.
 
 ---
