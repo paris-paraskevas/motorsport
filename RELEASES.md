@@ -1,5 +1,9 @@
 What's new in Paddock Tracker. Newest first.
 
+## 0.334.25 — 2026-08-24
+
+**Internal housekeeping.** An editor shortcut in the account menu, visible only to site admins. Nothing changes for readers.
+
 ## 0.334.24 — 2026-08-24
 
 **Internal groundwork.** Editor tooling for arranging the home page, with a preview before anything goes live. Readers see no change yet.

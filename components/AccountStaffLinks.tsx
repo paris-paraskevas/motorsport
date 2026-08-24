@@ -81,7 +81,12 @@ export function AccountStaffLinks() {
       {isAdmin && (
         // Cross-subdomain link to the admin surface — a full navigation (plain
         // <a>, not next/link) since dev.paddock-tracker.com is a different host,
-        // itself admin-locked in proxy.ts. Admin-only (moderators don't get it).
+        // itself admin-locked in middleware.ts. Admin-only (moderators don't get
+        // it). The header avatar menu carries the same link (AppShell.tsx), which
+        // is the one the operator actually reaches for.
+        // NB middleware.ts, NOT proxy.ts — Next 16 prefers proxy.ts and warns on
+        // every build, but the Cloudflare migration renamed it back because
+        // OpenNext needs the Edge runtime. See CLAUDE.md landmine 2.
         <a
           href="https://dev.paddock-tracker.com"
           className="group flex items-center gap-3 border-b border-border py-4 transition-colors duration-(--duration-fast) hover:bg-surface"

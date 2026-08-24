@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.25 — 2026-08-24
+
+### Added
+- **The console is reachable from the avatar menu** (operator: "we havent added the admin console button in the dropdown"). The header account dropdown gains a **Console ↗** row, admin-only, sitting directly under Profile because it is the one destination the operator opens in order to *do* something rather than read something. The link already existed on `/settings`, which is not where anyone reaches for it.
+  - A plain `<a>` rather than `next/link`: `dev.paddock-tracker.com` is a different host and needs a full navigation. It targets `/admin` explicitly instead of relying on the host's root rewrite.
+  - Gated client-side on Clerk's `publicMetadata.role === 'admin'` — the same ladder `lib/threads.ts` `isAdmin()` uses on the server, and the same one `AccountStaffLinks` already used — so the row never renders for anyone else and the shell pays no Clerk backend hop.
+
+### Fixed
+- **A stale landmine reference.** `components/AccountStaffLinks.tsx` said the admin host is locked "in `proxy.ts`". It is `middleware.ts` — the exact rename that breaks the deploy if anyone acts on it, and the same stale-naming defect that put Vercel in the privacy policy. Noted while reviewing the composer, fixed now that the file was open, with a pointer to the CLAUDE.md landmine explaining why the Next 16 build warning about it must not be "fixed".
+
 ## 0.334.24 — 2026-08-24
 
 ### Added

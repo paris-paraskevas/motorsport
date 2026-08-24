@@ -232,6 +232,11 @@ function HeaderAccount() {
     };
   }, [open]);
 
+  // Clerk's `publicMetadata.role`, the same source lib/threads.ts isAdmin() uses
+  // on the server. Read here rather than passed in so the shell stays a client
+  // component with no Clerk backend hop.
+  const isAdminUser = user?.publicMetadata?.role === 'admin';
+
   const itemClass =
     'block w-full px-3 py-2 text-left font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:bg-surface hover:text-text';
   const close = () => setOpen(false);
@@ -309,6 +314,23 @@ function HeaderAccount() {
             <Link href="/settings" role="menuitem" onClick={close} className={itemClass}>
               Profile
             </Link>
+          )}
+          {/* Admin only, and first among the signed-in rows because it is the
+              one destination the operator opens to DO something. A plain <a>,
+              not next/link: dev.paddock-tracker.com is a different host, itself
+              admin-locked in middleware.ts, so this has to be a full navigation.
+              Role is read client-side from Clerk (same ladder as
+              AccountStaffLinks), so nothing renders until Clerk confirms it and
+              a non-admin never sees the row. */}
+          {isSignedIn && isAdminUser && (
+            <a
+              href="https://dev.paddock-tracker.com/admin"
+              role="menuitem"
+              onClick={close}
+              className={`${itemClass} border-b border-border text-brand hover:text-brand`}
+            >
+              Console ↗
+            </a>
           )}
           <Link href="/changelog" role="menuitem" onClick={close} className={itemClass}>
             What&apos;s new
