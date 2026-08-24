@@ -10,9 +10,11 @@ Every item states **what**, **why**, **where**, and **how prod is audited**. The
 
 ## READ THIS BEFORE YOU ADD ANYTHING
 
-**The Worker bundle has 19.35 KiB of headroom.** 10220.65 KiB gzipped against a hard 10240 KiB ceiling (Workers Paid; there is no higher tier). `wrangler deploy --dry-run` before writing any import that pulls in a package. `npm run deploy:testing` rejects harmlessly.
+**The Worker bundle has 672.31 KiB of headroom** as of 0.334.27 — 9567.69 KiB gzipped against a hard 10240 KiB ceiling (Workers Paid; there is no higher tier). That is a comfortable margin, and it was 19.35 KiB a few hours earlier: the admin clean-up freed **653 KiB**. Still measure with `wrangler deploy --dry-run` before adding a dependency, but the emergency is over.
 
-**And the biggest lever is not application code.** ~618 KiB gzipped — 6% of the entire budget — is the Satori / `ImageResponse` runtime for OpenGraph cards: `resvg.wasm` 531 KiB, the embedded font 59 KiB, `yoga.wasm` 28.5 KiB. Five routes use it. Static assets are already offloaded to Workers Assets, so that lever is spent. **Pre-generating the cards is the one change that buys back real room, and it is an operator decision** because those cards are what make posts shareable.
+**The lesson that bought it, worth keeping:** `@google-analytics/data` and `@googleapis/searchconsole` were *server* imports inside *server* components, so they landed in the Worker script. `three` (25 MB installed), `recharts` (8.3 MB) and `leaflet` are all client-side behind `next/dynamic` and cost the Worker **nothing**. When something looks expensive, check which side of that line it is on first. And a chunk measurement is a **floor**: the prediction was ~352 KiB, the reality 653 KiB, because transitive trees go with the package.
+
+**The next lever, if it is ever needed:** ~618 KiB is the Satori / `ImageResponse` runtime for OpenGraph cards (`resvg.wasm` 531 KiB, an embedded font 59 KiB, `yoga.wasm` 28.5 KiB) across five routes. Pre-generating those cards would reclaim it, and it is an operator decision because the cards are what make posts shareable. **Not urgent now.**
 
 ---
 
@@ -76,7 +78,7 @@ The operator's verdict on the current one: *"a pile of pages that do little, it 
 
 > Paddock — session 35. `main` = **0.334.25**, prod verified, tree clean, zero open PRs, suite **1208**. Read in order: `CLAUDE.md` · `docs/HANDOFF.md` top block · **`docs/next-session.md` (this file — it is what to do)** · `CONTRIBUTING.md` · `IDEAS.md` · `SCHEDULE.md` · memory `feedback-paddock-*`.
 >
-> **Before you write a single import: the Worker bundle has 19.35 KiB of headroom** against a hard 10 MiB ceiling. `wrangler deploy --dry-run` first. And know that **~618 KiB of that budget is the OpenGraph-card runtime** (`resvg.wasm` + a font + `yoga.wasm`), not app code — pre-generating those cards is the only change that buys back real room, and it is the operator's call because the cards are what make posts shareable.
+> **The Worker bundle has 672.31 KiB of headroom** (9567.69 / 10240 KiB), after the admin clean-up freed 653 KiB. Comfortable, but still measure with `wrangler deploy --dry-run` before adding a dependency — and know the rule that made it expensive in the first place: a *server* import in a *server* component lands in the Worker, while anything client-side behind `next/dynamic` costs it nothing.
 >
 > **Work the queue from the top.** Item 1, the **mobile calendar**, carries a verbatim constraint that is the whole item: *only* mobile, **do not change desktop**, prove it with before/after screenshots at 1440. Then item 2, **cover images on `/blog`**. Then item 3, **AdSense wave 3** — 46 F1 seasons, data only, guarded by `champion-notes-integrity`, small waves and two sources per clinch.
 >

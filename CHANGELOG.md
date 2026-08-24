@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.28 — 2026-08-24
+
+### Internal
+- **Bundle figures corrected across the docs, immediately, because they had just become wrong by 35×.** `docs/next-session.md` opened with "**READ THIS BEFORE YOU ADD ANYTHING: the Worker bundle has 19.35 KiB of headroom**" — written an hour before the clean-up freed 653 KiB. Leaving it would have had the next session refusing to add a dependency it had ample room for, which is the same stale-doc defect that put Vercel in the privacy policy and `proxy.ts` in both onboarding guides.
+  - Both files now carry **672.31 KiB** and, more usefully, the *rule* that explains the swing: a **server** import in a **server** component lands in the Worker script, while anything client-side behind `next/dynamic` costs it nothing. That is why `three` (25 MB installed), `recharts` (8.3 MB) and `leaflet` are free while a 6.8 MB analytics client was not.
+  - Also recorded: **a chunk measurement is a floor, not the answer** — the prediction was ~352 KiB, the reality 653 KiB, because transitive dependency trees go with the package.
+- `docs/HANDOFF.md` session totals corrected to 14 merges (0.334.15 → 0.334.28) and the suite to **1206** (1208 at its peak, less the 2 tests in the deleted `bing.test.ts`).
+
 ## 0.334.27 — 2026-08-24
 
 ### Removed

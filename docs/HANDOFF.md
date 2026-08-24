@@ -6,11 +6,11 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-24 (LATEST, session 34 FINAL — the queue drained, then the home composer) — `main` = **0.334.25**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-24 (LATEST, session 34 FINAL — the queue drained, the home composer, the console clean-up) — `main` = **0.334.28**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
 
-### ✅ Shipped — 11 merges, 0.334.15 → 0.334.25
+### ✅ Shipped — 14 merges, 0.334.15 → 0.334.28
 
 | Version | What |
 |---|---|
@@ -25,12 +25,17 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 | **0.334.23** | Two operator asks logged (mobile calendar, blog covers) |
 | **0.334.24** | Home composer — **reorder, hide, live preview, drag and drop** |
 | **0.334.25** | The **Console** link in the avatar menu |
+| **0.334.26** | Session-34 records |
+| **0.334.27** | **The admin clean-up: 653 KiB of Worker budget reclaimed**, the hub rebuilt as a to-do list |
+| **0.334.28** | Bundle figures corrected across the docs |
 
-Suite 1193 → **1208**.
+Suite 1193 → **1206** (1208 at its peak, less the 2 tests in the deleted `bing.test.ts`).
 
 ### 🔴 The two findings that change what the next session can do
 
-1. **The Worker bundle has 19.35 KiB of headroom.** 10220.65 KiB gzipped against 10240 KiB, down from 53.8 KiB. `@dnd-kit` had **zero importers** since the orphan sweep, so it was in `package.json` but never in the bundle; the composer's drag-to-reorder is its first consumer. Shipped on an explicit operator decision with the number on the table. **Measure before adding anything.**
+1. **The Worker bundle ended the session with 672.31 KiB of headroom, after starting it with 53.8 and dipping to 19.35.** The composer's drag-to-reorder gave `@dnd-kit` its first importer since the orphan sweep and took the margin to 19.35 KiB; the admin clean-up then freed **653 KiB** by deleting two read-only pages, landing at 9567.69 / 10240 KiB.
+   - **The rule that explains both**: `@google-analytics/data` and `@googleapis/searchconsole` were *server* imports in *server* components, so they landed in the Worker script. `three` (25 MB installed), `recharts` (8.3 MB) and `leaflet` are all client-side behind `next/dynamic` and cost the Worker **nothing**. Check which side of that line something is on before assuming it is expensive.
+   - **A chunk measurement is a floor, not the answer.** The prediction from measuring built chunks was ~352 KiB; the reality was 653 KiB, because the transitive `google-gax` / `@grpc` / `google-auth-library` trees went too.
    - **And the biggest lever is not application code.** A bundle breakdown (`wrangler deploy --outdir … --dry-run`) shows `resvg.wasm` **531 KiB**, `Geist-Regular.ttf.bin` **59 KiB** and `yoga.wasm` **28.5 KiB** gzipped — **~618 KiB, 6% of the whole budget** — which is the **Satori/`ImageResponse` runtime for OpenGraph cards**, used by five routes (`app/opengraph-image.tsx`, the blog / weekend / session cards, and `blog/[slug]/story-image`). Static assets are already offloaded to Workers Assets (`wrangler.jsonc:98`), so that lever is spent. Pre-generating those cards is the one change that would buy back real room. **Operator decision — the cards are what make posts shareable.**
 2. **A published home layout appears inside the ISR window, not the 30-minute regional-cache window.** Measured on prod: **48 s** for one change, **~4 m 45 s** for the next, both *without* `revalidatePath`. The `revalidate = 60` fallback held in reserve by the plan is **not needed**. Both numbers are in `docs/perf-baselines.md`.
 
