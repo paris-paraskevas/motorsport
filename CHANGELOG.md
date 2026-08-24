@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.31 — 2026-08-24
+
+### Fixed
+- **`docs/launch-checklist.md` restored, and the four gates that had become FALSE deleted.** `lib/site.ts:43` tells the reader to consult this file before flipping the 1.0 banner; the file was deleted by the Cloudflare migration commit (`243013a`), so the banner's own instructions pointed at nothing for a month. Recovered from `243013a^`. A checklist that asserts wrong facts is worse than a missing one, so these went with the reason recorded rather than being left to mislead:
+  - ~~"`next.config.ts` keeps BOTH `serverExternalPackages: ["node-ical"]` AND `outputFileTracingIncludes`"~~ — **neither is in the file** and prod is healthy. `serverExternalPackages` survives only in a comment at `next.config.ts:8`; `outputFileTracingIncludes` appears nowhere. Output-file tracing stopped mattering once content moved to a build-time bundle, because workerd has no `fs` and traced files would be unreadable. **`CLAUDE.md` landmine #1 carried the same false claim and is struck through with the correction**, pointing instead at the live trap in that area (below).
+  - ~~"Middleware is `proxy.ts`, not `middleware.ts`"~~ — backwards now; there is no `proxy.ts`.
+  - ~~"the 12 GitHub Actions workflows"~~ — `.github/workflows/` holds one file, `warm-live-data.yml`; the 13 cron jobs are Cloudflare triggers in `wrangler.jsonc`.
+  - ~~Vercel KV / Speed Insights / preview URLs / dashboard rollback~~ — corrected in place to Upstash, the PSI sweep, the three named Workers, and the revert-PR path `CONTRIBUTING.md` calls authoritative. Cloudflare's own rollback is noted as **never exercised on this project**, so it is not planned around.
+- **Gates added that the new host created:** the Worker bundle must clear the 10240 KiB gzipped ceiling or the deploy is rejected outright (a launch-window outage), and a parser change is unproven until `scripts/warm-live-data.mts` has run with it.
+- **Ticked with evidence** what shipped since the file was written: CSP enforcing (0.334.17), the legal pages true rather than merely present (0.334.0, 0.334.1), GPC honoured, blog SEO (0.334.22), the PSI sweep, response headers, Worker observability, and a biography for every driver (0.257.0–0.262.0).
+
+### Added
+- **The §A1 smoke gate was RUN, on prod: 132 series URLs, all 200, zero bad markers.** URLs generated from the app's own `tabsFor()` / `listSeriesSlugs()` so the single-event trim and the F1-only Rounds gate cannot drift from what ships. Scanned for error boundaries, `Application error`, Wikipedia CSS leaks (`mw-parser-output` / `infobox-`), `temporarily unavailable`, the retired `Coming soon`, `[object Object]`, literal `undefined` and `NaN` — none present. The largest open launch gate is green.
+  - **Two outliers were checked in a browser rather than trusted from raw HTML**, because the record carries two false "renders empty on prod" reports that were probe-before-hydration errors. Both cleared, and one indicted the detector rather than the page: `/series/f1/champions` renders 76 champions in decade groups back to 1950, and its "no table cells, no list items" reading was because these pages are **div-based**. `/series/nls/standings` degrades honestly with the 0.334.8 copy.
+
+### Changed
+- **Two launch gates were wrong and are corrected by measurement:**
+  - **"No console errors" could never go green.** Every ad-bearing page logs exactly one: the `fundingchoicesmessages.google.com` CSP block, deliberate since 0.334.17, and `next.config.ts:32-39` says in terms not to "fix" it by allow-listing the origin. One Funding Choices error is now the documented baseline; the gate is to look for anything *else*.
+  - **An empty tab still advertises rich data in its metadata**, which feeds the open AdSense "low value content" case. `/series/nls/standings` renders the honest "Nothing here yet for this series." under a `describeTab` description (`lib/tabs.ts`) promising "the full drivers' and constructors' championship tables with points, wins and gaps, plus a season trend chart". The page is honest; the SERP entry is not. Operator decision before launch: reduced metadata, or `noindex` as the news tabs took in 0.334.8.
+- Also logged, not a blocker: `/series/f1/champions` `link preload`s four Wikimedia portraits it does not paint within seconds of load.
+
 ## 0.334.30 — 2026-08-24
 
 ### Changed
