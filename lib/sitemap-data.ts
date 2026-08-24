@@ -17,6 +17,31 @@ import { loadAllPosts } from './posts';
 // edit history, markdown frontmatter dates, etc.), emitting `lastModified:
 // new Date()` on every build would train Google to ignore the field — worse
 // than omitting it. So entries here are minimal `<url><loc>` only.
+//
+// ONE EXCEPTION, added 0.334.22: DB-backed blog posts. They carry `updated_at`,
+// a real per-page change timestamp of exactly the kind this rule was waiting
+// for, so those entries — and only those — advertise a `lastmod`. The rule is
+// unchanged everywhere else, and an MDX post with no such stamp still gets none.
+/**
+ * The `lastmod` for one DB blog post, or null when it has no usable stamp.
+ *
+ * Order matters: `updated_at` is the only value that moves when a published post
+ * is CORRECTED, which is the change a re-crawl is actually for. It falls back to
+ * publication, then creation. An unparseable or absent stamp yields null and the
+ * entry ships without a lastmod — a wrong one is worse than none, which is the
+ * rule the header comment above is protecting.
+ */
+export function blogLastModified(post: {
+  updatedAt?: string | null;
+  publishedAt?: string | null;
+  createdAt?: string | null;
+}): string | null {
+  const stamp = post.updatedAt ?? post.publishedAt ?? post.createdAt;
+  if (!stamp) return null;
+  const when = new Date(stamp);
+  return Number.isNaN(when.getTime()) ? null : when.toISOString();
+}
+
 export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const allMeta = await loadAllSeriesMeta();
   // Sort for deterministic build-to-build output. fs.readdir order is
@@ -142,9 +167,26 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   // URL whose canonical says "index somewhere else" is a mixed signal, so the
   // sitemap carries original writing only.
   for (const p of dbPosts) if (p.originalUrl === null) postSlugs.add(p.slug);
-  const blogUrls: MetadataRoute.Sitemap = [...postSlugs]
-    .sort()
-    .map((slug) => ({ url: `${SITE_URL}/blog/${slug}` }));
+
+  // Blog posts are THE EXCEPTION to the no-lastmod rule above, and the only one:
+  // a DB post carries a real per-page change timestamp, which is exactly the
+  // "significant content change" source that comment says we lack elsewhere.
+  // `updated_at` is stamped by every mutating helper in lib/blog.ts, so an edit
+  // to a published post moves it and a re-crawl is genuinely warranted.
+  // Falls back to published_at, then created_at. An MDX-only post has no such
+  // timestamp and deliberately gets NO lastmod rather than a guessed one —
+  // a wrong lastmod is worse than none, which is the whole point of the rule.
+  const stampBySlug = new Map<string, string>();
+  for (const p of dbPosts) {
+    const when = blogLastModified(p);
+    if (when) stampBySlug.set(p.slug, when);
+  }
+  const blogUrls: MetadataRoute.Sitemap = [...postSlugs].sort().map((slug) => {
+    const lastModified = stampBySlug.get(slug);
+    return lastModified
+      ? { url: `${SITE_URL}/blog/${slug}`, lastModified }
+      : { url: `${SITE_URL}/blog/${slug}` };
+  });
 
   // Driver profiles — GATED on an authored bio (content/series/<slug>/bios.json).
   // ~650 driver routes exist, but a bare page (Wikipedia intro + live season

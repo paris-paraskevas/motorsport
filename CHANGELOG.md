@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.22 — 2026-08-24
+
+### Fixed
+- **Blog SEO metadata: freshness signals and a self-canonical** (operator: "fix metadata for all blogs uploaded so we get more visits"). The audit found the metadata in better shape than expected — title, description, `og:type=article`, `publishedTime`, Twitter card and `Article` JSON-LD were all already correct — so this fixes the three things that were genuinely missing rather than rewriting what worked.
+  - **Every original post now canonicalizes to itself.** Only *imported* posts set a canonical before; original writing set none at all, which leaves every URL variant (tracking parameters, a trailing slash, an `http://` link) free to be indexed as a separate page and split the ranking signal between them. Every other page on the site already self-canonicalizes via `withSocialMeta`; the blog was the gap.
+  - **`lastmod` for blog URLs in the sitemap — the one exception to a deliberate rule.** `lib/sitemap-data.ts:13-19` bans `lastModified` because emitting `new Date()` per build trains Google to ignore the field, and we had no verifiable per-page change timestamp. **DB posts do**: `updated_at`, stamped by every mutating helper in `lib/blog.ts`. So blog entries — and only blog entries — now advertise a real one. Everything else is untouched, and an MDX post with no such stamp still gets none.
+  - **`dateModified` in the Article structured data is now real**, instead of being hard-coded to the publication date with a "no edit tracking yet" note. Same for `og:modifiedTime`. A corrected post (the Dutch GP qualifying recap was re-tensed today) now advertises the correction instead of claiming it has not changed since publication.
+  - `updated_at` joins `COLS` and `BlogPost.updatedAt` — the column was written by six helpers and read by nothing.
+
+### Changed
+- **A test was narrowed on purpose, and it is worth being explicit about that.** `lib/sitemap-data.test.ts` asserted "no entry carries lastModified". It now asserts that only blog URLs may, while `changeFrequency` and `priority` stay banned outright. This is not a check weakened to go green: the old assertion passed **vacuously** (the suite runs with Supabase unconfigured, so `publishedPosts()` fail-softs to `[]` and no blog entry ever got a stamp). The rule it encoded has been deliberately narrowed, so the test now encodes the narrowed rule, and the mapping itself gained real coverage.
+  - `blogLastModified()` extracted and unit-tested: prefers `updated_at`, falls back to published then created, and returns **null rather than a guess** on a missing or unparseable stamp. Suite 1197 → **1201**.
+
 ## 0.334.21 — 2026-08-24
 
 ### Added
