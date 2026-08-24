@@ -288,6 +288,9 @@ export function articleLd(args: {
   url: string;
   authorName?: string | null;
   authorUrl?: string | null;
+  /** Real last-edit stamp when the post is DB-backed. Omitted for file-based
+   *  posts, which carry no edit history. */
+  dateModified?: string | null;
 }): object {
   const author: Record<string, unknown> = {
     '@type': 'Person',
@@ -304,10 +307,11 @@ export function articleLd(args: {
     description: args.post.frontmatter.summary,
     url: args.url,
     datePublished: args.post.frontmatter.publishedAt,
-    // No edit tracking yet — modified date = published date. When a post
-    // gains an actual edit history (frontmatter `updatedAt` or git log),
-    // wire that here.
-    dateModified: args.post.frontmatter.publishedAt,
+    // A DB post carries a real `updated_at`, so a corrected article advertises
+    // the correction instead of claiming it has not changed since publication.
+    // File-based posts have no edit history, so they still fall back to the
+    // published date rather than inventing one.
+    dateModified: args.dateModified ?? args.post.frontmatter.publishedAt,
     author,
     publisher: { '@id': ORG_ID },
   };

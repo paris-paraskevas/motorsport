@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildSitemapEntries } from './sitemap-data';
+import { buildSitemapEntries, blogLastModified } from './sitemap-data';
 import { TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
 import { loadDriverBios } from './series-content';
@@ -146,12 +146,49 @@ describe('buildSitemapEntries', () => {
     expect(urls).toContain(`${SITE_URL}/blog`);
   });
 
-  it('no entry carries lastModified / changeFrequency / priority (Google ignores all three in 2026)', async () => {
+  // NARROWED in 0.334.22, deliberately, not to make anything pass. The previous
+  // assertion was "no entry carries lastModified", on the reasoning that we had
+  // no verifiable per-page change timestamp. DB blog posts now do (`updated_at`),
+  // so they are the one exception. Everything else is unchanged, and
+  // changeFrequency / priority remain banned outright — Google ignores both.
+  //
+  // Note this suite runs with Supabase unconfigured, so `publishedPosts()`
+  // fail-softs to [] and no blog entry gets a stamp here. That is why the
+  // non-blog assertion below is the real guard, and why the mapping itself is
+  // covered separately in the unit test underneath.
+  it('only blog URLs may carry lastModified; nothing carries changeFrequency or priority', async () => {
     const urls = await buildSitemapEntries();
     for (const u of urls) {
-      expect(u.lastModified).toBeUndefined();
+      if (!u.url.startsWith(`${SITE_URL}/blog/`)) {
+        expect(u.lastModified).toBeUndefined();
+      }
       expect(u.changeFrequency).toBeUndefined();
       expect(u.priority).toBeUndefined();
     }
+  });
+});
+
+describe('blogLastModified', () => {
+  const iso = '2026-08-24T06:30:00.000Z';
+
+  it('prefers updated_at, because that is what moves when a post is corrected', () => {
+    expect(
+      blogLastModified({ updatedAt: iso, publishedAt: '2026-01-01T00:00:00Z', createdAt: '2025-01-01T00:00:00Z' }),
+    ).toBe(iso);
+  });
+
+  it('falls back to published, then created', () => {
+    expect(blogLastModified({ updatedAt: null, publishedAt: iso, createdAt: '2025-01-01T00:00:00Z' })).toBe(iso);
+    expect(blogLastModified({ updatedAt: null, publishedAt: null, createdAt: iso })).toBe(iso);
+  });
+
+  it('returns null rather than a guess when there is no usable stamp', () => {
+    expect(blogLastModified({})).toBeNull();
+    expect(blogLastModified({ updatedAt: null, publishedAt: null, createdAt: null })).toBeNull();
+    expect(blogLastModified({ updatedAt: 'not a date' })).toBeNull();
+  });
+
+  it('normalises to ISO so the emitted lastmod is well-formed', () => {
+    expect(blogLastModified({ updatedAt: '2026-08-24 06:30:00+00' })).toBe(iso);
   });
 });

@@ -45,6 +45,9 @@ export interface BlogPost {
   publishedAt: string | null;
   heroImage: string | null;
   createdAt: string;
+  /** Last write of any kind to the row. Null on rows created before the column
+   *  was populated; callers treating this as "content changed" must fall back. */
+  updatedAt: string | null;
 }
 
 export const TITLE_MAX = 140;
@@ -78,8 +81,11 @@ export function normalizeTags(raw: string[] | undefined | null): string[] {
   return out;
 }
 
+// `updated_at` is selected so the sitemap can advertise a REAL lastmod and the
+// article's structured data a real dateModified. Every mutating helper in this
+// file already stamps it; nothing read it until 0.334.22.
 const COLS =
-  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, original_url, created_at';
+  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, original_url, created_at, updated_at';
 
 /** Normalize + shape-check a hero/cover image reference: null/blank → null;
  *  otherwise it must be an absolute https:// URL or a root-relative /path —
@@ -133,6 +139,7 @@ function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
     publishedAt: (r.published_at as string | null) ?? null,
     heroImage: (r.hero_image as string | null) ?? null,
     createdAt: r.created_at as string,
+    updatedAt: (r.updated_at as string | null) ?? null,
   };
 }
 

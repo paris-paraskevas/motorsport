@@ -85,9 +85,16 @@ export async function generateMetadata({
     // An imported article canonicalizes to its ORIGINAL off-site URL, so the
     // import adds no indexable page of ours — the original keeps the equity.
     // Original writing sets no canonical here, exactly as before.
-    ...(db?.status === 'published' && db.originalUrl
-      ? { alternates: { canonical: db.originalUrl } }
-      : {}),
+    // An imported article canonicalizes to its ORIGINAL off-site URL. Original
+    // writing now canonicalizes to ITSELF: until 0.334.22 it set no canonical at
+    // all, which leaves every variant of the URL (tracking params, a trailing
+    // slash, an http:// link) free to be indexed as a separate page and split
+    // the ranking signal between them. Every other page on the site already does
+    // this via withSocialMeta; the blog was the gap.
+    alternates: {
+      canonical:
+        db?.status === 'published' && db.originalUrl ? db.originalUrl : `/blog/${slug}`,
+    },
     openGraph: {
       type: 'article',
       title: post.frontmatter.title,
@@ -95,6 +102,9 @@ export async function generateMetadata({
       siteName: 'Paddock Tracker',
       url: `${SITE_URL}/blog/${slug}`,
       publishedTime: post.frontmatter.publishedAt,
+      // Real edit stamp when we have one, so a corrected post reads as updated
+      // rather than as unchanged since publication.
+      ...(db?.updatedAt ? { modifiedTime: db.updatedAt } : {}),
     },
     twitter: {
       card: 'summary_large_image',
@@ -266,6 +276,7 @@ export default async function PostPage({
           url: postUrl,
           authorName: author.name,
           authorUrl: authorSlug ? `${SITE_URL}/authors/${authorSlug}` : null,
+          dateModified: db?.updatedAt ?? null,
         })}
       />
       <Link
