@@ -36,7 +36,7 @@ export function LandingNav({
           </SignedOutOnly>
           <SignedInOnly>
             <Link
-              href="/app"
+              href="/"
               className="text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
             >
               Open app →

@@ -36,8 +36,8 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/app"
-      signUpFallbackRedirectUrl="/app"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
       appearance={{
         variables: {
           colorBackground: '#fffcf2',

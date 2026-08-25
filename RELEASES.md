@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.42 — 2026-08-25
+
+**The home page is now the front page.** Going to paddock-tracker.com used to show a short introduction to the site; it now shows the site itself — the latest result and what it changed, what races next, the wire and the writing. The old address still works and sends you here. Installing Paddock as an app has moved to the footer, where it is on every page.
+
 ## 0.334.41 — 2026-08-25
 
 **Internal groundwork.** The 1.0 announcement is built and switched off. Nothing appears for readers until it is deliberately turned on.

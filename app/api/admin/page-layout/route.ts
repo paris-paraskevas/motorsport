@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     // until the window elapsed. revalidatePath only works on prod because of the
     // sharded tag cache wired in open-next.config.ts — it was a silent no-op
     // before 0.255.0, so if a publish ever stops appearing, look there first.
-    revalidatePath('/app');
+    revalidatePath('/');
     return NextResponse.json({ ok: true, blocks: layout.blocks });
   } catch (err) {
     return NextResponse.json(

@@ -3,6 +3,7 @@ import { APP_VERSION } from '@/lib/version';
 import { SITE_TITLE } from '@/lib/site';
 import { ManageCookiesButton } from '@/components/ManageCookiesButton';
 import { ContactFooterButton } from '@/components/ContactModal';
+import { InstallApp } from '@/components/landing/InstallApp';
 
 const COFFEE_URL = process.env.NEXT_PUBLIC_COFFEE_URL || 'https://buymeacoffee.com/parisp';
 
@@ -75,7 +76,24 @@ export function Footer() {
             <FooterLink href="/imprint" dataHeatmapId="footer:imprint">Imprint</FooterLink>
           </div>
         </div>
-        <div className="mt-6 flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-text-faint sm:flex-row sm:items-center sm:justify-between">
+        {/* Install, and the one line saying what this is.
+            Both re-homed here in 0.334.42 when the marketing landing was retired
+            (operator: "we might not even need it"). InstallApp was that page's
+            second hero button and is the ONLY install path on the site —
+            Chromium's `beforeinstallprompt` can only be re-triggered by
+            something that captured it, so dropping the landing without moving
+            this would have removed app installation rather than relocated it.
+            The footer renders on every page, which is more reach than the
+            landing ever had. */}
+        <div className="mt-6 flex flex-col gap-4 border-t border-border pt-5 sm:flex-row sm:items-start sm:justify-between">
+          <p className="max-w-sm text-[12px] leading-relaxed text-text-muted">
+            Independent motorsport companion, built in the open. Fifteen
+            championships, every session in your own time zone. No account needed
+            to browse.
+          </p>
+          <InstallApp />
+        </div>
+        <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-text-faint sm:flex-row sm:items-center sm:justify-between">
           <span className="font-display font-extrabold uppercase tracking-wide text-text">
             Paddock<span className="text-brand">•</span>Tracker
             <span className="ml-2 font-mono font-normal tracking-normal text-text-faint">v{APP_VERSION}</span>

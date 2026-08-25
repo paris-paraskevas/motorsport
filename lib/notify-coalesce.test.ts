@@ -75,7 +75,10 @@ describe('coalescedPayload', () => {
     expect(p.title).toBe('Paddock · 3 updates');
     expect(p.body).toContain('+ 2 more');
     expect(p.tag).toBe('paddock-digest');
-    expect(p.url).toBe('/app');
+    // '/' since 0.334.42: a coalesced digest lands on the home page, and the
+    // home page moved from /app to the site root when the marketing landing was
+    // retired. The intent is unchanged — tap a digest, see everything at once.
+    expect(p.url).toBe('/');
     expect(p.silent).toBeUndefined();
   });
 

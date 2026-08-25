@@ -34,7 +34,7 @@ export interface SearchDoc {
 // Top-level public pages. Personal / gated surfaces (/social, /settings)
 // are deliberately absent — search only indexes public content.
 const STATIC_PAGES: Array<{ url: string; title: string; subtitle: string }> = [
-  { url: '/app', title: 'Home', subtitle: 'Your dashboard' },
+  { url: '/', title: 'Home', subtitle: 'Your dashboard' },
   { url: '/calendar', title: 'Calendar', subtitle: 'Every series, one timeline' },
   { url: '/news', title: 'News', subtitle: 'Latest across the grid' },
   { url: '/blog', title: 'Blog', subtitle: 'Analysis & recaps' },

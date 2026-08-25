@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       const result = await sendPushTo(subscription, {
         title: 'Paddock Tracker — test',
         body: 'Push notifications are wired up. You\'ll hear about upcoming sessions.',
-        url: '/app',
+        url: '/',
         tag: 'paddock-test',
       });
       if (result.ok) {

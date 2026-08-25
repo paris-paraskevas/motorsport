@@ -24,7 +24,7 @@ export function BottomBar() {
       className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-elevated border-t border-text pb-[env(safe-area-inset-bottom)]"
     >
       <div className="grid grid-cols-4">
-        <BarLink href="/app" active={pathname === '/app'} label="Home" Icon={House} dataHeatmapId="bottombar:home" />
+        <BarLink href="/" active={pathname === '/'} label="Home" Icon={House} dataHeatmapId="bottombar:home" />
         <BarLink
           href="/calendar"
           active={pathname === '/calendar' || pathname.startsWith('/calendar/')}

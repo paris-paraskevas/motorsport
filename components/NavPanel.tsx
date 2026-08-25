@@ -27,9 +27,9 @@ let INDEX_CACHE: SearchDoc[] | null = null;
 // door: the row IS that route (gets the active state); the other NOW rows are
 // pointers into a region of the same page and must never claim aria-current.
 const NOW_LINKS = [
-  { href: '/app', label: 'Home', door: true },
+  { href: '/', label: 'Home', door: true },
   { href: '/calendar', label: 'Calendar', door: true },
-  { href: '/app', label: 'Latest results', door: false },
+  { href: '/', label: 'Latest results', door: false },
   { href: '/calendar', label: 'This weekend', door: false },
 ];
 

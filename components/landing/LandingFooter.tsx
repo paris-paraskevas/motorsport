@@ -6,7 +6,7 @@ const COLUMNS: Array<{ heading: string; links: Array<{ href: string; label: stri
   {
     heading: 'App',
     links: [
-      { href: '/app', label: 'Open paddock' },
+      { href: '/', label: 'Open paddock' },
       { href: '/calendar', label: 'Calendar' },
       { href: '/blog', label: 'Blog' },
       { href: '/settings', label: 'Settings' },

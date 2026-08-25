@@ -98,20 +98,14 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
-  // Signed-in visitors skip the marketing landing: on the main host, / -> /app.
-  // Anonymous requests (incl. crawlers) fall through to the static landing, so /
-  // stays the indexable SEO homepage. Temporary (307) — / is NOT moved, so a user
-  // who later signs out sees the landing again (a cached 301/308 would never
-  // re-check auth). Dev host already returned above (root rewrites to /admin).
-  if (url.pathname === '/' && !host.startsWith('dev.')) {
-    const { userId } = await auth();
-    if (userId) {
-      const dest = url.clone();
-      dest.pathname = '/app';
-      dest.search = '';
-      return NextResponse.redirect(dest, 307);
-    }
-  }
+  // REMOVED in 0.334.42, and removing it was mandatory rather than tidy. This
+  // block existed to skip the marketing landing for signed-in visitors: `/` ->
+  // `/app`. The landing is gone and `/` IS the home page now, while `/app` 301s
+  // to `/` (next.config.ts) — so leaving this in place would have sent every
+  // signed-in visitor round an infinite redirect: / -> /app -> / -> /app.
+  //
+  // Nothing replaces it. One home page for everyone, signed in or not, which is
+  // also what keeps that page ISR-cacheable.
 
   if (isProtected(req)) {
     await auth.protect();
