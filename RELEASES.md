@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.36 — 2026-08-25
+
+**More reading on the home page now shows its pictures.** The three further posts beside the lead story carry their covers instead of being a plain list of links, so there is more than one piece of writing worth looking at on the front page.
+
 ## 0.334.35 — 2026-08-24
 
 **The blog list is balanced, and it works on a phone.** The newest post is still the biggest, but its picture no longer takes the whole screen, and every other post's picture is much larger than before. On a phone each post now leads with its image above the headline instead of squeezing the words next to a stamp, and summaries are trimmed so there is a reason to click.

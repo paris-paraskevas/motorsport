@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.36 — 2026-08-25
+
+### Added
+- **The home page's "More reading" list carries covers.** Operator ask: *"the blog list is something that should be available to place on the home screen (we need to have multiple blogs on main screen)"*, and of three shapes offered they chose **upgrade the existing list in place** over a new movable band — one file, no change to the home-layout contract, no composer change.
+  - `lib/home-model.ts:268` already read from `publishedPosts()`, which returns `heroImage`; the map was simply dropping it. Now `{ slug, title, heroImage }`, with the type widened at `components/HomeLead.tsx:76`.
+  - The thumbnail is deliberately small (104 px). This list sits in the **text column beside the band's own 8/5 cover**, so a larger one would compete with the lead it belongs to. No cover → no thumbnail and the title spans the row, the same rule `/blog` follows.
+  - `/app` still builds `○ (Static)` with the 5m revalidate, so the ISR cache contract is intact.
+- Corrected a stale comment two elements up in the same file: the lead's no-cover fallback said "7 of 8 published posts have none". Counted 2026-08-24: **19 of 24**.
+
+### Known gap, deliberately not changed
+- **This list is `hidden xl:block`, so below 1280 px the home still shows exactly one post.** The existing comment gives the reason — under xl the text column is already full and the list would push the band taller than its own picture. That means the operator's "multiple blogs on main screen" is satisfied on desktop only. Raised rather than silently rebreakpointed, because fixing it properly is a layout decision (a compact mobile treatment under the CTA, or the separate movable band that was the other option).
+
 ## 0.334.35 — 2026-08-24
 
 ### Changed
