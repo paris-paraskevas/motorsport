@@ -13,6 +13,7 @@ import { ThemeScript } from '@/components/theme/ThemeScript';
 import { loadAllSeriesMeta } from '@/lib/series';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/site';
+import { SOCIAL_CARD } from '@/lib/seo';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
 import '../globals.css';
@@ -45,11 +46,16 @@ export const metadata: Metadata = {
     siteName: SITE_TITLE,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
+    // Covers every route under this group that declares no openGraph of its
+    // own (/app and the blog index among them). Without it those pages shipped
+    // with no og:image at all and shared as bare text links.
+    images: SOCIAL_CARD,
   },
   twitter: {
     card: 'summary_large_image',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
+    images: SOCIAL_CARD,
   },
 };
 
