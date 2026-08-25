@@ -4,6 +4,16 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.37 — 2026-08-25
+
+### Fixed
+- **Every page emits an `og:image` again — `/`, `/app`, `/calendar` and every series, driver, track, information and legal page had NONE.** Shares of them rendered as bare text links, while the Worker carried ~618 KiB (6% of its ceiling) for the `ImageResponse` runtime that generates the card. Found in 0.334.34, fixed here.
+  - **Cause:** the `opengraph-image` file convention attaches an image only to the segment that HOLDS the file. `app/opengraph-image.tsx` sits in the **root** segment while every page lives inside a route group (`(marketing)` for `/`, `(app)` for the rest), so the card was generated, served at the static `/opengraph-image` route, and referenced by no page.
+  - **Fixed by naming it explicitly, not by adding files.** A copy of `opengraph-image.tsx` inside a route group resolves to the SAME `/opengraph-image` URL as the root file and collides. So `lib/seo.ts` exports `SOCIAL_CARD` (one definition, three consumers) and `withSocialMeta()` sets it; both group layouts set it too, which covers routes declaring no `openGraph` of their own — `/app` and the blog index were exactly that case and would otherwise have stayed uncovered. Relative URL, resolved by the `metadataBase` each layout already sets.
+- **A regression this change caused and then fixed, caught by checking each route type instead of trusting the docs.** Adding the card unconditionally **replaced the weekend page's own generated card with the generic one**. So the rule is the opposite of what the comment in `app/(app)/blog/[slug]/page.tsx:77` asserts: **an explicit `images` in the metadata object BEATS the file convention.** `withSocialMeta` now takes `ownCard`, set on the weekend and session pages, which omits the card so their colocated file supplies it.
+  - Verified across 12 route types: `/`, `/app`, `/calendar`, `/series/f1`, `/blog`, `/drivers/*`, `/tracks/*`, `/information`, `/changelog`, `/about` → the branded card; `/blog/<slug>`, `/series/f1/weekend/12` and `/series/f1/weekend/12/race` → their own hashed cards, on both `og:image` and `twitter:image`.
+  - The blog post route never used `withSocialMeta`, which is why it kept its card throughout and masked the rule while I was reasoning about it.
+
 ## 0.334.36 — 2026-08-25
 
 ### Added

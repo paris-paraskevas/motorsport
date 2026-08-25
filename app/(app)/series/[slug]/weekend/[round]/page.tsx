@@ -97,10 +97,13 @@ export async function generateMetadata(
       `${series.meta.name} ${label} live stream`,
     ],
     alternates: { canonical: `/series/${slug}/weekend/${round}` },
+    // ownCard: the sibling opengraph-image.tsx generates a weekend-specific
+    // card, and an explicit `images` here would replace it with the generic one.
     ...withSocialMeta({
       title: fullTitle,
       description,
       path: `/series/${slug}/weekend/${round}`,
+      ownCard: true,
     }),
   };
 }

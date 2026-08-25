@@ -150,7 +150,8 @@ export async function generateMetadata(
     title,
     description,
     alternates: { canonical: path },
-    ...withSocialMeta({ title, description, path }),
+    // ownCard: the sibling opengraph-image.tsx generates a session-specific card.
+    ...withSocialMeta({ title, description, path, ownCard: true }),
   };
 }
 
