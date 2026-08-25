@@ -207,7 +207,18 @@ export function MonthView({
   // carry text at 390px, and the dot row it used to show carried no information
   // (feedback board 2026-08-20: "chaotic on mobile"). Days without sessions
   // don't rent space; today always appears as an anchor.
-  const agendaFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  // Operator, 2026-08-25: "i want it to look like google calendar". That means
+  // Google's mobile SCHEDULE view, which is the shape this already was
+  // underneath: the date moves into a narrow left gutter (day number large,
+  // weekday small beneath it) with the sessions stacked to its right, empty days
+  // omitted, and today's number in a filled circle instead of a "· Today"
+  // suffix. The full-width date header the agenda used before cost a whole row
+  // per day for three words.
+  //
+  // The circle is a deliberate exception to the house sharp-corners rule: it is
+  // the single most recognisable cue in the thing being asked for.
+  const dayFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric' });
+  const weekdayFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short' });
   const agendaDays = cells.filter(c => c.inMonth && ((buckets.get(c.key)?.length ?? 0) > 0 || c.isToday));
 
   return (
@@ -222,41 +233,55 @@ export function MonthView({
             const entries = buckets.get(cell.key) ?? [];
             const lines = summariseDay(entries, roundByKey);
             return (
-              <section key={cell.key} className="border-b border-border py-2">
-                <div className="flex items-baseline justify-between">
-                  <button
-                    type="button"
-                    onClick={() => onSelectDay(cell.date)}
-                    className={`font-mono text-[10px] font-semibold uppercase tracking-[0.16em] ${
-                      cell.isToday ? 'text-brand' : 'text-text-muted'
+              <section key={cell.key} className="flex gap-3 border-b border-border py-2.5">
+                {/* The date gutter. Fixed width so every day's sessions start on
+                    the same left edge — the column that makes a schedule read as
+                    a schedule rather than as a list of headings. */}
+                <button
+                  type="button"
+                  onClick={() => onSelectDay(cell.date)}
+                  aria-label={`Open ${weekdayFmt.format(cell.date)} ${dayFmt.format(cell.date)}`}
+                  className="w-9 shrink-0 pt-0.5 text-center"
+                >
+                  <span
+                    className={`mx-auto flex h-7 w-7 items-center justify-center font-mono text-[15px] font-semibold tabular-nums ${
+                      cell.isToday ? 'rounded-full bg-brand-fill text-bg' : 'text-text'
                     }`}
                   >
-                    {agendaFmt.format(cell.date)}
-                    {cell.isToday ? ' · Today' : ''}
-                  </button>
-                  {entries.length > 0 && (
-                    <span className="font-mono text-[10px] tabular-nums text-text-faint">{entries.length}</span>
+                    {dayFmt.format(cell.date)}
+                  </span>
+                  <span
+                    className={`mt-0.5 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] ${
+                      cell.isToday ? 'text-brand' : 'text-text-faint'
+                    }`}
+                  >
+                    {weekdayFmt.format(cell.date)}
+                  </span>
+                </button>
+
+                <div className="min-w-0 flex-1">
+                  {lines.map(l => (
+                    <Link key={l.key} href={l.href} className="flex min-h-10 min-w-0 items-center gap-2">
+                      <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: l.color }} />
+                      <span className="w-12 shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-text-faint">
+                        {code(l.seriesSlug)}
+                      </span>
+                      <span
+                        className={`min-w-0 flex-1 truncate font-serif text-[14px] leading-tight ${
+                          l.decides ? 'font-semibold text-text' : 'text-text-muted'
+                        }`}
+                      >
+                        {l.label}
+                      </span>
+                      <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">{l.time}</span>
+                    </Link>
+                  ))}
+                  {entries.length === 0 && (
+                    <p className="flex min-h-10 items-center font-serif text-[13px] italic leading-snug text-text-muted">
+                      Nothing today.
+                    </p>
                   )}
                 </div>
-                {lines.map(l => (
-                  <Link key={l.key} href={l.href} className="flex min-h-10 min-w-0 items-center gap-2">
-                    <span aria-hidden="true" className="h-3.5 w-[3px] shrink-0" style={{ backgroundColor: l.color }} />
-                    <span className="w-12 shrink-0 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-text-faint">
-                      {code(l.seriesSlug)}
-                    </span>
-                    <span
-                      className={`min-w-0 flex-1 truncate font-serif text-[14px] leading-tight ${
-                        l.decides ? 'font-semibold text-text' : 'text-text-muted'
-                      }`}
-                    >
-                      {l.label}
-                    </span>
-                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">{l.time}</span>
-                  </Link>
-                ))}
-                {entries.length === 0 && (
-                  <p className="mt-1 font-serif text-[13px] italic leading-snug text-text-muted">No sessions.</p>
-                )}
               </section>
             );
           })

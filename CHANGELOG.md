@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.38 — 2026-08-25
+
+### Changed
+- **The mobile month view is now a Google-Calendar-style schedule.** Operator, after seeing the options: *"i want it to look like google calendar."* `components/calendar/MonthView.tsx`, inside the existing `md:hidden` block only: the date moves into a fixed-width **left gutter** (day number large, weekday small beneath) with the day's sessions stacked to its right; today's number sits in a filled circle instead of a `· Today` suffix; the per-day count badge goes; empty days stay skipped. The old full-width date header spent an entire row on three words per day.
+  - The circle is a deliberate exception to the house sharp-corners rule, because it is the most recognisable cue in the thing being asked for.
+- **The archaeology changed the plan, and it is worth recording.** `IDEAS.md` said to restore the pre-0.313.0 mobile calendar. **0.313.0 WAS the fix for an earlier complaint of the operator's** — its commit message quotes *"Calendar Mobile - chaotic on mobile"* — and what it replaced was a 7-column grid that at 390px could only render unlabelled dots (~48px per day column). Reverting would have restored the rejected version. Raised before building, and the operator redirected to the Google Calendar shape instead.
+- **Measured, and not addressed here:** ~430px of the 844px phone screen is still chrome above the first session (title, three This-weekend cards, month nav, a five-button view switcher, a four-action filter row). That is the same defect 0.313.0 called out ("four stacked weekend cards ate 450px before it even started"); it fixed the grid, not the chrome. Left for a separate decision rather than bundled in.
+
+### Verified — desktop provably unmoved, which was the hard constraint
+- The operator's constraint is verbatim: *"i am talking ONLY about mobile. desktop is easy. perfect. DO NOT CHANGE desktop calendar."*
+- **The diff contains zero lines touching any `md:` class** (`git diff | grep -c 'md:grid\|md:block\|md:flex\|md:min-h'` → **0**). The mobile agenda lives entirely inside `md:hidden` and the grid entirely behind `md:grid` / `md:block`, so the change cannot reach desktop.
+- Screenshotted at **1440 before and after**: title, This weekend, month nav, view switcher, the full 15-chip filter box, weekday header, grid, the Dutch GP spanning bar and `25 TODAY` all identical in position. (The before shot has one extra weekend card — prod reads the warmed DB snapshot while dev fetches upstream. A data-source difference, not a layout one.)
+- Mobile verified at **390**: `21 FRI` / `22 SAT` / `23 SUN` gutters with their sessions, and today's `25 TUE` circled over "Nothing today."
+
+### Note for the next person verifying UI locally
+- **A local production build cannot browser-verify client-rendered pages.** Building with `.env.production.local` picks up the real Clerk keys, and Clerk refuses them off the live domain — *"Production Keys are only allowed for domain paddock-tracker.com"* — which kills hydration, so the calendar rendered as an empty un-hydrated grid. That looked exactly like a broken change and was not one. Server-rendered pages (`/blog`) are fine that way; client pages need `next dev` or a preview Worker on a real subdomain.
+
 ## 0.334.37 — 2026-08-25
 
 ### Fixed
