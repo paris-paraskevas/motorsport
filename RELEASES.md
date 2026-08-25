@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.38 — 2026-08-25
+
+**The calendar on a phone now reads like a schedule.** Each day's date sits in a column on the left with that day's sessions beside it, today is circled, and days with nothing on are skipped. The desktop calendar is unchanged.
+
 ## 0.334.37 — 2026-08-25
 
 **Sharing a Paddock link now shows a picture.** Until now the home page, your paddock, the calendar and every series page shared as a bare text link with no image, even though the site had a share card ready to use. Every page carries one now, and the pages with their own custom card — race weekends, sessions and blog posts — keep it.
