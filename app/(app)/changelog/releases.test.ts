@@ -3,9 +3,12 @@ import {
   splitReleases,
   dateRangeLabel,
   deriveSpan,
+  loadReleaseGroups,
+  releasesFilePath,
   UNFILED_KEY,
   type ReleaseEntry,
 } from './releases';
+import { CONTENT_BUNDLE } from '@/lib/content-bundle.generated';
 
 const md = (...lines: string[]) => lines.join('\n');
 
@@ -133,5 +136,24 @@ describe('deriveSpan', () => {
   it('reports no range when nothing is dated, and nothing at all when empty', () => {
     expect(deriveSpan([entry('Pre-0.8.0', null)]).dateRange).toBeNull();
     expect(deriveSpan([])).toEqual({ dateRange: null, versionSpan: null });
+  });
+});
+
+// Worker-size guard, added with 0.334.40. RELEASES.md was ~76 KiB gzipped inside
+// the Worker script and is the only content file that grows on every push. It is
+// excluded from the bundle because /changelog is build-time only, so the read
+// happens in Node against the real filesystem. These two tests are the pair that
+// keeps that arrangement honest: the first fails if the file creeps back into the
+// bundle, the second fails if the real-fs fallback ever stops working.
+describe('RELEASES.md stays out of the Worker bundle', () => {
+  it('is not bundled', () => {
+    expect(CONTENT_BUNDLE['RELEASES.md']).toBeUndefined();
+  });
+
+  it('still loads and parses from disk', async () => {
+    const groups = await loadReleaseGroups(releasesFilePath());
+    expect(groups.length).toBeGreaterThan(10);
+    expect(groups[0].entries.length).toBeGreaterThan(0);
+    expect(groups.at(-1)?.label).toBe('First light');
   });
 });
