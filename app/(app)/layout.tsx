@@ -130,9 +130,13 @@ export default async function RootLayout({
             `}
           </Script>
           <AppShell seriesList={seriesList} bettingEnabled={isBettingConfigured()}>
-            <LaunchBanner />
             {children}
           </AppShell>
+          {/* The 1.0 announcement, a modal over whatever page the reader landed
+              on (operator, 2026-08-25). Layout level beside the other dialogs
+              rather than inside AppShell, because it is fixed-position and no
+              longer an inline bar. Ships dark until LAUNCH_ANNOUNCEMENT.active. */}
+          <LaunchBanner />
           {/* Custom consent UI replacing Google Funding Choices (0.12.6). FC
               was dropped because adsbygoogle.js never summons a banner until
               the AdSense site is approved, leaving Consent Mode v2 stuck on
