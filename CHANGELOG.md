@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.44 — 2026-08-25
+
+### Added
+- **Champion-notes wave 3a: F1 1986–1995, ten seasons.** `content/series/f1/champion-notes.json` 30 → **40** entries. Each carries the clinching race, venue, exact date, round-of-total, and 2–3 sources, researched season by season.
+  - **Measured effect on the pages, which is the whole point:** newly enriched pages render **169–179 words at 20% sibling overlap**, against the un-enriched control at **68 words and 54%**. That is slightly better than the existing enriched band (150–160 words, 18–19%).
+  - **They returned to the index by existing.** The 0.334.43 gate makes a page indexable iff it has a note, so this wave needed **no code**: who-won URLs advertised in the sitemap went **45 → 55**, and `/information/formula-1/who-won-the-1992-formula-1-championship` now serves `robots: index, follow`. The derived sitemap test adapted with no edit, which is exactly why it was written derived.
+  - F1 is now **40 of 76** seasons noted; 36 remain (1950–1985).
+
+### Two process notes worth keeping
+- **A convenient aggregate nearly poisoned the wave.** One fetch of Wikipedia's champions list returned champion, team, wins, points, runner-up and margin for all 46 seasons at once — and it was **wrong in at least four places**: Jackie Stewart listed as his own 1969 runner-up, Trevor Taylor as 1962 runner-up (it was Clark), Senna as 1986 runner-up (it was Mansell, 72–70–69, verified separately), and 8 wins for 1994 where the season article said 6. **Every fact in this wave is sourced season by season instead.** RULE #1 earned its keep.
+  - Where sources conflicted and could not be settled cheaply, the note **omits the fact**: the 1994 entry states no win count at all rather than pick one.
+- **`JSON.stringify` cannot be used to edit these files.** Integer-like keys are always serialised in ASCENDING order regardless of insertion order, so a round-trip flips the file's newest-first convention and turns a 10-entry addition into a 439-line whole-file rewrite. The first attempt did exactly that. The notes are now spliced as **text** before the closing brace, with guards asserting the file still parses, gained exactly the expected years, and that **every pre-existing entry is byte-identical**. Result: **85 insertions, 0 deletions.**
+  - Related, and the charter already warns about it: building that script through a shell heredoc mangled its escapes into real newlines. Written in the editor instead.
+
+### Verified
+- `tsc` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** (champion-notes integrity + sitemap gates included) · `build` **0**
+- Sitemap who-won entries **45 → 55**; new pages `index, follow`; depth measured on the running build.
+
 ## 0.334.43 — 2026-08-25
 
 ### Changed — the AdSense low-value-content audit, and its first action
