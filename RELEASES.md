@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.44 — 2026-08-25
+
+**Ten more championship answers tell the story.** The Formula 1 seasons from 1986 to 1995 now explain where and when each title was actually decided, from Senna stalling on pole at Suzuka in 1988 to Mansell's tyre exploding in Adelaide in 1986. Each one cites its sources.
+
 ## 0.334.43 — 2026-08-25
 
 **A quality pass over what search engines are shown.** Championship answers we have written a proper account of stay in search results; the ones still awaiting that work are kept out of it until they are ready. Every page remains live and reachable exactly as before, and the German-named imprint now points at the English one so the same notice is not listed twice.
