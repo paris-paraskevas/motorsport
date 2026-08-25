@@ -265,7 +265,7 @@ export async function buildHomeModel(layout: HomeLayout, now = new Date()): Prom
       const suggested = (await publishedPosts())
         .filter(p => p.slug !== lead.slug)
         .slice(0, 3)
-        .map(p => ({ slug: p.slug, title: p.title }));
+        .map(p => ({ slug: p.slug, title: p.title, heroImage: p.heroImage ?? null }));
       blog = {
         ...lead,
         seriesName: meta?.name ?? null,

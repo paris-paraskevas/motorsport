@@ -73,7 +73,7 @@ export interface HomeLeadBlog {
   /** Relative stamp ("28m ago") — a lead story should read as news. */
   ageLabel?: string | null;
   /** Further reading, shown only where the 8/5 cover leaves room beside it. */
-  suggested?: { slug: string; title: string }[];
+  suggested?: { slug: string; title: string; heroImage?: string | null }[];
 }
 
 /** The weekend running RIGHT NOW. Its presence is what demotes the
@@ -214,8 +214,8 @@ export function HomeLead({
                   className="aspect-[8/5] h-full w-full object-cover"
                 />
               ) : (
-                // No cover (7 of 8 published posts have none): a typographic
-                // panel rather than a broken image box.
+                // No cover (19 of 24 published posts have none, counted
+                // 2026-08-24): a typographic panel rather than a broken box.
                 <span className="flex aspect-[8/5] items-end bg-surface p-4">
                   <span className="font-mono text-[28px] font-bold uppercase leading-none tracking-[-0.02em] text-text-faint lg:text-[38px]">
                     {blog.seriesName ?? 'Paddock'}
@@ -291,11 +291,28 @@ export function HomeLead({
                   <ul className="mt-2">
                     {blog.suggested.map(s => (
                       <li key={s.slug}>
+                        {/* Cover beside the headline (operator's pick, 2026-08-24:
+                            "we need to have multiple blogs on main screen"). The
+                            thumbnail is deliberately small — this list sits in the
+                            text column beside the band's own 8/5 cover, and a
+                            larger one would compete with the lead it belongs to.
+                            No cover → no thumbnail and the title spans the row,
+                            the same rule the /blog list follows. */}
                         <Link
                           href={`/blog/${s.slug}`}
-                          className="block border-b border-border py-2 font-serif text-[16px] font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
+                          className="flex items-center gap-3 border-b border-border py-2 font-serif text-[16px] font-semibold leading-snug text-text-muted transition-colors duration-(--duration-fast) last:border-b-0 hover:text-text"
                         >
-                          {s.title}
+                          {s.heroImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={s.heroImage}
+                              alt=""
+                              width={1200}
+                              height={630}
+                              className="aspect-[1200/630] w-[104px] shrink-0 border border-border bg-surface object-cover"
+                            />
+                          )}
+                          <span className="min-w-0 flex-1">{s.title}</span>
                         </Link>
                       </li>
                     ))}
