@@ -101,6 +101,18 @@ export function HomeComposer({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [query, setQuery] = useState('');
+
+  // Title OR series, so "f1" narrows to a championship and "zandvoort" to a
+  // race. The "Newest published post" row is never filtered out — it is the
+  // default rather than a post, and it is how you undo a pin.
+  const shownPosts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return posts;
+    return posts.filter(
+      p => p.title.toLowerCase().includes(q) || (p.seriesSlug ?? '').toLowerCase().includes(q),
+    );
+  }, [posts, query]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -109,6 +121,13 @@ export function HomeComposer({
 
   const ids = blocks.map(b => b.id);
   const hiddenSet = new Set(blocks.filter(b => b.hidden).map(b => b.id));
+
+  /** "2026-08-24T…" → "24 Aug". UTC so a plain date can't drift a day. */
+  function shortDate(iso: string): string {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  }
 
   // Serialising the draft into the URL is what triggers the server preview.
   const push = (next: HomeBlock[]) => {
@@ -186,30 +205,67 @@ export function HomeComposer({
         </SortableContext>
       </DndContext>
 
-      <p className="mb-2 mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
-        Lead story
-      </p>
-      <div className="max-h-80 overflow-y-auto border border-border">
-        <button type="button" onClick={() => setLead(null)} className={rowBtn} aria-pressed={!pinnedSlug}>
+      <div className="mb-2 mt-6 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-text-faint">
+          Lead story
+        </p>
+        {/* Local state only — deliberately NOT pushed into the URL like the
+            selections are, because filtering the list is not a change to the
+            draft and must not cost a server round-trip or a preview re-render. */}
+        <input
+          type="search"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Filter posts…"
+          aria-label="Filter the post list"
+          className="min-w-0 flex-1 border border-border bg-surface px-2 py-1 font-mono text-[11px] text-text placeholder:text-text-faint focus:border-text focus:outline-none"
+        />
+      </div>
+      {/* radiogroup, not a column of checkboxes: exactly one lead can be chosen,
+          and the square boxes with `aria-pressed` announced as independent
+          toggles to a screen reader. */}
+      <div role="radiogroup" aria-label="Lead story" className="max-h-80 overflow-y-auto border border-border">
+        <button
+          type="button"
+          role="radio"
+          aria-checked={!pinnedSlug}
+          onClick={() => setLead(null)}
+          className={`${rowBtn} ${!pinnedSlug ? 'bg-surface' : ''}`}
+        >
           <span className="flex h-4 w-4 shrink-0 items-center justify-center border border-border-strong">
             {!pinnedSlug && <Check size={11} />}
           </span>
           <span className="min-w-0 flex-1 font-semibold text-text">Newest published post</span>
         </button>
-        {posts.map(p => (
+        {shownPosts.map(p => (
           <button
             key={p.slug}
             type="button"
+            role="radio"
+            aria-checked={pinnedSlug === p.slug}
             onClick={() => setLead(p.slug)}
-            className={rowBtn}
-            aria-pressed={pinnedSlug === p.slug}
+            className={`${rowBtn} ${pinnedSlug === p.slug ? 'bg-surface' : ''}`}
           >
             <span className="flex h-4 w-4 shrink-0 items-center justify-center border border-border-strong">
               {pinnedSlug === p.slug && <Check size={11} />}
             </span>
-            <span className="min-w-0 flex-1 truncate text-text">{p.title}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-text">{p.title}</span>
+              {/* Series and date were already being passed to this component and
+                  thrown away. Two dozen truncated headlines with no other
+                  signal is not a list you can pick from. */}
+              <span className="mt-0.5 flex items-baseline gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-text-faint">
+                {p.seriesSlug && <span className="font-semibold">{p.seriesSlug}</span>}
+                {p.publishedAt && <span className="tabular-nums">{shortDate(p.publishedAt)}</span>}
+              </span>
+            </span>
           </button>
         ))}
+        {shownPosts.length === 0 && (
+          <p className="px-3 py-4 text-center text-xs text-text-faint">
+            No post matches “{query}”.
+          </p>
+        )}
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
