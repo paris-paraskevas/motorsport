@@ -66,7 +66,10 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/accessibility` },
     { url: `${SITE_URL}/do-not-sell` },
     { url: `${SITE_URL}/imprint` },
-    { url: `${SITE_URL}/impressum` },
+    // /impressum is NOT advertised: it renders the same file as /imprint and now
+    // canonicalises to it. Submitting a page that points its canonical elsewhere
+    // earns "Duplicate, Google chose a different canonical" rather than an index
+    // entry. The URL stays live and reachable for anyone looking for "Impressum".
   ];
 
   // The bare series URL (the calendar landing) plus each non-calendar tab as

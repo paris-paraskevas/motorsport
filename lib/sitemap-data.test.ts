@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { buildSitemapEntries, blogLastModified } from './sitemap-data';
 import { TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
-import { loadDriverBios } from './series-content';
+import { loadDriverBios, loadChampionNotes } from './series-content';
 import { loadAllDrivers } from './people';
 import { groupByWeekend } from './group';
 import { weekendLabel } from './weekend';
@@ -195,5 +195,52 @@ describe('blogLastModified', () => {
 
   it('normalises to ISO so the emitted lastmod is well-formed', () => {
     expect(blogLastModified({ updatedAt: '2026-08-24 06:30:00+00' })).toBe(iso);
+  });
+});
+
+// AdSense low-value-content gate, added 0.334.43 (operator decision 2026-08-25).
+//
+// A "who won the YYYY X championship" page is indexable IFF a curated note for
+// that season exists in content/series/<slug>/champion-notes.json. Audited on
+// prod: un-enriched pages render 67-101 words with 55-66% of their text shared
+// verbatim with sibling years, while enriched ones reach 150-160 words at 18-19%
+// overlap. 443 of 488 were un-enriched, which was 35.4% of the whole index.
+//
+// This test is DERIVED, not pinned to a number, so each enrichment wave flips its
+// own pages indexable and the assertion keeps holding without an edit.
+describe('who-won pages are advertised only when enriched', () => {
+  // Its own call: `urls` above is scoped to the other describe block.
+  let all!: Awaited<ReturnType<typeof buildSitemapEntries>>;
+  beforeAll(async () => {
+    all = await buildSitemapEntries();
+  }, 120_000);
+
+  it('advertises exactly the note-backed seasons, and no others', async () => {
+    const advertised = all
+      .map((u) => u.url)
+      .filter((u) => /\/information\/[^/]+\/who-won-/.test(u));
+
+    let authored = 0;
+    for (const meta of await loadAllSeriesMeta()) {
+      const notes = await loadChampionNotes(meta.slug);
+      authored += notes ? Object.keys(notes).length : 0;
+    }
+
+    expect(authored).toBeGreaterThan(0); // the waves exist; a zero here is a bug
+    expect(advertised).toHaveLength(authored);
+  });
+
+  it('advertises no un-enriched season (spot-check across series)', () => {
+    const advertised = new Set(all.map((u) => u.url));
+    // Seasons with no note as of the 0.334.43 audit. If a later wave enriches
+    // one, this list is what to update - deliberately explicit rather than
+    // derived, so re-indexing a page stays a visible decision.
+    const shouldBeAbsent = [
+      `${SITE_URL}/information/formula-1/who-won-the-1985-formula-1-championship`,
+      `${SITE_URL}/information/endurance/who-won-the-2023-adac-ravenol-24h-nurburgring-championship`,
+    ];
+    for (const u of shouldBeAbsent) {
+      expect(advertised.has(u), `${u} is un-enriched and must not be advertised`).toBe(false);
+    }
   });
 });

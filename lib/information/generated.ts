@@ -317,19 +317,32 @@ export async function generateInfoEntries(): Promise<InfoEntry[]> {
     const notes = (await loadChampionNotes(meta.slug)) ?? {};
     const topic = topicForSeries(meta.slug, meta.category);
 
-    // EVERY champion page is featured, i.e. indexable (operator decision,
-    // 2026-07-31). Previously only `c.year === maxYear` was, which left 473 of
-    // 488 rendering noindex and showing up in Search Console as "Excluded by
-    // 'noindex' tag" — working as designed, but leaving real answers invisible.
+    // A champion page is indexable IFF it has an authored note. One predicate,
+    // and because `verified && featured` is the single gate read by the page's
+    // robots tag, the sitemap (lib/sitemap-data.ts) and the registry's `indexed`
+    // filter, the three cannot drift apart.
     //
-    // The reason it is safe to flip: these are not the thin, templated pages
-    // Google's scaled-content policy targets. Measured across all 488 before the
-    // change: shortest body 188 characters, median 316, longest 495, and not one
-    // is a single sentence — each names the champion, their team, the secondary
-    // title and title-count context. Every fact traces to a vetted
-    // content/series/<slug>/champions.json, which is why they are `verified`.
+    // HISTORY, because this reverses a decision rather than fixing an oversight.
+    // 2026-07-31 flipped ALL 488 featured, on the reasoning that they were not
+    // thin: shortest body 188 characters, median 316, every fact traced to a
+    // vetted champions.json. The AdSense verdict landed FIVE DAYS LATER.
+    //
+    // Audited on prod 2026-08-25, measuring rendered words rather than source
+    // characters, which is what a reviewer sees:
+    //   • un-enriched: 67–101 words, 55–66% of the text shared verbatim with
+    //     its sibling years
+    //   • enriched:   150–160 words, sibling overlap down to 18–19%
+    // 443 of the 488 were un-enriched — 35.4% of the ENTIRE index. The pages are
+    // individually defensible and collectively a scaled-content signal, and the
+    // overlap figure is the part the earlier reasoning had no measurement for.
+    //
+    // Operator decision, 2026-08-25: noindex the un-enriched, keep enriching in
+    // waves, and let each wave flip its own pages back by simply existing. The
+    // pages stay LIVE and linked — this removes them from the index, not from the
+    // site, exactly as 0.334.8 did for the news tabs.
     for (const c of [...champs].sort((a, b) => b.year - a.year)) {
-      out.push(whoWonEntry(meta, c, champs, topic, true, notes[String(c.year)]));
+      const note = notes[String(c.year)];
+      out.push(whoWonEntry(meta, c, champs, topic, Boolean(note), note));
     }
     const md = mostDriverTitlesEntry(meta, champs, topic);
     if (md) out.push(md);
