@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.45 — 2026-08-25
+
+### Added
+- **Champion-notes wave 3b: F1 1976–1985, ten seasons.** `content/series/f1/champion-notes.json` 40 → **50** entries, each with the clinching race, venue, exact date, round-of-total where verified, and 2–3 sources. **F1 is now 50 of 76 seasons; 26 remain (1950–1975).** Sitemap who-won entries 55 → 65.
+  - The decade earns the enrichment: five of the ten titles were settled by three points or fewer, including 1984 by **half a point** (still the closest margin in the sport) and 1976 and 1981 by one.
+  - **Where a fact could not be verified cheaply, the note omits it rather than guessing.** The 1979 and 1981 entries give the clinching race and date without a round-of-total, because the sources found did not state the season's race count and the aggregate that would have supplied it is the one proven unreliable in 0.334.44.
+
+### Fixed
+- **The spot-check test caught its own list going stale, exactly as designed.** `lib/sitemap-data.test.ts` asserted that F1 1985 was absent from the sitemap; wave 3b enriched 1985, so it is now correctly indexed and the test failed. The list is updated to 1972 (still un-enriched), which is the intended workflow: that assertion is explicit rather than derived precisely so re-indexing a page stays a visible decision.
+  - **A real trap recorded with it:** running `npx vitest` directly **skips `pretest`**, so `CONTENT_BUNDLE` is stale and this assertion can pass against old content. It passed in an isolated run minutes before `npm test` failed it. Content changes must be validated with `npm test`.
+
+### Verified
+- `tsc` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** · `build` **0**
+- Splice guards: **87 insertions, 0 deletions**, CRLF preserved, every pre-existing entry byte-identical, every new entry carrying 2+ sources and no em dashes.
+
 ## 0.334.44 — 2026-08-25
 
 ### Added

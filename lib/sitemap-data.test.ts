@@ -232,11 +232,16 @@ describe('who-won pages are advertised only when enriched', () => {
 
   it('advertises no un-enriched season (spot-check across series)', () => {
     const advertised = new Set(all.map((u) => u.url));
-    // Seasons with no note as of the 0.334.43 audit. If a later wave enriches
-    // one, this list is what to update - deliberately explicit rather than
-    // derived, so re-indexing a page stays a visible decision.
+    // Seasons with no note. If a later wave enriches one, this list is what to
+    // update - deliberately explicit rather than derived, so re-indexing a page
+    // stays a visible decision. It has already done its job once: wave 3b
+    // (0.334.45) enriched F1 1985, which used to be listed here, and this test
+    // is what said so.
+    //
+    // NB running `npx vitest` directly skips `pretest`, so CONTENT_BUNDLE is
+    // stale and this assertion can pass against old data. Use `npm test`.
     const shouldBeAbsent = [
-      `${SITE_URL}/information/formula-1/who-won-the-1985-formula-1-championship`,
+      `${SITE_URL}/information/formula-1/who-won-the-1972-formula-1-championship`,
       `${SITE_URL}/information/endurance/who-won-the-2023-adac-ravenol-24h-nurburgring-championship`,
     ];
     for (const u of shouldBeAbsent) {

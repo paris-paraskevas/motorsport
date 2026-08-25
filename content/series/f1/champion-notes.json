@@ -356,5 +356,92 @@
       "https://en.wikipedia.org/wiki/1986_Australian_Grand_Prix",
       "https://www.motorsportmagazine.com/articles/single-seaters/f1/1-1986-australian-gp/"
     ]
+  },
+  "1985": {
+    "clinched": "European Grand Prix, Brands Hatch, 6 October 1985, two rounds to spare (round 14 of 16)",
+    "note": "Fourth place at Brands Hatch on 6 October 1985 made Prost, at 30, the first French world champion, and he is still the only one. He had started sixth, dropped to 14th at the start and broken the lap record three times climbing back; his last rival, Michele Alboreto, was out on lap 13 with a blown turbo. Nigel Mansell won the race, the first victory of his career. Prost had lost the 1984 title by half a point to his own team-mate, which made this one the correction.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1985_European_Grand_Prix",
+      "https://www.goodwood.com/grr/f1/remembering-alain-prosts-first-world-championship-in-1985/",
+      "https://www.motorsport.com/f1/news/alain-prost-first-world-title-1985/10764483/"
+    ]
+  },
+  "1984": {
+    "clinched": "Portuguese Grand Prix, Estoril, 21 October 1984, final round (16 of 16)",
+    "note": "The closest title-winning margin in the sport's history, and it still stands. Lauda needed second at Estoril on 21 October 1984 and got it when Nigel Mansell spun out of that position with 18 laps to go, a front-left brake problem ending his race. Alain Prost won the race, his seventh of the season, and lost the championship to his own team-mate by half a point, the half having been awarded at a rain-shortened Monaco. It was Lauda's third title, seven years after his second.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1984_Portuguese_Grand_Prix",
+      "https://www.motorsportmagazine.com/special-article/the-75-greatest-grands-prix/52/46-1984-portuguese-gp-lauda-claims-title-by-half-a-point-from-prost/",
+      "https://www.formula1.com/en/latest/article/greatest-races-23-an-f1-title-decided-by-just-half-a-point-1984-portuguese.77pMpHOVWQGsnTIrjyR6Vd"
+    ]
+  },
+  "1983": {
+    "clinched": "South African Grand Prix, Kyalami, 15 October 1983, final round (15 of 15)",
+    "note": "Three drivers arrived at Kyalami on 15 October 1983 still able to win it. Piquet led from the start, and the championship was settled on lap 36 when Alain Prost climbed out of his Renault with a broken turbine. Told on the pit board that Prost was out, Piquet wound the boost down to be certain of finishing, dropped to third, and took the title 59 points to 57. It was the first championship won with a turbocharged engine and the last won by a Brabham driver. Renault sacked Prost after the race.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1983_South_African_Grand_Prix",
+      "https://www.f1-fansite.com/f1-result/results-1983-formula-1-grand-prix-of-south-africa/",
+      "https://www.upi.com/Archives/1983/10/16/Nelson-Piquet-became-world-racing-champion-for-the-second/8052435124800/"
+    ]
+  },
+  "1982": {
+    "clinched": "Caesars Palace Grand Prix, Las Vegas, 25 September 1982, final round (16 of 16)",
+    "note": "Rosberg needed sixth place in the car park behind Caesars Palace on 25 September 1982 and finished fifth, taking the championship on 44 points to 39. He won only one race all year, at the Swiss Grand Prix, the first champion to manage it with a single victory since 1958. It was a season with no pattern to it at all: eleven different drivers won a race. Had John Watson won in Las Vegas and Rosberg scored nothing, Watson would have taken the title on a countback of wins.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1982_Caesars_Palace_Grand_Prix",
+      "http://en.espn.co.uk/f1/motorsport/story/6342.html",
+      "https://www.autosport.com/f1/news/grand-prix-gold-1982-las-vegas-gp-5098970/5098970/"
+    ]
+  },
+  "1981": {
+    "clinched": "Caesars Palace Grand Prix, Las Vegas, 17 October 1981, final round",
+    "note": "Piquet won his first championship by a single point, 50 to 49, in a Las Vegas car park on 17 October 1981. Carlos Reutemann had arrived leading and started from pole, but his gearbox was failing by lap two and he finished eighth. Piquet, needing only to see the flag, faded to fifth in stifling heat on a new anticlockwise circuit that punished drivers' necks, and was so far gone by the end that mechanics had to lift him out of the car. Alan Jones won the race, the last of his Formula 1 career.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1981_Caesars_Palace_Grand_Prix",
+      "http://en.espn.co.uk/f1/motorsport/story/98694.html"
+    ]
+  },
+  "1980": {
+    "clinched": "Canadian Grand Prix, Circuit Ile Notre-Dame, Montreal, 28 September 1980, one round to spare (round 13 of 14)",
+    "note": "Jones and Nelson Piquet were separated by a single point when they arrived in Montreal on 28 September 1980, and they collided at the first corner, Piquet spinning into the wall and taking most of the field's running with him. The race was stopped and restarted; Piquet led it until his qualifying-specification engine failed on lap 24, and Jones won. It gave Williams its first drivers' championship and made Jones the second Australian champion after Jack Brabham.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1980_Canadian_Grand_Prix",
+      "http://en.espn.co.uk/f1/motorsport/story/6333.html",
+      "https://www.upi.com/Archives/1980/09/28/Australian-Alan-Jones-won-the-Canadian-Grand-Prix-Sunday/5631338961600/"
+    ]
+  },
+  "1979": {
+    "clinched": "Italian Grand Prix, Monza, 9 September 1979",
+    "note": "Scheckter won at Monza on 9 September 1979 half a second ahead of his team-mate Gilles Villeneuve, and the one-two took both championships for Ferrari in front of the tifosi. Villeneuve had agreed before the start to follow him home. Jacques Laffite, the only other man in contention, threw a valve on lap 42. Scheckter finished the year on 50 points to Villeneuve's 47, remains the only South African champion, and never won another Grand Prix. Ferrari would wait 21 years for its next drivers' title.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1979_Italian_Grand_Prix",
+      "https://www.ferrari.com/en-EN/magazine/articles/1979-jody-scheckter-is-world-champion-at-his-first-attempt",
+      "https://www.motorsportmagazine.com/articles/single-seaters/f1/becoming-world-champion-for-ferrari-at-monza-it-was-just-a-relief-says-jody-scheckter"
+    ]
+  },
+  "1978": {
+    "clinched": "Italian Grand Prix, Monza, 10 September 1978, two rounds to spare (round 14 of 16)",
+    "note": "Andretti became champion at Monza on 10 September 1978 and could not celebrate it. A chaotic start put ten cars into an accident from which James Hunt and Clay Regazzoni pulled his team-mate and title rival Ronnie Peterson clear of the flames; Peterson's leg injuries were not thought life-threatening, and he died the following day of an embolism. Andretti finished sixth in the restarted race after a jump-start penalty, and Peterson was awarded second in the championship posthumously. Andretti is still the last American world champion, and he later said he would trade the title to have his friend back.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1978_Italian_Grand_Prix",
+      "https://www.espn.com/f1/story/_/id/24521171/the-day-f1-lost-ronnie-peterson-monza"
+    ]
+  },
+  "1977": {
+    "clinched": "United States Grand Prix, Watkins Glen, 2 October 1977, two rounds to spare (round 15 of 17)",
+    "note": "Lauda needed one point at a wet Watkins Glen on 2 October 1977 and took four for fourth place, fourteen months after the Nurburgring crash that nearly killed him. James Hunt won the race and lost the championship. The second title was built on the reliability of the Ferrari 312 T2 rather than its speed: three wins, ten podiums, 72 points. Lauda then skipped the last two rounds and left for Brabham, having asked Enzo Ferrari for a raise and been refused.",
+    "sources": [
+      "https://www.ferrari.com/en-EN/history/moments/1977/niki-double",
+      "https://www.formula1.com/en/information/drivers-hall-of-fame-niki-lauda.2Ye7VYWdXwhb97ZqLyxvX"
+    ]
+  },
+  "1976": {
+    "clinched": "Japanese Grand Prix, Fuji Speedway, 24 October 1976, final round (16 of 16)",
+    "note": "Three points behind Lauda with one race left, Hunt took the title by one at Fuji on 24 October 1976. The race started in a downpour after 90 minutes of argument about whether it should run at all, and Lauda pulled into the pits after two laps and withdrew, saying afterwards that his life was worth more than a title. Hunt led, then lost places as the track dried, suffered a deflating tyre and pitted, and recovered to third, which was exactly enough. Mario Andretti won.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1976_Japanese_Grand_Prix",
+      "https://www.racefans.net/2008/10/07/1976-japanese-grand-prix-flashback/",
+      "https://www.motorsportmagazine.com/articles/single-seaters/f1/hunt-and-lauda-fuji-1976/"
+    ]
   }
 }
