@@ -4,6 +4,20 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.39 — 2026-08-25
+
+### Changed
+- **Composer refining pass, round 1** (operator: *"this will need refining and improving too"*, with a screenshot of `/admin/home`). Four changes to `components/admin/HomeComposer.tsx`, each grounded in the code rather than in taste, because the specific refinements were not named:
+  - **The lead-story picker can be filtered.** It was a scroll box of two dozen truncated headlines and nothing else, which does not scale as the blog grows. Matching runs on title OR series, so "f1" narrows to a championship and "zandvoort" to a race. Local state **deliberately not pushed into the URL** like the selections are: filtering the list is not a change to the draft and must not cost a server round-trip or a preview re-render.
+  - **Each row now shows its series and date.** Both were already being passed into the component (`posts: { slug, title, publishedAt, seriesSlug }`) and **thrown away** at render.
+  - **Correct radio semantics.** Exactly one lead can be chosen, but the rows were `<button aria-pressed>` in square boxes, which a screen reader announces as independent toggles. Now a `role="radiogroup"` of `role="radio"` with `aria-checked`, which matters on a site that has had two dedicated accessibility passes (0.226–0.227).
+  - The selected row carries a background, so the choice is visible without hunting for the tick.
+  - Empty-filter state added rather than an empty box.
+
+### Not verified in a browser, and this is the standing limitation
+- **`/admin` needs an admin session this machine does not have**, so this is compile-verified only: `tsc`, `lint`, the suite and a production build. The operator is signed in (their screenshot proves the console renders) and their click is the verification. Saying so plainly rather than implying otherwise.
+- Worth recording from this session: a local **production** build cannot verify admin or any client-rendered page either, because `.env.production.local` carries real Clerk keys and Clerk rejects them off the live domain.
+
 ## 0.334.38 — 2026-08-25
 
 ### Changed

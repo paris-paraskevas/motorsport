@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.39 — 2026-08-25
+
+**Internal groundwork.** The editor's tool for choosing what leads the home page is easier to use: the post list can be filtered and each entry shows its series and date. Nothing changes for readers.
+
 ## 0.334.38 — 2026-08-25
 
 **The calendar on a phone now reads like a schedule.** Each day's date sits in a column on the left with that day's sessions beside it, today is circled, and days with nothing on are skipped. The desktop calendar is unchanged.
