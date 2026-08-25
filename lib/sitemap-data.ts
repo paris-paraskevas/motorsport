@@ -49,8 +49,10 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const sortedMeta = [...allMeta].sort((a, b) => a.slug.localeCompare(b.slug));
 
   const staticUrls: MetadataRoute.Sitemap = [
+    // The root IS the home page since 0.334.42; `/app` now 301s here, and
+    // advertising a redirect in a sitemap earns "Page with redirect" in Search
+    // Console rather than an indexed page.
     { url: SITE_URL },
-    { url: `${SITE_URL}/app` },
     { url: `${SITE_URL}/series` },
     { url: `${SITE_URL}/calendar` },
     { url: `${SITE_URL}/news` },

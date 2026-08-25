@@ -30,7 +30,7 @@ export default function NotFound() {
 
         <div className="mt-10 flex flex-wrap gap-3">
           <Link
-            href="/app"
+            href="/"
             data-heatmap-id="404:home"
             className="flex min-h-11 items-center bg-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-(--duration-fast) hover:bg-text-muted"
           >

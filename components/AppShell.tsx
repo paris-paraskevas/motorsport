@@ -95,7 +95,7 @@ export function AppShell({
               logo") — condensed caps + the brand dot, one treatment shared with
               LandingNav and LandingFooter. Mobile drops to PADDOCK for width. */}
           <Link
-            href="/app"
+            href="/"
             data-heatmap-id="nav:wordmark"
             className="shrink-0 font-condensed text-[16px] font-bold uppercase tracking-[0.06em] text-text lg:text-[19px]"
           >

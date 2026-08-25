@@ -85,8 +85,8 @@ export default async function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/app"
-      signUpFallbackRedirectUrl="/app"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
       // Clerk 7 honours only colorPrimary / colorBackground / borderRadius here;
       // colorText, colorTextOnPrimaryBackground and colorInput* were silently
       // ignored (verified: --cl-color-* were unset at runtime while the heading

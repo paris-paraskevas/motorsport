@@ -14,7 +14,7 @@ import { SITE_URL } from '@/lib/site';
 // Tools went with them: it was five links to surfaces that live elsewhere, which
 // is why Studio is a real row here instead.
 //
-// Active state is an EXACT pathname match (like AppShell's isActive('/app',
+// Active state is an EXACT pathname match (like AppShell's isActive('/',
 // true)) so /admin does not stay lit on its sub-routes. A horizontally
 // scrollable chip strip on mobile; a vertical rail that sticks below the fixed
 // h-14 header on lg+.

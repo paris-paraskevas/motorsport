@@ -4,6 +4,30 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.42 — 2026-08-25
+
+### Removed
+- **The marketing landing page is retired; `/` now serves the home page.** Operator: *"i have a big issue with the existence of the landing page now the home page is better. want to reimagine it? we might not even need it."* The strongest argument for going was that **the thinnest page on the site was sitting on its most valuable URL** — which is the AdSense low-value-content problem in miniature. What went: 281 lines of hero copy, a templated `01 / 02 / 03` feature row, a THIS WEEKEND panel and a LAST TIME OUT panel that the home page already does better, with a full classification.
+  - Deleted, operator-approved by exact list: `app/(marketing)/{page,layout,error}.tsx`, `app/(app)/app/page.tsx` (moved to `app/(app)/page.tsx`), `components/landing/StandaloneRedirect.tsx`. **Five files, not the six on the approved list** — `LastTimeOut` turned out to be a local function inside the landing page rather than its own file, so it died with it.
+  - `/app` **301s to `/`** (`next.config.ts`), because it was in the sitemap, was the PWA's `start_url`, and is bookmarked. `public/manifest.json` `start_url` → `/`, and the `/app` sitemap entry is dropped, since advertising a redirect earns "Page with redirect" in Search Console rather than an indexed page.
+  - **A redirect LOOP was caught before it shipped.** `middleware.ts` carried a block sending signed-in visitors from `/` to `/app` to skip the landing. With `/app` now 301ing to `/`, leaving it would have sent every signed-in visitor round `/ → /app → / → /app` forever. Removed, with the reasoning recorded in its place.
+  - **`revalidatePath('/app')`** in `app/api/admin/page-layout/route.ts` would have revalidated a route that no longer exists — so publishing a home layout from the composer would have silently stopped taking effect. Now `revalidatePath('/')`.
+  - ~13 internal links, both Clerk fallback redirect URLs in two layouts, the search index, the notify-coalesce digest URL and the service worker's default notification destination all repointed.
+  - **`InstallApp` re-homed into `components/Footer.tsx`.** It was the landing's second hero button and **the only install path on the site** — Chromium's `beforeinstallprompt` can only be re-triggered by whatever captured it, so deleting the landing without moving this would have removed app installation rather than relocated it. The footer is on every page, which is more reach than the landing had. The site's one-line self-description moved with it.
+  - The root gains its own absolute title and description (the landing's headline survives as the page title) plus `withSocialMeta`, so the most-shared URL on the site carries real social metadata.
+
+### Corrected — twice, on the same point
+- I claimed retiring the landing would delete `LandingNav` + `LandingFooter` as duplicate chrome. Then I "corrected" that to say they were shared with `AppShell` and must be kept. **Both readings were wrong, and the second was worse.** `AppShell` renders `components/Footer.tsx`; the only mention of `LandingNav`/`LandingFooter` in it is a **comment**, which is what my `grep -l` matched. Verified properly by searching for `import` statements: **zero importers.**
+  - So they are now **orphaned dead code**, along with `LandingAuth.tsx` which only `LandingNav` used. **Deliberately NOT deleted here**, because the approved deletion list explicitly said they would be kept, and expanding a deletion beyond what was approved is not mine to do. Nothing imports them, so they cost nothing at runtime. Flagged for an orphan sweep.
+  - Lesson worth keeping: `grep -l <ComponentName>` proves a *mention*, not a usage. Search for the import.
+
+### Verified
+- Route table: **`┌ ○ / — 5m 1y`**, so the root is the home page and **the ISR cache contract survived the move**. Zero occurrences of `/app` remain in the route table.
+- `/app` → **308 → `/`**; `/` itself does **0** redirects (`curl -L`, no loop).
+- `/` serves the dashboard (Classification, What it changed, What's next, The wire) plus the footer's "Install as an app" and the self-description line. Browser-verified at 1440, **0 console errors**.
+- One test failure, caused by this change and **intended**: `notify-coalesce.test.ts` asserted the digest URL was `/app`. A tapped digest should land on the home page, which moved — expectation updated to `/` with the reason recorded, not loosened.
+- `tsc` **0** (after clearing `.next`, since a deleted route leaves stale generated types) · `lint` 0 errors + 2 known warnings · `npm test` **1210 passed** · `build` **0**.
+
 ## 0.334.41 — 2026-08-25
 
 ### Added

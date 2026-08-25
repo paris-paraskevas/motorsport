@@ -54,7 +54,7 @@ export function coalescedPayload(items: QueuedNotification[], silent: boolean): 
   return {
     title: `Paddock · ${items.length} updates`,
     body: `${lead.payload.title} + ${items.length - 1} more`,
-    url: '/app',
+    url: '/',
     tag: 'paddock-digest',
     color: lead.session.seriesColor,
     ...(silent ? { silent: true } : {}),

@@ -93,7 +93,7 @@ self.addEventListener('push', (event: PushEvent) => {
         icon: '/icons/icon-192.png',
         badge: '/icons/badge-96.png',
         tag: payload.tag,
-        data: { url: payload.url ?? '/app', ...(payload.data ?? {}) },
+        data: { url: payload.url ?? '/', ...(payload.data ?? {}) },
         image: payload.image,
         color: payload.color ?? ACCENT_COLOR,
         actions: payload.actions ?? [],
@@ -119,7 +119,7 @@ self.addEventListener('push', (event: PushEvent) => {
 self.addEventListener('notificationclick', (event: NotificationEvent) => {
   event.notification.close();
   const data = (event.notification.data as { url?: string; seriesSlug?: string } | null) ?? {};
-  const url = data.url ?? '/app';
+  const url = data.url ?? '/';
   const action = event.action;
 
   event.waitUntil(

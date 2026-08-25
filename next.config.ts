@@ -115,6 +115,12 @@ const nextConfig: NextConfig = {
       // /threads/:id detail pages stay where they are — deep links must survive.
       { source: "/play", destination: "/social", permanent: true },
       { source: "/threads", destination: "/social/threads", permanent: true },
+      // The home page moved from /app to the site root in 0.334.42, when the
+      // separate marketing landing was retired (operator: "i have a big issue
+      // with the existence of the landing page now the home page is better").
+      // Permanent, because /app was in the sitemap, is the PWA's old start_url,
+      // and is bookmarked — every one of those has to keep working.
+      { source: "/app", destination: "/", permanent: true },
     ];
   },
   async headers() {

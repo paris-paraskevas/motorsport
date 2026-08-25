@@ -40,7 +40,7 @@ export default function Error({
           Try again
         </button>
         <Link
-          href="/app"
+          href="/"
           className="inline-flex min-h-11 items-center border border-text px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-text transition-colors duration-(--duration-fast) hover:bg-surface"
         >
           Back to the paddock
