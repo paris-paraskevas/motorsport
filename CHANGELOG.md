@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.40 — 2026-08-25
+
+### Changed
+- **RELEASES.md is out of the Worker script: content bundle 416.98 → 341.30 KiB gzipped, a 75.68 KiB saving.** This is the answer to "the R2 mechanism", and the answer is that **R2 was not needed for it.**
+  - **Why it was the right target.** It was the largest single entry in `CONTENT_BUNDLE` (233 KB raw, ~76 KiB gzipped), it has exactly one reader, and it is **the only content file that grows on every single push** — so left alone it is the one line item guaranteed to eat the remaining headroom over time.
+  - **Why no runtime mechanism was needed.** `/changelog` is `export const dynamic = 'force-static'` **with no revalidate**, so `loadReleaseGroups` runs at BUILD time in Node, where `lib/content-fs.ts` falls through a bundle miss to the real filesystem. The bytes never need to reach the runtime, so there is no asset read, no binding, and no new dependency.
+  - **What was rejected, and why.** The Workers-Assets/R2 route needs `getCloudflareContext()` from `@opennextjs/cloudflare` — which is a **devDependency** that nothing in `lib/` or `app/` imports — inserted into `lib/content-fs.ts`, the choke point every content page reads through. A new untested runtime path in the most load-bearing module in the app, for 1.6% of the budget, is a bad trade while 669 KiB of headroom exists.
+  - **`content/information/tracks.json` (87.45 KiB) deliberately STAYS.** The same trick does not work for it: `/information` and `/information/[topic]` carry a **1h revalidate**, so they re-render on the Worker where there is no filesystem. Moving it genuinely would need the asset-binding work above. Recorded so the next person does not assume it was missed.
+  - **Two guard tests** (`releases.test.ts`, now 15): one fails if `RELEASES.md` creeps back into the bundle, the other fails if the real-fs fallback stops working. The arrangement is only safe while /changelog stays build-time only, and that comment is on the exclusion list itself.
+- **`SOCIAL_CARD` is now an absolute URL.** A relative one resolves against `metadataBase`, which the three group layouts set — but `app/not-found.tsx` sits outside all of them. Absolute cannot be resolved wrongly by any route, which removes the class of fault instead of patching one page.
+
+### Corrected
+- **I reported the 404 page's localhost `og:image` as a regression I had just introduced. It is not.** The URL carries Next's file-convention cache-busting hash (`?6c77aaf7…`), which `SOCIAL_CARD` does not produce — so `_not-found` gets its card from the root `app/opengraph-image.tsx` and has had a localhost URL all along. It also confirms the 0.334.37 diagnosis exactly: the root file convention applies to precisely one route, the 404, the only page in the root segment. Left alone (nobody shares a 404), logged rather than chased.
+
+### Verified
+- `/changelog` prerenders all 15 releases with 40 version entries from the real-fs read: `grep` of `.next/server/app/changelog.html` finds "Release 15", "The finishing pass", "Release 1" and "First light".
+- Content bundle measured before and after with a per-entry gzip harness: **416.98 → 341.30 KiB** (−75.68).
+- **`wrangler deploy --dry-run`: 9570.73 → 9417.32 KiB gzipped, headroom 669.27 → 822.68 KiB.** That is a **153.41 KiB** net improvement *across the eight merges of this session, which also added blog covers, home-page covers, the og:image fix, the mobile calendar and the composer work* — so the exclusion is worth more than the module-level figure suggested. **The session-34 lesson holds a third time: a component measurement is a floor, not the answer** (predicted 75.68, delivered 153.41 net while features were being added).
+
 ## 0.334.39 — 2026-08-25
 
 ### Changed
