@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: 'Impressum',
   description:
     'Verantwortlich nach § 18 Abs. 2 MStV und § 5 DDG — Kontakt und Anschrift für paddock-tracker.com.',
+  // This page and /imprint render the SAME file (content/legal/imprint.md),
+  // differing only in title. Both were indexed with no canonical on either,
+  // which is duplicate content of the most literal kind. The URL stays live —
+  // a German visitor looks for "Impressum", and § 5 DDG is why it exists — but
+  // it now points at /imprint as the one to index, and it is out of the sitemap.
+  alternates: { canonical: '/imprint' },
 };
 
 export default async function ImpressumPage() {

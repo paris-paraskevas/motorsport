@@ -4,6 +4,39 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.43 — 2026-08-25
+
+### Changed — the AdSense low-value-content audit, and its first action
+- **Audited every indexed page family on prod, then acted on the one that fails.** Operator: *"we need to also reevaluate if we are ready to resubmit site for ads. we need to look over ALL content pages and ensure we dont have low value content."* **Verdict: we were not ready.** 1252 indexed URLs across 25 families; three families were 88.6% of the index.
+  - Measured rendered words and, crucially, **sibling text overlap** (Jaccard over 6-word shingles), because scaled-content is a property of a family rather than of one page:
+
+    | family | count | words | sibling overlap |
+    |---|---:|---:|---:|
+    | who-won-*, **un-enriched** | **443** | **67–101** | **55–66%** |
+    | who-won-*, enriched | 45 | 150–160 | 18–19% |
+    | curated explainers | 59 | 146–491 | 3% |
+    | weekend pages | 198 | 177 | 25% |
+    | driver pages | 126 | 411 | — |
+    | blog posts | 24 | 523–1819 | 14% |
+
+  - **443 pages — 35.4% of the entire index — were 67–101 words sharing 55–66% of their text verbatim with sibling years.** Those 488 pages were flipped indexable on 2026-07-31, **five days before** the 5 August rejection.
+  - **The enrichment strategy is measurably correct**: it takes a page from 68 → 157 words and drops sibling overlap from 55% → 19%. It was simply **9.2% done** (45 of 488).
+- **Operator decision, reversing the earlier "enrich-not-noindex" call with the measurement in hand: noindex the un-enriched, enrich in waves, let each wave flip its own pages back.** `lib/information/generated.ts` passed `featured: true` unconditionally; it is now `Boolean(note)`, where `note` is the curated season entry in `content/series/<slug>/champion-notes.json`.
+  - **One predicate, three consumers.** `verified && featured` is already the single gate read by the page's robots tag, `lib/sitemap-data.ts` and the registry's `indexed` filter, so they cannot drift.
+  - **Nothing is deleted and nothing 404s.** Verified: an un-enriched page returns **200** with `robots: noindex, follow` — live, linked, equity flowing, just out of the index. An enriched one still returns `index, follow`. Same treatment 0.334.8 gave the news tabs.
+  - **A future wave needs no code.** Authoring notes for a season makes its page indexable by existing.
+- **`/imprint` and `/impressum` were duplicate content.** Both render the *same file* (`content/legal/imprint.md`), differing only in `<title>`, both indexed, **neither carrying a canonical**. `/impressum` now canonicalises to `/imprint` and leaves the sitemap; the URL stays live, because a German visitor looks for "Impressum" and § 5 DDG is why it exists.
+
+### Verified
+- **Sitemap: 1252 → 814 URLs.** who-won advertised **488 → 45** (exactly the authored-note count), `/impressum` **1 → 0**.
+- **Build prerenders 961 → 517 static pages**, 444 fewer, since the route prerenders only indexed entries and the rest render on demand and cache.
+- **Two derived tests** (`lib/sitemap-data.test.ts`, suite 1210 → **1212**): one asserts the advertised who-won count *equals the authored-note count*, so it keeps holding as waves land without an edit; the other spot-checks that named un-enriched seasons are absent.
+- `tsc` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** · `build` **0**.
+
+### Corrections to my own audit method, caught before they became findings
+- My raw-HTML prober reported **0 words** for driver pages, series tabs and one weekend page. That was the prober failing on streamed content, not empty pages — the browser shows **411 words** on `/drivers/lando-norris`. Word counts for data-driven families must be measured in a browser; only statically-prerendered prose can be measured from HTML.
+- Two triggers `IDEAS.md` still lists are already fixed: driver pages are down to **126** bio-backed URLs (from ~524, gated by the existing bios test), and the news tabs left the index in 0.334.8.
+
 ## 0.334.42 — 2026-08-25
 
 ### Removed
