@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.41 — 2026-08-25
+
+**Internal groundwork.** The 1.0 announcement is built and switched off. Nothing appears for readers until it is deliberately turned on.
+
 ## 0.334.40 — 2026-08-25
 
 **Internal housekeeping.** These release notes no longer ride along inside the code the site runs, which frees up meaningful room for what comes next. This page is unchanged, and shares of every page now carry a picture reliably.

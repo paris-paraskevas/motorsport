@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.41 — 2026-08-25
+
+### Added
+- **The 1.0 announcement, rebuilt as a modal. Ships DARK.** Operator, 2026-08-25: *"1.0 needs to be a pop up banner that covers any page upon a users visit, it can be shown to everyone, same dont show again logic as support prompt."* `components/LaunchBanner.tsx` was an inline dismissible bar carrying one sentence, which could not "clearly explain everything in version 1" — the earlier requirement. It is now a dialog over whatever page the reader arrived on.
+  - **Content lives in `LAUNCH_ANNOUNCEMENT` (`lib/site.ts`)**, not in the component: a kicker, title, intro, six **capability** rows (grouped by what the site does, not by release, because nobody cares that biographies landed in 0.257.0) and a three-item "what comes next".
+  - **⚠ THE COPY IS DRAFT AND NEEDS SIGN-OFF BEFORE `active` GOES TRUE**, `next` above all: anything named there is a public promise. Marked as such in the file itself.
+  - **Shown once, to everyone.** Dismissal persists in `localStorage` keyed by `LAUNCH_ANNOUNCEMENT.id` (bumping the id re-shows a future announcement) **and** to Clerk `unsafeMetadata` when signed in, so it does not reappear on another device. `localStorage` rather than `SupportPrompt`'s `sessionStorage`, because an announcement that returns in every new tab is an annoyance rather than an announcement.
+  - **The shell deliberately follows `SupportPrompt`** rather than inventing a second dialog language: backdrop, `useFocusTrap`, body scroll lock, Esc/backdrop dismiss, and the `data-state` entrance. **Every animation is gated behind `motion-safe:`**, so `prefers-reduced-motion` is honoured — which is the requirement's "with animations" without undoing the 0.226–0.227 accessibility work. The only piece with personality is a CSS `scale-x` wipe on the chequered rule; no library, nothing added to the bundle.
+  - **It stands down rather than stacking:** not while the consent modal is pending, not while any other `[role="dialog"]` is open, and not before Clerk resolves (which would flash it at an account that already dismissed it elsewhere). It returns on the next navigation.
+  - Mount moved out of `AppShell` to layout level beside the other dialogs, since it is fixed-position now rather than an inline bar.
+
+### Verified
+- **Browser-verified by temporarily flipping `active` locally, then reverting.** Screenshotted over `/calendar` at **1440 and 390**; the panel scrolls inside `max-h-[88vh]` on the phone. `active: false` and the absence of the temp marker both re-confirmed by grep before commit.
+- Worth recording: it did not appear on the first attempt, and the reason was **the logic working** — `paddock:launch-dismissed:v1.0` was already `"1"` in that browser profile from the old inline banner, which shares the key.
+- `tsc` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1210 passed** · `build` **0**, `/app` still `○ (Static) 5m`.
+
 ## 0.334.40 — 2026-08-25
 
 ### Changed
