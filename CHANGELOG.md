@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.61 — 2026-08-26
+
+### Fixed
+- **The derived text treated an endurance crew as one person, and that published a false claim on every WEC page.** The 2019 answer read *"It was **Sébastien Buemi, Fernando Alonso, Kazuki Nakajima**'s **first** FIA WEC title"* — untrue for Buemi, who won in 2014 with Anthony Davidson — and the all-time record read *"**2** titles, shared by"* two crew strings when Buemi and Hartley had **four each**. Titles are now counted **per person** (`driversOf` in `lib/information/generated.ts`, splitting on commas and slashes).
+  - The 2019 page now reads "a first FIA WEC title for **Fernando Alonso** and **Kazuki Nakajima**, and **Sébastien Buemi**'s 2nd of 4 (2014, 2019, 2022, 2023)", and the record line "**4** titles, shared by **Brendon Hartley and Sébastien Buemi**".
+  - **Found before publishing, not after**: it surfaced while browser-verifying the first WEC page of this wave, so no crew page was ever indexed carrying it. It affected **145 crew rows across six families** — WEC 13/13, IMSA 12/12, ADAC 54/54, NLS 15/16, GT World 7/12 and the shared 1996 IndyCar title — i.e. every family still to be enriched.
+  - **Single-driver families are byte-identical**, deliberately: 166 authored notes were written to sit under the old sentence, and a test pins `It was **Lando Norris**'s first Formula 1 title.` verbatim.
+  - Verified that the split cannot cut a name in half: checked all 15 `champions.json` files for an individual name containing a comma or slash — **zero**.
+- **`content/series/wec/champions.json` called 2019–20 a "super season". It was not.** The Super Season was **2018–19**, the eight-round campaign spanning two calendar years with Le Mans in it twice; 2019–20 was an ordinary season. The label rendered inside the team name on the page. Two sources.
+
+### Added
+- **Champion-notes wave 9: WEC COMPLETE, all thirteen seasons, 2012 to 2025.** New sidecar `content/series/wec/champion-notes.json`. **Fifth family finished.** Sitemap who-won 166 → **179**. Note there is no 2018 row: the super seasons are filed as 2019 and 2020.
+- **Five of the thirteen were won by a crew that did not win the deciding race, and two by crews that barely finished it.** Davidson and Buemi took 2014 from eleventh after sixteen laps in the garage having an alternator changed; Estre, Lotterer and Vanthoor took 2024 from eleventh, the #6 Porsche's worst result of the year; Bernhard, Webber and Hartley took 2015 fifth after losing nine laps to a throttle actuator; Lieb, Dumas and Jani took 2016 sixth after being hit in the second hour. 2019 is the only time Le Mans has been the championship finale.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1251 passed** (1246 + 5 crew-counting cases) · `build` **0** with the standing six upstream noise lines, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **179**, up exactly thirteen. `/information/endurance/who-won-the-2019-fia-wec-championship` browser-verified on `next dev` before and after the crew fix; console 0 errors. F1 2025 re-checked as the single-driver regression case.
+- Wave notes average **97 words** (83–103).
+
 ## 0.334.60 — 2026-08-26
 
 ### Fixed

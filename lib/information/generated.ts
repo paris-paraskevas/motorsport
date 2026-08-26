@@ -44,6 +44,25 @@ function secondTitleLabel(meta: SeriesMeta): string {
 const driversTitleWord = (meta: SeriesMeta) =>
   meta.category === 'motorcycle' ? 'riders’' : 'drivers’';
 
+/** The endurance families put a whole crew in one `driver` string — "James
+ *  Calado, Antonio Giovinazzi, Alessandro Pier Guidi" — and NLS and the shared
+ *  1996 IndyCar title use slashes. Counting titles by that whole string treats a
+ *  crew as a person, which published a false claim on every WEC page: the 2019
+ *  answer read "It was Sébastien Buemi, Fernando Alonso, Kazuki Nakajima's FIRST
+ *  FIA WEC title" when Buemi had already won in 2014 with a different crew, and
+ *  the all-time record read "2 titles" shared between two crews when Buemi and
+ *  Hartley had four each. So: split, and count people.
+ *
+ *  Verified against all 15 curated `champions.json` files — 145 crew rows across
+ *  six families — that no individual name contains a comma or a slash, so this
+ *  split cannot cut a name in half. */
+export function driversOf(driverField: string): string[] {
+  return driverField
+    .split(/\s*[,/]\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 // 1 → "1st", 2 → "2nd", 3 → "3rd", 11 → "11th"…
 function ordinal(n: number): string {
   const s = ['th', 'st', 'nd', 'rd'];
@@ -126,20 +145,50 @@ function whoWonEntry(
       `In the ${champ.secondaryLabel ?? 'secondary championship'}, **${champ.secondaryDriver}**${sTeam} was champion.`,
     );
   }
-  // Title context for this driver — which number title this was, and how it sits
-  // against the all-time series record. All exact-name matches on our curated
-  // data, so every claim is a true, sourced fact.
-  const driverYears = all
-    .filter((c) => c.driver === champ.driver)
-    .map((c) => c.year)
-    .sort((a, b) => a - b);
-  const nth = driverYears.indexOf(champ.year) + 1;
-  lines.push(
-    driverYears.length > 1
-      ? `It was **${champ.driver}**’s ${ordinal(nth)} of ${driverYears.length} ${name} titles (${driverYears.join(', ')}).`
-      : `It was **${champ.driver}**’s first ${name} title.`,
-  );
-  const driverRecord = topHolders(rankTitles(all, (c) => c.driver));
+  // Title context — which number title this was for each person who won it, and
+  // how that sits against the all-time series record. Counted PER DRIVER, which
+  // for the crew families is the whole point: see driversOf.
+  const winners = driversOf(champ.driver);
+  const yearsFor = (driver: string) =>
+    all
+      .filter((c) => driversOf(c.driver).includes(driver))
+      .map((c) => c.year)
+      .sort((a, b) => a - b);
+  if (winners.length === 1) {
+    // Single-driver seasons keep their exact previous wording: 166 authored notes
+    // were written to sit under this sentence.
+    const driverYears = yearsFor(winners[0]);
+    const nth = driverYears.indexOf(champ.year) + 1;
+    lines.push(
+      driverYears.length > 1
+        ? `It was **${champ.driver}**’s ${ordinal(nth)} of ${driverYears.length} ${name} titles (${driverYears.join(', ')}).`
+        : `It was **${champ.driver}**’s first ${name} title.`,
+    );
+  } else {
+    const firsts: string[] = [];
+    const repeats: string[] = [];
+    for (const driver of winners) {
+      const years = yearsFor(driver);
+      if (years.length > 1) {
+        repeats.push(
+          `**${driver}**’s ${ordinal(years.indexOf(champ.year) + 1)} of ${years.length} (${years.join(', ')})`,
+        );
+      } else {
+        firsts.push(`**${driver}**`);
+      }
+    }
+    // Joined by hand rather than through joinNames: the firsts clause already
+    // ends in "and X", so gluing the two with another "and" reads as a stutter
+    // ("…for Alonso and Nakajima and Buemi's 2nd of 4").
+    const firstsClause = firsts.length ? `a first ${name} title for ${joinNames(firsts)}` : '';
+    const repeatsClause = repeats.length ? joinNames(repeats) : '';
+    const body =
+      firstsClause && repeatsClause
+        ? `${firstsClause}, and ${repeatsClause}`
+        : firstsClause || repeatsClause;
+    lines.push(`It was ${body}.`);
+  }
+  const driverRecord = topHolders(rankTitles(all, (c) => driversOf(c.driver)));
   if (driverRecord.count >= 2) {
     lines.push(
       `The all-time ${name} ${driversTitleWord(meta)} record is **${driverRecord.count}** titles, ${driverRecord.names.length > 1 ? 'shared by' : 'held by'} **${joinNames(driverRecord.names)}**.`,
@@ -190,11 +239,13 @@ function whoWonEntry(
 }
 
 // Rank a field's title counts; returns [name, count] sorted desc, count-first.
-function rankTitles(champs: Champion[], key: (c: Champion) => string | undefined) {
+function rankTitles(champs: Champion[], key: (c: Champion) => string | string[] | undefined) {
   const counts = new Map<string, number>();
   for (const c of champs) {
     const v = key(c);
-    if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+    for (const name of Array.isArray(v) ? v : v ? [v] : []) {
+      counts.set(name, (counts.get(name) ?? 0) + 1);
+    }
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 }
@@ -219,7 +270,7 @@ function joinNames(names: string[]): string {
 // "Who has won the most X championships?" — only when the record-holder has ≥2
 // (otherwise the page is meaningless, e.g. endurance crews that never repeat).
 function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: string): InfoEntry | null {
-  const ranked = rankTitles(champs, (c) => c.driver);
+  const ranked = rankTitles(champs, (c) => driversOf(c.driver));
   if (ranked.length === 0 || ranked[0][1] < 2) return null;
   const [topName, topN] = ranked[0];
   const multi = ranked.filter(([, n]) => n > 1).slice(0, 8);
@@ -228,7 +279,8 @@ function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: stri
     : ' (including its predecessor series)';
 
   const who = meta.category === 'motorcycle' ? 'riders' : 'drivers';
-  const distinct = new Set(champs.map((c) => c.driver)).size;
+  // Counted per person, not per crew: "different drivers crowned" means people.
+  const distinct = new Set(champs.flatMap((c) => driversOf(c.driver))).size;
   const rec = topHolders(ranked);
   const lines = [
     rec.names.length > 1
