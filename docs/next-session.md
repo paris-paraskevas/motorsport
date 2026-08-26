@@ -1,118 +1,94 @@
 # The execution queue
 
-Rewritten 2026-08-24 (session 34 close). `main` = **0.334.29**, prod verified, tree clean, zero open PRs, suite **1206**.
-
-**Session 35's two priorities, operator-set:** the admin page, and moving what can be moved into R2.
+Rewritten 2026-08-26 (session 35 close). `main` = **0.334.48**, prod verified, tree clean, zero open PRs, suite **1212**.
 
 Every item states **what**, **why**, **where**, and **how prod is audited**. The ritual per item: branch → implement → `tsc` / `lint` / `vitest` / `build` → browser-verify → the trio → PR with a real body → squash-merge → poll `/changelog` → audit on prod.
 
 ---
 
-## The bundle, and what R2 can actually do — read before planning the R2 work
+## Read this before touching anything
 
-**Headroom is 672.31 KiB** (9567.69 / 10240 KiB gzipped) after the clean-up freed 653 KiB. The emergency is over; the discipline is not.
-
-**The rule that governs all of it:** a **server** import in a **server** component lands in the Worker script. Anything client-side behind `next/dynamic` costs the Worker **nothing** — which is why `three` (25 MB installed), `recharts` (8.3 MB) and `leaflet` are free while a 6.8 MB analytics client was not. Check which side of that line something is on before assuming it is expensive.
-
-**R2 holds DATA, not CODE. This is settled, not a matter of effort:**
-
-- **WASM cannot be lazily loaded from R2.** Cloudflare Workers refuse to compile Wasm fetched at runtime — `WebAssembly.instantiate()` accepts only a pre-compiled module from a static `import x from './y.wasm'` that the bundler resolves at deploy. Attempting it raises **"Wasm code generation disallowed by embedder"**. So the ~560 KiB of `resvg.wasm` + `yoga.wasm` **cannot** move to R2. Do not spend a session discovering this.
-- **JavaScript cannot either** — a Worker's script must be self-contained.
-- **What CAN move is data the Worker reads at runtime**, and that is where the opportunity is.
-
-### The real R2 candidate: `content/`
-
-`content/` is **1.9 MB raw** and is read at runtime by `loadAllSeries()`, `loadAllSeriesMeta()` and the `/information` loaders, so output-file-tracing pulls it into the Worker.
-
-| Path | Raw |
-|---|---:|
-| `content/information/tracks.json` | **306.5 KB** |
-| `content/series/f1/upgrades.json` | 50.4 KB |
-| `content/series/motogp/sessions.json` | 28.9 KB |
-| `content/information/rising-stars.json` | 28.9 KB |
-| `content/series/f1/champion-notes.json` | 28.0 KB |
-
-**First job is a measurement, not a migration.** Confirm how much of `content/` actually lands in the Worker (compare `wrangler deploy --dry-run` before and after temporarily stubbing a big file), because JSON gzips extremely well and the raw number will overstate it. Only then decide.
-
-**And weigh it against what `content/` is for.** It is the operator's curated data — the thing `CLAUDE.md` calls "conversational authoring IS the CMS", edited as commits that ship to prod. Moving it to R2 means edits stop being commits, which is a real loss of reviewability. A middle path exists: move only the largest **derived/reference** blobs (`tracks.json` is the obvious one) and leave the hand-curated per-series files where they are.
-
-**If more room is ever needed after that**, the ~618 KiB OpenGraph-card runtime is the biggest remaining block. It cannot go to R2, but it can be split into its own Worker behind a service binding, or removed entirely by pre-generating the cards at build time. Operator decision — those cards are what make posts shareable.
+- **`/` IS the home page now.** The marketing landing was retired in 0.334.42; `/app` 301s to `/`. `app/(marketing)/` is gone. Do not reintroduce a `/` → `/app` redirect: `middleware.ts` used to carry one and with the 301 in place it becomes an **infinite loop**.
+- **`npx vitest` skips `pretest`.** `CONTENT_BUNDLE` goes stale, so content assertions pass against old data. Validate content changes with **`npm test`**.
+- **`JSON.stringify` cannot edit `champion-notes.json`** — integer-like keys serialise ascending and flip the file's newest-first order. Use the text-splice script pattern from 0.334.44 with byte-identical guards.
+- **A local production build cannot browser-verify client-rendered pages.** Prod Clerk keys reject localhost, hydration dies, and the page renders as an un-hydrated shell that looks like a broken change. Use `next dev`, or `npm run deploy:paris`.
+- **Worker headroom is 822.68 KiB** (9417.32 / 10240 KiB gzipped). Comfortable. `wrangler deploy --dry-run` before adding a dependency; a **component measurement is a floor, not the answer** (three times now).
+- **A deploy leaves a stale-chunk window** — see TIER 1 item 1.
 
 ---
 
-## TIER 1 — the admin page
+## TIER 1 — the two operator actions, then the programme
 
-Continues the approved plan at `~/.claude/plans/clever-enchanting-summit.md`. Step 1 (the clean-up) shipped as 0.334.27.
+### 1. Cloudflare build command — the only live defect left
+`Cache-Control: s-maxage=85, stale-while-revalidate=2592000`, so the R2 page cache can serve HTML from *before* a deploy that points at build-hashed chunks which no longer exist. **The first visitor to any page after each deploy gets a page whose JS 404s.** Measured twice: `/calendar` rendered as an empty grid, `/` logged 40 console errors, both self-healing on revalidate.
+- Local `npm run deploy` runs `cf:populate`, which overwrites stale renders. **Workers Builds has its own command in the Cloudflare dashboard** — if it is just `cf:build && wrangler deploy`, add `&& npm run cf:populate`.
+- **Operator action** (dashboard access). **Audit**: deploy, then immediately fetch `/` and check every `/_next/static/*` reference returns 200 and not `text/html`.
 
-### 1. Click what is already there, before building more
-**Nothing in the console has ever been browser-verified** — `/admin` needs an admin session, which the dev machine does not have. Before adding features, the operator (or a session with a signed-in browser) should exercise: the composer's drag, hide, preview and Publish; the **Studio** link from the dev host (it is an absolute cross-host link because `middleware.ts:92-98` 404s relative paths there, and that nearly shipped broken); and the four autosave checks from PR #788. **Fix what that finds first.**
+### 2. The 1.0 flip — needs copy sign-off, not code
+Everything is built and **dark**. `LAUNCH_ANNOUNCEMENT` in `lib/site.ts` holds the whole modal's content: kicker, title, intro, six capability rows, three "what comes next" items.
+- **The operator signs off the copy, `next` above all — anything named there is a public promise.**
+- Then: flip `active` to `true` **in the same commit** that bumps `package.json` to `1.0.0`, per `docs/launch-checklist.md` §B, and run `npm run indexnow:submit` after.
+- Remaining §A gates are mostly the operator's: crons green via `/api/cron/health`, Clerk prod key, KV reachable, Supabase prod, secret rotation, a real contact-form send, PSI re-measure, signed-in console check.
+- **Audit**: on prod, the modal appears once, dismisses permanently, and `/changelog` reports 1.0.0.
 
-### 2. L1 — your own content in the home page
-- **`link` band**: a free card — title, kicker, URL, optional image. Our article or anywhere else.
-- **`note` on a weekend card**: `HomeLeadNextItem.note?` already exists and is unused (`HomeLead.tsx:40-49`).
-- **Choose which result leads** and **which weekends show**, instead of newest / next-three.
-- New block ids drop into `HOME_BLOCK_IDS`; `parseHomeLayout` already ignores ids it does not know, so **published revisions keep working** across the deploy and a rollback stays safe.
-- **Audit**: publish a layout with a link card, confirm it appears on `/app` within ~5 minutes, then revert.
+### 3. Champion-notes enrichment — 91 of 488 done, 397 left
+The gate (0.334.43) makes a who-won page indexable **iff** its season has a note, so **a wave needs no code**: authoring notes re-indexes its pages by existing.
 
-### 3. Evidence inside the composer
-Show each band's click-through **next to that band**, from our own `heatmap_element_stats` — the Guardian's "Ophan in the tool" idea, using data we already collect and already pay for. Today `/admin/behaviour` is that table's only reader, which is the same write-only shape as the push history removed in 0.334.16.
+| series | pages | done | left |
+|---|---:|---:|---:|
+| **f1** | 76 | **76** | **0 ✅** |
+| motogp | 77 | 15 | **62** |
+| adac-ravenol-24h | 54 | 0 | 54 |
+| wrc | 47 | 0 | 47 |
+| dtm | 39 | 0 | 39 |
+| wsbk | 38 | 0 | 38 |
+| indycar | 30 | 0 | 30 |
+| nascar-cup | 26 | 0 | 26 |
+| f2 (incl. GP2 era) | 21 | 0 | 21 |
+| f3 (incl. GP3 era) | 16 | 0 | 16 |
+| nls | 16 | 0 | 16 |
+| wec | 13 | 0 | 13 |
+| gt-world / imsa | 12 each | 0 | 24 |
+| formula-e | 11 | 0 | 11 |
 
-### 4. L2 — per-band dials
-Wire item count, standings top-N, weekends shown, preferred series. Each is a field on the block in the same `blocks` JSON.
+- **Next: MotoGP (62).** Biggest family, already 19% done, second-biggest series — finishing it gives a **second complete family** rather than a second partial one.
+- **⚠ ADAC (54) and NLS (16) need a DIFFERENT note template.** They are single 24-hour races, not championships, so "where the title was settled" is meaningless. Decide the shape ("who won the race, and how") before anyone researches 54 seasons into the wrong one.
+- **Method, proven over 46 seasons**: ~1.2 targeted web lookups per season; write the entries as a JSON file in the editor; splice with the text-splice script; `npm test` (integrity + sitemap gates); trio; PR; merge. **Omit any fact the sources disagree on** — that discipline caught four errors in an aggregate table and two genuinely-contested clinch dates.
+- **Audit**: sitemap who-won count rises by exactly the notes added; a newly-noted page serves `robots: index, follow`; measured words land 150–180 at ~20% sibling overlap.
+
+### 4. AdSense resubmission
+The index is already clean — this is a waiting game, not work. Give Google time to drop the 443 noindexed pages; Search Console will show them as **"Excluded by 'noindex' tag"**, which is the expected state and not a fault. Then tick "I confirm" and request review, **once**.
 
 ---
 
-## TIER 2 — the rest of the ladder
+## TIER 2 — decisions the operator owes, each small once decided
 
-5. **L3 — scheduled and self-switching layouts.** A `publish_at` on a revision plus a cron that promotes it, mirroring `publishDuePosts`; and a conditional rule ("while a session is live, use this layout") evaluated server-side from data `lib/home-model.ts` already computes. **The composer must always show which layout is live and why.**
-6. **L4 — named presets.** Falls out of L3 once revisions can be named.
-7. **L5 — new band types.** Editorial note first: `renderMarkdown()` (`lib/content.ts:43`) already sanitises, so it costs no dependency. Then image card (`normalizeHeroImage`), then spotlight (`loadAllDrivers` / `loadDriverBios`). Poll last — the only one likely to need client interaction, so measure before writing.
-8. **Finish `/admin/submissions`.** Its `new / reviewing / ingested / rejected` badge **can never change**: `lib/feeder.ts` exports no status-mutation function. Either give it one or drop the badge — right now the console is pretending.
-9. **Auth inconsistency.** `/api/feedback/[id]` and `/api/threads/[id]` return **403** where every `api/admin` route returns **404**. The 403 leaks existence.
+5. **Empty tab advertising data it hasn't got.** `/series/nls/standings` renders the honest "Nothing here yet for this series." under a `describeTab` description (`lib/tabs.ts`) promising full championship tables and a trend chart. The page is honest; the SERP entry is not. Reduced metadata, or `noindex` as the news tabs took in 0.334.8.
+6. **The home page shows ONE post on mobile.** "More reading" is `hidden xl:block`, so below 1280 px the covers added in 0.334.36 are invisible. The existing comment gives the reason (the text column is already full under xl). Fix is a layout decision: a compact treatment under the CTA, or the separate movable band that was option 1.
+7. **19 of 24 blog posts have no cover.** The 0.334.33 mechanism renders one wherever it exists; the rest need licence-clean sources. A slice of the image session.
+8. **Composer, round 2** — three refinements left as taste calls: the band rows' hidden/shown affordance (an eye icon with no at-a-glance state), whether `Published` reads as state or action, and whether the preview should scroll with the band being dragged.
+9. **`/social/leagues` carries no play-money framing** where `/social` does ("no cash", "virtual"). Launch gate A6 wants it on every betting surface.
 
 ---
 
-## TIER 3 — carried, not started
+## TIER 3 — carried
 
-10. **The mobile calendar goes back to the simpler version.** Operator, verbatim, and the constraint IS the item: *"i am talking ONLY about mobile. desktop is easy. perfect. DO NOT CHANGE desktop calendar."* Archaeology first (0.313.0's mobile agenda is the likely turning point), diff provably scoped to the mobile breakpoint, desktop screenshotted at 1440 before and after to prove it did not move.
-11. **`/blog` needs its cover images.** Every post has a `hero_image` the post page and `/app` lead already use. The listing's card shape is inline at `app/(app)/blog/page.tsx:22-35` — extract it. Posts with no cover must not leave a hole.
-12. **AdSense wave 3** — 46 F1 pre-1996 champion notes, data only, guarded by `champion-notes-integrity`. Two sources per clinch, small waves. Carried from session 33, still not started.
-13. **Tier-3 projects**: the day page · the image session · GEO/positioning · v1.0 launch · Street View corner tours · information-hub restyle.
+10. **Orphan sweep.** `LandingNav`, `LandingFooter` and `LandingAuth` have **zero importers** after the landing retirement. Deliberately not deleted in 0.334.42 because the approved deletion list said keep them. Nothing imports them, so they cost nothing at runtime.
+11. **`/series/f1/champions` preloads four Wikimedia portraits it never paints** ("preloaded using link preload but not used"). Wasted bandwidth, not a blocker. For the image session.
+12. **`app/error.tsx` reports to nothing** — server-side errors surface only in Cloudflare's logs since the Sentry server SDK came off in 0.288.0. Accept as a documented gap or wire something.
+13. **The OG-card runtime is ~618 KiB** of the Worker (resvg.wasm 531, Geist 59, yoga.wasm 28.5). Only reclaimable by pre-generating the cards or a separate Worker behind a service binding. Not urgent at 822 KiB headroom, and the cards now actually work everywhere.
+14. **`content/information/tracks.json` (87.45 KiB gzipped) stays in the Worker.** The RELEASES.md trick does not transfer: `/information` carries a 1h revalidate, so it re-renders on the Worker where there is no filesystem. Moving it needs the ASSETS-binding work, which means a new runtime path in `lib/content-fs.ts` for 0.9% of the budget.
+15. **Tier-3 projects**: the image session · the day page · GEO/positioning · v1.0 marketing · Street View corner tours · information-hub restyle · AdSense content waves beyond who-won.
 
 ---
 
 ## Standing facts
 
-- **Deploys are ~5-6 minutes**, no GitHub Actions run to watch — poll `/changelog`. 14 for 14 this session.
-- **A published home layout reaches `/app` in 48 s to ~4 m 45 s** without `revalidatePath` — the ISR window, not the 30-minute regional cache.
-- **`/admin` and `/studio` cannot be verified from the dev machine.** Say so plainly rather than implying otherwise.
-- **Local Supabase is down**, so every blog-backed surface renders empty locally. That is the fail-soft path working.
+- **Deploys are ~5–8 minutes**, no GitHub Actions run to watch — poll `/changelog`. 19 for 19 this session.
+- **`/` must stay `○ (Static)` with a 5m revalidate.** That one line in the build output is the proof the ISR contract survived; it survived the root move.
+- **`/changelog` must stay build-time only.** It is `force-static` with no revalidate, which is *why* RELEASES.md could leave the Worker. Give it a `revalidate` and the page fail-softs to "Nothing here yet" — quietly.
+- **`/admin` and `/studio` cannot be verified from the dev machine.** Say so plainly. The operator's screenshot proved the console renders.
 - **Lint is 0 errors + 2 known `_encoding` warnings** in `lib/content-fs.ts`. Load-bearing. Leave them.
-- **`npm test` is 1206.**
-- **Write changelog prose in the editor**, never a shell-quoted `node -e` — bash expands backticks and eats identifiers.
-- **A chunk measurement is a floor**: predicted ~352 KiB, actual 653 KiB.
+- **`npm test` is 1212.**
+- **Write changelog prose in the editor**, never a shell-quoted heredoc or `node -e`.
 - **Prod Supabase writes and migrations need the operator to name the action.**
-
----
-
-## Handoff prompt for session 35
-
-> Paddock — session 35. `main` = **0.334.29**, prod verified, tree clean, zero open PRs, suite **1206**. Read in order: `CLAUDE.md` · `docs/HANDOFF.md` top block · **`docs/next-session.md` (this file — it is what to do)** · `CONTRIBUTING.md` · `IDEAS.md` · `SCHEDULE.md` · memory `feedback-paddock-*`. The approved multi-step plan is at `~/.claude/plans/clever-enchanting-summit.md`.
->
-> **Two priorities, operator-set: the admin page, and moving what can be moved into R2.**
->
-> **On R2, read the section at the top of this file before planning anything.** The short version: **R2 holds data, not code.** WASM cannot be lazily loaded — Workers refuse to compile Wasm fetched at runtime ("Wasm code generation disallowed by embedder"), so the ~560 KiB of `resvg.wasm` + `yoga.wasm` **cannot** move there, and neither can JavaScript. The real candidate is `content/` (1.9 MB raw, `tracks.json` alone 306 KB), read at runtime and traced into the Worker. **Measure before migrating** — JSON gzips well and the raw figure overstates it — and weigh it against the fact that `content/` is the operator's curated CMS, where an edit is a reviewable commit.
->
-> **On the admin page: click what exists before building more.** Nothing in the console has ever been browser-verified, because `/admin` needs a session the dev machine has not got. The composer's drag/hide/preview/Publish, the Studio cross-host link, and the four autosave checks in PR #788 all want a real browser. Fix what that finds, then take L1 (your own link cards, a note on a weekend, choosing which result and weekends show).
->
-> **Five traps from session 34, none guessable.**
->
-> 1. **Write changelog prose in the editor, never a shell-quoted `node -e`.** Bash expands every backtick and silently eats identifiers out of finished prose. It happened despite the warning already being written down.
-> 2. **Read the structure before a multi-boundary refactor.** Four visually identical `)}` lines are not interchangeable — the one matched belonged to a sibling block and the refactor broke mid-flight. Relatedly: `changed` and `next` are **siblings** of the result section (`HomeLead.tsx` closes it at `:479`, the grid opens at `:488`), not nested inside it, whatever older notes say.
-> 3. **A chunk measurement is a floor, not the answer.** Removing two pages was predicted at ~352 KiB and delivered 653 KiB, because transitive dependency trees go with the package.
-> 4. **A test that passes vacuously is not coverage.** The sitemap's "no entry carries lastModified" assertion passed only because Supabase is unconfigured under vitest.
-> 5. **Deleting a route leaves stale generated types** that fail `tsc` until `.next` is cleared — and check the port first, because clearing it under a live dev server 500s it.
->
-> Usual rules: branch from `main` as the literal first action after every merge · full gate chain before any "done" · the trio on every push · no Claude attribution · browser-verify and screenshot · a merge is the deploy, ~5-6 min, no Actions run, poll `/changelog`, never stack merges · `wrangler deploy --dry-run` before adding a dependency (672 KiB of headroom, comfortable but not infinite) · **prod Supabase writes and migrations need the operator to name the action**.
->
-> End of session: update `docs/HANDOFF.md`, mark the day in `SCHEDULE.md`, triage `IDEAS.md`, rewrite this file's queue and a fresh prompt.

@@ -33,7 +33,32 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 - Voice reference, established quantitatively 2026-08-23 by profiling the published preview: **results tables beside the prose** (not instead of it), ~9 outbound links, 20+ internal, three-sentence paragraphs, opinion stated plainly, a verdict section, a bold "For the books" list, an italic photo credit, zero em or en dashes.
 - Operator also wants, going forward: **images in every post** (Commons/CC with credit, eyeballed before use) and **driver-radio embeds** via OpenF1 `team_radio` (player UX + rights stance to design).
 
-## Inbox (2026-08-24 — session 35)
+## Triage — session 35 close (2026-08-26)
+
+**Closed this session**, so they are gone from the front: the changelog restructure · the og:image fault (was the headline inbox item, fixed in 0.334.37) · the vitest-under-load flake (root-caused, not worked around) · the blog cover images · the mobile calendar · the landing page (retired entirely rather than reimagined) · the R2 question (answered: R2 was not needed) · the AdSense low-value-content audit **and** its first action · F1 champion notes **complete at 76/76**.
+
+**Promoted to NOW, in order** — full detail in `docs/next-session.md`:
+1. **The Cloudflare build command** (`&& npm run cf:populate`) — the only live defect left; the first visitor after every deploy gets a page whose JS 404s.
+2. **The 1.0 copy sign-off**, then flip `active` with the `1.0.0` bump. Everything else is built and dark.
+3. **Champion notes: MotoGP (62)** — biggest remaining family, already 19% done, gives a second complete family. **ADAC (54) and NLS (16) need a different note template first**: they are single 24-hour races, not championships.
+4. **AdSense resubmission** — a waiting game now, not work. Let Google drop the 443 first.
+
+**Killed:** ~~"enrich-not-noindex"~~ as a strategy — reversed by the operator on 2026-08-25 once the measurement existed (443 pages at 67–101 words with 54–66% sibling overlap, 35.4% of the index). Enrichment continues, but it now earns pages *back* into the index rather than being the only lever.
+
+**Still parked, unchanged:** the image session · the day page · GEO/positioning · v1.0 marketing · Street View corner tours · information-hub restyle · remote-branch audit · What's-New modal · error.tsx reporting to nothing.
+
+## Inbox (2026-08-26 — session 35 close)
+
+- **Orphan sweep**: `LandingNav`, `LandingFooter`, `LandingAuth` have **zero importers** after the landing retirement. Not deleted in 0.334.42 because the approved deletion list said keep them; nothing imports them so they cost nothing at runtime.
+- **The home page shows one post on mobile.** "More reading" is `hidden xl:block`, so the covers added in 0.334.36 are invisible below 1280 px. A layout decision, not a class change.
+- **An empty series tab still advertises rich data.** `/series/nls/standings` renders "Nothing here yet for this series." under a description promising full championship tables and a trend chart. Reduced metadata, or `noindex` as the news tabs took.
+- **19 of 24 blog posts have no cover** — the mechanism ships, the pictures do not exist. A slice of the image session.
+- **Composer round 2**: the eye icon with no at-a-glance state, whether `Published` reads as state or action, whether the preview should scroll with the dragged band.
+- **`/social/leagues` has no play-money framing** where `/social` does.
+- **`/series/f1/champions` preloads four Wikimedia portraits it never paints.**
+- **`content/information/tracks.json` (87.45 KiB gzipped) stays in the Worker** — the RELEASES.md trick does not transfer because `/information` revalidates hourly, so it re-renders where there is no filesystem.
+
+## Inbox (2026-08-24 — session 35 start)
 
 - **🔴 NO OG IMAGE on `/`, `/app`, `/calendar` or any series page — verified on prod 2026-08-24.** Sharing the landing page or the app home produces a link **with no picture**, while the site carries **~618 KiB of Worker bundle (6% of the ceiling)** for the OG-card runtime that generates them. Cause found by comparison, not guesswork: only routes with a **colocated** `opengraph-image.tsx` emit the tag (`/blog/<slug>` → 1, `/series/f1/weekend/12` → 1; `/`, `/app`, `/calendar` → **0**). `app/opengraph-image.tsx` sits in the **root** segment, but every real page lives inside a route group (`(marketing)` / `(app)`), so no page's own segment carries it — the file serves fine at `/opengraph-image` and is referenced by nothing. The installed docs (`node_modules/next/dist/docs/…/opengraph-image.md`) only ever say "for a route segment" and never promise inheritance. **Likely fix: put the file in `app/(marketing)/` and `app/(app)/`.** Cheap, high value, and it changes the return on that 618 KiB. **Promote to NOW.**
 - **1.0 needs an announcement surface before it can be flipped** (operator, verbatim): *"if we go to version 1, we will need a banner with animations and clear explanation of everything in version 1 and what to expect in later versions."* Gated as **§A9** in `docs/launch-checklist.md`. Three pieces: an animated banner (CSS-authored, Paper idiom, `prefers-reduced-motion` honoured — no library, no generic fade-on-scroll); a "what 1.0 is" page grouped **by capability, not by release** (the 15 named releases are the raw material, the page is the edited version); and an honest "what to expect later" roadmap where each item needs sign-off, because naming it makes it a promise. Route needs approval before building.

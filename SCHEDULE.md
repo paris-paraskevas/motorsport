@@ -1588,6 +1588,32 @@ Active: _(no `[+Nm]` prefixes captured this session)_
 
 ## How to use this file
 
+## Week of 2026-08-24
+
+### Mon 2026-08-25 to Tue 2026-08-26 - session 35, one long run
+
+Operator-set priorities, in the order they were given: the admin page and R2, then five more added mid-session, then the content programme.
+
+- -> done: **release restructure** - /changelog reads as 15 named releases instead of 707 pushes, and a MINOR now means a named release (0.334.30).
+- -> done: **launch checklist restored** and four gates deleted because they were FALSE, not unticked; the 132-URL smoke pass run on prod (0.334.31).
+- -> done: **the vitest flake root-caused and killed** - suite 39-46s to 7.5-11s (0.334.32).
+- -> done: **blog covers**, then rebalanced and rebuilt as cards on mobile after two rounds of operator feedback (0.334.33, 0.334.35).
+- -> done: **og:image fixed site-wide** - it was missing on every page outside the blog and weekend routes (0.334.34, 0.334.37).
+- -> done: **mobile calendar as a Google-style schedule**, desktop provably untouched: zero md: classes in the diff (0.334.38).
+- -> done: **composer refine pass 1** (0.334.39).
+- -> done: **the R2 question answered, and the answer was that R2 was not needed** - RELEASES.md out of the Worker script, headroom 669 to 822.68 KiB (0.334.40).
+- -> done: **1.0 announcement rebuilt as a modal, shipped dark** awaiting copy sign-off (0.334.41).
+- -> done: **the landing page retired**, / serves the home page, /app 301s. Caught a redirect loop and a dead revalidatePath before they shipped (0.334.42).
+- -> done: **the AdSense audit and its first action** - 443 thin pages, 35.4% of the index, noindexed; sitemap 1252 to 822 (0.334.43).
+- -> done: **champion notes waves 3a-3e - F1 COMPLETE, 76 of 76** (0.334.44-47), counts corrected after a double-count (0.334.48).
+- -> 19 merges, 0.334.30 to 0.334.48, every one prod-verified. Suite 1206 to 1212.
+- Won't touch: per-visitor personalisation on /, the desktop calendar, prod Supabase or infra without the operator naming it, the OG-card runtime.
+- Handed off at 96% context. Next: MotoGP enrichment (62 seasons), the 1.0 copy sign-off, the Cloudflare cf:populate fix.
+
+Active: (no [+Nm] prefixes given this session)
+
+---
+
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
 - **Mid-session:** don't edit this file (use `IDEAS.md` Inbox for new ideas).
 - **At session end:** convert intent bullets to outcomes (`→ done` / `→ partial` / `→ skipped`). If tomorrow's plan is obvious, stub it.
