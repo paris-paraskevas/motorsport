@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.50 — 2026-08-26
+
+### Added
+- **Champion-notes wave 4a: MotoGP 2010–2001, ten seasons.** `content/series/motogp/champion-notes.json` 15 → **25** entries, each carrying the clinching race, venue, exact date, round-of-total and 2–3 sources, researched season by season. **MotoGP is now 25 of 77; 52 remain (2000–1949).** Sitemap who-won entries 91 → **101**, the rise being exactly the notes added, because the 0.334.43 gate indexes a season iff its note exists — so this wave needed no code.
+- The decade covers the handover years: Rossi's five titles in a row and the two seasons that broke them (Hayden by five points when Rossi crashed at Valencia, Stoner giving Ducati its first premier-class crown and Bridgestone its first), the 990cc four-strokes replacing the 500cc two-strokes in 2002, the 800cc rules in 2007, and the last 500cc championship, settled by 0.013 seconds on the final lap at Phillip Island in 2001.
+
+### Fixed
+- **The splice guard caught the champion-notes ordering trap twice before anything was written, and the second catch is the durable one.** `JSON.parse` returns integer-like keys in ascending numeric order, so a check over `Object.keys(parsed)` can *never* see the file's newest-first textual order — it always reads ascending and always fails, or worse, always passes. The order check has to scan the file's bytes (`/^ {2}"(\d{4})": \{$/gm`). The same reordering then hit the *entries* file: its authored 2010 → 2001 order was lost the moment it was parsed, so the insertion order is now **derived** (sort descending) rather than taken from `Object.keys`. Result: 90 lines added, 0 removed, prefix byte-identical.
+
+### Notes on sourcing
+- **The 2002 Rio clinch date is contested and the note says so.** Wikipedia and Wikidata date the race to Sunday 22 September 2002; Motor Sport Magazine's database and Roadracing World's contemporaneous report both carry a Saturday 21 September dateline, and RTÉ filed its report on the 21st. Two contemporaneous sources against one archive, so the note uses the Saturday and states the disagreement, following the precedent set for F1 1952 and 1953 in 0.334.47.
+- **Two claims were dropped rather than published.** A widely-repeated "57th grand prix win" for Rossi at Sepang 2003 does not reconcile against his per-class win counts, and no season win total is stated for 2008 — what is sourced is that Motegi was his eighth of the year and fifth in a row, so that is what the note says. Same discipline as the F1 waves: omit what two sources do not agree on.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known `_encoding` warnings · `npm test` **1212 passed** (champion-notes integrity + the derived sitemap gate) · `build` **0**, `/` still `○ (Static)` 5m and `/changelog` still build-time only
+- Browser-verified on `next dev` (not a local production build — prod Clerk keys reject localhost): `/information/motogp/who-won-the-2010-motogp-championship` serves `robots: index, follow`, renders the clinch line and the note, and lists its three primary sources. Console 0 errors. Wave notes average **98 words** against the 76 shipped F1 notes' 89.
+
 ## 0.334.49 — 2026-08-26
 
 ### Internal
