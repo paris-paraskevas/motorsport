@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.51 — 2026-08-26
+
+**Nine more championship answers, and now the 500cc years.** Wayne Rainey's three titles and the crash at Misano that ended his career while he led the championship, Kevin Schwantz winning the only one he ever won, and Mick Doohan's run of five after the injury that nearly cost him a leg. 1996 is missing on purpose: nobody can tell us which race actually decided it, so we would rather leave it blank than guess.
+
 ## 0.334.50 — 2026-08-26
 
 **Ten more MotoGP championship answers, back to 2001.** Rossi's five titles in a row, and the two seasons that broke the run: Nicky Hayden winning by five points when Rossi crashed at Valencia, and Casey Stoner giving Ducati its first premier-class crown. The decade also holds the last 500cc championship, settled by 0.013 seconds on the final lap at Phillip Island. Each answer says where and when the title was actually won, and cites its sources.
