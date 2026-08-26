@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.58 — 2026-08-26
+
+**Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.
+
 ## 0.334.57 — 2026-08-26
 
 **Formula 2 is finished: all twenty-one seasons back to 2005, including the GP2 years.** Nico Rosberg won the first one and Lewis Hamilton the second, both straight on to Formula 1. The best of them is 2010, when Pastor Maldonado hit the wall three times over one weekend at Monza, crashed out of both races, and was champion anyway because his rival could finish no higher than thirteenth.

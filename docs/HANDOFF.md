@@ -6,9 +6,58 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-26 (LATEST, session 35 FINAL — the root moved, the index cleaned, F1 finished) — `main` = **0.334.48**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-26 (LATEST, session 36 FINAL — four more families finished, the programme past a third) — `main` = **0.334.58**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
+
+### ✅ Shipped — 8 merges, 0.334.50 → 0.334.57
+
+| Version | What |
+|---|---|
+| **0.334.50** | MotoGP champion notes **2010–2001** (wave 4a), 15 → 25 |
+| **0.334.51** | MotoGP **2000–1991**, nine of ten; 1996 held back |
+| **0.334.52** | MotoGP **1990–1983**, seven of eight, **plus a wrong win count fixed** |
+| **0.334.53** | **FORMULA E COMPLETE**, 11 of 11 |
+| **0.334.54** | Formula E's **2026 champion added** — and the false claim it was making on twelve pages |
+| **0.334.55** | **F3 COMPLETE**, 16 of 16 |
+| **0.334.56** | F2 **2025–2014**, twelve seasons |
+| **0.334.57** | **F2 COMPLETE**, 21 of 21 |
+
+**The programme went 91/488 → 166/489, 19% → 33.9%.** Complete families: **F1 76, F2 21, F3 16, Formula E 12** — four finished this session where one existed before. MotoGP sits at **41 of 77**. Suite 1212 → **1230**, every one of those 18 from the `it.each` integrity gate picking up new series, not from a test being written.
+
+### 🔴 The findings that matter most
+
+1. **The clinch template runs out of sourceable data at about 1990, and that is now a decision rather than a research problem.** Everything from 1990 forward has been findable in a sentence; below it the record is race results without championship context. Four MotoGP seasons were **held back rather than guessed** — 1996, 1986, 1982, 1981 — and 1986 is the instructive one: sources disagree on the round *count* (10 of 11 with Silverstone following, versus 10 of 12 with Silverstone before), and a 22-point final margin with 40 points still available refutes a round-10 clinch outright. Everything from 1980 back is untouched for the same reason. **This is the same question already open for ADAC and NLS**, and it now covers ~106 of the 323 remaining seasons.
+2. **One missing row was publishing a false claim on twelve live pages.** `content/series/formula-e/champions.json` stopped at 2025 although season 12 ended at London on 16 August 2026 with Wehrlein taking a second title. The "all-time record" sentence is *derived* from that file, so every Formula E answer read "2 titles, held by Jean-Éric Vergne". Adding the row re-rendered it as "shared by Jean-Éric Vergne and Pascal Wehrlein". **The lesson generalises: derived prose inherits the staleness of its source, silently.**
+3. **`champions.json` had Wayne Gardner down for one win in 1987. He won seven.** `ChampionsTab.tsx:328` renders that field, so `/series/motogp/champions` had been publishing "1 win" beside the 1987 champion. Found because the note contradicted the table. A sweep of all 77 rows afterwards found the rest sound — 2020 Mir's single win is real — with **2009 Rossi's count missing**, logged rather than guessed.
+4. **`JSON.parse` reorders integer-like keys at BOTH ends of a splice.** Known for the target file; what bit twice this session is that it does the same to the *entries* file, so the authored 2010 → 2001 order was gone the moment it was read. The insertion order must be **derived** (sort descending), never taken from `Object.keys`, and the order check must scan the file's **bytes**, because a parsed-key check can never observe textual order at all. Both guards fired before anything was written.
+
+### 🟡 Corrections caught before publishing, not after
+
+- **Doohan's 1997 title was clinched at Donington, not Brno**; a first-pass answer said Brno.
+- **The 1993 MotoGP season had 14 rounds, not 16** — right round number, wrong total, which would have described the Laguna Seca clinch as three rounds early instead of one.
+- **Piastri's 2021 F2 title was clinched at Abu Dhabi, not Jeddah** (the Jeddah feature was declared at the end of lap five after the Pourchaire/Fittipaldi crash).
+- **Grosjean's 2011 GP2 title was clinched at Spa, not Monza**, and his rival was van der Garde.
+- **A Wikipedia season-page fetch contradicted itself on 1997**, giving both 12 and 13 wins and the clinching race as both a win and a second place, because it was inferring from a results table. **Table inference is not a source.**
+
+### 🔵 Process learnings (durable, session 36)
+
+1. **One targeted web search per season beats fetching the season article.** Season pages carry results tables but rarely the clinch sentence; the per-*race* Wikipedia article is the best single source, because it usually carries the date, the round-of-total and often an explicit clinch statement.
+2. **Omission is cheap and it compounds.** Four MotoGP seasons and several individual claims were dropped (Rossi's "57th grand prix win" at Sepang 2003, which does not reconcile against his per-class totals; any 2008 season win total; Hülkenberg's 2009 points). None of it weakened a page.
+3. **A new notes file costs +6 tests and no test-writing**, because the integrity gate is `it.each` over every series carrying both files. A wave that adds entries to an existing file adds none.
+4. **The interesting seasons are rarely the dominant ones.** Three F2 titles were won by a champion scoring nothing in the deciding race; four F3 titles were settled without their winner finishing, or even racing; 1988 MotoGP was settled by a *cancelled* grand prix. That is what makes an enriched page worth reading rather than worth counting.
+5. **Stale agent-owned Chrome processes block Playwright.** Nine `mcp-chrome-*` processes from 24–25 August held the profile; killed by PID (never by image name) and the browser came back.
+
+### 🩹 Owed (operator)
+
+- **Two note-shape decisions**, both now blocking real volume: the **pre-1990 seasons** (~36 MotoGP plus the pre-1990 tails of WRC, DTM, WSBK) and the **ADAC 54 + NLS 16** single-race families. Options and rendered examples are in `docs/next-session.md`.
+- **Cloudflare build command** — still owed, untouched this session: add `&& npm run cf:populate`.
+- **The 1.0 modal copy** — still owed, untouched this session, especially the three `next` roadmap promises.
+- **AdSense**: still a waiting game. The index is now *better* than at session 35's close — 75 more pages earned their way back in.
+
+---
+
+## ⚡ Session 35 — 2026-08-26 (the root moved, the index cleaned, F1 finished) — `main` = **0.334.49**, zero open PRs, every merge prod-verified
 
 ### ✅ Shipped — 19 merges, 0.334.30 → 0.334.48
 

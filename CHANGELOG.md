@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.58 — 2026-08-26
+
+### Internal
+- **Session-36 close.** `docs/HANDOFF.md` gains the session block: 8 merges (0.334.50 → 0.334.57), four findings, five corrections caught *before* publishing rather than after, and five durable process learnings. `docs/next-session.md` rewritten. `SCHEDULE.md` marked. `IDEAS.md` triaged.
+- **The programme went 91/488 → 166/489, 19% → 33.9%**, and complete families went from one to four: **F1 76, F2 21, F3 16, Formula E 12**, with MotoGP at 41 of 77.
+- **The queue now leads with two decisions rather than more research**, because the session established that the clinch template runs out of sourceable data at about 1990 — everything from 1990 forward has been findable in a sentence, and below it the record is race results without championship context. That governs ~36 MotoGP seasons and is the same question already open for ADAC's 54 and NLS's 16. Both decisions are written up with **rendered examples of the alternative note shapes**, because a shape is a thing to look at rather than read about.
+- **The splice-guard lesson is recorded at the top of the queue in its stronger form.** `JSON.parse` reorders integer-like keys at *both* ends of the operation — the target file and the entries file — so the insertion order must be derived and the order guard must scan bytes. A parsed-key order check cannot observe textual order at all.
+
 ## 0.334.57 — 2026-08-26
 
 ### Added
