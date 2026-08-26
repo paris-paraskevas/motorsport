@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { generateInfoEntries, noteLead } from './generated';
+import { generateInfoEntries, noteLead, driversOf } from './generated';
 import {
   getAllInfoEntries,
   getInfoEntry,
@@ -61,13 +61,58 @@ describe('generateInfoEntries (champions-derived, verified)', () => {
   });
 });
 
-// A note's lead label comes from which field the DATA sets, because one shape
-// cannot describe every family honestly (operator decision, 2026-08-26): a
-// championship with a sourced deciding round, a championship whose deciding
-// round no source records, and a family that is a single race rather than a
-// championship each need different words. Unit-tested rather than tested through
-// content, because no `season` or `race` note has been authored yet — this is the
-// mechanism landing before the waves that use it.
+// The endurance families put a whole crew in one `driver` string, and counting
+// titles by that string treats a crew as a person. That published a false claim
+// on every WEC page: the 2019 answer said it was Buemi/Alonso/Nakajima's FIRST
+// title when Buemi had won in 2014 with a different crew, and the all-time record
+// said 2 titles shared between two crews when Buemi and Hartley had four each.
+describe('crew title counting', () => {
+  it('splits crews on commas and slashes, and leaves solo names alone', () => {
+    expect(driversOf('James Calado, Antonio Giovinazzi, Alessandro Pier Guidi')).toEqual([
+      'James Calado',
+      'Antonio Giovinazzi',
+      'Alessandro Pier Guidi',
+    ]);
+    expect(driversOf('Nick Wüstenhagen / Ranko Mijatovic')).toEqual([
+      'Nick Wüstenhagen',
+      'Ranko Mijatovic',
+    ]);
+    expect(driversOf('Kenny Roberts Jr.')).toEqual(['Kenny Roberts Jr.']);
+  });
+
+  it('never claims a first title for a driver who already had one', async () => {
+    const g = await generateInfoEntries();
+    const e = g.find((x) => x.slug === 'who-won-the-2019-fia-wec-championship');
+    expect(e).toBeDefined();
+    // The firsts clause names exactly the two who had never won, and stops there.
+    expect(e!.bodyMarkdown).toContain(
+      'a first FIA WEC title for **Fernando Alonso** and **Kazuki Nakajima**,',
+    );
+    // Buemi's 2014 title with Anthony Davidson has to be counted, not erased.
+    expect(e!.bodyMarkdown).toMatch(/\*\*Sébastien Buemi\*\*’s 2nd of 4 \(2014, 2019, 2022, 2023\)/);
+  });
+
+  it('states the all-time record per person, not per crew', async () => {
+    const g = await generateInfoEntries();
+    const e = g.find((x) => x.slug === 'who-won-the-2019-fia-wec-championship');
+    expect(e!.bodyMarkdown).toContain('record is **4** titles');
+    expect(e!.bodyMarkdown).toContain('Brendon Hartley and Sébastien Buemi');
+  });
+
+  it('reads without a stuttered "and" when a crew mixes firsts and repeats', async () => {
+    const g = await generateInfoEntries();
+    const e = g.find((x) => x.slug === 'who-won-the-2019-fia-wec-championship');
+    expect(e!.bodyMarkdown).not.toMatch(/\*\* and \*\*[^*]+\*\*’s \d/);
+  });
+
+  it('leaves a single-driver family untouched', async () => {
+    const g = await generateInfoEntries();
+    const f1 = g.find((x) => x.slug === 'who-won-the-2025-formula-1-championship');
+    // 166 authored notes were written to sit under this exact sentence.
+    expect(f1!.bodyMarkdown).toContain('It was **Lando Norris**’s first Formula 1 title.');
+  });
+});
+
 describe('noteLead', () => {
   const base = { note: 'body', sources: ['https://example.com/a'] };
 

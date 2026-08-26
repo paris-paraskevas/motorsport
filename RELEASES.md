@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.61 — 2026-08-26
+
+**Every World Endurance Championship, all thirteen of them, and a correction to how we count crews.** Endurance titles are won by two or three drivers together, and we had been treating each crew as though it were a single person: the 2019 page called it a first title for Sébastien Buemi when he had already won in 2014 with someone else. Titles are now counted per driver, so the pages say who it was a first for and who was adding to a collection. Five of the thirteen championships were won by crews who did not win the deciding race, two of them from eleventh place.
+
 ## 0.334.60 — 2026-08-26
 
 **Internal housekeeping.** Session records corrected; nothing user-facing changed.
