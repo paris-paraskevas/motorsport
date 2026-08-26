@@ -6,11 +6,11 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-26 (LATEST, session 36 FINAL — four more families finished, the programme past a third) — `main` = **0.334.58**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-26 (LATEST, session 36 FINAL — four more families finished, the programme past a third) — `main` = **0.334.60**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
 
-### ✅ Shipped — 8 merges, 0.334.50 → 0.334.57
+### ✅ Shipped — 10 merges, 0.334.50 → 0.334.59
 
 | Version | What |
 |---|---|
@@ -22,12 +22,14 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 | **0.334.55** | **F3 COMPLETE**, 16 of 16 |
 | **0.334.56** | F2 **2025–2014**, twelve seasons |
 | **0.334.57** | **F2 COMPLETE**, 21 of 21 |
+| **0.334.58** | Session records |
+| **0.334.59** | **The note lead label now comes from the data** — the mechanism the two decisions needed, shipped the same session they were taken |
 
-**The programme went 91/488 → 166/489, 19% → 33.9%.** Complete families: **F1 76, F2 21, F3 16, Formula E 12** — four finished this session where one existed before. MotoGP sits at **41 of 77**. Suite 1212 → **1230**, every one of those 18 from the `it.each` integrity gate picking up new series, not from a test being written.
+**The programme went 91/488 → 166/489, 19% → 33.9%.** Complete families: **F1 76, F2 21, F3 16, Formula E 12** — four finished this session where one existed before. MotoGP sits at **41 of 77**. Suite 1212 → **1239** — 18 of those from the `it.each` integrity gate picking up new series rather than any test being written, the last 9 from the note-shape work.
 
 ### 🔴 The findings that matter most
 
-1. **The clinch template runs out of sourceable data at about 1990, and that is now a decision rather than a research problem.** Everything from 1990 forward has been findable in a sentence; below it the record is race results without championship context. Four MotoGP seasons were **held back rather than guessed** — 1996, 1986, 1982, 1981 — and 1986 is the instructive one: sources disagree on the round *count* (10 of 11 with Silverstone following, versus 10 of 12 with Silverstone before), and a 22-point final margin with 40 points still available refutes a round-10 clinch outright. Everything from 1980 back is untouched for the same reason. **This is the same question already open for ADAC and NLS**, and it now covers ~106 of the 323 remaining seasons.
+1. **The clinch template runs out of sourceable data at about 1990, and that is now a decision rather than a research problem.** Everything from 1990 forward has been findable in a sentence; below it the record is race results without championship context. Four MotoGP seasons were **held back rather than guessed** — 1996, 1986, 1982, 1981 — and 1986 is the instructive one: sources disagree on the round *count* (10 of 11 with Silverstone following, versus 10 of 12 with Silverstone before), and a 22-point final margin with 40 points still available refutes a round-10 clinch outright. Everything from 1980 back is untouched for the same reason. **This was the same question already open for ADAC and NLS** — together ~106 of the 323 remaining seasons — and it was **decided at session close and shipped as 0.334.59**: a note now carries one of `clinched` / `season` / `race` and the label follows the data.
 2. **One missing row was publishing a false claim on twelve live pages.** `content/series/formula-e/champions.json` stopped at 2025 although season 12 ended at London on 16 August 2026 with Wehrlein taking a second title. The "all-time record" sentence is *derived* from that file, so every Formula E answer read "2 titles, held by Jean-Éric Vergne". Adding the row re-rendered it as "shared by Jean-Éric Vergne and Pascal Wehrlein". **The lesson generalises: derived prose inherits the staleness of its source, silently.**
 3. **`champions.json` had Wayne Gardner down for one win in 1987. He won seven.** `ChampionsTab.tsx:328` renders that field, so `/series/motogp/champions` had been publishing "1 win" beside the 1987 champion. Found because the note contradicted the table. A sweep of all 77 rows afterwards found the rest sound — 2020 Mir's single win is real — with **2009 Rossi's count missing**, logged rather than guessed.
 4. **`JSON.parse` reorders integer-like keys at BOTH ends of a splice.** Known for the target file; what bit twice this session is that it does the same to the *entries* file, so the authored 2010 → 2001 order was gone the moment it was read. The insertion order must be **derived** (sort descending), never taken from `Object.keys`, and the order check must scan the file's **bytes**, because a parsed-key check can never observe textual order at all. Both guards fired before anything was written.
@@ -50,7 +52,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ### 🩹 Owed (operator)
 
-- **Two note-shape decisions**, both now blocking real volume: the **pre-1990 seasons** (~36 MotoGP plus the pre-1990 tails of WRC, DTM, WSBK) and the **ADAC 54 + NLS 16** single-race families. Options and rendered examples are in `docs/next-session.md`.
+- ~~Two note-shape decisions~~ — **taken at session close and the mechanism shipped as 0.334.59.** You chose the second note shape for pre-1990 seasons (`season:`, saying what the season was and that the deciding round is not recorded) and the short factual shape for ADAC/NLS (`race:`). That unblocked **106 of the 323 remaining seasons**, so the next session starts with no decision pending.
 - **Cloudflare build command** — still owed, untouched this session: add `&& npm run cf:populate`.
 - **The 1.0 modal copy** — still owed, untouched this session, especially the three `next` roadmap promises.
 - **AdSense**: still a waiting game. The index is now *better* than at session 35's close — 75 more pages earned their way back in.
