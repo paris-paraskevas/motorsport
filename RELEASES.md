@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.48 — 2026-08-26
+
+**Internal housekeeping.** A miscount in yesterday's engineering notes corrected. Nothing user-facing changed.
+
 ## 0.334.47 — 2026-08-26
 
 **Every Formula 1 championship, all 76 of them, now tells its story.** From Farina at Monza in 1950 to Norris at Abu Dhabi in 2025, each answer explains where and when the title was actually settled and what it turned on: Fangio's greatest drive at the Nürburgring, Brabham pushing his car over the line at Sebring, Surtees taking it on the final lap in Mexico, Hunt in the Fuji rain. Every one cites its sources.
