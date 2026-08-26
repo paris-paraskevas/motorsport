@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.55 — 2026-08-26
+
+### Added
+- **Champion-notes wave 6: F3 COMPLETE, all sixteen seasons, 2010 to 2025.** New sidecar `content/series/f3/champion-notes.json`. **Fourth family finished** after F1 (76), Formula E (12) and, in progress, MotoGP (41/77). Sitemap who-won entries 129 → **145**. Suite 1218 → **1224**, again from the `it.each` integrity gate picking up a new series rather than any new test.
+- The era naming is already handled by `seriesNameForYear` (`lib/information/generated.ts:27`), so the notes match their pages: GP3 Series through 2018, Formula 3 from 2019. Verified on the URLs — `who-won-the-2016-gp3-series-championship` and `who-won-the-2020-formula-3-championship`.
+- **Four of the sixteen were decided without a race being won or even run.** 2010 by a pole position (Gutiérrez's last pole of the year put him beyond Wickens's reach), 2014 by *someone else's* pole (Stoneman needed it to stay alive, Kirchhöfer took it, and Lynn was champion in qualifying), 2023 in an abandoned, thrice-red-flagged qualifying session with Bortoleto standing in the pit lane, and 2016 in a race Leclerc retired from — because his only rival was taken out at the same chicane. 2024 was the opposite extreme: Fornaroli took it with a pass at the final corner of the final lap, and is the only champion in the series' history never to have won a race.
+
+### Noted, not changed
+- **`constructor` carries an era suffix that now reads as noise**: 9 of 16 F3 rows and 12 of 21 F2 rows have team names like "ART Grand Prix (GP3 Series)". On a page already titled "Who won the 2016 GP3 Series championship?" the summary reads "…with ART Grand Prix (GP3 Series)", which looks like a mistake rather than a clarification. Cosmetic, on pages this wave just made indexable, and it touches two families, so it goes to the inbox rather than riding along here.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1224 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **145**, up exactly sixteen. `/information/feeder-series/who-won-the-2016-gp3-series-championship` browser-verified on `next dev`: `index, follow`, clinch line and note render, console 0 errors.
+- Wave notes average **100 words** (91–111).
+- **Prod audit of wave 5**: 0.334.54 confirmed live.
+
 ## 0.334.54 — 2026-08-26
 
 ### Fixed
