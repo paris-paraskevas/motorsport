@@ -6,7 +6,68 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-24 (LATEST, session 34 FINAL — the queue drained, the home composer, the console clean-up) — `main` = **0.334.28**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-26 (LATEST, session 35 FINAL — the root moved, the index cleaned, F1 finished) — `main` = **0.334.48**, zero open PRs, every merge prod-verified
+
+**Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
+
+### ✅ Shipped — 19 merges, 0.334.30 → 0.334.48
+
+| Version | What |
+|---|---|
+| **0.334.30** | `/changelog` reads as **15 named releases** instead of 707 pushes; version scheme set: a MINOR is a named release |
+| **0.334.31** | `docs/launch-checklist.md` restored from the commit that deleted it; **4 gates were FALSE, not unticked**; 132-URL smoke pass run |
+| **0.334.32** | The "vitest under load" flake **root-caused and killed**: suite 39–46 s → **7.5–11 s** |
+| **0.334.33** | `/blog` shows its cover images |
+| **0.334.34** | Findings recorded, including the og:image fault |
+| **0.334.35** | Blog list rebalanced; mobile rows rebuilt as cards |
+| **0.334.36** | Home "More reading" carries its covers |
+| **0.334.37** | **Every page emits an `og:image` again** (12 route types verified) |
+| **0.334.38** | Mobile calendar rebuilt as a Google-style schedule, **desktop provably untouched** |
+| **0.334.39** | Composer refine pass 1 (filterable lead picker, series+date, radio semantics) |
+| **0.334.40** | **RELEASES.md out of the Worker script** — headroom 669 → **822.68 KiB** |
+| **0.334.41** | 1.0 announcement rebuilt as a **modal, shipped DARK** |
+| **0.334.42** | **The landing page is retired; `/` serves the home page**, `/app` 301s |
+| **0.334.43** | **AdSense audit + the noindex gate**: 443 thin pages left the index |
+| **0.334.44–47** | Champion notes waves 3a–3e: **F1 complete, 76 of 76** |
+| **0.334.48** | Programme counts corrected (I had double-counted) |
+
+### 🔴 The findings that matter most
+
+1. **Your thinnest pages were on your most valuable URLs, twice over.** 443 who-won pages (67–101 words, **54–66% text shared with sibling years**) were **35.4% of the whole index**, and had been flipped indexable five days before the 5 Aug AdSense rejection. Now noindexed and out of the sitemap (1252 → 822 URLs), pages still live and linked. Separately the *landing page* was the thinnest page on the site sitting on `/` — retired.
+2. **`og:image` was missing site-wide.** `app/opengraph-image.tsx` sits in the root segment while every page lives in a route group, so the card was generated, served, and referenced by nothing. Fixed via `SOCIAL_CARD` in `lib/seo.ts` + both group layouts. **An explicit `images` in metadata BEATS the file convention** — the opposite of what the comment in `app/(app)/blog/[slug]/page.tsx:77` claims, and it silently replaced the weekend page's own card until `ownCard` was added.
+3. **A deploy leaves a stale-chunk window.** `Cache-Control: s-maxage=85, stale-while-revalidate=2592000`, so the R2 page cache serves HTML from before a deploy pointing at build-hashed chunks that no longer exist. The first visitor to any page after each deploy gets broken JS (that is why `/calendar` rendered as an empty grid and `/` logged 40 errors). Local `deploy` runs `cf:populate`; **Workers Builds' command is in the Cloudflare dashboard and probably does not** — operator action.
+4. **Enrichment works, measurably**: 68 → 157–179 words, sibling overlap 55% → 18–20%. F1 is 76/76. **91 of 488 done, 397 left.**
+
+### 🟡 Corrections I owe the record
+
+- **"121 of 488 done, 367 remain"** in 0.334.47 — double-counted the 30 pre-existing F1 notes. It is **91 / 397**. Now script-derived so it cannot recur.
+- **`LandingNav` / `LandingFooter` are NOT shared with `AppShell`.** I said they were, "correcting" a right first answer. `AppShell` renders `components/Footer.tsx` and only *mentions* those two in a comment, which is what `grep -l` matched. They are **orphaned** now, along with `LandingAuth`.
+- **"All 24 blog posts have a cover"** — wrong; I had measured `og:image`, which comes from the generated card route. It is **5 of 24**.
+- **The 404's localhost `og:image` is not a regression I introduced** — its URL carries Next's file-convention hash, so it comes from the root `opengraph-image.tsx` and always has.
+
+### 🔵 Process learnings (durable, session 35)
+
+1. **`JSON.stringify` cannot edit `champion-notes.json`.** Integer-like keys always serialise **ascending**, flipping the file's newest-first order and turning a 10-entry addition into a 439-line rewrite. Splice as **text**, with guards asserting every pre-existing entry is byte-identical.
+2. **`npx vitest` skips `pretest`**, so `CONTENT_BUNDLE` is stale and content assertions pass against old data. A sitemap assertion passed in isolation minutes before `npm test` correctly failed it. **Content changes need `npm test`.**
+3. **Aggregate tables lie.** One fetch offered all 46 F1 champions at once and was wrong in four places (Stewart as his own 1969 runner-up, Taylor for Clark in 1962, Senna for Mansell in 1986, 8 wins for 1994 vs 6). Source season by season; **omit where sources conflict** rather than pick.
+4. **A local production build cannot browser-verify client-rendered pages.** `.env.production.local` carries real Clerk keys and Clerk rejects them off the live domain, killing hydration — the calendar rendered as an empty grid and looked like a broken change. Use `next dev` or a preview Worker on a real subdomain.
+5. **`grep -l <ComponentName>` proves a mention, not a usage.** Search for the `import`.
+6. A `content/**` or `RELEASES.md` edit is invisible to `next dev` until `scripts/bundle-content.mts` re-runs.
+7. **A component measurement is a floor — third time confirmed.** Predicted 75.68 KiB, delivered 153.41 net.
+8. Shell heredocs mangle escapes into real newlines. Write scripts in the editor.
+
+### 🩹 Owed (operator)
+
+- **The 1.0 modal copy**, especially the three roadmap items in `LAUNCH_ANNOUNCEMENT.next` — anything named there is a public promise. Flip `active` in the same commit as the `1.0.0` bump.
+- **Cloudflare build command**: add `&& npm run cf:populate` to close the stale-chunk window.
+- **AdSense**: wait for Google to drop the 443 (Search Console will show "Excluded by 'noindex' tag" — expected, not a fault), then resubmit.
+- **The ADAC note template**: 54 seasons of a 24-hour *race*, not a championship, so the clinch template does not apply. Decide the shape before anyone researches it.
+- Launch-checklist §A gates that are yours: crons green, Clerk prod key, KV reachable, Supabase prod, secret rotation, a real contact-form send, PSI re-measure, signed-in console check.
+- Empty-tab metadata (`/series/nls/standings` advertises tables it hasn't got) · `/social/leagues` play-money framing · month-grid tap targets (still unanswered).
+
+---
+
+## ⚡ Session 34 — 2026-08-24 (session 34 FINAL — the queue drained, the home composer, the console clean-up) — `main` = **0.334.28**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
 

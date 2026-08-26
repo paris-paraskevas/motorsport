@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.49 — 2026-08-26
+
+### Internal
+- **Session-35 close.** `docs/HANDOFF.md` gains the session block: 19 merges (0.334.30 → 0.334.48), the four findings that mattered, **four corrections I owe the record**, and eight durable process learnings. `docs/next-session.md` rewritten as an ordered queue led by the two operator actions. `SCHEDULE.md` marked. `IDEAS.md` triaged: nine items closed, four promoted, one strategy killed, eight new inbox items.
+- **The queue now opens with a "read this before touching anything" block**, because four of this session's traps are invisible until they bite: `/` IS the home page (never reintroduce a `/` → `/app` redirect, it loops); `npx vitest` skips `pretest` so content assertions pass against stale data; `JSON.stringify` cannot edit `champion-notes.json`; and a local production build cannot browser-verify client pages because prod Clerk keys reject localhost.
+- **The strategy reversal is recorded as a kill, not a silent change.** "Enrich-not-noindex" was the operator's earlier call; it was reversed on 2026-08-25 once the measurement existed (443 pages at 67–101 words with 54–66% sibling overlap, 35.4% of the index). Enrichment continues, but it now earns pages back into the index rather than being the only lever.
+
 ## 0.334.48 — 2026-08-26
 
 ### Fixed
