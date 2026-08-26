@@ -37,7 +37,7 @@
   { "year": 1990, "driver": "Wayne Rainey", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 255, "wins": 7, "runnerUp": "Kevin Schwantz", "runnerUpTeam": "Suzuki", "runnerUpPoints": 188 },
   { "year": 1989, "driver": "Eddie Lawson", "constructor": "Honda", "constructorChampion": "Honda", "points": 228, "wins": 4, "runnerUp": "Wayne Rainey", "runnerUpTeam": "Yamaha", "runnerUpPoints": 210.5 },
   { "year": 1988, "driver": "Eddie Lawson", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 252, "wins": 7, "runnerUp": "Wayne Gardner", "runnerUpTeam": "Honda", "runnerUpPoints": 229 },
-  { "year": 1987, "driver": "Wayne Gardner", "constructor": "Honda", "constructorChampion": "Yamaha", "points": 178, "wins": 1, "runnerUp": "Randy Mamola", "runnerUpTeam": "Yamaha", "runnerUpPoints": 158 },
+  { "year": 1987, "driver": "Wayne Gardner", "constructor": "Honda", "constructorChampion": "Yamaha", "points": 178, "wins": 7, "runnerUp": "Randy Mamola", "runnerUpTeam": "Yamaha", "runnerUpPoints": 158 },
   { "year": 1986, "driver": "Eddie Lawson", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 139, "wins": 7, "runnerUp": "Wayne Gardner", "runnerUpTeam": "Honda", "runnerUpPoints": 117 },
   { "year": 1985, "driver": "Freddie Spencer", "constructor": "Honda", "constructorChampion": "Honda", "points": 141, "wins": 7, "runnerUp": "Eddie Lawson", "runnerUpTeam": "Yamaha", "runnerUpPoints": 133 },
   { "year": 1984, "driver": "Eddie Lawson", "constructor": "Yamaha", "constructorChampion": "Honda", "points": 142, "wins": 4, "runnerUp": "Randy Mamola", "runnerUpTeam": "Honda", "runnerUpPoints": 111 },

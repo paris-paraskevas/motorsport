@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.52 — 2026-08-26
+
+**Seven more championship answers, and a correction.** The 1980s: Freddie Spencer beating Kenny Roberts by two points in the last race of 1983, his 250 and 500 double in 1985, Wayne Gardner becoming Australia's first champion, and the 1988 title that no race decided, settled instead when a grand prix was cancelled. Our own record of Gardner's 1987 season said he won one race that year. He won seven, and the champions page now says so.
+
 ## 0.334.51 — 2026-08-26
 
 **Nine more championship answers, and now the 500cc years.** Wayne Rainey's three titles and the crash at Misano that ended his career while he led the championship, Kevin Schwantz winning the only one he ever won, and Mick Doohan's run of five after the injury that nearly cost him a leg. 1996 is missing on purpose: nobody can tell us which race actually decided it, so we would rather leave it blank than guess.
