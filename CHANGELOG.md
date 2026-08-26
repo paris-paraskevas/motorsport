@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.52 — 2026-08-26
+
+### Added
+- **Champion-notes wave 4c: MotoGP 1990–1983, seven of the eight seasons.** `content/series/motogp/champion-notes.json` 34 → **41** entries. **MotoGP is now 41 of 77; 36 remain.** Sitemap who-won entries 110 → **117**.
+- **1988 is the first note in the programme where no race clinched the title.** Lawson led Gardner by twenty points after Brno with two rounds left; the Argentine Grand Prix was then dropped from the calendar for bad organisation and unsafe track conditions, which left one race in which Gardner could at best have drawn level on points and lost the count-back on wins. The `clinched` line says exactly that instead of naming a race, and the template renders it without complaint.
+- **1989's half point is now explained on the page.** `champions.json` records the runner-up on **210.5** points, which looks like a typo until you know the FIM halved the scores for the rain-drenched Belgian Grand Prix after the organisers restarted it three times against their own regulations. The note says so.
+
+### Fixed
+- **`content/series/motogp/champions.json` recorded Wayne Gardner with `wins: 1` for 1987. It was 7.** Wikipedia's round-by-round winners list for the season gives him rounds 2, 4, 5, 6, 10, 11 and 14, and a second source states seven independently; the fifteen 1987 winners reconcile exactly as Gardner 7, Lawson 5, Mamola 3. This was **visible**, not latent: `ChampionsTab.tsx:328` renders the field, so `/series/motogp/champions` was publishing "1 win" next to the 1987 champion.
+  - Same field swept across all 77 rows afterwards: **2020 Joan Mir's `wins: 1` is correct** (he won only at Aragón), and **2009 Rossi's is missing** — a gap, not an error, logged rather than guessed.
+
+### Deliberately not shipped
+- **1986, 1982 and 1981 are held back, for the same reason 1996 was.** No source consulted states which round the title was mathematically settled, and for 1986 the sources actively disagree: one has Lawson clinching at Anderstorp as round 10 of 11 with Silverstone following, while the race article gives Anderstorp as round 10 of **12** and the calendar puts Silverstone *before* it. A 22-point final margin with two rounds and 40 points still available does not support a round-10 clinch either. For 1982 and 1981 the season articles simply do not say.
+- **This is now a pattern worth a decision rather than more searching.** Sourced clinch rounds thin out sharply before about 1990: everything from 1990 forward has been findable, and below it the record is race results without championship context. **The remaining 36 MotoGP seasons may want the note shape changed** — "how the season went and what settled it" rather than "the round where the arithmetic closed" — which is the same question already open for ADAC and NLS. Operator's call, flagged in the queue.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **117**, up exactly seven. `/information/motogp/who-won-the-1988-motogp-championship` browser-verified on `next dev` — the unusual clinch line reads correctly and the page serves `index, follow`; console 0 errors.
+- **Prod audit of wave 4b**: 0.334.51 live on prod, polled from `/changelog`.
+
 ## 0.334.51 — 2026-08-26
 
 ### Added
