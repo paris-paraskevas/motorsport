@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.59 — 2026-08-26
+
+### Added
+- **A champion note's lead label now comes from the data, which unblocks 106 of the 323 remaining seasons.** Operator decision taken with both alternatives rendered side by side. A note carries **exactly one** of three lead fields and `noteLead()` (`lib/information/generated.ts`) turns whichever it is into the label:
+  - **`clinched`** — a championship whose deciding round is sourced. The default; all 166 existing notes use it and **render byte-identically after this change** (browser-verified).
+  - **`season`** — a championship whose deciding round **no source records**. Sourced clinch rounds thin out sharply before about 1990, so rather than invent a round or leave ~90 pages thin, the page says what the season was and states plainly that the deciding round is not recorded. **MotoGP's remaining 36 seasons are unblocked by this.**
+  - **`race`** — the single-race families, **ADAC 24h (54) and NLS (16)**, where "where the title was settled" is meaningless: who won, by how much, and the one thing that decided it.
+- The rejected options are recorded because they were real: leaving un-sourceable seasons un-enriched (MotoGP would cap at ~45 of 77), and a "bounded clinch" hedge reading "settled with at least a round to spare" on ~90 pages. For ADAC, a fuller race-story shape was rejected as roughly double the research across 70 seasons.
+
+### Fixed
+- **The integrity gate now enforces one-lead-and-only-one, and it was proved to fail before shipping.** Two lead fields on one note is the defect that matters: the renderer would silently pick `clinched` and the other would vanish from the page while still looking authored in the file. A temporary second lead on the F1 2025 note made `f1: every note has exactly one lead clause` fail with `expected [ 'clinched', 'season' ] to have a length of 1 but got 2`, and the probe was reverted (`git diff` confirmed zero content files changed). The year check and the points-pair check now read whichever lead is present rather than `clinched` alone.
+- `noteLead` is unit-tested for all three shapes plus the two states the gate rejects, so a bad note degrades to a page without a lead line rather than to a crash. Suite 1230 → **1239**.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1239 passed** · `build` **0** with the standing six upstream noise lines, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- **Regression check on the 166 shipped notes**: `who-won-the-2010-motogp-championship` and `who-won-the-2006-gp2-series-championship` still render "**Title clinched:** …" unchanged, and the dev sitemap still carries **166** who-won URLs. Screenshot taken; console 0 errors.
+
 ## 0.334.58 — 2026-08-26
 
 ### Internal

@@ -47,12 +47,27 @@ export function loadChampionNotes(slug: string): Promise<ChampionNotesFile | nul
   );
 }
 
-/** One season's enrichment. `clinched` is the where/when clause (race, date,
- *  rounds remaining); `note` is the authored paragraph; `sources` are the primary
- *  references each claim was checked against (RULE #1 trail, rendered on the page
- *  so the answer is traceable). */
+/** One season's enrichment: a short lead clause, the authored paragraph, and the
+ *  primary references each claim was checked against (RULE #1 trail, rendered on
+ *  the page so the answer is traceable).
+ *
+ *  Exactly ONE lead field is set, and which one is set decides the label the page
+ *  renders. Three exist because one shape cannot describe every family honestly
+ *  (operator decision, 2026-08-26):
+ *
+ *  - `clinched` — a championship whose deciding round is sourced. The default,
+ *    and what all 166 notes written to date use.
+ *  - `season` — a championship whose deciding round NO source records. Sourced
+ *    clinch rounds thin out sharply before about 1990: below it the record is
+ *    race results without championship context. Rather than guess a round or
+ *    leave ~90 pages thin, these say what the season was and say plainly that
+ *    the deciding round is not recorded.
+ *  - `race` — a family that is a single race rather than a championship (ADAC
+ *    24h, NLS), where "where the title was settled" is meaningless. */
 export interface ChampionNote {
-  clinched: string;
+  clinched?: string;
+  season?: string;
+  race?: string;
   note: string;
   sources?: string[];
 }
