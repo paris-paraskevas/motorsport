@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.63 — 2026-08-26
+
+### Added
+- **Champion-notes wave 11: GT WORLD COMPLETE, all twelve seasons, 2014 to 2025.** New sidecar `content/series/gt-world/champion-notes.json`. **Seventh family finished**, and the third of this session. Sitemap who-won 191 → **203**. Suite 1258 → **1265**.
+- **This family broke the pattern every other one follows: the title is often not settled at the finale, and almost never at the same kind of venue.** The overall championship combines Sprint and Endurance points, so it has been clinched at **Baku** (2014, the first year the overall title existed), **Zandvoort** (2015 and 2023), the **Nürburgring** (2021, two races early), **Valencia** (2022, at the Sprint finale with an Endurance round still to run), **Paul Ricard** (2020), **Jeddah** (2024) and **Barcelona** (2016–2019, 2025). Four of the twelve were settled before the last race.
+- **The 2024 season needed a second pass.** One report had Winward taking "the overall series titles" at the Barcelona Sprint finale; a second, more specific account showed the overall was still live and was decided at the **Jeddah** Endurance finale, where Auer and Engel won the race to overturn Vanthoor and Weerts's lead. The Jeddah account is the one that reconciles with the standings, and it is what the note says.
+- **2020's champion did not score in the deciding race.** Boguslavskiy needed fifth at Paul Ricard, lost a minute in the pits to a damaged splitter, dropped out of the points, and was champion anyway at 20 — the youngest the series has had. The same failure cost his team the combined teams' title.
+
+### Sourcing
+- **Six of the twelve notes give a month rather than a day.** The clinch *venues* for this family are well documented; the race *days* frequently are not, and inferring one from an article's publication date is not sourcing it. Where a source states the day — 29 September 2019 — the note gives it.
+
+### Noted, not changed
+- **`gt-world` has no era-name handling.** `seriesNameForYear` (`lib/information/generated.ts`) special-cases F2 and F3 so their pre-rebrand seasons read "GP2 Series" and "GP3 Series", but the 2014–2019 GT World pages say "GT World Challenge" when the series was the **Blancpain GT Series** — a name the `constructor` field already carries in parentheses for exactly those rows. The notes name Blancpain in the prose so the pages are not anachronistic, but the heading still is.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1265 passed** · `build` **0**; the log carried **eight** `error|failed` lines — the standing six plus two `api.jolpi.ca` timeouts, transient upstream and not a prod concern (`DATA_SOURCE=db`). `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **203**, up exactly twelve. `/information/endurance/who-won-the-2021-gt-world-challenge-championship` browser-verified on `next dev`; the crew line reads "a first GT World Challenge title for **Dries Vanthoor**, and **Charles Weerts**'s 1st of 2 (2021, 2025)" and the record correctly credits Marciello with three. Console 0 errors.
+- Wave notes average **96 words** (82–112).
+
 ## 0.334.62 — 2026-08-26
 
 ### Added
