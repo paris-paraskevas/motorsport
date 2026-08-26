@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.56 — 2026-08-26
+
+### Added
+- **Champion-notes wave 7: F2 2025–2014, twelve seasons.** New sidecar `content/series/f2/champion-notes.json`. **F2 is 12 of 21; the nine GP2-era seasons 2013–2005 are the second half**, deliberately split so a twelve-season wave ships verified rather than a twenty-one-season one shipping rushed. Sitemap who-won 145 → **157**. Suite 1224 → **1230**, again the `it.each` integrity gate picking up a new series.
+- Era naming is handled the same way as F3: **GP2 Series through 2016, Formula 2 from 2017** (`seriesNameForYear`, `lib/information/generated.ts:26`). Verified on the URL — `who-won-the-2017-formula-2-championship`.
+- **Three of the twelve were settled by the champion scoring nothing, or nearly nothing.** Drugovich took 2022 standing in the pit lane after a first-lap retirement, because Pourchaire needed fifth and finished last. Schumacher took 2020 having been called into the pit lane and rejoined at the back to finish eighteenth. Gasly took 2016 finishing ninth and pointless in the last GP2 race ever run. The pattern is worth noting for the enrichment programme: the interesting seasons are rarely the dominant ones.
+
+### Corrections found while sourcing
+- **Piastri's 2021 title was clinched at Yas Marina, not Jeddah.** He *could* have taken it at Jeddah, but the feature race there was declared at the end of lap five after the Pourchaire/Fittipaldi crash, so it carried over to Abu Dhabi.
+- **Grosjean's 2011 title was clinched at Spa, not Monza.** Monza was merely the finale, by which time only the teams' championship was live. (This one is in the second F2 wave; recorded here because it was found now.)
+- **Two sources give irreconcilable points totals for Hülkenberg's 2009 season** (100 to Petrov's 75 in one, "85 points" with 76 of them from feature races in the other), so no season total will be stated for it. Also deferred to the second wave.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1230 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- The build log carried **nine** `error|failed` lines rather than the usual six. The three extra are `api.jolpi.ca fetch failed: timed out after 8000ms` — a transient upstream timeout in an outbound F1 fetch, not this change, and not a prod concern because the Worker runs `DATA_SOURCE=db` and never calls that endpoint. The other six are the standing fiawec `no-store` and over-2 MB Wikipedia data-cache notices.
+- Dev sitemap who-won **157**, up exactly twelve. `/information/feeder-series/who-won-the-2017-formula-2-championship` browser-verified on `next dev`, console 0 errors.
+- Wave notes average **102 words** (92–112). **Prod audit of wave 6**: 0.334.55 confirmed live.
+
 ## 0.334.55 — 2026-08-26
 
 ### Added
