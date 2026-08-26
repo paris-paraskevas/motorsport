@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.63 — 2026-08-26
+
+**Every GT World Challenge champion, all twelve seasons back to 2014.** This one is unlike the others: because the title adds up sprint and endurance results together, it often gets settled somewhere other than the last race, and the list of places it has been won reads Baku, Zandvoort, the Nurburgring, Valencia, Paul Ricard, Jeddah and Barcelona. In 2020 the champion did not score a single point in the deciding race and still won it, at the age of 20.
+
 ## 0.334.62 — 2026-08-26
 
 **Every IMSA champion since the series was unified in 2014, all twelve of them.** It is a championship that keeps coming down to the last race and keeps being won by crews having a terrible day: Helio Castroneves and Ricky Taylor took 2020 by one point from eighth place, twelve laps down after a long repair, and the Taylor brothers took 2017 having completed 97 of the finale's 402 laps.
