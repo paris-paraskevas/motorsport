@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.57 — 2026-08-26
+
+### Added
+- **Champion-notes wave 8: F2 COMPLETE, all twenty-one seasons, 2005 to 2025.** `content/series/f2/champion-notes.json` 12 → **21**, adding the GP2 era 2013–2005. **Fifth family finished.** Sitemap who-won 157 → **166**. The suite stays at **1230**: F2 already had its integrity case, so this wave adds entries to it rather than a new one.
+- The GP2 half is where the series' whole point is visible: **Rosberg** won the first one, **Hamilton** the second, and both went to Formula 1 immediately. It also contains the two most procedural titles in the programme — Hamilton's 2006, confirmed by a stewards' decision stripping Pantano of a fastest-lap point set under yellow flags, and Pantano's own 2008, won while serving a drive-through that dropped him out of the points in the race he was leading.
+- **Maldonado's 2010 is the best story in the family**: he hit the wall three times across the Monza weekend, crashed out of both races, and became champion anyway because Sergio Pérez could finish no better than thirteenth.
+
+### Corrections found while sourcing
+- **Grosjean's 2011 title rival was Giedo van der Garde, and it was clinched at Spa.** Both details came from the round article; the first pass had neither, and one search result asserted Monza.
+- **Leimer's 2013 margin over Sam Bird was decided by a stall**, not by pace: Bird stalled from second on the grid in the Abu Dhabi feature and recovered only to tenth, worth one point.
+- **No season points total is stated for Hülkenberg's 2009**, because two sources give irreconcilable figures (100 to Petrov's 75 in one; 85 total with 76 from feature races in the other). The note names the individual wins it can verify instead.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1230 passed** · `build` **0** with the standing six upstream noise lines (the `api.jolpi.ca` timeouts from the previous build did not recur), `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **166**, up exactly nine. Splice was append-only: **81 lines added, 0 removed, prefix byte-identical**. A local check confirms **21 notes against 21 champions rows**, every note naming its own champion.
+- `/information/feeder-series/who-won-the-2006-gp2-series-championship` browser-verified on `next dev`, console 0 errors.
+
 ## 0.334.56 — 2026-08-26
 
 ### Added

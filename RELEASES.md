@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.57 — 2026-08-26
+
+**Formula 2 is finished: all twenty-one seasons back to 2005, including the GP2 years.** Nico Rosberg won the first one and Lewis Hamilton the second, both straight on to Formula 1. The best of them is 2010, when Pastor Maldonado hit the wall three times over one weekend at Monza, crashed out of both races, and was champion anyway because his rival could finish no higher than thirteenth.
+
 ## 0.334.56 — 2026-08-26
 
 **Twelve years of Formula 2, the championship drivers pass through on the way to F1.** Leclerc, Russell, Piastri, de Vries, Gasly, Vandoorne and Mick Schumacher all won it, and three of them clinched it while scoring nothing at all in the deciding race: one watching from the pit lane after a first-lap crash, one having been called in and sent back out at the rear, one finishing ninth in the very last GP2 race ever run. The nine earlier GP2 seasons are next.
