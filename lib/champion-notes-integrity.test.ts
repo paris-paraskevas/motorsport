@@ -31,9 +31,19 @@ interface Champion {
 
 interface Note {
   clinched?: string;
+  season?: string;
+  race?: string;
   note?: string;
   sources?: unknown;
 }
+
+/** A note carries EXACTLY ONE lead clause, and which one it is decides the label
+ *  the page renders (`noteLead` in lib/information/generated.ts). Two set at once
+ *  is the defect this guards: the renderer would silently pick `clinched` and the
+ *  other would vanish from the page while still looking authored in the file. */
+const LEAD_KEYS = ['clinched', 'season', 'race'] as const;
+const leadsOf = (n: Note) => LEAD_KEYS.filter((k) => (n[k] ?? '').trim().length > 0);
+const leadText = (n: Note) => LEAD_KEYS.map((k) => n[k] ?? '').join(' ');
 
 const sets = readdirSync(ROOT)
   .map((slug) => ({
@@ -76,14 +86,20 @@ describe('champion-notes.json integrity', () => {
       const champion = byYear.get(year);
       if (!champion) continue;
       const surname = champion.driver.trim().split(/\s+/).slice(-1)[0];
-      const blob = `${note.clinched ?? ''} ${note.note ?? ''}`;
+      const blob = `${leadText(note)} ${note.note ?? ''}`;
       expect(blob, `${year}: note never names ${surname}`).toContain(surname);
     }
   });
 
-  it.each(cases)('%s: the clinch line carries its own season', (_slug, notes) => {
+  it.each(cases)('%s: every note has exactly one lead clause', (_slug, notes) => {
     for (const [year, note] of Object.entries(notes)) {
-      expect(note.clinched ?? '', `${year}: clinch line lacks the year`).toContain(year);
+      expect(leadsOf(note), `${year}: expected one of ${LEAD_KEYS.join('/')}`).toHaveLength(1);
+    }
+  });
+
+  it.each(cases)('%s: the lead clause carries its own season', (_slug, notes) => {
+    for (const [year, note] of Object.entries(notes)) {
+      expect(leadText(note), `${year}: lead clause lacks the year`).toContain(year);
     }
   });
 
@@ -95,7 +111,7 @@ describe('champion-notes.json integrity', () => {
     for (const [year, note] of Object.entries(notes)) {
       const champion = byYear.get(year);
       if (!champion || champion.points == null || champion.runnerUpPoints == null) continue;
-      const match = POINTS_PAIR.exec(`${note.clinched ?? ''} ${note.note ?? ''}`);
+      const match = POINTS_PAIR.exec(`${leadText(note)} ${note.note ?? ''}`);
       if (!match) continue;
       const [first, second] = match.slice(1).filter((g) => g !== undefined).map(Number);
       expect([first, second], `${year}: prose says ${first}/${second}`).toEqual([
@@ -121,7 +137,7 @@ describe('champion-notes.json integrity', () => {
 
   it.each(cases)('%s: no note is empty', (_slug, notes) => {
     for (const [year, note] of Object.entries(notes)) {
-      expect((note.clinched ?? '').trim().length, `${year}: empty clinch line`).toBeGreaterThan(0);
+      expect(leadText(note).trim().length, `${year}: empty lead clause`).toBeGreaterThan(0);
       expect((note.note ?? '').trim().length, `${year}: empty note`).toBeGreaterThan(0);
     }
   });

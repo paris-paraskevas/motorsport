@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { generateInfoEntries } from './generated';
+import { generateInfoEntries, noteLead } from './generated';
 import {
   getAllInfoEntries,
   getInfoEntry,
@@ -58,6 +58,48 @@ describe('generateInfoEntries (champions-derived, verified)', () => {
   it('generates per-series record pages', async () => {
     const g = await generateInfoEntries();
     expect(g.some((e) => e.slug === 'most-formula-1-championships')).toBe(true);
+  });
+});
+
+// A note's lead label comes from which field the DATA sets, because one shape
+// cannot describe every family honestly (operator decision, 2026-08-26): a
+// championship with a sourced deciding round, a championship whose deciding
+// round no source records, and a family that is a single race rather than a
+// championship each need different words. Unit-tested rather than tested through
+// content, because no `season` or `race` note has been authored yet — this is the
+// mechanism landing before the waves that use it.
+describe('noteLead', () => {
+  const base = { note: 'body', sources: ['https://example.com/a'] };
+
+  it('labels a sourced clinch as the title being clinched', () => {
+    expect(noteLead({ ...base, clinched: 'Monza, 9 September 2006' })).toEqual({
+      label: 'Title clinched',
+      text: 'Monza, 9 September 2006',
+    });
+  });
+
+  it('labels an unrecorded deciding round as the season', () => {
+    expect(noteLead({ ...base, season: 'Eight rounds in 1980' })).toEqual({
+      label: 'The season',
+      text: 'Eight rounds in 1980',
+    });
+  });
+
+  it('labels a single-race family as the race', () => {
+    expect(noteLead({ ...base, race: 'Won by 1m 12s in 2026' })).toEqual({
+      label: 'The race',
+      text: 'Won by 1m 12s in 2026',
+    });
+  });
+
+  it('prefers the clinch when more than one is set, and never throws on none', () => {
+    // The integrity gate rejects both of these states; this pins the fallback so
+    // a bad note degrades to a page without a lead line rather than to a crash.
+    expect(noteLead({ ...base, clinched: 'Monza 2006', season: 'ignored' })?.label).toBe(
+      'Title clinched',
+    );
+    expect(noteLead({ ...base })).toBeNull();
+    expect(noteLead({ ...base, clinched: '   ' })).toBeNull();
   });
 });
 

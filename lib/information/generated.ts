@@ -65,6 +65,21 @@ function sourceLabel(url: string): string {
   }
 }
 
+/** The label for a note's lead clause comes from the DATA, not from this file:
+ *  whichever of the three lead fields is set decides it. `clinched` is the
+ *  default and what every note written to date uses; `season` exists for
+ *  championships whose deciding round no source records (pre-1990, mostly), so
+ *  the page can say what the season was instead of inventing a round; `race`
+ *  exists for the single-race families (ADAC 24h, NLS) where a title clause is
+ *  meaningless. Returns null for a note with no lead clause, which the integrity
+ *  gate rejects, so this is belt-and-braces rather than a supported state. */
+export function noteLead(note: ChampionNote): { label: string; text: string } | null {
+  if (note.clinched?.trim()) return { label: 'Title clinched', text: note.clinched.trim() };
+  if (note.season?.trim()) return { label: 'The season', text: note.season.trim() };
+  if (note.race?.trim()) return { label: 'The race', text: note.race.trim() };
+  return null;
+}
+
 function seriesSources(meta: SeriesMeta): InfoSource[] {
   const out: InfoSource[] = [{ label: 'Paddock curated championship records' }];
   if (meta.championsPage) {
@@ -137,7 +152,8 @@ function whoWonEntry(
   // low-value-content finding, audit 2026-08-20). Appended last so the factual
   // answer still comes first for someone who only wants the name.
   if (note) {
-    lines.push(`**Title clinched:** ${note.clinched}.`);
+    const lead = noteLead(note);
+    if (lead) lines.push(`**${lead.label}:** ${lead.text}.`);
     lines.push(note.note);
   }
 
