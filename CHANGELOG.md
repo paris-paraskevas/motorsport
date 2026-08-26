@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.48 — 2026-08-26
+
+### Fixed
+- **Corrected the programme counts in 0.334.47, which were wrong.** It claimed "121 of 488 who-won seasons (24.8%)" with "367 remain". The 121 **double-counted the 30 pre-existing F1 notes** on top of the 76 the wave produced, and the remaining-work list split F2 and F3 across their historical GP2 and GP3 names as though those were separate families. The true figures, taken from source rather than from arithmetic: **91 done, 397 remaining, 19%.**
+  - Derived now by a script over `content/series/*/champions.json` (which defines the pages) against `champion-notes.json` (which gates them), so the number cannot be miscounted by hand again. Per family: MotoGP 15/77, ADAC 0/54, WRC 0/47, DTM 0/39, WSBK 0/38, IndyCar 0/30, NASCAR 0/26, F2 0/21, F3 0/16, NLS 0/16, WEC 0/13, GT World 0/12, IMSA 0/12, Formula E 0/11, F1 **76/76**.
+- **Noted for whoever takes the ADAC family:** it spans 1970–2026 across 54 seasons and is a 24-hour race rather than a championship, so "where the title was settled" does not apply. That family wants its own note shape ("who won the race, and how") rather than the championship-clinch template used for F1.
+
 ## 0.334.47 — 2026-08-26
 
 ### Added
@@ -22,7 +29,8 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 - The integrity suite also independently confirms each note names its champion and that any points pair stated in prose agrees with `champions.json`.
 
 ### Programme status
-- **Done: 121 of 488 who-won seasons (24.8%).** F1 76/76 complete, MotoGP 15/77. **367 remain**, largest first: MotoGP pre-2011 (62), ADAC Ravenol 24h (54), WRC (47), DTM (39), WorldSBK (38), IndyCar (30), NASCAR Cup (26), NLS (16), WEC (13), GP2 (12), GT World (12), IMSA (12), Formula E (11), F2 (9), GP3 (9), F3 (7).
+- **Done: 91 of 488 who-won seasons (19%).** F1 76/76 complete, MotoGP 15/77. **397 remain**, largest first: MotoGP (62), ADAC Ravenol 24h (54), WRC (47), DTM (39), WSBK (38), IndyCar (30), NASCAR Cup (26), F2 including the GP2 era (21), F3 including the GP3 era (16), NLS (16), WEC (13), GT World (12), IMSA (12), Formula E (11).
+  - *(Corrected in 0.334.48: this first read "121 of 488, 367 remain", which double-counted the 30 pre-existing F1 notes on top of the new 76, and split F2/F3 across their historical GP2/GP3 names as if they were separate families.)*
 
 ## 0.334.46 — 2026-08-26
 
