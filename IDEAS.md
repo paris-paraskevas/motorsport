@@ -47,6 +47,21 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 
 **Still parked, unchanged:** the image session · the day page · GEO/positioning · v1.0 marketing · Street View corner tours · information-hub restyle · remote-branch audit · What's-New modal · error.tsx reporting to nothing.
 
+## Triage — session 37 close (2026-08-26)
+
+**Closed this session**: WEC, IMSA and GT World are all complete, taking the programme from 166/489 to **203/489 (41.5%)** and complete families from four to **seven**. The crew-counting defect is closed. The WEC "super season" mislabel is closed.
+
+**Promoted to NOW, in order:**
+1. **The Cloudflare build command** and **the 1.0 copy sign-off** — the operator's, and untouched for three sessions now.
+2. **ADAC (54) + NLS (16)** — 70 of the 286 remaining seasons, the single biggest block, unblocked since 0.334.59 with the `race:` shape. Worth its own session.
+3. **NASCAR (26) and IndyCar (30)** — both single-driver and well documented, so both should run like F2/F3 did.
+4. **MotoGP's remaining 36**, using `season:` wherever the deciding round cannot be sourced.
+
+**New to the inbox this session:**
+- **`gt-world` has no era-name handling.** `seriesNameForYear` special-cases F2 and F3 so their pre-rebrand seasons read "GP2 Series"/"GP3 Series", but 2014–2019 GT World pages say "GT World Challenge" when the series was the **Blancpain GT Series** — a name `constructor` already carries for exactly those rows. One `if` in the same shape as the existing two.
+- **A second instance of the same bug class**: derived prose stating a count or a "first" that its source data cannot support. Formula E's record line (0.334.54) and now crew title counting (0.334.61). Worth one sweep of the other derived sentences — the "different drivers crowned" count, the secondary-championship line — for the same shape.
+- **The splice/writer script still is not in the repo.** It has now been recreated twice, from the queue's description, and it carries real invariants (derived order, byte-scanning order guard, one-lead check). Consider `scripts/` as its home.
+
 ## Triage — session 36 close (2026-08-26)
 
 **Closed this session**: the champion-notes programme's F1-only status — **four more families are finished** (Formula E 12, F3 16, F2 21, plus MotoGP to 41 of 77), taking the programme from 91/488 to **166/489**. Formula E's missing 2026 champion is closed. The 1987 MotoGP win count is closed.

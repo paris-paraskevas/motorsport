@@ -4,6 +4,14 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.64 — 2026-08-26
+
+### Internal
+- **Session-37 close.** `docs/HANDOFF.md` gains the session block: 4 merges (0.334.61 → 0.334.64), the crew-counting finding, two further data errors, and four durable process learnings. `docs/next-session.md` rewritten. `SCHEDULE.md` marked. `IDEAS.md` triaged.
+- **The programme went 166/489 → 203/489, 33.9% → 41.5%**, and complete families four → **seven**: F1 76, F2 21, F3 16, WEC 13, Formula E 12, GT World 12, IMSA 12. **The endurance families are done**, so what remains is stock cars, single-seaters, bikes, rallying and the two 24-hour races.
+- **The queue's read-me-first block gains three lessons that cost real time**: browser-verify the *first* page of a wave rather than the last, because that is how both of the last two sessions' defects were caught; a family's shape can differ from every other family's (GT World's overall title is regularly clinched away from the finale); and never infer a race day from an article's publication date or trust your own date arithmetic — probe it.
+- **The bug class is now named in the queue, because it has appeared twice**: derived prose stating a count or a "first" that its source data cannot support. Formula E's all-time record line (0.334.54), then crew title counting (0.334.61). A sweep of the remaining derived sentences is in the inbox.
+
 ## 0.334.63 — 2026-08-26
 
 ### Added

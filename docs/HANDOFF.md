@@ -6,7 +6,51 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-26 (LATEST, session 36 FINAL — four more families finished, the programme past a third) — `main` = **0.334.60**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-26 (LATEST, session 37 FINAL — the endurance families, and a false claim caught before it was indexed) — `main` = **0.334.64**, zero open PRs, every merge prod-verified
+
+**Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
+
+### ✅ Shipped — 4 merges, 0.334.61 → 0.334.64
+
+| Version | What |
+|---|---|
+| **0.334.61** | **WEC COMPLETE**, 13 of 13 — **and crews counted per person**, which is the finding below |
+| **0.334.62** | **IMSA COMPLETE**, 12 of 12 |
+| **0.334.63** | **GT WORLD COMPLETE**, 12 of 12 |
+| **0.334.64** | Session records |
+
+**The programme went 166/489 → 203/489, 33.9% → 41.5%, and complete families four → seven**: F1 76, F2 21, F3 16, WEC 13, Formula E 12, GT World 12, IMSA 12. MotoGP stays at 41 of 77. Suite 1239 → **1265**.
+
+### 🔴 The finding that mattered
+
+**A crew is not a person, and the derived text did not know that.** `champions.json` puts a whole endurance crew in one `driver` field — `"Sébastien Buemi, Fernando Alonso, Kazuki Nakajima"` — and the title-counting logic keyed on that whole string. So the 2019 WEC page said *"It was **Buemi, Alonso, Nakajima**'s **first** FIA WEC title"*, which is false for Buemi, who won in 2014 with Anthony Davidson; and the all-time record line said *"**2** titles, shared by"* two crew strings when Buemi and Hartley had **four each**.
+
+- **Caught while browser-verifying the first page of the WEC wave**, so no crew page was ever indexed carrying it. Fixed in the same PR that shipped those thirteen notes.
+- **Scope was every family still to be enriched**: 145 crew rows across six families — WEC 13/13, IMSA 12/12, ADAC 54/54, NLS 15/16, GT World 7/12, and the shared 1996 IndyCar title.
+- **Same class as the Formula E record line in 0.334.54**: derived prose making a claim its source data cannot support. That is now twice. When a page states a *count* or a *first*, check what it is counting.
+- Single-driver families render byte-identically by design, and a test pins the old sentence verbatim, because 166 authored notes were written to sit under it.
+
+### 🟡 Two more data errors, both found by a note contradicting its own page
+
+- **`wec/champions.json` called 2019–20 a "super season".** The Super Season was **2018–19** — eight rounds across two calendar years with Le Mans in it twice. The label renders inside the team name.
+- **The 2018 IMSA and six of twelve GT World notes give a month, not a day.** Wikipedia and its own mirror date the 2018 Petit Le Mans to **15 October, a Monday**, while every other IMSA finale in the family is a Saturday (checked all fourteen dates with `node -e`, not from memory). For GT World the clinch *venues* are well sourced and the *days* often are not. Inferring a race day from an article's publication date is not sourcing it.
+
+### 🔵 Process learnings (durable, session 37)
+
+1. **Browser-verify the FIRST page of a wave, not the last.** Every defect this session was found that way, before the wave shipped rather than after.
+2. **A family's shape can differ from every other family's.** GT World's overall title combines Sprint and Endurance points, so it is regularly clinched away from the finale — Baku, Zandvoort, the Nürburgring, Valencia, Paul Ricard, Jeddah — and four of twelve were settled before the last race. Do not assume the finale.
+3. **When two accounts of the same season disagree, the more specific one usually wins.** 2024 GT World had one report crediting the Barcelona Sprint finale and another the Jeddah Endurance finale; only Jeddah reconciles with the standings.
+4. **My own date arithmetic is not evidence.** The Monday finding came from a `node -e` probe over all fourteen dates, not from counting in my head.
+
+### 🩹 Owed (operator)
+
+- **Cloudflare build command** — still owed, untouched for a third session: add `&& npm run cf:populate`.
+- **The 1.0 modal copy** — still owed, untouched for a third session.
+- **AdSense**: still a waiting game, and the index is now 203 enriched pages rather than 91 two sessions ago.
+
+---
+
+## ⚡ Session 36 — 2026-08-26 (four more families finished, the programme past a third) — `main` = **0.334.60**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
 
