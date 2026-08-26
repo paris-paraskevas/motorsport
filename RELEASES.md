@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.54 — 2026-08-26
+
+**This year's Formula E champion was missing from our record books.** The season finished at London on 16 August with Pascal Wehrlein taking his second title, but our championship history stopped at 2025, which meant every Formula E answer page was still calling two titles a record held by Jean-Éric Vergne alone. Both now say what actually happened, and the 2026 season has its own page with the story of a finale that nine drivers could still have won.
+
 ## 0.334.53 — 2026-08-26
 
 **Every Formula E champion now has their story, all eleven of them.** It is the closest-fought family we have: the first title decided by a single point, the second by two after both contenders crashed into each other on the opening lap and it came down to who could set the fastest lap, and one finale that began with fourteen drivers still able to win it. Each answer says where and when the championship was actually settled, and cites its sources.

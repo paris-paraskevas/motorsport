@@ -4,6 +4,23 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.54 — 2026-08-26
+
+### Fixed
+- **Formula E's 2026 champion was missing from the curated record, and it was making a false claim on twelve live pages.** `content/series/formula-e/champions.json` stopped at 2025 although season 12 finished at London on 16 August 2026. Because the "all-time record" line on every who-won answer is *derived* from that file, all twelve Formula E answers read "the all-time Formula E drivers' record is 2 titles, held by **Jean-Éric Vergne**" — untrue from the moment Pascal Wehrlein won his second. With the 2026 row added, the same line now renders "**shared by Jean-Éric Vergne and Pascal Wehrlein**", verified in the browser.
+  - The row is deliberately the same minimal shape as the rest of the family (`year`, `driver`, `constructor`, `constructorChampion`) rather than a richer one-off: **Wehrlein, TAG Heuer Porsche, teams' title to Jaguar TCS Racing.** Porsche took the manufacturers' championship in Tokyo three weeks earlier and finished second in the teams' standings; those are two different titles and the file's field is the teams' one.
+  - Triple-checked per RULE #1 before it was written, because this is a current-season fact: the FIA's own report, Porsche's race report, and Formula E's teams'-championship report all agree on champion, margin and teams' title.
+
+### Added
+- **A 2026 note, so the new page is enriched rather than thin on arrival.** Nine drivers could still have won it at London with the top three inside five points; Wehrlein won Saturday's round, then on Sunday was shuffled to twelfth while Jake Dennis climbed into a virtual championship lead until he hit Joel Eriksson at Turn 16 on lap 31 and retired with the damage. Taylor Barnard won the race at 22, the youngest winner in the series' history. Sitemap who-won 128 → **129**.
+
+### Checked, no action needed
+- **No other series is missing a completed 2026 season.** ADAC already carries its 2026 row; every other family's 2026 campaign is still running. The nearest candidate was F3, whose finale is at Madrid on 11–13 September 2026, so its champion does not exist yet.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1218 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- `/information/formula-1/who-won-the-2026-formula-e-championship` returns 200 with `robots: index, follow`, names the teams' champion, reports "2nd of 2 Formula E titles (2024, 2026)", and carries the corrected all-time record line. Console 0 errors.
+
 ## 0.334.53 — 2026-08-26
 
 ### Added
