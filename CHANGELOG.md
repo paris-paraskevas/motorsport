@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.53 — 2026-08-26
+
+### Added
+- **Champion-notes wave 5: FORMULA E COMPLETE, all eleven seasons, 2015 to 2025.** New sidecar `content/series/formula-e/champion-notes.json` — the third finished family after F1 (76/76) and, still in progress, MotoGP. Sitemap who-won entries 117 → **128**. No code: `loadChampionNotes(slug)` already reads this path for any series, so creating the file is what enables the pages.
+- Formula E turns out to be the best-documented family in the programme, because it is young and its titles are absurdly close: **2015 decided by one point** at Battersea Park, **2016 by two** and only after both contenders crashed into each other on lap one and the championship came down to the two points for fastest lap, **2021 with fourteen drivers still mathematically alive** at the start of the last race. Four of the eleven ran to the final race and two were settled with rounds to spare.
+- **The suite grows by 6, from 1212 to 1218, without a new test being written.** `champion-notes-integrity.test.ts` is `it.each` over every series that has both a `champions.json` and a `champion-notes.json`, so a new notes file adds a case × 6 invariants. That is the gate working as designed.
+
+### Found, not fixed here
+- **`content/series/formula-e/champions.json` stops at 2025 and Formula E has since crowned a 2026 champion.** Season 12 ran to a London finale in July 2026 and Pascal Wehrlein took a second title, which the site already knows from live standings — the home page has been saying "Wehrlein is Formula E champion" since session 29 — but the curated historical record has no 2026 row. The visible consequence is on every Formula E who-won page: the derived line reads "the all-time Formula E drivers' record is 2 titles, held by Jean-Éric Vergne", which stopped being true when Wehrlein won his second. Follow-up PR, sourced separately, not folded in here.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1218 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **128**, up exactly eleven. `/information/formula-1/who-won-the-2016-formula-e-championship` browser-verified on `next dev`: `robots: index, follow`, clinch line and note render, console 0 errors. (Formula E's answers sit under the `formula-1` topic — pre-existing, unchanged.)
+- Wave notes average **96 words** (79–106).
+
 ## 0.334.52 — 2026-08-26
 
 ### Added

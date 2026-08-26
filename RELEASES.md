@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.53 — 2026-08-26
+
+**Every Formula E champion now has their story, all eleven of them.** It is the closest-fought family we have: the first title decided by a single point, the second by two after both contenders crashed into each other on the opening lap and it came down to who could set the fastest lap, and one finale that began with fourteen drivers still able to win it. Each answer says where and when the championship was actually settled, and cites its sources.
+
 ## 0.334.52 — 2026-08-26
 
 **Seven more championship answers, and a correction.** The 1980s: Freddie Spencer beating Kenny Roberts by two points in the last race of 1983, his 250 and 500 double in 1985, Wayne Gardner becoming Australia's first champion, and the 1988 title that no race decided, settled instead when a grand prix was cancelled. Our own record of Gardner's 1987 season said he won one race that year. He won seven, and the champions page now says so.
