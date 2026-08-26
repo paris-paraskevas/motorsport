@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.47 — 2026-08-26
+
+### Added
+- **F1 IS COMPLETE: champion notes for all 76 seasons, 1950 to 2025, no gaps.** Wave 3d (1956–1965) and 3e (1950–1955) shipped together, `content/series/f1/champion-notes.json` 60 → **76**. **All 76 F1 who-won pages are indexed again** (sitemap who-won total 75 → 91). This is the first family finished, which was the point of doing F1 first: one complete family reads better to a reviewer than several partial ones.
+  - The oldest decade needed the most care. Titles settled by a team-mate handing over his car (Fangio 1956, after Musso refused), by wheel diameter (Fangio 1951, when Ferrari's smaller rears shed their treads), by pushing the car 400 yards to the line (Brabham 1959), and by Ferrari waving a driver aside on the final lap (Surtees 1964).
+- **Two clinch dates are genuinely contested, and the notes say so rather than pick silently.** For **1953** some accounts place the clinch at the Nürburgring a round before the Swiss race; for **1952** Ferrari's own history marks the Monza win as the coronation while the arithmetic completed earlier. Both are the same root cause: only a driver's best four results counted, so the mathematical and ceremonial moments differ. Stating the dispute is more accurate than resolving it by preference.
+- **1961 deliberately carries no death toll.** Sources give 15 spectators, or 16 in total, or von Trips plus 14. The note says von Trips and a number of spectators were killed, the worst loss of life a championship race has seen, which is true under every source.
+
+### Fixed
+- **The integrity gate caught a real omission.** `champion-notes-integrity.test.ts` requires every `clinched` line to contain its own season, and the 1950 entry read "final round of the first world championship" with no year, because I had not verified the date. Rather than pad the string to satisfy the test, I verified it: **3 September 1950, race 7 of 7.** The invariant exists so the rendered page is self-describing, and the right response to it was research, not a workaround.
+
+### Verified
+- `tsc` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** (integrity + sitemap gates included) · `build` **0**
+- On the running build: **76 of 76** F1 who-won URLs advertised, 91 across all series, and `/information/formula-1/who-won-the-1950-formula-1-championship` serves `index, follow`.
+- Splice guards across both waves: **144 insertions, 0 deletions**, CRLF preserved, every pre-existing entry byte-identical, every new entry 2+ sources, no em dashes.
+- The integrity suite also independently confirms each note names its champion and that any points pair stated in prose agrees with `champions.json`.
+
+### Programme status
+- **Done: 121 of 488 who-won seasons (24.8%).** F1 76/76 complete, MotoGP 15/77. **367 remain**, largest first: MotoGP pre-2011 (62), ADAC Ravenol 24h (54), WRC (47), DTM (39), WorldSBK (38), IndyCar (30), NASCAR Cup (26), NLS (16), WEC (13), GP2 (12), GT World (12), IMSA (12), Formula E (11), F2 (9), GP3 (9), F3 (7).
+
 ## 0.334.46 — 2026-08-26
 
 ### Added
