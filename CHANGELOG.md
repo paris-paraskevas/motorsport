@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.62 — 2026-08-26
+
+### Added
+- **Champion-notes wave 10: IMSA COMPLETE, all twelve seasons, 2014 to 2025.** New sidecar `content/series/imsa/champion-notes.json`. **Sixth family finished.** Sitemap who-won 179 → **191**. Suite 1251 → **1258**.
+- **The crew fix from 0.334.61 is already earning on a second family.** The 2020 answer now reads "a first IMSA title for **Hélio Castroneves**, and **Ricky Taylor**'s 2nd of 2 (2017, 2020)", and the all-time record reads "**3** titles, shared by **Dane Cameron and Felipe Nasr**" — Cameron 2016/2019/2024, Nasr 2018/2021/2024. Under the old crew-string counting every IMSA crew had exactly one title and the record line would have been nonsense.
+- **This is a championship decided at one race, eleven times out of twelve, and usually by a crew having a bad day.** Castroneves and Taylor won 2020 by a single point from eighth place, twelve laps down after a 25-minute intercooler repair. The Taylor brothers won 2017 having completed 97 of the finale's 402 laps. Nasr and Derani won 2021 by 0.405 seconds after last-lap contact. Cameron and Curran went into the 2016 finale one point ahead of their own team-mates.
+
+### Sourcing
+- **The 2018 note gives the month, not the day.** Wikipedia and its own mirror both date that Petit Le Mans to 15 October 2018, which was a **Monday** — and every other IMSA finale in this family falls on a Saturday (checked all fourteen dates with `node -e` rather than from memory). A contemporaneous press release is dated the 14th. Two non-independent sources against an arithmetic impossibility is not enough to publish a day, so the day is omitted.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1258 passed** · `build` **0** with the standing six upstream noise lines, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **191**, up exactly twelve. `/information/endurance/who-won-the-2020-imsa-championship` browser-verified on `next dev`: `index, follow`, the crew line correct, console 0 errors.
+- Wave notes average **96 words** (90–102).
+
 ## 0.334.61 — 2026-08-26
 
 ### Fixed
