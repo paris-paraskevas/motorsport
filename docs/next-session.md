@@ -16,16 +16,39 @@ Every item states **what**, **why**, **where**, and **how prod is audited**. The
 - **Browser-verify the FIRST page of a wave, not the last.** Every defect found in sessions 36 and 37 was found that way, before the wave shipped. Twice now the defect was **derived prose stating a count or a "first" that the source data cannot support** — Formula E's record line, then crew title counting. When a page states a count, check what it is counting.
 - **A family's shape can differ from every other family's.** GT World's overall title combines Sprint and Endurance points and is regularly clinched away from the finale (Baku, Zandvoort, the Nürburgring, Valencia, Paul Ricard, Jeddah). Do not assume the last race.
 - **Do not infer a race day from an article's publication date, and do not trust your own date arithmetic.** Probe it (`node -e` over the candidate dates) — that is how the 2018 IMSA "Monday finale" was caught.
-- **A deploy leaves a stale-chunk window** — see TIER 1 item 1.
+- ~~A deploy leaves a stale-chunk window~~ — **closed 2026-08-26** by the Workers Builds deploy command now running `cf:populate`. TIER 1 item 1 records the exact dashboard config and the audit that proves it, because nothing in the repo enforces it.
 
 ---
 
-## TIER 1 — two operator actions, then the programme (both note-shape decisions are now made)
+## TIER 1 — one operator action left, then the programme
 
-### 1. Cloudflare build command — still the only live defect
-`Cache-Control: s-maxage=85, stale-while-revalidate=2592000`, so the R2 page cache can serve HTML from *before* a deploy that points at build-hashed chunks which no longer exist. **The first visitor to any page after each deploy gets a page whose JS 404s.** Measured twice.
-- Local `npm run deploy` runs `cf:populate`. **Workers Builds has its own command in the Cloudflare dashboard** — if it is just `cf:build && wrangler deploy`, add `&& npm run cf:populate`.
-- **Operator action** (dashboard access). **Audit**: deploy, then immediately fetch `/` and check every `/_next/static/*` reference returns 200 and not `text/html`.
+### 1. ~~Cloudflare build command~~ — FIXED by the operator, 2026-08-26
+The stale-chunk window is closed. `Cache-Control: s-maxage=85, stale-while-revalidate=2592000` meant the R2 page cache could serve HTML from *before* a deploy, pointing at build-hashed chunks that no longer existed, so **the first visitor to any page after each deploy got a page whose JS 404s** — measured twice (`/calendar` as an empty grid, `/` with 40 console errors). Local `npm run deploy` always ran `cf:populate`; Workers Builds did not.
+
+**The Workers Builds configuration is now, recorded here because it lives in the Cloudflare dashboard and nothing in the repo enforces it** (Workers & Pages → `motorsport` → Settings → Build → Build configuration):
+
+| Field | Value |
+|---|---|
+| Build command | `npm run cf:build` |
+| Deploy command | `npx wrangler deploy && (npm run cf:populate || echo "populate skipped, non-fatal")` |
+| Root directory | `/` |
+
+Three things about that deploy command worth not re-deriving:
+- **No `-c` flag, deliberately.** The root `wrangler.jsonc` *is* production. The per-dev workers need `-c wrangler.<name>.jsonc`; this one must not have it.
+- **The populate is guarded with `|| echo`, not chained with a bare `&&`.** If `cf:populate` ever fails in the build environment, a bare `&&` fails the whole deploy — and a red deploy is worse than a cold cache. This matches the existing `deploy:cf:testing` and `deploy:cf:paris` scripts; the repo's `deploy:cf` is the one place that still chains strictly.
+- **The build command must stay the OpenNext build.** `worker.ts` imports `./.open-next/worker.js`, and a plain `next build` emits only `.next/`.
+
+**Audit, and it is worth re-running after any dashboard change** — run it the moment prod flips version:
+
+```bash
+curl -s https://paddock-tracker.com/ -o /tmp/home.html
+grep -oE '/_next/static/[A-Za-z0-9._/-]+' /tmp/home.html | sort -u | while read -r p; do
+  out=$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "https://paddock-tracker.com$p")
+  case "$out" in 200*text/html*) echo "STALE: $p";; 200*) ;; *) echo "BAD: $out $p";; esac
+done; echo done
+```
+
+Silence between the lines is a pass. A `STALE:` line means the HTML came from the cache but names a chunk that no longer exists, so the Worker served its 404 page as `text/html` instead. **Do not use a looser regex**: `/_next/static/[^"]+` also matches the escaped backslashes in inlined JSON and reports phantom 308s.
 
 ### 2. The 1.0 flip — needs copy sign-off, not code
 Everything is built and **dark**. `LAUNCH_ANNOUNCEMENT` in `lib/site.ts` holds the modal: kicker, title, intro, six capability rows, three "what comes next" items.
