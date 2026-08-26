@@ -4,6 +4,25 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.51 — 2026-08-26
+
+### Added
+- **Champion-notes wave 4b: MotoGP 2000–1991, nine of the ten seasons.** `content/series/motogp/champion-notes.json` 25 → **34** entries. **MotoGP is now 34 of 77; 43 remain.** Sitemap who-won entries 101 → **110**.
+- This is the 500cc era, and it reads as one story: Rainey's three titles and the Misano crash that ended his career mid-fight, Schwantz taking the one championship he won in the worst way there was to win it, then Doohan's five in a row after the 1992 Assen crash that nearly cost him a leg. Two of the nine were settled at a season finale (1992 by a two-point swing), and 1997 four rounds early on the way to twelve wins from fifteen.
+
+### Deliberately not shipped
+- **1996 is held back.** No reliable source states which round Doohan mathematically clinched his third title, and the one claim found — that he "clinched with his victory in the European Grand Prix at Catalunya" — is **demonstrably false twice over**: the European Grand Prix had been renamed the Catalan Grand Prix, and Carlos Checa won that race with Doohan second. The arithmetic bounds it (a final margin of 64 with 25 available at the finale means it was settled no later than Rio, round 14 of 15) but does not distinguish round 13 from round 14, and the per-round standings needed to close it are not in any source checked. It stays un-noindexed and un-enriched until a contemporaneous report settles it. **This is the single-season follow-up in the queue.**
+
+### Corrections found while sourcing
+- **1997 was clinched at Donington Park, not Brno**, and a first-pass answer that said Brno was wrong. Doohan won round 11 of 15 from pole with the fastest lap; he held 295 points by the following round, having already taken the title.
+- **The 1993 season had 14 rounds, not 16.** One source gave Misano as "round 12 of 16"; the round number was right and the total wrong, which would have made the Laguna Seca clinch read as three rounds early instead of one.
+- **A Wikipedia season-page fetch contradicted itself on 1997** ("12 wins out of 15" and "13 of the 15", the clinching race both won and finished second) because it was inferring from a results table rather than reading prose. Table inference is not a source; every clinch in this wave comes from a sentence.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- Dev sitemap who-won **110**, up exactly nine. `/information/motogp/who-won-the-1991-motogp-championship` and `.../1993-...` serve `robots: index, follow` with their clinch lines; browser-verified on `next dev`, console 0 errors.
+- **Prod audit of the previous wave**: 0.334.50 reached prod ~4 minutes after merge, `/information/motogp/who-won-the-2001-motogp-championship` returns 200 with `index, follow`, and prod's sitemap carries **101** who-won URLs.
+
 ## 0.334.50 — 2026-08-26
 
 ### Added
