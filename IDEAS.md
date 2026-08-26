@@ -47,6 +47,21 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 
 **Still parked, unchanged:** the image session · the day page · GEO/positioning · v1.0 marketing · Street View corner tours · information-hub restyle · remote-branch audit · What's-New modal · error.tsx reporting to nothing.
 
+## Triage — session 36 close (2026-08-26)
+
+**Closed this session**: the champion-notes programme's F1-only status — **four more families are finished** (Formula E 12, F3 16, F2 21, plus MotoGP to 41 of 77), taking the programme from 91/488 to **166/489**. Formula E's missing 2026 champion is closed. The 1987 MotoGP win count is closed.
+
+**Promoted to NOW, in order** — full detail in `docs/next-session.md`:
+1. **The Cloudflare build command** and **the 1.0 copy sign-off** — both still the operator's, both untouched this session because the directive was "waves first".
+2. **Two note-shape decisions, now blocking ~106 seasons**: what a note says when no source records the deciding round (pre-1990, ~36 MotoGP plus the pre-1990 tails of WRC/DTM/WSBK), and the shape for ADAC (54) + NLS (16), which are single races rather than championships. Rendered examples are in the queue.
+3. **Enrichment, unblocked next**: WEC (13), IMSA (12), GT-World (12) — three small modern families, three more completions — then NASCAR (26) and IndyCar (30).
+
+**New to the inbox this session:**
+- **The era suffix in `constructor` reads as noise now that those pages are indexed**: 9 of 16 F3 rows and 12 of 21 F2 rows carry names like "ART Grand Prix (GP3 Series)", so a page titled "Who won the 2016 GP3 Series championship?" says "…with ART Grand Prix (GP3 Series)". Cosmetic, two families.
+- **MotoGP 2009 has no `wins` value** — a gap rather than an error, found while sweeping all 77 rows after the 1987 fix, and deliberately not guessed at.
+- **The footer's first link is labelled "Landing"** and points at `/`, which since 0.334.42 *is* the home page. One word, but a copy call.
+- **A WEC wave was abandoned mid-research** — five of thirteen seasons sourced. Rather than ship a half-verified family the head start went into the queue: in the hybrid era every WEC drivers' title has been settled at the Bahrain finale, and `champions.json` has no 2018 row because the super seasons are filed as 2019 and 2020.
+
 ## Inbox (2026-08-26 — session 35 close)
 
 - **Orphan sweep**: `LandingNav`, `LandingFooter`, `LandingAuth` have **zero importers** after the landing retirement. Not deleted in 0.334.42 because the approved deletion list said keep them; nothing imports them so they cost nothing at runtime.

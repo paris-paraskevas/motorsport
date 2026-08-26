@@ -1614,6 +1614,24 @@ Active: (no [+Nm] prefixes given this session)
 
 ---
 
+### Tue 2026-08-26 — session 36 (the enrichment programme, four families finished)
+
+Plan at start: the two operator items first, then the ADAC template decision, then MotoGP. Operator overrode the order in one line — **"c and all other waves first"** — so the waves ran and the operator items were left untouched deliberately.
+
+- → done: **MotoGP 2010–2001** (0.334.50), **2000–1991** (0.334.51), **1990–1983** (0.334.52). 15 → 41 of 77.
+- → done: **Formula E complete, 11 of 11** (0.334.53), then **its missing 2026 champion** (0.334.54) — a single absent row had been publishing "the all-time record is 2 titles, held by Vergne" on twelve live pages, because that sentence is derived from the file.
+- → done: **F3 complete, 16 of 16** (0.334.55). **F2 complete, 21 of 21** (0.334.56 + 0.334.57).
+- → done, unplanned: **a wrong win count fixed** — 1987 MotoGP said Gardner won 1 race; he won 7, and `ChampionsTab` renders that field, so the champions page had been publishing it. Swept all 77 rows afterwards.
+- → **8 merges, 0.334.50 → 0.334.57, every one prod-verified.** Programme 91/488 → **166/489 (33.9%)**. Suite 1212 → 1230, all +18 from the `it.each` integrity gate rather than any test being written. Prod's sitemap carries 166 who-won URLs, matching local exactly.
+- → **held back rather than guessed**: MotoGP 1996, 1986, 1982, 1981, and everything from 1980 back. Sourced clinch rounds thin out before ~1990, which turns the remaining 36 MotoGP seasons into a note-shape decision — the same one already open for ADAC and NLS. Both are written up with rendered examples in `docs/next-session.md`.
+- → **not started, deliberately**: the Cloudflare `cf:populate` fix and the 1.0 copy sign-off. Both are the operator's and both were displaced by the one-line directive.
+- → **abandoned mid-research**: a WEC wave. Five of its thirteen seasons were sourced when I stopped rather than ship a half-verified family; the head start is recorded in the queue.
+- Won't-touch honoured: no Tier-2 or Tier-3 item was started, no prod Supabase or infra write, the desktop calendar untouched, the OG-card runtime untouched.
+
+Active: (no [+Nm] prefixes given this session)
+
+---
+
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
 - **Mid-session:** don't edit this file (use `IDEAS.md` Inbox for new ideas).
 - **At session end:** convert intent bullets to outcomes (`→ done` / `→ partial` / `→ skipped`). If tomorrow's plan is obvious, stub it.
