@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.65 — 2026-08-26
+
+**The first person to visit the site after an update no longer gets a broken page.** Every time a new version went live, whoever arrived first could be served the previous version's page while the files it needed had already been replaced, which showed up as an empty calendar or a page that simply did not work. It now rebuilds its cache as part of going live, so the first visit is as good as the hundredth.
+
 ## 0.334.64 — 2026-08-26
 
 **Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.

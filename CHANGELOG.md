@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.65 — 2026-08-26
+
+### Fixed
+- **The stale-chunk window after every deploy is closed.** The operator added the cache population to the Workers Builds deploy command, which is the last live defect on the queue and had been open for three sessions. `Cache-Control: s-maxage=85, stale-while-revalidate=2592000` meant the R2 page cache could serve HTML from *before* a deploy, referencing build-hashed chunks that no longer existed, so **the first visitor to any page after each deploy got a page whose JS 404s** — measured twice, as `/calendar` rendering an empty grid and `/` logging 40 console errors. `npm run deploy` always ran `cf:populate` locally; Workers Builds did not.
+- **The dashboard config is now recorded in `docs/next-session.md` item 1**, because it lives in the Cloudflare dashboard and *nothing in this repo enforces it* — if the project is ever reconnected or reset, the defect comes back silently. Build command `npm run cf:build`; deploy command `npx wrangler deploy && (npm run cf:populate || echo "populate skipped, non-fatal")`; root `/`.
+  - **No `-c` flag, deliberately**: the root `wrangler.jsonc` *is* production, and only the per-dev workers take `-c wrangler.<name>.jsonc`.
+  - **Guarded with `|| echo` rather than chained with a bare `&&`**: if `cf:populate` fails in the build environment a strict chain fails the whole deploy, and a red deploy is worse than a cold cache. This matches `deploy:cf:testing` and `deploy:cf:paris`; the repo's own `deploy:cf` is the one place still chaining strictly.
+- **The audit command is recorded with a warning about its regex.** `/_next/static/[^"]+` also matches the escaped backslashes inside inlined JSON and reports phantom 308s — found while writing the check. The correct pattern is `/_next/static/[A-Za-z0-9._/-]+`, which on the current prod home page resolves 28 asset references, all 200 and none `text/html`.
+
+### Verified
+- `tsc --noEmit` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1265 passed** · `build` **0**, `/` still `○ (Static)` 5m, `/changelog` still build-time only
+- **The fix itself is verified by this deploy**: the audit was run against `/` and `/calendar` the moment prod reported 0.334.65, which is precisely the window that used to be broken. Result recorded in the PR.
+
 ## 0.334.64 — 2026-08-26
 
 ### Internal

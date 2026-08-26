@@ -44,7 +44,7 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ### 🩹 Owed (operator)
 
-- **Cloudflare build command** — still owed, untouched for a third session: add `&& npm run cf:populate`.
+- ~~Cloudflare build command~~ — **DONE by the operator, 2026-08-26.** The Workers Builds deploy command is now `npx wrangler deploy && (npm run cf:populate || echo "populate skipped, non-fatal")`. Recorded in `docs/next-session.md` item 1 with the audit command, because that config lives in the dashboard and nothing in the repo enforces it.
 - **The 1.0 modal copy** — still owed, untouched for a third session.
 - **AdSense**: still a waiting game, and the index is now 203 enriched pages rather than 91 two sessions ago.
 
