@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.60 — 2026-08-26
+
+**Internal housekeeping.** Session records corrected; nothing user-facing changed.
+
 ## 0.334.59 — 2026-08-26
 
 **Groundwork so that two kinds of answer we could not write honestly are now possible.** Some championships from before about 1990 have no surviving record of which race actually settled them, and the Nürburgring 24 Hours is a single race rather than a championship at all, so "where the title was won" was the wrong sentence for both. Those pages can now say what the season was, or how the race was won, instead of claiming something nobody recorded. Nothing changes on the answers already published.

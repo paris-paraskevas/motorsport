@@ -1,6 +1,6 @@
 # The execution queue
 
-Rewritten 2026-08-26 (session 36 close). `main` = **0.334.59**, prod verified, tree clean, zero open PRs, suite **1239**.
+Rewritten 2026-08-26 (session 36 close). `main` = **0.334.60**, prod verified, tree clean, zero open PRs, suite **1239**.
 
 Every item states **what**, **why**, **where**, and **how prod is audited**. The ritual per item: branch → implement → `tsc` / `lint` / `vitest` / `build` → browser-verify → the trio → PR with a real body → squash-merge → poll `/changelog` → audit on prod.
 
