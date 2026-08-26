@@ -4,6 +4,21 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.46 — 2026-08-26
+
+### Added
+- **Champion-notes wave 3c: F1 1966–1975, ten seasons.** `content/series/f1/champion-notes.json` 50 → **60**. **F1 is now 60 of 76; 16 remain (1950–1965).** Sitemap who-won entries 65 → 75.
+  - A decade of titles settled by something other than winning: **Stewart clinched 1971 while retired at the roadside** with a broken driveshaft, and **Brabham clinched 1966 the same way** when Surtees stopped 24 laps after he did. **1970 is the sport's only posthumous championship**, confirmed at Watkins Glen a month after Rindt was killed at Monza. Stewart's 1969 came by **eight hundredths of a second**, top four covered by 0.19s.
+- **Two facts omitted rather than guessed**, on the same rule as the earlier waves: 1967's final margin is two points in some sources and three in others (a dropped-scores artefact), so the note says only that Hulme edged his team-mate; 1966 gets no round-of-total because the sources found did not state the season's race count.
+- **One conflict resolved rather than omitted:** sources disagreed on Clay Regazzoni's 1974 finish (5th or 11th). Wikipedia's race report gives **11th, four laps down**, so the note uses that.
+
+### Changed
+- **The sitemap spot-check is pointed away from F1 entirely.** This programme works through F1 fastest, so an F1 year in that explicit list goes stale every wave — it caught 1985, then 1972, which is the test working but noisily. It now names two ADAC seasons, a family no wave will reach for a long time. The list stays explicit rather than derived, because re-indexing a page should remain a visible decision.
+
+### Verified
+- `tsc` **0** · `lint` 0 errors + 2 known warnings · `npm test` **1212 passed** · `build` **0**
+- Splice guards: **90 insertions, 0 deletions**, CRLF preserved, every pre-existing entry byte-identical, every new entry 2+ sources, no em dashes.
+
 ## 0.334.45 — 2026-08-25
 
 ### Added

@@ -443,5 +443,95 @@
       "https://www.racefans.net/2008/10/07/1976-japanese-grand-prix-flashback/",
       "https://www.motorsportmagazine.com/articles/single-seaters/f1/hunt-and-lauda-fuji-1976/"
     ]
+  },
+  "1975": {
+    "clinched": "Italian Grand Prix, Monza, 7 September 1975, one round to spare (round 13 of 14)",
+    "note": "Lauda needed half a point at Monza on 7 September 1975, the Canadian Grand Prix having been cancelled for lack of money, and third place behind his team-mate Clay Regazzoni gave him his first championship. Emerson Fittipaldi caught and passed him for second in the closing laps, which changed nothing. The same afternoon ended an eleven-year wait for a Ferrari constructors' title. Lauda's year was built on Mauro Forghieri's transverse-gearbox 312 T: five wins and nine poles from fourteen rounds.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1975_Italian_Grand_Prix",
+      "https://www.grandprix.com/gpe/rr263.html",
+      "https://www.motorsport.com/f1/news/niki-lauda-first-f1-title-50-years-ago-in-his-own-words/10757040/"
+    ]
+  },
+  "1974": {
+    "clinched": "United States Grand Prix, Watkins Glen, 6 October 1974, final round (15 of 15)",
+    "note": "Fittipaldi and Clay Regazzoni arrived at Watkins Glen on 6 October 1974 level on points, so the title went to whichever finished ahead. Regazzoni's Ferrari had a broken damper that destroyed its tyres and he came home eleventh, four laps down, while Fittipaldi drove a careful fourth to take his second championship in three seasons on 55 points. It was McLaren's first constructors' title, by three points from Ferrari. The weekend was overshadowed by the death of Helmuth Koinigg, the second driver killed at the circuit in twelve months.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1974_United_States_Grand_Prix",
+      "https://www.mclaren.com/racing/heritage/how-emerson-fittipaldi-won-mclarens-first-f1-title-on-three-hours-sleep/",
+      "https://www.f1-fansite.com/f1-result/results-1974-formula-1-grand-prix-of-the-united-states/"
+    ]
+  },
+  "1973": {
+    "clinched": "Italian Grand Prix, Monza, 9 September 1973, two rounds to spare (round 13 of 15)",
+    "note": "Stewart needed one point at Monza on 9 September 1973 and had to earn it the hard way: a left-rear puncture on lap 8 dropped him to twentieth, a minute down. He came back through the field at around two seconds a lap faster than the cars ahead, reached fourth by lap 49, and set a new lap record for the chicaned circuit on the way. It was his third and final championship, and he announced his retirement three days later. Ronnie Peterson won the race.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1973_Italian_Grand_Prix",
+      "https://www.autosport.com/f1/news/race-of-my-life-jackie-stewart-on-the-1973-italian-gp-4982196/4982196/",
+      "https://www.f1-fansite.com/f1-result/results-1973-formula-1-grand-prix-of-italy/"
+    ]
+  },
+  "1972": {
+    "clinched": "Italian Grand Prix, Monza, 10 September 1972, two rounds to spare (round 10 of 12)",
+    "note": "Fittipaldi won at Monza on 10 September 1972 to become the first Brazilian world champion and, at 25 years and 273 days, the youngest in the sport's history, a record that stood for 33 years until Fernando Alonso broke it in 2005. Jackie Stewart's challenge ended within a hundred metres of the start when his clutch failed. Fittipaldi was driving a spare Lotus 72D, his own car having been badly damaged in a transporter crash on the way to Monza, and said afterwards that he only realised he was champion the next morning, reading the papers.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1972_Italian_Grand_Prix",
+      "http://en.espn.co.uk/f1/motorsport/story/6293.html",
+      "https://www.autosport.com/f1/news/race-of-my-life-emerson-fittipaldi-on-the-1972-italian-gp-4981591/4981591/"
+    ]
+  },
+  "1971": {
+    "clinched": "Austrian Grand Prix, Osterreichring, 15 August 1971, three rounds to spare (round 8 of 11)",
+    "note": "Stewart took his second title on a day he did not finish. A broken left-rear driveshaft ended his race at the Osterreichring on 15 August 1971, but Jacky Ickx retired with engine failure and Ronnie Peterson could only manage eighth, which left nobody able to catch him. He had won five of the first seven rounds and closed the year on 62 points. He remains the only driver crowned world champion in Austria. Jo Siffert won the race, and it was also the day Niki Lauda made his Formula 1 debut.",
+    "sources": [
+      "https://f1.fandom.com/wiki/1971_Austrian_Grand_Prix",
+      "https://www.grandprix247.com/f1-history/on-this-day-in-formula-1-stewart-crowned-lauda-debuts-and-ferrari-seal-another-formula-1-title",
+      "https://www.motorsportmagazine.com/database/drivers/jackie-stewart/"
+    ]
+  },
+  "1970": {
+    "clinched": "United States Grand Prix, Watkins Glen, 4 October 1970, one round to spare (round 12 of 13)",
+    "note": "The only posthumous championship in the sport's history. Rindt was killed in practice at Monza on 5 September 1970 while leading the standings, and the title was mathematically settled at Watkins Glen on 4 October, where his replacement Emerson Fittipaldi won and Jacky Ickx, the only man who could still catch him, finished fourth. Rindt took it by five points. The trophy was presented to his widow, Nina. Ickx said later that he was glad he had never won the 1970 championship.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/Jochen_Rindt",
+      "https://www.motorsportmagazine.com/articles/single-seaters/f1/jochen-rindt-f1s-unanointed-champion/",
+      "https://en.wikipedia.org/wiki/1970_United_States_Grand_Prix"
+    ]
+  },
+  "1969": {
+    "clinched": "Italian Grand Prix, Monza, 7 September 1969, three rounds to spare (round 8 of 11)",
+    "note": "Stewart had to win at Monza on 7 September 1969 to take the title there, and he won it by eight hundredths of a second. The lead changed fourteen times over 68 laps of slipstreaming, and the top four crossed the line covered by 0.19 seconds, Stewart ahead of Jochen Rindt with Jean-Pierre Beltoise and Bruce McLaren behind. He finished the season on 63 points with six wins, 26 clear of Jacky Ickx, and the year gave Matra its first and only constructors' championship.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1969_Italian_Grand_Prix",
+      "https://automobilist.com/en-us/blogs/stories/sir-jackie-stewart-in-monza-1969-the-scots-italian-job",
+      "https://www.f1-fansite.com/f1-results/1969-f1-championship-standings/"
+    ]
+  },
+  "1968": {
+    "clinched": "Mexican Grand Prix, Magdalena Mixhuca, 3 November 1968, final round (12 of 12)",
+    "note": "Three drivers could still win it in Mexico City on 3 November 1968: Hill on 39 points, Jackie Stewart on 36, Denny Hulme on 33. Hill led from the end of the opening lap and won the race, finishing the year on 48 points, twelve clear of Stewart, for his second championship. Lotus took the constructors' title the same afternoon. It closed a season the team had begun by losing Jim Clark at Hockenheim in April.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1968_Mexican_Grand_Prix",
+      "https://www.motorsportmagazine.com/database/races/1968-mexican-grand-prix/",
+      "https://www.motorsportmagazine.com/articles/single-seaters/f1/watch-graham-hill-clinch-his-second-f1-title/"
+    ]
+  },
+  "1967": {
+    "clinched": "Mexican Grand Prix, Magdalena Mixhuca, 22 October 1967, final round (11 of 11)",
+    "note": "For the first time in eight years two team-mates went to the last race able to win the championship. Hulme needed fourth place in Mexico City on 22 October 1967; Jack Brabham needed to win it with Hulme fifth or lower. Jim Clark won by over a minute despite having almost no clutch, Brabham was second and Hulme came home third a lap down, driving deliberately out of trouble. He is still the only New Zealander to have won the Formula 1 world championship, and the team had already taken the constructors' title three rounds earlier.",
+    "sources": [
+      "https://en.wikipedia.org/wiki/1967_Mexican_Grand_Prix",
+      "https://www.motorsportmagazine.com/archive/article/december-1967/34/sixth-grand-prix-of-mexico/",
+      "https://www.formula1.com/en/information/drivers-hall-of-fame-denny-hulme.4Y4lvrNNAQcB0Cf6PQcIqq"
+    ]
+  },
+  "1966": {
+    "clinched": "Italian Grand Prix, Monza, 4 September 1966",
+    "note": "Brabham clinched his third championship at Monza on 4 September 1966 from the side of the track. An oil leak stopped his BT19 on lap seven, and the title was his 24 laps later when John Surtees, the only man who could still catch him and needing to win all three remaining races, stopped with a fuel leak. He had won four of the previous six rounds. It remains the only time a driver has won the world championship in a car carrying his own name, and Brabham-Repco took the constructors' title too. Ludovico Scarfiotti won the race, the only Grand Prix victory of his career.",
+    "sources": [
+      "https://www.goodwood.com/grr/f1/how-brabhams-hastily-prepared-bt19-claimed-a-world-championship/",
+      "https://automobile.fandom.com/wiki/1966_Italian_Grand_Prix",
+      "https://www.whichcar.com.au/news/repco-brabham-bt19-first-car-inducted-into-australian-motorsport-hall-of-fame"
+    ]
   }
 }
