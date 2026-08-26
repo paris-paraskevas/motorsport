@@ -1631,6 +1631,20 @@ Plan at start: the two operator items first, then the ADAC template decision, th
 
 Active: (no [+Nm] prefixes given this session)
 
+### Tue 2026-08-26 — session 37 (the endurance families)
+
+Plan at start: WEC, IMSA and GT World — three completable families, three more completions — leaving the operator's two items alone. Executed as planned.
+
+- → done: **WEC complete, 13 of 13** (0.334.61), **IMSA complete, 12 of 12** (0.334.62), **GT World complete, 12 of 12** (0.334.63).
+- → done, unplanned and the reason the wave order mattered: **crews are now counted per person** (0.334.61). Browser-verifying the FIRST page of the WEC wave found the derived text calling 2019 "Buemi, Alonso, Nakajima's first FIA WEC title" when Buemi had won in 2014 with a different crew, and the all-time record calling it two titles between two crew strings when Buemi and Hartley had four each. Fixed in the same PR, so no crew page was ever indexed carrying it. It would have affected 145 crew rows across six families.
+- → also corrected: `wec/champions.json` called 2019–20 a "super season" (it was 2018–19).
+- → **4 merges, 0.334.61 → 0.334.64, every one prod-verified.** Programme 166/489 → **203/489 (41.5%)**, complete families four → **seven**. Suite 1239 → 1265. Prod's sitemap carries 203 who-won URLs, matching local exactly.
+- → deliberately month-not-day on seven notes: the 2018 IMSA finale (Wikipedia and its mirror say a Monday; every other finale in the family is a Saturday) and six GT World seasons whose venues are sourced but whose race days are not.
+- → **not started, for a third session**: the Cloudflare `cf:populate` fix and the 1.0 copy sign-off. Both the operator's.
+- Won't-touch honoured: no Tier-2 or Tier-3 item, no prod Supabase or infra write, ADAC/NLS left for their own session.
+
+Active: (no [+Nm] prefixes given this session)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.
