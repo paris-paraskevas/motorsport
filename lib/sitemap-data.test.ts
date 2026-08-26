@@ -240,9 +240,14 @@ describe('who-won pages are advertised only when enriched', () => {
     //
     // NB running `npx vitest` directly skips `pretest`, so CONTENT_BUNDLE is
     // stale and this assertion can pass against old data. Use `npm test`.
+    // Deliberately NOT F1 seasons any more. The enrichment programme is working
+    // through F1 fastest, so an F1 year here goes stale every wave (it already
+    // did twice, 1985 then 1972 - the test working, but noisily). These two are
+    // in a family no wave will reach for a long time, so the assertion stays
+    // meaningful. When the ADAC wave lands, this list is what to update.
     const shouldBeAbsent = [
-      `${SITE_URL}/information/formula-1/who-won-the-1972-formula-1-championship`,
       `${SITE_URL}/information/endurance/who-won-the-2023-adac-ravenol-24h-nurburgring-championship`,
+      `${SITE_URL}/information/endurance/who-won-the-2022-adac-ravenol-24h-nurburgring-championship`,
     ];
     for (const u of shouldBeAbsent) {
       expect(advertised.has(u), `${u} is un-enriched and must not be advertised`).toBe(false);

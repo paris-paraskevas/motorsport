@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.46 — 2026-08-26
+
+**Ten more championship answers, back to 1966.** These are the strange ones: Jackie Stewart winning the 1971 title while parked at the side of the road with a broken driveshaft, Jack Brabham the same in 1966, and 1970, the only championship in the sport's history won by a driver who had already died. Each cites its sources.
+
 ## 0.334.45 — 2026-08-25
 
 **Ten more championship answers, back to 1976.** The Formula 1 seasons from 1976 to 1985 now carry the story of how each title was settled: Hunt taking it by a point in the Fuji rain, Lauda by half a point at Estoril, Piquet by one in a Las Vegas car park. Each cites its sources.
