@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.71 — 2026-08-27
+
+**Every World Rally champion now has a written note, back to the first drivers' championship in 1979.** Forty-seven of them. Rallying keeps the best endings: three of these titles were decided by a single point, including the very first one. In 1986 the championship changed hands eleven days after the season had finished, on appeal. And in 2006 Sébastien Loeb won it while sitting at home with a broken arm, on a rally he never started.
+
 ## 0.334.70 — 2026-08-27
 
 **Every World Superbike champion now has a written note, back to the first season in 1988.** All 38 of them, and this championship keeps producing finishes worth reading about: 2012 was decided by half a point, traceable to a race at Monza cut to eight laps that paid half score. 2002 turned on a mistake at the penultimate corner of the final race. In 2000 the title was not safe until a court ruled on an appeal, days before the last round. We also corrected who won the 2007 manufacturers' title, which we had wrong.
