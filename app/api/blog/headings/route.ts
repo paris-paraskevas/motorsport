@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   }
   // Supporter gate (operator rule 2026-08-05): AI tools are a donor perk.
   // Admins bypass; everyone else needs publicMetadata.donor, granted by hand
-  // on /admin/users. 402 is deliberate — payment required, literally.
+  // on /admin/audience. 402 is deliberate — payment required, literally.
   if (!isAdmin(user) && !hasDonated(user)) {
     return NextResponse.json(
       { error: 'AI tools are a supporter perk: the coffee button in the header unlocks them' },

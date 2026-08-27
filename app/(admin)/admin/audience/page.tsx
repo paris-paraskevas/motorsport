@@ -8,7 +8,7 @@ import { DonorToggle } from '@/components/admin/DonorToggle';
 import { listAuthorRequests, type AuthorRequest } from '@/lib/author-requests';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Users · Admin' };
+export const metadata: Metadata = { title: 'Audience · Admin' };
 
 interface UserRow {
   id: string;
@@ -77,7 +77,7 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Users" tagline="Accounts · roles · author applications · recent sign-ups" />
+      <AdminPageHeader title="Audience" tagline="Accounts · roles · author applications · recent sign-ups" />
       {requests.length > 0 && (
         <div className="mb-6">
           <TelemetryPanel title="Author applications" meta={`${requests.length} pending`} flush>

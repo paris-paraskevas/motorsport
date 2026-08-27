@@ -13,7 +13,7 @@ import { AdminPageHeader } from '@/components/admin/AdminUI';
 import { HomeComposer } from '@/components/admin/HomeComposer';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Home page' };
+export const metadata: Metadata = { title: 'Site · Admin' };
 
 // The home composer: arrange the bands, choose what leads, see it before it is
 // live. The first tool in the console that CHANGES the site rather than

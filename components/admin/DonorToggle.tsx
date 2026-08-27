@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Supporter-flag toggle on an /admin/users sign-up row. Sets Clerk
+// Supporter-flag toggle on an /admin/audience sign-up row. Sets Clerk
 // publicMetadata.donor via PATCH /api/admin/users/[id]; the flag unlocks the
 // studio's AI tools for that account. Mirrors AuthorRequestActions: success
 // router.refresh()es so the server-rendered row shows the new state.

@@ -137,7 +137,7 @@ export function HomeComposer({
     if (hidden.length) q.set('hidden', hidden.join(','));
     const lead = next.find(b => b.id === 'blog')?.pinnedSlug;
     if (lead) q.set('lead', lead);
-    router.replace(`/admin/home?${q.toString()}`, { scroll: false });
+    router.replace(`/admin/site?${q.toString()}`, { scroll: false });
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -281,7 +281,7 @@ export function HomeComposer({
         {dirty && (
           <button
             type="button"
-            onClick={() => router.replace('/admin/home', { scroll: false })}
+            onClick={() => router.replace('/admin/site', { scroll: false })}
             className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted hover:text-text"
           >
             <RotateCcw size={13} /> Discard

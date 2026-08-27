@@ -129,7 +129,7 @@ export async function notifyAdminsAuthorRequest(req: { displayName: string; pitc
       req.pitch.length > 400 ? `${req.pitch.slice(0, 400)}…` : req.pitch,
       'Approve or decline it from the admin console; approval grants studio access immediately.',
     ],
-    cta: { label: 'Review the application', href: `${SITE_URL}/admin/users` },
+    cta: { label: 'Review the application', href: `${SITE_URL}/admin/audience` },
   });
   await sendEmail({ subject: `[Authors] Application: ${req.displayName}`, text, html });
 }
