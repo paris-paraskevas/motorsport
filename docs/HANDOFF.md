@@ -6,7 +6,73 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-27 (LATEST, session 38 FINAL — the enrichment programme is finished, and what is thin now) — `main` = **0.334.81**, prod verified, suite **1345**
+## ⚡ Next session pickup — 2026-08-27 (LATEST, session 39 FINAL — the record cohort, and four false claims it surfaced) — `main` = **0.334.86**, prod verified, zero open PRs, suite **1451**
+
+**Read `docs/next-session.md` next.** TIER 1 item 1 is struck; its correction and the recommendation on item 2 are written in.
+
+### ✅ Shipped — 4 merges, 0.334.83 → 0.334.86
+
+| Version | What |
+|---|---|
+| **0.334.83** | The `record-notes.json` mechanism + its integrity test + the first nine notes; **two `champions.json` false claims fixed** |
+| **0.334.84** | Eight more notes; **Formula E's teams record was wrong and is now Renault e.dams outright** |
+| **0.334.85** | The last six — **the cohort is complete, 23 of 23** |
+| **0.334.86** | Session records |
+
+**Measured on prod-rendered HTML, before and after, the same way both times** (fetch the URL, take the `<article>`, strip tags, count words):
+
+| | median | min | under 180 |
+|---|---:|---:|---:|
+| Before | **58** | **42** | 23 of 23 |
+| After | **221** | **191** | **0** |
+
+Suite 1345 → **1451**, all 106 from the new `it.each` gate rather than a test being written.
+
+### 🔴 Four `champions.json` errors, every one found by checking a record COUNT against its sources
+
+This is the finding worth carrying. The record pages state a number, and a number is falsifiable in a way prose is not — so writing 23 notes was, in effect, an audit of fifteen files' aggregate integrity. Three of the four were publishing false claims on live indexed pages.
+
+1. **WEC credited Toyota with two manufacturers' titles that were never awarded.** For 2018-19 and 2019-20 the FIA **replaced** the top-class manufacturers' championship with a teams' championship, because the award required at least two registered manufacturers and Toyota was the only one left in LMP1. Toyota won both of those *teams'* titles. We had them as `constructorChampion`, so the record page said 7 and both who-won pages said "Toyota also took the manufacturers' championship that season". Real total **5**.
+2. **WorldSBK had Yamaha as the 2009 manufacturers' champion; it was Ducati.** That one row is why our Ducati total read 20 against Wikipedia's stated 21 — and with it corrected the two agree exactly across all 38 seasons, which cross-checks the whole list rather than the single year.
+3. **Formula E's teams record was published as a four-way tie at two. It is Renault e.dams, outright, with three.** Season 1 was filed as `e.dams-Renault` and seasons 2-3 as `Renault e.dams`, so `rankTitles` counted one team as two. **Same class as the crew-counting bug closed in 0.334.61 — the aggregation cannot see that two strings are one entity — in the constructor field this time.** It also fixed a derived count: "gone to 8 different teams" → 7.
+4. The gt-world 2014 note cited that series' own `meta.wikipediaPage`, so the sources rail listed the same page twice. The only such duplicate in 1279 note sources.
+
+### 🟡 Four bounded windows — NOT errors, and the distinction matters
+
+Four pages have a derived headline that reads as an all-time claim over a file covering part of the history. Nothing is wrong in the data; the note states the scope.
+
+- **NASCAR** — file starts 2000. Petty and Earnhardt also won seven, so it is a three-way tie, not Johnson alone. His five consecutive **is** his alone.
+- **WRC** — manufacturers' title from 1973, drivers' from 1979, file from 1979. Lancia's 1974-76 are outside it: all-time Lancia has ten to Toyota's nine, which Toyota's own 2025 release says too.
+- **IndyCar** — file starts 1996. Dixon's six leads the IndyCar Series era; Foyt's seven leads all-time.
+- **NLS** — file starts 2010, series runs from 1977 (VLN until 2020). Fritzsche and Scheid have five each to Leisen's four, per the series' own report of Leisen's fourth.
+
+**Still open and the operator's call:** the `summary` line — meta description and hub teaser — is unqualified on all 23 pages, including those four. It is the string Google indexes. Fixing it changes both record generators' summary text for every record page.
+
+### 🟢 Two naming boundaries deliberately NOT normalised
+
+The opposite call from the Formula E fix, and the difference is the test: **normalise when two strings are one entity in consecutive seasons and the aggregate is simply wrong; explain in prose when the entrant names as recorded are correct.**
+
+- **F3** — ART Grand Prix's 2011 and 2012 GP3 titles were really entered as **Lotus ART** and **Lotus GP** under its title sponsorship. Real, distinct names. Under ART's name the record is six; counting the organisation it is eight. The note gives both.
+- **F2** — four of ART's five are GP2 and one is Formula 2, across the 2017 rebrand. Its 2008 GP2 Asia teams' title is a different championship and is correctly excluded.
+
+### 🔵 Process learnings (durable, session 39)
+
+1. **Writing a note that must state a number audits the data that produces it.** Three false claims had survived every gate and two enrichment sessions because nothing ever compared our aggregate to an external one. The cheapest version of this check: take the record total the page derives, find one source that states the same total, and see whether they match. Where they did not, the year-by-year list was wrong.
+2. **A press release's own count is not authority.** Mercedes-AMG's 2025 DTM release calls that title its **16th**; both Wikipedia DTM tables give **17** year by year. The note states neither total as a sourced claim — it gives the eras and the arithmetic, which both sources support. Same rule as "omit what two sources contest", applied to a number.
+3. **Browser-verifying the FIRST page of the wave caught the only rendering defect again** — two Wikipedia citations in one entry rendering as a bare, duplicated-looking `en.wikipedia.org`. `sourceLabel()` now names the article. Fourth session running that this rule earned its keep.
+4. **Check a URL resolves before citing it.** Of the first twenty source URLs, one 404'd (a worldsbk.com link whose spaces were `+`-encoded, not `%20`) and one 403'd to any scripted fetch. A one-line `fetch` loop over every candidate is worth running before the note is written, not after.
+5. **A test that reuses the code under test is right when it is checking CONTENT, not code.** `record-notes-integrity.test.ts` imports the generator's own `driversOf` deliberately, so the test and the page cannot disagree about who a record holder is; the ranking is reimplemented, because that is the thing being asserted about.
+
+### 🩹 Owed (operator)
+
+- **The `summary` line decision** above — the one thing this work surfaced and could not close on its own.
+- **The ADAC "drivers' title" noun.** `driversTitleWord` has no concept of a one-race family, so 70 who-won pages and two record pages call a 24-hour race win a drivers' title. It is the recommended next spend on TIER 1 item 2, in place of researching 204 short pages.
+- **One primary-source check on the ADAC 2022 crew.** Ours is Mies/Feller/Vervisch/Vanthoor for Scherer Sport Team Phoenix; a secondary summary put van der Linde in that car instead. Wikipedia confirms the team but not the line-up. Nothing was asserted either way.
+- Carried: the 1.0 copy sign-off (fifth session), the `POINTS_PAIR` broadening decision, the Álex Palou accent.
+
+---
+
+## ⚡ Session 38 — 2026-08-27 (the enrichment programme is finished, and what is thin now) — `main` = **0.334.81**, prod verified, suite **1345**
 
 **Read `docs/next-session.md` next.** It is the ordered queue, and it is now ordered by measured thinness rather than by family. This file records what happened.
 

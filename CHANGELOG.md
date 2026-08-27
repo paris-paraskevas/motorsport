@@ -4,11 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.86 — 2026-08-27
+
+### Internal
+- **Session-39 records.** `docs/HANDOFF.md` gains the session block; `SCHEDULE.md` records the day; `docs/next-session.md` has TIER 1 item 1 struck as done.
+- **`docs/next-session.md`'s record-cohort figures were wrong and are corrected.** It said **22 pages, median 67, minimum 44**. Re-measured on prod-rendered HTML — fetch the URL, take the `<article>`, strip tags, count words — it was **23 pages, median 58, minimum 42**. The min page was named correctly; the count and both statistics were not. The correction is written into the file with the method, because a registry-side or source-character estimate will always drift from what a reviewer sees.
+- **A recommendation written into TIER 1 item 2**, as asked, rather than padding the ~204 short who-won pages: accept them short and retire the 150-word bar for single-race families (it came from championship-season pages, where a title fight supplies the material by definition); skip the German period-press hunt as a poor return; and spend the effort instead on the **wording** — `driversTitleWord` and the question templates have no concept of a one-race family, so 70 ADAC/NLS who-won pages plus two record pages call a 24-hour race win a "drivers' title". One change against 204 research tasks, and a correctness problem rather than a length one.
+- Nothing user-facing changed in this push.
+
 ## 0.334.85 — 2026-08-27
 
 ### Added
 - **Record notes, wave 3 — the last six, and the cohort is complete at 23 of 23.** Formula 1 (drivers + teams), Formula 2 (teams), IndyCar, NLS and the ADAC 24h. Measured on prod before, in `next dev` after: 74 → 242, 61 → 221, 58 → 212, 58 → 223, 68 → 234, 81 → 251. Suite 1416 → **1451**.
-- **Whole-cohort result.** All 23 `most-` record pages, measured the same way on prod-rendered HTML that produced the audit: **before — median 58, minimum 42, 23 of 23 under 180. After — median 219, minimum 191, 0 under 180.** The thinnest page on the site went 42 → 203.
+- **Whole-cohort result.** All 23 `most-` record pages, measured the same way on prod-rendered HTML that produced the audit: **before — median 58, minimum 42, 23 of 23 under 180. After — median 221, minimum 191, maximum 263, 0 under 180.** The thinnest page on the site went 42 → 203. (This entry first said median 219, which was the mixed figure — waves 1 and 2 on prod, wave 3 still local. Re-measured entirely on prod after this deploy it is 221; corrected in 0.334.86.)
 
 ### The third and fourth bounded windows, both now stated in the note rather than left to inference
 Same shape as the NASCAR and WRC cases in 0.334.84. The derived headline reads as an all-time claim; the file behind it covers part of the history.

@@ -1645,6 +1645,22 @@ Plan at start: WEC, IMSA and GT World — three completable families, three more
 
 Active: (no [+Nm] prefixes given this session)
 
+### Wed 2026-08-27 — session 39 (the `most-` record cohort, and the false claims it surfaced)
+
+Plan at start: enrich the 23 `most-` record pages — build the sidecar mechanism and its integrity test first, then write the notes thinnest-first in three waves, each with its own gates, browser check and prod re-measure. Operator approved both new file kinds and chose the note's placement before the provenance footer.
+
+- → done: **the mechanism** — `content/series/<slug>/record-notes.json` keyed by half, `loadRecordNotes`, `recordNoteLines`, and `lib/record-notes-integrity.test.ts` with eight invariants (0.334.83).
+- → done: **all 23 notes**, in three waves — nine (0.334.83), eight (0.334.84), six (0.334.85). **Median 58 → 219, minimum 42 → 191, none under 180**, measured on prod-rendered HTML both times.
+- → done, unplanned and the real finding: **four `champions.json` errors**, three of them false claims on live indexed pages, every one found by checking a record COUNT against its sources. WEC's two never-awarded manufacturers' titles, WorldSBK's 2009 Ducati/Yamaha swap, and **Formula E's teams record, which was a four-way tie at two and is actually Renault e.dams outright with three** — one team filed under two spellings, the same class as the 0.334.61 crew-counting bug.
+- → done, unplanned: `sourceLabel()` now names Wikipedia articles rather than returning a bare host, found by browser-verifying the first page of wave 1 rather than the last. Fourth session running that rule has caught the only defect.
+- → done: four bounded-window pages (NASCAR, WRC, IndyCar, NLS) now state their scope in the note. **Not** data errors — derived headlines reading as all-time claims.
+- → decided and NOT done: two naming boundaries left alone (ART's Lotus-branded GP3 seasons, ART's GP2-vs-F2 split) and explained in prose, because the entrant names as recorded are correct.
+- → done: `docs/next-session.md` TIER 1 item 1 struck, its wrong 22/67/44 figures corrected to 23/58/42, and a recommendation written into item 2 — accept the ADAC pages as short, retire the 150-word bar for single-race families, and spend the effort on the "drivers' title" noun instead.
+- → **not started, for a fifth session**: the 1.0 copy sign-off. Still the operator's.
+- Won't-touch honoured: TIER 1 items 2 and 3 (no padding, no country pages), TIER 2 and 3, `POINTS_PAIR`, the Álex Palou accent (an operator-deferred change), the `featured: hasStableName` gate, and no prod Supabase or infra write.
+
+Active: (no [+Nm] prefixes given this session)
+
 ### Wed 2026-08-27 — session 38 (the enrichment programme, finished)
 
 Plan at start: none written — the session began as a UI task (the What's-New modal) and turned into the rest of the champion-notes programme on the operator's instruction, wave by wave.

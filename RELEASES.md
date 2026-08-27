@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.86 — 2026-08-27
+
+**Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.
+
 ## 0.334.85 — 2026-08-27
 
 **Every "who has won the most" page now has a written answer — all 23 of them.** The last six are Formula 1 for drivers and teams, Formula 2 teams, IndyCar, and the two Nürburgring championships. These were the thinnest pages on the site: a name, a number and a list, near-identical from one series to the next. They now tell you when the record was set and what it displaced, who is closest and what they would need, and the one thing that makes it hard to beat. Two of the six also say something the numbers alone got wrong: our IndyCar records start in 1996, so Scott Dixon's six titles lead that era while A. J. Foyt's seven still lead all-time, and our Nürburgring endurance records start in 2010, which leaves out two drivers with more titles than the man the page calls the record holder.
