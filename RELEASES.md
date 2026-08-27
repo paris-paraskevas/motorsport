@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.72 — 2026-08-27
+
+**Internal, for the people running the site.** The admin console has been rebuilt around answering a question rather than listing links: it now opens on whether every series' data is healthy and what is waiting on someone, with a new screen for data health, feed freshness and what is switched on. It also has its own dark and light modes, so it no longer looks like the site you are editing. Nothing changes for readers.
+
 ## 0.334.71 — 2026-08-27
 
 **Internal groundwork.** The site already checks every series' data every six hours and then forgets the answer; it now keeps it, so that health can be shown on a screen instead of being recomputed on demand. Nothing changes for readers.

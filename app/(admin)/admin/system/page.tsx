@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/admin-guard';
-import { readHealthReport } from '@/lib/health-store';
+import { readHealthReport, type HealthReport } from '@/lib/health-store';
+import { getSourceHealth, type SourceHealth } from '@/lib/source-snapshot';
+import { getOpenMarkets, type OpenMarket } from '@/lib/betting/markets';
 import { AdminPageHeader, KpiTile, TelemetryPanel, Unavailable } from '@/components/admin/AdminUI';
 import { LocalTime } from '@/components/LocalTime';
 import { Activity, ListChecks, Radio } from 'lucide-react';
@@ -10,25 +12,213 @@ export const metadata: Metadata = { title: 'System · Admin' };
 
 // System: is the machine healthy, and what does it cost.
 //
-// This is the interim shape. The full board — per-series grades, upstream
-// freshness, the cron ledger, Cloudflare usage against the included allowance,
-// billable cost and the flags-as-built panel — lands with the next step. What is
-// here already is the part that needed no new plumbing: the stored verdict from
-// `/api/cron/health`, which until 0.334.70 was computed every six hours and
-// thrown away.
+// EVERY PANEL HERE IS A READ. Nothing on this page calls a parser: the verdict
+// comes from the KV report the 6-hourly cron writes (lib/health-store.ts), so
+// this renders in one round trip instead of fifteen series of live network
+// fan-out behind a 30s-per-check timeout.
 //
-// One KV read, deliberately. Calling the health functions here instead would
-// mean fifteen series of live network fan-out on every page load behind a
-// 30s-per-check timeout — see lib/health-store.ts for why that is the wrong
-// shape, and why per-source freshness is NOT in this report.
+// The board deliberately keeps TWO measures apart, because they answer
+// different questions and conflating them is how one upstream break renders as
+// fifteen red tiles:
+//   • Parser health — can our code still read its source, over the WORKER's
+//     network. That is the stored report.
+//   • Freshness — how old the data a reader is actually served is. The Worker
+//     runs DATA_SOURCE=db, so readers get snapshots written by the warm job
+//     from clean egress IPs. That is `source_snapshot`, read live because it is
+//     one indexed query.
+//
+// Cloudflare usage, billable cost and the external analytics panels need
+// credentials that do not exist yet; they are named as not-connected rather
+// than faked, and land in the next phase.
+
+async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch {
+    return fallback;
+  }
+}
+
+const STATUS_TONE: Record<string, string> = {
+  OK: 'text-positive',
+  LOW: 'text-brand',
+  EMPTY: 'text-negative',
+  ERROR: 'text-negative',
+};
+
+function StatusPill({ status }: { status: string }) {
+  return (
+    <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${STATUS_TONE[status] ?? 'text-text-faint'}`}>
+      {status}
+    </span>
+  );
+}
+
+/** Every series named by any of the three monitors, so a series that only one
+ *  of them covers still gets a row rather than silently vanishing. */
+function seriesRows(report: HealthReport) {
+  const labels = new Map<string, string>();
+  for (const c of [...report.standings.checks, ...report.results.checks]) labels.set(c.slug, c.label);
+  for (const c of report.sessions.checks) labels.set(c.slug, c.label);
+
+  const standings = new Map(report.standings.checks.map(c => [c.slug, c]));
+  const results = new Map(report.results.checks.map(c => [c.slug, c]));
+  const sessions = new Map(report.sessions.checks.map(c => [c.slug, c]));
+
+  return [...labels.entries()]
+    .map(([slug, label]) => ({
+      slug,
+      label,
+      standings: standings.get(slug),
+      results: results.get(slug),
+      sessions: sessions.get(slug),
+    }))
+    // Anything not OK first — the board should open on what needs you.
+    .sort((a, b) => {
+      const bad = (r: typeof a) =>
+        [r.standings?.status, r.results?.status, r.sessions?.status].filter(s => s && s !== 'OK').length;
+      return bad(b) - bad(a) || a.label.localeCompare(b.label);
+    });
+}
+
+function HealthMatrix({ report }: { report: HealthReport }) {
+  const rows = seriesRows(report);
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[540px] border-collapse text-sm">
+        <thead>
+          <tr className="border-b border-border">
+            {['Series', 'Standings', 'Results', 'Sessions', 'Slowest'].map(h => (
+              <th
+                key={h}
+                className="px-4 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] font-medium text-text-faint"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => {
+            const ms = Math.max(r.standings?.ms ?? 0, r.results?.ms ?? 0, r.sessions?.ms ?? 0);
+            return (
+              <tr key={r.slug} className="border-b border-border last:border-b-0">
+                <td className="px-4 py-2 text-text">{r.label}</td>
+                <td className="px-4 py-2">
+                  {r.standings ? (
+                    <span className="flex items-baseline gap-2">
+                      <StatusPill status={r.standings.status} />
+                      <span className="font-mono text-[11px] tabular-nums text-text-faint">{r.standings.rows}</span>
+                    </span>
+                  ) : (
+                    <span className="text-text-faint">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-2">
+                  {r.results ? (
+                    <span className="flex items-baseline gap-2">
+                      <StatusPill status={r.results.status} />
+                      <span className="font-mono text-[11px] tabular-nums text-text-faint">{r.results.rows}</span>
+                    </span>
+                  ) : (
+                    <span className="text-text-faint">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-2">
+                  {r.sessions ? (
+                    <span className="flex items-baseline gap-2">
+                      <StatusPill status={r.sessions.status} />
+                      {r.sessions.thin.length > 0 ? (
+                        <span className="font-mono text-[11px] text-text-faint">
+                          {r.sessions.thin.length} thin
+                        </span>
+                      ) : null}
+                    </span>
+                  ) : (
+                    <span className="text-text-faint">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-2 font-mono text-[11px] tabular-nums text-text-faint">
+                  {ms > 0 ? `${(ms / 1000).toFixed(1)}s` : '—'}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function FreshnessPanel({ sources }: { sources: SourceHealth[] }) {
+  // Newest first is how getSourceHealth returns them; the stale ones are what
+  // matter, so surface those first instead.
+  const ordered = [...sources].sort((a, b) => (b.ageMinutes ?? 0) - (a.ageMinutes ?? 0)).slice(0, 12);
+  return (
+    <ul className="divide-y divide-border">
+      {ordered.map(s => (
+        <li key={s.key} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
+          <span className="min-w-0 truncate font-mono text-xs text-text">{s.key}</span>
+          <span className="flex shrink-0 items-baseline gap-3">
+            {!s.ok ? <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-negative">failed</span> : null}
+            <span
+              className={`font-mono text-[11px] tabular-nums ${s.stale ? 'text-negative' : 'text-text-faint'}`}
+            >
+              {s.ageMinutes == null
+                ? 'never'
+                : s.ageMinutes < 60
+                  ? `${s.ageMinutes}m`
+                  : `${Math.round(s.ageMinutes / 60)}h`}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Feature flags as the running build actually contains them.
+ *
+ * This is the panel that would have caught the assistant going dark. A
+ * NEXT_PUBLIC_* value is inlined at BUILD time, and Workers Builds runs its own
+ * build on every merge — so a flag set only in a local env file compiles out
+ * silently and nothing anywhere reports it. Reading it here reports it.
+ */
+function flagRows() {
+  return [
+    {
+      label: 'Race Engineer assistant',
+      on: process.env.NEXT_PUBLIC_ASSISTANT_ENABLED === '1',
+      note: 'Also needs its widget remounting — it was taken out of the app layout on 2026-08-21.',
+    },
+    {
+      label: 'Push notifications',
+      on: Boolean(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
+      note: 'Without the public key in the build, new subscriptions fail silently.',
+    },
+    {
+      label: 'Studio AI tools',
+      on: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY),
+      note: 'Server-side key. Powers the section-heading proposals, and the assistant when it is on.',
+    },
+  ];
+}
 
 export default async function AdminSystemPage() {
   await requireAdmin();
-  const report = await readHealthReport();
+
+  const [report, sources, markets] = await Promise.all([
+    safe(() => readHealthReport(), null as HealthReport | null),
+    safe(() => getSourceHealth(), [] as SourceHealth[]),
+    safe(() => getOpenMarkets(), [] as OpenMarket[]),
+  ]);
+
+  const flags = flagRows();
 
   return (
-    <div>
-      <AdminPageHeader title="System" tagline="Data health · usage · what it costs" />
+    <div className="space-y-6">
+      <AdminPageHeader title="System" tagline="Data health · freshness · what is switched on" />
 
       {report === null ? (
         // An empty state has to say what fills it and when, or it reads as
@@ -37,7 +227,7 @@ export default async function AdminSystemPage() {
           <Unavailable note="No check stored yet. The health run fires every six hours and its verdict lands here; until then there is nothing to show." />
         </TelemetryPanel>
       ) : (
-        <div className="space-y-6">
+        <>
           <div className="grid gap-3 sm:grid-cols-3">
             <KpiTile
               icon={Activity}
@@ -59,35 +249,88 @@ export default async function AdminSystemPage() {
             />
           </div>
 
-          {/* An absolute instant through the site's existing LocalTime, not a
-              server-computed "41m ago": reading the clock during render is
-              impure (react-hooks/purity catches it), and a relative string baked
-              at render drifts the moment it is cached. LocalTime is
-              hydration-safe by construction and shows the viewer's own zone. */}
           <TelemetryPanel
-            title="Last check"
+            title="Parser health"
             meta={<LocalTime instant={Date.parse(report.checkedAt)} />}
             flush
           >
-            <div className="px-4 py-3 text-sm text-text-muted">
-              {report.ok ? (
-                <p>Every check passed. Nothing needs you here.</p>
-              ) : (
-                <p>
-                  <span className="font-semibold text-text">{report.down}</span>{' '}
-                  {report.down === 1 ? 'check is' : 'checks are'} failing. The per-series board arrives with the next
-                  step; the names are in the tiles above.
-                </p>
-              )}
-              <p className="mt-2 text-xs text-text-faint">
-                This grades the parsers over the Worker&rsquo;s own network. What a reader is actually served is the
-                snapshot written by the warm job, and its freshness is a separate measure — also arriving with the
-                board.
-              </p>
-            </div>
+            <HealthMatrix report={report} />
+            <p className="border-t border-border px-4 py-2.5 text-xs leading-relaxed text-text-faint">
+              Graded from the Worker&rsquo;s own network, which many upstreams reject on datacenter IPs. It answers
+              &ldquo;can our code still read its source&rdquo;, not &ldquo;is the site stale&rdquo; — that is the panel
+              below.
+            </p>
           </TelemetryPanel>
-        </div>
+        </>
       )}
+
+      <TelemetryPanel
+        title="Freshness — what readers are served"
+        meta={sources.length ? `${sources.filter(s => s.stale).length} stale of ${sources.length}` : undefined}
+        flush
+      >
+        {sources.length === 0 ? (
+          <div className="p-4">
+            <Unavailable note="No snapshots on file. The warm job writes these from GitHub Actions every 20 minutes." />
+          </div>
+        ) : (
+          <FreshnessPanel sources={sources} />
+        )}
+      </TelemetryPanel>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TelemetryPanel title="Switched on, as built" flush>
+          <ul className="divide-y divide-border">
+            {flags.map(f => (
+              <li key={f.label} className="px-4 py-3">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm text-text">{f.label}</span>
+                  <span
+                    className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] ${
+                      f.on ? 'text-positive' : 'text-text-faint'
+                    }`}
+                  >
+                    {f.on ? 'on' : 'off'}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-text-faint">{f.note}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="border-t border-border px-4 py-2.5 text-xs leading-relaxed text-text-faint">
+            Read from the running build, not from a file on a laptop. A public flag is baked in at build time, so one
+            set only locally compiles out on deploy and nothing else would ever tell you.
+          </p>
+        </TelemetryPanel>
+
+        <TelemetryPanel title="Markets" meta={markets.length ? `${markets.length} open` : undefined} flush>
+          {markets.length === 0 ? (
+            <div className="p-4">
+              <Unavailable note="No markets open. The open-markets cron runs twice a day and settlement every three hours." />
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {markets.slice(0, 8).map(m => (
+                <li key={m.id} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
+                  <span className="min-w-0 truncate text-text">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-text-faint">
+                      {m.seriesSlug} R{m.round}
+                    </span>{' '}
+                    {m.type}
+                  </span>
+                  <span className="shrink-0 font-mono text-[11px] tabular-nums text-text-faint">
+                    <LocalTime instant={Date.parse(m.locksAt)} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </TelemetryPanel>
+      </div>
+
+      <TelemetryPanel title="Usage and cost">
+        <Unavailable note="Cloudflare usage against the included allowance, billable cost and AI spend need read-only API tokens that are not configured yet. Nothing is estimated here on purpose." />
+      </TelemetryPanel>
     </div>
   );
 }

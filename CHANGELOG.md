@@ -4,6 +4,35 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.72 — 2026-08-27
+
+### Added
+- **The console is six tabs with its own dark and light modes, and an Overview that answers rather than links.** Steps 1b and 1c of the approved rebuild. The hub was five cards to five pages carrying one word of state each, and on a normal day three of those words were "Nothing waiting" — which is exactly why it went unopened. NN/g's distinction is the one that matters: data you can act on at a glance is a dashboard, a grid of doors is a portal.
+  - **Overview** now opens on the two things that are ever urgent — series healthy, sources stale, items needing you, accounts — then a **Needs you** queue that merges failing data checks, stale feeds, posts in review, author applications and unread contributor submissions into one ordered list, broken data first. Every row carries where it goes and what to do there.
+  - **New `/admin/system`**: per-series parser grades (standings / results / sessions, with row counts and the slowest check), upstream **freshness** read live from `source_snapshot`, open **markets** with their lock times, and a **switched-on-as-built** panel.
+  - **The board keeps parser health and freshness apart on purpose.** They answer different questions and conflating them is how one upstream break renders as fifteen red tiles. Parser health is graded from the Worker's own network, which many upstreams reject on datacenter IPs; freshness is what a reader is actually served, because the Worker runs `DATA_SOURCE=db` and reads snapshots the warm job writes from clean egress IPs. Both are labelled as such on the page.
+  - **Nothing on either page calls a parser.** Health comes from the KV report `0.334.71` started storing, so the console renders in one round trip instead of fifteen series of live fan-out behind a 30s-per-check timeout.
+  - **`switched on, as built` is the panel that would have caught the assistant going dark.** A `NEXT_PUBLIC_*` value is inlined at BUILD time and Workers Builds runs its own build on every merge, so a flag set only in a local env file compiles out silently and nothing anywhere reports it. Reading it in the running build reports it. That mechanism has taken down the assistant and new push subscriptions before.
+- **Two console themes, `console-dark` and `console-light`** (`app/globals.css`), plus `components/admin/ConsoleMode.tsx`. They ride the **existing token names**: there is not one `dark:` utility in `components/admin` and every colour already goes through the token utilities, so redefining the tokens reskins the whole console without touching a single class.
+  - Contrast **measured, not eyeballed** (WCAG 2.1 relative luminance, every ink against all three surfaces): dark clears **4.71:1** at worst, light **4.75:1**, and the text → muted → faint ladder stays monotonic in both. The light palette's first `--text-faint` candidate failed at 4.22 and was darkened until it passed.
+  - `--brand-fill` **is** overridden here, which the site's light themes deliberately never do. The console has no series tints; its accent is a UI colour, and amber `#ffb400` on a near-white canvas measures about 1.8:1.
+
+### Fixed
+- **The console has never had its own mode.** The admin root SSR'd `data-theme="paper"` and then rendered the **site's** `ThemeScript`, which overwrites `data-theme` from `paddock:theme` — so the console has been rendering in whichever of the six site themes the operator last picked, by accident rather than design. It now owns `paddock:console-mode`, defaults to dark, and follows the OS on first visit.
+  - The toggle renders **both** icons and lets CSS hide the wrong one, so there is no React state to mismatch on hydration. It sits in the header row rather than the rail, because the rail collapses to a scrolling chip strip below `lg` where a control appended to it would scroll off the end on a phone.
+- **Two hardcoded Tailwind palette literals** in the submission badge (`text-amber-400`, `text-emerald-400`) now use theme tokens. Amber-400 on the light console's white panels measures about 1.9:1.
+- **A server-side `Date.now()` in two new pages**, caught by `react-hooks/purity` rather than shipped. Replaced with the existing hydration-safe `LocalTime` on System and a pure absolute date on Overview — a relative age is wrong the moment the HTML is cached anyway.
+
+### Changed
+- **Routes renamed to match the tabs**, with `git mv` so history follows: `users` → `audience`, `submissions` → `content`, `behaviour` → `traffic`, `home` → `site`. The heatmap moves under Traffic, where it belongs. Studio is deliberately **not** a tab — it is a different surface on the main host, so it sits below a divider as an external link rather than implying you stay in the console.
+- **Permanent redirects for all four old paths** (`next.config.ts`), and not for search — these are `noindex`. It is for the links **already sent**: the author-application and contributor-submission emails carry absolute `/admin/users` and `/admin/submissions` URLs into somebody's inbox, and those must not start 404ing.
+- Swept every reference: two functional email CTAs (`lib/author-requests.ts`, `lib/feeder.ts`), the composer's own `router.replace` targets, and five stale comments. The `/api/admin/*` endpoints are **unchanged** — they are API routes, not pages.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1302 passed** (110 files) · `next build` → compiled, all six `/admin` routes present as `ƒ`, and the only `error|failed` lines are the six documented standing ones.
+- **1302 also settles the "contaminated 1302/110" note in `0.334.70` below.** That run was not contaminated; it was this branch's 11 health-store tests in the same checkout. 1291 + 11 = 1302 is the correct combined figure.
+- **NOT verified, and it cannot be from here:** nothing in the console has been clicked. `/admin` needs an admin session this machine does not hold, which is precisely how `0.334.68` shipped a control no operator could reach. **Browser-verification is owed on prod**: every tab loads, the mode toggle survives a reload, the composer still publishes, a supporter toggle still writes.
+
 ## 0.334.71 — 2026-08-27
 
 ### Added

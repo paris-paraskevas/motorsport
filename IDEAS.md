@@ -79,6 +79,7 @@ Superseded the fact-packs-only contract: **"i want you to read my previous blogs
 
 ## Inbox (2026-08-26 — session 35 close)
 
+- **A support centre, not just a feedback tab** (operator, 2026-08-27, during the console build) — fold `/feedback` triage (API exists, no UI), contact messages (`/api/contact` → KV) and thread moderation into one console surface, then add **transactional email** (Brevo or Resend) on top: a welcome email to new sign-ups, and replies to feedback from the console. The hook already exists — `app/api/webhooks/clerk` fires on user creation and `lib/email.ts` is the send seam. Decide the provider before any code; this is a Phase 2+ item, deliberately not in the console's Phase 1.
 - **Orphan sweep**: `LandingNav`, `LandingFooter`, `LandingAuth` have **zero importers** after the landing retirement. Not deleted in 0.334.42 because the approved deletion list said keep them; nothing imports them so they cost nothing at runtime.
 - **The home page shows one post on mobile.** "More reading" is `hidden xl:block`, so the covers added in 0.334.36 are invisible below 1280 px. A layout decision, not a class change.
 - **An empty series tab still advertises rich data.** `/series/nls/standings` renders "Nothing here yet for this series." under a description promising full championship tables and a trend chart. Reduced metadata, or `noindex` as the news tabs took.
