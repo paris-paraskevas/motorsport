@@ -6,6 +6,7 @@ import { requireAuthor } from '@/lib/admin-guard';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { getPostById } from '@/lib/blog';
 import { StudioEditor } from '@/components/studio/StudioEditor';
+import { LearnFeature } from '@/components/studio/LearnFeature';
 import { STATUS_META } from '@/components/studio/studio-shared';
 
 export const metadata: Metadata = { title: 'Edit post' };
@@ -53,6 +54,13 @@ export default async function StudioPostPage({ params }: { params: Promise<{ id:
           >
             View the live post →
           </Link>
+        )}
+        {/* The one thing still actionable on a live post, and admin-only: filing
+            it into the Learn IA. Deliberately here rather than in the editor —
+            featuring is a decision about a FINISHED post, and the API guards it
+            to `published` regardless. */}
+        {post.status === 'published' && admin && (
+          <LearnFeature id={post.id} learnTopic={post.learnTopic} />
         )}
       </>
     );

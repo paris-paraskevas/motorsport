@@ -6,6 +6,8 @@ import { INFO_TOPICS, getTopic } from '@/lib/information/topics';
 import { getTopicEntries, isTopicIndexable } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
 import { EntryRow } from '@/components/information/InfoUi';
+import { ContributorPosts } from '@/components/information/ContributorPosts';
+import { learnFeaturedPosts } from '@/lib/blog';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -63,7 +65,10 @@ export default async function TopicPage({
   const t = getTopic(topic);
   if (!t) notFound();
 
-  const entries = await getTopicEntries(topic);
+  const [entries, contributorPosts] = await Promise.all([
+    getTopicEntries(topic),
+    learnFeaturedPosts(topic),
+  ]);
   const verified = entries.filter((e) => e.review === 'verified');
   const drafts = entries.filter((e) => e.review === 'unverified');
 
@@ -175,11 +180,17 @@ export default async function TopicPage({
             </section>
           )}
 
-          {verified.length === 0 && drafts.length === 0 && (
+          {/* Only truly empty when the contributor band is empty too, or the page
+              would claim there is nothing here directly above a populated list. */}
+          {verified.length === 0 && drafts.length === 0 && contributorPosts.length === 0 && (
             <p className="text-sm text-text-muted">No answers here yet — check back soon.</p>
           )}
         </>
       )}
+
+      {/* Outside the tracks/answers branch on purpose: an admin can file a post
+          under any topic, the tracks directory included. */}
+      <ContributorPosts posts={contributorPosts} className="mb-10" />
     </div>
   );
 }

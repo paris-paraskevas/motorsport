@@ -4,7 +4,9 @@ import { INFO_TOPICS, topicForSeries } from '@/lib/information/topics';
 import { getAllInfoEntries, getIndexedInfoEntries } from '@/lib/information/registry';
 import { entryHref } from '@/lib/information/types';
 import { loadAllSeriesMeta } from '@/lib/series';
+import { learnFeaturedPosts } from '@/lib/blog';
 import { AskField } from '@/components/information/AskField';
+import { ContributorPosts } from '@/components/information/ContributorPosts';
 import { JsonLd } from '@/components/JsonLd';
 import { breadcrumbLd } from '@/lib/json-ld';
 import { SITE_URL, PAGE_WIDE } from '@/lib/site';
@@ -42,10 +44,13 @@ const FIRST_READS = [
 // ARE the product, so they lead — ask field, most-asked, the weekend-format
 // band — and the topic filing cabinet drops to the foot.
 export default async function InformationHub() {
-  const [all, featured, seriesMeta] = await Promise.all([
+  const [all, featured, seriesMeta, contributorPosts] = await Promise.all([
     getAllInfoEntries(),
     getIndexedInfoEntries(),
     loadAllSeriesMeta(),
+    // Published posts an admin filed under a Learn topic. Fail-soft inside, so a
+    // database hiccup drops the band rather than the hub.
+    learnFeaturedPosts(),
   ]);
 
   const verifiedByTopic = new Map<string, number>();
@@ -139,6 +144,11 @@ export default async function InformationHub() {
                 </div>
               </section>
             )}
+
+            {/* 4b — contributor writing, filed into the Learn IA by an admin.
+                Above the topic list because it is written by people and dated,
+                which makes it the freshest thing on the page. */}
+            <ContributorPosts posts={contributorPosts} showTopic className="mb-10" />
 
             {/* 5 — the ten topics, at the foot where a filing cabinet belongs. */}
             <section aria-label="Browse by topic">

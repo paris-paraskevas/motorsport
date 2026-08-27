@@ -4,7 +4,7 @@
 
 import type { PostStatus } from '@/lib/blog';
 
-export type PostAction = 'submit' | 'approve' | 'reject' | 'reschedule';
+export type PostAction = 'submit' | 'approve' | 'reject' | 'reschedule' | 'feature';
 
 /** Label + text-color class per status, shared by the dashboard sections, the
  *  row chips and the editor rail so a status never renders two different ways.
@@ -50,18 +50,21 @@ export function fmtWhen(iso: string | null): string {
 
 /** POST /api/blog/[id] { action } from a client handler. Approve/reschedule
  *  carry publishAt: the LOCAL datetime-local string converts to UTC ISO here,
- *  at the boundary. Never throws; the caller renders the error string. */
+ *  at the boundary. `feature` carries an InfoTopic id, or null to un-feature.
+ *  Never throws; the caller renders the error string. */
 export async function postAction(
   id: string,
   action: PostAction,
   localWhen?: string,
+  topic?: string | null,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const body: { action: PostAction; publishAt?: string } = { action };
+  const body: { action: PostAction; publishAt?: string; topic?: string | null } = { action };
   if (action === 'approve' || action === 'reschedule') {
     const d = new Date(localWhen ?? defaultLocalDateTime());
     if (Number.isNaN(d.getTime())) return { ok: false, error: 'Pick a valid publish time.' };
     body.publishAt = d.toISOString();
   }
+  if (action === 'feature') body.topic = topic ?? null;
   try {
     const res = await fetch(`/api/blog/${id}`, {
       method: 'POST',
