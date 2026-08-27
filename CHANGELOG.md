@@ -4,6 +4,30 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.67 — 2026-08-27
+
+### Added
+- **MotoGP champion notes complete: the 36 remaining seasons, 1949 to 1996.** `content/series/motogp/champion-notes.json` goes 41 → **77 of 77**, so the eighth series family is finished and MotoGP's who-won pages are all indexable (the 0.334.43 gate flips a page back by the note simply existing). Repo-wide coverage 203 → **239 of 489 (48.9%)**; 250 left across seven families (adac-ravenol-24h 54, wrc 47, dtm 39, wsbk 38, indycar 30, nascar-cup 26, nls 16).
+- **The `season` lead shape is in use for the first time.** 33 of the 36 use it; only 1978, 1975 and 1967 use `clinched`. That split is deliberate, not laziness: for most of this era no accessible source *states* which race settled the title, and the established rule from the 1997 Brno/Donington error is that **table inference is not a source**. `noteLead` renders these as "**The season:**" rather than "**Title clinched:**", which is exactly what the three-shape field was added for in 0.334.59. Where a source does state the decider it is used — Roberts third at the Nürburgring on 20 August 1978 (final round, first American champion), Agostini needing a top-seven at Brno in 1975, and Agostini taking 1967 at Mosport on 30 September.
+
+### Fixed
+- **Wikipedia season articles contradict themselves on win counts, repeatedly.** Caught and worked around in 1975 (calendar credited Agostini a Jarama win he did not take; Motor Sport and Yamaha's own archive both give four wins, matching `champions.json`), 1971, 1970, 1962, 1960, 1959, 1955, 1952 and 1951. Where the article's calendar disagreed with our curated `wins`, the figure was **omitted from the prose** rather than guessed — the notes render beside `champions.json` on the same page, so a disagreement is visible to the reader.
+- **A genuine data win for our own curation: the 1962 Senior TT.** The Wikipedia calendar credits it to Hailwood, which would make his win count 6; `champions.json` says 5. The article is wrong. Gary Hocking won the 1962 Senior TT and retired days later after Tom Phillis was killed in the Junior TT, which is corroborated by Motor Sport's 2004 Hocking profile and his own article. Our curated 5 was right.
+
+### Internal
+- **The splice guard fired on the first run and prevented a silently inverted file.** `const out = {}; for (const y of order) out[y] = merged[y]` does **not** preserve insertion order: V8 stores integer-like keys in ascending numeric order, so `JSON.stringify` emitted 1949-first and the byte-order check threw `order broken at 1949 -> 1950`. The file was restored from a backup taken in the same command and the writer rebuilt to **serialise the JSON text directly** from a derived `sort((a,b) => Number(b) - Number(a))` key list. Both halves of the existing rule matter: derive the order, and verify it by scanning bytes (`/^ {2}"(\d{4})": \{$/gm`), because a parsed object can never show you the file's real order.
+
+### Verified
+- `npm test` **1265 passed**; `champion-notes-integrity` runs all 7 invariants over the motogp set (77 notes) — `every note names its own champion`, `exactly one lead clause`, `the lead clause carries its own season`, `stated points agree with champions.json`, `at least two real sources`, all green.
+- **34 of the 36 new notes have their champion/runner-up points pair machine-asserted against `champions.json`, zero mismatches.** The two exceptions are deliberate: 1969 states 105 from 150 actually scored without a runner-up pair, and 1949 has no `runnerUpPoints` in `champions.json` at all. Confirmed by re-running the test's own `POINTS_PAIR` regex per note rather than trusting a green suite, because that assertion silently skips when no pair is present.
+  - Prose was written to avoid a false positive on that regex's bare `(\d+) to (\d+)` branch: year ranges are phrased "between 1968 and 1970", never "1968 to 1974".
+- All 16 second-source URLs HTTP-checked (`200`); `cyclenews.com` and `classictwowheels.com.au` returned 403/406 to curl as bot-blocks and were replaced with Cycle World's 1978 archive and Motor Sport, both 200.
+- **Browser-verified** on `next dev` at 1280×1000: `who-won-the-1967-motogp-championship` renders "Title clinched: Grand Prix of Canada, Mosport, 30 September 1967, final round" and `who-won-the-1949-motogp-championship` renders "The season: the first world championship season, in 1949". Both now serve `<meta name="robots" content="index, follow">`, confirming the enrichment gate flipped.
+
+### Noted, not done
+- `seriesNameForYear` (`lib/information/generated.ts:25`) era-maps only f2 and f3, so these pages ask "Who won the **1949 MotoGP** championship?" for a season whose class was 500cc. Pre-existing, affects every pre-2002 MotoGP page, and a rename touches slugs and sitemap entries — not folded into a content wave.
+- The sources sidebar labels both Wikipedia citations as bare `en.wikipedia.org`, so a season article and a rider article look like the same duplicated link. Pre-existing label derivation, affects all enriched notes.
+
 ## 0.334.66 — 2026-08-26
 
 ### Added

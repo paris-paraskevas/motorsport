@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.67 — 2026-08-27
+
+**Every MotoGP champion now has a written note, back to the first world championship in 1949.** The last 36 seasons have been filled in, which means the premier class is complete from Leslie Graham's AJS to Marc Márquez. Some of them are worth the read on their own: 1967, when Agostini and Hailwood finished level on points and the title went on second places, three against two; 1968, when Agostini won all ten rounds because Honda had walked away; and 1980, when Kenny Roberts won the first three races, nothing after that, and the championship anyway.
+
 ## 0.334.66 — 2026-08-26
 
 **Groundwork for release notes you can actually see.** When a version worth announcing goes live, you will get a short summary on arrival with pictures of the parts of the site it is talking about, and you will only ever see each one once. Nothing appears yet: this build only puts the machinery in place.
