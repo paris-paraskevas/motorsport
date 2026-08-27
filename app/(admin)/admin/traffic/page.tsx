@@ -14,7 +14,7 @@ import { HeatmapOverlay } from '@/components/admin/HeatmapOverlay';
 import { AdminPageHeader, RankPanel } from '@/components/admin/AdminUI';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Behaviour · Admin' };
+export const metadata: Metadata = { title: 'Traffic · Admin' };
 
 const EMPTY_OVERLAY: OverlayData = { clicks: [], scroll: { sample: 0, reached: [] }, rage: [], dead: [] };
 
@@ -45,7 +45,7 @@ export default async function AdminBehaviourPage() {
 
   return (
     <div>
-      <AdminPageHeader title="Behaviour" tagline="Self-captured click heatmap · hot + dead zones" />
+      <AdminPageHeader title="Traffic" tagline="Self-captured click heatmap · hot + dead zones" />
       {heat.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-surface/40 px-4 py-6 text-center">
           <p className="text-sm text-text-muted">

@@ -261,6 +261,81 @@
   --series-ink-mix: 52%;
 }
 
+/* ── The console's two modes ──────────────────────────────────────────────
+   The /admin console is a separate root layout on its own subdomain and
+   inherits none of the site's chrome, so it does not have to wear the site's
+   palette either — and it should not: the console shares a browser with the
+   live site, and a different ground is how you know which one you are acting
+   in. These are NOT offered in ThemePicker; the admin root sets them directly
+   and ConsoleMode toggles between them.
+
+   They ride the existing token names on purpose. Every admin component already
+   paints through the token utilities (bg-surface-elevated, text-text-muted,
+   border-border) and there is not one `dark:` utility in components/admin — so
+   redefining the tokens reskins the whole console without touching a single
+   class.
+
+   --brand-fill IS overridden here, which the site's light themes deliberately
+   never do (it is "the vibrant paint"). The console has no series tints and no
+   marketing surface; its accent is a UI colour, and leaving it amber would put
+   #ffb400 on a near-white canvas at 1.8:1.
+
+   Contrast measured, not eyeballed (WCAG 2.1 relative luminance, every ink
+   against all three surfaces): dark clears 4.71:1 at worst, light 4.75:1, and
+   the text → muted → faint ladder stays monotonic in both. */
+:root[data-theme='console-dark'] {
+  color-scheme: dark;
+  --bg: #14181d;
+  --surface: #1c2128;
+  --surface-elevated: #212831;
+  --border: #2c333d;
+  --border-strong: #3b434f;
+  --text: #e1e6ec;
+  --text-muted: #98a3b0;
+  --text-faint: #8792a0;
+  --numeral: #f2f6fa;
+  --brand: #5ea9c4;
+  --brand-fill: #5ea9c4;
+  --tint-contrast: #14181d;
+  --live: #e07a72;
+  --live-pill: #e07a72;
+  --positive: #5bbe93;
+  --negative: #e07a72;
+  --series-ink-mix: 100%;
+}
+
+:root[data-theme='console-light'] {
+  color-scheme: light;
+  /* Panels are --surface-elevated and the page is --bg, so elevated must be the
+     LIGHTEST of the three or every card sinks into the canvas. */
+  --bg: #f1f5f8;
+  --surface: #f8fafb;
+  --surface-elevated: #ffffff;
+  --border: #dfe5ec;
+  --border-strong: #c1cad4;
+  --text: #1b2430;
+  --text-muted: #55616f;
+  --text-faint: #616c79;
+  --numeral: #0d141d;
+  --brand: #26708f;
+  --brand-fill: #26708f;
+  --tint-contrast: #ffffff;
+  --live: #ad4038;
+  --live-pill: #ad4038;
+  --positive: #2c7a58;
+  --negative: #ad4038;
+  --series-ink-mix: 52%;
+}
+
+/* The console mode toggle renders BOTH icons and CSS hides the wrong one, so
+   the button has no React state to mismatch on hydration (components/admin/
+   ConsoleMode.tsx explains why that matters). Scoped to the console themes, so
+   these selectors can never match anything on the public site. */
+:root[data-theme='console-dark'] [data-mode-icon='light'],
+:root[data-theme='console-light'] [data-mode-icon='dark'] {
+  display: none;
+}
+
 /* Light themes re-derive tint-as-ink PER ELEMENT: custom properties resolve
    var() where they are DEFINED, so a :root-level derivation would never see
    the per-series --tint-fill injected inline further down the tree. 52% is

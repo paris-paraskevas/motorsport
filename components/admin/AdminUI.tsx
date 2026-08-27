@@ -5,7 +5,7 @@ import type { HeatmapPathPanel, ElementRank } from '@/lib/heatmap';
 
 // Server-rendered UI kit for the /admin console. All server-safe (no hooks, no
 // client state) so every admin route can compose these directly. The telemetry
-// aesthetic — amber accents, mono/display type, hairline borders and inline-SVG
+// aesthetic — accent, mono/display type, hairline borders and inline-SVG
 // sparklines — lives here so the console reads as one instrument panel, not a
 // templated card wall. Client interactivity (the heatmap overlay, the nav rail,
 // the home composer) lives in its own 'use client' components.
@@ -176,8 +176,8 @@ export function SubmissionRow({ s }: { s: SeriesSubmission }) {
 export function SubmissionStatusBadge({ status }: { status: SeriesSubmission['status'] }) {
   const tone: Record<SeriesSubmission['status'], string> = {
     new: 'text-brand',
-    reviewing: 'text-amber-400',
-    ingested: 'text-emerald-400',
+    reviewing: 'text-text-muted',
+    ingested: 'text-positive',
     rejected: 'text-text-faint',
   };
   return <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${tone[status]}`}>{status}</span>;

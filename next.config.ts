@@ -121,6 +121,16 @@ const nextConfig: NextConfig = {
       // Permanent, because /app was in the sitemap, is the PWA's old start_url,
       // and is bookmarked — every one of those has to keep working.
       { source: "/app", destination: "/", permanent: true },
+      // Console tabs, renamed in 0.334.71 when the rail became the six sections.
+      // These are admin-only and noindex, so this is not about search — it is
+      // about the links ALREADY SENT: the author-application and contributor-
+      // submission emails carry absolute /admin/users and /admin/submissions
+      // URLs into somebody's inbox, and those must not start 404ing. Bookmarks
+      // too. Permanent, because the old paths are never coming back.
+      { source: "/admin/users", destination: "/admin/audience", permanent: true },
+      { source: "/admin/submissions", destination: "/admin/content", permanent: true },
+      { source: "/admin/behaviour", destination: "/admin/traffic", permanent: true },
+      { source: "/admin/home", destination: "/admin/site", permanent: true },
     ];
   },
   async headers() {

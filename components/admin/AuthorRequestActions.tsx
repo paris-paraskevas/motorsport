@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Approve / decline buttons on an /admin/users author-application row. Approve
+// Approve / decline buttons on an /admin/audience author-application row. Approve
 // grants the contributor role and emails the applicant; decline just emails.
 // Success router.refresh()es so the row leaves the server-rendered queue.
 export function AuthorRequestActions({ id }: { id: string }) {
