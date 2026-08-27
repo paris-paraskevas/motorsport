@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.71 — 2026-08-27
+
+### Added
+- **The 6-hourly health verdict is now stored instead of discarded** — step 1a of the approved console rebuild, and no UI yet. `/api/cron/health` has always run every live standings and results parser plus the session-schedule grader, returned the verdict to the cron, and **thrown it away**; nothing has ever persisted it. New `lib/health-store.ts` writes it to one KV key (`paddock:health:report`) so a console page can render site health from **one KV read** rather than re-running fifteen series of network fan-out at request time behind a 30s-per-check timeout. Shipped ahead of the UI on purpose: the store is warm before anything reads it, so the console's first render is never an empty state.
+  - **The response body is unchanged, byte for byte.** `buildHealthReport()` returns exactly the object the route has always emitted (`ok`, `checkedAt`, `down`, `standings`, `results`, `sessions`) and the route spreads it and appends `sources`, so the GitHub Actions cron and any uptime check that reads this endpoint see no difference. The 503-on-down threshold moved to `report.down` — same arithmetic, one owner.
+  - **The `down` total and the per-check detail mappers moved into the store**, so the stored report and the endpoint's body cannot drift into disagreeing about whether the site is healthy. The route's local `detail` / `sessionDetail` are gone.
+  - **Type-only imports, deliberately.** `lib/results-health.ts` pulls in every results parser and `lib/sessions-health.ts` pulls the content layer; a future consumer that only wants to READ the last report must not drag either into its bundle. So `health-store.ts` imports `kv` and `logSourceError` at runtime and everything else as types, and the caller passes the summaries it has already computed.
+  - **TTL is 30 days, not the 6-hour cadence.** A TTL at the cadence means one failed run empties the key and the consumer renders nothing — strictly worse than a stale report with an honest age, since an old `checkedAt` is itself the signal that the cron has stopped. The long TTL only stops an abandoned key living forever.
+  - **Per-source freshness is deliberately NOT stored.** `getSourceHealth()` is one indexed query over `source_snapshot` and answers a different question — how old the data a reader is actually served is. Freezing that into a 6-hourly report would make a cheap live truth stale for no reason.
+  - Both store paths are fail-soft (`logSourceError`, never throw): a KV outage must not turn a healthy check red, and must not 500 a console page. Exercised by tests that make the mock throw rather than assumed.
+- **11 new tests** (`lib/health-store.test.ts`). Cover the report shape, the `down` arithmetic including a thin session schedule, `error` being omitted on a passing check, the KV round trip under the shared key, the TTL floor, the unconfigured no-op, and both failure paths.
+
+### Fixed
+- **A load-bearing comment on `/api/cron/health` was wrong about what it measures.** It claimed the checks run "from the production environment (so the result reflects what users actually get, not a CI runner's network)". That was true on Vercel and is not true on Cloudflare: the Worker runs `DATA_SOURCE=db`, so a reader is served snapshots written by `scripts/warm-live-data.mts` from GitHub Actions on **clean egress IPs**, while these checks run from the Worker, whose datacenter IPs plenty of upstreams reject. The endpoint grades **parser health over the Worker's network**; reader-facing freshness is the separate `sources` block. Corrected in place, because the next person to build on this would have drawn the wrong conclusion from it — and the console's design depends on the distinction.
+
+### Note
+- Renumbered from 0.334.70 during rebase: the WorldSBK notes wave below took that number first, from a session working in the same checkout at the same time.
+
 ## 0.334.70 — 2026-08-27
 
 ### Added

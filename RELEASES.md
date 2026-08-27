@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.71 — 2026-08-27
+
+**Internal groundwork.** The site already checks every series' data every six hours and then forgets the answer; it now keeps it, so that health can be shown on a screen instead of being recomputed on demand. Nothing changes for readers.
+
 ## 0.334.70 — 2026-08-27
 
 **Every World Superbike champion now has a written note, back to the first season in 1988.** All 38 of them, and this championship keeps producing finishes worth reading about: 2012 was decided by half a point, traceable to a race at Monza cut to eight laps that paid half score. 2002 turned on a mistake at the penultimate corner of the final race. In 2000 the title was not safe until a court ruled on an appeal, days before the last round. We also corrected who won the 2007 manufacturers' title, which we had wrong.
