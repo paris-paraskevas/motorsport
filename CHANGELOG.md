@@ -4,6 +4,31 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.70 — 2026-08-27
+
+### Added
+- **WorldSBK champion notes complete: all 38 seasons, 1988 to 2025.** New `content/series/wsbk/champion-notes.json`, so the ninth series family is finished and every WorldSBK who-won page is now indexable (the 0.334.43 gate flips a page back by the note simply existing). Repo-wide coverage 239 → **277 of 489 (56.6%)**; 212 left across six families (adac-ravenol-24h 54, wrc 47, dtm 39, indycar 30, nascar-cup 26, nls 16).
+- **27 of the 38 use the `clinched` shape and only 11 fall back to `season`** — nearly the inverse of the MotoGP tail's 3/33. WorldSBK is modern and well reported, so contemporary accounts usually state which race settled it: Razgatlıoğlu third from tenth on the grid in the last race at Jerez in 2025, Biaggi taking exactly the fifth place he needed at Magny-Cours in 2012, Bayliss third at Magny-Cours with three races to spare in 2008.
+- The `season` shape covers the years where no source states a clinch race (mostly 1988–1996) and **one where a race was the wrong unit entirely**: 2000, where Edwards was mathematically clear only if Noriyuki Haga's 45-point deduction stood, and the title was not safe until the Court of Arbitration for Sport ruled days before the finale.
+
+### Fixed
+- **`champions.json` said Ducati won the 2007 manufacturers' title. It was Yamaha, its first in the class.** The error rendered on the live who-won page as "Ducati also took the manufacturers' championship that season" — a wrong fact on an indexable page. Corrected, and confirmed against two independent readings of the 2007 season record before the edit.
+  - It prompted a spot-check of `constructorChampion` across the family while the sources were open: **22 of 38 verified correct, one wrong (2007)**. The unchecked 16 are mostly the Kawasaki and Ducati runs where the riders' and manufacturers' titles went the same way; recorded here rather than silently assumed.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1291 passed** (109 files, up from 1284). The delta is exactly the 7 new `it.each` cases the integrity suite adds for a series that now has a notes file.
+  - **Corrected mid-flight:** an earlier run of the same suite reported 1302/110. That number was contaminated — a second session was working in the same checkout and its `lib/health-store.test.ts` was present in the tree. Every figure above was re-measured in an isolated `git worktree` on this branch alone. See §Concurrency below.
+- `champion-notes-integrity` runs all 7 invariants over the wsbk set (38 notes): names its own champion, exactly one lead clause, the lead clause carries its own season, at least two real sources, none empty. The writer asserts the same invariants itself, so a failure names the year rather than just the series.
+- **All source URLs HTTP-checked**: 38 Wikipedia season articles, 19 rider pages, 24 contemporary reports (crash.net, motorsport.com, roadracingworld, MCN, ESPN). Nine Wikipedia URLs returned 429 on the first sweep and 200 on a re-check with delays — rate limiting, not dead links. Two `ducati.com` rider pages 403 as bot-blocks and were dropped for verified alternatives.
+- **Browser-verified**: `who-won-the-2012-worldsbk-championship` renders "Title clinched: Race 2, Circuit de Nevers Magny-Cours, 7 October 2012, the final race of the season"; 2012, 1988 and 2002 all serve `<meta name="robots" content="index, follow">`; the 2007 page now names Yamaha.
+- The byte-order guard did not fire: the writer builds the JSON text directly from a derived `sort((a,b) => Number(b) - Number(a))` list and re-scans the written bytes, which is the fix the MotoGP wave arrived at.
+
+### Known limitation of this family
+- **`wsbk/champions.json` carries no `points`, `wins`, `runnerUp` or `runnerUpPoints` fields**, so the integrity suite's "stated points agree with champions.json" assertion **skips all 38 of these notes** — it requires both `points` and `runnerUpPoints`. Nothing machine-checks the figures in this family. Each is taken from a source named in that note's own `sources`, and where two sources disagreed the figure was omitted rather than chosen: the 1995 and 2005 final points totals, and Razgatlıoğlu's 2025 win count (15 in one reading, 21 in another). Backfilling those four columns would switch the assertion on for 38 notes and is the obvious follow-up.
+
+### Concurrency — recorded because it nearly corrupted this change
+- A second session was committing to this working tree while this wave was being researched. Its branch `feat/console-health-store` got checked out underneath, so the CHANGELOG, RELEASES and `package.json` edits for this wave were briefly sitting on **its** branch, and its unpushed commit already claimed **0.334.70**. Nothing was lost: the notes file was untracked and survived the switch, the four tracked edits were parked with `git stash push -- <paths>` (leaving that session's own modified files untouched), and the work was re-applied on `content/wsbk-champion-notes` in a separate `git worktree`. **`feat/console-health-store` will need renumbering to 0.334.71 before it merges**, since this took 0.334.70 first.
+
 ## 0.334.69 — 2026-08-27
 
 ### Fixed
