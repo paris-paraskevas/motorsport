@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { buildSitemapEntries, blogLastModified } from './sitemap-data';
 import { TRACKS_TAB_SLUGS } from './tabs';
 import { loadSeries, loadAllSeriesMeta } from './series';
-import { loadDriverBios, loadChampionNotes } from './series-content';
+import { loadDriverBios, loadChampionNotes, loadCuratedChampions } from './series-content';
 import { loadAllDrivers } from './people';
 import { groupByWeekend } from './group';
 import { weekendLabel } from './weekend';
@@ -230,27 +230,47 @@ describe('who-won pages are advertised only when enriched', () => {
     expect(advertised).toHaveLength(authored);
   });
 
-  it('advertises no un-enriched season (spot-check across series)', () => {
-    const advertised = new Set(all.map((u) => u.url));
-    // Seasons with no note. If a later wave enriches one, this list is what to
-    // update - deliberately explicit rather than derived, so re-indexing a page
-    // stays a visible decision. It has already done its job once: wave 3b
-    // (0.334.45) enriched F1 1985, which used to be listed here, and this test
-    // is what said so.
-    //
-    // NB running `npx vitest` directly skips `pretest`, so CONTENT_BUNDLE is
-    // stale and this assertion can pass against old data. Use `npm test`.
-    // Deliberately NOT F1 seasons any more. The enrichment programme is working
-    // through F1 fastest, so an F1 year here goes stale every wave (it already
-    // did twice, 1985 then 1972 - the test working, but noisily). These two are
-    // in a family no wave will reach for a long time, so the assertion stays
-    // meaningful. When the ADAC wave lands, this list is what to update.
-    const shouldBeAbsent = [
-      `${SITE_URL}/information/endurance/who-won-the-2023-adac-ravenol-24h-nurburgring-championship`,
-      `${SITE_URL}/information/endurance/who-won-the-2022-adac-ravenol-24h-nurburgring-championship`,
-    ];
-    for (const u of shouldBeAbsent) {
-      expect(advertised.has(u), `${u} is un-enriched and must not be advertised`).toBe(false);
+  // Replaced a two-URL spot-check on 2026-08-27, when the enrichment programme
+  // finished. The old test hardcoded two ADAC seasons as "un-enriched and must
+  // not be advertised", and its own comment said "when the ADAC wave lands, this
+  // list is what to update". The wave landed, and there is now no un-enriched
+  // season anywhere to point at — the condition it sampled has ceased to exist,
+  // so a sample is the wrong instrument for it.
+  //
+  // What replaces it is stronger, not weaker. The old version checked two URLs;
+  // this checks every champions.json row in every series, and it fails the moment
+  // somebody adds a season (a new F1 year, say) without writing its note — which
+  // is the regression the sample existed to catch, generalised to all 489 rows.
+  it('leaves no champions row without a note', async () => {
+    const missing: string[] = [];
+    for (const meta of await loadAllSeriesMeta()) {
+      const [rows, notes] = await Promise.all([
+        loadCuratedChampions(meta.slug),
+        loadChampionNotes(meta.slug),
+      ]);
+      for (const row of rows ?? []) {
+        if (!notes?.[String(row.year)]) missing.push(`${meta.slug} ${row.year}`);
+      }
+    }
+    expect(missing, `seasons with no champion note: ${missing.join(', ')}`).toEqual([]);
+  });
+
+  // The other half of the same guarantee, kept derived: an advertised who-won URL
+  // must name a year that some note covers. Deliberately NOT compared against the
+  // registry, which is what builds the sitemap — that would only prove the sitemap
+  // agrees with itself.
+  it('advertises no who-won page for a year with no note anywhere', async () => {
+    const noted = new Set<string>();
+    for (const meta of await loadAllSeriesMeta()) {
+      const notes = await loadChampionNotes(meta.slug);
+      for (const year of Object.keys(notes ?? {})) noted.add(year);
+    }
+    const advertised = all.map((u) => u.url).filter((u) => /\/information\/[^/]+\/who-won-/.test(u));
+    expect(advertised.length).toBeGreaterThan(0);
+    for (const url of advertised) {
+      const year = /who-won-the-(\d{4})-/.exec(url)?.[1];
+      expect(year, `${url}: no year in slug`).toBeTruthy();
+      expect(noted.has(year!), `${url} is advertised but no note covers ${year}`).toBe(true);
     }
   });
 });

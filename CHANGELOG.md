@@ -4,6 +4,40 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.81 — 2026-08-27
+
+### Added
+- **The champion-notes programme is finished: 489 of 489 seasons, 100%.** The last two families land together — **ADAC Ravenol 24h, 54 runnings 1970 to 2026**, and **NLS, 16 seasons 2010 to 2025**. Every who-won page in every one of the fifteen series now carries an authored note, which means every one is indexable under the 0.334.43 gate. The programme ran from 91 notes at the start of session 36 to 489.
+- **First use of the `race` lead shape, and it is all 54 ADAC notes.** The field was added in 0.334.59 and had sat unused since. The ADAC 24h is one race a year, so `clinched` and `season` are both meaningless for it; `noteLead` renders these as "**The race:**", e.g. "95 laps in 1973, run as two eight-hour heats".
+- **NLS uses `season`, correcting what I said when I deferred it.** I had assumed both remaining families needed `race`. NLS is a season championship — nine rounds on the Nordschleife, one-day Saturday events, three groups starting minutes apart — so `season` is right and only the ADAC needed the new shape.
+
+### The two facts that make these families make sense
+- **NLS scores its drivers' title on GROUP positions, not overall ones.** That single sentence is why the champions are production-car crews in BMW 325is and Renault Clios rather than the GT3 names, and why they "almost never contend for outright wins" — there is a separate Speed-Trophy for overall results. Without it the pages would read as inexplicable. Adrenalin Motorsport won seven consecutive titles on that basis, 2018 through 2024, and 2025 ended the run.
+- **ADAC lap counts are not comparable across eras**, so no note treats them as a cross-era record unless a source says so explicitly. The combined lap was 22.835 km originally, grew to nearly 26 km with the Mercedes Arena, and was set at 25.3 km in 2005 when a chicane bypass arrived. 1974, 1975 and 1983 are absent from the data because the race was not held — the oil crisis for the first two, construction for 1983. Fifty-seven calendar years, fifty-four runnings, and `champions.json` had it right.
+
+### Highlights from 54 runnings
+- **1970 and 1998**: Hans-Joachim Stuck won the first ever running, and won again twenty-eight years later — in a diesel, the first diesel to take a major twenty-four hour race outright.
+- **1973**: Niki Lauda won it with Hans-Peter Joisten, two years before the first of his Formula One titles, in a race split into two eight-hour heats with an eight-hour break at midnight.
+- **1977**: Fritz Müller and Herbert Hechler shared a Porsche 911 between just the two of them for twenty-four hours, and won.
+- **1988**: a privateer beat the factory turbo Fords in a fourteen-year-old Porsche.
+- **1996**: Sabine Schmitz became the first woman to win it, and won again the next year.
+- **2023 and 2024**: the longest race on record (162 laps, and Ferrari's first win) followed immediately by the shortest (50 laps, rain and fog).
+- **2025**: the Manthey Porsche led almost the whole race and lost it to a late penalty.
+
+### Changed — a test, and why this is not a weakening
+- `lib/sitemap-data.test.ts` had an assertion that hardcoded **two ADAC seasons** as "un-enriched and must not be advertised". Its own comment read: *"when the ADAC wave lands, this list is what to update"*. The wave landed, the assertion failed exactly as designed, and **there is now no un-enriched season anywhere to point at** — the condition it sampled has ceased to exist, so a sample is the wrong instrument.
+- It is replaced by two derived assertions: **every `champions.json` row in every series must carry a note** (all 489, versus the old two URLs), and **no advertised who-won URL may name a year that no note covers** — the latter deliberately not compared against the registry, since the registry is what builds the sitemap and comparing them would only prove the sitemap agrees with itself.
+- **Proved non-vacuous rather than assumed.** With the programme complete these could easily be no-ops, so nls 2014's note was temporarily deleted and the suite re-run: `FAIL ... AssertionError: seasons with no champion note: nls 2014`. Restored immediately. The new check fires the moment anyone adds a season without writing its note, which is the regression the old sample existed to catch, generalised.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1345 passed** (110 files, up from 1330) · `npm run build` → **EXIT=0**
+- All 14 integrity invariants pass across both new families (7 each). Every source URL HTTP-checked 200, including the two years with no per-edition article — 2004 cites Autosport, 2005 cites BMW's own season review. Per-edition Wikipedia articles exist for 2012, 2015, 2017, 2018, 2019, 2025 and 2026 and are cited where they do.
+- **A conflict left unresolved rather than guessed**: the main winners table gives 2003 as 139 laps, the Autosport report gives 143. That note carries no lap count.
+- **Browser-verified** on `next dev`: 1970, 1973 and 2024 ADAC pages and 2010 and 2017 NLS pages all 200 and serve `<meta name="robots" content="index, follow">`. The 1973 page renders "The race: 95 laps in 1973, run as two eight-hour heats" and the 2010 NLS page "The season: a title in 2010, won partly under a pseudonym".
+
+### Honest limitation of this family
+- **The ADAC notes are shorter than the championship families', and unavoidably so.** A season championship yields a title fight, a margin and a decider; a single race yields laps, a crew and the weather. Around forty of the fifty-four have laps, crew, car and era context but no individual drama, because none is recorded in English-language sources. They are specific and true rather than templated, but they are thinner, and pretending otherwise would be the scaled-content problem in a different costume.
+
 ## 0.334.80 — 2026-08-27
 
 ### Added
