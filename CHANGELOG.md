@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.84 — 2026-08-27
+
+### Added
+- **Record notes, wave 2 — eight more, across Formula E, GT World Challenge, MotoGP, NASCAR Cup and WRC.** Measured on prod before, in `next dev` after: 49 → 214, 62 → 211, 51 → 212, 55 → 208, 65 → 230, 56 → 212, 57 → 222, 70 → 248. Seventeen of the 23 record pages are now enriched. Suite 1381 → **1416** (+35, all from the `it.each` gate picking up five more series).
+
+### Fixed — a third false claim in `champions.json`, and this one changed who held a record
+- **Formula E's teams record was published as a four-way tie at two titles each. It is Renault e.dams, outright, with three.** `content/series/formula-e/champions.json` recorded season 1's teams' champion as `e.dams-Renault` and seasons 2 and 3 as `Renault e.dams` — the same team, entered under a slightly different name in its first year — so the aggregation in `rankTitles` treated one team as two and its three-in-a-row became a two plus a one. Exactly the class of defect the crew-counting fix (0.334.61) closed for drivers, in the constructor field this time. Season 1's row is normalised to `Renault e.dams`. Two consequences beyond the record line: the page's "gone to N different teams" count drops from a wrong **8** to a correct **7**, and the summary/meta description changes from a four-way share to a single holder. Sourced to Wikipedia's Nissan Formula E Team article and Nissan's own release, both of which state that e.dams took the first three teams' titles in partnership with Renault.
+
+### Two bounded-window claims the notes now state out loud
+Neither is a data error — both are pages whose derived headline reads as an all-time claim when the underlying file only covers part of the history. The notes say the scope explicitly rather than leaving a reader to infer it.
+- **NASCAR**: `champions.json` starts in **2000**, so Jimmie Johnson's seven look unique. All-time they are not — Richard Petty (1964-1979) and Dale Earnhardt (1980-1994) also won seven, making it a three-way tie. What *is* Johnson's alone is the five consecutive, 2006-2010.
+- **WRC**: the manufacturers' championship dates from **1973** and the drivers' from **1979**, and `champions.json` starts at 1979 — so Lancia's 1974, 1975 and 1976 titles are outside the count. Toyota leads the windowed count on nine; all-time Lancia leads with ten, which Toyota's own 2025 press release says as well ("one fewer than the record set by Lancia").
+
+### Changed
+- `content/series/gt-world/champion-notes.json` 2014 no longer cites `GT_World_Challenge_Europe`, which is that series' own `meta.wikipediaPage` and so was already in the entry's sources. It was the only such duplicate across 1279 note sources; logged in 0.334.83 and fixed here with the gt-world record note.
+
 ## 0.334.83 — 2026-08-27
 
 ### Added

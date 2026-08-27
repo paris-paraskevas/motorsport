@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.84 — 2026-08-27
+
+**Eight more "who has won the most" pages get a written answer, and one of them turned out to be wrong.** Formula E, GT World Challenge, MotoGP, NASCAR and rallying, for drivers and for teams. The Formula E teams page said four teams shared the record with two titles each; in fact Renault e.dams won the first three seasons outright, and our records had the team's first year filed under a slightly different name, so it was being counted as two teams. Fixed. Two other pages now say something they should always have said: our NASCAR records only go back to 2000, so Jimmie Johnson's seven titles read as a record when Richard Petty and Dale Earnhardt won seven too, and our rally records start in 1979, which leaves out three of Lancia's ten manufacturers' titles. Both notes now spell that out.
+
 ## 0.334.83 — 2026-08-27
 
 **The "who has won the most" pages start getting written answers, and two of them were wrong.** These pages used to be a name, a number and a list, which is not much of an answer — so they now carry a written note explaining when the record was set, what it displaced, who is closest, and what it would take to beat. Nine are done: DTM, IMSA, WEC, Formula 3 and World Superbike, for drivers and for teams. Checking those numbers against the sources turned up two real errors in our own records. Toyota was credited with two world endurance manufacturers' titles it never won, because for two seasons there was no such title to win — Toyota was the only manufacturer left, so the award became a teams' championship instead. And the 2009 World Superbike manufacturers' title was down to Yamaha when Ducati won it. Both corrected.
