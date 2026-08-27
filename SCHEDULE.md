@@ -1645,6 +1645,22 @@ Plan at start: WEC, IMSA and GT World — three completable families, three more
 
 Active: (no [+Nm] prefixes given this session)
 
+### Wed 2026-08-27 — session 38 (the enrichment programme, finished)
+
+Plan at start: none written — the session began as a UI task (the What's-New modal) and turned into the rest of the champion-notes programme on the operator's instruction, wave by wave.
+
+- → done: **MotoGP complete** 77/77 (0.334.67), **WorldSBK** 38/38 (0.334.70), **WRC** 47/47 (0.334.73), **DTM** 39/39 (0.334.75), **IndyCar** 30/30 (0.334.79), **NASCAR Cup** 26/26 (0.334.80), **ADAC 24h 54 + NLS 16** (0.334.81). **The programme closed at 489/489, 100%, fifteen complete families.** Suite 1265 → 1345.
+- → done, unplanned: the **What's-New release modal** (0.334.66), shipping dark. Its first version drew abstract panels and was rejected outright ("show parts of our site"), so the card art is now real 848×260 screenshots of our own pages.
+- → done, unplanned: **blog posts can be featured into the Learn IA** (0.334.68) — reference, not absorption, because Learn is a build-time registry and a database row cannot mint a Learn slug. Then 0.334.69, because that control **shipped unreachable**: the dashboard linked a LIVE post's title to the article, not to the studio page.
+- → done: **points/wins/runner-up backfilled** across WSBK, WRC and DTM (0.334.77), which found the **F1 1979 note stating 50 points when the official total is 51**.
+- → done, first use of the `race` lead shape added back in 0.334.59 — all 54 ADAC notes use it. **NLS did not need it**: it is a season championship, correcting what this session said when it deferred the pair.
+- → **audited, and the answer is the next session's priority**: 788 `/information` entries, 786 indexed, **238 under 130 words**. The **22 `most-` record pages are now the thinnest cohort on the site** (median 67 words, min 44) and have no authored-note sidecar at all. That is TIER 1 item 1 in the queue.
+- → **not started, for a fourth session**: the 1.0 copy sign-off. Still the operator's, and they have said we are not ready for 1.0.
+- → open decision recorded rather than taken: broadening `POINTS_PAIR` would check 47 more notes but would fail `f1 1993`, whose prose is correct. Evidence is in the queue; the call is the operator's.
+- Won't-touch honoured: no prod Supabase write beyond the one operator-sanctioned `learn_topic` migration, no infra change, and a second session's in-flight console work left strictly alone in the shared checkout.
+
+Active: (no [+Nm] prefixes given this session)
+
 ---
 
 - **At session start:** if today's date doesn't have an entry, create one. Write the intent as a bullet list. Add the "won't touch" line.

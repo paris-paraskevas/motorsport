@@ -6,7 +6,52 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-08-26 (LATEST, session 37 FINAL — the endurance families, and a false claim caught before it was indexed) — `main` = **0.334.64**, zero open PRs, every merge prod-verified
+## ⚡ Next session pickup — 2026-08-27 (LATEST, session 38 FINAL — the enrichment programme is finished, and what is thin now) — `main` = **0.334.81**, prod verified, suite **1345**
+
+**Read `docs/next-session.md` next.** It is the ordered queue, and it is now ordered by measured thinness rather than by family. This file records what happened.
+
+### ✅ Shipped — 11 merges of mine, 0.334.66 → 0.334.81
+
+| Version | What |
+|---|---|
+| **0.334.66** | What's-New release modal, ships dark — card art is real page screenshots, not drawings |
+| **0.334.67** | **MotoGP COMPLETE**, 77 of 77 (the 1949–1996 tail) |
+| **0.334.68** | Feature a published blog post into the Learn IA (`post.learn_topic`) |
+| **0.334.69** | Fix: that control shipped unreachable — a LIVE row's title linked to the article, not the studio page |
+| **0.334.70** | **WorldSBK COMPLETE**, 38 of 38 |
+| **0.334.73** | **WRC COMPLETE**, 47 of 47 |
+| **0.334.75** | **DTM COMPLETE**, 39 of 39 |
+| **0.334.77** | Backfilled points/wins/runner-up across WSBK, WRC, DTM — and fixed a wrong number on a live F1 page |
+| **0.334.79** | **IndyCar COMPLETE**, 30 of 30 |
+| **0.334.80** | **NASCAR Cup COMPLETE**, 26 of 26 |
+| **0.334.81** | **ADAC 24h COMPLETE (54) + NLS COMPLETE (16) — the programme closes at 489/489** |
+
+**The programme went 203/489 → 489/489, 41.5% → 100%, complete families seven → fifteen.** Suite 1265 → **1345**. 0.334.71/72/74/76/78 are a second session's admin-console work, not mine.
+
+### 🔴 The finding that matters most — the programme finishing is not the thin-content work finishing
+
+Audited the live registry rather than assuming: **788 `/information` entries, 786 indexed, 238 under 130 words.** Median words by cohort — who-won 140, tracks 274, editorial 169, guides 750, **`most-` record pages 67**.
+
+- **The 22 `most-` record pages are now the thinnest indexed cohort on the site**, median 67 words and a 44-word minimum, *thinner than any who-won page ever was*. They are generated wholly from `champions.json` and **have no authored-note sidecar at all** — no equivalent of `champion-notes.json`. Structural gap, 22 pages, one wave. **This is TIER 1 item 1.**
+- ~204 who-won pages remain under 130 words, concentrated in the ADAC 24h family and unavoidably so: a single race yields laps, a crew and the weather. Padding them would be the scaled-content problem in a different costume.
+
+### 🟡 Errors found and fixed, each on a live indexable page
+
+- **F1 1979 said Scheckter finished on 50 points. The official counting total is 51**, which `champions.json` already held — so the note was wrong and the data was right. Found by the backfill work, verified against the final standings before editing.
+- **WSBK `champions.json` credited Ducati with the 2007 manufacturers' title. Yamaha won it**, its first in the class. The error rendered as "Ducati also took the manufacturers' championship that season". A spot-check of `constructorChampion` across that family then verified 22 of 38 and found no others.
+- **The 1962 Senior TT went to Gary Hocking, not Hailwood** — Wikipedia's calendar is wrong, which is why our curated `wins: 5` was right and the article was not.
+
+### 🔵 Process learnings (durable, session 38)
+
+1. **The backfill's real result was not the one predicted, and measuring said so.** Filling points columns was meant to arm the points-pair assertion; it moved that check from 0 to only **8** of 124 notes, because **the columns were never the binding constraint — the regex is**. What it *did* arm was a different test: `champions-integrity`'s "champion outscores the runner-up" and "runner-up is a different person" now run over 40 and 62 previously-unchecked rows. Measure what a change armed; do not assume it armed the thing you aimed at.
+2. **Consolidated driver articles roughly halve research cost on multi-title families.** One fetch of Loeb's article gave clinch venues for all nine of his titles; Sainz's covered two of his own plus the 1995 and 1998 deciders he lost; Dixon's covered six. Per-season fetches only where the driver article is silent.
+3. **Two sessions in one working tree will collide.** A second session's branch was checked out underneath mid-wave, its unpushed commit already claimed the version about to be used, and a test count of 1302 was contaminated by its `health-store.test.ts` before being re-measured at 1291 in an isolated worktree. **Work in a `git worktree` when the tree is shared** — and it needs a real `npm ci`, because Turbopack refuses a junctioned `node_modules`.
+4. **When a test's premise ceases to exist, generalise it rather than delete it.** `sitemap-data.test.ts` hardcoded two ADAC seasons as un-enriched; the wave enriched them and it failed as designed. Replaced with two derived checks — every one of 489 rows must carry a note, and no advertised URL may name a year no note covers — then **proved non-vacuous** by temporarily deleting nls 2014's note and watching it fail.
+5. **A feature can be complete, correct, tested and unreachable.** The Learn-featuring control shipped with no route to it from the dashboard. `tsc` and unit tests cannot see reachability, and the admin UI sits behind auth this session could not hold, so the gap was found only when the operator asked where to click.
+
+---
+
+## Session 37 — 2026-08-26 (the endurance families, and a false claim caught before it was indexed) — `main` = **0.334.64**, zero open PRs, every merge prod-verified
 
 **Read `docs/next-session.md` next.** It is the ordered queue. This file records what happened.
 
