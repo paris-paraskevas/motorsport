@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.80 — 2026-08-27
+
+### Added
+- **NASCAR Cup champion notes complete: all 26 champions, 2000 to 2025.** New `content/series/nascar-cup/champion-notes.json`, finishing the thirteenth series family. Repo-wide coverage 393 → **419 of 489 (85.7%)**; **70 left, and both remaining families need the `race` shape designed first** (adac-ravenol-24h 54, nls 16).
+- **Columns filled in the same change**, as with IndyCar: 25 of the 26 rows gained `wins` or `runnerUp` (18 name a runner-up, 14 carry wins). No `points` were added, deliberately — see below.
+- **20 `clinched` / 6 `season`**, but the high `clinched` count is a property of the format rather than of the reporting: from 2014 the Championship 4 start the last race on level points and the highest finisher of the four is champion, so **every season since is decided in the final race by construction**. The notes say that rather than implying a dramatic late swing each year.
+- **The notes explain three different championships wearing one name.** 2000–2003 was full-season points with no playoff. 2004–2013 was the Chase: top ten after race 26 plus anyone within 400 points, reset five points apart, ten races to settle it. 2014 onwards is the elimination playoff — sixteen drivers, four rounds, four eliminated per round. Stage racing arrived in 2017.
+- The set's best note is **2003, and it explains the rest of the family.** Kenseth won one race all year, at Las Vegas in round three, and beat Johnson by 90 points; he led the standings for 33 consecutive weeks, a series record, and his lead never dropped below 160 points across the final 24 races. NASCAR created the Chase for the following season **primarily because of it**. Also in the set: **2011**, where Stewart and Carl Edwards finished level on points and the title went to Stewart on a count-back of wins, five to one, making him the first owner-driver champion since Alan Kulwicki in 1992; and **2015**, where Kyle Busch won after missing the first third of the season with severe leg injuries, which the pre-2014 points system would have made impossible.
+
+### Why no `points` column for this family
+- Under the Chase and the elimination playoff, final points are **reset artificially** — the Championship 4 begin the last race level, which is why 2016's runner-up is "three points behind" a seven-time champion. Writing those into `points` would render "clinching the title on N points" on the who-won page and imply a season-long total that does not exist. `wins` and `runnerUp` carry real meaning across all three formats; the points figure does not, so it is left out rather than filled with a number that misleads.
+
+### Cross-family finding
+- **Three championships in this programme were tied on points and all three were settled by counting race wins**: NASCAR 2011 (Stewart 5–1 over Edwards), IndyCar 2006 (Hornish 4–2 over Wheldon) and IndyCar 2015 (Dixon 3–2 over Montoya, both on 556). A fourth, IndyCar 1996, tied with **no tiebreaker rule in existence at all**, and the title was simply shared. The relevant notes cross-reference each other.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1330 passed** (110 files, up from 1323 — the 7 `it.each` cases for a newly-noted series) · `npm run build` → **EXIT=0**
+- **One URL pattern answers for all 26 years** — `{year}_NASCAR_Cup_Series` — checked across the era boundaries, because the Winston, Nextel, Sprint and Monster Energy titles all redirect to it. Fourteen driver pages HTTP-checked 200.
+- **Browser-verified** on `next dev`: 2001, 2003 and 2011 all 200 and serve `<meta name="robots" content="index, follow">`; the 2003 page renders "The season: the 2003 season, won with a single race victory — and it changed the sport."
+- **Two notes handle a death and are sourced accordingly.** 2001 opens with Dale Earnhardt's death in that season's Daytona 500, written from the season article and his own; 2000 records that the runner-up he beat was Earnhardt, killed in the opening race of the following year. IndyCar's 2011 note in the previous release does the same for Dan Wheldon.
+
 ## 0.334.79 — 2026-08-27
 
 ### Added
