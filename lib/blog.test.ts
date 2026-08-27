@@ -10,18 +10,36 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const updateMock = vi.fn();
 const eqMock = vi.fn();
 const inMock = vi.fn();
+// setLearnTopic ends update → eq(id) → eq(status), where the older decide/edit
+// helpers end update → eq(id) → in(statuses). The inner object offers BOTH so one
+// mock serves both shapes.
+const eq2Mock = vi.fn();
 
 // The read side (fetchHomeBlogLead) needs its own chain: select → eq → order ×2
 // → limit → maybeSingle. Recorded separately from the update chain so the query
 // shape (the NULL-ordering guard and the tiebreak) is assertable.
-const readChain: { select: unknown[][]; eq: unknown[][]; order: unknown[][]; limit: unknown[][] } = {
+const readChain: {
+  select: unknown[][];
+  eq: unknown[][];
+  not: unknown[][];
+  order: unknown[][];
+  limit: unknown[][];
+} = {
   select: [],
   eq: [],
+  not: [],
   order: [],
   limit: [],
 };
 let readResult: { data: Record<string, unknown> | null; error: { message: string } | null } = {
   data: null,
+  error: null,
+};
+// learnFeaturedPosts awaits the chain directly (no maybeSingle), so `limit` has to
+// be both awaitable and still chainable for fetchHomeBlogLead, which calls
+// maybeSingle AFTER limit.
+let listResult: { data: Record<string, unknown>[] | null; error: { message: string } | null } = {
+  data: [],
   error: null,
 };
 
@@ -34,15 +52,19 @@ vi.mock('./betting/client', () => ({
         return {
           eq: (...eqArgs: unknown[]) => {
             eqMock(...eqArgs);
-            return { in: inMock };
+            return { in: inMock, eq: eq2Mock };
           },
         };
       },
       select: (...args: unknown[]) => {
         readChain.select.push(args);
-        const chain = {
+        const chain: Record<string, (...a: unknown[]) => unknown> = {
           eq: (...a: unknown[]) => {
             readChain.eq.push(a);
+            return chain;
+          },
+          not: (...a: unknown[]) => {
+            readChain.not.push(a);
             return chain;
           },
           order: (...a: unknown[]) => {
@@ -51,7 +73,8 @@ vi.mock('./betting/client', () => ({
           },
           limit: (...a: unknown[]) => {
             readChain.limit.push(a);
-            return chain;
+            // Awaitable AND chainable — see listResult above.
+            return Object.assign(Promise.resolve(listResult), chain);
           },
           maybeSingle: () => Promise.resolve(readResult),
         };
@@ -60,20 +83,32 @@ vi.mock('./betting/client', () => ({
     }),
   }),
 }));
-vi.mock('./betting/friends', () => ({ displayNames: vi.fn() }));
+vi.mock('./betting/friends', () => ({ displayNames: vi.fn(async () => new Map()) }));
 
-import { updatePostContent, normalizeOriginalUrl, fetchHomeBlogLead, TITLE_MAX, BODY_MAX } from './blog';
+import {
+  updatePostContent,
+  normalizeOriginalUrl,
+  fetchHomeBlogLead,
+  learnFeaturedPosts,
+  setLearnTopic,
+  TITLE_MAX,
+  BODY_MAX,
+} from './blog';
 
 beforeEach(() => {
   updateMock.mockClear();
   eqMock.mockClear();
   inMock.mockReset();
   inMock.mockResolvedValue({ error: null, count: 1 });
+  eq2Mock.mockReset();
+  eq2Mock.mockResolvedValue({ error: null, count: 1 });
   readChain.select = [];
   readChain.eq = [];
+  readChain.not = [];
   readChain.order = [];
   readChain.limit = [];
   readResult = { data: null, error: null };
+  listResult = { data: [], error: null };
 });
 
 describe('updatePostContent', () => {
@@ -273,5 +308,108 @@ describe('fetchHomeBlogLead', () => {
       readResult = { data: row({ body: words(count) }), error: null };
       expect((await fetchHomeBlogLead())?.readMinutes).toBe(minutes);
     }
+  });
+});
+
+// Featuring a post inside the Learn IA (/information). The column carries no CHECK
+// constraint by design — lib/information/topics.ts is the single source of truth —
+// so validation lives here and is worth pinning.
+describe('learnFeaturedPosts', () => {
+  const row = (over: Record<string, unknown> = {}) => ({
+    id: 'p1',
+    slug: 'a-post',
+    title: 'A post',
+    summary: 's',
+    body: 'b',
+    series_slug: null,
+    tags: [],
+    status: 'published',
+    author_id: 'u1',
+    publish_at: null,
+    published_at: '2026-08-01T00:00:00Z',
+    hero_image: null,
+    original_url: null,
+    learn_topic: 'motogp',
+    created_at: '2026-08-01T00:00:00Z',
+    updated_at: null,
+    ...over,
+  });
+
+  it('asks only for published posts that are featured', async () => {
+    await learnFeaturedPosts();
+    expect(readChain.eq).toEqual([['status', 'published']]);
+    expect(readChain.not).toEqual([['learn_topic', 'is', null]]);
+  });
+
+  it('scopes to one topic when given one, without the not-null filter', async () => {
+    await learnFeaturedPosts('endurance');
+    expect(readChain.eq).toEqual([['status', 'published'], ['learn_topic', 'endurance']]);
+    expect(readChain.not).toEqual([]);
+  });
+
+  // An undated post must never consume a slot in a capped list.
+  it('orders by published_at with the NULL guard, and caps', async () => {
+    await learnFeaturedPosts(undefined, 4);
+    expect(readChain.order).toEqual([['published_at', { ascending: false, nullsFirst: false }]]);
+    expect(readChain.limit).toEqual([[4]]);
+  });
+
+  it('refuses an unknown topic without querying at all', async () => {
+    expect(await learnFeaturedPosts('not-a-topic')).toEqual([]);
+    expect(readChain.select).toEqual([]);
+  });
+
+  // A value written straight into the table can name a topic that no longer
+  // exists; it must vanish rather than render a section with nowhere to belong.
+  it('drops rows whose stored topic is not a real InfoTopic', async () => {
+    listResult = { data: [row(), row({ id: 'p2', learn_topic: 'retired-topic' })], error: null };
+    const out = await learnFeaturedPosts();
+    expect(out.map(p => p.id)).toEqual(['p1']);
+  });
+
+  it('maps learn_topic onto the post', async () => {
+    listResult = { data: [row()], error: null };
+    expect((await learnFeaturedPosts())[0].learnTopic).toBe('motogp');
+  });
+
+  // It feeds a decorative band on the most-indexed section of the site.
+  it('fails soft to an empty list on a query error', async () => {
+    listResult = { data: null, error: { message: 'boom' } };
+    expect(await learnFeaturedPosts()).toEqual([]);
+  });
+});
+
+describe('setLearnTopic', () => {
+  it('rejects an unknown topic before touching the database', async () => {
+    await expect(setLearnTopic('p1', 'not-a-topic')).rejects.toThrow(/unknown Learn topic/i);
+    expect(updateMock).not.toHaveBeenCalled();
+  });
+
+  it('writes the topic and stamps updated_at', async () => {
+    await setLearnTopic('p1', 'motogp');
+    expect(updateMock).toHaveBeenCalledTimes(1);
+    const [fields, opts] = updateMock.mock.calls[0] as [Record<string, unknown>, unknown];
+    expect(fields.learn_topic).toBe('motogp');
+    expect(typeof fields.updated_at).toBe('string');
+    expect(opts).toEqual({ count: 'exact' });
+  });
+
+  it('accepts null to un-feature', async () => {
+    await setLearnTopic('p1', null);
+    const [fields] = updateMock.mock.calls[0] as [Record<string, unknown>];
+    expect(fields.learn_topic).toBeNull();
+  });
+
+  // The invariant: only a live post can be featured. Guarded in the UPDATE, not
+  // just the UI, so the editorial order holds however the call arrives.
+  it('guards the update to published rows', async () => {
+    await setLearnTopic('p1', 'motogp');
+    expect(eqMock).toHaveBeenCalledWith('id', 'p1');
+    expect(eq2Mock).toHaveBeenCalledWith('status', 'published');
+  });
+
+  it('throws when no published row matched', async () => {
+    eq2Mock.mockResolvedValue({ error: null, count: 0 });
+    await expect(setLearnTopic('p1', 'motogp')).rejects.toThrow(/only a published post/i);
   });
 });

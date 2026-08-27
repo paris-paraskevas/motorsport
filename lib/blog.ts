@@ -1,5 +1,6 @@
 import { betDb, isBettingConfigured } from './betting/client';
 import { displayNames } from './betting/friends';
+import { isTopicId } from './information/topics';
 
 // Server-only. DB-backed blog pipeline. Complements the file-based MDX blog
 // (content/posts, see lib/posts.ts): a post is drafted (by scripts/draft-post or
@@ -44,6 +45,12 @@ export interface BlogPost {
   publishAt: string | null;
   publishedAt: string | null;
   heroImage: string | null;
+  /** An InfoTopic id (lib/information/topics.ts) when an admin has featured this
+   *  post inside the Learn IA, else null. Featuring makes the post appear in a
+   *  /information LIST — canonical stays /blog/<slug> and it never becomes an
+   *  InfoEntry, so it adds nothing to the sitemap. Set only on `published` rows
+   *  (setLearnTopic status-guards it). */
+  learnTopic: string | null;
   createdAt: string;
   /** Last write of any kind to the row. Null on rows created before the column
    *  was populated; callers treating this as "content changed" must fall back. */
@@ -85,7 +92,7 @@ export function normalizeTags(raw: string[] | undefined | null): string[] {
 // article's structured data a real dateModified. Every mutating helper in this
 // file already stamps it; nothing read it until 0.334.22.
 const COLS =
-  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, original_url, created_at, updated_at';
+  'id, slug, title, summary, body, series_slug, tags, status, author_id, publish_at, published_at, hero_image, original_url, learn_topic, created_at, updated_at';
 
 /** Normalize + shape-check a hero/cover image reference: null/blank → null;
  *  otherwise it must be an absolute https:// URL or a root-relative /path —
@@ -138,6 +145,7 @@ function toPost(r: Record<string, unknown>, name: string | null): BlogPost {
     publishAt: (r.publish_at as string | null) ?? null,
     publishedAt: (r.published_at as string | null) ?? null,
     heroImage: (r.hero_image as string | null) ?? null,
+    learnTopic: (r.learn_topic as string | null) ?? null,
     createdAt: r.created_at as string,
     updatedAt: (r.updated_at as string | null) ?? null,
   };
@@ -413,6 +421,55 @@ export async function publishedPostsForSeries(seriesSlug: string, limit = 4): Pr
   } catch {
     return [];
   }
+}
+
+/** Published posts an admin has featured in the Learn IA, newest first, capped.
+ *  Pass a topic to scope it to one /information/[topic] page; omit it for the hub.
+ *
+ *  Same NULL-ordering guard and fail-soft contract as publishedPostsForSeries
+ *  above, and for the same reason twice over: this feeds a decorative block, and
+ *  the block sits on /information — the most-indexed section of the site. It must
+ *  never 500 the hub, and an undated post must never consume a capped slot.
+ *
+ *  A topic is validated against isTopicId rather than trusted: `learn_topic` has
+ *  no CHECK constraint (see the migration), so a value written by hand straight
+ *  into the table must render nothing rather than an orphan section. */
+export async function learnFeaturedPosts(topic?: string, limit = 6): Promise<BlogPost[]> {
+  if (!isBettingConfigured()) return [];
+  if (topic !== undefined && !isTopicId(topic)) return [];
+  try {
+    let q = betDb().from('post').select(COLS).eq('status', 'published');
+    q = topic === undefined ? q.not('learn_topic', 'is', null) : q.eq('learn_topic', topic);
+    const { data, error } = await q
+      .order('published_at', { ascending: false, nullsFirst: false })
+      .limit(limit);
+    if (error || !data) return [];
+    // Drop rows whose stored topic is no longer a real InfoTopic — a topic can be
+    // renamed or retired in topics.ts without a migration, and the unfiltered hub
+    // query would otherwise surface a post with nowhere to belong.
+    return (await withNames(data)).filter(p => p.learnTopic && isTopicId(p.learnTopic));
+  } catch {
+    return [];
+  }
+}
+
+/** Feature a published post under a Learn topic, or clear it with null.
+ *
+ *  Status-guarded to 'published' with an exact count, so "you can only feature a
+ *  post that is live" is a database invariant rather than a UI convention — a
+ *  draft can never be filed into Learn, and the editorial order (publish, then
+ *  feature) holds even if a caller gets it wrong. Same guard shape as
+ *  reschedulePost. Caller must have proved admin (the API route's gate). */
+export async function setLearnTopic(id: string, topic: string | null): Promise<void> {
+  if (topic !== null && !isTopicId(topic)) throw new Error('unknown Learn topic');
+  const now = new Date().toISOString();
+  const { error, count } = await betDb()
+    .from('post')
+    .update({ learn_topic: topic, updated_at: now }, { count: 'exact' })
+    .eq('id', id)
+    .eq('status', 'published');
+  if (error) throw new Error(`setLearnTopic failed: ${error.message}`);
+  if (!count) throw new Error('only a published post can be featured in Learn');
 }
 
 /** One post by slug (any status), or null. The page gates non-published visibility. */

@@ -4,7 +4,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { isAdmin, canAuthor } from '@/lib/threads';
 import { isPushConfigured } from '@/lib/push';
-import { decidePost, reschedulePost, submitPost, publishDuePosts, updatePostContent, getPostById, type PostContentPatch, type BlogPost } from '@/lib/blog';
+import { decidePost, reschedulePost, submitPost, publishDuePosts, updatePostContent, getPostById, setLearnTopic, type PostContentPatch, type BlogPost } from '@/lib/blog';
 import { announcePublishedPosts } from '@/lib/notify-blog';
 import { notifyAdminsDraftReady, notifyAuthorDecision } from '@/lib/blog-notify';
 
@@ -37,7 +37,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const gate = await authorizePostActor(id, userId);
   if (gate instanceof NextResponse) return gate;
-  let body: { action?: unknown; publishAt?: unknown };
+  let body: { action?: unknown; publishAt?: unknown; topic?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -47,7 +47,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     body.action !== 'approve' &&
     body.action !== 'reject' &&
     body.action !== 'reschedule' &&
-    body.action !== 'submit'
+    body.action !== 'submit' &&
+    body.action !== 'feature'
   ) {
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
   }
@@ -72,6 +73,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         }
       });
       return NextResponse.json({ ok: true, status: submitted.status });
+    }
+    // Feature (or un-feature) a published post inside the Learn IA. `topic` is an
+    // InfoTopic id; null/absent clears it. setLearnTopic validates the id and
+    // status-guards to 'published', so an unknown topic or a draft is a 422.
+    //
+    // Both the OLD and the NEW topic page are revalidated, plus the hub: re-filing
+    // a post from one topic to another must remove it from the page it left, and
+    // /information* carries revalidate = 3600, so without this the change would
+    // take up to an hour to show. Same mechanism the publish path below uses.
+    if (body.action === 'feature') {
+      const topic = typeof body.topic === 'string' && body.topic ? body.topic : null;
+      const previous = gate.learnTopic;
+      await setLearnTopic(id, topic);
+      revalidatePath('/information');
+      for (const t of new Set([previous, topic].filter((t): t is string => Boolean(t)))) {
+        revalidatePath(`/information/${t}`);
+      }
+      return NextResponse.json({ ok: true, learnTopic: topic });
     }
     if (body.action === 'reschedule') {
       if (!publishAt) return NextResponse.json({ error: 'publishAt required to reschedule' }, { status: 422 });
@@ -117,7 +136,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
-    const domain = /required|not a draft|not scheduled/i.test(message);
+    // setLearnTopic's two rejections (an unknown topic id, a non-published row)
+    // are caller mistakes, not faults — without them here they'd surface as 500s.
+    const domain = /required|not a draft|not scheduled|unknown Learn topic|can be featured/i.test(message);
     return NextResponse.json({ error: message }, { status: domain ? 422 : 500 });
   }
 }
