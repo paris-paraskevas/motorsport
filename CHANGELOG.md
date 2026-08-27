@@ -4,6 +4,13 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.82 — 2026-08-27
+
+### Internal
+- **Session-38 close.** `docs/next-session.md` rewritten and **reordered by measured thinness rather than by family**, now that the champion-notes programme is finished at 489/489. `docs/HANDOFF.md` gains the session-38 block; `SCHEDULE.md` records the day; `IDEAS.md`'s AdSense front is rewritten, because its main premise — 488 thin who-won pages at 38.7% of the sitemap — is closed and the thin content has moved rather than gone.
+- **The queue's new TIER 1 item 1 is the 22 `most-` record pages**: median 67 rendered words, minimum 44, all indexed, generated wholly from `champions.json` with no authored-note sidecar. Thinner than any who-won page ever was, and only 22 pages.
+- Nothing user-facing changed in this push.
+
 ## 0.334.81 — 2026-08-27
 
 ### Added
