@@ -4,6 +4,22 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.78 — 2026-08-27
+
+### Added
+- **Cloudflare usage and cost land on System.** Phase 4, and the last credential-gated piece. Worker requests over 30 days against the plan's included allowance, errors, subrequests, and usage-based charges grouped by service. New `lib/analytics/cloudflare.ts`, plain `fetch` against the GraphQL analytics endpoint and the REST billable-usage endpoint.
+  - **Two tokens, not one, and they are not interchangeable.** `CLOUDFLARE_ANALYTICS_TOKEN` carries Account Analytics read; `CLOUDFLARE_BILLING_TOKEN` carries Billing read. Billing is the most sensitive permission in the console, so it sits on its own token and can be revoked without taking the usage panel down with it.
+  - **The cost panel says "usage-based charges", not "cost", and that wording is load-bearing.** Verified against the live account: the endpoint returns usage-based charges only, and **fixed plan subscriptions are not in it** — so the Workers Paid monthly base does not appear. The only rows the account currently returns are R2 storage and operations. Labelling that total "what the site costs" would understate the bill by most of it.
+  - **The requests allowance is a reference line, not a calculation.** No API reports your plan's included quota, so it is a named constant carrying the date it was checked; if the plan changes, a wrong reference is visibly wrong, whereas a wrong derived figure is not.
+  - **Only the three GraphQL fields proven against the live API ship** — requests, errors, subrequests. The dataset also exposes CPU-time quantiles, but GraphQL fails the *whole* query on one unknown field, so an unverified addition would blank the panel rather than degrade it.
+  - **A GraphQL permission failure answers HTTP 200** with an `errors` array, so the client checks the body rather than the status. A status-only check would have rendered an empty panel as a healthy one.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1316 passed** (110 files) · `next build` → compiled, all six `/admin` routes `ƒ`.
+- **Both tokens were proved against the live API before either secret was set**: token verify returned `active` for both, the analytics query returned **316,830 requests and 0 errors** over 7 days, and billable-usage returned **36 rows** with real cost fields. The two files the operator saved them to were deleted immediately afterwards, and the values never entered a chat, a repo file, or a command line.
+- Production Worker secrets are now **26**, up from 19 at the start of the day.
+- **NOT verified:** nothing has been clicked. `/admin` needs a session this machine does not hold.
+
 ## 0.334.77 — 2026-08-27
 
 ### Added
