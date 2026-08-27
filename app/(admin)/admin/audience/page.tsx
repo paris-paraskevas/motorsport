@@ -6,6 +6,9 @@ import { AdminPageHeader, KpiTile, Sparkline, TelemetryPanel, Unavailable } from
 import { AuthorRequestActions } from '@/components/admin/AuthorRequestActions';
 import { DonorToggle } from '@/components/admin/DonorToggle';
 import { listAuthorRequests, type AuthorRequest } from '@/lib/author-requests';
+import { listFeedback, type FeedbackItem } from '@/lib/feedback';
+import { listThreads, type Thread } from '@/lib/threads';
+import { FeedbackActions, ThreadActions } from '@/components/admin/ModerationActions';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Audience · Admin' };
@@ -70,14 +73,81 @@ async function loadPendingRequests(): Promise<AuthorRequest[]> {
   }
 }
 
+// Both queues are fail-soft to []: neither is load-bearing for the page, and a
+// Supabase blip must not take the accounts panel down with it.
+async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch {
+    return fallback;
+  }
+}
+
 export default async function AdminUsersPage() {
   await requireAdmin();
-  const [users, requests] = await Promise.all([loadUserStats(), loadPendingRequests()]);
+  const [users, requests, pendingThreads, feedback] = await Promise.all([
+    loadUserStats(),
+    loadPendingRequests(),
+    safe(() => listThreads('pending'), [] as Thread[]),
+    safe(() => listFeedback(), [] as FeedbackItem[]),
+  ]);
   const cadence = users ? signupCadence(users.recent) : [];
+  // Closed and done are history; the console shows what still needs deciding.
+  const openFeedback = feedback.filter(f => f.status === 'open' || f.status === 'considered');
 
   return (
     <div>
-      <AdminPageHeader title="Audience" tagline="Accounts · roles · author applications · recent sign-ups" />
+      <AdminPageHeader title="Audience" tagline="Accounts · roles · what people are saying" />
+
+      {pendingThreads.length > 0 && (
+        <div className="mb-6">
+          <TelemetryPanel title="Threads awaiting moderation" meta={`${pendingThreads.length} pending`} flush>
+            <ul className="divide-y divide-border">
+              {pendingThreads.map(t => (
+                <li key={t.id} className="space-y-2 px-4 py-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="font-semibold text-text">{t.title}</span>
+                    <span className="font-mono text-[11px] tabular-nums text-text-faint">
+                      {new Date(t.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-muted">{t.body}</p>
+                  <p className="font-mono text-[11px] text-text-faint">
+                    {t.authorName ?? t.authorId}
+                    {t.seriesSlug ? ` · ${t.seriesSlug}` : ''}
+                  </p>
+                  <ThreadActions id={t.id} />
+                </li>
+              ))}
+            </ul>
+          </TelemetryPanel>
+        </div>
+      )}
+
+      {openFeedback.length > 0 && (
+        <div className="mb-6">
+          <TelemetryPanel title="Feedback" meta={`${openFeedback.length} to triage`} flush>
+            <ul className="divide-y divide-border">
+              {openFeedback.map(f => (
+                <li key={f.id} className="space-y-2 px-4 py-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="font-semibold text-text">{f.title}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-text-faint">
+                      {f.kind}
+                    </span>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-muted">{f.body}</p>
+                  <p className="font-mono text-[11px] text-text-faint">
+                    {f.authorName ?? f.authorId} ·{' '}
+                    {new Date(f.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                  </p>
+                  <FeedbackActions id={f.id} status={f.status} />
+                </li>
+              ))}
+            </ul>
+          </TelemetryPanel>
+        </div>
+      )}
       {requests.length > 0 && (
         <div className="mb-6">
           <TelemetryPanel title="Author applications" meta={`${requests.length} pending`} flush>

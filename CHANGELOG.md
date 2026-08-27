@@ -4,6 +4,29 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.74 — 2026-08-27
+
+### Added
+- **Content is a real tab, and the two admin jobs that had an API but no screen now have one.** Phase 2 of the console rebuild.
+  - **`/admin/content`**: every post regardless of status, newest first, with **all of its flags on the row** — status, series, Learn topic, cover / no cover, imported, scheduled date. Until now each of those was set on the post's own page and visible nowhere else, so answering "which posts are in Learn" or "which have no cover" meant opening twenty-four posts in turn. The switch stays on the object; the overview lives here.
+  - **Learn placement by topic, including the topics on zero.** The contributor band only renders on `/information` where something exists, so a topic nobody has written for looks identical to one that is covered. Counting posts *and* answers per topic makes the gap visible, which turns the Learn flag from a switch you occasionally remember into a commissioning list.
+  - **Champion-note coverage per series**, sorted least-complete first, with a bar per family. Read from the bundled content via `loadCuratedChampions` / `loadChampionNotes`, so it is in-memory rather than thirty file reads at request time.
+  - **`/admin/audience` gains both moderation queues**: threads awaiting moderation, and feedback to triage. New `components/admin/ModerationActions.tsx` posts to the endpoints that already existed and already re-check admin server-side — a client control is never the gate.
+  - **The Overview's Needs you queue picks both up**, so a pending thread or an open feedback item is visible the moment you open the console rather than only if you go looking.
+- **`listAllPosts()` in `lib/blog.ts`** — one query for the whole working set rather than five `listPosts(status)` round trips to assemble one table. Fail-soft, unlike `listPosts`, because it feeds a dashboard panel that must degrade to empty rather than 500 the page around it.
+
+### Fixed
+- **Feedback triage has been unusable since it was built.** `lib/feedback.ts` ships four states and `POST /api/feedback/[id]` has always worked; there was no UI anywhere, so moving an item to "done" meant hand-crafting a request. The control renders the current state as the pressed button rather than a separate badge, so the control and the state cannot disagree.
+- **Thread moderation was on a public page.** Pending threads appeared to admins inside `/social/threads` — the reader-facing route — rather than in the console. It is now in both, and the console is where the queue belongs.
+- **The last hardcoded Tailwind palette literal in the admin surface** (`text-red-400` in `AuthorRequestActions`) now uses `text-negative`. It measures about 2.3:1 on the light console's white panels.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1309 passed** (110 files) · `next build` → compiled, all six `/admin` routes present as `ƒ`, only the six documented standing warnings. Re-run after rebasing onto the WRC wave, which brought the suite 1302 → 1309 through the `it.each` integrity gate.
+- **NOT verified, same gap as 0.334.72:** nothing has been clicked. `/admin` needs a session this machine does not hold. The two new controls both mutate — approving a thread publishes it, and a feedback status write is a prod write — so those are the first two things to exercise.
+
+### Note
+- Renumbered from 0.334.73 during rebase; the WRC notes wave below took that number first.
+
 ## 0.334.73 — 2026-08-27
 
 ### Added

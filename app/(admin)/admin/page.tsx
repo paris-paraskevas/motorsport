@@ -9,6 +9,8 @@ import { listPosts } from '@/lib/blog';
 import { readHealthReport, type HealthReport } from '@/lib/health-store';
 import { getSourceHealth, type SourceHealth } from '@/lib/source-snapshot';
 import { loadLiveHomeLayout, pinnedLeadSlug } from '@/lib/home-layout';
+import { listFeedback, type FeedbackItem } from '@/lib/feedback';
+import { listThreads, type Thread } from '@/lib/threads';
 import { AdminPageHeader, TelemetryPanel } from '@/components/admin/AdminUI';
 import { SITE_URL } from '@/lib/site';
 
@@ -86,7 +88,8 @@ function waitingSince(iso: string): string {
 export default async function AdminPage() {
   await requireAdmin();
 
-  const [heat, accounts, layout, pendingAuthors, submissions, inReview, report, sources] = await Promise.all([
+  const [heat, accounts, layout, pendingAuthors, submissions, inReview, report, sources, pendingThreads, feedback] =
+    await Promise.all([
     safe(() => heatmapAdminOverview(), []),
     safe(async () => (await clerkClient()).users.getCount(), null as number | null),
     loadLiveHomeLayout(),
@@ -95,6 +98,8 @@ export default async function AdminPage() {
     safe(() => listPosts('in_review'), []),
     safe(() => readHealthReport(), null as HealthReport | null),
     safe(() => getSourceHealth(), [] as SourceHealth[]),
+    safe(() => listThreads('pending'), [] as Thread[]),
+    safe(() => listFeedback(), [] as FeedbackItem[]),
   ]);
 
   const totalClicks = heat.reduce((sum, p) => sum + p.total, 0);
@@ -139,6 +144,22 @@ export default async function AdminPage() {
       detail: `Pending · since ${waitingSince(r.createdAt)}`,
       href: '/admin/audience',
       action: 'Decide',
+    });
+  }
+  for (const t of pendingThreads) {
+    tasks.push({
+      what: `Thread — ${t.title}`,
+      detail: `Awaiting moderation · since ${waitingSince(t.createdAt)}`,
+      href: '/admin/audience',
+      action: 'Moderate',
+    });
+  }
+  for (const f of feedback.filter(f => f.status === 'open')) {
+    tasks.push({
+      what: `Feedback — ${f.title}`,
+      detail: `${f.kind} · since ${waitingSince(f.createdAt)}`,
+      href: '/admin/audience',
+      action: 'Triage',
     });
   }
   for (const s of submissions.filter(s => s.status === 'new')) {

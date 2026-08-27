@@ -224,6 +224,32 @@ export async function listPosts(
   return withNames(data ?? []);
 }
 
+/**
+ * Every post regardless of status, newest first — the console's Content tab.
+ *
+ * Deliberately NOT five `listPosts(status)` calls: the whole point of that view
+ * is one table you can scan for state, and five round trips to assemble one
+ * table is three too many. Capped, because the console shows a working set and
+ * not an archive.
+ *
+ * Fail-soft, unlike `listPosts`: this feeds a dashboard panel that must degrade
+ * to empty rather than 500 the page around it.
+ */
+export async function listAllPosts(limit = 100): Promise<BlogPost[]> {
+  if (!isBettingConfigured()) return [];
+  try {
+    const { data, error } = await betDb()
+      .from('post')
+      .select(COLS)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+    return withNames(data);
+  } catch {
+    return [];
+  }
+}
+
 /** Published posts for the public feed, newest published first. Fail-soft so the
  *  /blog page never breaks on a DB hiccup or an unprovisioned Supabase. */
 export async function publishedPosts(): Promise<BlogPost[]> {

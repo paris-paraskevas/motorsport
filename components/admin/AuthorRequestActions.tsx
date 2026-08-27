@@ -51,7 +51,7 @@ export function AuthorRequestActions({ id }: { id: string }) {
       >
         Decline
       </button>
-      {error && <span className="font-mono text-xs text-red-400">{error}</span>}
+      {error && <span className="font-mono text-xs text-negative">{error}</span>}
     </div>
   );
 }
