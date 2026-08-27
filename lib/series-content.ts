@@ -75,6 +75,51 @@ export interface ChampionNote {
 /** Sidecar shape: year-as-string → note. */
 export type ChampionNotesFile = Record<string, ChampionNote>;
 
+/** Authored enrichment for the two generated "most titles" record answers
+ *  (content/series/<slug>/record-notes.json).
+ *
+ *  Why it exists: those pages are derived wholly from champions.json — the
+ *  holder, the count, the multiple-winners list — so all 23 of them read as one
+ *  page with the names swapped, and at a measured 42–81 rendered words they were
+ *  the thinnest cohort on the site (audit 2026-08-27), thinner than the who-won
+ *  pages the 2026-08-20 AdSense review flagged. Unlike who-won they had no
+ *  authored-note mechanism at all, which was a structural gap rather than a
+ *  backlog.
+ *
+ *  Same fail-soft gate as champion-notes.json: absent file, or absent half,
+ *  leaves the page rendering exactly as it did, so a series can be enriched on
+ *  its own. Keyed by HALF ("drivers" / "teams") rather than by year, so the V8
+ *  integer-key reordering that governs champion-notes.json does not apply here
+ *  and JSON.stringify is safe to write these with. */
+export function loadRecordNotes(slug: string): Promise<RecordNotesFile | null> {
+  return readJsonIfExists<RecordNotesFile>(
+    path.join(SERIES_ROOT, slug, 'record-notes.json'),
+  );
+}
+
+/** One record page's enrichment: a short lead clause rendered as "The record: …",
+ *  the authored paragraph, and the primary references each claim was checked
+ *  against (RULE #1 trail, rendered on the page).
+ *
+ *  What the note carries is what the data cannot: when the record was set and
+ *  what it displaced, who is closest and what they would need, whether the run
+ *  was consecutive, and the one thing that makes it hard to beat. */
+export interface RecordNote {
+  lead: string;
+  note: string;
+  sources?: string[];
+}
+
+/** Sidecar shape, one entry per record page the series generates. `drivers` is
+ *  present only where the driver/rider record is ≥ 2 and `teams` only where the
+ *  constructor record is ≥ 2, because below that the generator emits no page at
+ *  all — a note for a page that never renders is dead content, and
+ *  lib/record-notes-integrity.test.ts fails on one. */
+export interface RecordNotesFile {
+  drivers?: RecordNote;
+  teams?: RecordNote;
+}
+
 /** Curated WRC per-stage classifications (content/series/wrc/stage-results.json).
  *  The rally results feed is winners-only, so the full per-stage field lives
  *  here as curated content (RULE #1: eWRC + wrc.com). Null when the file is

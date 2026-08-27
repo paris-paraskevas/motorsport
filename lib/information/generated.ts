@@ -1,6 +1,12 @@
 import 'server-only';
 import { loadAllSeriesMeta } from '../series';
-import { loadCuratedChampions, loadChampionNotes, type ChampionNote } from '../series-content';
+import {
+  loadCuratedChampions,
+  loadChampionNotes,
+  loadRecordNotes,
+  type ChampionNote,
+  type RecordNote,
+} from '../series-content';
 import { slugify } from '../slug';
 import { topicForSeries } from './topics';
 import type { InfoEntry, InfoSource } from './types';
@@ -78,7 +84,23 @@ function ordinal(n: number): string {
  *  generation. */
 function sourceLabel(url: string): string {
   try {
-    return new URL(url).host.replace(/^www\./, '');
+    const u = new URL(url);
+    const host = u.host.replace(/^www\./, '');
+    // A bare host is the right label for a one-off news URL, but an entry citing
+    // two different Wikipedia articles rendered them as "en.wikipedia.org" twice,
+    // which reads as the same link listed twice rather than two sources. Name the
+    // article for those (2026-08-27, found by looking at the DTM record page).
+    if (/(^|\.)wikipedia\.org$/.test(host) && u.pathname.startsWith('/wiki/')) {
+      const raw = u.pathname.slice('/wiki/'.length);
+      let title = raw;
+      try {
+        title = decodeURIComponent(raw);
+      } catch {
+        // Malformed percent-encoding: the raw path still names the article.
+      }
+      return `Wikipedia — ${title.replace(/_/g, ' ')}`;
+    }
+    return host;
   } catch {
     return url;
   }
@@ -97,6 +119,28 @@ export function noteLead(note: ChampionNote): { label: string; text: string } | 
   if (note.season?.trim()) return { label: 'The season', text: note.season.trim() };
   if (note.race?.trim()) return { label: 'The race', text: note.race.trim() };
   return null;
+}
+
+/** The authored enrichment for a record page. Everything the two record
+ *  generators produce is derived from champions.json, so all 23 of those pages
+ *  read as one page with the names swapped — at 42–81 rendered words the
+ *  thinnest cohort on the site when it was measured (2026-08-27). This is the
+ *  part that says what the data cannot: when the record was set and what it
+ *  displaced, who is closest, and what would have to happen for it to change.
+ *
+ *  Placed AFTER the derived lines but BEFORE the "Based on our curated…"
+ *  provenance footer, which reads as the end of the page (operator decision,
+ *  2026-08-27; the who-won entry has no such footer, so "append last" there and
+ *  here are not the same position). No note → no lines, and the page renders
+ *  byte-identically to what it did. */
+function recordNoteLines(note: RecordNote | undefined): string[] {
+  if (!note) return [];
+  const out: string[] = [];
+  const lead = note.lead?.trim();
+  if (lead) out.push(`**The record:** ${lead}.`);
+  const body = note.note?.trim();
+  if (body) out.push(body);
+  return out;
 }
 
 function seriesSources(meta: SeriesMeta): InfoSource[] {
@@ -269,7 +313,12 @@ function joinNames(names: string[]): string {
 
 // "Who has won the most X championships?" — only when the record-holder has ≥2
 // (otherwise the page is meaningless, e.g. endurance crews that never repeat).
-function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: string): InfoEntry | null {
+function mostDriverTitlesEntry(
+  meta: SeriesMeta,
+  champs: Champion[],
+  topic: string,
+  note?: RecordNote,
+): InfoEntry | null {
   const ranked = rankTitles(champs, (c) => driversOf(c.driver));
   if (ranked.length === 0 || ranked[0][1] < 2) return null;
   const [topName, topN] = ranked[0];
@@ -292,6 +341,7 @@ function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: stri
     lines.push('Drivers with multiple titles:');
     lines.push(multi.map(([n, c]) => `- **${n}** — ${c}`).join('\n'));
   }
+  lines.push(...recordNoteLines(note));
   lines.push(`Based on our curated ${meta.name} champions, ${span(champs)}.`);
 
   return {
@@ -310,7 +360,12 @@ function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: stri
       topName,
     ],
     bodyMarkdown: lines.join('\n\n'),
-    sources: seriesSources(meta),
+    // The note's own primary references join the series-level sources, so every
+    // authored claim on the page is traceable (RULE #1), same as whoWonEntry.
+    sources: [
+      ...seriesSources(meta),
+      ...(note?.sources ?? []).map((url) => ({ label: sourceLabel(url), url })),
+    ],
     related: [
       { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
       { label: `${meta.name} history`, href: `/information/${topic}/the-history-of-${meta.slug}` },
@@ -322,7 +377,12 @@ function mostDriverTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: stri
   };
 }
 
-function mostConstructorTitlesEntry(meta: SeriesMeta, champs: Champion[], topic: string): InfoEntry | null {
+function mostConstructorTitlesEntry(
+  meta: SeriesMeta,
+  champs: Champion[],
+  topic: string,
+  note?: RecordNote,
+): InfoEntry | null {
   const ranked = rankTitles(champs, (c) => c.constructorChampion);
   if (ranked.length === 0 || ranked[0][1] < 2) return null;
   const [topName, topN] = ranked[0];
@@ -341,6 +401,7 @@ function mostConstructorTitlesEntry(meta: SeriesMeta, champs: Champion[], topic:
     lines.push('Most successful:');
     lines.push(multi.map(([n, c]) => `- **${n}** — ${c}`).join('\n'));
   }
+  lines.push(...recordNoteLines(note));
   lines.push(`Based on our curated ${meta.name} ${label} champions, ${span(champs)}.`);
 
   return {
@@ -359,7 +420,10 @@ function mostConstructorTitlesEntry(meta: SeriesMeta, champs: Champion[], topic:
       topName,
     ],
     bodyMarkdown: lines.join('\n\n'),
-    sources: seriesSources(meta),
+    sources: [
+      ...seriesSources(meta),
+      ...(note?.sources ?? []).map((url) => ({ label: sourceLabel(url), url })),
+    ],
     related: [
       { label: `${meta.name} — all champions`, href: `/series/${meta.slug}/champions` },
       { label: `${meta.name} history`, href: `/information/${topic}/the-history-of-${meta.slug}` },
@@ -383,6 +447,9 @@ export async function generateInfoEntries(): Promise<InfoEntry[]> {
     // Authored per-season enrichment, wave by wave: absent file or absent year
     // leaves that page exactly as it was (fail-soft, same gate as bios.json).
     const notes = (await loadChampionNotes(meta.slug)) ?? {};
+    // The two record pages get their own sidecar, keyed by half rather than by
+    // year. Same fail-soft gate: absent file leaves both pages as they were.
+    const records = (await loadRecordNotes(meta.slug)) ?? {};
     const topic = topicForSeries(meta.slug, meta.category);
 
     // A champion page is indexable IFF it has an authored note. One predicate,
@@ -412,9 +479,9 @@ export async function generateInfoEntries(): Promise<InfoEntry[]> {
       const note = notes[String(c.year)];
       out.push(whoWonEntry(meta, c, champs, topic, Boolean(note), note));
     }
-    const md = mostDriverTitlesEntry(meta, champs, topic);
+    const md = mostDriverTitlesEntry(meta, champs, topic, records.drivers);
     if (md) out.push(md);
-    const mc = mostConstructorTitlesEntry(meta, champs, topic);
+    const mc = mostConstructorTitlesEntry(meta, champs, topic, records.teams);
     if (mc) out.push(mc);
   }
 
