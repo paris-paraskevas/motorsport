@@ -6,6 +6,7 @@ import { FONT_CLASSES } from '@/lib/fonts';
 import { AppShell } from '@/components/AppShell';
 import { CookieConsent } from '@/components/CookieConsent';
 import { LaunchBanner } from '@/components/LaunchBanner';
+import { WhatsNewModal } from '@/components/whats-new/WhatsNewModal';
 import { SupportPrompt } from '@/components/SupportPrompt';
 
 import { HeatmapTracker } from '@/components/HeatmapTracker';
@@ -137,6 +138,7 @@ export default async function RootLayout({
               rather than inside AppShell, because it is fixed-position and no
               longer an inline bar. Ships dark until LAUNCH_ANNOUNCEMENT.active. */}
           <LaunchBanner />
+          <WhatsNewModal />
           {/* Custom consent UI replacing Google Funding Choices (0.12.6). FC
               was dropped because adsbygoogle.js never summons a banner until
               the AdSense site is approved, leaving Consent Mode v2 stuck on
