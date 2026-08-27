@@ -4,6 +4,28 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.76 — 2026-08-27
+
+### Added
+- **Google Analytics, Search Console and Bing are back in the console** — the panels 0.334.27 deleted, rebuilt against the REST surfaces so they cost a fraction of what they did. Phase 3 of the console rebuild. `/admin/traffic` now carries all four sources on **one 28-day window**, because the useful thing is that they disagree: Google's numbers are consent-gated and our own click heatmap is not, so the gap between them is the size of the consent refusal rather than an error.
+  - **New `lib/analytics/google-auth.ts` — about sixty lines that replace two SDKs.** The 653 KiB removed in 0.334.27 was `@google-analytics/data` and `@googleapis/searchconsole` dragging `google-gax`, `@grpc` and `google-auth-library` into the Worker. Both APIs are ordinary JSON over HTTPS; the only thing the SDKs really provided was minting an access token, which is a JWT signed with the service account's RSA key. Workers ship `crypto.subtle` with `RSASSA-PKCS1-v1_5` / SHA-256 — exactly RS256 — so it is `crypto.subtle` plus `fetch` and **no dependency at all**. Node's `crypto` is deliberately untouched: workerd has none, and reaching for it is how a module works locally and fails in the deployed runtime.
+  - **The token is cached in KV for 50 minutes**, not in a module variable. Signing is a real RSA operation against a per-request CPU budget and every panel would otherwise mint its own; Workers isolates are short-lived and numerous, so a module cache would miss far more often than it hit.
+  - **`lib/analytics/bing.ts` came back VERBATIM**, and it should never have gone. It was always a bare `fetch` to `ssl.bing.com`, so it carried **none** of the 653 KiB — it was deleted as collateral alongside the two that did. Its secrets were never removed from the Worker either, so it came back on with no configuration whatsoever.
+  - **`GSC_SITE_URL` must match the property string exactly** (`sc-domain:paddock-tracker.com` for a domain property); the API rejects a near-miss rather than guessing. **`GA4_PROPERTY_ID` is the numeric id** from Analytics Admin, not the `G-` measurement id.
+  - Search Console queries end at **two days ago**, not today: its data settles about two days behind, and ending at today reports a collapse every morning that is only the data not having arrived yet.
+
+### Measured — and a claim of mine corrected
+- **The Worker grew by 26.52 KiB gzipped**, not zero. Measured with `wrangler deploy --dry-run` on both sides of the same base: `main` **9526.04 KiB** → this branch **9552.56 KiB**, leaving **687.44 KiB** of headroom against the 10240 KiB ceiling.
+- I had been saying these panels would cost **"0 KiB"**. That was wrong and worth correcting: application code always costs something. What costs nothing is the **dependency tree**, and there is none — 26.52 KiB against the 653 KiB the SDKs took is **25× smaller**, which is the actual claim.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1316 passed** (110 files, up from 1309 after rebasing onto the DTM wave) · `next build` → compiled, all six `/admin` routes `ƒ`.
+- **The credentials were proved against the live APIs before any secret was set**, using the exact WebCrypto path this ships: the token minted, GA4 returned **181 users / 413 sessions / 1839 views** over 28 days, and Search Console returned real query rows led by **"f2 champions"** at 368 impressions. Four secrets are now on the production Worker (`GA4_PROPERTY_ID`, `GA4_SA_KEY`, `GSC_SITE_URL`, `GSC_SA_KEY`), taking it from 19 to 23.
+- **NOT verified:** nothing has been clicked. `/admin` needs a session this machine does not hold.
+
+### Note
+- **`NEXT_PUBLIC_ASSISTANT_ENABLED` is on the Worker as a runtime secret, which does nothing.** `NEXT_PUBLIC_*` is inlined at BUILD time and Workers Builds runs its own build, so the value that matters is a **build variable in the Cloudflare dashboard**. It sitting in the secret list is false comfort, and it is part of why the assistant went dark.
+
 ## 0.334.75 — 2026-08-27
 
 ### Added
