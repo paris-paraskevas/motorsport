@@ -4,6 +4,27 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.85 — 2026-08-27
+
+### Added
+- **Record notes, wave 3 — the last six, and the cohort is complete at 23 of 23.** Formula 1 (drivers + teams), Formula 2 (teams), IndyCar, NLS and the ADAC 24h. Measured on prod before, in `next dev` after: 74 → 242, 61 → 221, 58 → 212, 58 → 223, 68 → 234, 81 → 251. Suite 1416 → **1451**.
+- **Whole-cohort result.** All 23 `most-` record pages, measured the same way on prod-rendered HTML that produced the audit: **before — median 58, minimum 42, 23 of 23 under 180. After — median 219, minimum 191, 0 under 180.** The thinnest page on the site went 42 → 203.
+
+### The third and fourth bounded windows, both now stated in the note rather than left to inference
+Same shape as the NASCAR and WRC cases in 0.334.84. The derived headline reads as an all-time claim; the file behind it covers part of the history.
+- **IndyCar**: `champions.json` starts in **1996**, the first IRL season. Scott Dixon's six is the record for the IndyCar Series era and he is genuinely second all-time — A. J. Foyt won seven between 1960 and 1979 in the AAA/USAC lineage the series counts as its own. The mildest of the four, and stated precisely rather than flattened.
+- **NLS**: `champions.json` starts in **2010**; the series has run since **1977**, as the VLN until 2020. Philipp Leisen's four is the most in the window; Heinz-Otto Fritzsche and Johannes Scheid have five each across the full history, which the series' own report of Leisen's fourth title says in as many words.
+
+### Two naming boundaries left ALONE, deliberately, and explained in the note instead
+Both would change a record if normalised, and in both cases the entrant names as recorded are correct — so the honest fix is prose, not data. This is the opposite call from the Formula E one in 0.334.84, where the two spellings were the same team in consecutive seasons and the aggregate was simply wrong.
+- **F3**: ART Grand Prix's six are all GP3-era. The same operation also won 2011 and 2012 entered as **Lotus ART** and **Lotus GP** under its title sponsorship — real, distinct entrant names for those seasons, so they stay as recorded. Counting them the organisation has eight; under the ART name it has six, which is what the page says and what Wikipedia's year-by-year table supports.
+- **F2**: four of ART's five are GP2 (2005, 2006, 2009, 2015) and one is Formula 2 (2023), across a 2017 rebrand. Verified against both Wikipedia's ART article and ART's own site; its 2008 **GP2 Asia** teams' title is a different championship and is correctly not counted.
+
+### Noted, not done
+- **`champions.json` disagrees with one source on the ADAC four-win group.** Ours has Christopher Mies on four (2015, 2017, 2022, 2024) and Kelvin van der Linde on two; a search-surfaced summary put Mies on three and van der Linde on three, differing over the **2022** crew. Wikipedia confirms the 2022 winner as Scherer Sport Team Phoenix #15, which is the team our row names. Nothing was asserted either way in the note, so no contradiction ships — but the 2022 line-up is worth one primary-source check.
+- **The generator calls an ADAC or NLS win a "drivers' title" and the H1 says "championships".** For a single twenty-four-hour race that is the wrong noun, and it predates this work — `secondTitleLabel` and `driversTitleWord` have no concept of a one-race family. The note says out loud that this is a race rather than a season, which is the in-scope treatment; changing the generated wording is a separate decision.
+- **The `summary` line on all 23 pages still makes its claim unqualified** — it is the meta description and the hub teaser, and on the four bounded pages it is the string Google indexes. Raised in the PR for #852 and still open.
+
 ## 0.334.84 — 2026-08-27
 
 ### Added
