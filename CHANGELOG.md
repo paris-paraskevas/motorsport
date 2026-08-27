@@ -4,6 +4,26 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.73 — 2026-08-27
+
+### Added
+- **WRC champion notes complete: all 47 drivers' champions, 1979 to 2025.** New `content/series/wrc/champion-notes.json`, finishing the tenth series family, so every WRC who-won page is now indexable. Repo-wide coverage 277 → **324 of 489 (66.3%)**; 165 left across five families (adac-ravenol-24h 54, dtm 39, indycar 30, nascar-cup 26, nls 16).
+- **29 `clinched` / 18 `season`.** Rallies are discrete named events, so where the title was settled is usually on the record — including one that is settled in the note itself: **2006, clinched at Rally Australia, an event Loeb did not start.** He had broken his arm in a mountain-bike accident and missed the end of the season; Grönholm failed to finish and could no longer catch him.
+- Three championships in the set were decided by **a single point** — 1979, 1997 and 2003 — and 1979 was the very first drivers' championship, Waldegård 112 to Mikkola 111. The 1986 note carries the strangest resolution: Group B was banned mid-season after Toivonen and Cresto were killed, Peugeot was then excluded from Sanremo on a technicality which briefly handed the title to Markku Alén, and the appeal reversing it landed **eleven days after the final round**.
+
+### Research method
+- **Consolidated driver articles cut the call count roughly in half.** One fetch of Loeb's article yielded clinch venues for all nine of his titles; Mäkinen's covered four; Kankkunen's four; Sainz's covered 1990 and 1992 *and* the 1995 and 1998 deciders he lost. Per-season fetches were kept for the seasons where the driver article was silent.
+- **Three corrections caught before they shipped.** An early 2025 fetch claimed the title was settled "with one event remaining" when the four-point final margin proves it went to the last round. The 2003 season article gave no margin at all; a search established the one-point finish at Rally GB, with Solberg arriving a point behind two drivers tied on 63. And **2001's fourth title contender is disputed between sources** — Sainz per DirtFish and Autocar, Grönholm per the WRC's own profile — so that note names only the two confirmed to have crashed out rather than picking a side.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1298 passed** (109 files, up from 1291). The delta is exactly the 7 `it.each` cases the integrity suite adds for a series that now has a notes file.
+- `npm run build` → **EXIT=0**. Worth recording how: a `git worktree` with a junctioned `node_modules` runs vitest fine but **Turbopack refuses it** — `Symlink [project]/node_modules is invalid, it points out of the filesystem root` — so a real `npm ci` was run in the worktree to get a genuine build gate rather than skipping it.
+- All 47 Wikipedia season articles and 20 driver pages HTTP-checked 200. `wrc.com` 403s to curl as a bot-block, so its three pages were dropped for verified alternatives (fia.com, autosport, DirtFish, Autocar, Goodwood, Motor Sport).
+- **Browser-verified** on `next dev` in the worktree: 2003, 1979 and 2006 all return 200 and serve `<meta name="robots" content="index, follow">`, and the 2006 page renders "Title clinched: Rally Australia, 2006, an event Loeb did not start."
+- Byte-order guard did not fire; the writer builds the JSON text from a derived descending key list and re-scans the bytes.
+
+### Known limitation, same as WorldSBK
+- `wrc/champions.json` has no `points`, `wins`, `runnerUp` or `runnerUpPoints` columns, so the integrity suite's points-pair assertion **skips all 47 of these notes**. Every figure comes from a source named in that note's own `sources`; where two sources disagreed the figure was omitted. **None of the five remaining families carry those columns either** — checked — so this limitation applies to the whole rest of the programme, and backfilling them is now the highest-value follow-up.
 ## 0.334.72 — 2026-08-27
 
 ### Added

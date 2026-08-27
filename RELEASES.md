@@ -4,6 +4,9 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.73 — 2026-08-27
+
+**Every World Rally champion now has a written note, back to the first drivers' championship in 1979.** Forty-seven of them. Rallying keeps the best endings: three of these titles were decided by a single point, including the very first one. In 1986 the championship changed hands eleven days after the season had finished, on appeal. And in 2006 Sébastien Loeb won it while sitting at home with a broken arm, on a rally he never started.
 ## 0.334.72 — 2026-08-27
 
 **Internal, for the people running the site.** The admin console has been rebuilt around answering a question rather than listing links: it now opens on whether every series' data is healthy and what is waiting on someone, with a new screen for data health, feed freshness and what is switched on. It also has its own dark and light modes, so it no longer looks like the site you are editing. Nothing changes for readers.
