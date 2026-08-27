@@ -15,7 +15,7 @@
   { "year": 2012, "driver": "Max Biaggi", "constructor": "Aprilia", "constructorChampion": "Aprilia", "points": 358, "wins": 5, "runnerUp": "Tom Sykes", "runnerUpPoints": 357.5 },
   { "year": 2011, "driver": "Carlos Checa", "constructor": "Ducati", "constructorChampion": "Ducati" },
   { "year": 2010, "driver": "Max Biaggi", "constructor": "Aprilia", "constructorChampion": "Aprilia" },
-  { "year": 2009, "driver": "Ben Spies", "constructor": "Yamaha", "constructorChampion": "Yamaha", "points": 462, "wins": 14, "runnerUp": "Noriyuki Haga", "runnerUpPoints": 456 },
+  { "year": 2009, "driver": "Ben Spies", "constructor": "Yamaha", "constructorChampion": "Ducati", "points": 462, "wins": 14, "runnerUp": "Noriyuki Haga", "runnerUpPoints": 456 },
   { "year": 2008, "driver": "Troy Bayliss", "constructor": "Ducati", "constructorChampion": "Ducati", "points": 410, "wins": 9 },
   { "year": 2007, "driver": "James Toseland", "constructor": "Honda", "constructorChampion": "Yamaha", "points": 415, "wins": 8, "runnerUp": "Noriyuki Haga", "runnerUpPoints": 413 },
   { "year": 2006, "driver": "Troy Bayliss", "constructor": "Ducati", "constructorChampion": "Ducati" },

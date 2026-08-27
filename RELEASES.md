@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.83 — 2026-08-27
+
+**The "who has won the most" pages start getting written answers, and two of them were wrong.** These pages used to be a name, a number and a list, which is not much of an answer — so they now carry a written note explaining when the record was set, what it displaced, who is closest, and what it would take to beat. Nine are done: DTM, IMSA, WEC, Formula 3 and World Superbike, for drivers and for teams. Checking those numbers against the sources turned up two real errors in our own records. Toyota was credited with two world endurance manufacturers' titles it never won, because for two seasons there was no such title to win — Toyota was the only manufacturer left, so the award became a teams' championship instead. And the 2009 World Superbike manufacturers' title was down to Yamaha when Ducati won it. Both corrected.
+
 ## 0.334.82 — 2026-08-27
 
 **Internal housekeeping.** Session records and the plan for the next one; nothing user-facing changed.
