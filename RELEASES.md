@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.78 — 2026-08-27
+
+**Internal, for the people running the site.** The console can now see how much of the hosting allowance the site is using and what usage is adding to the bill, alongside the health board. Nothing changes for readers.
+
 ## 0.334.77 — 2026-08-27
 
 **Points totals, win counts and runners-up added to the World Superbike, World Rally and DTM champion records.** The champion pages for those three now show what the title was won on, the way the Formula 1 and MotoGP ones already did. One error surfaced while doing it: the 1979 Formula 1 page had Jody Scheckter's final total a point low, and that is now correct.

@@ -3,6 +3,15 @@ import { requireAdmin } from '@/lib/admin-guard';
 import { readHealthReport, type HealthReport } from '@/lib/health-store';
 import { getSourceHealth, type SourceHealth } from '@/lib/source-snapshot';
 import { getOpenMarkets, type OpenMarket } from '@/lib/betting/markets';
+import {
+  fetchBillableUsage,
+  fetchWorkerUsage,
+  isCloudflareBillingConfigured,
+  isCloudflareUsageConfigured,
+  WORKERS_INCLUDED_REQUESTS,
+  type BillableUsage,
+  type WorkerUsage,
+} from '@/lib/analytics/cloudflare';
 import { AdminPageHeader, KpiTile, TelemetryPanel, Unavailable } from '@/components/admin/AdminUI';
 import { LocalTime } from '@/components/LocalTime';
 import { Activity, ListChecks, Radio } from 'lucide-react';
@@ -27,9 +36,10 @@ export const metadata: Metadata = { title: 'System · Admin' };
 //     from clean egress IPs. That is `source_snapshot`, read live because it is
 //     one indexed query.
 //
-// Cloudflare usage, billable cost and the external analytics panels need
-// credentials that do not exist yet; they are named as not-connected rather
-// than faked, and land in the next phase.
+// Cloudflare usage and cost arrived in 0.334.77. The one nuance the panel states
+// out loud: the billable-usage endpoint returns USAGE-BASED charges only, so the
+// Workers Paid $5/month base is not in it. Presenting that total as "what the
+// site costs" would understate the bill by most of it.
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -208,10 +218,12 @@ function flagRows() {
 export default async function AdminSystemPage() {
   await requireAdmin();
 
-  const [report, sources, markets] = await Promise.all([
+  const [report, sources, markets, usage, billing] = await Promise.all([
     safe(() => readHealthReport(), null as HealthReport | null),
     safe(() => getSourceHealth(), [] as SourceHealth[]),
     safe(() => getOpenMarkets(), [] as OpenMarket[]),
+    safe(() => fetchWorkerUsage(30), null as WorkerUsage | null),
+    safe(() => fetchBillableUsage(30), null as BillableUsage | null),
   ]);
 
   const flags = flagRows();
@@ -328,9 +340,107 @@ export default async function AdminSystemPage() {
         </TelemetryPanel>
       </div>
 
-      <TelemetryPanel title="Usage and cost">
-        <Unavailable note="Cloudflare usage against the included allowance, billable cost and AI spend need read-only API tokens that are not configured yet. Nothing is estimated here on purpose." />
-      </TelemetryPanel>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TelemetryPanel title="Cloudflare usage" meta={usage ? `${usage.days} days` : undefined} flush>
+          {usage === null ? (
+            <div className="p-4">
+              {isCloudflareUsageConfigured() ? (
+                <Unavailable note="Configured, but Cloudflare returned nothing. The token may have lost its Account Analytics permission." />
+              ) : (
+                <Unavailable note="Not connected. Needs CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_ANALYTICS_TOKEN as Worker secrets." />
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3 p-4">
+              <div>
+                <div className="flex items-baseline justify-between gap-3 text-sm">
+                  <span className="text-text-muted">Worker requests</span>
+                  <span className="font-mono text-[11px] tabular-nums text-text">
+                    {usage.requests.toLocaleString()} / {(WORKERS_INCLUDED_REQUESTS / 1_000_000).toFixed(0)}M
+                  </span>
+                </div>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface">
+                  <div
+                    className={`h-full rounded-full ${
+                      usage.requests > WORKERS_INCLUDED_REQUESTS ? 'bg-negative' : 'bg-positive'
+                    }`}
+                    style={{
+                      width: `${Math.min(100, Math.max(1, (usage.requests / WORKERS_INCLUDED_REQUESTS) * 100))}%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <ul className="divide-y divide-border border-t border-border">
+                <li className="flex items-baseline justify-between gap-3 py-2 text-sm">
+                  <span className="text-text-muted">Errors</span>
+                  <span
+                    className={`font-mono text-[11px] tabular-nums ${usage.errors > 0 ? 'text-negative' : 'text-positive'}`}
+                  >
+                    {usage.errors.toLocaleString()}
+                  </span>
+                </li>
+                <li className="flex items-baseline justify-between gap-3 py-2 text-sm">
+                  <span className="text-text-muted">Subrequests</span>
+                  <span className="font-mono text-[11px] tabular-nums text-text">
+                    {usage.subrequests.toLocaleString()}
+                  </span>
+                </li>
+              </ul>
+              <p className="text-xs leading-relaxed text-text-faint">
+                The allowance is the Workers Paid included figure, shown as a reference rather than used to compute
+                anything — if the plan changes, a wrong reference is visibly wrong.
+              </p>
+            </div>
+          )}
+        </TelemetryPanel>
+
+        <TelemetryPanel
+          title="Usage-based charges"
+          meta={billing ? `${billing.currency} · 30 days` : undefined}
+          flush
+        >
+          {billing === null ? (
+            <div className="p-4">
+              {isCloudflareBillingConfigured() ? (
+                <Unavailable note="Configured, but Cloudflare returned nothing. The Billable Usage API covers self-serve accounts only." />
+              ) : (
+                <Unavailable note="Not connected. Needs CLOUDFLARE_BILLING_TOKEN as a Worker secret." />
+              )}
+            </div>
+          ) : (
+            <>
+              <ul className="divide-y divide-border">
+                {billing.services.length === 0 ? (
+                  <li className="px-4 py-3 text-sm text-text-muted">No usage-based charges in this period.</li>
+                ) : (
+                  billing.services.map(sv => (
+                    <li key={sv.name} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
+                      <span className="min-w-0 truncate text-text-muted">{sv.name}</span>
+                      <span className="flex shrink-0 items-baseline gap-3">
+                        <span className="font-mono text-[10px] text-text-faint">
+                          {sv.quantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} {sv.unit}
+                        </span>
+                        <span className="font-mono text-[11px] tabular-nums text-text">{sv.cost.toFixed(2)}</span>
+                      </span>
+                    </li>
+                  ))
+                )}
+                <li className="flex items-baseline justify-between gap-3 border-t border-border-strong px-4 py-2.5 text-sm">
+                  <span className="font-semibold text-text">Total</span>
+                  <span className="font-mono text-[11px] tabular-nums font-semibold text-text">
+                    {billing.total.toFixed(2)} {billing.currency}
+                  </span>
+                </li>
+              </ul>
+              <p className="border-t border-border px-4 py-2.5 text-xs leading-relaxed text-text-faint">
+                <strong className="text-text-muted">Usage-based charges only.</strong> Fixed plan subscriptions are not
+                in this figure, so the Workers Paid monthly base is not counted here — this is what usage adds on top,
+                not the bill.
+              </p>
+            </>
+          )}
+        </TelemetryPanel>
+      </div>
     </div>
   );
 }
