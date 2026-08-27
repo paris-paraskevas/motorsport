@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.75 — 2026-08-27
+
+**Every DTM champion now has a written note, back to the first season in 1984.** Thirty-nine of them, across the original series, the year it became a world championship and collapsed, and the revival that followed. Some of the endings are hard to believe: the very first champion won the title without winning a single race all year, the 2011 champion did it in a three-year-old car, and the 2021 title was settled by team orders in the closing laps of the final race, after which team orders were banned.
+
 ## 0.334.74 — 2026-08-27
 
 **Internal, for the people running the site.** The console gains a Content screen showing every post with what it is flagged as, which Learn topics have writing and which have none, and how far the champion-note project has got in each series. Feedback and community threads can now be dealt with from the console instead of needing a hand-written request. Nothing changes for readers.
