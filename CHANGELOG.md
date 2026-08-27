@@ -4,6 +4,32 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.77 — 2026-08-27
+
+### Added
+- **Backfilled `points`, `wins`, `runnerUp` and `runnerUpPoints` across WorldSBK, WRC and DTM — 86 of the 124 rows.** These three families had none of those columns, which is why the integrity suite's points-pair assertion had been skipping all 124 of their notes. Of 124 rows: **52 now carry `points`, 40 carry both `points` and `runnerUpPoints`, 62 name a `runnerUp`, 78 carry `wins`.**
+  - **Sourcing rule, applied strictly:** a figure went in only if it is a FINAL season figure taken from a source already cited in that season's own note. Several notes quote a mid-season standing (a lead *at the clinch*, e.g. WorldSBK 2005's 409/354 at Imola with a round still to run), and those are deliberately left out — backfilling them would have made the guard fail against the note's own correct prose. Derived figures are out too: WRC 1980 states 118 points and a 54-point margin, which implies a runner-up on 64, but nothing states 64, so it is omitted.
+  - Written line-by-line on the file text rather than through `JSON.parse`/`stringify`: all three files are one object per line by hand, and a round-trip would have reformatted 124 rows and buried the real change.
+
+### Fixed
+- **A wrong number on a live indexable page, found by this work.** The F1 1979 note said Scheckter "finished the year on 50 points to Villeneuve's 47". The official counting totals are **51 and 47**, which is what `champions.json` already held — so the note was wrong and the data was right. Corrected. Verified against the 1979 final standings before editing (51, 47, 40 for Jones), and worth noting the 60/53 figures that circulate are gross scores before the era's dropped-scores rule.
+
+### What the backfill actually armed, measured rather than assumed
+- `champions-integrity`'s **"champion outscores the runner-up"** and **"runner-up is a different person"** assertions both skip when the fields are absent (`lib/champions-integrity.test.ts:51`, `:58`). They now run against **40** and **62** rows respectively that were previously unchecked. That is the real win here.
+- `champion-notes-integrity`'s **points-pair assertion went from 0 to only 8** of these 124 notes. **The columns were never the binding constraint — the regex is.** `POINTS_PAIR` requires the two numbers to sit adjacent around "points to", so "489 points to 361" matches but "498 points to Sykes's 447" does not, because a name intervenes. Most well-written prose names the rival.
+
+### Proposed, NOT done — a test change needs your call
+- Broadening `POINTS_PAIR` to tolerate a short non-digit run after "to" would newly check **47 notes**, including 20 MotoGP and 5 F1 that escape today. I probed it read-only across all twelve families. It found the F1 1979 error above — which today's narrow regex would *never* have caught, even after this fix, because the corrected sentence still reads "51 points to Villeneuve's 47".
+- It is not safe as a drop-in, and here is exactly why, so the decision is yours:
+  - **f1 1993 would fail while being correct.** Its note reads "Ayrton Senna finished runner-up on 73 points to Prost's 99" — accurate prose that states the runner-up first, which a champion-first pattern reads as 73/99 against data of 99/73.
+  - **motogp 2001 would fail on a false positive**, matching "1973 to hold titles in the 125" as a points pair. Excluding numbers in the 1900–2099 band fixes that cleanly, since no championship total lands there.
+  - Making the comparison order-insensitive fixes the 1993 case and keeps all 75 currently-passing matches passing, at the cost of no longer catching a transposed pair. That is a deliberate loosening of one dimension in exchange for 47 more value checks, and per the standing rule I am not making that call on a test unilaterally.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1316 passed** · `npm run build` → **EXIT=0**
+- Backfill script re-ran the suite's own `POINTS_PAIR` logic over all 124 notes after writing: **0 mismatches**. Nothing in the prose of these three families contradicts the data now sitting beside it.
+- **Browser-verified** on `next dev`: WorldSBK 2012 renders "clinching the title on **358** points", WRC 1979 renders 112, DTM 1984 correctly renders no points clause (it carries only `wins: 0`, the inaugural champion having won no races), and the F1 1979 page now reads "51 points to Villeneuve's 47".
+
 ## 0.334.76 — 2026-08-27
 
 ### Added
