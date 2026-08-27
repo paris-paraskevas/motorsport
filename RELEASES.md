@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.81 — 2026-08-27
+
+**Every champion of every series we track now has a written note — all 489 of them.** The last two are the Nürburgring's own: the 24-hour race, back to its first running in 1970, and the endurance series that runs on the same circuit. The 24-hour ones are worth a browse: Niki Lauda won it in 1973 when it was split into two eight-hour heats, two drivers shared a Porsche between just the pair of them for a full day in 1977, Sabine Schmitz became the first woman to win it in 1996, and the longest race in its history was followed the very next year by the shortest.
+
 ## 0.334.80 — 2026-08-27
 
 **Every NASCAR Cup champion since 2000 now has a written note.** Twenty-six of them, across three different championship formats that all went by the same name. The one worth reading first is 2003: Matt Kenseth won the title with a single race victory all year, and NASCAR invented the playoff the following season because of it. Also here: the 2011 title, tied on points and settled by counting race wins, and the 2015 title, won by a driver who missed the first third of the season with a broken leg.
