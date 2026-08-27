@@ -4,6 +4,17 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.69 — 2026-08-27
+
+### Fixed
+- **The Feature-in-Learn control shipped unreachable, one release ago.** 0.334.68 put it on `/studio/[id]`, but on the studio dashboard a LIVE row's title links to `/blog/<slug>`, not to the studio page: `actionable` (`app/(app)/studio/page.tsx:35`) is true only for `draft | in_review | approved`, so a published post never had a studio route from the UI. The feature was complete and correct and **no operator could get to it** — found the moment the operator asked "from where do I make a blog featured in learn". This is exactly the class of defect the unverified-gap note in 0.334.68 flagged: the toggle's click path was never exercised, because the admin UI sits behind auth this session does not hold, and reachability is not something a unit test or a typecheck can see.
+  - A published post now opens its studio page **for an admin**, via a new `opensStudio` flag kept separate from `actionable` — `actionable` still governs `RowActions` (submit/approve/reject/reschedule), which must stay off a live post. For a non-admin author a live post's studio page is a dead end, so their title keeps going to the article.
+  - Because the title no longer goes to the article for an admin, the row's right-hand link is now shown for published posts too, reading **View ↗** rather than **Preview ↗**.
+- **Added a `Learn · <topic>` chip to the row** when `learnTopic` is set. Without it, the only way to tell which posts are already in Learn was to open each one in turn.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1284 passed**
+
 ## 0.334.68 — 2026-08-27
 
 ### Added

@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.69 — 2026-08-27
+
+**Internal fix.** The control for putting a post into Learn could not actually be reached from the studio; it can now, and each post shows whether it is already featured. Nothing changes for readers.
+
 ## 0.334.68 — 2026-08-27
 
 **Writing from contributors can now appear in Learn.** When a post is a genuine explainer rather than a race report, it can be filed under a Learn topic and it shows up alongside the written answers, with the author's name on it. The post keeps its own address, so nothing is duplicated. Nothing appears until someone picks a post, so you may not see the section yet.

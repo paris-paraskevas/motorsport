@@ -4,6 +4,7 @@ import { isAdmin } from '@/lib/threads';
 import { requireAuthor } from '@/lib/admin-guard';
 import { isBettingConfigured } from '@/lib/betting/client';
 import { listPosts, publishedPosts, type BlogPost } from '@/lib/blog';
+import { getTopic } from '@/lib/information/topics';
 import { RowActions } from '@/components/studio/RowActions';
 import { STATUS_META, fmtWhen } from '@/components/studio/studio-shared';
 
@@ -34,11 +35,18 @@ function Row({
   meta?: string;
 }) {
   const actionable = post.status === 'draft' || post.status === 'in_review' || post.status === 'approved';
+  // A live post has a studio page too, but only for an admin, and only because
+  // that page carries the Feature-in-Learn control (0.334.68). Without this the
+  // control had no route to it: a LIVE row's title linked straight to the public
+  // post, so the feature shipped unreachable. For a non-admin author a live post's
+  // studio page is a dead end, so their title keeps going to the article.
+  const opensStudio = actionable || (post.status === 'published' && admin);
+  const featured = post.learnTopic ? getTopic(post.learnTopic) : undefined;
   return (
     <li className="py-4 first:pt-0 last:pb-0">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <Link
-          href={actionable ? `/studio/${post.id}` : `/blog/${post.slug}`}
+          href={opensStudio ? `/studio/${post.id}` : `/blog/${post.slug}`}
           className="font-semibold text-text transition-colors duration-(--duration-fast) hover:text-tint"
         >
           {post.title}
@@ -48,12 +56,19 @@ function Row({
           {admin && post.authorName ? ` · ${post.authorName}` : ''}
           {meta ? ` · ${meta}` : ''}
         </span>
-        {actionable && (
+        {/* Which posts are already in Learn, at a glance — otherwise the only way
+            to tell is to open each one. */}
+        {featured && (
+          <span className="border border-brand px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-brand">
+            Learn · {featured.label}
+          </span>
+        )}
+        {opensStudio && (
           <Link
             href={`/blog/${post.slug}`}
             className="ml-auto font-mono text-[11px] uppercase tracking-[0.14em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
           >
-            Preview ↗
+            {post.status === 'published' ? 'View ↗' : 'Preview ↗'}
           </Link>
         )}
       </div>
