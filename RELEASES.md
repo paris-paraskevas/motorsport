@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Performance, weather by the hour, and a privacy policy that finally describes the site that exists. The tools for arranging the home page arrived, and this changelog was rebuilt to read as releases rather than a list of every push.
 
+## 0.334.79 — 2026-08-27
+
+**Every IndyCar champion now has a written note, back to the first season in 1996.** Thirty of them, and this championship produces endings the others do not: three of these titles ended in a points tie, including the very first, which had no tiebreaker rule and so was simply shared. Two more were settled by counting race wins. One driver completed every single lap of a season. And the 2011 title was decided by a race that was stopped and never restarted, after the accident that killed Dan Wheldon.
+
 ## 0.334.78 — 2026-08-27
 
 **Internal, for the people running the site.** The console can now see how much of the hosting allowance the site is using and what usage is adding to the bill, alongside the health board. Nothing changes for readers.

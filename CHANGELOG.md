@@ -4,6 +4,29 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.79 — 2026-08-27
+
+### Added
+- **IndyCar champion notes complete: all 30 champions, 1996 to 2025**, in a new `content/series/indycar/champion-notes.json`. Twelfth series family. Repo-wide coverage 363 → **393 of 489 (80.4%)**; 96 left across three families (adac-ravenol-24h 54, nascar-cup 26, nls 16). This is the IRL/IndyCar Series lineage, which begins in 1996, so the CART-split ambiguity flagged earlier does not apply — CART is a separate championship and is not in this file.
+- **Columns filled in the same change, not deferred.** 29 of the 30 rows gained `points`, `wins` or `runnerUp` as the notes were written, so this family is guarded from birth rather than joining the backlog the previous release had to clear: **9 rows carry `points`, 1 carries a full pair, 17 name a `runnerUp`, 27 carry `wins`.**
+- **23 `clinched` / 7 `season` — the best ratio of any family so far.** IndyCar finales are exhaustively reported, and an unusual number of these went to the last race.
+- Four that stand out. **1996 ended in a tie nobody had written a rule for**: Calkins and Sharp finished the three-race inaugural season level, and with no tiebreaker in existence both were declared champions. **2006 and 2015 were also ties**, and both were settled on a count-back of race wins — Hornish 4-2 over Wheldon, Dixon 3-2 over Montoya, with 2015 level on 556 points each. **2004** produced the most complete season in the set: Kanaan completed all 3,305 racing laps and never failed to see a chequered flag. **1997** was won by Tony Stewart, still the only driver to have won a championship in both IndyCar and NASCAR.
+- **2011 is written with care and its own sourcing.** Franchitti's fourth title was settled by a race that was abandoned: on the eleventh lap at Las Vegas a fifteen-car accident killed Dan Wheldon, the 2005 champion in this same list. The race was stopped and not resumed, and the standings reverted to the previous round. Verified against both the season article and Wheldon's own, which agree on the accident, the lap and the cause of death.
+
+### Research method
+- **Consolidated driver articles carried this family.** Dixon's covered six titles, Franchitti's and Palou's four each, Hornish's three, Power's and Newgarden's two — 21 of 30 seasons from six calls, with points and runners-up attached.
+- **Three URL eras, all HTTP-checked:** `{year}_IndyCar_Series` for 2003+, `1997_Indy_Racing_League_season` for 1997 alone, `{year}_Indy_Racing_League` for 1996 and 1998–2002. 2001 answers to both patterns; 1997 answers to neither of the obvious two.
+- **A contradiction between two Wikipedia driver pages, so neither was used.** Will Power's article says he was runner-up in 2010, 2011 *and 2012*; Ryan Hunter-Reay's says Kanaan was runner-up in 2012. The 2012 runner-up is therefore stated nowhere — not in the note, not in the column.
+- **A consolidated champions list would have been cheaper and does not exist**: `List_of_IndyCar_Series_champions` 404s, and the table inside the `IndyCar_Series` article is truncated and carries no points.
+
+### Noted, not changed
+- `champions.json` spells the four-time champion **"Alex Palou"** without the accent; he is written **Álex Palou**, which is also his article title. Left alone because renaming a driver touches the `driversOf` matching used for per-person title counts, and that deserves its own change rather than riding along inside a content wave.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1323 passed** (110 files, up from 1316 — exactly the 7 `it.each` cases added for a newly-noted series) · `npm run build` → **EXIT=0**
+- All 30 season-article URLs and 16 driver-page URLs HTTP-checked 200.
+- **Browser-verified** on `next dev`: 1996, 2011 and 2015 all 200 and serve `<meta name="robots" content="index, follow">`. The shared 1996 title renders both names — "a first IndyCar title for **Buzz Calkins** and **Scott Sharp**" — which is `driversOf` splitting the field on the slash exactly as the crew families need. The 2015 page shows "clinching the title on **556** points" beside a lead clause that explains the tie.
+
 ## 0.334.78 — 2026-08-27
 
 ### Added
