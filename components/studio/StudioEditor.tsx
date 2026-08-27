@@ -77,7 +77,7 @@ export function StudioEditor({
   post: StudioEditorPost;
   admin: boolean;
   /** Supporter gate: AI tools render disabled without it (admins pass; everyone
-   *  else needs the donor flag an admin sets on /admin/users). The API enforces
+   *  else needs the donor flag an admin sets on /admin/audience). The API enforces
    *  the same rule server-side — this is display, not security. */
   aiTools: boolean;
 }) {

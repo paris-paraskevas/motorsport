@@ -5,7 +5,7 @@ import { listSeriesSubmissions } from '@/lib/feeder';
 import { AdminPageHeader, SubmissionRow } from '@/components/admin/AdminUI';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Submissions · Admin' };
+export const metadata: Metadata = { title: 'Content · Admin' };
 
 // Submissions route: feeder-series data intake from /contribute. Metadata only —
 // the base64 file blob is never inlined here; downloads go through the admin-gated

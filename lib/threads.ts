@@ -52,7 +52,7 @@ export function canAuthor(user: { publicMetadata?: { role?: unknown } } | null |
 }
 
 /** Supporter flag (Clerk `publicMetadata.donor`), set by an admin on
- *  /admin/users when a donation arrives (Buy Me a Coffee has no webhook wired,
+ *  /admin/audience when a donation arrives (Buy Me a Coffee has no webhook wired,
  *  so matching donor → account is manual). Gates the studio's AI tools;
  *  admins bypass the gate at the call sites, not here. */
 export function hasDonated(user: { publicMetadata?: { donor?: unknown } } | null | undefined): boolean {

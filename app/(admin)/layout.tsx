@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { FONT_CLASSES } from '@/lib/fonts';
 import { SITE_URL } from '@/lib/site';
-import { ThemeScript } from '@/components/theme/ThemeScript';
+import { ConsoleModeScript } from '@/components/admin/ConsoleMode';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
 import '../globals.css';
@@ -17,7 +17,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#f7f3e8',
+  // The console's dark ground, which is its default mode. The public site keeps
+  // its own paper themeColor — these are separate root layouts.
+  themeColor: '#14181d',
   width: 'device-width',
   initialScale: 1,
 };
@@ -49,13 +51,17 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
         },
       }}
     >
+      {/* SSR default is the console's dark mode, plus `dark` so any dark:
+          utility (and the shadcn primitives) resolve the same way the site's
+          dark-family themes do. ConsoleModeScript corrects both pre-paint for
+          an operator who has chosen light. */}
       <html
         lang="en"
-        data-theme="paper"
-      className={FONT_CLASSES}
+        data-theme="console-dark"
+        className={`dark ${FONT_CLASSES}`}
       >
         <body className="min-h-screen bg-bg text-text">
-          <ThemeScript />
+          <ConsoleModeScript />
           {children}
           <SerwistRegister />
         </body>

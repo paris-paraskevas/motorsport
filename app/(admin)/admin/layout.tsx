@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { requireAdmin } from '@/lib/admin-guard';
 import { PAGE_WIDE, SITE_URL } from '@/lib/site';
 import { AdminNav } from '@/components/admin/AdminNav';
+import { ConsoleModeToggle } from '@/components/admin/ConsoleMode';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -17,15 +18,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requireAdmin();
   return (
     <div className={PAGE_WIDE}>
-      {/* Absolute apex, not a relative "/settings": on the admin-only dev.
-          subdomain a relative link resolves to dev.paddock-tracker.com/settings,
-          which 404s (proxy.ts serves only admin routes on dev.*). */}
-      <Link
-        href={`${SITE_URL}/settings`}
-        className="mb-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
-      >
-        <ArrowLeft size={13} /> Account
-      </Link>
+      {/* Header row: the escape hatch, and the mode switch. The toggle lives
+          here rather than in the rail because the rail collapses to a scrolling
+          chip strip below lg, where a control appended to it would scroll off
+          the end and be unreachable on a phone. */}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        {/* Absolute apex, not a relative "/settings": on the admin-only dev.
+            subdomain a relative link resolves to dev.paddock-tracker.com/settings,
+            which 404s (middleware serves only admin routes on dev.*). */}
+        <Link
+          href={`${SITE_URL}/settings`}
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-text-muted transition-colors duration-(--duration-fast) hover:text-text"
+        >
+          <ArrowLeft size={13} /> Account
+        </Link>
+        <ConsoleModeToggle />
+      </div>
       <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
         <AdminNav />
         <div className="min-w-0">{children}</div>
