@@ -4,6 +4,30 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 0.334.75 — 2026-08-27
+
+### Added
+- **DTM champion notes complete: all 39 champions, 1984 to 2025.** New `content/series/dtm/champion-notes.json`, finishing the eleventh series family. Repo-wide coverage 324 → **363 of 489 (74.2%)**; 126 left across four families (adac-ravenol-24h 54, indycar 30, nascar-cup 26, nls 16). There is no 1997–1999 in the set: the series folded when the ITC collapsed and was revived in 2000.
+- **11 `clinched` / 28 `season`** — the inverse of the WRC split, for a structural reason worth recording. DTM runs two races per weekend and the older season articles are stubs, so the round a title was mathematically settled is usually not on the record. Where it is, it is often the last race of the year: 2025, 2018, 2012, 2011, 2010 and 2002 all went to the final round, and 2025 was decided by four points, the closest finish the revived series has produced.
+- Three that are worth the read on their own. **1984, won without a single race victory** — Strycek took the inaugural title in a BMW 635 CSi without winning any of the fifteen races, which the scoring system then allowed. **2021, disputed after the fact** — Götz won by three points at the Norisring after his two rivals collided at the first corner and Mercedes-AMG issued team orders in the closing laps; team orders were banned outright for the following season. **2011, won in a three-year-old car** — Tomczyk ran a 2008-specification Audi A4 for Team Phoenix while the factory drivers had newer machinery.
+
+### Research method
+- **Consolidated driver articles again, but they paid less than for rally.** Schneider's covered five titles, Rast's and Ludwig's three each, Wittmann's, Scheider's and Ekström's two each — nineteen seasons from six calls. DTM driver pages carry thinner narrative than the rally ones, so per-season articles still did most of the work.
+- **The 1984–87 Wikipedia articles are stubs.** Rather than spend three thin fetches, one search covered 1984, 1985 and 1986 together and produced better material than the articles hold: the "flying brick" Volvo 240 Turbo, the handicap rules that admitted turbos in 1985, and Thiim's 1986 Rover Vitesse title in his debut season.
+- **Three URL eras, all HTTP-checked**: `{year}_DTM` for 2021+, `{year}_Deutsche_Tourenwagen_Masters` for 2000–2020, `{year}_Deutsche_Tourenwagen_Meisterschaft` for 1984–1995, and 1996 under `1996_International_Touring_Car_Championship`. Assuming one pattern for all of them 404s.
+- **Two source framings rejected by checking our own data.** One implied Ekström was the first Swedish champion — Per Stureson won in 1985 and is Swedish, so the claim is not made. Another implied Larini was the first Italian champion — Roberto Ravaglia won in 1989, so the notes credit Ravaglia as the first and describe Bortolotti in 2024 as the first Italian *since* Larini.
+
+### Verified
+- `tsc --noEmit` → **0** · `lint` → 0 errors + the 2 known `_encoding` warnings · `npm test` → **1316 passed** (110 files, up from 1309 — exactly the 7 `it.each` cases the integrity suite adds for a newly-noted series) · `npm run build` → **EXIT=0**
+- All 39 season-article URLs and 27 driver-page URLs HTTP-checked 200. `motorsportretro.com` 403s as a bot-block and was dropped.
+- **Browser-verified** on `next dev`: 1984, 1996 and 2021 all 200 and serve `<meta name="robots" content="index, follow">`; the 1984 page renders "The season: the first season, in 1984, won without a single race victory."
+
+### Noted
+- **The squash-merge subject for the WRC wave (#841) reads `(0.334.71)` while its CHANGELOG entry and `package.json` say `0.334.73`.** The PR was renumbered to 0.334.73 after `main` moved, but the squash took its original commit subject rather than the edited PR title. The contract that matters — `package.json` and what `/changelog` reports — is correct; only the git subject is stale. Recording it so nobody later reads the git log as the version authority.
+
+### Same limitation, fourth family running
+- `dtm/champions.json` has no `points`, `wins`, `runnerUp` or `runnerUpPoints` columns, so the points-pair assertion **skips all 39 notes**. That is now WSBK, WRC and DTM — **124 notes with no machine check on their figures** — and the four families still open are the same. Backfilling those columns remains the highest-value follow-up in the programme.
+
 ## 0.334.74 — 2026-08-27
 
 ### Added
